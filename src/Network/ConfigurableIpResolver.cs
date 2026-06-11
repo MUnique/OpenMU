@@ -28,7 +28,7 @@ public class ConfigurableIpResolver : IIpAddressResolver
     /// <param name="allowRuntimeReconfiguration">
     /// If set to <c>false</c>, calls to <see cref="Configure"/> are ignored after construction.
     /// </param>
-    /// <exception cref="System.ArgumentException">When using a custom resolver type, a parameter with an IP or host name is required. - parameter</exception>
+    /// <exception cref="System.ArgumentException">When using a custom resolver type, a parameter with an IP or host name is required. - parameter.</exception>
     public ConfigurableIpResolver(IpResolverType resolverType, string? parameter, ILoggerFactory loggerFactory, bool allowRuntimeReconfiguration = true)
     {
         this._loggerFactory = loggerFactory;
@@ -101,7 +101,7 @@ public class ConfigurableIpResolver : IIpAddressResolver
             case IpResolverType.Auto:
             case IpResolverType.Public:
             default:
-                return new PublicIpResolver(_loggerFactory.CreateLogger<PublicIpResolver>());
+                return new PublicIpResolver(this._loggerFactory.CreateLogger<PublicIpResolver>());
         }
     }
 }

@@ -117,7 +117,7 @@ public sealed class Packet : INotifyPropertyChanged
                 this._message = request.Message;
                 this._analyzedByVersion = request.ClientVersion;
                 this._definition = request.Definition;
-                this.RaisePropertyChanged(nameof(DisplayCode));
+                this.RaisePropertyChanged(nameof(this.DisplayCode));
             }
 
             return this._message ?? string.Empty;
@@ -142,7 +142,7 @@ public sealed class Packet : INotifyPropertyChanged
     /// <summary>
     /// Gets the protocol version which was applied when analyzing.
     /// </summary>
-    public ClientVersion AnalyzedByVersion => _analyzedByVersion;
+    public ClientVersion AnalyzedByVersion => this._analyzedByVersion;
 
     /// <inheritdoc />
     public override string ToString()
@@ -159,12 +159,12 @@ public sealed class Packet : INotifyPropertyChanged
         this._definition = null;
         this._displayCode = null;
         this._message = null;
-        this.RaisePropertyChanged(nameof(Message));
+        this.RaisePropertyChanged(nameof(this.Message));
     }
 
     private void RaisePropertyChanged([CallerMemberName] string? propertyName = null)
     {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
     /// <summary>
@@ -178,7 +178,7 @@ public sealed class Packet : INotifyPropertyChanged
         /// <param name="data">The data.</param>
         public AnalyzingRequestedEventArgs(Packet data)
         {
-            Packet = data;
+            this.Packet = data;
         }
 
         /// <summary>

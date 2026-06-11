@@ -15,10 +15,10 @@ using MUnique.OpenMU.Network.Packets;
 using MUnique.OpenMU.Persistence.Initialization.Items;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 using MUnique.OpenMU.PlugIns;
-using static CharacterClasses.CharacterClassHelper;
+using static MUnique.OpenMU.Persistence.Initialization.CharacterClasses.CharacterClassHelper;
 
 /// <summary>
-/// This adds attributes and relations for attack speed. Adds effects for Ale and Potion of Soul
+/// This adds attributes and relations for attack speed. Adds effects for Ale and Potion of Soul.
 /// </summary>
 [PlugIn]
 [Display(Name = PlugInName, Description = PlugInDescription)]
@@ -131,11 +131,11 @@ public class FixAttackSpeedCalculationUpdate : UpdatePlugInBase
             return;
         }
 
-        AddStatIfNotExists(context, gameConfiguration, Stats.MagicSpeed);
-        AddStatIfNotExists(context, gameConfiguration, Stats.AttackSpeedByWeapon);
-        AddStatIfNotExists(context, gameConfiguration, Stats.AreTwoWeaponsEquipped);
-        AddStatIfNotExists(context, gameConfiguration, Stats.EquippedWeaponCount);
-        AddStatIfNotExists(context, gameConfiguration, Stats.WalkSpeed);
+        this.AddStatIfNotExists(context, gameConfiguration, Stats.MagicSpeed);
+        this.AddStatIfNotExists(context, gameConfiguration, Stats.AttackSpeedByWeapon);
+        this.AddStatIfNotExists(context, gameConfiguration, Stats.AreTwoWeaponsEquipped);
+        this.AddStatIfNotExists(context, gameConfiguration, Stats.EquippedWeaponCount);
+        this.AddStatIfNotExists(context, gameConfiguration, Stats.WalkSpeed);
 
         Stats.AttackSpeed.GetPersistent(gameConfiguration).MaximumValue = Stats.AttackSpeed.MaximumValue;
         Stats.MagicSpeed.GetPersistent(gameConfiguration).MaximumValue = Stats.MagicSpeed.MaximumValue;
@@ -219,7 +219,7 @@ public class FixAttackSpeedCalculationUpdate : UpdatePlugInBase
         new BlessPotionEffectInitializer(context, gameConfiguration).Initialize();
         new SoulPotionEffectInitializer(context, gameConfiguration).Initialize();
 
-        SetItemEffect(gameConfiguration, ItemConstants.Alcohol, MagicEffectNumber.Alcohol);
+        this.SetItemEffect(gameConfiguration, ItemConstants.Alcohol, MagicEffectNumber.Alcohol);
         var siegePotion = gameConfiguration.Items.First(item => item.Number == ItemConstants.SiegePotion.Number && item.Group == ItemConstants.SiegePotion.Group);
         siegePotion.Name = "Potion of Bless;Potion of Soul";
         siegePotion.Durability = 10;

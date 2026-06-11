@@ -33,7 +33,7 @@ public static class AttackableExtensions
         /// <summary>
         /// Gets a value indicating whether this instance is a summoned monster.
         /// </summary>
-        public bool IsSummonedMonster => attackable is Monster { SummonedBy: not null };
+        public bool IsSummonedMonster => this.attackable is Monster { SummonedBy: not null };
     }
 
     /// <summary>

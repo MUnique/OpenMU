@@ -85,7 +85,6 @@ public class AppearanceSerializer095 : IAppearanceSerializer
     /// </summary>
     /// <param name="target">The target.</param>
     /// <param name="appearanceData">The appearance data.</param>
-    /// <returns></returns>
     private void WritePreviewCharSet(Span<byte> target, IAppearanceData appearanceData)
     {
         ItemAppearance?[] itemArray = new ItemAppearance[InventoryConstants.EquippableSlotsCount];

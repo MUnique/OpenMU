@@ -64,7 +64,7 @@ public partial class ValueTable<TValue>
         }
 
         this.WrappedList ??= new ValueListWrapper<TValue>(this.Value);
-        this.WrappedList!.Add(new TValue());
+        this.WrappedList!.Add(default(TValue));
         await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
     }
 

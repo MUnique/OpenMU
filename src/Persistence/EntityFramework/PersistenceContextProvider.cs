@@ -240,6 +240,7 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
         return new GuildServerContext(new GuildContext(), this.RepositoryProvider, this._loggerFactory.CreateLogger<GuildServerContext>());
     }
 
+    /// <inheritdoc/>
     public IContext CreateNewTypedContext(Type editType, bool useCache, DataModel.Configuration.GameConfiguration? gameConfiguration = null)
     {
         if (!editType.IsConfigurationType() && gameConfiguration is null)

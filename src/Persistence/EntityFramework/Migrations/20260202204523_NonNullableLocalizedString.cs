@@ -1,9 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿// <copyright file="20260202204523_NonNullableLocalizedString.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
 
 #nullable disable
 
 namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 {
+    using Microsoft.EntityFrameworkCore.Migrations;
+
     /// <inheritdoc />
     public partial class NonNullableLocalizedString : Migration
     {
@@ -16,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 table: "MiniGameSpawnWave",
                 type: "text",
                 nullable: false,
-                defaultValue: "",
+                defaultValue: string.Empty,
                 oldClrType: typeof(string),
                 oldType: "text",
                 oldNullable: true);
@@ -27,7 +31,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 table: "MiniGameSpawnWave",
                 type: "text",
                 nullable: false,
-                defaultValue: "",
+                defaultValue: string.Empty,
                 oldClrType: typeof(string),
                 oldType: "text",
                 oldNullable: true);
@@ -38,7 +42,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 table: "MiniGameChangeEvent",
                 type: "text",
                 nullable: false,
-                defaultValue: "",
+                defaultValue: string.Empty,
                 oldClrType: typeof(string),
                 oldType: "text",
                 oldNullable: true);
@@ -49,7 +53,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 table: "MiniGameChangeEvent",
                 type: "text",
                 nullable: false,
-                defaultValue: "",
+                defaultValue: string.Empty,
                 oldClrType: typeof(string),
                 oldType: "text",
                 oldNullable: true);
@@ -60,7 +64,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 table: "ConfigurationUpdate",
                 type: "text",
                 nullable: false,
-                defaultValue: "",
+                defaultValue: string.Empty,
                 oldClrType: typeof(string),
                 oldType: "text",
                 oldNullable: true);
@@ -71,7 +75,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 table: "ConfigurationUpdate",
                 type: "text",
                 nullable: false,
-                defaultValue: "",
+                defaultValue: string.Empty,
                 oldClrType: typeof(string),
                 oldType: "text",
                 oldNullable: true);

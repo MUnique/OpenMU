@@ -2,9 +2,6 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.Network;
-using MUnique.OpenMU.Persistence.Initialization.Updates;
-
 namespace MUnique.OpenMU.Persistence.Initialization;
 
 using System.Diagnostics;
@@ -14,6 +11,8 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.Network;
+using MUnique.OpenMU.Persistence.Initialization.Updates;
 
 /// <summary>
 /// Base class for a map initializer which provides some common basic functionality.

@@ -45,7 +45,7 @@ internal class ServerListItem : IGameServerEntry
     public ushort ServerId { get; set; }
 
     /// <summary>
-    /// Gets or sets the server load (usage rate).
+    /// Gets the server load (usage rate).
     /// </summary>
     public byte ServerLoadPercentage
     {

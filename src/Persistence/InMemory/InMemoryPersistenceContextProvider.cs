@@ -2,14 +2,13 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using Nito.Disposables;
-
 namespace MUnique.OpenMU.Persistence.InMemory;
 
 using System.Threading;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.PlugIns;
+using Nito.Disposables;
 
 /// <summary>
 /// A context provider which uses in-memory repositories to hold its data, e.g. for testing or demo purposes.

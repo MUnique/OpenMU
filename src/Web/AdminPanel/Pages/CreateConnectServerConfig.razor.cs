@@ -1,4 +1,4 @@
-﻿// <copyright file="CreateGameServerConfig.razor.cs" company="MUnique">
+﻿// <copyright file="CreateConnectServerConfig.razor.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -126,7 +126,7 @@ public partial class CreateConnectServerConfig : ComponentBase, IAsyncDisposable
         result.ServerId = this._viewModel.ServerId;
         result.Description = this._viewModel.Description;
         result.Client = this._viewModel.Client!;
-        result.ClientListenerPort = _viewModel.NetworkPort;
+        result.ClientListenerPort = this._viewModel.NetworkPort;
         return result;
     }
 

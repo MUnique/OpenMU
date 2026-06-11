@@ -1,4 +1,4 @@
-﻿// <copyright file="AppearanceSerializer.cs" company="MUnique">
+﻿// <copyright file="AppearanceSerializerExtended.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -92,15 +92,15 @@ public class AppearanceSerializerExtended : IAppearanceSerializer
         }
 
         var items = target[2..];
-        SetShinyItem(items[0..3], itemArray[InventoryConstants.LeftHandSlot]);
-        SetShinyItem(items[3..6], itemArray[InventoryConstants.RightHandSlot]);
-        SetShinyItem(items[6..9], itemArray[InventoryConstants.HelmSlot]);
-        SetShinyItem(items[9..12], itemArray[InventoryConstants.ArmorSlot]);
-        SetShinyItem(items[12..15], itemArray[InventoryConstants.PantsSlot]);
-        SetShinyItem(items[15..18], itemArray[InventoryConstants.GlovesSlot]);
-        SetShinyItem(items[18..21], itemArray[InventoryConstants.BootsSlot]);
-        SetUnshinyItem(items[21..23], itemArray[InventoryConstants.WingsSlot]);
-        SetUnshinyItem(items[23..25], itemArray[InventoryConstants.PetSlot]);
+        this.SetShinyItem(items[0..3], itemArray[InventoryConstants.LeftHandSlot]);
+        this.SetShinyItem(items[3..6], itemArray[InventoryConstants.RightHandSlot]);
+        this.SetShinyItem(items[6..9], itemArray[InventoryConstants.HelmSlot]);
+        this.SetShinyItem(items[9..12], itemArray[InventoryConstants.ArmorSlot]);
+        this.SetShinyItem(items[12..15], itemArray[InventoryConstants.PantsSlot]);
+        this.SetShinyItem(items[15..18], itemArray[InventoryConstants.GlovesSlot]);
+        this.SetShinyItem(items[18..21], itemArray[InventoryConstants.BootsSlot]);
+        this.SetUnshinyItem(items[21..23], itemArray[InventoryConstants.WingsSlot]);
+        this.SetUnshinyItem(items[23..25], itemArray[InventoryConstants.PetSlot]);
 
         var pet = itemArray[InventoryConstants.PetSlot];
         if (pet is not null)
@@ -174,7 +174,7 @@ public class AppearanceSerializerExtended : IAppearanceSerializer
     ///     Number: 12 bit
     ///     Level:  4 bit
     ///     IsExc:  1 bit
-    ///     IsAnc:  1 bit
+    ///     IsAnc:  1 bit.
     /// </summary>
     private readonly ref struct ShinyItem(Span<byte> data)
     {
@@ -254,7 +254,7 @@ public class AppearanceSerializerExtended : IAppearanceSerializer
     /// <summary>
     /// Unshiny Item: (2 bytes)
     ///     Group:  4 bit
-    ///     Number: 12 bit
+    ///     Number: 12 bit.
     /// </summary>
     private readonly ref struct UnshinyItem(Span<byte> data)
     {
