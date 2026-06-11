@@ -23,7 +23,7 @@ public sealed class OnlineFriend : IObservable<OnlineFriend>, IObserver<OnlineFr
     /// <summary>
     /// The synchronize object which is used for locks.
     /// </summary>
-    private readonly ReaderWriterLockSlim _readerWriterLock = new ();
+    private readonly ReaderWriterLockSlim _readerWriterLock = new();
 
     /// <summary>
     /// This are all subscriptions, to which this player subscribed.

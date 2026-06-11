@@ -138,10 +138,10 @@ public class Gates : InitializerBase
         targetGates.Add(52, this.CreateExitGate(maps[6], 107, 114, 107, 114, 0, true));
 
         // Devil Square:
-        targetGates.Add(58, this.CreateExitGate(maps[new (9, 1)], 133, 91, 141, 99, 0, true));
-        targetGates.Add(59, this.CreateExitGate(maps[new (9, 2)], 135, 162, 142, 170, 0, true));
-        targetGates.Add(60, this.CreateExitGate(maps[new (9, 3)], 62, 150, 70, 158, 0, true));
-        targetGates.Add(61, this.CreateExitGate(maps[new (9, 4)], 66, 84, 74, 92, 0, true));
+        targetGates.Add(58, this.CreateExitGate(maps[new(9, 1)], 133, 91, 141, 99, 0, true));
+        targetGates.Add(59, this.CreateExitGate(maps[new(9, 2)], 135, 162, 142, 170, 0, true));
+        targetGates.Add(60, this.CreateExitGate(maps[new(9, 3)], 62, 150, 70, 158, 0, true));
+        targetGates.Add(61, this.CreateExitGate(maps[new(9, 4)], 66, 84, 74, 92, 0, true));
 
         // Noria
         targetGates.Add(27, this.CreateExitGate(maps[3], 171, 108, 177, 117, 0, true));

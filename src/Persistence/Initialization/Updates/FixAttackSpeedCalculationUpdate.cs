@@ -37,54 +37,54 @@ public class FixAttackSpeedCalculationUpdate : UpdatePlugInBase
 
     private static readonly Dictionary<int, int> AttackSpeedByGloveNumber = new()
     {
-        {0, 4}, // Bronze Gloves
-        {1, 6}, // Dragon Gloves
-        {5, 8}, // Leather Gloves
-        {6, 10}, // Scale Gloves
-        {8, 8}, // Brass Gloves
-        {9, 4}, // Plate Gloves
-        {10, 4}, // Vine Gloves
-        {11, 8}, // Silk Gloves
-        {12, 10}, // Wind Gloves
-        {13, 4}, // Spirit Gloves
-        {14, 6}, // Guardian Gloves
-        {15, 6}, // Storm Crow Gloves
-        {16, 6}, // Black Dragon Gloves
-        {17, 6}, // Dark Phoenix Gloves
-        {18, 5}, // Grand Soul Gloves
-        {19, 6}, // Divine Gloves
-        {20, 7}, // Thunder Hawk Gloves
-        {21, 6}, // Great Dragon Gloves
-        {22, 6}, // Dark Soul Gloves
-        {23, 7}, // Hurricane Gloves
-        {24, 6}, // Red Spirit Gloves
-        {25, 7}, // Light Plate Gloves
-        {26, 6}, // Adamantine Gloves
-        {27, 5}, // Dark Steel Gloves
-        {28, 4}, // Dark Master Gloves
-        {29, 7}, // Dragon Knight Gloves
-        {30, 7}, // Venom Mist Gloves
-        {31, 7}, // Sylphid Ray Gloves
-        {32, 7}, // Volcano Gloves
-        {33, 5}, // Sunlight Gloves
-        {34, 6}, // Ashcrow Gloves
-        {35, 6}, // Eclipse Gloves
-        {36, 6}, // Iris Gloves
-        {37, 7}, // Valiant Gloves
-        {38, 5}, // Glorious Gloves
-        {39, 6}, // Violent Wind Gloves
-        {40, 8}, // Red Wing Gloves
-        {41, 7}, // Ancient Gloves
-        {42, 6}, // Demonic Gloves
-        {43, 6}, // Storm Blitz Gloves
-        {45, 7}, // Titan  Gloves
-        {46, 7}, // Brave Gloves
-        {47, 7}, // Phantom  Gloves
-        {48, 7}, // Destroy Gloves
-        {49, 7}, // Seraphim Gloves
-        {50, 7}, // Divine Gloves
-        {51, 7}, // Royal Gloves
-        {52, 7}, // Hades Gloves
+        { 0, 4 }, // Bronze Gloves
+        { 1, 6 }, // Dragon Gloves
+        { 5, 8 }, // Leather Gloves
+        { 6, 10 }, // Scale Gloves
+        { 8, 8 }, // Brass Gloves
+        { 9, 4 }, // Plate Gloves
+        { 10, 4 }, // Vine Gloves
+        { 11, 8 }, // Silk Gloves
+        { 12, 10 }, // Wind Gloves
+        { 13, 4 }, // Spirit Gloves
+        { 14, 6 }, // Guardian Gloves
+        { 15, 6 }, // Storm Crow Gloves
+        { 16, 6 }, // Black Dragon Gloves
+        { 17, 6 }, // Dark Phoenix Gloves
+        { 18, 5 }, // Grand Soul Gloves
+        { 19, 6 }, // Divine Gloves
+        { 20, 7 }, // Thunder Hawk Gloves
+        { 21, 6 }, // Great Dragon Gloves
+        { 22, 6 }, // Dark Soul Gloves
+        { 23, 7 }, // Hurricane Gloves
+        { 24, 6 }, // Red Spirit Gloves
+        { 25, 7 }, // Light Plate Gloves
+        { 26, 6 }, // Adamantine Gloves
+        { 27, 5 }, // Dark Steel Gloves
+        { 28, 4 }, // Dark Master Gloves
+        { 29, 7 }, // Dragon Knight Gloves
+        { 30, 7 }, // Venom Mist Gloves
+        { 31, 7 }, // Sylphid Ray Gloves
+        { 32, 7 }, // Volcano Gloves
+        { 33, 5 }, // Sunlight Gloves
+        { 34, 6 }, // Ashcrow Gloves
+        { 35, 6 }, // Eclipse Gloves
+        { 36, 6 }, // Iris Gloves
+        { 37, 7 }, // Valiant Gloves
+        { 38, 5 }, // Glorious Gloves
+        { 39, 6 }, // Violent Wind Gloves
+        { 40, 8 }, // Red Wing Gloves
+        { 41, 7 }, // Ancient Gloves
+        { 42, 6 }, // Demonic Gloves
+        { 43, 6 }, // Storm Blitz Gloves
+        { 45, 7 }, // Titan  Gloves
+        { 46, 7 }, // Brave Gloves
+        { 47, 7 }, // Phantom  Gloves
+        { 48, 7 }, // Destroy Gloves
+        { 49, 7 }, // Seraphim Gloves
+        { 50, 7 }, // Divine Gloves
+        { 51, 7 }, // Royal Gloves
+        { 52, 7 }, // Hades Gloves
     };
 
     private static readonly Dictionary<int, int> WalkSpeedByBootNumber = new()

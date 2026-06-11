@@ -35,15 +35,15 @@ public class JsonQueryBuilder
     /// <returns>The query which returns the objects of the given type as json string.</returns>
     public string BuildJsonQueryForEntity(IEntityType entityType)
     {
-        //Debug.WriteLine($"Building the json query for {entityType.Name}.");
+        // Debug.WriteLine($"Building the json query for {entityType.Name}.");
         var stringBuilder = new StringBuilder();
         stringBuilder.Append("select result.\"Id\" \"$id\", result.\"Id\" id, row_to_json(result) as ").AppendLine(entityType.GetTableName())
             .AppendLine("from (");
         this.AddTypeToQuery(entityType, stringBuilder, "a");
         stringBuilder.AppendLine(") result");
         var result = stringBuilder.ToString();
-        //Debug.WriteLine("Finished building the json query for {0}. Result: {1}", entityType.Name, result);
 
+        // Debug.WriteLine("Finished building the json query for {0}. Result: {1}", entityType.Name, result);
         return result;
     }
 

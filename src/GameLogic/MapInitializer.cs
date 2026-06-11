@@ -188,7 +188,7 @@ public class MapInitializer : IMapInitializer
         if (monsterDef.ObjectKind == NpcObjectKind.Monster)
         {
             this._logger.LogDebug("Creating monster {spawn}", spawnArea);
-            npc = new Monster(spawnArea, monsterDef, createdMap, dropGenerator ?? this._dropGenerator, intelligence ?? new BasicMonsterIntelligence(), this.PlugInManager, this.PathFinderPool,  eventStateProvider);
+            npc = new Monster(spawnArea, monsterDef, createdMap, dropGenerator ?? this._dropGenerator, intelligence ?? new BasicMonsterIntelligence(), this.PlugInManager, this.PathFinderPool, eventStateProvider);
         }
         else if (monsterDef.ObjectKind == NpcObjectKind.Guard)
         {

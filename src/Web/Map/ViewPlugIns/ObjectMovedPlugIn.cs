@@ -16,7 +16,6 @@ using MUnique.OpenMU.Web.Map.Map;
 /// </summary>
 public class ObjectMovedPlugIn : JsViewPlugInBase, IObjectMovedPlugIn
 {
-
     private readonly string _worldAccessor;
 
     /// <summary>

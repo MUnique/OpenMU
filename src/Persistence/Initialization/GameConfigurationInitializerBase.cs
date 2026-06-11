@@ -246,7 +246,6 @@ public abstract class GameConfigurationInitializerBase : InitializerBase
         this.GameConfiguration.GlobalBaseAttributeValues.Add(randomExperienceMaxMultiplier);
     }
 
-
     private long CalcNeededMasterExp(long lvl)
     {
         // f(x) = 505 * x^3 + 35278500 * x + 228045 * x^2

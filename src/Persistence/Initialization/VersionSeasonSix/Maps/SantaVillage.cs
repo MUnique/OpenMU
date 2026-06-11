@@ -21,8 +21,6 @@ internal class SantaVillage : BaseMapInitializer
     /// </summary>
     internal const string Name = "Santa Village";
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="SantaVillage"/> class.
     /// </summary>

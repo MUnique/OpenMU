@@ -17,13 +17,13 @@
         private IDictionary<int, IGameServer> _gameServers;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="gameServers"></param>
         public ServerController(IDictionary<int, IGameServer> gameServers) => _gameServers = gameServers;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="id"></param>
         /// <param name="msg"></param>
@@ -37,6 +37,7 @@
                 await server.Context.SendGlobalNotificationAsync(msg).ConfigureAwait(false);
                 return Ok("Done");
             }
+
             return Ok("Server not ready");
         }
 
@@ -65,7 +66,7 @@
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -77,7 +78,7 @@
             _gameServers.Values.ForEach(async item =>
             {
                 var server = item as GameServer;
-                if(server is not null)
+                if (server is not null)
                 {
                     await server.Context.ForEachPlayerAsync(player =>
                     {

@@ -499,8 +499,8 @@ internal class LostTower : BaseMapInitializer
         yield return this.CreateMonsterSpawn(545, this.NpcDictionary[39], 173, 227);
         yield return this.CreateMonsterSpawn(546, this.NpcDictionary[39], 183, 233);
         yield return this.CreateMonsterSpawn(547, this.NpcDictionary[39], 173, 237);
- 
-        // Traps:  
+
+        // Traps:
         yield return this.CreateMonsterSpawn(550, this.NpcDictionary[103], 5, 175, Direction.SouthEast);
         yield return this.CreateMonsterSpawn(551, this.NpcDictionary[103], 6, 175, Direction.SouthEast);
         yield return this.CreateMonsterSpawn(552, this.NpcDictionary[103], 4, 175, Direction.SouthEast);

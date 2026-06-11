@@ -26,7 +26,7 @@ internal sealed class ChatRoom : IDisposable
     /// </summary>
     private readonly List<IChatClient> _connectedClients;
 
-    private ReaderWriterLockSlim? _lockSlim = new ();
+    private ReaderWriterLockSlim? _lockSlim = new();
 
     private int _lastUsedClientIndex = -1;
 

@@ -24,9 +24,9 @@ using MUnique.OpenMU.PlugIns;
 [TestFixture]
 public class ViewPlugInContainerTest
 {
-    private static readonly ClientVersion Season6E3English = new (6, 3, ClientLanguage.English);
+    private static readonly ClientVersion Season6E3English = new(6, 3, ClientLanguage.English);
 
-    private static readonly ClientVersion Season9E2English = new (9, 2, ClientLanguage.English);
+    private static readonly ClientVersion Season9E2English = new(9, 2, ClientLanguage.English);
 
     /// <summary>
     /// A test interface for our test plugin implementations.

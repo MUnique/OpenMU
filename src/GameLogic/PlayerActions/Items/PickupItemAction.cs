@@ -33,27 +33,27 @@ public class PickupItemAction
 
                 break;
             case DroppedItem droppedItem:
-            {
-                var (success, stackTarget) = await TryPickupItemAsync(player, droppedItem).ConfigureAwait(false);
-                if (success)
                 {
-                    if (stackTarget != null)
+                    var (success, stackTarget) = await TryPickupItemAsync(player, droppedItem).ConfigureAwait(false);
+                    if (success)
                     {
-                        await player.InvokeViewPlugInAsync<IItemPickUpFailedPlugIn>(p => p.ItemPickUpFailedAsync(ItemPickFailReason.ItemStacked)).ConfigureAwait(false);
-                        await player.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(stackTarget, false)).ConfigureAwait(false);
+                        if (stackTarget != null)
+                        {
+                            await player.InvokeViewPlugInAsync<IItemPickUpFailedPlugIn>(p => p.ItemPickUpFailedAsync(ItemPickFailReason.ItemStacked)).ConfigureAwait(false);
+                            await player.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(stackTarget, false)).ConfigureAwait(false);
+                        }
+                        else
+                        {
+                            await player.InvokeViewPlugInAsync<IItemAppearPlugIn>(p => p.ItemAppearAsync(droppedItem.Item)).ConfigureAwait(false);
+                        }
                     }
                     else
                     {
-                        await player.InvokeViewPlugInAsync<IItemAppearPlugIn>(p => p.ItemAppearAsync(droppedItem.Item)).ConfigureAwait(false);
+                        await player.InvokeViewPlugInAsync<IItemPickUpFailedPlugIn>(p => p.ItemPickUpFailedAsync(ItemPickFailReason.General)).ConfigureAwait(false);
                     }
-                }
-                else
-                {
-                    await player.InvokeViewPlugInAsync<IItemPickUpFailedPlugIn>(p => p.ItemPickUpFailedAsync(ItemPickFailReason.General)).ConfigureAwait(false);
-                }
 
-                break;
-            }
+                    break;
+                }
 
             default:
                 await player.InvokeViewPlugInAsync<IItemPickUpFailedPlugIn>(p => p.ItemPickUpFailedAsync(ItemPickFailReason.General)).ConfigureAwait(false);
@@ -108,6 +108,7 @@ public class PickupItemAction
                     ? $"{droppedItem.Item.Definition?.Name.ToString()} +{droppedItem.Item.Level.ToString()}"
                     : droppedItem.Item.Definition?.Name.ToString();
             }
+
             await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.PickupLimitReached), itemName).ConfigureAwait(false);
             return (false, null);
         }

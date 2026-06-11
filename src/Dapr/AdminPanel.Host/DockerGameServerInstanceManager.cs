@@ -29,6 +29,7 @@ public class DockerGameServerInstanceManager : IGameServerInstanceManager
         foreach (var gameServer in gameServers)
         {
             await gameServer.ShutdownAsync().ConfigureAwait(false);
+
             // It's started again automatically by the docker host.
         }
     }
@@ -37,7 +38,6 @@ public class DockerGameServerInstanceManager : IGameServerInstanceManager
     public async ValueTask InitializeGameServerAsync(byte serverId)
     {
         // TODO: Implement this... by starting a new docker container
-
     }
 
     /// <inheritdoc />
@@ -49,6 +49,7 @@ public class DockerGameServerInstanceManager : IGameServerInstanceManager
         if (gameServer is not null)
         {
             await gameServer.ShutdownAsync().ConfigureAwait(false);
+
             // TODO: Remove the docker container
         }
     }

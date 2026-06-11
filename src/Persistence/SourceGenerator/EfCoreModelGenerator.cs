@@ -403,8 +403,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
     [NotMapped]
     public override {propertyType.FullName} {property.Name}
     {{
-        get => base.{property.Name};{
-            (property.GetSetMethod(true) is { } ? $@"{(property.GetSetMethod() is null ? "protected " : null)}set
+        get => base.{property.Name};{(property.GetSetMethod(true) is { } ? $@"{(property.GetSetMethod() is null ? "protected " : null)}set
         {{
             base.{property.Name} = value;
             this.{property.Name}Id = this.Raw{property.Name}?.Id;
@@ -484,7 +483,6 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
     {
         return StandaloneTypes.Any(st =>
         {
-
             if (st.TypeName != typeName)
             {
                 return false;

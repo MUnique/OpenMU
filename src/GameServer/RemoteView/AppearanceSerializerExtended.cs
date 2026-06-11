@@ -90,7 +90,7 @@ public class AppearanceSerializerExtended : IAppearanceSerializer
         {
             target[1] |= 0x20;
         }
-        
+
         var items = target[2..];
         SetShinyItem(items[0..3], itemArray[InventoryConstants.LeftHandSlot]);
         SetShinyItem(items[3..6], itemArray[InventoryConstants.RightHandSlot]);
@@ -120,7 +120,6 @@ public class AppearanceSerializerExtended : IAppearanceSerializer
                 items[23] |= 0b110;
             }
         }
-        
     }
 
     private void SetUnshinyItem(Span<byte> data, ItemAppearance? item)
@@ -199,7 +198,7 @@ public class AppearanceSerializerExtended : IAppearanceSerializer
             {
                 // Higher 4 bits of the first byte for the higher bits of the value
                 this._data[0] = (byte)((this._data[0] & 0xF0) | (((value & 0x0F00) >> 8) & 0xF));
-                
+
                 // The lower bits in the second byte
                 this._data[1] = (byte)(value & 0xFF);
             }
@@ -251,7 +250,6 @@ public class AppearanceSerializerExtended : IAppearanceSerializer
             }
         }
     }
-
 
     /// <summary>
     /// Unshiny Item: (2 bytes)

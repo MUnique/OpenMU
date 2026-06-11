@@ -21,7 +21,6 @@ try
     var i = 0;
     foreach (var character in fileBytes)
     {
-        
         var result = (char)(character ^ decryptionKey[i % decryptionKey.Length]);
         resultBuilder.Append(result);
         i++;
@@ -30,7 +29,6 @@ try
     var resultPath = logPath + ".decrypted.txt";
     File.WriteAllText(resultPath, resultBuilder.ToString());
     Console.WriteLine($"Decrypted file has been written to {resultPath}. Press any key to exit...");
-    
 }
 catch (Exception ex)
 {

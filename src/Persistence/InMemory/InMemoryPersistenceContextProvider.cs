@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 public class InMemoryPersistenceContextProvider : IMigratableDatabaseContextProvider
 {
-    private InMemoryRepositoryProvider _repositoryProvider = new ();
+    private InMemoryRepositoryProvider _repositoryProvider = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="InMemoryPersistenceContextProvider"/> class.
