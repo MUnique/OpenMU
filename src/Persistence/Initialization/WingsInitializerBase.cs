@@ -66,7 +66,7 @@ public abstract class WingsInitializerBase : InitializerBase
                     yield return this.CreateItemOption(tuple.Item1, Stats.HealthRecoveryMultiplier, 0, AggregateType.AddRaw, 0.01f, ItemOptionDefinitionNumbers.WingHealthRecover);
                     break;
                 case OptionType.PhysDamage:
-                    yield return this.CreateItemOption(tuple.Item1, Stats.PhysicalBaseDmg, 0, AggregateType.AddRaw, 4f, ItemOptionDefinitionNumbers.WingPhysical);
+                    yield return this.CreateItemOption(tuple.Item1, Stats.PhysicalBaseDmg, 0, AggregateType.AddFinal, 4f, ItemOptionDefinitionNumbers.WingPhysical);
                     break;
                 case OptionType.WizDamage:
                     yield return this.CreateItemOption(tuple.Item1, Stats.WizardryBaseDmg, 0, AggregateType.AddRaw, 4f, ItemOptionDefinitionNumbers.WingWizardry);
