@@ -64,7 +64,7 @@ public static class ModalExtensions
     {
         var messageParams = new ModalParameters();
         messageParams.Add(nameof(ModalQuestion.Question), question);
-        
+
         var modal = modalService.Show<ModalQuestion>(title, messageParams);
         var result = await modal.Result.ConfigureAwait(false);
         return result.Data is true;

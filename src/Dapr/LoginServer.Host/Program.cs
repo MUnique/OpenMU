@@ -15,6 +15,7 @@ builder.Services
     .AddSingleton<GameServerRegistry>();
 
 var metricsRegistry = new MetricsRegistry();
+
 // todo: add some meaningful metrics
 builder.AddOpenTelemetryMetrics(metricsRegistry);
 

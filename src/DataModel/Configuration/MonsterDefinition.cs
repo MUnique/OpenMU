@@ -193,7 +193,7 @@ public enum NpcObjectKind
     Trap,
 
     /// <summary>
-    /// The npc is a gate
+    /// The npc is a gate.
     /// </summary>
     Gate,
 

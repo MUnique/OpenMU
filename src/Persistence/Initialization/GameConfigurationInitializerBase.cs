@@ -10,8 +10,8 @@ using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
-using MUnique.OpenMU.Persistence.Initialization.Version075.Items;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
+using MUnique.OpenMU.Persistence.Initialization.Version075.Items;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 
 /// <summary>
@@ -245,7 +245,6 @@ public abstract class GameConfigurationInitializerBase : InitializerBase
         var randomExperienceMaxMultiplier = this.Context.CreateNew<ConstValueAttribute>(1.2f, Stats.RandomExperienceMaxMultiplier.GetPersistent(this.GameConfiguration));
         this.GameConfiguration.GlobalBaseAttributeValues.Add(randomExperienceMaxMultiplier);
     }
-
 
     private long CalcNeededMasterExp(long lvl)
     {

@@ -1,4 +1,8 @@
-﻿namespace MUnique.OpenMU.DataModel;
+﻿// <copyright file="ModelResourceProvider.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.DataModel;
 
 using System;
 using System.Collections.Concurrent;
@@ -12,7 +16,6 @@ using System.Text.RegularExpressions;
 /// </summary>
 public static class ModelResourceProvider
 {
-
     private static readonly Regex WordSeparatorRegex = new("([a-z])([A-Z])", RegexOptions.Compiled);
 
     private static readonly ConcurrentDictionary<Assembly, ResourceManager?> ResourceManagersByAssembly = new();

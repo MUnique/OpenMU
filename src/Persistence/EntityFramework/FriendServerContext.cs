@@ -1,4 +1,4 @@
-﻿// <copyright file="FriendServerContext.cs" company="MUnique">
+// <copyright file="FriendServerContext.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -52,43 +52,43 @@ internal class FriendServerContext : CachingEntityFrameworkContext, IFriendServe
     public async ValueTask<IEnumerable<FriendViewItem>> GetFriendsAsync(Guid characterId)
     {
         return await (from friend in this.Context.Set<Model.Friend>()
-            join friendCharacter in this.Context.Set<CharacterName>() on friend.FriendId equals friendCharacter.Id
-            join character in this.Context.Set<CharacterName>() on friend.CharacterId equals character.Id
-            select new FriendViewItem(character.Name, friendCharacter.Name)
-            {
-                Id = friend.Id,
-                CharacterId = friend.CharacterId,
-                FriendId = friend.FriendId,
-                Accepted = friend.Accepted,
-                RequestOpen = friend.RequestOpen,
-            }).ToListAsync().ConfigureAwait(false);
+                      join friendCharacter in this.Context.Set<CharacterName>() on friend.FriendId equals friendCharacter.Id
+                      join character in this.Context.Set<CharacterName>() on friend.CharacterId equals character.Id
+                      select new FriendViewItem(character.Name, friendCharacter.Name)
+                      {
+                          Id = friend.Id,
+                          CharacterId = friend.CharacterId,
+                          FriendId = friend.FriendId,
+                          Accepted = friend.Accepted,
+                          RequestOpen = friend.RequestOpen,
+                      }).ToListAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc />
     public async ValueTask<IEnumerable<string>> GetFriendNamesAsync(Guid characterId)
     {
         return await (from friend in this.Context.Set<Model.Friend>()
-            where friend.CharacterId == characterId
-            join friendCharacter in this.Context.Set<CharacterName>() on friend.FriendId equals friendCharacter.Id
-            select friendCharacter.Name).ToListAsync().ConfigureAwait(false);
+                      where friend.CharacterId == characterId
+                      join friendCharacter in this.Context.Set<CharacterName>() on friend.FriendId equals friendCharacter.Id
+                      select friendCharacter.Name).ToListAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
     public async ValueTask<IEnumerable<string>> GetOpenFriendRequesterNamesAsync(Guid characterId)
     {
         return await (from friend in this.Context.Set<Model.Friend>()
-            where friend.RequestOpen == true && friend.FriendId == characterId
-            join requester in this.Context.Set<CharacterName>() on friend.CharacterId equals requester.Id
-            select requester.Name).ToListAsync().ConfigureAwait(false);
+                      where friend.RequestOpen == true && friend.FriendId == characterId
+                      join requester in this.Context.Set<CharacterName>() on friend.CharacterId equals requester.Id
+                      select requester.Name).ToListAsync().ConfigureAwait(false);
     }
 
     private IQueryable<Model.Friend> FindItems(string characterName, string friendName)
     {
         return from friend in this.Context.Set<Model.Friend>()
-            join friendCharacter in this.Context.Set<CharacterName>() on friend.FriendId equals friendCharacter.Id
-            join character in this.Context.Set<CharacterName>() on friend.CharacterId equals character.Id
-            where friendCharacter.Name == friendName && character.Name == characterName
-            select friend;
+               join friendCharacter in this.Context.Set<CharacterName>() on friend.FriendId equals friendCharacter.Id
+               join character in this.Context.Set<CharacterName>() on friend.CharacterId equals character.Id
+               where friendCharacter.Name == friendName && character.Name == characterName
+               select friend;
     }
 
     private async ValueTask<Guid?> GetCharacterIdByNameAsync(string name) => await this.Context.Set<CharacterName>().Where(character => character.Name == name).Select(character => character.Id).FirstOrDefaultAsync().ConfigureAwait(false);

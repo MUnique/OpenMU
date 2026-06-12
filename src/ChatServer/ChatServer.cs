@@ -222,7 +222,7 @@ public sealed class ChatServer : IChatServer, IDisposable
 
         this._logger.LogInformation("Begin shutdown");
         this.ServerState = OpenMU.Interfaces.ServerState.Stopping;
-        this.RemoveCleanupTimers(); 
+        this.RemoveCleanupTimers();
         foreach (var listener in this._listeners)
         {
             listener.Stop();

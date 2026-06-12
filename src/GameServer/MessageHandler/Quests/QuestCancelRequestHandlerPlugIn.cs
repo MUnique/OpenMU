@@ -19,7 +19,7 @@ using MUnique.OpenMU.PlugIns;
 [BelongsToGroup(QuestGroupHandlerPlugIn.GroupKey)]
 public class QuestCancelRequestHandlerPlugIn : ISubPacketHandlerPlugIn
 {
-    private readonly QuestCancelAction _questCancelAction = new ();
+    private readonly QuestCancelAction _questCancelAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;

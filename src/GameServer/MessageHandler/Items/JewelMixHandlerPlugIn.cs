@@ -56,7 +56,7 @@ internal class JewelMixHandlerPlugIn : IPacketHandlerPlugIn
             LahapJewelMixRequest.StackSize.Ten => 10,
             LahapJewelMixRequest.StackSize.Twenty => 20,
             LahapJewelMixRequest.StackSize.Thirty => 30,
-            _ => throw new InvalidEnumArgumentException(nameof(stackSize), (int)stackSize, typeof(LahapJewelMixRequest.StackSize))
+            _ => throw new InvalidEnumArgumentException(nameof(stackSize), (int)stackSize, typeof(LahapJewelMixRequest.StackSize)),
         };
     }
 }

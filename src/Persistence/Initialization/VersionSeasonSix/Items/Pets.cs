@@ -2,8 +2,6 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.Network;
-
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 
 using MUnique.OpenMU.AttributeSystem;
@@ -12,6 +10,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 
@@ -190,7 +189,7 @@ public class Pets : InitializerBase
         this.GameConfiguration.Items.Add(spirit);
 
         var horseDrop = this.Context.CreateNew<DropItemGroup>();
-        horseDrop.SetGuid(NumberConversionExtensions.MakeWord(13, 31).ToSigned(), 0, 1);
+        horseDrop.SetGuid((short)NumberConversionExtensions.MakeWord(13, 31), 0, 1);
         horseDrop.ItemLevel = 0;
         horseDrop.Chance = 0.001;
         horseDrop.Description = "Dark Horse Spirit";
@@ -200,7 +199,7 @@ public class Pets : InitializerBase
         BaseMapInitializer.RegisterDefaultDropItemGroup(horseDrop);
 
         var ravenDrop = this.Context.CreateNew<DropItemGroup>();
-        ravenDrop.SetGuid(NumberConversionExtensions.MakeWord(13, 31).ToSigned(), 1, 1);
+        ravenDrop.SetGuid((short)NumberConversionExtensions.MakeWord(13, 31), 1, 1);
         ravenDrop.ItemLevel = 1;
         ravenDrop.Chance = 0.001;
         ravenDrop.Description = "Dark Raven Spirit";

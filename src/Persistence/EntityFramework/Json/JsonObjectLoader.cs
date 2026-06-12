@@ -2,12 +2,11 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using System.Threading;
-
 namespace MUnique.OpenMU.Persistence.EntityFramework.Json;
 
 using System.Data;
 using System.Text.Json.Serialization;
+using System.Threading;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 

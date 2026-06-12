@@ -249,11 +249,14 @@ public static class ItemExtensions
 
         switch (random % 3)
         {
-            case 0 when left is { }: result = left;
+            case 0 when left is { }:
+                result = left;
                 break;
-            case 1 when right is { }: result = right;
+            case 1 when right is { }:
+                result = right;
                 break;
-            case 2 when pendant is { }: result = pendant;
+            case 2 when pendant is { }:
+                result = pendant;
                 break;
             default:
                 // keep first available result
@@ -351,6 +354,7 @@ public static class ItemExtensions
             // -> we check it based on the item set group.
             appearance.VisibleOptions.Add(ItemOptionTypes.AncientOption);
         }
+
         return appearance;
     }
 

@@ -175,13 +175,13 @@ public class GuildRelationshipChangeAction
             (_, GuildRelationshipType.Alliance, GuildRelationshipRequestType.Join) =>
                  await serverContext.GuildServer.CreateAllianceAsync(requesterGuildStatus.GuildId, responderGuildStatus.GuildId).ConfigureAwait(false)
                  switch
-                {
-                    AllianceCreationResult.Success => GuildRelationshipChangeResultType.Success,
-                    AllianceCreationResult.MasterGuildNotFound or AllianceCreationResult.TargetGuildNotFound => GuildRelationshipChangeResultType.GuildNotFound,
-                    AllianceCreationResult.TargetGuildAlreadyInAlliance => GuildRelationshipChangeResultType.AlreadyInAlliance,
-                    AllianceCreationResult.MaximumAllianceSizeReached => GuildRelationshipChangeResultType.MaximumNumberOfGuildsInAllianceReached,
-                    _ => GuildRelationshipChangeResultType.Failed,
-                },
+                 {
+                     AllianceCreationResult.Success => GuildRelationshipChangeResultType.Success,
+                     AllianceCreationResult.MasterGuildNotFound or AllianceCreationResult.TargetGuildNotFound => GuildRelationshipChangeResultType.GuildNotFound,
+                     AllianceCreationResult.TargetGuildAlreadyInAlliance => GuildRelationshipChangeResultType.AlreadyInAlliance,
+                     AllianceCreationResult.MaximumAllianceSizeReached => GuildRelationshipChangeResultType.MaximumNumberOfGuildsInAllianceReached,
+                     _ => GuildRelationshipChangeResultType.Failed,
+                 },
             (_, GuildRelationshipType.Hostility, _) => await serverContext.GuildServer.SetHostilityAsync(requesterGuildStatus.GuildId, responderGuildStatus.GuildId, pendingRequestType == GuildRelationshipRequestType.Join).ConfigureAwait(false)
                 ? GuildRelationshipChangeResultType.Success
                 : GuildRelationshipChangeResultType.Failed,

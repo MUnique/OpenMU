@@ -2,10 +2,9 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using System.Threading;
-
 namespace MUnique.OpenMU.Persistence.InMemory;
 
+using System.Threading;
 using MUnique.OpenMU.Persistence.BasicModel;
 
 /// <summary>

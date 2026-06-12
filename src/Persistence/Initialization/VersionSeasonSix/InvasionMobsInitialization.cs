@@ -28,7 +28,6 @@ internal class InvasionMobsInitialization : Version095d.InvasionMobsInitializati
     protected override void InitializeGoldenInvasionMobs()
     {
         base.InitializeGoldenInvasionMobs();
-
         {
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);

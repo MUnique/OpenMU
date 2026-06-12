@@ -84,15 +84,31 @@ public class FriendServer : IFriendServer
     }
 
     /// <inheritdoc/>
+    public async ValueTask<bool> IsFriendAsync(string characterName, string friendName)
+    {
+        if (this.OnlineFriends.TryGetValue(characterName, out var player)
+            && this.OnlineFriends.TryGetValue(friendName, out var friend))
+        {
+            return player.HasSubscriber(friend);
+        }
+
+        using var context = this._persistenceContextProvider.CreateNewFriendServerContext();
+        var friendEntry = await context.GetFriendByNamesAsync(characterName, friendName).ConfigureAwait(false);
+        return friendEntry?.Accepted == true;
+    }
+
+    /// <inheritdoc/>
     public async ValueTask DeleteFriendAsync(string playerName, string friendName)
     {
         if (this.OnlineFriends.TryGetValue(playerName, out var player) && this.OnlineFriends.TryGetValue(friendName, out var friend))
         {
             player.RemoveSubscriber(friend);
+            friend.RemoveSubscriber(player);
         }
 
         using var context = this._persistenceContextProvider.CreateNewFriendServerContext();
         await context.DeleteAsync(playerName, friendName).ConfigureAwait(false);
+        await context.DeleteAsync(friendName, playerName).ConfigureAwait(false);
         await context.SaveChangesAsync().ConfigureAwait(false);
     }
 

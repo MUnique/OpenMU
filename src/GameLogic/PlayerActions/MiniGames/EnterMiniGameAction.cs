@@ -85,7 +85,6 @@ public class EnterMiniGameAction
         }
 
         // TODO: Check Duel state when duels are implemented
-
         if (miniGameDefinition.MapCreationPolicy == MiniGameMapCreationPolicy.Shared)
         {
             var miniGameStrategy = player.GameContext.PlugInManager.GetStrategy<MiniGameType, IPeriodicMiniGameStartPlugIn>(miniGameDefinition.Type);

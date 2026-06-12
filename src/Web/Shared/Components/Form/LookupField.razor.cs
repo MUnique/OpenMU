@@ -53,5 +53,4 @@ public partial class LookupField<TObject>
     {
         throw new NotImplementedException();
     }
-
 }

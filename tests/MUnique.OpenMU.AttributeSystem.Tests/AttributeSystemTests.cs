@@ -10,13 +10,13 @@ namespace MUnique.OpenMU.AttributeSystem.Tests;
 [TestFixture]
 public class AttributeSystemTests
 {
-    private readonly AttributeDefinition _attributeA = new (Guid.NewGuid(), "A", "The A attribute");
-    private readonly AttributeDefinition _attributeB = new (Guid.NewGuid(), "B", "The B attribute");
+    private readonly AttributeDefinition _attributeA = new(Guid.NewGuid(), "A", "The A attribute");
+    private readonly AttributeDefinition _attributeB = new(Guid.NewGuid(), "B", "The B attribute");
     private readonly AttributeDefinition _attributeC = new(Guid.NewGuid(), "C", "The C attribute");
     private readonly AttributeDefinition _attributeD = new(Guid.NewGuid(), "D", "The D attribute");
-    private readonly AttributeDefinition _attributeAplusB = new (Guid.NewGuid(), "A+B", "The A+B attribute");
+    private readonly AttributeDefinition _attributeAplusB = new(Guid.NewGuid(), "A+B", "The A+B attribute");
     private readonly AttributeDefinition _attributeAtimesB = new(Guid.NewGuid(), "A*B", "The A*B attribute");
-    private readonly AttributeDefinition _attributeAchained = new (Guid.NewGuid(), "A'", "The chained A attribute");
+    private readonly AttributeDefinition _attributeAchained = new(Guid.NewGuid(), "A'", "The chained A attribute");
 
     private List<IAttribute> _statAttributes = null!;
     private List<IAttribute> _baseAttributes = null!;

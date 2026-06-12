@@ -140,4 +140,16 @@ public interface IMuHelperSettings
 
     /// <summary>Gets a value indicating whether to repair items.</summary>
     bool RepairItem { get; }
+
+    /// <summary>Gets a value indicating whether to automatically defend against players attacking the character.</summary>
+    bool UseSelfDefense { get; }
+
+    /// <summary>Gets a value indicating whether to automatically accept requests from friends.</summary>
+    bool AutoAcceptFriend { get; }
+
+    /// <summary>Gets a value indicating whether to automatically accept requests from guild.</summary>
+    bool AutoAcceptGuild { get; }
+
+    /// <summary>Gets a value indicating whether to use basic attack as fallback when the configured skill cannot be used.</summary>
+    bool FallbackBasicAttack { get; }
 }

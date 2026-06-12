@@ -1,10 +1,14 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿// <copyright file="20230303185735_ConfigurationUpdate.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
 
 #nullable disable
 
 namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 {
+    using System;
+    using Microsoft.EntityFrameworkCore.Migrations;
+
     /// <inheritdoc />
     public partial class ConfigurationUpdate : Migration
     {
@@ -21,7 +25,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     Name = table.Column<string>(type: "text", nullable: true),
                     Description = table.Column<string>(type: "text", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    InstalledAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    InstalledAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                 },
                 constraints: table =>
                 {
@@ -35,7 +39,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     InitializationKey = table.Column<string>(type: "text", nullable: true),
-                    CurrentInstalledVersion = table.Column<int>(type: "integer", nullable: false)
+                    CurrentInstalledVersion = table.Column<int>(type: "integer", nullable: false),
                 },
                 constraints: table =>
                 {

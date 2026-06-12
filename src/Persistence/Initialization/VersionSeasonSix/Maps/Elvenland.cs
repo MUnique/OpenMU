@@ -20,7 +20,6 @@ internal class Elvenland : BaseMapInitializer
     /// <inheritdoc/>
     private static readonly string Name = "Elvenland";
 
-
     /// <summary>
     /// Initializes a new instance of the <see cref="Elvenland"/> class.
     /// </summary>

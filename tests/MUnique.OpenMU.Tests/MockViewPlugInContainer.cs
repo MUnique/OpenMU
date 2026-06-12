@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 public class MockViewPlugInContainer : ICustomPlugInContainer<IViewPlugIn>
 {
-    private readonly Dictionary<Type, IViewPlugIn> _mocks = new ();
+    private readonly Dictionary<Type, IViewPlugIn> _mocks = new();
 
     /// <inheritdoc />
     public T GetPlugIn<T>()

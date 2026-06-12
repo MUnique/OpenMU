@@ -36,7 +36,7 @@
 
 .configuration-search__result-path {
     font-size: 0.78rem;
-    color: #5f6368;
+    color: var(--omu-text-muted);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -45,7 +45,7 @@
 
 .configuration-search__result:hover .configuration-search__result-path,
 .configuration-search__result:focus .configuration-search__result-path {
-    color: rgba(0, 0, 0, 0.7);
+    color: var(--omu-text);
 }
 
 @media (max-width: 640.98px) {

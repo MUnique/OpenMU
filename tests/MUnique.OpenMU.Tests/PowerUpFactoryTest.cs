@@ -328,7 +328,7 @@ public class PowerUpFactoryTest
 
         armorSet.Object.MinimumItemCount = levels.Length;
         armorSet.Object.SetLevel = minimumLevel;
-        
+
         foreach (var level in levels)
         {
             var item = this.GetItem();
@@ -361,7 +361,7 @@ public class PowerUpFactoryTest
         for (int i = 0; i < itemCount; i++)
         {
             var item = this.GetItem();
-            var itemOfSet = new ItemOfItemSet { BonusOption = bonusOption, ItemDefinition = item.Definition, ItemSetGroup = ancientSet.Object};
+            var itemOfSet = new ItemOfItemSet { BonusOption = bonusOption, ItemDefinition = item.Definition, ItemSetGroup = ancientSet.Object };
             item.Definition!.PossibleItemSetGroups.Add(ancientSet.Object);
             item.ItemSetGroups.Add(itemOfSet);
             item.ItemOptions.Add(new ItemOptionLink { ItemOption = bonusOption, Level = 1 });
@@ -371,7 +371,7 @@ public class PowerUpFactoryTest
         }
     }
 
-    private AttributeSystem GetAttributeSystem() => new (Enumerable.Empty<IAttribute>(), Enumerable.Empty<IAttribute>(), Enumerable.Empty<AttributeRelationship>());
+    private AttributeSystem GetAttributeSystem() => new(Enumerable.Empty<IAttribute>(), Enumerable.Empty<IAttribute>(), Enumerable.Empty<AttributeRelationship>());
 
     private class TestPowerUpDefinitionValue : PowerUpDefinitionValue
     {
