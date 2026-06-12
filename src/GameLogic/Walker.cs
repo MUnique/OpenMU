@@ -189,6 +189,11 @@ public sealed class Walker : IDisposable
             var step = await this.WalkStepAsync(cancellationToken).ConfigureAwait(false);
             if (step is null)
             {
+                if (!cancellationToken.IsCancellationRequested)
+                {
+                    await this.StopAsync().ConfigureAwait(false);
+                }
+
                 continue;
             }
 
