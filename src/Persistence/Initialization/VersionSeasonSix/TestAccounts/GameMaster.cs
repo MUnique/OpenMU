@@ -41,6 +41,7 @@ internal class GameMaster : Level400
         return account;
     }
 
+    /// <inheritdoc/>
     protected override Character CreateDarkLord()
     {
         var character = this.CreateDarkLord(CharacterClassNumber.LordEmperor);

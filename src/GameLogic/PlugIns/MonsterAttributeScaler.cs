@@ -48,11 +48,11 @@ public class MonsterAttributeScaler : IFeaturePlugIn, IObjectAddedToMapPlugIn, I
                 return;
             }
 
-            this._damageMultiplier.Value = value.DamagePercentage > 0 ? 1.0f + value.DamagePercentage / 100.0f : 1.0f;
-            this._attackRateMultiplier.Value = value.AttackRatePercentage > 0 ? 1.0f + value.AttackRatePercentage / 100.0f : 1.0f;
-            this._defenseRateMultiplier.Value = value.DefenseRatePercentage > 0 ? 1.0f + value.DefenseRatePercentage / 100.0f : 1.0f;
-            this._defenseMultiplier.Value = value.DefensePercentage > 0 ? 1.0f + value.DefensePercentage / 100.0f : 1.0f;
-            this._healthMultiplier.Value = value.HealthPercentage > 0 ? 1.0f + value.HealthPercentage / 100.0f : 1.0f;
+            this._damageMultiplier.Value = value.DamagePercentage > 0 ? 1.0f + (value.DamagePercentage / 100.0f) : 1.0f;
+            this._attackRateMultiplier.Value = value.AttackRatePercentage > 0 ? 1.0f + (value.AttackRatePercentage / 100.0f) : 1.0f;
+            this._defenseRateMultiplier.Value = value.DefenseRatePercentage > 0 ? 1.0f + (value.DefenseRatePercentage / 100.0f) : 1.0f;
+            this._defenseMultiplier.Value = value.DefensePercentage > 0 ? 1.0f + (value.DefensePercentage / 100.0f) : 1.0f;
+            this._healthMultiplier.Value = value.HealthPercentage > 0 ? 1.0f + (value.HealthPercentage / 100.0f) : 1.0f;
         }
     }
 

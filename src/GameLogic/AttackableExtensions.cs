@@ -37,11 +37,11 @@ public static class AttackableExtensions
     }
 
     /// <summary>
-    /// Calculates the damage, using a skill.
+    /// Calculates the damage using a skill.
     /// </summary>
-    /// <param name="attacker">The object which is attacking.</param>
-    /// <param name="defender">The object which is defending.</param>
-    /// <param name="skill">The skill which is used.</param>
+    /// <param name="attacker">The object that is attacking.</param>
+    /// <param name="defender">The object that is defending.</param>
+    /// <param name="skill">The skill that is used.</param>
     /// <param name="isCombo">If set to <c>true</c>, the damage gets increased by a combo bonus.</param>
     /// <param name="damageFactor">The damage factor.</param>
     /// <returns>
@@ -806,7 +806,7 @@ public static class AttackableExtensions
                 maximumBaseDamage = (int)attackerStats[Stats.FenrirBaseDmg] + skillMaximumDamage;
                 break;
             default:
-                // the skill has some other damage type defined which is not applicable to this calculation
+                // the skill has some other damage type defined that is not applicable to this calculation
                 break;
         }
 

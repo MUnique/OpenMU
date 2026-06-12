@@ -43,7 +43,7 @@ public sealed class AccountDataSource : DataSourceBase<Account>
         IDataSource<GameConfiguration> gameConfigurationSource)
         : base(logger, persistenceContextProvider)
     {
-        _gameConfigurationSource = gameConfigurationSource;
+        this._gameConfigurationSource = gameConfigurationSource;
     }
 
     /// <inheritdoc />
@@ -52,7 +52,7 @@ public sealed class AccountDataSource : DataSourceBase<Account>
     /// <inheritdoc />
     protected override async ValueTask<IContext> CreateNewContextAsync()
     {
-        var gameConfiguration = await _gameConfigurationSource.GetOwnerAsync(Guid.Empty).ConfigureAwait(false);
+        var gameConfiguration = await this._gameConfigurationSource.GetOwnerAsync(Guid.Empty).ConfigureAwait(false);
         return this.ContextProvider.CreateNewPlayerContext(gameConfiguration);
     }
 }

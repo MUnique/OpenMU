@@ -23,6 +23,7 @@ internal sealed class LocalizableString
     private Type? _resourceType;
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="LocalizableString"/> class.
     ///     Constructs a localizable string, specifying the property name associated
     ///     with this item.  The <paramref name="propertyName" /> value will be used
     ///     within any exceptions thrown as a result of localization failures.

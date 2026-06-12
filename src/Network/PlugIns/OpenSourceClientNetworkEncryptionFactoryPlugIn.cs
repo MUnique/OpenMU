@@ -1,4 +1,4 @@
-﻿// <copyright file="Season106Episode3NetworkEncryptionFactoryPlugIn.cs" company="MUnique">
+﻿// <copyright file="OpenSourceClientNetworkEncryptionFactoryPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -13,7 +13,7 @@ using MUnique.OpenMU.Network.Xor;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// A plugin which provides network encryptors and decryptors for the english open source game clients of season 6 episode 3, version 2.04d
+/// A plugin which provides network encryptors and decryptors for the english open source game clients of season 6 episode 3, version 2.04d.
 /// </summary>
 [PlugIn]
 [Display(Name = nameof(PlugInResources.OpenSourceClientNetworkEncryptionFactoryPlugIn_Name), Description = nameof(PlugInResources.OpenSourceClientNetworkEncryptionFactoryPlugIn_Description), ResourceType = typeof(PlugInResources))]

@@ -143,8 +143,8 @@ public record FrustumBasedTargetFilter
         // The frustum has Y pointing forward and X pointing right
         var cos = Math.Cos(-rotationRad);
         var sin = Math.Sin(-rotationRad);
-        var rotatedX = dx * cos - dy * sin;
-        var rotatedY = dx * sin + dy * cos;
+        var rotatedX = (dx * cos) - (dy * sin);
+        var rotatedY = (dx * sin) + (dy * cos);
 
         // If target is behind us or too close, return 0
         if (rotatedY <= 0)
@@ -155,7 +155,7 @@ public record FrustumBasedTargetFilter
         // Calculate the frustum width at the target's distance
         // Linear interpolation between start and end width
         var distanceRatio = Math.Min(rotatedY / this.Distance, 1.0);
-        var frustumWidthAtDistance = this.StartWidth + (this.EndWidth - this.StartWidth) * distanceRatio;
+        var frustumWidthAtDistance = this.StartWidth + ((this.EndWidth - this.StartWidth) * distanceRatio);
 
         // Normalize the X position by the frustum width at that distance
         // Result will be in range [-1, 1] where -1 is left edge, 0 is center, 1 is right edge

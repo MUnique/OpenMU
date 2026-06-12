@@ -52,7 +52,7 @@ public partial class MuItem
     private bool CanMoveLeft => this.Model.Column > 0;
     private bool CanMoveRight => this.Model.Column + this.Width < 8;
     private bool CanJumpDown => this.Model.Parent?.StorageType is StorageType.Inventory or StorageType.InventoryExtension;
-    private bool CanJumpUp => (this.Model.Parent?.StorageType is StorageType.InventoryExtension or StorageType.PersonalStore);
+    private bool CanJumpUp => this.Model.Parent?.StorageType is StorageType.InventoryExtension or StorageType.PersonalStore;
 
     private async Task OnKeyPressAsync(KeyboardEventArgs obj)
     {

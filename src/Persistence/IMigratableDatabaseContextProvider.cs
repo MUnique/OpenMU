@@ -7,7 +7,7 @@ using System.Threading;
 
 /// <summary>
 /// Provider for persistence contexts which supports database creation and migration.
-/// TODO: find better name? ;-)
+/// TODO: find better name?.
 /// </summary>
 public interface IMigratableDatabaseContextProvider : IPersistenceContextProvider
 {

@@ -10,8 +10,8 @@ using MUnique.OpenMU.GameLogic.PlayerActions.Guild;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.Network.Packets.ClientToServer;
 using MUnique.OpenMU.PlugIns;
-using ViewGuildRelationshipType = MUnique.OpenMU.GameLogic.Views.Guild.GuildRelationshipType;
 using ViewGuildRelationshipRequestType = MUnique.OpenMU.GameLogic.Views.Guild.GuildRelationshipRequestType;
+using ViewGuildRelationshipType = MUnique.OpenMU.GameLogic.Views.Guild.GuildRelationshipType;
 
 /// <summary>
 /// Handler for guild relationship change request packets (C1 E5).

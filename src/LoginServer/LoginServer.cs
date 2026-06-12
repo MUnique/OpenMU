@@ -4,8 +4,8 @@
 
 namespace MUnique.OpenMU.LoginServer;
 
-using Nito.AsyncEx;
 using MUnique.OpenMU.Interfaces;
+using Nito.AsyncEx;
 
 /// <summary>
 /// The login server which keeps track of connected accounts in-memory.

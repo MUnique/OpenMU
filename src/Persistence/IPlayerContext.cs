@@ -4,9 +4,9 @@
 
 namespace MUnique.OpenMU.Persistence;
 
+using System.Threading;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Interfaces;
-using System.Threading;
 
 /// <summary>
 /// Persistence context which is used by in-game players.

@@ -98,8 +98,8 @@ public class AddItemDropGroupForJewelsUpdate075 : UpdatePlugInBase
     /// <param name="context">The persistence context.</param>
     /// <param name="gameConfiguration">Game configuration context to update.</param>
     /// <param name="dropId">New drop id.</param>
-    /// <param name="mapNumber">Optionally the map number to asociate drop group item.</param>
-    /// <param name="name">Description of drop,</param>
+    /// <param name="mapNumber">Optionally the map number to associate drop group item.</param>
+    /// <param name="name">Description of drop.</param>
     /// <returns>Returns new drop item group.</returns>
     protected DropItemGroup CreateDropItemGroupForJewels(IContext context, GameConfiguration gameConfiguration, short dropId, short? mapNumber, string name)
     {

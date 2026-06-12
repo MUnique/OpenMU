@@ -7,6 +7,6 @@ namespace MUnique.OpenMU.ServerClients;
 using MUnique.OpenMU.Interfaces;
 
 /// <summary>
-/// Arguments for <see cref="IGameServer.PlayerAlreadyLoggedInAsync"/>
+/// Arguments for <see cref="IGameServer.PlayerAlreadyLoggedInAsync"/>.
 /// </summary>
 public record PlayerLoggedInArguments(byte ServerId, string LoginName);

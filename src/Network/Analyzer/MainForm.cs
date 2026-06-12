@@ -59,7 +59,7 @@ public partial class MainForm : Form
         this._analyzer = new PacketAnalyzer();
         this.Disposed += (_, _) => this._analyzer.Dispose();
 
-        this.clientVersionComboBox.SelectedIndexChanged += OnSelectedClientVersionChanged;
+        this.clientVersionComboBox.SelectedIndexChanged += this.OnSelectedClientVersionChanged;
         this.clientVersionComboBox.DataSource = new BindingSource(this._clientVersions, string.Empty);
         this.clientVersionComboBox.DisplayMember = "Value";
         this.clientVersionComboBox.ValueMember = "Key";
