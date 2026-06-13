@@ -1,6 +1,8 @@
 ﻿@page "/servers"
 
 @using System.ComponentModel
+@using Microsoft.Extensions.DependencyInjection
+@using Blazored.Toast.Services
 @using MUnique.OpenMU.Interfaces
 @using MUnique.OpenMU.Web.AdminPanel.Properties
 
@@ -15,6 +17,8 @@
     <p><em>@Resources.Loading</em></p>
 }
 else
+{
+@if (_gameServers is not null)
 {
 <div class="card mb-3">
     <div class="card-body">
@@ -41,6 +45,7 @@ else
         </div>
     </div>
 </div>
+}
 
 <div>
   <table>
@@ -121,10 +126,23 @@ else
     public IGameServerInstanceManager? ServerInstanceManager { get; set; }
 
     /// <summary>
-    /// Gets or sets the game servers.
+    /// Gets or sets the service provider, used to optionally resolve the game server dictionary.
     /// </summary>
     [Inject]
-    public IDictionary<int, IGameServer> GameServers { get; set; } = null!;
+    public IServiceProvider ServiceProvider { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the toast service.
+    /// </summary>
+    [Inject]
+    public IToastService ToastService { get; set; } = null!;
+
+    /// <summary>
+    /// The game servers, resolved optionally: the dictionary is only registered in the
+    /// single-process host, so it is null on the distributed (Dapr) admin panel host. When
+    /// null, the global message card is not rendered (graceful degradation).
+    /// </summary>
+    private IDictionary<int, IGameServer>? _gameServers;
 
     /// <inheritdoc />
     public void Dispose()
@@ -137,6 +155,7 @@ else
     {
         base.OnInitialized();
         this._servers = this.ServerProvider.Servers;
+        this._gameServers = this.ServiceProvider.GetService<IDictionary<int, IGameServer>>();
         this.ServerProvider.PropertyChanged += this.OnServersChanged;
     }
 
@@ -165,7 +184,7 @@ else
     private async Task SendMessageAsync()
     {
         var message = _message;
-        if (string.IsNullOrWhiteSpace(message))
+        if (string.IsNullOrWhiteSpace(message) || this._gameServers is not { } gameServers)
         {
             return;
         }
@@ -174,16 +193,44 @@ else
         // preventing double-submission and preserving any text the user types while sending.
         _message = string.Empty;
 
-        if (_selectedServerId == -1)
+        var targets = _selectedServerId == -1
+            ? gameServers.Values.Where(s => s.ServerState == ServerState.Started).ToList()
+            : gameServers.TryGetValue(_selectedServerId, out var selected) && selected.ServerState == ServerState.Started
+                ? new List<IGameServer> { selected }
+                : new List<IGameServer>();
+
+        if (targets.Count == 0)
         {
-            foreach (var server in this.GameServers.Values.Where(s => s.ServerState == ServerState.Started))
+            // No running target (e.g. the selected server stopped meanwhile). Restore the text so
+            // the admin can pick another target and retry without retyping.
+            _message = message;
+            this.ToastService.ShowInfo(Resources.GlobalMessageNoTarget);
+            return;
+        }
+
+        var sent = 0;
+        foreach (var server in targets)
+        {
+            try
             {
                 await server.SendGlobalMessageAsync(message, MessageType.GoldenCenter);
+                sent++;
+            }
+            catch (Exception ex)
+            {
+                // Per-server catch so one failing server does not abort the broadcast to the rest.
+                this.ToastService.ShowError(string.Format(Resources.GlobalMessageSendFailed, server.Description, ex.Message));
             }
         }
-        else if (this.GameServers.TryGetValue(_selectedServerId, out var server) && server.ServerState == ServerState.Started)
+
+        if (sent == targets.Count)
         {
-            await server.SendGlobalMessageAsync(message, MessageType.GoldenCenter);
+            this.ToastService.ShowSuccess(Resources.GlobalMessageSent);
+        }
+        else if (sent == 0)
+        {
+            // Nothing got through: restore the text so the whole broadcast can be retried.
+            _message = message;
         }
     }
 }

@@ -591,6 +591,15 @@
   <data name="GlobalMessage" xml:space="preserve">
     <value>Global Message</value>
   </data>
+  <data name="GlobalMessageNoTarget" xml:space="preserve">
+    <value>No running game server to send the message to.</value>
+  </data>
+  <data name="GlobalMessageSendFailed" xml:space="preserve">
+    <value>Failed to send the message to {0}: {1}</value>
+  </data>
+  <data name="GlobalMessageSent" xml:space="preserve">
+    <value>Message sent.</value>
+  </data>
   <data name="MessagePlaceholder" xml:space="preserve">
     <value>Enter message...</value>
   </data>
