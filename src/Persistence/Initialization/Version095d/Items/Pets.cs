@@ -78,11 +78,7 @@ public class Pets : InitializerBase
                 var powerUpDefinition = this.Context.CreateNew<ItemBasePowerUpDefinition>();
                 powerUpDefinition.TargetAttribute = basePowerUp.Item1.GetPersistent(this.GameConfiguration);
                 powerUpDefinition.BaseValue = basePowerUp.Item2;
-                if (basePowerUp.Item1 == Stats.MaxMovementSpeed || basePowerUp.Item1 == Stats.MaxMovementSpeedUnderwater)
-                {
-                    powerUpDefinition.AggregateType = basePowerUp.Item3;
-                }
-
+                powerUpDefinition.AggregateType = basePowerUp.Item3;
                 pet.BasePowerUpAttributes.Add(powerUpDefinition);
             }
         }
