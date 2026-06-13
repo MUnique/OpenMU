@@ -37,6 +37,23 @@ public static class AttackableExtensions
     }
 
     /// <summary>
+    /// Determines whether an attack is blocked because the target or the player attacker is in a safezone.
+    /// </summary>
+    /// <param name="target">The attack target.</param>
+    /// <param name="attacker">The attacker.</param>
+    /// <returns><c>true</c>, if the attack is blocked; otherwise, <c>false</c>.</returns>
+    public static bool IsAttackBlockedBySafezone(this IAttackable target, IAttacker attacker)
+    {
+        if (target.IsAtSafezone())
+        {
+            return true;
+        }
+
+        var attackerPlayer = attacker as Player ?? (attacker as IPlayerSurrogate)?.Owner;
+        return attackerPlayer?.IsAtSafezone() is true;
+    }
+
+    /// <summary>
     /// Calculates the damage using a skill.
     /// </summary>
     /// <param name="attacker">The object that is attacking.</param>

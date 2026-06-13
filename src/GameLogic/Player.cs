@@ -1458,17 +1458,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <inheritdoc />
     public ValueTask StopWalkingAsync() => this._walker.StopAsync();
 
-    private bool IsAttackBlockedBySafezone(IAttacker attacker)
-    {
-        if (this.IsAtSafezone())
-        {
-            return true;
-        }
-
-        var attackerPlayer = attacker as Player ?? (attacker as IPlayerSurrogate)?.Owner;
-        return attackerPlayer?.IsAtSafezone() is true;
-    }
-
     /// <summary>
     /// Regenerates the attributes specified in <see cref="Stats.IntervalRegenerationAttributes"/>.
     /// </summary>
