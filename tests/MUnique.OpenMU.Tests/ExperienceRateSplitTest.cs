@@ -113,6 +113,9 @@ public class ExperienceRateSplitTest
         Assert.That(masterGained, Is.GreaterThan(normalGained * 3));
     }
 
+    /// <summary>
+    /// Verifies that concurrent normal experience gains cannot exceed the maximum level.
+    /// </summary>
     [Test]
     public async ValueTask ConcurrentNormalExperienceCantExceedMaximumLevelAsync()
     {
@@ -136,6 +139,9 @@ public class ExperienceRateSplitTest
         Assert.That(player.SelectedCharacter.LevelUpPoints, Is.EqualTo(initialLevelUpPoints + pointsPerLevelUp));
     }
 
+    /// <summary>
+    /// Verifies that concurrent master experience stays within configured maximum bounds.
+    /// </summary>
     [Test]
     public async ValueTask ConcurrentMasterExperienceStaysWithinConfiguredMaximumBoundsAsync()
     {
@@ -158,6 +164,9 @@ public class ExperienceRateSplitTest
         Assert.That(player.SelectedCharacter.MasterExperience, Is.LessThanOrEqualTo(maxMasterExperience));
     }
 
+    /// <summary>
+    /// Verifies that experience overflow is applied below max when not prevented.
+    /// </summary>
     [Test]
     public async ValueTask OverflowIsAppliedBelowMaxWhenNotPreventedAsync()
     {
@@ -176,6 +185,9 @@ public class ExperienceRateSplitTest
         Assert.That(player.SelectedCharacter.Experience, Is.EqualTo(context.ExperienceTable[2] + 10));
     }
 
+    /// <summary>
+    /// Verifies that experience overflow is discarded below max when prevented.
+    /// </summary>
     [Test]
     public async ValueTask OverflowIsDiscardedBelowMaxWhenPreventedAsync()
     {
@@ -195,6 +207,10 @@ public class ExperienceRateSplitTest
         Assert.That(player.SelectedCharacter.Experience, Is.EqualTo(context.ExperienceTable[2]));
     }
 
+    /// <summary>
+    /// Verifies that experience always stops at the maximum level regardless of the overflow setting.
+    /// </summary>
+    /// <param name="preventExperienceOverflow">Whether to prevent experience overflow.</param>
     [TestCase(false)]
     [TestCase(true)]
     public async ValueTask ExperienceAlwaysStopsAtMaximumLevelRegardlessOfOverflowSettingAsync(bool preventExperienceOverflow)

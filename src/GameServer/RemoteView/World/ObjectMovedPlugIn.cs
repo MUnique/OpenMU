@@ -200,6 +200,10 @@ public class ObjectMovedPlugIn : IObjectMovedPlugIn
         }
     }
 
+    /// <summary>
+    /// Gets the walk code for the current client version.
+    /// </summary>
+    /// <returns>The walk code.</returns>
     protected byte GetWalkCode()
     {
         if (this._player.ClientVersion.Season == 0)

@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 using Timer = System.Timers.Timer;
 
 /// <summary>
-/// Chat Server Listener, accepts incoming connections.
+/// Chat Server Listener that accepts incoming connections.
 /// </summary>
 public sealed class ChatServer : IChatServer, IDisposable
 {
@@ -180,38 +180,6 @@ public sealed class ChatServer : IChatServer, IDisposable
         this._settings = settings;
     }
 
-    private void CreateCleanupTimers()
-    {
-        this._clientCleanupTimer = new Timer(this.Settings.ClientCleanUpInterval.TotalMilliseconds);
-        this._clientCleanupTimer.Elapsed += this.ClientCleanupInactiveClients;
-        this._clientCleanupTimer.Start();
-        this._roomCleanupTimer = new Timer(this.Settings.RoomCleanUpInterval.TotalMilliseconds);
-        this._roomCleanupTimer.Elapsed += this.ClientCleanupUnusedRooms;
-        this._roomCleanupTimer.Start();
-    }
-
-    private void RemoveCleanupTimers()
-    {
-        this._clientCleanupTimer?.Stop();
-        this._clientCleanupTimer?.Dispose();
-        this._clientCleanupTimer = null;
-
-        this._roomCleanupTimer?.Stop();
-        this._roomCleanupTimer?.Dispose();
-        this._roomCleanupTimer = null;
-    }
-
-    private void CreateListeners()
-    {
-        foreach (var endpoint in this.Settings.Endpoints)
-        {
-            var listener = new ChatServerListener(endpoint, this._plugInManager, this._loggerFactory);
-            listener.ClientAccepted += this.ChatClientAcceptedAsync;
-            listener.ClientAccepting += this.ChatClientAcceptingAsync;
-            this._listeners.Add(listener);
-        }
-    }
-
     /// <inheritdoc/>
     public async ValueTask ShutdownAsync()
     {
@@ -259,6 +227,38 @@ public sealed class ChatServer : IChatServer, IDisposable
             this._randomNumberGenerator.Dispose();
             this._clientCleanupTimer?.Dispose();
             this._roomCleanupTimer?.Dispose();
+        }
+    }
+
+    private void CreateCleanupTimers()
+    {
+        this._clientCleanupTimer = new Timer(this.Settings.ClientCleanUpInterval.TotalMilliseconds);
+        this._clientCleanupTimer.Elapsed += this.ClientCleanupInactiveClients;
+        this._clientCleanupTimer.Start();
+        this._roomCleanupTimer = new Timer(this.Settings.RoomCleanUpInterval.TotalMilliseconds);
+        this._roomCleanupTimer.Elapsed += this.ClientCleanupUnusedRooms;
+        this._roomCleanupTimer.Start();
+    }
+
+    private void RemoveCleanupTimers()
+    {
+        this._clientCleanupTimer?.Stop();
+        this._clientCleanupTimer?.Dispose();
+        this._clientCleanupTimer = null;
+
+        this._roomCleanupTimer?.Stop();
+        this._roomCleanupTimer?.Dispose();
+        this._roomCleanupTimer = null;
+    }
+
+    private void CreateListeners()
+    {
+        foreach (var endpoint in this.Settings.Endpoints)
+        {
+            var listener = new ChatServerListener(endpoint, this._plugInManager, this._loggerFactory);
+            listener.ClientAccepted += this.ChatClientAcceptedAsync;
+            listener.ClientAccepting += this.ChatClientAcceptingAsync;
+            this._listeners.Add(listener);
         }
     }
 
@@ -322,8 +322,7 @@ public sealed class ChatServer : IChatServer, IDisposable
                 }
 
                 this._logger.LogDebug(
-                    "Disconnecting client {Client}, because of activity timeout. LastActivity: {ClientLastActivity}",
-                    client, client.LastActivity);
+                    "Disconnecting client {Client}, because of activity timeout. LastActivity: {ClientLastActivity}", client, client.LastActivity);
 
                 await client.LogOffAsync().ConfigureAwait(false);
             }

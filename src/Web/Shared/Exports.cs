@@ -16,11 +16,6 @@ using System.Collections.Immutable;
 public static class Exports
 {
     /// <summary>
-    /// Gets the url prefix to the scripts of this project.
-    /// </summary>
-    private static string Prefix { get; } = $"_content/{typeof(Exports).Namespace}";
-
-    /// <summary>
     /// Gets the scripts.
     /// </summary>
     public static ImmutableList<string> Scripts { get; } = SharedScripts.ToImmutableList();
@@ -34,6 +29,11 @@ public static class Exports
     /// Gets the stylesheets.
     /// </summary>
     public static ImmutableList<string> Stylesheets { get; } = SharedStylesheets.ToImmutableList();
+
+    /// <summary>
+    /// Gets the url prefix to the scripts of this project.
+    /// </summary>
+    private static string Prefix { get; } = $"_content/{typeof(Exports).Namespace}";
 
     private static IEnumerable<string> SharedScripts
     {

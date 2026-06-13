@@ -44,6 +44,10 @@ internal class GameMaster2 : AccountInitializerBase
         return account;
     }
 
+    /// <summary>
+    /// Creates the summoner character.
+    /// </summary>
+    /// <returns>The created summoner character.</returns>
     protected Character CreateSummoner()
     {
         var character = this.CreateCharacter(this.AccountName + "Sum", CharacterClassNumber.DimensionMaster, this.Level, 0);

@@ -97,6 +97,10 @@ public class CloneableGenerator : IIncrementalGenerator
         var isInheritedClonable = declaredClassSymbol.BaseType?.GetAttributes().Any(a => a.AttributeClass?.Name == CloneableAttributeName) ?? false;
 
         sb.AppendLine($"""
+                        // <copyright file="{className}_Cloneable.cs" company="MUnique">
+                        // Licensed under the MIT License. See LICENSE file in the project root for full license information.
+                        // </copyright>
+
                         namespace {ns};
 
                         using System;
@@ -104,12 +108,13 @@ public class CloneableGenerator : IIncrementalGenerator
                         using MUnique.OpenMU.DataModel;
                         using MUnique.OpenMU.DataModel.Configuration;
 
+                        /// <inheritdoc />
                         public partial class {className} : IAssignable, IAssignable<{className}>, ICloneable<{className}>
                         """);
         sb.AppendLine("{");
         sb.AppendLine($"""
                           /// <inheritdoc />
-                          public virtual {className} Clone(GameConfiguration gameConfiguration)
+                          public {(isInheritedClonable ? "override" : "virtual")} {className} Clone(GameConfiguration gameConfiguration)
                       """);
         sb.AppendLine("    {");
         sb.AppendLine($"""
@@ -125,7 +130,7 @@ public class CloneableGenerator : IIncrementalGenerator
                             {
                                 if (other is {{className}} typedOther)
                                 {
-                                    AssignValuesOf(typedOther, gameConfiguration);
+                                    this.AssignValuesOf(typedOther, gameConfiguration);
                                 }
                             }
 

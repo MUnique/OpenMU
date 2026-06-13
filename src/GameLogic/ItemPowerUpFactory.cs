@@ -253,7 +253,9 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
             var level = option.LevelType == LevelType.ItemLevel ? item.Level : optionLink.Level;
 
             var optionOfLevel = option.LevelDependentOptions?.FirstOrDefault(l => l.Level == level);
-            if (optionOfLevel is null && level > 1 && item.Definition!.Skill?.Number != 49) // Dinorant options are an exception
+
+            // Dinorant options are an exception.
+            if (optionOfLevel is null && level > 1 && item.Definition!.Skill?.Number != 49)
             {
                 this._logger.LogWarning("Item {item} (id {itemId}) has IncreasableItemOption ({option}, id {optionId}) with level {level}, but no definition in LevelDependentOptions.", item, item.GetId(), option, option.GetId(), level);
                 continue;

@@ -23,14 +23,14 @@ namespace MUnique.OpenMU.Web.API
         /// <summary>
         /// Initializes a new instance of the <see cref="ServerController"/> class.
         /// </summary>
-        /// <param name="gameServers"></param>
+        /// <param name="gameServers">The game servers.</param>
         public ServerController(IDictionary<int, IGameServer> gameServers) => this._gameServers = gameServers;
 
         /// <summary>
         /// Sends a global message to the specified server.
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="msg"></param>
+        /// <param name="id"><see langword="this"/>The server id.</param>
+        /// <param name="msg">The message.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         [Route("send/{id=0}")]
         public async Task<IActionResult> SendGlobalMessage(int id, [FromQuery(Name = "msg")] string msg)
@@ -70,9 +70,8 @@ namespace MUnique.OpenMU.Web.API
         }
 
         /// <summary>
-        ///
+        /// Gets the server state.
         /// </summary>
-        /// <returns></returns>
         [HttpGet]
         [Route("status")]
         public IActionResult ServerState()

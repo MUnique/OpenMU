@@ -16,15 +16,6 @@ using System.Collections.Immutable;
 public static class Exports
 {
     /// <summary>
-    /// Gets the url prefix to the scripts of this project.
-    /// </summary>
-    private static string Prefix { get; } = $"_content/{typeof(Exports).Namespace}";
-
-    private static IEnumerable<string> AdminPanelScripts => [];
-
-    private static IEnumerable<string> AdminPanelStylesheets => [];
-
-    /// <summary>
     /// Gets the scripts.
     /// </summary>
     public static ImmutableList<string> Scripts { get; } = AdminPanelEnvironment.IsHostingEmbedded
@@ -44,4 +35,13 @@ public static class Exports
     public static ImmutableList<string> Stylesheets { get; } = AdminPanelEnvironment.IsHostingEmbedded
         ? Web.Map.Exports.Stylesheets.Concat(AdminPanelStylesheets).ToImmutableList()
         : AdminPanelStylesheets.ToImmutableList();
+
+    /// <summary>
+    /// Gets the url prefix to the scripts of this project.
+    /// </summary>
+    private static string Prefix { get; } = $"_content/{typeof(Exports).Namespace}";
+
+    private static IEnumerable<string> AdminPanelScripts => [];
+
+    private static IEnumerable<string> AdminPanelStylesheets => [];
 }

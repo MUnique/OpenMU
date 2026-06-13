@@ -338,7 +338,8 @@ internal class Weapons : InitializerBase
         var qualifiedCharacterClasses = this.GameConfiguration.DetermineCharacterClasses(wizardClass, knightClass, elfClass, magicGladiatorClass, darkLordClass, summonerClass, ragefighterClass);
         qualifiedCharacterClasses.ToList().ForEach(item.QualifiedCharacters.Add);
 
-        if (height == 1) // bolts and arrows
+        // Bolts and arrows.
+        if (height == 1)
         {
             var damagePowerUp = this.CreateItemBasePowerUpDefinition(Stats.AmmunitionDamageBonus, 0f, AggregateType.AddRaw);
             damagePowerUp.BonusPerLevelTable = this._ammunitionDamageIncreaseTable;
@@ -441,7 +442,8 @@ internal class Weapons : InitializerBase
             item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsTwoHandedWeaponEquipped, 1, AggregateType.AddRaw));
         }
 
-        if (group == (int)ItemGroups.Swords || (group == (int)ItemGroups.Scepters && number == 5)) // Crystal Sword
+        // Crystal Sword.
+        if (group == (int)ItemGroups.Swords || (group == (int)ItemGroups.Scepters && number == 5))
         {
             if (ragefighterClass == 0 || number < 2)
             {
