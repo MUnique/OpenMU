@@ -8,6 +8,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 {
     using Microsoft.EntityFrameworkCore.Migrations;
 
+    /// <summary>
+    /// Adds pet experience columns to Item and ItemDefinition.
+    /// </summary>
     public partial class PetLevels : Migration
     {
         /// <inheritdoc/>

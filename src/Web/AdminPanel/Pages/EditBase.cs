@@ -309,7 +309,7 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
         {
             var isConfirmed = await this.JavaScript.InvokeAsync<bool>(
                 "window.confirm",
-                    Resources.UnsavedChangesQuestion)
+                Resources.UnsavedChangesQuestion)
                 .ConfigureAwait(true);
 
             if (!isConfirmed)

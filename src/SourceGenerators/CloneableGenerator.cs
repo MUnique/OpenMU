@@ -120,18 +120,19 @@ public class CloneableGenerator : IIncrementalGenerator
         sb.AppendLine("    }");
         sb.AppendLine();
         sb.AppendLine($$"""
-                           /// <inheritdoc />
-                           public {{(isInheritedClonable ? "override" : "virtual")}} void AssignValuesOf(object other, GameConfiguration gameConfiguration)
-                           {
-                               if (other is {{className}} typedOther)
-                               {
-                                   AssignValuesOf(typedOther, gameConfiguration);
-                               }
-                           }
+                            /// <inheritdoc />
+                            public {{(isInheritedClonable ? "override" : "virtual")}} void AssignValuesOf(object other, GameConfiguration gameConfiguration)
+                            {
+                                if (other is {{className}} typedOther)
+                                {
+                                    AssignValuesOf(typedOther, gameConfiguration);
+                                }
+                            }
 
-                           /// <inheritdoc />
-                           public virtual void AssignValuesOf({{className}} other, GameConfiguration gameConfiguration)
-                      """);
+                            /// <inheritdoc />
+                            public virtual void AssignValuesOf({{className}} other, GameConfiguration gameConfiguration)
+                        """);
+
         sb.AppendLine("    {");
         if (isInheritedClonable)
         {

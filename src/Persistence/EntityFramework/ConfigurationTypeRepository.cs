@@ -51,6 +51,7 @@ internal class ConfigurationTypeRepository<T> : IRepository<T>, IConfigurationTy
     /// <summary>
     /// Gets all objects by using the <see cref="_collectionSelector"/> to the current <see cref="GameConfiguration"/>.
     /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>All objects of the repository.</returns>
     public ValueTask<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default)
     {

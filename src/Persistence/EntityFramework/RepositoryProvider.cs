@@ -44,6 +44,7 @@ internal class RepositoryProvider : BaseRepositoryProvider, IContextAwareReposit
     /// Creates the generic repository for the specified type.
     /// </summary>
     /// <param name="entityType">Type of the entity.</param>
+    /// <param name="repositoryProvider">The repository provider.</param>
     /// <returns>The created repository.</returns>
     protected virtual IRepository CreateGenericRepository(Type entityType, IContextAwareRepositoryProvider repositoryProvider)
     {

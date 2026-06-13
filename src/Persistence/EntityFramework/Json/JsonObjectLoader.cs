@@ -39,6 +39,7 @@ public class JsonObjectLoader
     /// </summary>
     /// <typeparam name="T">The type of the <see cref="IIdentifiable"/> object.</typeparam>
     /// <param name="context">The context.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>All objects of <typeparamref name="T"/>.</returns>
     public async ValueTask<IEnumerable<T>> LoadAllObjectsAsync<T>(DbContext context, CancellationToken cancellationToken = default)
         where T : class, IIdentifiable
