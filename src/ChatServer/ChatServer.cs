@@ -266,7 +266,7 @@ public sealed class ChatServer : IChatServer, IDisposable
     /// Gets a random authentication token.
     /// </summary>
     /// <param name="clientIndex">Index of the client.</param>
-    /// <returns>The random authentication token as string.</returns>
+    /// <returns>The random authentication token as a string.</returns>
     /// <remarks>
     ///  This is the original way of generating the token - not especially secure, but to keep it simple, I leave it that way.
     /// </remarks>

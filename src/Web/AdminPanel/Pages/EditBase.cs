@@ -191,11 +191,13 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
         builder.OpenComponent<CascadingValue<IContext>>(11);
         builder.AddAttribute(12, nameof(CascadingValue<IContext>.Value), this._persistenceContext);
         builder.AddAttribute(13, nameof(CascadingValue<IContext>.IsFixed), this._isOwningContext);
-        builder.AddAttribute(14, nameof(CascadingValue<IContext>.ChildContent), (RenderFragment)(builder2 =>
+        RenderFragment childContent = builder2 =>
         {
             var sequence = 14;
             this.AddFormToRenderTree(builder2, ref sequence);
-        }));
+        };
+
+        builder.AddAttribute(14, nameof(CascadingValue<IContext>.ChildContent), childContent);
 
         builder.CloseComponent();
     }

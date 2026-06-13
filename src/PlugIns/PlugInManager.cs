@@ -33,6 +33,7 @@ public class PlugInManager
     /// <param name="configurations">The configurations.</param>
     /// <param name="loggerFactory">The logger factory.</param>
     /// <param name="serviceProvider">The service provider.</param>
+    /// <param name="customConfigReferenceHandler">The reference handler for references in custom plugin configurations.</param>
     public PlugInManager(ICollection<PlugInConfiguration>? configurations, ILoggerFactory loggerFactory, IServiceProvider? serviceProvider, ReferenceHandler? customConfigReferenceHandler)
     {
         _ = typeof(Nito.AsyncEx.AsyncReaderWriterLock); // Ensure Nito.AsyncEx.Coordination is loaded so it will be available in proxy generation.
@@ -56,12 +57,12 @@ public class PlugInManager
     }
 
     /// <summary>
-    /// Occurs when a plug in got deactivated.
+    /// Occurs when a plugin got deactivated.
     /// </summary>
     public event EventHandler<PlugInEventArgs>? PlugInDeactivated;
 
     /// <summary>
-    /// Occurs when a plug in got activated.
+    /// Occurs when a plugin got activated.
     /// </summary>
     public event EventHandler<PlugInEventArgs>? PlugInActivated;
 
@@ -71,10 +72,10 @@ public class PlugInManager
     public event EventHandler<PlugInConfigurationChangedEventArgs>? PlugInConfigurationChanged;
 
     /// <summary>
-    /// Gets the known plug in types.
+    /// Gets the known plugin types.
     /// </summary>
     /// <value>
-    /// The known plug in types.
+    /// The known plugin types.
     /// </value>
     public IEnumerable<Type> KnownPlugInTypes => this._knownPlugIns.Values;
 
@@ -84,7 +85,7 @@ public class PlugInManager
     public ReferenceHandler? CustomConfigReferenceHandler { get; }
 
     /// <summary>
-    /// Discovers and registers all plug ins of all loaded assemblies.
+    /// Discovers and registers all plugins of all loaded assemblies.
     /// </summary>
     public void DiscoverAndRegisterPlugIns()
     {
@@ -93,7 +94,7 @@ public class PlugInManager
     }
 
     /// <summary>
-    /// Discovers and registers plug ins of the specified assembly.
+    /// Discovers and registers plugins of the specified assembly.
     /// </summary>
     /// <param name="assembly">The assembly.</param>
     public void DiscoverAndRegisterPlugIns(Assembly assembly)
@@ -103,9 +104,9 @@ public class PlugInManager
     }
 
     /// <summary>
-    /// Discovers the and register plug ins of type <typeparamref name="T"/>.
+    /// Discovers and register plugins of type <typeparamref name="T"/>.
     /// </summary>
-    /// <typeparam name="T">The type of the plugins which should be discovered.</typeparam>
+    /// <typeparam name="T">The type of the plugins that should be discovered.</typeparam>
     public void DiscoverAndRegisterPlugInsOf<T>()
     {
         var plugIns = this.DiscoverAllPlugIns().Where(type => typeof(T).IsAssignableFrom(type));
@@ -113,7 +114,7 @@ public class PlugInManager
     }
 
     /// <summary>
-    /// Gets the known plug ins of the given interface type.
+    /// Gets the known plugins of the given interface type.
     /// </summary>
     /// <typeparam name="T">The plugin interface type. Type parameter of a <see cref="CustomPlugInContainerBase{TPlugIn}"/>.</typeparam>
     /// <returns>The known plugins of the given interface type.</returns>
@@ -128,9 +129,9 @@ public class PlugInManager
     }
 
     /// <summary>
-    /// Gets the active plug ins of the specified type.
+    /// Gets the active plugins of the specified type.
     /// </summary>
-    /// <typeparam name="TPlugIn">The type of the plug in.</typeparam>
+    /// <typeparam name="TPlugIn">The type of the plugin.</typeparam>
     /// <returns>The active plugins of the specified type.</returns>
     public IEnumerable<TPlugIn> GetActivePlugInsOf<TPlugIn>()
     {
@@ -143,21 +144,21 @@ public class PlugInManager
     }
 
     /// <summary>
-    /// Deactivates the plug in of type <typeparamref name="TPlugIn"/>.
+    /// Deactivates the plugin of type <typeparamref name="TPlugIn"/>.
     /// </summary>
-    /// <typeparam name="TPlugIn">The type of the plug in.</typeparam>
+    /// <typeparam name="TPlugIn">The type of the plugin.</typeparam>
     public void DeactivatePlugIn<TPlugIn>() => this.DeactivatePlugIn(typeof(TPlugIn));
 
     /// <summary>
-    /// Deactivates the plug in of the specified type.
+    /// Deactivates the plugin of the specified type.
     /// </summary>
-    /// <param name="plugIn">The plug in.</param>
+    /// <param name="plugIn">The plugin.</param>
     public void DeactivatePlugIn(Type plugIn) => this.DeactivatePlugIn(plugIn.GUID);
 
     /// <summary>
-    /// Deactivates the plug in with the specified type id.
+    /// Deactivates the plugin with the specified type id.
     /// </summary>
-    /// <param name="plugInId">The plug in identifier.</param>
+    /// <param name="plugInId">The plugin identifier.</param>
     public void DeactivatePlugIn(Guid plugInId)
     {
         if (this._knownPlugIns.TryGetValue(plugInId, out var plugInType))
@@ -168,21 +169,21 @@ public class PlugInManager
     }
 
     /// <summary>
-    /// Activates the plug in of type <typeparamref name="TPlugIn"/>.
+    /// Activates the plugin of type <typeparamref name="TPlugIn"/>.
     /// </summary>
-    /// <typeparam name="TPlugIn">The type of the plug in.</typeparam>
+    /// <typeparam name="TPlugIn">The type of the plugin.</typeparam>
     public void ActivatePlugIn<TPlugIn>() => this.ActivatePlugIn(typeof(TPlugIn));
 
     /// <summary>
-    /// Activates the plug in of the specified type.
+    /// Activates the plugin of the specified type.
     /// </summary>
-    /// <param name="plugIn">The plug in.</param>
+    /// <param name="plugIn">The plugin.</param>
     public void ActivatePlugIn(Type plugIn) => this.ActivatePlugIn(plugIn.GUID);
 
     /// <summary>
-    /// Activates the plug in with the specified type id.
+    /// Activates the plugin with the specified type id.
     /// </summary>
-    /// <param name="plugInId">The plug in identifier.</param>
+    /// <param name="plugInId">The plugin identifier.</param>
     public void ActivatePlugIn(Guid plugInId)
     {
         if (this._knownPlugIns.TryGetValue(plugInId, out var plugInType))
@@ -193,10 +194,10 @@ public class PlugInManager
     }
 
     /// <summary>
-    /// Gets the plug in point which implements <typeparamref name="TPlugIn"/>.
+    /// Gets the plugin point which implements <typeparamref name="TPlugIn"/>.
     /// </summary>
-    /// <typeparam name="TPlugIn">The type of the plug in.</typeparam>
-    /// <returns>The plug in point which implements <typeparamref name="TPlugIn"/>, if available; Otherwise, <c>null</c>.</returns>
+    /// <typeparam name="TPlugIn">The type of the plugin.</typeparam>
+    /// <returns>The plugin point which implements <typeparamref name="TPlugIn"/>, if available; Otherwise, <c>null</c>.</returns>
     public TPlugIn? GetPlugInPoint<TPlugIn>()
         where TPlugIn : class
     {
@@ -209,11 +210,11 @@ public class PlugInManager
     }
 
     /// <summary>
-    /// Gets the strategy plug in.
+    /// Gets the strategy plugin.
     /// </summary>
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="TStrategy">The type of the strategy.</typeparam>
-    /// <returns>The strategy plug in.</returns>
+    /// <returns>The strategy plugin.</returns>
     public IStrategyPlugInProvider<TKey, TStrategy>? GetStrategyProvider<TKey, TStrategy>()
         where TStrategy : class, IStrategyPlugIn<TKey>
     {
@@ -226,12 +227,12 @@ public class PlugInManager
     }
 
     /// <summary>
-    /// Gets the strategy plug in.
+    /// Gets the strategy plugin.
     /// </summary>
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="TStrategy">The type of the strategy.</typeparam>
     /// <param name="key">The key.</param>
-    /// <returns>The strategy plug in of the specified key, if available; Otherwise, <c>null</c>.</returns>
+    /// <returns>The strategy plugin of the specified key, if available; Otherwise, <c>null</c>.</returns>
     public TStrategy? GetStrategy<TKey, TStrategy>(TKey key)
         where TStrategy : class, IStrategyPlugIn<TKey>
     {
@@ -239,11 +240,11 @@ public class PlugInManager
     }
 
     /// <summary>
-    /// Gets the strategy plug in.
+    /// Gets the strategy plugin.
     /// </summary>
     /// <typeparam name="TStrategy">The type of the strategy.</typeparam>
     /// <param name="key">The key.</param>
-    /// <returns>The strategy plug in of the specified key, if available; Otherwise, <c>null</c>.</returns>
+    /// <returns>The strategy plugin of the specified key, if available; Otherwise, <c>null</c>.</returns>
     public TStrategy? GetStrategy<TStrategy>(string key)
         where TStrategy : class, IStrategyPlugIn<string>
     {
@@ -251,11 +252,11 @@ public class PlugInManager
     }
 
     /// <summary>
-    /// Determines whether the specified plug in type is configured as active.
+    /// Determines whether the specified plugin type is configured as active.
     /// </summary>
-    /// <param name="plugInType">Type of the plug in.</param>
+    /// <param name="plugInType">Type of the plugin.</param>
     /// <returns>
-    ///   <c>true</c> if the specified plug in type is configured as active; otherwise, <c>false</c>.
+    ///   <c>true</c> if the specified plugin type is configured as active; otherwise, <c>false</c>.
     /// </returns>
     public bool IsPlugInActive(Type plugInType)
     {
@@ -263,11 +264,11 @@ public class PlugInManager
     }
 
     /// <summary>
-    /// Determines whether the specified plug in type is configured as active.
+    /// Determines whether the specified plugin type is configured as active.
     /// </summary>
-    /// <param name="plugInTypeId">Identifier of the type of the plug in.</param>
+    /// <param name="plugInTypeId">Identifier of the type of the plugin.</param>
     /// <returns>
-    ///   <c>true</c> if the specified plug in type is configured as active; otherwise, <c>false</c>.
+    ///   <c>true</c> if the specified plugin type is configured as active; otherwise, <c>false</c>.
     /// </returns>
     public bool IsPlugInActive(Guid plugInTypeId)
     {
@@ -275,10 +276,10 @@ public class PlugInManager
     }
 
     /// <summary>
-    /// Registers the plug in class for the specified plug in interface.
+    /// Registers the plugin class for the specified plugin interface.
     /// </summary>
-    /// <typeparam name="TPlugInInterface">The type of the plug in interface.</typeparam>
-    /// <typeparam name="TPlugInClass">The type of the plug in class.</typeparam>
+    /// <typeparam name="TPlugInInterface">The type of the plugin interface.</typeparam>
+    /// <typeparam name="TPlugInClass">The type of the plugin class.</typeparam>
     public void RegisterPlugIn<TPlugInInterface, TPlugInClass>()
         where TPlugInInterface : class
         where TPlugInClass : class, TPlugInInterface
@@ -308,9 +309,9 @@ public class PlugInManager
     }
 
     /// <summary>
-    /// Registers the plug in instance for the specified plugin point interface.
+    /// Registers the plugin instance for the specified plugin point interface.
     /// </summary>
-    /// <typeparam name="TPlugInInterface">The type of the plug in interface.</typeparam>
+    /// <typeparam name="TPlugInInterface">The type of the plugin interface.</typeparam>
     /// <param name="instance">The instance.</param>
     /// <exception cref="ArgumentException">Plugin Type {instance.GetType()} - instance.</exception>
     public void RegisterPlugInAtPlugInPoint<TPlugInInterface>(TPlugInInterface instance)
@@ -340,9 +341,9 @@ public class PlugInManager
     }
 
     /// <summary>
-    /// Configures the plug in.
+    /// Configures the plugin.
     /// </summary>
-    /// <param name="plugInId">The plug in identifier.</param>
+    /// <param name="plugInId">The plugin identifier.</param>
     /// <param name="configuration">The configuration.</param>
     public void ConfigurePlugIn(Guid plugInId, PlugInConfiguration configuration)
     {
@@ -476,17 +477,6 @@ public class PlugInManager
         this.PlugInConfigurationChanged?.Invoke(this, new PlugInConfigurationChangedEventArgs(plugInType, configuration));
     }
 
-    private Assembly CompileCustomPlugInAssembly(PlugInConfiguration configuration)
-    {
-        if (string.IsNullOrEmpty(configuration.CustomPlugInSource))
-        {
-            throw new ArgumentNullException(nameof(configuration));
-        }
-
-        var syntaxTree = SyntaxFactory.ParseSyntaxTree(configuration.CustomPlugInSource!);
-        return syntaxTree.CompileAndLoad($"CustomPlugIn_{configuration.TypeId}");
-    }
-
     private IEnumerable<Type> DiscoverNewPlugIns()
     {
         return this.DiscoverNewPlugIns(this.DiscoverAllPlugIns());
@@ -554,7 +544,7 @@ public class PlugInManager
     }
 
     /// <summary>
-    /// Exception which occurs when the created proxy doesn't implement the expected interface <see cref="IPlugInContainer{TPlugIn}"/>.
+    /// Exception that occurs when the created proxy doesn't implement the expected interface <see cref="IPlugInContainer{TPlugIn}"/>.
     /// </summary>
     /// <seealso cref="System.Exception" />
     public class InvalidPlugInProxyException : Exception

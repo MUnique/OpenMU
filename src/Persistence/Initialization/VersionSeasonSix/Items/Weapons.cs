@@ -1,4 +1,4 @@
-﻿// <copyright file="Weapons.cs" company="MUnique">
+// <copyright file="Weapons.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -301,11 +301,33 @@ internal class Weapons : InitializerBase
     /// <param name="darkLordClass">The dark lord class.</param>
     /// <param name="summonerClass">The summoner class.</param>
     /// <param name="ragefighterClass">The ragefighter class.</param>
-    protected void CreateWeapon(byte @group, byte number, byte slot, int skillNumber, byte width, byte height,
-        bool dropsFromMonsters, string name, byte dropLevel, int minimumDamage, int maximumDamage, int attackSpeed,
-        byte durability, int magicPower, int levelRequirement, int strengthRequirement, int agilityRequirement,
-        int energyRequirement, int vitalityRequirement,
-        int wizardClass, int knightClass, int elfClass, int magicGladiatorClass, int darkLordClass, int summonerClass, int ragefighterClass)
+    protected void CreateWeapon(
+        byte @group,
+        byte number,
+        byte slot,
+        int skillNumber,
+        byte width,
+        byte height,
+        bool dropsFromMonsters,
+        string name,
+        byte dropLevel,
+        int minimumDamage,
+        int maximumDamage,
+        int attackSpeed,
+        byte durability,
+        int magicPower,
+        int levelRequirement,
+        int strengthRequirement,
+        int agilityRequirement,
+        int energyRequirement,
+        int vitalityRequirement,
+        int wizardClass,
+        int knightClass,
+        int elfClass,
+        int magicGladiatorClass,
+        int darkLordClass,
+        int summonerClass,
+        int ragefighterClass)
     {
         var item = this.Context.CreateNew<ItemDefinition>();
         this.GameConfiguration.Items.Add(item);

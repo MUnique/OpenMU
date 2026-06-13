@@ -15,7 +15,7 @@ using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
 
 /// <summary>
-/// Razor page which shows objects of the specified type in a grid.
+/// Razor page that shows objects of the specified type in a grid.
 /// </summary>
 public partial class CreateGameServerConfig : ComponentBase, IAsyncDisposable
 {
@@ -74,11 +74,11 @@ public partial class CreateGameServerConfig : ComponentBase, IAsyncDisposable
         }
         catch (OperationCanceledException)
         {
-            // we can ignore that ...
+            // We can ignore that.
         }
         catch
         {
-            // and we should not throw exceptions in the dispose method ...
+            // And we should not throw exceptions in the dispose method.
         }
     }
 
@@ -148,7 +148,6 @@ public partial class CreateGameServerConfig : ComponentBase, IAsyncDisposable
 
     private async Task OnSaveButtonClickAsync()
     {
-        string text;
         try
         {
             var gameConfiguration = await this.DataSource.GetOwnerAsync().ConfigureAwait(false);
