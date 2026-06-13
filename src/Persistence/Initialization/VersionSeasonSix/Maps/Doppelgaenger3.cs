@@ -36,4 +36,11 @@ internal class Doppelgaenger3 : BaseMapInitializer
 
     /// <inheritdoc />
     protected override string MapName => Name;
+
+    /// <inheritdoc />
+    protected override void AdditionalInitialization(GameMapDefinition mapDefinition)
+    {
+        base.AdditionalInitialization(mapDefinition);
+        this.AddUnderwaterMovementPowerUp();
+    }
 }

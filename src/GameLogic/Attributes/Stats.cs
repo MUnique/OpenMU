@@ -440,6 +440,21 @@ public class Stats
     public static AttributeDefinition WalkSpeed { get; } = new(new Guid("9CDDC598-E5F3-4372-9294-505455E4A40B"), "Walk Speed", string.Empty);
 
     /// <summary>
+    /// Gets the maximum movement speed attribute definition.
+    /// </summary>
+    public static AttributeDefinition MaxMovementSpeed { get; } = new(new Guid("E29301BE-626B-4B42-9F68-0DFAC18B3856"), "Maximum Movement Speed", "The maximum movement speed of a character on regular terrain.");
+
+    /// <summary>
+    /// Gets the maximum underwater movement speed attribute definition.
+    /// </summary>
+    public static AttributeDefinition MaxMovementSpeedUnderwater { get; } = new(new Guid("12128DC7-0740-48A5-A653-E546191CD7E0"), "Maximum Underwater Movement Speed", "The maximum movement speed of a character on underwater terrain.");
+
+    /// <summary>
+    /// Gets the movement speed factor attribute definition.
+    /// </summary>
+    public static AttributeDefinition MovementSpeedFactor { get; } = new(new Guid("003E1F2E-661D-4258-BEF0-33111D5F4AD2"), "Movement Speed Factor", "The factor which is applied to the final movement speed of a character.");
+
+    /// <summary>
     /// Gets the attack damage increase attribute definition.
     /// </summary>
     /// <remarks>Includes wings, imp, dinorant, black fenrir, and infinite arrow strengthener.</remarks>
@@ -1330,6 +1345,11 @@ public class Stats
     /// Gets the <see cref="IsInSafezone"/> attribute which defines if the character is located in a safezone of a game map.
     /// </summary>
     public static AttributeDefinition IsInSafezone { get; } = new(new Guid("82044DF9-F528-4AD6-9AAA-6FEAA4C786E7"), "Flag, if the character is located in a safezone of a game map", "Characters at the safezone recover additional health and shield.");
+
+    /// <summary>
+    /// Gets the <see cref="IsUnderwater"/> attribute which defines if the character is located on an underwater game map.
+    /// </summary>
+    public static AttributeDefinition IsUnderwater { get; } = new(new Guid("72A684C1-102B-4FDE-B637-2665ADD5F4AE"), "Flag, if the character is located on an underwater game map", "Characters on underwater maps use underwater movement speed attributes.");
 
     /// <summary>
     /// Gets the attribute definition, which defines if a player has MU Helper activated.

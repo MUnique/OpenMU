@@ -23,20 +23,15 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
     private readonly Walker _walker;
 
     /// <summary>
-    /// The power up element of the monster skill.
-    /// It is a "cached" element which will be created on demand and can be applied multiple times.
+    /// The power up elements of the monster skill.
+    /// These are "cached" elements which will be created on demand and can be applied multiple times.
     /// </summary>
-    private readonly IElement? _skillPowerUp;
+    private readonly (AttributeDefinition Target, IElement Boost)[] _skillPowerUps;
 
     /// <summary>
-    /// The duration of the <see cref="_skillPowerUp"/>.
+    /// The duration of the <see cref="_skillPowerUps"/>.
     /// </summary>
     private readonly IElement? _skillPowerUpDuration;
-
-    /// <summary>
-    /// The target attribute of the <see cref="_skillPowerUp"/>.
-    /// </summary>
-    private readonly AttributeDefinition? _skillPowerUpTarget;
 
     private readonly IObjectPool<PathFinder> _pathFinderPool;
 
@@ -59,10 +54,10 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
         : base(spawnInfo, stats, map, eventStateProvider, dropGenerator, plugInManager)
     {
         this._pathFinderPool = pathFinderPool;
-        this._walker = new Walker(this, () => this.StepDelay);
+        this._walker = new Walker(this, this.GetStepDelay);
         this._intelligence = npcIntelligence;
 
-        (this._skillPowerUp, this._skillPowerUpDuration, this._skillPowerUpTarget) = this.CreateMagicEffectPowerUp();
+        (this._skillPowerUps, this._skillPowerUpDuration) = this.CreateMagicEffectPowerUps();
 
         this._intelligence.Npc = this;
     }
@@ -87,7 +82,7 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
     public Point WalkTarget => this._walker.CurrentTarget;
 
     /// <inheritdoc/>
-    public TimeSpan StepDelay => this.Definition.MoveDelay;
+    public TimeSpan StepDelay => this.GetStepDelay(null);
 
     /// <inheritdoc/>
     /// <remarks>Monsters don't do combos.</remarks>
@@ -122,7 +117,7 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
         await this.ForEachWorldObserverAsync<IShowAnimationPlugIn>(p => p.ShowMonsterAttackAnimationAsync(this, target, this.GetDirectionTo(target)), true).ConfigureAwait(false);
         if (this.Definition.AttackSkill is { } attackSkill)
         {
-            await target.TryApplyElementalEffectsAsync(this, attackSkill, this._skillPowerUp, this._skillPowerUpDuration, this._skillPowerUpTarget, hitInfo).ConfigureAwait(false);
+            await target.TryApplyElementalEffectsAsync(this, attackSkill, this._skillPowerUps, this._skillPowerUpDuration, hitInfo).ConfigureAwait(false);
 
             await this.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowSkillAnimationAsync(this, target, attackSkill, true), true).ConfigureAwait(false);
         }
@@ -356,27 +351,42 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
         };
     }
 
+    private TimeSpan GetStepDelay(WalkingStep? step)
+    {
+        var tileDistance = step is { } walkingStep ? walkingStep.From.EuclideanDistanceTo(walkingStep.To) : 1.0;
+        var delayMilliseconds = this.Definition.MoveDelay.TotalMilliseconds * Math.Max(1.0, tileDistance);
+        delayMilliseconds /= this.GetMovementSpeedFactor();
+
+        return TimeSpan.FromMilliseconds(delayMilliseconds);
+    }
+
+    private double GetMovementSpeedFactor()
+    {
+        var movementSpeedFactor = this.Attributes[Stats.MovementSpeedFactor];
+
+        return movementSpeedFactor > 0 ? movementSpeedFactor : 1.0;
+    }
+
     /// <summary>
-    /// Creates the magic effect power up for the given skill of a monster.
+    /// Creates the magic effect power ups for the given skill of a monster.
     /// </summary>
-    /// <remarks>
-    /// Currently, we just support one effect for monsters.
-    /// </remarks>
-    private (IElement? PowerUp, IElement? Duration, AttributeDefinition? Target) CreateMagicEffectPowerUp()
+    private ((AttributeDefinition Target, IElement Boost)[] PowerUps, IElement? Duration) CreateMagicEffectPowerUps()
     {
         var skill = this.Definition.AttackSkill;
-        if (skill?.MagicEffectDef?.PowerUpDefinitions.FirstOrDefault() is not { } powerUpDefinition
-            || skill.MagicEffectDef.Duration is not { } duration)
+        if (skill?.MagicEffectDef is not { } magicEffectDefinition
+            || magicEffectDefinition.Duration is not { } duration)
         {
-            return (null, null, null);
+            return ([], null);
         }
 
-        if (powerUpDefinition.Boost is null)
+        if (magicEffectDefinition.PowerUpDefinitions.Any(p => p.Boost is null || p.TargetAttribute is null))
         {
             throw new InvalidOperationException($"Skill {skill.Name} ({skill.Number}) has no magic effect definition or is without a PowerUpDefinition.");
         }
 
-        return (this.Attributes.CreateElement(powerUpDefinition), this.Attributes.CreateDurationElement(duration), powerUpDefinition.TargetAttribute);
+        return (
+            [.. magicEffectDefinition.PowerUpDefinitions.Select(p => (p.TargetAttribute!, this.Attributes.CreateElement(p)))],
+            this.Attributes.CreateDurationElement(duration));
     }
 
     private void ValidatePath(Memory<WalkingStep> steps)

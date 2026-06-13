@@ -244,6 +244,8 @@ public abstract class GameConfigurationInitializerBase : InitializerBase
 
         var randomExperienceMaxMultiplier = this.Context.CreateNew<ConstValueAttribute>(1.2f, Stats.RandomExperienceMaxMultiplier.GetPersistent(this.GameConfiguration));
         this.GameConfiguration.GlobalBaseAttributeValues.Add(randomExperienceMaxMultiplier);
+
+        this.GameConfiguration.GlobalBaseAttributeValues.Add(this.Context.CreateNew<ConstValueAttribute>(1f, Stats.MovementSpeedFactor.GetPersistent(this.GameConfiguration)));
     }
 
     private long CalcNeededMasterExp(long lvl)

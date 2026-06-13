@@ -71,6 +71,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         { SkillNumber.Weakness, MagicEffectNumber.WeaknessSummoner },
         { SkillNumber.Innovation, MagicEffectNumber.Innovation },
         { SkillNumber.DamageReflection, MagicEffectNumber.Reflection },
+        { SkillNumber.StrikeofDestruction, MagicEffectNumber.Cold },
         { SkillNumber.BeastUppercut, MagicEffectNumber.DefenseReductionBeastUppercut },
         { SkillNumber.PhoenixShot, MagicEffectNumber.DecreaseBlock },
         { SkillNumber.Explosion223, MagicEffectNumber.Explosion },
@@ -688,6 +689,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         new WeaknessSummonerEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new InnovationEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new ReflectionEffectInitializer(this.Context, this.GameConfiguration).Initialize();
+        new ColdEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new DefenseReductionBeastUppercutEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new DecreaseBlockEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new ExplosionEffectInitializer(this.Context, this.GameConfiguration).Initialize();

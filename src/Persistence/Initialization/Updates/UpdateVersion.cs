@@ -422,4 +422,19 @@ public enum UpdateVersion
     /// The version of the <see cref="AddRandomExperienceConfigAttributesPlugInSeason6"/>.
     /// </summary>
     AddRandomExperienceConfigAttributesSeason6 = 83,
+
+    /// <summary>
+    /// The version of the <see cref="AddMovementSpeedAttributesPlugIn075"/>.
+    /// </summary>
+    AddMovementSpeedAttributes075 = 84,
+
+    /// <summary>
+    /// The version of the <see cref="AddMovementSpeedAttributesPlugIn095D"/>.
+    /// </summary>
+    AddMovementSpeedAttributes095d = 85,
+
+    /// <summary>
+    /// The version of the <see cref="AddMovementSpeedAttributesPlugInSeason6"/>.
+    /// </summary>
+    AddMovementSpeedAttributesSeason6 = 86,
 }
