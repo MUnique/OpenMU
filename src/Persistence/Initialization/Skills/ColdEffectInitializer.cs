@@ -1,4 +1,4 @@
-// <copyright file="BlowOfDestructionEffectInitializer.cs" company="MUnique">
+// <copyright file="ColdEffectInitializer.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -10,16 +10,16 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
 
 /// <summary>
-/// Initializer for the blow of destruction effect which results from the strike of destruction skill.
+/// Initializer for the cold effect which slows movement speed.
 /// </summary>
-public class BlowOfDestructionEffectInitializer : InitializerBase
+public class ColdEffectInitializer : InitializerBase
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="BlowOfDestructionEffectInitializer"/> class.
+    /// Initializes a new instance of the <see cref="ColdEffectInitializer"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
     /// <param name="gameConfiguration">The game configuration.</param>
-    public BlowOfDestructionEffectInitializer(IContext context, GameConfiguration gameConfiguration)
+    public ColdEffectInitializer(IContext context, GameConfiguration gameConfiguration)
         : base(context, gameConfiguration)
     {
     }
@@ -29,8 +29,8 @@ public class BlowOfDestructionEffectInitializer : InitializerBase
     {
         var magicEffect = this.Context.CreateNew<MagicEffectDefinition>();
         this.GameConfiguration.MagicEffects.Add(magicEffect);
-        magicEffect.Number = (short)MagicEffectNumber.BlowOfDestruction;
-        magicEffect.Name = "Blow of Destruction Effect (Strike of Destruction)";
+        magicEffect.Number = (short)MagicEffectNumber.Cold;
+        magicEffect.Name = "Cold";
         magicEffect.InformObservers = true;
         magicEffect.SendDuration = true;
         magicEffect.StopByDeath = true;
@@ -41,7 +41,7 @@ public class BlowOfDestructionEffectInitializer : InitializerBase
         magicEffect.PowerUpDefinitions.Add(movementSpeedFactorPowerUp);
         movementSpeedFactorPowerUp.TargetAttribute = Stats.MovementSpeedFactor.GetPersistent(this.GameConfiguration);
         movementSpeedFactorPowerUp.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-        movementSpeedFactorPowerUp.Boost.ConstantValue.Value = MovementSpeedConstants.BlowOfDestructionMovementSpeedFactor;
+        movementSpeedFactorPowerUp.Boost.ConstantValue.Value = MovementSpeedConstants.ColdMovementSpeedFactor;
         movementSpeedFactorPowerUp.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
     }
 }

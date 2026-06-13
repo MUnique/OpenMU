@@ -17,5 +17,5 @@ internal static class MovementSpeedConstants
     internal const float HorseOrFenrirMovementSpeed = 17f;
     internal const float UpgradedFenrirMovementSpeed = 19f;
     internal const float IcedMovementSpeedFactor = 0.5f;
-    internal const float BlowOfDestructionMovementSpeedFactor = 0.33f;
+    internal const float ColdMovementSpeedFactor = 0.33f;
 }

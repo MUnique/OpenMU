@@ -114,20 +114,20 @@ public abstract class AddMovementSpeedAttributesPlugInBase : UpdatePlugInBase
             this.AddMovementSpeedFactorPowerUp(context, gameConfiguration, icedEffect, MovementSpeedConstants.IcedMovementSpeedFactor);
         }
 
-        var blowOfDestructionEffect = gameConfiguration.MagicEffects.FirstOrDefault(e => e.Number == (short)MagicEffectNumber.BlowOfDestruction);
-        if (blowOfDestructionEffect is null
+        var coldEffect = gameConfiguration.MagicEffects.FirstOrDefault(e => e.Number == (short)MagicEffectNumber.Cold);
+        if (coldEffect is null
             && gameConfiguration.Skills.Any(s => s.Number == (short)SkillNumber.StrikeofDestruction))
         {
-            new BlowOfDestructionEffectInitializer(context, gameConfiguration).Initialize();
-            blowOfDestructionEffect = gameConfiguration.MagicEffects.FirstOrDefault(e => e.Number == (short)MagicEffectNumber.BlowOfDestruction);
+            new ColdEffectInitializer(context, gameConfiguration).Initialize();
+            coldEffect = gameConfiguration.MagicEffects.FirstOrDefault(e => e.Number == (short)MagicEffectNumber.Cold);
         }
 
-        if (blowOfDestructionEffect is not null)
+        if (coldEffect is not null)
         {
-            this.AddMovementSpeedFactorPowerUp(context, gameConfiguration, blowOfDestructionEffect, MovementSpeedConstants.BlowOfDestructionMovementSpeedFactor);
+            this.AddMovementSpeedFactorPowerUp(context, gameConfiguration, coldEffect, MovementSpeedConstants.ColdMovementSpeedFactor);
             foreach (var skill in gameConfiguration.Skills.Where(s => s.Number == (short)SkillNumber.StrikeofDestruction))
             {
-                skill.MagicEffectDef = blowOfDestructionEffect;
+                skill.MagicEffectDef = coldEffect;
             }
         }
     }
