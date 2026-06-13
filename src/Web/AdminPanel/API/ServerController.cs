@@ -29,7 +29,7 @@ namespace MUnique.OpenMU.Web.API
         /// <summary>
         /// Sends a global message to the specified server.
         /// </summary>
-        /// <param name="id"><see langword="this"/>The server id.</param>
+        /// <param name="id">The server id.</param>
         /// <param name="msg">The message.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         [Route("send/{id=0}")]
