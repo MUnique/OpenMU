@@ -66,7 +66,7 @@ public class AppearanceChangedPlugIn : IAppearanceChangedPlugIn
             packet.ItemData[1] |= item.GetGlowLevel();
 
             // We could also continue to dumb down information here as this packet reveals all of the options of an item to
-            // other players - something which is probably not in interest of the players.
+            // other players - something that is probably not in the interest of the players.
             // However, for now we keep this logic close to the original server, which doesn't do a thing about it.
 
             // Additionally, we could think of ignoring changes of rings and pendants, as they are usually not visible in the game client, except
