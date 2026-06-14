@@ -1,4 +1,4 @@
-﻿// <copyright file="ConnectionServerController.cs" company="MUnique">
+﻿// <copyright file="ConnectServerController.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.ServerClients;
 
 /// <summary>
-/// API Controller which receives messages from other services.
+/// API Controller that receives messages from other services.
 /// </summary>
 [ApiController]
 [Route("")]
