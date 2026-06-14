@@ -12,7 +12,7 @@ using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// Updates some item requirements for elf bows that were intialized wrongly.
+/// Updates some item requirements for elf bows that were initialized wrongly.
 /// </summary>
 [PlugIn]
 [Display(Name = PlugInName, Description = PlugInDescription)]
@@ -27,7 +27,7 @@ public class FixItemRequirementsPlugIn : UpdatePlugInBase
     /// <summary>
     /// The plugin description.
     /// </summary>
-    internal const string PlugInDescription = "Updates some item requirements for elf bows which were intialized wrongly.";
+    internal const string PlugInDescription = "Updates some item requirements for elf bows which were initialized wrongly.";
 
     private static readonly List<(int Group, int Number, int StrengthRequirement, int AgilityRequirement, int EnergyRequirement, int VitalityRequirement)> RequirementCorrections =
     [

@@ -10,7 +10,7 @@ using MUnique.OpenMU.Web.Shared.Components.Form;
 using MUnique.OpenMU.Web.Shared.Services;
 
 /// <summary>
-/// A <see cref="IComponentBuilder"/> for date fields.
+/// A <see cref="IComponentBuilder"/> for time fields.
 /// </summary>
 public class TimeOnlyFieldBuilder : BaseComponentBuilder, IComponentBuilder
 {
