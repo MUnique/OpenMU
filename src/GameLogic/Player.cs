@@ -1447,7 +1447,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return;
         }
 
-        using var _ = await this.ObserverLock.WriterLockAsync();
+        using var l = await this.ObserverLock.WriterLockAsync();
         this.Observers.Add(observer);
         if (this.Party is not null
             && observer is Player observingPlayer
@@ -1461,7 +1461,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <inheritdoc/>
     public async ValueTask RemoveObserverAsync(IWorldObserver observer)
     {
-        using var _ = await this.ObserverLock.WriterLockAsync();
+        using var l = await this.ObserverLock.WriterLockAsync();
         this.Observers.Remove(observer);
         if (this.Party is not null
             && observer is Player observingPlayer
@@ -1640,7 +1640,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// Creates the magic effect power up for the given definition.
     /// </summary>
     /// <param name="magicEffectDefinition">The definition for a magic effect.</param>
-    /// <returns></returns>
+    /// <returns>A tuple containing the duration element and the power-up elements.</returns>
     public (IElement DurationInSeconds, (AttributeDefinition Target, IElement BuffPowerUp)[] PowerUps) CreateMagicEffectPowerUp(MagicEffectDefinition magicEffectDefinition)
     {
         ArgumentNullException.ThrowIfNull(magicEffectDefinition);

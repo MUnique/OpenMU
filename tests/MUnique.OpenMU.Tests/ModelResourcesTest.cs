@@ -125,7 +125,7 @@ public class ModelResourcesTest
     }
 
     /// <summary>
-    /// Verifies that the non-generic overload of <see cref="ModelResourceProvider.GetEnumCaption(Type, object, CultureInfo)"/>
+    /// Verifies that the non-generic overload of <see cref="ModelResourceProvider.GetEnumCaption(Type, Enum, CultureInfo)"/>
     /// returns the expected caption for an enum value.
     /// </summary>
     [Test]
