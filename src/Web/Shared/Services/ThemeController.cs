@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.Web.Shared.Services;
 using Microsoft.AspNetCore.Mvc;
 
 /// <summary>
-/// A controller which writes the UI theme preference to a cookie and redirects to the specified uri.
+/// A controller that writes the UI theme preference to a cookie and redirects to the specified uri.
 /// </summary>
 [Route("[controller]/[action]")]
 public class ThemeController : Controller
@@ -23,9 +23,19 @@ public class ThemeController : Controller
     public static string DefaultTheme { get; } = "light";
 
     /// <summary>
+    /// Normalizes the supplied theme value to a known token.
+    /// </summary>
+    /// <param name="theme">The raw value from the request.</param>
+    /// <returns>Either dark or light.</returns>
+    public static string NormalizeTheme(string? theme)
+    {
+        return string.Equals(theme, "dark", StringComparison.OrdinalIgnoreCase) ? "dark" : "light";
+    }
+
+    /// <summary>
     /// Sets the UI theme by writing the theme cookie and redirects to the specified URI.
     /// </summary>
-    /// <param name="theme">The theme to set, e.g. &quot;light&quot; or &quot;dark&quot;.</param>
+    /// <param name="theme">The theme to set, e.g. dark or light.</param>
     /// <param name="redirectUri">The URI to redirect to after the cookie has been set. Must be a local URL; otherwise the user is sent to the application root.</param>
     /// <returns>A local redirect to <paramref name="redirectUri"/>, or to &quot;/&quot; if the URI is missing or non-local.</returns>
     public IActionResult Set(string? theme, string? redirectUri)
@@ -49,15 +59,5 @@ public class ThemeController : Controller
         }
 
         return this.LocalRedirect(redirectUri);
-    }
-
-    /// <summary>
-    /// Normalizes the supplied theme value to a known token.
-    /// </summary>
-    /// <param name="theme">The raw value from the request.</param>
-    /// <returns>Either &quot;dark&quot; or &quot;light&quot;.</returns>
-    public static string NormalizeTheme(string? theme)
-    {
-        return string.Equals(theme, "dark", StringComparison.OrdinalIgnoreCase) ? "dark" : "light";
     }
 }

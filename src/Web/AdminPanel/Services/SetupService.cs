@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 using Nito.AsyncEx.Synchronous;
 
 /// <summary>
-/// Service which allows to set the servers database up.
+/// Service that allows set the server database up.
 /// </summary>
 public class SetupService
 {
@@ -27,7 +27,7 @@ public class SetupService
     /// Initializes a new instance of the <see cref="SetupService"/> class.
     /// </summary>
     /// <param name="contextProvider">The context provider.</param>
-    /// <param name="plugInManager">The plug in manager.</param>
+    /// <param name="plugInManager">The plugin manager.</param>
     public SetupService(IMigratableDatabaseContextProvider contextProvider, PlugInManager plugInManager)
     {
         this._contextProvider = contextProvider;
@@ -40,7 +40,16 @@ public class SetupService
     public event AsyncEventHandler? DatabaseInitialized;
 
     /// <summary>
-    /// Gets a value indicating whether this application can connect to database.
+    /// Gets the versions.
+    /// </summary>
+    public ICollection<IDataInitializationPlugIn> Versions => this._availableInitializationPlugIns
+        ??= (this._plugInManager.GetStrategyProvider<string, IDataInitializationPlugIn>() ?? throw new InvalidOperationException("No data initialization plugins were found."))
+        .AvailableStrategies
+        .OrderByDescending(s => s.Caption)
+        .ToList();
+
+    /// <summary>
+    /// Gets a value indicating whether this application can connect to a database.
     /// </summary>
     public bool CanConnectToDatabase
     {
@@ -102,15 +111,6 @@ public class SetupService
         var definition = (await context.GetAsync<GameClientDefinition>().ConfigureAwait(false)).FirstOrDefault();
         return definition is { } ? new ClientVersion(definition.Season, definition.Episode, definition.Language) : null;
     }
-
-    /// <summary>
-    /// Gets the versions.
-    /// </summary>
-    public ICollection<IDataInitializationPlugIn> Versions => this._availableInitializationPlugIns
-        ??= (this._plugInManager.GetStrategyProvider<string, IDataInitializationPlugIn>() ?? throw new InvalidOperationException("No data initialization plugins were found."))
-            .AvailableStrategies
-            .OrderByDescending(s => s.Caption)
-            .ToList();
 
     /// <summary>
     /// Installs the updates asynchronous.

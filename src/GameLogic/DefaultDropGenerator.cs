@@ -448,7 +448,9 @@ public class DefaultDropGenerator : IDropGenerator
 
         var itemOfSet = ancientSet.Items.First(i => object.Equals(i.ItemDefinition, item.Definition));
         item.ItemSetGroups.Add(itemOfSet);
-        if (itemOfSet.BonusOption is { } bonusOption) // for example: +5str or +10str
+
+        // For example: +5str or +10str.
+        if (itemOfSet.BonusOption is { } bonusOption)
         {
             var bonusOptionLink = new ItemOptionLink();
             bonusOptionLink.ItemOption = bonusOption;

@@ -15,6 +15,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
     [Migration("00000000000000_Initial")]
     partial class Initial
     {
+        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618

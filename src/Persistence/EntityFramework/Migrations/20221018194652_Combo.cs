@@ -9,6 +9,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
     using System;
     using Microsoft.EntityFrameworkCore.Migrations;
 
+    /// <summary>
+    /// Adds skill combo definitions and steps.
+    /// </summary>
     public partial class Combo : Migration
     {
         /// <inheritdoc/>

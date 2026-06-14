@@ -28,7 +28,7 @@ internal class CacheAwareRepositoryProvider : ICacheAwareRepositoryProvider, ICo
     /// Initializes a new instance of the <see cref="CacheAwareRepositoryProvider"/> class.
     /// </summary>
     /// <param name="loggerFactory">The logger factory.</param>
-    /// <param name="configurationChangePublisher">The configuration change publisher.</param>
+    /// <param name="configurationChangeListener">The configuration change listener.</param>
     public CacheAwareRepositoryProvider(ILoggerFactory loggerFactory, IConfigurationChangeListener? configurationChangeListener)
     {
         this._loggerFactory = loggerFactory;

@@ -123,7 +123,7 @@ public partial class ConfigurationSearch : IDisposable
             value.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
     }
 
-    private void OnSearchFocus(FocusEventArgs _)
+    private void OnSearchFocus(FocusEventArgs e)
     {
         this.UpdateSearchResults();
     }
@@ -145,7 +145,7 @@ public partial class ConfigurationSearch : IDisposable
         return Task.CompletedTask;
     }
 
-    private async Task OnSearchBlurAsync(FocusEventArgs _)
+    private async Task OnSearchBlurAsync(FocusEventArgs e)
     {
         await Task.Delay(100).ConfigureAwait(true);
         this._searchResults.Clear();

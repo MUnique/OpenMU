@@ -98,7 +98,9 @@ public class PathFinder : IPathFinder
         }
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Resets the pathfinder.
+    /// </summary>
     public void ResetPathFinder()
     {
         this._openList.Clear();

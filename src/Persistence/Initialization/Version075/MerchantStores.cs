@@ -107,6 +107,7 @@ internal partial class NpcInitialization
     /// <summary>
     /// Creates the merchant store of 'Hanzo the Blacksmith'.
     /// </summary>
+    /// <param name="number">The number of the store.</param>
     /// <returns>The created store.</returns>
     protected virtual ItemStorage CreateHanzoTheBlacksmith(short number)
     {
@@ -151,6 +152,7 @@ internal partial class NpcInitialization
     /// <summary>
     /// Creates the merchant store of 'Pasi the Mage'.
     /// </summary>
+    /// <param name="number">The number of the store.</param>
     /// <returns>The created store.</returns>
     protected virtual ItemStorage CreatePasiTheMageStore(short number)
     {
@@ -196,6 +198,7 @@ internal partial class NpcInitialization
     /// <summary>
     /// Creates the merchant store of 'Elf Lala'.
     /// </summary>
+    /// <param name="number">The number of the store.</param>
     /// <returns>The created store.</returns>
     protected virtual ItemStorage CreateElfLalaStore(short number)
     {
@@ -266,6 +269,7 @@ internal partial class NpcInitialization
     /// <summary>
     /// Creates the merchant store of 'Izabel the Wizard'.
     /// </summary>
+    /// <param name="number">The number of the store.</param>
     /// <returns>The created store.</returns>
     protected virtual ItemStorage CreateIzabelTheWizardStore(short number)
     {
@@ -319,6 +323,7 @@ internal partial class NpcInitialization
     /// <summary>
     /// Creates the merchant store of 'Eo the Craftsman'.
     /// </summary>
+    /// <param name="number">The number of the store.</param>
     /// <returns>The created store.</returns>
     protected virtual ItemStorage CreateEoTheCraftsmanStore(short number)
     {
@@ -359,6 +364,7 @@ internal partial class NpcInitialization
     /// <summary>
     /// Creates the merchant store of 'Zienna'.
     /// </summary>
+    /// <param name="number">The number of the store.</param>
     /// <returns>The created store.</returns>
     protected virtual ItemStorage CreateZiennaStore(short number)
     {
@@ -395,6 +401,7 @@ internal partial class NpcInitialization
     /// <summary>
     /// Creates the merchant store of 'Lumen the Barmaid'.
     /// </summary>
+    /// <param name="number">The number of the store.</param>
     /// <returns>The created store.</returns>
     protected virtual ItemStorage CreateLumenTheBarmaidStore(short number)
     {
@@ -412,6 +419,7 @@ internal partial class NpcInitialization
     /// <summary>
     /// Creates the merchant store of 'Carmen the Barmaid'.
     /// </summary>
+    /// <param name="number">The number of the store.</param>
     /// <returns>The created store.</returns>
     protected virtual ItemStorage CreateCarenTheBarmaidStore(short number)
     {

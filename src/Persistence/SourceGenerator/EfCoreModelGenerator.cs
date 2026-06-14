@@ -143,6 +143,29 @@ internal partial class {className} : {fullName}, IIdentifiable
         }
     }
 
+    private static bool IsMemberOfAggregate(PropertyInfo propertyInfo)
+    {
+        if (propertyInfo?.Name.StartsWith("Raw") ?? false)
+        {
+            propertyInfo = propertyInfo.DeclaringType?.GetProperty(propertyInfo.Name.Substring(3), BindingFlags.Instance | BindingFlags.Public);
+        }
+
+        return propertyInfo?.GetCustomAttribute<MemberOfAggregateAttribute>() is { };
+    }
+
+    private static bool IsStandaloneType(string typeName, Type referencingType)
+    {
+        return StandaloneTypes.Any(st =>
+        {
+            if (st.TypeName != typeName)
+            {
+                return false;
+            }
+
+            return !st.StandaloneForEntityOnly || !ModelGeneratorHelper.IsConfigurationType(referencingType);
+        });
+    }
+
     private IEnumerable<(string Name, string Source)> GenerateJoinEntities()
     {
         var standaloneCollectionProperties = ModelGeneratorHelper.CustomTypes.SelectMany(this.GetStandaloneCollectionProperties).ToList();
@@ -222,16 +245,6 @@ public static class MapsterConfigurator
 }}
 ";
         return source;
-    }
-
-    private static bool IsMemberOfAggregate(PropertyInfo propertyInfo)
-    {
-        if (propertyInfo?.Name.StartsWith("Raw") ?? false)
-        {
-            propertyInfo = propertyInfo.DeclaringType?.GetProperty(propertyInfo.Name.Substring(3), BindingFlags.Instance | BindingFlags.Public);
-        }
-
-        return propertyInfo?.GetCustomAttribute<MemberOfAggregateAttribute>() is { };
     }
 
     private string GenerateDbContext()
@@ -477,19 +490,6 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         }
 
         return string.Empty;
-    }
-
-    private static bool IsStandaloneType(string typeName, Type referencingType)
-    {
-        return StandaloneTypes.Any(st =>
-        {
-            if (st.TypeName != typeName)
-            {
-                return false;
-            }
-
-            return !st.StandaloneForEntityOnly || !ModelGeneratorHelper.IsConfigurationType(referencingType);
-        });
     }
 
     private IEnumerable<PropertyInfo> GetStandaloneCollectionProperties(Type type)

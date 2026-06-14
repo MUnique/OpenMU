@@ -74,12 +74,22 @@ public abstract class UpdateStatsBasePlugIn : Disposable, IUpdateStatsPlugIn
         base.Dispose(disposing);
     }
 
+    private static FrozenDictionary<UpdateAction, int> GetActionIndexMapping(FrozenDictionary<AttributeDefinition, UpdateAction> changeActions)
+    {
+        return ActionIndexMappings.GetOrAdd(changeActions, CreateNewIndexDictionary);
+
+        FrozenDictionary<UpdateAction, int> CreateNewIndexDictionary(FrozenDictionary<AttributeDefinition, UpdateAction> dict)
+        {
+            return dict.Values.Distinct().Index().ToFrozenDictionary(tuple => tuple.Item, tuple => tuple.Index);
+        }
+    }
+
     private async ValueTask SendDelayedUpdateAsync(UpdateAction action)
     {
         var autoResetEvent = this._resetEvents[this._actionIndexMapping[action]];
         if (!autoResetEvent.WaitOne(0))
         {
-            // we're sending an update already.
+            // We're sending an update already.
             return;
         }
 
@@ -91,16 +101,6 @@ public abstract class UpdateStatsBasePlugIn : Disposable, IUpdateStatsPlugIn
         finally
         {
             autoResetEvent.Set();
-        }
-    }
-
-    private static FrozenDictionary<UpdateAction, int> GetActionIndexMapping(FrozenDictionary<AttributeDefinition, UpdateAction> changeActions)
-    {
-        return ActionIndexMappings.GetOrAdd(changeActions, CreateNewIndexDictionary);
-
-        FrozenDictionary<UpdateAction, int> CreateNewIndexDictionary(FrozenDictionary<AttributeDefinition, UpdateAction> dict)
-        {
-            return dict.Values.Distinct().Index().ToFrozenDictionary(tuple => tuple.Item, tuple => tuple.Index);
         }
     }
 }

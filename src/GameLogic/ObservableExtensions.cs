@@ -82,7 +82,7 @@ public static class ObservableExtensions
     /// <param name="observable">The observable.</param>
     /// <param name="action">The action.</param>
     /// <param name="includeThis">if set to <c>true</c> the <paramref name="action" /> should be done for <paramref name="observable" /> too.</param>
-    /// <returns></returns>
+    /// <returns>A <see cref="ValueTask"/> representing the asynchronous operation.</returns>
     public static async ValueTask ForEachObservingAsync<T>(this IObservable observable, Func<T, ValueTask> action, bool includeThis)
         where T : class, IWorldObserver
     {
