@@ -14,6 +14,5 @@ public interface IConsumeSpecialItemPlugIn : IViewPlugIn
     /// </summary>
     /// <param name="item">The item.</param>
     /// <param name="effectTimeInSeconds">The effect time in seconds.</param>
-    /// <returns>A <see cref="ValueTask"/> representing the asynchronous operation.</returns>
     ValueTask ConsumeSpecialItemAsync(Item item, ushort effectTimeInSeconds);
 }

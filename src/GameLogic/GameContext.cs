@@ -390,7 +390,6 @@ public class GameContext : AsyncDisposable, IGameContext
     /// <param name="stateFactory">The state factory which creates a state for each culture group.</param>
     /// <param name="action">The action to execute for each player and culture state.</param>
     /// <typeparam name="TCultureState">The type of the culture state.</typeparam>
-    /// <returns>A task representing the asynchronous operation.</returns>
     public async ValueTask ForEachPlayerGroupedByCultureAsync<TCultureState>(Func<CultureInfo, TCultureState> stateFactory, Func<Player, TCultureState, Task> action)
     {
         if (this._playerList.Count == 0)

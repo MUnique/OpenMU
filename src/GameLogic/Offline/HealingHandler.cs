@@ -45,7 +45,6 @@ public sealed class HealingHandler
     /// <summary>
     /// Performs health recovery actions for the player and their party.
     /// </summary>
-    /// <returns>A value task representing the asynchronous operation.</returns>
     public async ValueTask PerformHealthRecoveryAsync()
     {
         if (this._config is null || this._player.Attributes is null)

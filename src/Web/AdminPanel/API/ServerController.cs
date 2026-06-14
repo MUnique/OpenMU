@@ -31,7 +31,6 @@ namespace MUnique.OpenMU.Web.API
         /// </summary>
         /// <param name="id">The server id.</param>
         /// <param name="msg">The message.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         [Route("send/{id=0}")]
         public async Task<IActionResult> SendGlobalMessage(int id, [FromQuery(Name = "msg")] string msg)
         {
