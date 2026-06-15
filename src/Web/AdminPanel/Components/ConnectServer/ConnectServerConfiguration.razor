@@ -53,7 +53,7 @@ else
         <div id="maxConnectionsPerAddressInput">
             <div>
                 <span id="connections-addon">
-                    <InputCheckbox id="checkMaxConnectionsPerAddressInput" @bind-Value=@this.Configuration.CheckMaxConnectionsPerAddress/>
+                    <InputCheckbox class="form-check-input" id="checkMaxConnectionsPerAddressInput" @bind-Value=@this.Configuration.CheckMaxConnectionsPerAddress/>
                 </span>
             </div>
             <InputNumber min="1" @bind-Value=@this.Configuration.MaxConnectionsPerAddress aria-describedby="connections-addon"/>

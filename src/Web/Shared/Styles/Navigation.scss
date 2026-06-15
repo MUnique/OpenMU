@@ -13,7 +13,7 @@
 
 .sidebar > nav > div:first-child {
     @extend .top-row;
-    @extend .pl-4;
+    @extend .ps-4;
     @extend .navbar;
     @extend .navbar-dark;
     background-color: rgba(0,0,0,0.4);

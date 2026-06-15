@@ -36,19 +36,19 @@
                                 </EditForm>
                             </td>
                             <td>
-                                <button type="button" class="btn-danger" @onclick="@(() => OnRemoveClickAsync(index))">Remove</button>
+                                <button type="button" class="btn btn-danger" @onclick="@(() => OnRemoveClickAsync(index))"><span class="oi oi-trash" aria-hidden="true"></span> Remove</button>
                             </td>
                         </tr>
                     }
                 }
                 </tbody>
-                <tfooter>
+                <tfoot>
                     <tr>
-                        <td colspan="2">
-                            <button type="button" class="btn-primary" @onclick="@OnAddClickAsync">Add Value</button>
+                        <td colspan="2" class="border-bottom-0">
+                            <button type="button" class="btn btn-primary" @onclick="@OnAddClickAsync">Add Value</button>
                         </td>
                     </tr>
-                </tfooter>
+                </tfoot>
             </table>
         </div>
     }

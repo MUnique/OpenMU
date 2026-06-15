@@ -8,7 +8,7 @@
     flex-direction: row;
     background-color: var(--omu-surface-2);
     color: var(--omu-text);
-    border-left: 1px solid var(--omu-border);
+    border-left: var(--bs-border-width) solid var(--omu-border);
     box-shadow: -2px 0 5px rgba(0, 0, 0, 0.08);
     overflow: hidden;
     z-index: 2;
@@ -23,7 +23,7 @@
     width: 1.75rem;
     padding: 0;
     border: none;
-    border-right: 1px solid var(--omu-border);
+    border-right: var(--bs-border-width) solid var(--omu-border);
     background-color: var(--omu-surface-muted);
     cursor: pointer;
     color: var(--omu-text);
@@ -58,14 +58,13 @@
 .creation-panel-body ::deep .form-actions {
     position: sticky;
     bottom: 0;
-    background-color: #fff;
-    margin-top: auto;
-    border-top: 1px solid #dee2e6;
+    background-color: var(--omu-surface-2);
+    margin: 1rem -1.5rem -1rem -1.5rem;
+    padding: 1rem 1.25rem;
+    border-top: var(--bs-border-width) solid var(--omu-border);
     display: flex;
     gap: 0.5rem;
     justify-content: flex-start;
-    padding: 1rem 0;
-    width: 100%;
     box-sizing: border-box;
 }
 

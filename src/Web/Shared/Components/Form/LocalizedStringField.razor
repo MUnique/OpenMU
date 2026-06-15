@@ -9,9 +9,7 @@
 @inject IOptions<RequestLocalizationOptions> LocalizationOptions
 
 <div class="input-group">
-  <div class="input-group-prepend">
-    <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
-  </div>
+  <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
 
   @foreach (var culture in this.LocalizationOptions.Value.SupportedUICultures)
   {
@@ -129,9 +127,9 @@
       var isValidationError = this.HasErrors(culture);
       if (isValidationError)
       {
-        return "badge-danger";
+        return "text-bg-danger";
       }
 
-      return this.CurrentValue.GetTranslation(culture, false)?.Length > 0 ? "badge-success" : "badge-warning";
+      return this.CurrentValue.GetTranslation(culture, false)?.Length > 0 ? "text-bg-success" : "text-bg-warning";
     }
 }

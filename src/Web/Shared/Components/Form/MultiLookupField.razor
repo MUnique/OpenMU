@@ -58,7 +58,7 @@
                         <div class="multi-lookup-field__dropdown-item @(isSelected ? "multi-lookup-field__dropdown-item--selected" : "")"
                              @onmousedown="() => ToggleItem(item)"
                              @onmousedown:preventDefault="true">
-                            <input type="checkbox" checked="@isSelected" tabindex="-1" />
+                            <input type="checkbox" class="form-check-input" checked="@isSelected" tabindex="-1" />
                             <span>@CaptionFactory(item)</span>
                         </div>
                     }

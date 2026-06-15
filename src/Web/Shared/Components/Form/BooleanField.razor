@@ -3,7 +3,7 @@
 
 <div>
     <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
-    <input type="checkbox" id="@this.FieldIdentifier.FieldName" @bind="CurrentValue" />
+    <input type="checkbox" class="form-check-input" id="@this.FieldIdentifier.FieldName" @bind="CurrentValue" />
     <ValidationMessage For=@this.ValueExpression />
 </div>
 

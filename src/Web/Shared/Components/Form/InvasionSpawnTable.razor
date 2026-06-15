@@ -22,43 +22,46 @@
                                       @bind-Value="spawn.Maps" />
                 </div>
                 <div class="d-flex align-items-center flex-wrap">
-                    <div class="d-flex align-items-center mr-4">
-                        <label class="mb-0 mr-2">@Resources.Quantity</label>
+                    <div class="d-flex align-items-center me-4">
+                        <label class="mb-0 me-2">@Resources.Quantity</label>
                         <InputNumber @bind-Value="spawn.Count"
                                      class="form-control form-control"
                                      style="width: 70px;"
                                      min="1" max="254" />
                     </div>
-                    <div class="d-flex align-items-center mr-4">
-                        <label class="mb-0 mr-2">X</label>
+                    <div class="d-flex align-items-center me-4">
+                        <label class="mb-0 me-2">X</label>
                         <InputNumber @bind-Value="spawn.X"
                                      class="form-control form-control"
                                      style="width: 70px;"
                                      min="0" max="255" />
                     </div>
-                    <div class="d-flex align-items-center mr-4">
-                        <label class="mb-0 mr-2">Y</label>
+                    <div class="d-flex align-items-center me-4">
+                        <label class="mb-0 me-2">Y</label>
                         <InputNumber @bind-Value="spawn.Y"
                                      class="form-control form-control"
                                      style="width: 70px;"
                                      min="0" max="255" />
                     </div>
-                    <div class="mb-0 d-flex align-items-center mr-4">
-                        <label class="mb-0" style="min-width: 250px;" for="@($"checkbox_{spawn.GetHashCode()}")" title="@Resources.SpawnOnAllSelectedMapsTooltip">
+                    <div class="mb-0 d-flex align-items-center me-4">
+                        <label class="mb-0" style="min-width: 250px;" for="@($"checkbox_{spawn.GetHashCode()}")">
                             @Resources.SpawnOnAllSelectedMaps
-                            <span class="oi oi-info" style="cursor: help;"></span>
+                            <details>
+                                <summary></summary>
+                                <div>@Resources.SpawnOnAllSelectedMapsTooltip</div>
+                            </details>
                         </label>
                         <input type="checkbox"
                                id="@($"checkbox_{spawn.GetHashCode()}")"
-                               class="mt-0"
+                               class="form-check-input mt-0"
                                @bind="spawn.IsSpawnOnAllMaps" />
                     </div>
                 </div>
                 <div class="mt-2">
                     <button type="button"
-                            class="btn-danger"
+                            class="btn btn-danger"
                             @onclick="@(() => this.OnRemoveClick(spawn))">
-                        @Resources.Remove
+                        <span class="oi oi-trash" aria-hidden="true"></span> @Resources.Remove
                     </button>
                 </div>
             </div>

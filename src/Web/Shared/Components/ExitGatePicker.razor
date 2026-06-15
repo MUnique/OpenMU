@@ -4,21 +4,19 @@
 @using MUnique.OpenMU.Web.Shared.Properties
 
 <div class="input-group border rounded">
-    <div class="input-group-prepend">
-        <span class="" id="targetMapLabel">@Resources.Target:</span>
-    </div>
+      <span class="input-group-text" id="targetMapLabel">@Resources.Target:</span>
     
       @if (!this._maps.Any())
       {
-        <div class="form-control border-0 p-0 ml-1">
+        <div class="form-control border-0 p-0 ms-1">
           <div class="spinner-border text-secondary" role="status">
-            <span class="sr-only">@Resources.Loading</span>
+            <span class="visually-hidden">@Resources.Loading</span>
           </div>
         </div>
       }
       else
       {
-        <div class="form-control border-0 p-0 ml-1">
+        <div class="form-control border-0 p-0 ms-1">
           <select title="@Resources.TargetMap" @onchange=this.OnMapSelectedAsync id="targetMapSelect" autocomplete="off">
             @foreach (var map in this._maps)
             {
@@ -28,7 +26,7 @@
         </div>
         @if (this.Map?.ExitGates.Any() ?? false)
         {
-          <div class="form-control border-0 p-0 ml-3">
+          <div class="form-control border-0 p-0 ms-3">
               <select title="@typeof(ExitGate).GetTypeCaption()" @onchange=this.OnGateSelectedAsync id="targetGateSelect" autocomplete="off">
               @foreach (var gate in this.Map?.ExitGates ?? [])
               {

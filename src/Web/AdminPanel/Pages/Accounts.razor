@@ -26,11 +26,11 @@
             <td>@item.State.GetEnumCaption()</td>
             <td>@item.EMail</td>
             <td>
-                <NavLink href="@($"edit-account/{item.GetId()}/{typeof(Account).FullName}/{item.GetId()}")">Edit</NavLink>
+                <NavLink href="@($"edit-account/{item.GetId()}/{typeof(Account).FullName}/{item.GetId()}")" class="btn btn-info"><span class="oi oi-pencil" aria-hidden="true"></span> Edit</NavLink>
             </td>
         </ItemTemplate>
         <TableFooter>
-            <td><button type="button" class="btn btn-sm btn-success" @onclick="@this._accountService.CreateNewInModalDialogAsync">@Resources.Create</button></td>
+            <td><button type="button" class="btn btn-primary" @onclick="@this._accountService.CreateNewInModalDialogAsync">@Resources.Create</button></td>
             <td></td>
             <td></td>
             <td></td>

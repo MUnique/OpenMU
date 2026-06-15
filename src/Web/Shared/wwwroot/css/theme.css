@@ -74,6 +74,11 @@ body {
     color: var(--omu-text);
 }
 
+[data-theme="dark"] .breadcrumb {
+    --bs-breadcrumb-item-active-color: var(--omu-text);
+    --bs-breadcrumb-divider-color: var(--omu-text-muted);
+}
+
 [data-theme="dark"] .border-bottom,
 [data-theme="dark"] .border-top,
 [data-theme="dark"] .border-left,
@@ -96,19 +101,23 @@ body {
 /* Tables (used everywhere via @extend .table .table-striped .table-hover in Tables.scss) */
 [data-theme="dark"] .table,
 [data-theme="dark"] table {
+    --bs-table-bg: var(--omu-surface);
+    --bs-table-color: var(--omu-text);
+    --bs-table-striped-bg: rgba(255, 255, 255, 0.04);
+    --bs-table-hover-bg: rgba(255, 255, 255, 0.08);
     color: var(--omu-text);
     background-color: transparent;
 }
 
-[data-theme="dark"] .table-striped tbody tr:nth-of-type(odd),
-[data-theme="dark"] table tbody tr:nth-of-type(odd) {
-    background-color: rgba(255, 255, 255, 0.04);
+[data-theme="dark"] .table-striped > tbody > tr:nth-of-type(odd) > *,
+[data-theme="dark"] table > tbody > tr:nth-of-type(odd) > * {
+    --bs-table-accent-bg: var(--bs-table-striped-bg);
     color: var(--omu-text);
 }
 
-[data-theme="dark"] .table-hover tbody tr:hover,
-[data-theme="dark"] table tbody tr:hover {
-    background-color: rgba(255, 255, 255, 0.08);
+[data-theme="dark"] .table-hover > tbody > tr:hover > *,
+[data-theme="dark"] table > tbody > tr:hover > * {
+    --bs-table-accent-bg: var(--bs-table-hover-bg);
     color: var(--omu-text);
 }
 
@@ -146,6 +155,10 @@ body {
     background-color: var(--omu-surface-hover);
     color: var(--omu-text);
     border-color: var(--omu-border);
+}
+
+[data-theme="dark"] .text-muted {
+    color: var(--omu-text-muted) !important;
 }
 
 /* Dropdowns / popovers */
@@ -284,10 +297,10 @@ body {
     border-top: 1px solid var(--omu-border) !important;
 }
 
-/* Sticky "Add New" bar in EditConfigGrid (hardcoded #fff / #dee2e6 in EditConfigGrid.razor.css, added in #788) */
+/* Sticky "Add New" bar in EditConfigGrid */
 [data-theme="dark"] .add-new-bar {
     background-color: var(--omu-surface) !important;
-    border-top: 1px solid var(--omu-border) !important;
+    border-top: var(--bs-border-width) solid var(--omu-border) !important;
 }
 
 /* Blazored.Modal panel (NuGet package hardcodes background-color: #fff in blazored.modal.bundle.scp.css) */

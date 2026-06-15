@@ -1,8 +1,4 @@
-﻿input[type="checkbox"] {
-  max-width: 10%;
-}
-
-form input {
+﻿form input {
     @extend .form-control;
 }
 
@@ -29,11 +25,11 @@ form input {
 .cancel-button {
     @extend .btn;
     @extend .btn-secondary;
-    @extend .ml-3;
+    @extend .ms-3;
 }
 
 form > div {
-    @extend .form-group;
+    margin-bottom: 1rem;
 }
 
 form > div > div {
@@ -41,17 +37,24 @@ form > div > div {
     @extend .mb-3;
 }
 
-form > div > div > div:first-of-type {
-    @extend .input-group-prepend;
+form > div > div button {
+    z-index: auto;
 }
 
 form > div > div > div:first-of-type > span {
-    @extend .input-group-text;
     height: 38px;
 }
 
 form > div > div > input {
     @extend .form-control;
+}
+
+.form-check-input {
+    padding: 0;
+    width: 1em;
+    height: 1em;
+    min-width: 1em;
+    min-height: 1em;
 }
 
 .blazored-modal {
@@ -76,22 +79,22 @@ details[open] > summary {
     list-style-type: '✖';
 }
 
-label > details {
-    @extend .ml-2;
+label > details.info-popup {
+    @extend .ms-2;
     position: absolute;
     display: inline;
     z-index: 0;
 }
 
-label > details[open] {
-    z-index: 1;
-}
-
-label > details > div {
+label > details.info-popup > div {
     @extend .alert;
     @extend .alert-secondary;
     @extend .shadow;
-    @extend .mr-3;
+    @extend .me-3;
+}
+
+label > details[open] {
+    z-index: 5;
 }
 
 ul.socket {
@@ -110,7 +113,7 @@ ul.socket > li > div {
 }
 
 ul.socket > li > div:last-of-type {
-    @extend .ml-3;
+    @extend .ms-3;
 }
 
 .auto-form-search-group {
