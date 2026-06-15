@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Components.Layout;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using MUnique.OpenMU.Web.AdminPanel.Services;
+using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Web.Shared.Components;
 using MUnique.OpenMU.Web.Shared.Services;
 
@@ -27,6 +28,9 @@ public partial class ConfigurationSearch : IDisposable
 
     [Inject]
     private ConfigurationSearchIndexCache SearchIndexCache { get; set; } = null!;
+
+    [Inject]
+    private ILogger<ConfigurationSearch> Logger { get; set; } = null!;
 
     [Inject]
     private NavigationManager NavigationManager { get; set; } = null!;
@@ -125,6 +129,7 @@ public partial class ConfigurationSearch : IDisposable
 
     private void OnSearchFocus(FocusEventArgs e)
     {
+        this.Logger.LogDebug("Search input focused, event type: {EventType}", e.Type);
         this.UpdateSearchResults();
     }
 
@@ -147,6 +152,7 @@ public partial class ConfigurationSearch : IDisposable
 
     private async Task OnSearchBlurAsync(FocusEventArgs e)
     {
+        this.Logger.LogDebug("Search input blurred, event type: {EventType}", e.Type);
         await Task.Delay(100).ConfigureAwait(true);
         this._searchResults.Clear();
     }
