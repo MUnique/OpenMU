@@ -30,11 +30,20 @@
 .quickgrid {
     width: 100%;
     border-color: var(--bs-table-border-color);
+    --bs-table-striped-bg: rgba(0, 0, 0, 0.05);
+    --bs-table-hover-bg: rgba(0, 0, 0, 0.075);
 }
 
 .quickgrid td, .quickgrid th {
     padding: 0.5rem;
-    border-bottom: var(--bs-border-width) solid var(--omu-border);
+}
+
+.quickgrid tbody tr:nth-child(odd) {
+    background-color: var(--bs-table-striped-bg);
+}
+
+.quickgrid tbody tr:hover {
+    background-color: var(--bs-table-hover-bg);
 }
 
 .quickgrid tbody tr:has(td:empty) {

@@ -6,6 +6,9 @@ $enable-validation-icons: false;
 $primary: #1b6ec2;
 
 @import "bootstrap-5.3.8/scss/bootstrap";
+
+@import "Theme";
+
 @import "open-iconic/font/css/open-iconic-bootstrap.min.css";
 
 @import "Navigation";
