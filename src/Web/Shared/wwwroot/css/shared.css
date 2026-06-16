@@ -12312,13 +12312,38 @@ details[open] > summary::before {
 }
 
 label > details.info-popup {
-  position: absolute;
-  display: inline;
-  z-index: 0;
+  position: relative;
+  display: inline-block;
 }
 
 label > details[open] {
   z-index: 5;
+}
+
+label > details.info-popup > div {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 0.25rem;
+  width: max-content;
+  max-width: min(600px, 90vw);
+  white-space: normal;
+}
+
+.form-actions {
+  position: sticky;
+  bottom: 0;
+  background-color: var(--omu-surface-2);
+  padding: 1rem 1.5rem;
+  border-top: var(--bs-border-width) solid var(--omu-border);
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-start;
+  box-sizing: border-box;
+}
+
+.form-actions .btn-secondary {
+  margin-left: 1rem;
 }
 
 .auto-form-search-group {

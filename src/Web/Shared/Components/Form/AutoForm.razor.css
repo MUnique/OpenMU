@@ -8,19 +8,6 @@
 }
 
 .form-actions {
-    position: sticky;
-    bottom: 0;
-    background-color: var(--omu-surface-2);
     margin: 1rem -1.5rem -1rem -1.5rem;
-    padding: 1rem 1.5rem;
-    border-top: var(--bs-border-width) solid var(--omu-border);
-    display: flex;
-    gap: 0.5rem;
-    justify-content: flex-start;
     border-radius: 0;
-    box-sizing: border-box;
-}
-
-.form-actions .btn-secondary {
-    margin-left: 1rem;
 }

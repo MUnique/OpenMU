@@ -46,9 +46,9 @@
                     <div class="mb-0 d-flex align-items-center me-4">
                         <label class="mb-0" style="min-width: 250px;" for="@($"checkbox_{spawn.GetHashCode()}")">
                             @Resources.SpawnOnAllSelectedMaps
-                            <details>
+                            <details class="info-popup">
                                 <summary></summary>
-                                <div>@Resources.SpawnOnAllSelectedMapsTooltip</div>
+                                <div class="alert alert-secondary shadow me-3"><span class="oi oi-info" aria-hidden="true"></span> @Resources.SpawnOnAllSelectedMapsTooltip</div>
                             </details>
                         </label>
                         <input type="checkbox"
