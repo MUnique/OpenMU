@@ -94,6 +94,7 @@
     </Exec>
     <Error Condition="'$(SassExists)'!='0'" Text="Dart Sass not installed. Install with: npm install -g sass."/>
     <Exec Command="sass --quiet --style=expanded --no-source-map Styles/Site.scss wwwroot/css/shared.css" />
+    <Exec Command="sass --quiet --style=compressed --no-source-map Styles/Site.scss wwwroot/css/shared.min.css" />
   </Target>
 
 </Project>
