@@ -71,8 +71,7 @@
 /* Let the form controls fill the wider panel so the space is actually used. */
 .creation-panel-body ::deep input:not([type="checkbox"]):not([type="radio"]),
 .creation-panel-body ::deep select,
-.creation-panel-body ::deep textarea,
-.creation-panel-body ::deep {
+.creation-panel-body ::deep textarea {
     width: 100%;
     box-sizing: border-box;
 }

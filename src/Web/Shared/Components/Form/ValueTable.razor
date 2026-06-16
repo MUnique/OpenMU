@@ -2,25 +2,25 @@
 
 @inherits InputBase<IList<TValue>>
 
-<div class="card">
+<div class="card mb-3">
     <h5 class="card-header">
         <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
         @if (this._isStartingCollapsed)
     {
         @if (this._isCollapsed)
         {
-        <button type="button" class="btn-outline-info" @onclick="@this.OnToggleCollapseClick">Expand (@(this.Value?.Count) Items)</button>
+        <button type="button" class="btn btn-outline-info" @onclick="@this.OnToggleCollapseClick">Expand (@(this.Value?.Count) Items)</button>
         }
         else
         {
-        <button type="button" class="btn-outline-info" @onclick="@this.OnToggleCollapseClick">Collapse</button>
+        <button type="button" class="btn btn-outline-info" @onclick="@this.OnToggleCollapseClick">Collapse</button>
         }
     }
     </h5>
     @if (!this._isCollapsed)
     {
         <div class="card-body card-text">
-            <table>
+            <table class="table table-striped table-hover">
                 <tbody>
                 @if (this.WrappedList is not null)
                 {
@@ -36,7 +36,7 @@
                                 </EditForm>
                             </td>
                             <td>
-                                <button type="button" class="btn btn-danger" @onclick="@(() => OnRemoveClickAsync(index))"><span class="oi oi-trash" aria-hidden="true"></span> Remove</button>
+                                <button type="button" class="btn btn-danger btn-sm" @onclick="@(() => OnRemoveClickAsync(index))"><span class="oi oi-trash" aria-hidden="true"></span> Remove</button>
                             </td>
                         </tr>
                     }

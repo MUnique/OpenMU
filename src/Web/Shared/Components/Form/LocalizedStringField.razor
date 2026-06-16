@@ -8,7 +8,7 @@
 
 @inject IOptions<RequestLocalizationOptions> LocalizationOptions
 
-<div class="input-group">
+<div class="mb-3">
   <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
 
   @foreach (var culture in this.LocalizationOptions.Value.SupportedUICultures)
@@ -116,10 +116,10 @@
       var isValidationError = this.HasErrors(culture);
       if (isValidationError)
       {
-        return "invalid";
+        return "form-control invalid";
       }
 
-      return string.Empty;
+      return "form-control";
     }
 
     private string GetBadge(CultureInfo culture)

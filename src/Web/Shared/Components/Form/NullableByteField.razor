@@ -1,9 +1,9 @@
 ﻿@using System.Diagnostics.CodeAnalysis
 @inherits NotifyableInputBase<byte?>
 
-<div>
+<div class="mb-3">
     <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
-    <InputNullableByte id="@this.FieldIdentifier.FieldName" @bind-Value="@CurrentValue" Min="@Min" Max="@(Max ?? byte.MaxValue)"/>
+    <InputNullableByte class="form-control" id="@this.FieldIdentifier.FieldName" @bind-Value="@CurrentValue" Min="@Min" Max="@(Max ?? byte.MaxValue)"/>
     <ValidationMessage For=@this.ValueExpression />
 </div>
 

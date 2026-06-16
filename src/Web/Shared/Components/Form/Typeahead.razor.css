@@ -25,7 +25,7 @@
     background-color: var(--omu-surface-2);
     border-color: var(--omu-link);
     outline: 0;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.25);
 }
 
 .typeahead-single-value,
@@ -65,7 +65,7 @@
 }
 
 .typeahead-multi-value-remove:hover {
-    color: #dc3545;
+    color: var(--bs-danger);
 }
 
 .typeahead-input {

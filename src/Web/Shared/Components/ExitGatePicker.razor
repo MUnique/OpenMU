@@ -17,7 +17,7 @@
       else
       {
         <div class="form-control border-0 p-0 ms-1">
-          <select title="@Resources.TargetMap" @onchange=this.OnMapSelectedAsync id="targetMapSelect" autocomplete="off">
+          <select class="form-select" title="@Resources.TargetMap" @onchange=this.OnMapSelectedAsync id="targetMapSelect" autocomplete="off">
             @foreach (var map in this._maps)
             {
                <option value="@map.GetId()" selected=@(object.Equals(this.Map, map))>@typeof(ExitGate).GetPropertyCaption(nameof(ExitGate.Map))) : @map.ToString()</option>
@@ -27,7 +27,7 @@
         @if (this.Map?.ExitGates.Any() ?? false)
         {
           <div class="form-control border-0 p-0 ms-3">
-              <select title="@typeof(ExitGate).GetTypeCaption()" @onchange=this.OnGateSelectedAsync id="targetGateSelect" autocomplete="off">
+              <select class="form-select" title="@typeof(ExitGate).GetTypeCaption()" @onchange=this.OnGateSelectedAsync id="targetGateSelect" autocomplete="off">
               @foreach (var gate in this.Map?.ExitGates ?? [])
               {
                 <option value="@gate.GetId()" selected=@(object.Equals(this.SelectedGate, gate))>@typeof(Gate).GetTypeCaption(): @gate.ToString()</option>

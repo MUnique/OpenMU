@@ -47,7 +47,7 @@
 }
 
 .multi-lookup-field__tag-remove:hover {
-    color: #dc3545;
+    color: var(--bs-danger);
 }
 
 .multi-lookup-field__search-input {
