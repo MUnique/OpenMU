@@ -254,6 +254,10 @@ body {
  * Apply class="dropdown-menu" directly in NavMenu.razor markup.
  * The selector below is a safety net until that migration is complete.
  */
+[data-theme="dark"] .sidebar .nav-link {
+    color: var(--omu-nav-link);
+}
+
 [data-theme="dark"] .sidebar > nav > div > ul > li.dropdown > div {
     background-color: var(--omu-surface);
     color: var(--omu-text);

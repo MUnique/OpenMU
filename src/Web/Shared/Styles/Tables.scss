@@ -29,10 +29,12 @@
 
 .quickgrid {
     width: 100%;
+    border-color: var(--bs-table-border-color);
 }
 
 .quickgrid td, .quickgrid th {
     padding: 0.5rem;
+    border-bottom: var(--bs-border-width) solid var(--omu-border);
 }
 
 .quickgrid tbody tr:has(td:empty) {
