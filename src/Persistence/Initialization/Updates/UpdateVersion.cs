@@ -437,4 +437,9 @@ public enum UpdateVersion
     /// The version of the <see cref="AddMovementSpeedAttributesPlugInSeason6"/>.
     /// </summary>
     AddMovementSpeedAttributesSeason6 = 86,
+
+    /// <summary>
+    /// The version of the <see cref="AddMissingMerchantStoresPlugIn"/>.
+    /// </summary>
+    AddMissingMerchantStores = 87,
 }
