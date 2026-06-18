@@ -1866,14 +1866,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         await this.ForEachWorldObserverAsync<IUpdateCharacterHeroStatePlugIn>(o => o.UpdateCharacterHeroStateAsync(this), true).ConfigureAwait(false);
     }
 
-    /// <summary>
-    /// Clears all subscribers from the <see cref="PlayerDisconnected"/> event.
-    /// </summary>
-    internal void ClearDisconnectedEventSubscribers()
-    {
-        this.PlayerDisconnected = null;
-    }
-
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore()
     {

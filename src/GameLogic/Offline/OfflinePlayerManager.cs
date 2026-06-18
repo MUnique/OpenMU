@@ -103,16 +103,12 @@ public sealed class OfflinePlayerManager
     {
         await this.LogOffFromLoginServerAsync(realPlayer, loginName).ConfigureAwait(false);
 
-        // Send a close-game packet so the client sees a clean exit.
+        // Send a close-game packet so the client exits cleanly without auto-reconnecting.
+        // DisconnectAsync will then fire PlayerDisconnected, which triggers
+        // RemovePlayerAsync (player list cleanup) and OnPlayerDisconnectedAsync (dispose).
         await realPlayer.InvokeViewPlugInAsync<ILogoutPlugIn>(p => p.LogoutAsync(LogoutType.CloseGame)).ConfigureAwait(false);
 
-        realPlayer.ClearDisconnectedEventSubscribers();
         await realPlayer.DisconnectAsync().ConfigureAwait(false);
-
-        // Explicitly remove the real player so _playerList stay consistent.
-        await realPlayer.GameContext.RemovePlayerAsync(realPlayer).ConfigureAwait(false);
-
-        realPlayer.PersistenceContext.Dispose();
     }
 
     /// <summary>
