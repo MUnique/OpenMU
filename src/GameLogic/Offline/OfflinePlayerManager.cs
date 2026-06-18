@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.Offline;
 
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.MuHelper;
+using MUnique.OpenMU.GameLogic.Views.Login;
 
 /// <summary>
 /// Manages active <see cref="OfflinePlayer"/> sessions.
@@ -102,8 +103,15 @@ public sealed class OfflinePlayerManager
     {
         await this.LogOffFromLoginServerAsync(realPlayer, loginName).ConfigureAwait(false);
 
-        realPlayer.SuppressDisconnectedEvent();
+        // Send a close-game packet so the client sees a clean exit.
+        await realPlayer.InvokeViewPlugInAsync<ILogoutPlugIn>(p => p.LogoutAsync(LogoutType.CloseGame)).ConfigureAwait(false);
+
+        realPlayer.ClearDisconnectedEventSubscribers();
         await realPlayer.DisconnectAsync().ConfigureAwait(false);
+
+        // Explicitly remove the real player so _playerList stay consistent.
+        await realPlayer.GameContext.RemovePlayerAsync(realPlayer).ConfigureAwait(false);
+
         realPlayer.PersistenceContext.Dispose();
     }
 

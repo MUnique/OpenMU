@@ -1405,17 +1405,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
-    /// Clears all subscribers from the <see cref="PlayerDisconnected"/> event so that
-    /// <see cref="DisconnectAsync"/> will not raise it. Used by offline player to prevent
-    /// <c>GameServer.OnPlayerDisconnectedAsync</c> from double-saving and double-logging off
-    /// after the real client disconnects.
-    /// </summary>
-    public void SuppressDisconnectedEvent()
-    {
-        this.PlayerDisconnected = null;
-    }
-
-    /// <summary>
     /// Disconnects the player from the game. Remote connections will be closed and data will be saved.
     /// </summary>
     public async ValueTask DisconnectAsync()
@@ -1875,6 +1864,14 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this._selectedCharacter.StateRemainingSeconds += (int)TimeSpan.FromHours(1).TotalSeconds;
         this._selectedCharacter.PlayerKillCount += 1;
         await this.ForEachWorldObserverAsync<IUpdateCharacterHeroStatePlugIn>(o => o.UpdateCharacterHeroStateAsync(this), true).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Clears all subscribers from the <see cref="PlayerDisconnected"/> event.
+    /// </summary>
+    internal void ClearDisconnectedEventSubscribers()
+    {
+        this.PlayerDisconnected = null;
     }
 
     /// <inheritdoc />
