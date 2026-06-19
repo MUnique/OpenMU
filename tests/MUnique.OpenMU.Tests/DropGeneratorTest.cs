@@ -43,7 +43,7 @@ public class DropGeneratorTest
         var generator = new DefaultDropGenerator(config, this.GetRandomizer2(0, 0.5));
         var (items, _) = await generator.GenerateItemDropsAsync(monster, 1, await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false));
         var item = items.FirstOrDefault();
-        
+
         Assert.That(item, Is.Not.Null);
 
         // ReSharper disable once PossibleNullReferenceException

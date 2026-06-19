@@ -7,8 +7,8 @@ namespace MUnique.OpenMU.Network;
 using System.Buffers;
 using System.IO.Pipelines;
 using System.Net;
-using Nito.AsyncEx;
 using MUnique.OpenMU.PlugIns;
+using Nito.AsyncEx;
 
 /// <summary>
 /// Interface for a connection.

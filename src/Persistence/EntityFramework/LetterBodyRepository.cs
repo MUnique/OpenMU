@@ -4,10 +4,10 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
+using System.Threading;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Persistence.EntityFramework.Model;
-using System.Threading;
 
 /// <summary>
 /// Repository which is able to load <see cref="LetterBody"/>s for a specific letter header.

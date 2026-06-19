@@ -1,10 +1,14 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿// <copyright file="20240707081614_DuelConfiguration.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
 
 #nullable disable
 
 namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 {
+    using System;
+    using Microsoft.EntityFrameworkCore.Migrations;
+
     /// <inheritdoc />
     public partial class DuelConfiguration : Migration
     {
@@ -28,7 +32,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     MaximumScore = table.Column<int>(type: "integer", nullable: false),
                     EntranceFee = table.Column<int>(type: "integer", nullable: false),
                     MinimumCharacterLevel = table.Column<int>(type: "integer", nullable: false),
-                    MaximumSpectatorsPerDuelRoom = table.Column<int>(type: "integer", nullable: false)
+                    MaximumSpectatorsPerDuelRoom = table.Column<int>(type: "integer", nullable: false),
                 },
                 constraints: table =>
                 {
@@ -51,7 +55,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     SecondPlayerGateId = table.Column<Guid>(type: "uuid", nullable: true),
                     SpectatorsGateId = table.Column<Guid>(type: "uuid", nullable: true),
                     DuelConfigurationId = table.Column<Guid>(type: "uuid", nullable: true),
-                    Index = table.Column<short>(type: "smallint", nullable: false)
+                    Index = table.Column<short>(type: "smallint", nullable: false),
                 },
                 constraints: table =>
                 {

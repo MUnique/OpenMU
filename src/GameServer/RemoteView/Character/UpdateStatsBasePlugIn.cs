@@ -10,7 +10,7 @@ using System.Threading;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Views.Character;
-using UpdateAction = Func<RemotePlayer, ValueTask>;
+using UpdateAction = System.Func<MUnique.OpenMU.GameServer.RemoteView.RemotePlayer, System.Threading.Tasks.ValueTask>;
 
 /// <summary>
 /// The default implementation of the <see cref="IUpdateStatsPlugIn"/> which is forwarding everything to the game client with specific data packets.

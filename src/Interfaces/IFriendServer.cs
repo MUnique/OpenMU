@@ -65,7 +65,7 @@ public interface IFriendServer
     /// <param name="serverId">The server identifier.</param>
     /// <param name="characterId">Id of the character.</param>
     /// <param name="characterName">Name of the character.</param>
-    /// <param name="isVisible">If set to <c>true</c>, the character is visible as online. Otherwise, it appears as offline for other players, but is still online</param>
+    /// <param name="isVisible">If set to <c>true</c>, the character is visible as online. Otherwise, it appears as offline for other players, but is still online.</param>
     ValueTask SetPlayerVisibilityStateAsync(byte serverId, Guid characterId, string characterName, bool isVisible);
 
     /// <summary>

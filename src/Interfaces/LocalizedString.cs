@@ -240,7 +240,6 @@ public readonly struct LocalizedString : IEquatable<LocalizedString>
         //         ii. Else: replace its content with text.
         //       - If not found and text is not null/empty: append "||xx=text".
         // 4. Return new LocalizedString with computed value.
-
         var languageCode = cultureInfo.TwoLetterISOLanguageName;
 
         // Work with a mutable string representation

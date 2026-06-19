@@ -207,7 +207,6 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
         return base.OnInitializedAsync();
     }
 
-
     /// <summary>
     /// Adds the form to the render tree.
     /// </summary>
@@ -237,7 +236,6 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
                 }
             }).ConfigureAwait(false);
         }
-
 
         await base.OnAfterRenderAsync(firstRender).ConfigureAwait(true);
     }
@@ -309,7 +307,8 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
     {
         if (this._persistenceContext?.HasChanges is true)
         {
-            var isConfirmed = await this.JavaScript.InvokeAsync<bool>("window.confirm",
+            var isConfirmed = await this.JavaScript.InvokeAsync<bool>(
+                "window.confirm",
                     Resources.UnsavedChangesQuestion)
                 .ConfigureAwait(true);
 

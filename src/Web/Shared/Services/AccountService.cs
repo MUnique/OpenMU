@@ -45,7 +45,7 @@ public class AccountService : IDataService<Account>, ISupportDataChangedNotifica
     {
         try
         {
-            var playerContext = (IPlayerContext) await this._dataSource.GetContextAsync().ConfigureAwait(false);
+            var playerContext = (IPlayerContext)await this._dataSource.GetContextAsync().ConfigureAwait(false);
             return (await playerContext.GetAccountsOrderedByLoginNameAsync(offset, count).ConfigureAwait(false)).ToList();
         }
         catch

@@ -1,10 +1,14 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿// <copyright file="20230324205415_AddSystemConfiguration.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
 
 #nullable disable
 
 namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 {
+    using System;
+    using Microsoft.EntityFrameworkCore.Migrations;
+
     /// <inheritdoc />
     public partial class AddSystemConfiguration : Migration
     {
@@ -26,7 +30,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     IpResolverParameter = table.Column<string>(type: "text", nullable: true),
                     AutoStart = table.Column<bool>(type: "boolean", nullable: false),
                     AutoUpdateSchema = table.Column<bool>(type: "boolean", nullable: false),
-                    ReadConsoleInput = table.Column<bool>(type: "boolean", nullable: false)
+                    ReadConsoleInput = table.Column<bool>(type: "boolean", nullable: false),
                 },
                 constraints: table =>
                 {

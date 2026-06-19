@@ -9,12 +9,12 @@ using System.IO;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Serilog;
-using Serilog.Debugging;
 using MUnique.OpenMU.ChatServer;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.PlugIns;
+using Serilog;
+using Serilog.Debugging;
 
 /// <summary>
 /// The main entry class of the application.

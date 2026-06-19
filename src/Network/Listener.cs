@@ -8,8 +8,8 @@ using System.IO.Pipelines;
 using System.Net;
 using System.Net.Sockets;
 using Microsoft.Extensions.Logging;
-using Pipelines.Sockets.Unofficial;
 using MUnique.OpenMU.PlugIns;
+using Pipelines.Sockets.Unofficial;
 
 /// <summary>
 /// A tcp listener which automatically creates instances of <see cref="Connection"/>s for accepted clients.

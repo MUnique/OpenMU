@@ -17,11 +17,12 @@ internal class MulticastConnectionServerStateObserver : IGameServerStateObserver
 {
     private readonly MemorizingObserver _memorizingObserver = new();
     private readonly List<IGameServerStateObserver> _observers = new();
-    
+
     public MulticastConnectionServerStateObserver()
     {
         this._observers.Add(this._memorizingObserver);
     }
+
     /// <summary>
     /// Adds the observer which wants to get notified about changes.
     /// </summary>

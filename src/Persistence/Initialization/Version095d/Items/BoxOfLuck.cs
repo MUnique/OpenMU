@@ -42,7 +42,7 @@ internal class BoxOfLuck : InitializerBase
     /// +8: Box of Kundun+1
     /// +9: Box of Kundun+2
     /// +10: Box of Kundun+3
-    /// +11: Box of Kundun+4
+    /// +11: Box of Kundun+4.
     /// </summary>
     /// <remarks>
     /// Regex for ExTeam Files:

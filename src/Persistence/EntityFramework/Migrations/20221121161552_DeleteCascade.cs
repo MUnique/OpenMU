@@ -1,10 +1,14 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿// <copyright file="20221121161552_DeleteCascade.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
 
 #nullable disable
 
 namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 {
+    using System;
+    using Microsoft.EntityFrameworkCore.Migrations;
+
     /// <inheritdoc />
     public partial class DeleteCascade : Migration
     {
@@ -505,7 +509,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     OptionTypeId = table.Column<Guid>(type: "uuid", nullable: true),
                     PowerUpDefinitionId = table.Column<Guid>(type: "uuid", nullable: true),
                     Number = table.Column<int>(type: "integer", nullable: false),
-                    SubOptionType = table.Column<int>(type: "integer", nullable: false)
+                    SubOptionType = table.Column<int>(type: "integer", nullable: false),
                 },
                 constraints: table =>
                 {

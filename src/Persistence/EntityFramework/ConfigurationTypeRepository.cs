@@ -111,7 +111,7 @@ internal class ConfigurationTypeRepository<T> : IRepository<T>, IConfigurationTy
 
     /// <summary>
     /// Ensures the cache for the current configuration.
-    /// TODO: Call this at a better place and time - so that we can remove this check before every GetById
+    /// TODO: Call this at a better place and time - so that we can remove this check before every GetById.
     /// </summary>
     public void EnsureCacheForCurrentConfiguration()
     {

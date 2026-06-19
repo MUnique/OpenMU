@@ -23,7 +23,7 @@ public class ItemPriceCalculatorTest
     /// <summary>
     /// The calculator which is tested.
     /// </summary>
-    private readonly ItemPriceCalculator _calculator = new ();
+    private readonly ItemPriceCalculator _calculator = new();
 
     /// <summary>
     /// Tests if the apple price is calculated correctly.
@@ -203,7 +203,7 @@ public class ItemPriceCalculatorTest
     /// gloves          290
     /// boots           370.
     /// </remarks>
-    [TestCase(7, 5, 28, 480, Description="Pad Helm")]
+    [TestCase(7, 5, 28, 480, Description = "Pad Helm")]
     [TestCase(8, 10, 28, 1400, Description = "Pad Armor")]
     [TestCase(9, 8, 28, 960, Description = "Pad Pants")]
     [TestCase(10, 3, 28, 290, Description = "Pad Gloves")]

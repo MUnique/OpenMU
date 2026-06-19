@@ -63,7 +63,7 @@ public sealed class EditConfig : EditBase
         StringBuilder? stringBuilder = null;
         if (this.Type is not null
             && (EditorPages.TryGetValue(this.Type, out var editors)
-                || this.Type.BaseType is { } baseType && EditorPages.TryGetValue(baseType, out editors)))
+                || (this.Type.BaseType is { } baseType && EditorPages.TryGetValue(baseType, out editors))))
         {
             foreach (var editor in editors)
             {

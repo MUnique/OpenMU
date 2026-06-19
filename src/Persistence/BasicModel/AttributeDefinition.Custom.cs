@@ -27,7 +27,7 @@ public partial class AttributeDefinition :
     {
         if (other is AttributeSystem.AttributeDefinition typedOther)
         {
-            AssignValuesOf(typedOther, gameConfiguration);
+            this.AssignValuesOf(typedOther, gameConfiguration);
         }
     }
 

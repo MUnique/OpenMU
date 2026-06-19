@@ -13,7 +13,7 @@ using System.IO.Pipelines;
 public class DuplexPipe : IDuplexPipe
 {
     /// <summary>
-    /// Initializes a new instance of <see cref="DuplexPipe"/>.
+    /// Initializes a new instance of the <see cref="DuplexPipe"/> class.
     /// </summary>
     /// <param name="options">The optional pipe options. If null, the default options are applied.</param>
     public DuplexPipe(PipeOptions? options = null)

@@ -14,7 +14,7 @@ using MUnique.OpenMU.Web.Shared.Services;
 public partial class ConfigNavMenu
 {
     private bool _expandGameConfig;
-    
+
     [Inject]
     private NavigationHistory NavigationHistory { get; set; } = null!;
 
