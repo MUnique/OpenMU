@@ -61,6 +61,10 @@ public class BuyNpcItemAction
             targetItem.Durability += storeItem.Durability;
             await player.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(targetItem, false)).ConfigureAwait(false);
             await player.InvokeViewPlugInAsync<IBuyNpcItemFailedPlugIn>(p => p.BuyNpcItemFailedAsync()).ConfigureAwait(false);
+            if (player.GameContext.PlugInManager.GetPlugInPoint<IItemStackedPlugIn>() is { } itemStackedPlugIn)
+            {
+                await itemStackedPlugIn.ItemStackedAsync(player, storeItem, targetItem).ConfigureAwait(false);
+            }
         }
         else
         {
