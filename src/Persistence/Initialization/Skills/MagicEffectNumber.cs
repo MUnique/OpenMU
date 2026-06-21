@@ -297,6 +297,11 @@ internal enum MagicEffectNumber : short
     WizEnhance = 0x52,
 
     /// <summary>
+    /// The cold effect caused by skills such as Chain Drive and Strike of Destruction.
+    /// </summary>
+    Cold = 0x56,
+
+    /// <summary>
     /// The ignore defense effect of the rage fighter.
     /// </summary>
     IgnoreDefense = 129,

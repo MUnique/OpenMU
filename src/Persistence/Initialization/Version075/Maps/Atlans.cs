@@ -40,6 +40,13 @@ internal class Atlans : BaseMapInitializer
     /// <inheritdoc/>
     protected override string MapName => Name;
 
+    /// <inheritdoc />
+    protected override void AdditionalInitialization(GameMapDefinition mapDefinition)
+    {
+        base.AdditionalInitialization(mapDefinition);
+        this.AddUnderwaterMovementPowerUp();
+    }
+
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
     {

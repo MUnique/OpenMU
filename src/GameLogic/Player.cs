@@ -9,6 +9,7 @@ using System.Globalization;
 using System.Threading;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
+using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.GuildWar;
 using MUnique.OpenMU.GameLogic.MiniGames;
@@ -41,6 +42,8 @@ using Nito.AsyncEx;
 /// </summary>
 public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacker, ITrader, IPartyMember, IRotatable, IHasBucketInformation, ISupportWalk, IMovable, ILoggerOwner<Player>
 {
+    private const double WalkMovementSpeed = 12.0;
+
     private static readonly MagicEffectDefinition GMEffect = new GMMagicEffectDefinition
     {
         InformObservers = true,
@@ -148,7 +151,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public bool IsWalking => this._walker.CurrentTarget != default;
 
     /// <inheritdoc />
-    public TimeSpan StepDelay => this.GetStepDelay();
+    public TimeSpan StepDelay => this.GetStepDelay(null);
 
     /// <inheritdoc />
     public Point WalkTarget => this._walker.CurrentTarget;
@@ -713,6 +716,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         if (this.Attributes is null)
         {
             throw new InvalidOperationException("AttributeSystem not set.");
+        }
+
+        if (this.IsAttackBlockedBySafezone(attacker))
+        {
+            return null;
         }
 
         if (!this.GameContext.PvpEnabled && this.CurrentMap?.Definition.BattleZone == null &&
@@ -2149,19 +2157,48 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
-    /// Gets the step delay depending on the equipped items.
+    /// Gets the step delay depending on the equipped items and current movement effects.
     /// </summary>
+    /// <param name="step">The walking step for which the delay is calculated.</param>
     /// <returns>The current step delay, depending on equipped items.</returns>
-    private TimeSpan GetStepDelay()
+    private TimeSpan GetStepDelay(WalkingStep? step)
     {
-        if (this.Inventory?.EquippedItems.Any(item => item.Definition?.ItemSlot?.ItemSlots.Contains(7) ?? false) ?? false)
+        const double referenceFrameTimeMilliseconds = 40.0;
+        const double terrainScale = 100.0;
+
+        var speed = this.GetClientMovementSpeed(step?.From);
+        var tileDistance = step is { } walkingStep ? walkingStep.From.EuclideanDistanceTo(walkingStep.To) : 1.0;
+        var movementMilliseconds = terrainScale * Math.Max(1.0, tileDistance) / speed * referenceFrameTimeMilliseconds;
+
+        return TimeSpan.FromMilliseconds(movementMilliseconds);
+    }
+
+    private double GetClientMovementSpeed(Point? position = null)
+    {
+        if (this.IsInClientSafezone(position))
         {
-            // Wings
-            return TimeSpan.FromMilliseconds(300);
+            return this.ApplyMovementSpeedFactor(WalkMovementSpeed);
         }
 
-        // TODO: Consider pets etc.
-        return TimeSpan.FromMilliseconds(500);
+        var speedAttribute = this.Attributes?[Stats.IsUnderwater] > 0
+            ? Stats.MovementSpeedUnderwater
+            : Stats.MovementSpeed;
+        var speed = this.Attributes?[speedAttribute] ?? 0;
+
+        return this.ApplyMovementSpeedFactor(Math.Max(WalkMovementSpeed, speed));
+    }
+
+    private double ApplyMovementSpeedFactor(double speed)
+    {
+        var movementSpeedFactor = this.Attributes?[Stats.MovementSpeedFactor] ?? 1.0;
+
+        return speed * (movementSpeedFactor > 0 ? movementSpeedFactor : 1.0);
+    }
+
+    private bool IsInClientSafezone(Point? position = null)
+    {
+        var checkedPosition = position ?? this.Position;
+        return this.CurrentMap?.Terrain.SafezoneMap[checkedPosition.X, checkedPosition.Y] ?? false;
     }
 
     private async ValueTask<ExitGate> GetSpawnGateOfCurrentMapAsync()
@@ -2455,7 +2492,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         {
             foreach (var powerUpDefinition in powerUpDefinitions)
             {
-                if (powerUpDefinition.TargetAttribute is not { } targetAttribute)
+                if (powerUpDefinition.TargetAttribute is null)
                 {
                     continue;
                 }
@@ -2463,13 +2500,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 var powerUps = PowerUpWrapper.CreateByPowerUpDefinition(powerUpDefinition, attributes);
                 powerUps.ForEach(p =>
                 {
-                    this.Attributes?.AddElement(p, targetAttribute);
                     this.PlayerLeftMap += OnPlayerLeftMap;
 
                     void OnPlayerLeftMap(object? o, (Player, GameMap) args)
                     {
                         this.PlayerLeftMap -= OnPlayerLeftMap;
-                        attributes.RemoveElement(p, targetAttribute);
+                        p.Dispose();
                     }
                 });
             }
