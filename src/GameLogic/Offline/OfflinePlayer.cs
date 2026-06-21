@@ -36,18 +36,32 @@ public sealed class OfflinePlayer : Player
     public DateTime StartTimestamp { get; internal set; }
 
     /// <summary>
-    /// Initializes the offline player from captured references.
+    /// Initializes the offline player by loading the account fresh from the database.
     /// </summary>
-    /// <param name="account">The account.</param>
-    /// <param name="character">The character.</param>
+    /// <param name="loginName">The account login name.</param>
+    /// <param name="characterName">The character name to continue with.</param>
     /// <returns><c>true</c> if successfully started.</returns>
-    public async ValueTask<bool> InitializeAsync(Account account, Character character)
+    public async ValueTask<bool> InitializeAsync(string loginName, string characterName)
     {
         try
         {
             this.StartTimestamp = DateTime.UtcNow;
+
+            var account = await this.PersistenceContext.GetAccountByLoginNameAsync(loginName).ConfigureAwait(false);
+            if (account is null)
+            {
+                this.Logger.LogError("Failed to load account {LoginName} for offline session.", loginName);
+                return false;
+            }
+
+            var character = account.Characters.FirstOrDefault(c => c.Name == characterName);
+            if (character is null)
+            {
+                this.Logger.LogError("Character {CharacterName} not found in account {LoginName}.", characterName, loginName);
+                return false;
+            }
+
             this.Account = account;
-            this.PersistenceContext.Attach(account);
 
             await this.AdvanceToCharacterSelectionStateAsync().ConfigureAwait(false);
 
@@ -67,7 +81,7 @@ public sealed class OfflinePlayer : Player
         }
         catch (Exception ex)
         {
-            this.Logger.LogError(ex, "Failed to initialize offline player for {player}.", this);
+            this.Logger.LogError(ex, "Failed to initialize offline player for {LoginName}.", loginName);
             return false;
         }
     }
@@ -76,6 +90,12 @@ public sealed class OfflinePlayer : Player
     /// Stops the offline player and removes it from the world.
     /// </summary>
     public async ValueTask StopAsync()
+    {
+        await this.DisconnectAsync().ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    protected override async ValueTask InternalDisconnectAsync()
     {
         if (this._intelligence is { } intelligence)
         {
@@ -92,7 +112,7 @@ public sealed class OfflinePlayer : Player
             this.Logger.LogError(ex, "Failed to save progress of offline player {AccountLoginName}.", this.AccountLoginName);
         }
 
-        await this.DisconnectAsync().ConfigureAwait(false);
+        await base.InternalDisconnectAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -109,14 +129,8 @@ public sealed class OfflinePlayer : Player
 
     private async ValueTask SetupCharacterAsync(Character character)
     {
-        // Add to context and set character.
         await this.GameContext.AddPlayerAsync(this).ConfigureAwait(false);
         await this.SetSelectedCharacterAsync(character).ConfigureAwait(false);
-
-        if (this.SelectedCharacter is { } selectedCharacter)
-        {
-            this.PersistenceContext.Attach(selectedCharacter);
-        }
     }
 
     private void StartIntelligence()

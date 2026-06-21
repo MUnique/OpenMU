@@ -30,10 +30,9 @@ public sealed class OfflinePlayerManager
     /// <returns><c>true</c> if the offline session was started successfully.</returns>
     public async ValueTask<bool> StartAsync(Player realPlayer, string loginName)
     {
-        var account = realPlayer.Account;
-        var character = realPlayer.SelectedCharacter;
+        var characterName = realPlayer.SelectedCharacter?.Name;
 
-        if (account is null || character is null)
+        if (string.IsNullOrEmpty(characterName))
         {
             return false;
         }
@@ -57,9 +56,9 @@ public sealed class OfflinePlayerManager
         {
             await this.TransitionToOfflineAsync(realPlayer, loginName).ConfigureAwait(false);
 
-            if (!await sentinel.InitializeAsync(account, character).ConfigureAwait(false))
+            if (!await sentinel.InitializeAsync(loginName, characterName).ConfigureAwait(false))
             {
-                this._activePlayers.TryRemove(loginName, out _);
+                await this.RemoveAndDisposeAsync(loginName, sentinel).ConfigureAwait(false);
                 return false;
             }
 
@@ -67,7 +66,7 @@ public sealed class OfflinePlayerManager
         }
         catch
         {
-            this._activePlayers.TryRemove(loginName, out _);
+            await this.RemoveAndDisposeAsync(loginName, sentinel).ConfigureAwait(false);
             throw;
         }
     }
@@ -81,6 +80,7 @@ public sealed class OfflinePlayerManager
         if (this._activePlayers.TryRemove(loginName, out var offlinePlayer))
         {
             await offlinePlayer.StopAsync().ConfigureAwait(false);
+            await offlinePlayer.DisposeAsync().ConfigureAwait(false);
         }
     }
 
