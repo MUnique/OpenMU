@@ -440,14 +440,14 @@ public class Stats
     public static AttributeDefinition WalkSpeed { get; } = new(new Guid("9CDDC598-E5F3-4372-9294-505455E4A40B"), "Walk Speed", string.Empty);
 
     /// <summary>
-    /// Gets the maximum movement speed attribute definition.
+    /// Gets the movement speed attribute definition.
     /// </summary>
-    public static AttributeDefinition MaxMovementSpeed { get; } = new(new Guid("E29301BE-626B-4B42-9F68-0DFAC18B3856"), "Maximum Movement Speed", "The maximum movement speed of a character on regular terrain.");
+    public static AttributeDefinition MovementSpeed { get; } = new(new Guid("E29301BE-626B-4B42-9F68-0DFAC18B3856"), "Movement Speed", "The movement speed of a character on regular terrain.");
 
     /// <summary>
-    /// Gets the maximum underwater movement speed attribute definition.
+    /// Gets the underwater movement speed attribute definition.
     /// </summary>
-    public static AttributeDefinition MaxMovementSpeedUnderwater { get; } = new(new Guid("12128DC7-0740-48A5-A653-E546191CD7E0"), "Maximum Underwater Movement Speed", "The maximum movement speed of a character on underwater terrain.");
+    public static AttributeDefinition MovementSpeedUnderwater { get; } = new(new Guid("12128DC7-0740-48A5-A653-E546191CD7E0"), "Underwater Movement Speed", "The movement speed of a character on underwater terrain.");
 
     /// <summary>
     /// Gets the movement speed factor attribute definition.

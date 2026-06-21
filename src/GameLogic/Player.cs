@@ -2181,8 +2181,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
 
         var speedAttribute = this.Attributes?[Stats.IsUnderwater] > 0
-            ? Stats.MaxMovementSpeedUnderwater
-            : Stats.MaxMovementSpeed;
+            ? Stats.MovementSpeedUnderwater
+            : Stats.MovementSpeed;
         var speed = this.Attributes?[speedAttribute] ?? 0;
 
         return this.ApplyMovementSpeedFactor(Math.Max(WalkMovementSpeed, speed));

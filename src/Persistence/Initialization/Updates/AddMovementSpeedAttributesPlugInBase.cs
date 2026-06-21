@@ -85,8 +85,8 @@ public abstract class AddMovementSpeedAttributesPlugInBase : UpdatePlugInBase
     /// <inheritdoc />
     protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
-        AddStatIfNotExists(context, gameConfiguration, Stats.MaxMovementSpeed);
-        AddStatIfNotExists(context, gameConfiguration, Stats.MaxMovementSpeedUnderwater);
+        AddStatIfNotExists(context, gameConfiguration, Stats.MovementSpeed);
+        AddStatIfNotExists(context, gameConfiguration, Stats.MovementSpeedUnderwater);
         AddStatIfNotExists(context, gameConfiguration, Stats.MovementSpeedFactor);
         AddStatIfNotExists(context, gameConfiguration, Stats.IsUnderwater);
 
@@ -148,12 +148,12 @@ public abstract class AddMovementSpeedAttributesPlugInBase : UpdatePlugInBase
 
         foreach (var boots in gameConfiguration.Items.Where(item => item.Group == (byte)ItemGroups.Boots))
         {
-            this.AddItemBasePowerUp(context, gameConfiguration, boots, Stats.MaxMovementSpeed, 0, AggregateType.Maximum, runningMovementSpeedTable);
+            this.AddItemBasePowerUp(context, gameConfiguration, boots, Stats.MovementSpeed, 0, AggregateType.Maximum, runningMovementSpeedTable);
         }
 
         foreach (var gloves in gameConfiguration.Items.Where(item => item.Group == (byte)ItemGroups.Gloves))
         {
-            this.AddItemBasePowerUp(context, gameConfiguration, gloves, Stats.MaxMovementSpeedUnderwater, 0, AggregateType.Maximum, runningMovementSpeedTable);
+            this.AddItemBasePowerUp(context, gameConfiguration, gloves, Stats.MovementSpeedUnderwater, 0, AggregateType.Maximum, runningMovementSpeedTable);
         }
 
         foreach (var wing in gameConfiguration.Items.Where(IsWingSlotItem))
@@ -220,8 +220,8 @@ public abstract class AddMovementSpeedAttributesPlugInBase : UpdatePlugInBase
 
     private void AddMovementSpeedPowerUps(IContext context, GameConfiguration gameConfiguration, ItemDefinition item, float speed)
     {
-        this.AddItemBasePowerUp(context, gameConfiguration, item, Stats.MaxMovementSpeed, speed, AggregateType.Maximum);
-        this.AddItemBasePowerUp(context, gameConfiguration, item, Stats.MaxMovementSpeedUnderwater, speed, AggregateType.Maximum);
+        this.AddItemBasePowerUp(context, gameConfiguration, item, Stats.MovementSpeed, speed, AggregateType.Maximum);
+        this.AddItemBasePowerUp(context, gameConfiguration, item, Stats.MovementSpeedUnderwater, speed, AggregateType.Maximum);
     }
 
     private void AddItemBasePowerUp(
@@ -248,12 +248,12 @@ public abstract class AddMovementSpeedAttributesPlugInBase : UpdatePlugInBase
 
     private void AddFenrirMovementSpeedCombinationBonuses(IContext context, GameConfiguration gameConfiguration)
     {
-        this.AddFenrirMovementSpeedCombinationBonus(context, gameConfiguration, ItemOptionTypes.BlackFenrir, BlackFenrirMovementSpeedCombinationBonusNumber, Stats.MaxMovementSpeed);
-        this.AddFenrirMovementSpeedCombinationBonus(context, gameConfiguration, ItemOptionTypes.BlackFenrir, BlackFenrirUnderwaterMovementSpeedCombinationBonusNumber, Stats.MaxMovementSpeedUnderwater);
-        this.AddFenrirMovementSpeedCombinationBonus(context, gameConfiguration, ItemOptionTypes.BlueFenrir, BlueFenrirMovementSpeedCombinationBonusNumber, Stats.MaxMovementSpeed);
-        this.AddFenrirMovementSpeedCombinationBonus(context, gameConfiguration, ItemOptionTypes.BlueFenrir, BlueFenrirUnderwaterMovementSpeedCombinationBonusNumber, Stats.MaxMovementSpeedUnderwater);
-        this.AddFenrirMovementSpeedCombinationBonus(context, gameConfiguration, ItemOptionTypes.GoldFenrir, GoldFenrirMovementSpeedCombinationBonusNumber, Stats.MaxMovementSpeed);
-        this.AddFenrirMovementSpeedCombinationBonus(context, gameConfiguration, ItemOptionTypes.GoldFenrir, GoldFenrirUnderwaterMovementSpeedCombinationBonusNumber, Stats.MaxMovementSpeedUnderwater);
+        this.AddFenrirMovementSpeedCombinationBonus(context, gameConfiguration, ItemOptionTypes.BlackFenrir, BlackFenrirMovementSpeedCombinationBonusNumber, Stats.MovementSpeed);
+        this.AddFenrirMovementSpeedCombinationBonus(context, gameConfiguration, ItemOptionTypes.BlackFenrir, BlackFenrirUnderwaterMovementSpeedCombinationBonusNumber, Stats.MovementSpeedUnderwater);
+        this.AddFenrirMovementSpeedCombinationBonus(context, gameConfiguration, ItemOptionTypes.BlueFenrir, BlueFenrirMovementSpeedCombinationBonusNumber, Stats.MovementSpeed);
+        this.AddFenrirMovementSpeedCombinationBonus(context, gameConfiguration, ItemOptionTypes.BlueFenrir, BlueFenrirUnderwaterMovementSpeedCombinationBonusNumber, Stats.MovementSpeedUnderwater);
+        this.AddFenrirMovementSpeedCombinationBonus(context, gameConfiguration, ItemOptionTypes.GoldFenrir, GoldFenrirMovementSpeedCombinationBonusNumber, Stats.MovementSpeed);
+        this.AddFenrirMovementSpeedCombinationBonus(context, gameConfiguration, ItemOptionTypes.GoldFenrir, GoldFenrirUnderwaterMovementSpeedCombinationBonusNumber, Stats.MovementSpeedUnderwater);
     }
 
     private void AddFenrirMovementSpeedCombinationBonus(

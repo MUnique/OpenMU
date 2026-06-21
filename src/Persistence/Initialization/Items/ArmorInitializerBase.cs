@@ -149,7 +149,7 @@ public abstract class ArmorInitializerBase : InitializerBase
             gloves.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.AttackSpeedAny, attackSpeed, AggregateType.AddRaw));
         }
 
-        this.AddRunningMovementSpeed(gloves, Stats.MaxMovementSpeedUnderwater);
+        this.AddRunningMovementSpeed(gloves, Stats.MovementSpeedUnderwater);
         return gloves;
     }
 
@@ -161,7 +161,7 @@ public abstract class ArmorInitializerBase : InitializerBase
             gloves.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.AttackSpeedAny, attackSpeed, AggregateType.AddRaw));
         }
 
-        this.AddRunningMovementSpeed(gloves, Stats.MaxMovementSpeedUnderwater);
+        this.AddRunningMovementSpeed(gloves, Stats.MovementSpeedUnderwater);
         return gloves;
     }
 
@@ -173,7 +173,7 @@ public abstract class ArmorInitializerBase : InitializerBase
             boots.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.WalkSpeed, walkSpeed, AggregateType.AddRaw));
         }
 
-        this.AddRunningMovementSpeed(boots, Stats.MaxMovementSpeed);
+        this.AddRunningMovementSpeed(boots, Stats.MovementSpeed);
         return boots;
     }
 
@@ -185,7 +185,7 @@ public abstract class ArmorInitializerBase : InitializerBase
             boots.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.WalkSpeed, walkSpeed, AggregateType.AddRaw));
         }
 
-        this.AddRunningMovementSpeed(boots, Stats.MaxMovementSpeed);
+        this.AddRunningMovementSpeed(boots, Stats.MovementSpeed);
         return boots;
     }
 

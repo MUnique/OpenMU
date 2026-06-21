@@ -35,14 +35,14 @@ public class Pets : InitializerBase
         var imp = this.CreatePet(1, 0, "Imp", 28, true, (Stats.AttackDamageIncrease, 1.3f, AggregateType.Multiplicate));
         this.AddItemToJewelItemDrop(imp);
         var uniria = this.CreatePet(2, 0, "Horn of Uniria", 25, true,
-            (Stats.MaxMovementSpeed, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum),
-            (Stats.MaxMovementSpeedUnderwater, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum));
+            (Stats.MovementSpeed, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum),
+            (Stats.MovementSpeedUnderwater, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum));
         this.AddItemToJewelItemDrop(uniria);
 
         var dinorant = this.CreatePet(3, SkillNumber.FireBreath, "Horn of Dinorant", 110, false,
             (Stats.IsDinorantEquipped, 1, AggregateType.AddRaw),
-            (Stats.MaxMovementSpeed, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum),
-            (Stats.MaxMovementSpeedUnderwater, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum),
+            (Stats.MovementSpeed, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum),
+            (Stats.MovementSpeedUnderwater, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum),
             (Stats.DamageReceiveDecrement, 0.9f, AggregateType.Multiplicate),
             (Stats.AttackDamageIncrease, 1.15f, AggregateType.Multiplicate));
         this.AddDinorantOptions(dinorant);

@@ -51,22 +51,22 @@ public class Pets : InitializerBase
             (Stats.AttackDamageIncrease, 1.3f, AggregateType.Multiplicate));
         this.AddItemToJewelItemDrop(imp);
         var uniria = this.CreatePet(2, 0, 1, 1, "Horn of Uniria", 25, true, true,
-            (Stats.MaxMovementSpeed, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum),
-            (Stats.MaxMovementSpeedUnderwater, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum));
+            (Stats.MovementSpeed, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum),
+            (Stats.MovementSpeedUnderwater, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum));
         this.AddItemToJewelItemDrop(uniria);
 
         var dinorant = this.CreatePet(3, SkillNumber.FireBreath, 1, 1, "Horn of Dinorant", 110, false, true,
             (Stats.IsDinorantEquipped, 1, AggregateType.AddRaw),
-            (Stats.MaxMovementSpeed, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum),
-            (Stats.MaxMovementSpeedUnderwater, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum),
+            (Stats.MovementSpeed, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum),
+            (Stats.MovementSpeedUnderwater, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum),
             (Stats.DamageReceiveDecrement, 0.9f, AggregateType.Multiplicate),
             (Stats.AttackDamageIncrease, 1.15f, AggregateType.Multiplicate));
         this.AddDinorantOptions(dinorant);
 
         var darkHorse = this.CreatePet(4, SkillNumber.Earthshake, 1, 1, "Dark Horse", 218, false, false,
             (Stats.IsHorseEquipped, 1, AggregateType.AddRaw),
-            (Stats.MaxMovementSpeed, MovementSpeedConstants.HorseOrFenrirMovementSpeed, AggregateType.Maximum),
-            (Stats.MaxMovementSpeedUnderwater, MovementSpeedConstants.HorseOrFenrirMovementSpeed, AggregateType.Maximum));
+            (Stats.MovementSpeed, MovementSpeedConstants.HorseOrFenrirMovementSpeed, AggregateType.Maximum),
+            (Stats.MovementSpeedUnderwater, MovementSpeedConstants.HorseOrFenrirMovementSpeed, AggregateType.Maximum));
         this.AddDarkHorseOptions(darkHorse);
         this.GameConfiguration.DetermineCharacterClasses(CharacterClasses.AllLords).ForEach(darkHorse.QualifiedCharacters.Add);
         darkHorse.PetExperienceFormula = PetExperienceFormula;
@@ -80,8 +80,8 @@ public class Pets : InitializerBase
 
         var fenrir = this.CreatePet(37, SkillNumber.PlasmaStorm, 2, 2, "Horn of Fenrir", 300, false, true,
             (Stats.CanFly, 1.0f, AggregateType.AddRaw),
-            (Stats.MaxMovementSpeed, MovementSpeedConstants.HorseOrFenrirMovementSpeed, AggregateType.Maximum),
-            (Stats.MaxMovementSpeedUnderwater, MovementSpeedConstants.HorseOrFenrirMovementSpeed, AggregateType.Maximum));
+            (Stats.MovementSpeed, MovementSpeedConstants.HorseOrFenrirMovementSpeed, AggregateType.Maximum),
+            (Stats.MovementSpeedUnderwater, MovementSpeedConstants.HorseOrFenrirMovementSpeed, AggregateType.Maximum));
         this.AddFenrirOptions(fenrir);
 
         this.CreatePet(64, 0, 1, 1, "Demon", 1, false, true,
@@ -326,12 +326,12 @@ public class Pets : InitializerBase
 
     private void AddFenrirMovementSpeedCombinationBonuses()
     {
-        this.AddFenrirMovementSpeedCombinationBonus(ItemOptionTypes.BlackFenrir, BlackFenrirMovementSpeedCombinationBonusNumber, Stats.MaxMovementSpeed);
-        this.AddFenrirMovementSpeedCombinationBonus(ItemOptionTypes.BlackFenrir, BlackFenrirUnderwaterMovementSpeedCombinationBonusNumber, Stats.MaxMovementSpeedUnderwater);
-        this.AddFenrirMovementSpeedCombinationBonus(ItemOptionTypes.BlueFenrir, BlueFenrirMovementSpeedCombinationBonusNumber, Stats.MaxMovementSpeed);
-        this.AddFenrirMovementSpeedCombinationBonus(ItemOptionTypes.BlueFenrir, BlueFenrirUnderwaterMovementSpeedCombinationBonusNumber, Stats.MaxMovementSpeedUnderwater);
-        this.AddFenrirMovementSpeedCombinationBonus(ItemOptionTypes.GoldFenrir, GoldFenrirMovementSpeedCombinationBonusNumber, Stats.MaxMovementSpeed);
-        this.AddFenrirMovementSpeedCombinationBonus(ItemOptionTypes.GoldFenrir, GoldFenrirUnderwaterMovementSpeedCombinationBonusNumber, Stats.MaxMovementSpeedUnderwater);
+        this.AddFenrirMovementSpeedCombinationBonus(ItemOptionTypes.BlackFenrir, BlackFenrirMovementSpeedCombinationBonusNumber, Stats.MovementSpeed);
+        this.AddFenrirMovementSpeedCombinationBonus(ItemOptionTypes.BlackFenrir, BlackFenrirUnderwaterMovementSpeedCombinationBonusNumber, Stats.MovementSpeedUnderwater);
+        this.AddFenrirMovementSpeedCombinationBonus(ItemOptionTypes.BlueFenrir, BlueFenrirMovementSpeedCombinationBonusNumber, Stats.MovementSpeed);
+        this.AddFenrirMovementSpeedCombinationBonus(ItemOptionTypes.BlueFenrir, BlueFenrirUnderwaterMovementSpeedCombinationBonusNumber, Stats.MovementSpeedUnderwater);
+        this.AddFenrirMovementSpeedCombinationBonus(ItemOptionTypes.GoldFenrir, GoldFenrirMovementSpeedCombinationBonusNumber, Stats.MovementSpeed);
+        this.AddFenrirMovementSpeedCombinationBonus(ItemOptionTypes.GoldFenrir, GoldFenrirUnderwaterMovementSpeedCombinationBonusNumber, Stats.MovementSpeedUnderwater);
     }
 
     private void AddFenrirMovementSpeedCombinationBonus(ItemOptionType optionType, int number, AttributeDefinition targetAttribute)
