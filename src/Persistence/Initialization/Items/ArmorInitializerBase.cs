@@ -22,6 +22,7 @@ public abstract class ArmorInitializerBase : InitializerBase
     private ItemLevelBonusTable? _defenseIncreaseTable;
     private ItemLevelBonusTable? _shieldDefenseIncreaseTable;
     private ItemLevelBonusTable? _shieldDefenseRateIncreaseTable;
+    private ItemLevelBonusTable? _runningMovementSpeedTable;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ArmorInitializerBase"/> class.
@@ -44,10 +45,11 @@ public abstract class ArmorInitializerBase : InitializerBase
         this._defenseIncreaseTable = this.CreateItemBonusTable(DefenseIncreaseByLevel, "Defense Increase (Armors)", "Defines the defense increase per item level for armors. It's 3 per item level until level 9, then it's always 1 more for each level.");
         this._shieldDefenseIncreaseTable = this.CreateItemBonusTable(ShieldDefenseIncreaseByLevel, "Defense Increase (Shields)", "Defines the defense increase per item level for shields. It's always 1 per item level.");
         this._shieldDefenseRateIncreaseTable = this.CreateItemBonusTable(DefenseIncreaseByLevel, "Defense Rate Increase (Shields)", "Defines the defense rate increase per item level for shields. It's 3 per item level until level 9, then it's always 1 more for each level.");
+        this._runningMovementSpeedTable = this.CreateRunningMovementSpeedTable();
     }
 
     /// <summary>
-    /// Builds the <see cref="ItemSetGroup"/> for whole sets..
+    /// Builds the <see cref="ItemSetGroup"/> for whole sets.
     /// </summary>
     protected void BuildSets()
     {
@@ -206,6 +208,7 @@ public abstract class ArmorInitializerBase : InitializerBase
             gloves.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.AttackSpeedAny, attackSpeed, AggregateType.AddRaw));
         }
 
+        this.AddRunningMovementSpeed(gloves, Stats.MovementSpeedUnderwater);
         return gloves;
     }
 
@@ -236,6 +239,7 @@ public abstract class ArmorInitializerBase : InitializerBase
             gloves.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.AttackSpeedAny, attackSpeed, AggregateType.AddRaw));
         }
 
+        this.AddRunningMovementSpeed(gloves, Stats.MovementSpeedUnderwater);
         return gloves;
     }
 
@@ -265,6 +269,7 @@ public abstract class ArmorInitializerBase : InitializerBase
             boots.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.WalkSpeed, walkSpeed, AggregateType.AddRaw));
         }
 
+        this.AddRunningMovementSpeed(boots, Stats.MovementSpeed);
         return boots;
     }
 
@@ -299,11 +304,12 @@ public abstract class ArmorInitializerBase : InitializerBase
             boots.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.WalkSpeed, walkSpeed, AggregateType.AddRaw));
         }
 
+        this.AddRunningMovementSpeed(boots, Stats.MovementSpeed);
         return boots;
     }
 
     /// <summary>
-    /// Creates an armor.
+    /// Creates armor.
     /// </summary>
     /// <param name="number">The item number.</param>
     /// <param name="slot">The equipment slot.</param>
@@ -333,7 +339,7 @@ public abstract class ArmorInitializerBase : InitializerBase
     }
 
     /// <summary>
-    /// Creates an armor.
+    /// Creates armor.
     /// </summary>
     /// <param name="number">The item number.</param>
     /// <param name="slot">The equipment slot.</param>
@@ -411,6 +417,31 @@ public abstract class ArmorInitializerBase : InitializerBase
 
         armor.SetGuid(armor.Group, armor.Number);
         return armor;
+    }
+
+    private void AddRunningMovementSpeed(ItemDefinition item, AttributeDefinition targetAttribute)
+    {
+        var powerUp = this.CreateItemBasePowerUpDefinition(targetAttribute, 0, AggregateType.Maximum);
+        powerUp.BonusPerLevelTable = this._runningMovementSpeedTable;
+        item.BasePowerUpAttributes.Add(powerUp);
+    }
+
+    private ItemLevelBonusTable CreateRunningMovementSpeedTable()
+    {
+        var table = this.Context.CreateNew<ItemLevelBonusTable>();
+        this.GameConfiguration.ItemLevelBonusTables.Add(table);
+        table.Name = "Running Movement Speed";
+        table.Description = "Defines the running movement speed for boots and underwater gloves from item level 5.";
+
+        for (int level = MovementSpeedConstants.RunningGearMinimumLevel; level <= this.MaximumArmorLevel; level++)
+        {
+            var levelBonus = this.Context.CreateNew<LevelBonus>();
+            levelBonus.Level = level;
+            levelBonus.AdditionalValue = MovementSpeedConstants.RunningGearMovementSpeed;
+            table.BonusPerLevel.Add(levelBonus);
+        }
+
+        return table;
     }
 
     private IncreasableItemOption BuildDefenseBonusOption(float bonus, short level)
