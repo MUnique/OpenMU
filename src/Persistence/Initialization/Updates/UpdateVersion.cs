@@ -426,17 +426,32 @@ public enum UpdateVersion
     AddRandomExperienceConfigAttributesSeason6 = 83,
 
     /// <summary>
+    /// The version of the <see cref="AddMovementSpeedAttributesPlugIn075"/>.
+    /// </summary>
+    AddMovementSpeedAttributes075 = 84,
+
+    /// <summary>
+    /// The version of the <see cref="AddMovementSpeedAttributesPlugIn095D"/>.
+    /// </summary>
+    AddMovementSpeedAttributes095d = 85,
+
+    /// <summary>
+    /// The version of the <see cref="AddMovementSpeedAttributesPlugInSeason6"/>.
+    /// </summary>
+    AddMovementSpeedAttributesSeason6 = 86,
+
+    /// <summary>
     /// The version of the <see cref="FinishDarkKnightMasterTreePlugIn075"/>.
     /// </summary>
-    FinishDarkKnightMasterTree075 = 84,
+    FinishDarkKnightMasterTree075 = 87,
 
     /// <summary>
     /// The version of the <see cref="FinishDarkKnightMasterTreePlugIn095D"/>.
     /// </summary>
-    FinishDarkKnightMasterTree095d = 85,
+    FinishDarkKnightMasterTree095d = 88,
 
     /// <summary>
     /// The version of the <see cref="FinishDarkKnightMasterTreePlugInSeason6"/>.
     /// </summary>
-    FinishDarkKnightMasterTreeSeason6 = 86,
+    FinishDarkKnightMasterTreeSeason6 = 89,
 }
