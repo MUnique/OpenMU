@@ -57,6 +57,7 @@ public class LifeSwellProficiencyEffectInitializer : InitializerBase
             powerUpCopy.TargetAttribute = powerUp.TargetAttribute!.GetPersistent(this.GameConfiguration);
             powerUpCopy.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
             powerUpCopy.Boost.ConstantValue.Value = powerUp.Boost!.ConstantValue.Value;
+            powerUpCopy.Boost.MaximumValue = powerUp.Boost.MaximumValue;
 
             foreach (var boostRelatedValue in powerUp.Boost.RelatedValues)
             {

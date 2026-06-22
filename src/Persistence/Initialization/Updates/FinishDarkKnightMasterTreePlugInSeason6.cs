@@ -102,7 +102,7 @@ public class FinishDarkKnightMasterTreePlugInSeason6 : FinishDarkKnightMasterTre
         }
 
         // Restore iced effect (revert bug)
-        if (gameConfiguration.MagicEffects.First(e => e.Number == (short)MagicEffectNumber.Iced && e.Chance is { }) is { } originalIced)
+        if (gameConfiguration.MagicEffects.FirstOrDefault(e => e.Number == (short)MagicEffectNumber.Iced && e.Chance is { }) is { } originalIced)
         {
             originalIced.Chance = null;
         }
@@ -253,6 +253,7 @@ public class FinishDarkKnightMasterTreePlugInSeason6 : FinishDarkKnightMasterTre
             powerUpCopy.TargetAttribute = powerUp.TargetAttribute!.GetPersistent(gameConfiguration);
             powerUpCopy.Boost = context.CreateNew<PowerUpDefinitionValue>();
             powerUpCopy.Boost.ConstantValue.Value = powerUp.Boost!.ConstantValue.Value;
+            powerUpCopy.Boost.MaximumValue = powerUp.Boost.MaximumValue;
 
             foreach (var boostRelatedValue in powerUp.Boost.RelatedValues)
             {
