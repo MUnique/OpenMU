@@ -287,11 +287,11 @@ internal abstract class SkillsInitializerBase : InitializerBase
 
             if (effectNumber == MagicEffectNumber.Cold)
             {
-                powerUpDefinition.Boost.ConstantValue.Value = MovementSpeedConstants.ColdMovementSpeedFactor;
+                movementSpeedFactorPowerUp.Boost.ConstantValue.Value = MovementSpeedConstants.ColdMovementSpeedFactor;
             }
             else
             {
-                powerUpDefinition.Boost.ConstantValue.Value = MovementSpeedConstants.IcedMovementSpeedFactor;
+                movementSpeedFactorPowerUp.Boost.ConstantValue.Value = MovementSpeedConstants.IcedMovementSpeedFactor;
             }
         }
 

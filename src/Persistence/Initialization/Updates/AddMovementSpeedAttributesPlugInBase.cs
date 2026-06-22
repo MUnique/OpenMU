@@ -350,11 +350,11 @@ public abstract class AddMovementSpeedAttributesPlugInBase : UpdatePlugInBase
 
             if (effectNumber == MagicEffectNumber.Cold)
             {
-                powerUpDefinition.Boost.ConstantValue.Value = MovementSpeedConstants.ColdMovementSpeedFactor;
+                movementSpeedFactorPowerUp.Boost.ConstantValue.Value = MovementSpeedConstants.ColdMovementSpeedFactor;
             }
             else
             {
-                powerUpDefinition.Boost.ConstantValue.Value = MovementSpeedConstants.IcedMovementSpeedFactor;
+                movementSpeedFactorPowerUp.Boost.ConstantValue.Value = MovementSpeedConstants.IcedMovementSpeedFactor;
             }
         }
 
