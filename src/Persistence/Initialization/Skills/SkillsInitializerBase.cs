@@ -282,9 +282,17 @@ internal abstract class SkillsInitializerBase : InitializerBase
             var movementSpeedFactorPowerUp = this.Context.CreateNew<PowerUpDefinition>();
             effect.PowerUpDefinitions.Add(movementSpeedFactorPowerUp);
             movementSpeedFactorPowerUp.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-            movementSpeedFactorPowerUp.Boost.ConstantValue.Value = MovementSpeedConstants.IcedMovementSpeedFactor;
             movementSpeedFactorPowerUp.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
             movementSpeedFactorPowerUp.TargetAttribute = Stats.MovementSpeedFactor.GetPersistent(this.GameConfiguration);
+
+            if (effectNumber == MagicEffectNumber.Cold)
+            {
+                powerUpDefinition.Boost.ConstantValue.Value = MovementSpeedConstants.ColdMovementSpeedFactor;
+            }
+            else
+            {
+                powerUpDefinition.Boost.ConstantValue.Value = MovementSpeedConstants.IcedMovementSpeedFactor;
+            }
         }
 
         if (chance > 0)

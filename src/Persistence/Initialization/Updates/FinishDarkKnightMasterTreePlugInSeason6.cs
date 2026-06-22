@@ -107,6 +107,13 @@ public class FinishDarkKnightMasterTreePlugInSeason6 : FinishDarkKnightMasterTre
             originalIced.Chance = null;
         }
 
+        // Remove existing cold effect
+        var existingColdEffect = gameConfiguration.MagicEffects.FirstOrDefault(e => e.Number == (short)MagicEffectNumber.Cold);
+        if (existingColdEffect is not null)
+        {
+            gameConfiguration.MagicEffects.Remove(existingColdEffect);
+        }
+
         // Create chain drive cold effect
         var chainDriveCold = this.CreateEffect(context, gameConfiguration, ElementalType.Ice, MagicEffectNumber.Cold, Stats.IsIced, 10, 0.4f);
         if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.ChainDrive) is { } chainDrive)
@@ -288,6 +295,23 @@ public class FinishDarkKnightMasterTreePlugInSeason6 : FinishDarkKnightMasterTre
         powerUpDefinition.Boost = context.CreateNew<PowerUpDefinitionValue>();
         powerUpDefinition.Boost.ConstantValue.Value = 1;
         powerUpDefinition.TargetAttribute = targetAttribute.GetPersistent(gameConfiguration);
+        if (targetAttribute == Stats.IsIced)
+        {
+            var movementSpeedFactorPowerUp = context.CreateNew<PowerUpDefinition>();
+            effect.PowerUpDefinitions.Add(movementSpeedFactorPowerUp);
+            movementSpeedFactorPowerUp.Boost = context.CreateNew<PowerUpDefinitionValue>();
+            movementSpeedFactorPowerUp.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
+            movementSpeedFactorPowerUp.TargetAttribute = Stats.MovementSpeedFactor.GetPersistent(gameConfiguration);
+
+            if (effectNumber == MagicEffectNumber.Cold)
+            {
+                powerUpDefinition.Boost.ConstantValue.Value = MovementSpeedConstants.ColdMovementSpeedFactor;
+            }
+            else
+            {
+                powerUpDefinition.Boost.ConstantValue.Value = MovementSpeedConstants.IcedMovementSpeedFactor;
+            }
+        }
 
         if (chance > 0)
         {
