@@ -37,6 +37,23 @@ public static class AttackableExtensions
     }
 
     /// <summary>
+    /// Determines whether an attack is blocked because the target or the player attacker is in a safezone.
+    /// </summary>
+    /// <param name="target">The attack target.</param>
+    /// <param name="attacker">The attacker.</param>
+    /// <returns><c>true</c>, if the attack is blocked; otherwise, <c>false</c>.</returns>
+    public static bool IsAttackBlockedBySafezone(this IAttackable target, IAttacker attacker)
+    {
+        if (target.IsAtSafezone())
+        {
+            return true;
+        }
+
+        var attackerPlayer = attacker as Player ?? (attacker as IPlayerSurrogate)?.Owner;
+        return attackerPlayer?.IsAtSafezone() is true;
+    }
+
+    /// <summary>
     /// Calculates the damage using a skill.
     /// </summary>
     /// <param name="attacker">The object that is attacking.</param>
@@ -426,12 +443,11 @@ public static class AttackableExtensions
     /// <param name="target">The target.</param>
     /// <param name="attacker">The attacker.</param>
     /// <param name="skill">The skill.</param>
-    /// <param name="powerUp">The power up.</param>
+    /// <param name="powerUps">The power ups.</param>
     /// <param name="duration">The duration.</param>
-    /// <param name="targetAttribute">The target attribute.</param>
     /// <param name="hitInfo">The hit information.</param>
     /// <returns>The success of the appliance.</returns>
-    public static async ValueTask<bool> TryApplyElementalEffectsAsync(this IAttackable target, IAttacker attacker, Skill skill, IElement? powerUp, IElement? duration, AttributeDefinition? targetAttribute, HitInfo? hitInfo)
+    public static async ValueTask<bool> TryApplyElementalEffectsAsync(this IAttackable target, IAttacker attacker, Skill skill, IReadOnlyCollection<(AttributeDefinition Target, IElement Boost)> powerUps, IElement? duration, HitInfo? hitInfo)
     {
         if (!target.IsAlive)
         {
@@ -454,12 +470,11 @@ public static class AttackableExtensions
 
         if (skill.MagicEffectDef is { } effectDefinition
             && !target.MagicEffectList.ActiveEffects.ContainsKey(effectDefinition.Number)
-            && powerUp is not null
             && duration is not null
-            && targetAttribute is not null)
+            && powerUps.Count > 0)
         {
             // power-up is the wrong term here... it's more like a power-down ;-)
-            await target.ApplyMagicEffectAsync(attacker, effectDefinition, duration, hitInfo, (targetAttribute, powerUp)).ConfigureAwait(false);
+            await target.ApplyMagicEffectAsync(attacker, effectDefinition, duration, hitInfo, [.. powerUps]).ConfigureAwait(false);
             applied = true;
         }
 

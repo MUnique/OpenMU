@@ -16,7 +16,6 @@ using Nito.AsyncEx.Synchronous;
 public sealed class Walker : IDisposable
 {
     private readonly ISupportWalk _walkSupporter;
-    private readonly Func<TimeSpan> _stepDelay;
     private readonly Queue<WalkingStep> _nextSteps = new(5);
 
     /// <summary>
@@ -39,10 +38,10 @@ public sealed class Walker : IDisposable
     /// </summary>
     /// <param name="walkSupporter">The walk supporter.</param>
     /// <param name="stepDelay">The delay between performing a step.</param>
-    public Walker(ISupportWalk walkSupporter, Func<TimeSpan> stepDelay)
+    public Walker(ISupportWalk walkSupporter, Func<WalkingStep?, TimeSpan> stepDelay)
     {
         this._walkSupporter = walkSupporter;
-        this._stepDelay = stepDelay;
+        this.StepDelay = stepDelay;
         this._walkLock = new AsyncReaderWriterLock();
     }
 
@@ -50,6 +49,8 @@ public sealed class Walker : IDisposable
     /// Gets the current walk target.
     /// </summary>
     public Point CurrentTarget { get; private set; }
+
+    private Func<WalkingStep?, TimeSpan> StepDelay { get; }
 
     /// <summary>
     /// Initializes a new walk to the specified target with the specified steps.
@@ -180,15 +181,23 @@ public sealed class Walker : IDisposable
 
     private async Task WalkLoopAsync(CancellationToken cancellationToken)
     {
-        var delay = this._stepDelay().Subtract(TimeSpan.FromMilliseconds(50));
-
         // Task.Delay might take longer than we specify. We need to compensate that.
         var lastOffset = TimeSpan.Zero;
         while (!cancellationToken.IsCancellationRequested)
         {
             var sw = Stopwatch.StartNew();
-            await this.WalkStepAsync(cancellationToken).ConfigureAwait(false);
+            var step = await this.WalkStepAsync(cancellationToken).ConfigureAwait(false);
+            if (step is null)
+            {
+                if (!cancellationToken.IsCancellationRequested)
+                {
+                    await this.StopAsync().ConfigureAwait(false);
+                }
 
+                continue;
+            }
+
+            var delay = this.StepDelay(step);
             var nextDelay = delay - lastOffset;
             if (nextDelay > TimeSpan.Zero)
             {
@@ -207,14 +216,14 @@ public sealed class Walker : IDisposable
     /// <summary>
     /// Performs the next step of a walk.
     /// </summary>
-    private async ValueTask WalkStepAsync(CancellationToken cancellationToken)
+    private async ValueTask<WalkingStep?> WalkStepAsync(CancellationToken cancellationToken)
     {
         try
         {
             if (this._isDisposed)
             {
                 Debug.WriteLine("walker already disposed");
-                return;
+                return null;
             }
 
             bool stop;
@@ -226,13 +235,13 @@ public sealed class Walker : IDisposable
             if (stop)
             {
                 await this.StopAsync().ConfigureAwait(false);
-                return;
+                return null;
             }
 
             // Update new coords
             using (await this._walkLock.WriterLockAsync(cancellationToken))
             {
-                this.WalkNextStepIfStepAvailable();
+                return this.WalkNextStepIfStepAvailable();
             }
         }
         catch (OperationCanceledException)
@@ -243,13 +252,15 @@ public sealed class Walker : IDisposable
         {
             Debug.Fail(ex.Message, ex.StackTrace);
         }
+
+        return null;
     }
 
-    private void WalkNextStepIfStepAvailable()
+    private WalkingStep? WalkNextStepIfStepAvailable()
     {
         if (this.ShouldWalkerStop())
         {
-            return;
+            return null;
         }
 
         var nextStep = this._nextSteps.Dequeue();
@@ -259,6 +270,8 @@ public sealed class Walker : IDisposable
         {
             rotatable.Rotation = nextStep.Direction;
         }
+
+        return nextStep;
     }
 
     private bool ShouldWalkerStop() => !((this._walkSupporter as IAttackable)?.IsActive() ?? false) || this._nextSteps.Count <= 0;
