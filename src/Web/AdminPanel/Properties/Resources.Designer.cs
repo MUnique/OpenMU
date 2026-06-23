@@ -68,7 +68,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("About", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Accounts.
         /// </summary>
@@ -77,7 +77,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("Accounts", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Action.
         /// </summary>
@@ -86,7 +86,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("Action", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Actions.
         /// </summary>
@@ -95,7 +95,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("Actions", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Activate.
         /// </summary>
@@ -104,7 +104,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("Activate", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Active Offline Player.
         /// </summary>
@@ -113,7 +113,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("ActiveOfflinePlayer", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Add New.
         /// </summary>
@@ -122,7 +122,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("AddNew", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Admin Users.
         /// </summary>
@@ -131,7 +131,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("AdminUsers", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to All.
         /// </summary>
@@ -140,7 +140,16 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("All", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to All Game Servers.
+        /// </summary>
+        public static string AllGameServers {
+            get {
+                return ResourceManager.GetString("AllGameServers", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to An error occurred while processing your request.
         /// </summary>
@@ -149,7 +158,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("AnErrorOccurredWhileProcessingYourRequest", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Applying updates ....
         /// </summary>
@@ -158,7 +167,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("ApplyingUpdates", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Apply selected updates.
         /// </summary>
@@ -167,7 +176,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("ApplySelectedUpdates", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to available updates.
         /// </summary>
@@ -176,7 +185,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("AvailableUpdates", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Back.
         /// </summary>
@@ -185,7 +194,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("Back", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Cancel.
         /// </summary>
@@ -194,7 +203,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("Cancel", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Can&apos;t connect to the database. Probably not created yet..
         /// </summary>
@@ -203,7 +212,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("CantConnectToTheDatabaseProbablyNotCreatedYet", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Change password.
         /// </summary>
@@ -212,7 +221,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("ChangePassword", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Character.
         /// </summary>
@@ -221,7 +230,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("Character", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Character classes.
         /// </summary>
@@ -230,7 +239,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("CharacterClasses", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The connection server configuration has been saved. Initializing connect server ....
         /// </summary>
@@ -239,7 +248,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("ConnectionServerConfigurationSaved", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Connect Server.
         /// </summary>
@@ -248,7 +257,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("ConnectServer", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Couldn&apos;t find &apos;{0}&apos; to delete..
         /// </summary>
@@ -257,7 +266,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("CouldNotFindToDelete", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Couldn&apos;t find &apos;{0}&apos; to duplicate..
         /// </summary>
@@ -266,7 +275,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("CouldNotFindToDuplicate", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Could not load the map data. Check the logs for details..
         /// </summary>
@@ -275,7 +284,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("CouldNotLoadMapDataCheckTheLogs", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Create.
         /// </summary>
@@ -284,7 +293,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("Create", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Create Connect Server.
         /// </summary>
@@ -293,7 +302,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("CreateConnectServer", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to New object successfully created..
         /// </summary>
@@ -302,7 +311,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("CreatedSuccessfully", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Create Game Server.
         /// </summary>
@@ -311,7 +320,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("CreateGameServer", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Create User.
         /// </summary>
@@ -320,7 +329,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("CreateUser", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Creating Configuration ....
         /// </summary>
@@ -329,7 +338,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("CreatingConfigurationInfo", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Current State.
         /// </summary>
@@ -338,7 +347,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("CurrentState", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Database status.
         /// </summary>
@@ -347,7 +356,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("DatabaseStatus", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Deactivate.
         /// </summary>
@@ -356,7 +365,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("Deactivate", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Delete.
         /// </summary>
@@ -365,7 +374,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("Delete", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Couldn&apos;t delete &apos;{0}&apos;, probably because it&apos;s referenced by another object. For details, see log.
         /// </summary>
@@ -374,7 +383,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("DeleteFailedReferenced", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to &lt;strong&gt;The Development environment shouldn&apos;t be enabled for deployed applications.&lt;/strong&gt;
         ///    It can result in displaying sensitive information from exceptions to end users.
@@ -386,7 +395,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("DevelopmentEnvironmentWarning", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Development Mode.
         /// </summary>
@@ -395,7 +404,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("DevelopmentMode", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Discard changes.
         /// </summary>
@@ -404,7 +413,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("DiscardChanges", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Disconnect.
         /// </summary>
@@ -413,7 +422,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("Disconnect", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Download as JSON.
         /// </summary>
@@ -422,7 +431,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("DownloadAsJson", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Drop item groups.
         /// </summary>
@@ -431,7 +440,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("DropItemGroups", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Duplicate.
         /// </summary>
@@ -440,7 +449,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("Duplicate", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Duplicated &apos;{0}&apos; successfully..
         /// </summary>
@@ -449,7 +458,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("DuplicatedSuccessfully", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Edit.
         /// </summary>
@@ -458,7 +467,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("Edit", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Error.
         /// </summary>
@@ -467,7 +476,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("Error", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Error duplicating &apos;{0}&apos;: {1}.
         /// </summary>
@@ -476,7 +485,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("ErrorDuplicating", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Extension Point.
         /// </summary>
@@ -485,7 +494,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("ExtensionPoint", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Failed, context not initialized.
         /// </summary>
@@ -494,7 +503,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("FailedByUninitializedContext", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Failed to clone &apos;{0}&apos;..
         /// </summary>
@@ -503,7 +512,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("FailedToClone", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to File name.
         /// </summary>
@@ -512,7 +521,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("FileName", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Finished! Have fun :).
         /// </summary>
@@ -521,7 +530,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("FinishedHaveFun", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to First, close all connections to the server..
         /// </summary>
@@ -530,7 +539,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("FirstCloseAllConnectionsToTheServer", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Full configuration.
         /// </summary>
@@ -539,7 +548,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("FullConfiguration", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Game clients.
         /// </summary>
@@ -548,7 +557,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("GameClients", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Game configuration.
         /// </summary>
@@ -557,7 +566,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("GameConfiguration", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Game maps.
         /// </summary>
@@ -566,7 +575,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("GameMaps", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Game Server.
         /// </summary>
@@ -575,7 +584,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("GameServer", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The game server configuration has been saved. Initializing game server ....
         /// </summary>
@@ -584,7 +593,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("GameServerConfigurationSavedInfo", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Game server count.
         /// </summary>
@@ -593,7 +602,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("GameServerCount", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to General.
         /// </summary>
@@ -602,7 +611,43 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("General", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Global Message.
+        /// </summary>
+        public static string GlobalMessage {
+            get {
+                return ResourceManager.GetString("GlobalMessage", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to No running game server to send the message to..
+        /// </summary>
+        public static string GlobalMessageNoTarget {
+            get {
+                return ResourceManager.GetString("GlobalMessageNoTarget", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to send the message to {0}: {1}.
+        /// </summary>
+        public static string GlobalMessageSendFailed {
+            get {
+                return ResourceManager.GetString("GlobalMessageSendFailed", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Message sent..
+        /// </summary>
+        public static string GlobalMessageSent {
+            get {
+                return ResourceManager.GetString("GlobalMessageSent", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Hide entry form.
         /// </summary>
@@ -611,7 +656,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("HideEntryForm", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Home.
         /// </summary>
@@ -620,7 +665,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("Home", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to How many game servers do you want?.
         /// </summary>
@@ -629,7 +674,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("HowManyGameServersQuestion", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Initialized game version.
         /// </summary>
@@ -638,7 +683,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("InitializedGameVersion", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Initializing Connect Server ....
         /// </summary>
@@ -647,7 +692,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("InitializingConnectServerInfo", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Initializing Game Server ....
         /// </summary>
@@ -656,7 +701,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("InitializingGameServerInfo", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Installing, please wait ....
         /// </summary>
@@ -665,7 +710,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("InstallingPleaseWait", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Items.
         /// </summary>
@@ -674,7 +719,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("Items", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Jewel mixes.
         /// </summary>
@@ -683,7 +728,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("JewelMixes", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Last update.
         /// </summary>
@@ -692,7 +737,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("LastUpdate", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Live Map.
         /// </summary>
@@ -701,7 +746,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("LiveMap", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Loading ....
         /// </summary>
@@ -710,7 +755,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("Loading", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Could not load the data. Check the logs for details..
         /// </summary>
@@ -719,7 +764,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("LoadingErrorCheckLog", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Log Files.
         /// </summary>
@@ -728,7 +773,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("LogFiles", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Logs.
         /// </summary>
@@ -737,7 +782,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("Logs", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Major.
         /// </summary>
@@ -746,7 +791,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("MajorVersion", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Mandatory updates are always applied and cannot be deselected..
         /// </summary>
@@ -755,7 +800,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("MandatoryUpdatesAreAlwaysAppliedAndCannotBeDeselected", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Map Editor.
         /// </summary>
@@ -764,7 +809,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("MapEditor", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Merchants.
         /// </summary>
@@ -773,7 +818,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("Merchants", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Merchant stores.
         /// </summary>
@@ -782,7 +827,16 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("MerchantStores", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Enter message....
+        /// </summary>
+        public static string MessagePlaceholder {
+            get {
+                return ResourceManager.GetString("MessagePlaceholder", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Metrics.
         /// </summary>
@@ -791,7 +845,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("Metrics", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Mini games.
         /// </summary>
@@ -800,7 +854,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("MiniGames", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Minor.
         /// </summary>
@@ -809,7 +863,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("MinorVersion", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Monsters.
         /// </summary>
@@ -818,7 +872,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("Monsters", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to New updates for the configuration data are available. You can select the ones which should be applied to your configuration..
         /// </summary>
@@ -827,7 +881,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("NewConfigurationUpdatesAvailable", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to No.
         /// </summary>
@@ -836,7 +890,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("No", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to No changes have been saved..
         /// </summary>
@@ -845,7 +899,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("NoChangesSaved", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to There were no changes to save..
         /// </summary>
@@ -854,7 +908,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("NoChangesToSave", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to No configuration data update available..
         /// </summary>
@@ -863,7 +917,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("NoConfigurationDataUpdateAvailable", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to No initialized data found!.
         /// </summary>
@@ -872,7 +926,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("NoInitializedDataFound", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Not created.
         /// </summary>
@@ -881,7 +935,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("NotCreated", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to OK.
         /// </summary>
@@ -890,7 +944,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("OK", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Online Accounts.
         /// </summary>
@@ -899,7 +953,16 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("OnlineAccounts", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to {0} online.
+        /// </summary>
+        public static string OnlineCount {
+            get {
+                return ResourceManager.GetString("OnlineCount", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to OpenMU AdminPanel.
         /// </summary>
@@ -908,7 +971,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("OpenMUAdminPanel", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Patch.
         /// </summary>
@@ -917,7 +980,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("Patch", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Patch-Address.
         /// </summary>
@@ -926,7 +989,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("PatchAddress", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Patch-Version.
         /// </summary>
@@ -935,7 +998,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("PatchVersion", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Players.
         /// </summary>
@@ -944,7 +1007,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("PlayerCount", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Please, first install the database updates on the setup page..
         /// </summary>
@@ -953,7 +1016,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("PleaseFirstInstallTheDatabaseUpdatesOnTheSetupPage", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Please restart the connect and game server containers..
         /// </summary>
@@ -962,7 +1025,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("PleaseRestartTheConnectAndGameServerContainers", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Plugin Name.
         /// </summary>
@@ -971,7 +1034,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("PluginName", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Plugins.
         /// </summary>
@@ -980,7 +1043,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("Plugins", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Plugin Type.
         /// </summary>
@@ -989,7 +1052,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("PluginType", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Refresh.
         /// </summary>
@@ -998,7 +1061,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("Refresh", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Re-install.
         /// </summary>
@@ -1007,7 +1070,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("ReInstall", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Are you sure? All the current data is getting deleted and freshly installed..
         /// </summary>
@@ -1016,7 +1079,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("ReinstallConfirmation", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Reload.
         /// </summary>
@@ -1025,7 +1088,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("Reload", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Reload configuration and restart all Game Servers.
         /// </summary>
@@ -1034,7 +1097,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("ReloadConfigurationAndRestartAllGameServers", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Remove.
         /// </summary>
@@ -1043,7 +1106,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("Remove", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Remove Server.
         /// </summary>
@@ -1052,7 +1115,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("RemoveServer", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Save.
         /// </summary>
@@ -1061,7 +1124,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("Save", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Save changes.
         /// </summary>
@@ -1070,7 +1133,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("SaveChanges", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The changes have been saved..
         /// </summary>
@@ -1079,7 +1142,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("SavedChanges", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Saving Configuration ....
         /// </summary>
@@ -1088,7 +1151,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("SavingConfigurationInfo", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Search.
         /// </summary>
@@ -1097,7 +1160,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("Search", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to seconds.
         /// </summary>
@@ -1106,7 +1169,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("Seconds", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Select the game version.
         /// </summary>
@@ -1115,7 +1178,16 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("SelectTheGameVersion", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Send.
+        /// </summary>
+        public static string Send {
+            get {
+                return ResourceManager.GetString("Send", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Server control.
         /// </summary>
@@ -1124,7 +1196,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("ServerControl", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The server will be deleted from the database. Are you sure to proceed?.
         /// </summary>
@@ -1133,7 +1205,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("ServerDeleteProceedQuestion", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Server-ID.
         /// </summary>
@@ -1142,7 +1214,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("ServerID", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Server Name.
         /// </summary>
@@ -1151,7 +1223,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("ServerName", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Servers.
         /// </summary>
@@ -1160,7 +1232,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("Servers", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Server with Id {0} already exists. Please use another value..
         /// </summary>
@@ -1169,7 +1241,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("ServerWithIdAlreadyExists", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to A server with tcp port {0} already exists. Please use another tcp port..
         /// </summary>
@@ -1178,7 +1250,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("ServerWithPortAlreadyExists", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Setup.
         /// </summary>
@@ -1187,7 +1259,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("Setup", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Show entry form.
         /// </summary>
@@ -1196,7 +1268,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("ShowEntryForm", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Size.
         /// </summary>
@@ -1205,7 +1277,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("Size", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Skills.
         /// </summary>
@@ -1214,7 +1286,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("Skills", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Socket {0}.
         /// </summary>
@@ -1223,7 +1295,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("SocketNumber", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Start.
         /// </summary>
@@ -1232,7 +1304,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("Start", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Started At.
         /// </summary>
@@ -1241,7 +1313,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("StartedAt", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Start install.
         /// </summary>
@@ -1250,7 +1322,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("StartInstall", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Stop.
         /// </summary>
@@ -1259,7 +1331,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("Stop", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Swapping to &lt;strong&gt;Development&lt;/strong&gt; environment will display more detailed information about the error that occurred..
         /// </summary>
@@ -1268,7 +1340,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("SwappingToDevForMoreInformation", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to System.
         /// </summary>
@@ -1277,7 +1349,16 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("System", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Target.
+        /// </summary>
+        public static string Target {
+            get {
+                return ResourceManager.GetString("Target", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Do you want test accounts?.
         /// </summary>
@@ -1286,7 +1367,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("TestAccountsQuestion", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The updates require a restart of the server process to take effect..
         /// </summary>
@@ -1295,7 +1376,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("TheUpdatesRequireARestartOfTheServerProcessToTakeEffect", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Total Players.
         /// </summary>
@@ -1304,7 +1385,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("TotalPlayers", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Tracing.
         /// </summary>
@@ -1313,7 +1394,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("Tracing", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Type &apos;{0}&apos; does not support cloning..
         /// </summary>
@@ -1322,7 +1403,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("TypeDoesNotSupportCloning", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to An unexpected error occurred: {0}. See logs for more details..
         /// </summary>
@@ -1331,7 +1412,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("UnexpectedErrorCheckLogs", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to An unexpected error occurred: {0}..
         /// </summary>
@@ -1340,7 +1421,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("UnexpectedErrorOccurred", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to An unhandled error has occurred..
         /// </summary>
@@ -1349,7 +1430,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("UnhandledErrorOccurred", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to There are unsaved changes. Are you sure you want to discard them?.
         /// </summary>
@@ -1358,7 +1439,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("UnsavedChangesQuestion", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Update.
         /// </summary>
@@ -1367,7 +1448,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("Update", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Update Failed!.
         /// </summary>
@@ -1376,7 +1457,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("UpdateFailed", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Update required.
         /// </summary>
@@ -1385,7 +1466,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("UpdateRequired", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Updates.
         /// </summary>
@@ -1394,7 +1475,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("Updates", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Updating....
         /// </summary>
@@ -1403,7 +1484,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("Updating", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Up-to-date.
         /// </summary>
@@ -1412,7 +1493,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("UpToDate", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Users.
         /// </summary>
@@ -1421,7 +1502,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("Users", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Warp list.
         /// </summary>
@@ -1430,7 +1511,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("WarpList", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Welcome to the admin panel of OpenMU..
         /// </summary>
@@ -1439,7 +1520,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("WelcomeMessage", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Yes.
         /// </summary>
@@ -1448,7 +1529,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("Yes", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Yes, create test accounts.
         /// </summary>
