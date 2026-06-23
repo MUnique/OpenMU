@@ -317,7 +317,7 @@ public class Pets : InitializerBase
 
         fenrirOptionDefinition.PossibleOptions.Add(this.CreateRelatedPetOption(ItemOptionTypes.GoldFenrir, 4, Stats.MaximumHealth, AggregateType.AddFinal, ItemOptionDefinitionNumbers.Fenrir, 0, (Stats.TotalLevel, 0.5f)));
         fenrirOptionDefinition.PossibleOptions.Add(this.CreateRelatedPetOption(ItemOptionTypes.GoldFenrir, 4, Stats.MaximumMana, AggregateType.AddFinal, ItemOptionDefinitionNumbers.Fenrir, 0, (Stats.TotalLevel, 0.5f)));
-        fenrirOptionDefinition.PossibleOptions.Add(this.CreateRelatedPetOption(ItemOptionTypes.GoldFenrir, 4, Stats.PhysicalBaseDmg, AggregateType.AddRaw, ItemOptionDefinitionNumbers.Fenrir, 0, (Stats.TotalLevel, 1f / 12f)));
+        fenrirOptionDefinition.PossibleOptions.Add(this.CreateRelatedPetOption(ItemOptionTypes.GoldFenrir, 4, Stats.PhysicalBaseDmg, AggregateType.AddFinal, ItemOptionDefinitionNumbers.Fenrir, 0, (Stats.TotalLevel, 1f / 12f)));
         fenrirOptionDefinition.PossibleOptions.Add(this.CreateRelatedPetOption(ItemOptionTypes.GoldFenrir, 4, Stats.WizardryBaseDmg, AggregateType.AddRaw, ItemOptionDefinitionNumbers.Fenrir, 0, (Stats.TotalLevel, 1f / 25f)));
 
         fenrir.PossibleItemOptions.Add(fenrirOptionDefinition);
