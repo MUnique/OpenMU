@@ -26,6 +26,9 @@ using MUnique.OpenMU.PlugIns;
 [TestFixture]
 public class MoveItemActionTests
 {
+    /// <summary>
+    /// Verifies that a complete stack move consumes the source item.
+    /// </summary>
     [Test]
     public async ValueTask CompleteStackConsumesSourceItemAsync()
     {
@@ -47,6 +50,9 @@ public class MoveItemActionTests
         Assert.That(player.Inventory.ItemStorage.Items.Count(i => ReferenceEquals(i, target)), Is.EqualTo(1));
     }
 
+    /// <summary>
+    /// Verifies that completing a stack and relogging keeps a single persisted item.
+    /// </summary>
     [Test]
     public async ValueTask CompleteStackAndRelogKeepsSinglePersistedItemAsync()
     {
@@ -76,6 +82,9 @@ public class MoveItemActionTests
         Assert.That(player.Inventory.Items.Count(i => i.Definition == definition), Is.EqualTo(1));
     }
 
+    /// <summary>
+    /// Verifies that a failed move to an occupied slot keeps the source at its original slot.
+    /// </summary>
     [Test]
     public async ValueTask FailedMoveToOccupiedSlotKeepsSourceAtOriginalSlotAsync()
     {
@@ -94,6 +103,9 @@ public class MoveItemActionTests
         Assert.That(player.Inventory.GetItem(21), Is.Null);
     }
 
+    /// <summary>
+    /// Verifies that a failed vault to inventory move keeps the item in the vault.
+    /// </summary>
     [Test]
     public async ValueTask FailedVaultToInventoryMoveKeepsItemInVaultAsync()
     {
@@ -112,6 +124,9 @@ public class MoveItemActionTests
         Assert.That(player.Inventory!.GetItem(20), Is.Null);
     }
 
+    /// <summary>
+    /// Verifies that a move to a slot outside grid bounds is rejected without mutation.
+    /// </summary>
     [Test]
     public async ValueTask MoveToSlotOutsideGridBoundsIsRejectedWithoutMutationAsync()
     {
@@ -128,6 +143,9 @@ public class MoveItemActionTests
         Assert.That(source.ItemSlot, Is.EqualTo(20));
     }
 
+    /// <summary>
+    /// Verifies that a move request in an invalid player state is rejected without mutation.
+    /// </summary>
     [Test]
     public async ValueTask MoveRequestInInvalidPlayerStateIsRejectedWithoutMutationAsync()
     {
@@ -143,6 +161,9 @@ public class MoveItemActionTests
         Assert.That(player.Inventory.GetItem(22), Is.Null);
     }
 
+    /// <summary>
+    /// Verifies that a move to trade storage outside of a trade is rejected without mutation.
+    /// </summary>
     [Test]
     public async ValueTask MoveToTradeStorageOutsideTradeIsRejectedWithoutMutationAsync()
     {
@@ -157,6 +178,9 @@ public class MoveItemActionTests
         Assert.That(player.TemporaryStorage!.Items, Does.Not.Contain(source));
     }
 
+    /// <summary>
+    /// Verifies that a move request when the trade button is pressed is rejected without mutation.
+    /// </summary>
     [Test]
     public async ValueTask MoveRequestInTradeButtonPressedStateIsRejectedWithoutMutationAsync()
     {
@@ -186,6 +210,9 @@ public class MoveItemActionTests
         Assert.That(trader1.TemporaryStorage!.GetItem(1), Is.Null);
     }
 
+    /// <summary>
+    /// Verifies that logging out and back in after an inventory to vault move keeps a single persisted copy.
+    /// </summary>
     [Test]
     public async ValueTask LogoutAndRelogAfterInventoryToVaultMoveKeepsSinglePersistedCopyAsync()
     {

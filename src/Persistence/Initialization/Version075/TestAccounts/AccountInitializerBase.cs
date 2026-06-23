@@ -238,6 +238,10 @@ internal abstract class AccountInitializerBase : InitializerBase
         inventory.Items.Add(this.CreateAlcohol(31));
     }
 
+    /// <summary>
+    /// Adds scrolls to the inventory.
+    /// </summary>
+    /// <param name="inventory">The inventory.</param>
     protected void AddScrolls(ItemStorage inventory)
     {
         inventory.Items.Add(this.CreateScroll(32, 0)); // Scroll of Poison

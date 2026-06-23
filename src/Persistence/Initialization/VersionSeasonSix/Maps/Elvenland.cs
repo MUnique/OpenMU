@@ -14,10 +14,14 @@ using MUnique.OpenMU.Persistence.Initialization.Skills;
 /// </summary>
 internal class Elvenland : BaseMapInitializer
 {
-    /// <inheritdoc/>
+    /// <summary>
+    /// The Number of the Map.
+    /// </summary>
     public static readonly byte Number = 51;
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// The Name of the Map.
+    /// </summary>
     private static readonly string Name = "Elvenland";
 
     /// <summary>

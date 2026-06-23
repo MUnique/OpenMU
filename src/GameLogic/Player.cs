@@ -413,7 +413,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public uint CurrentHealth => (uint)(this.Attributes?[Stats.CurrentHealth] ?? 0);
 
     /// <summary>
-    /// Gets or sets a value indicating whether this player is online as friend, and shown as online in its friends friendlists.
+    /// Gets or sets a value indicating whether this player is online as a friend and shown as online in its friends friendlists.
     /// </summary>
     public bool OnlineAsFriend { get; set; } = true;
 
@@ -483,7 +483,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public Bucket<ILocateable>? OldBucket { get; set; }
 
     /// <summary>
-    /// Gets or sets the mini game, which the player has currently entered.
+    /// Gets or sets the mini-game, which the player has currently entered.
     /// </summary>
     public MiniGameContext? CurrentMiniGame { get; set; }
 
@@ -513,8 +513,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             if (this._petCommandManager is null
                 && this.Inventory?.GetItem(InventoryConstants.RightHandSlot) is { } pet && pet.IsTrainablePet())
             {
-                // Since the Raven is currently the only pet which can attack, we directly use it.
-                // However, in the future we might use a factory as strategy plugin here which creates the command manager
+                // Since the Raven is currently the only pet that can attack, we directly use it.
+                // However, in the future we might use a factory as a strategy plugin here which creates the command manager
                 // depending on the actual pet.
                 this._petCommandManager = new RavenCommandManager(this, pet);
             }
@@ -606,9 +606,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
-    /// Will be called when an item has been picked up by player.
+    /// Will be called when an item has been picked up by a player.
     /// </summary>
-    /// <param name="item">The item, which the player has picked up.</param>
+    /// <param name="item">The item that the player has picked up.</param>
     public async ValueTask OnPickedUpItemAsync(ILocateable item)
     {
         if (this.PlayerPickedUpItem is { } eventHandler)
@@ -650,10 +650,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
-    /// Determines whether the self defense is active for any attacker.
+    /// Determines whether the self-defense is active for any attacker.
     /// </summary>
     /// <returns>
-    ///   <c>true</c> if any self defense is active; otherwise, <c>false</c>.
+    ///   <c>true</c> if any self-defense is active; otherwise, <c>false</c>.
     /// </returns>
     public bool IsAnySelfDefenseActive()
     {
@@ -902,7 +902,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     /// <summary>
     /// Is called after the player killed a <see cref="Monster"/>.
-    /// Adds recovered mana and health to the players attributes.
+    /// Adds recovered mana and health to the player attributes.
     /// </summary>
     public async ValueTask AfterKilledMonsterAsync()
     {
@@ -939,10 +939,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
-    /// Tries to remove the money from the players inventory.
+    /// Tries to remove the money from the player inventory.
     /// </summary>
-    /// <param name="value">The value which should be removed.</param>
-    /// <returns><c>True</c>, if the players inventory had enough money to remove; Otherwise, <c>false</c>.</returns>
+    /// <param name="value">The value that should be removed.</param>
+    /// <returns><c>True</c>, if the player inventory had enough money to remove; Otherwise, <c>false</c>.</returns>
     public bool TryRemoveMoney(int value)
     {
         if (this.Money < value)
@@ -955,10 +955,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
-    /// Tries to deposit the money from the players inventory.
+    /// Tries to deposit the money from the player inventory.
     /// </summary>
-    /// <param name="value">The value which should be moved the the vault.</param>
-    /// <returns><c>True</c>, if the players inventory had enough money to move; Otherwise, <c>false</c>.</returns>
+    /// <param name="value">The value that should be retrieved from the vault.</param>
+    /// <returns><c>True</c>, if the player inventory had enough money to move; Otherwise, <c>false</c>.</returns>
     public bool TryDepositVaultMoney(int value)
     {
         if (this.Vault is null)
@@ -980,9 +980,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
-    /// Tries to take the money from the the vault.
+    /// Tries to take the money from the vault.
     /// </summary>
-    /// <param name="value">The value which should be retrieve the the vault.</param>
+    /// <param name="value">The value that should be retrieved from the vault.</param>
     /// <returns><c>True</c>, if the vault had enough money to move and player inventory isn't maximum; Otherwise, <c>false</c>.</returns>
     public bool TryTakeVaultMoney(int value)
     {
@@ -1005,10 +1005,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
-    /// Tries to add the money from the players inventory.
+    /// Tries to add the money from the player inventory.
     /// </summary>
-    /// <param name="value">The value which should be added.</param>
-    /// <returns><c>True</c>, if the players inventory had space to add money; Otherwise, <c>false</c>.</returns>
+    /// <param name="value">The value that should be added.</param>
+    /// <returns><c>True</c>, if the player inventory had space to add money; Otherwise, <c>false</c>.</returns>
     public virtual bool TryAddMoney(int value)
     {
         if (this.Money + value > this.GameContext?.Configuration?.MaximumInventoryMoney)
@@ -1123,7 +1123,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         if (this.ViewPlugIns.GetPlugIn<IRespawnAfterDeathPlugIn>() is { } respawnPlugIn)
         {
-            // Older clients use separate packet for the respawn, while newer don't.
+            // Older clients use a separate packet for the respawn, while newer don't.
             // It requires a slightly different logic.
             this.CurrentMap = await this.GameContext.GetMapAsync(this.SelectedCharacter!.CurrentMap!.Number.ToUnsigned()).ConfigureAwait(false) ?? throw new InvalidOperationException("Current map not found.");
             await respawnPlugIn.RespawnAsync().ConfigureAwait(false);
@@ -1143,11 +1143,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
-    /// Signals that the game client of the player is ready after a map change (data has been loaded etc).
-    /// On this event, the player enters the game map on the server side, and interacts with the other objects.
+    /// Signals that the game client of the player is ready after a map change (data has been loaded etc.).
+    /// In this event, the player enters the game map on the server side and interacts with the other objects.
     /// </summary>
     /// <remarks>
-    /// This method is called after the client sent us the F3 12 packet, of after
+    /// This method is called after the client sent us the F3 12 packet, or after
     /// the player entered the game.
     /// </remarks>
     public async ValueTask ClientReadyAfterMapChangeAsync()
@@ -1270,108 +1270,15 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         await this.AddMasterExperienceCoreAsync(experience, killedObject).ConfigureAwait(false);
     }
 
-    private async ValueTask AddMasterExperienceCoreAsync(int experience, IAttackable? killedObject)
-    {
-        if (this.Attributes![Stats.MasterLevel] >= this.GameContext.Configuration.MaximumMasterLevel)
-        {
-            await this.InvokeViewPlugInAsync<IAddExperiencePlugIn>(p => p.AddExperienceAsync(0, killedObject, ExperienceType.MaxMasterLevelReached)).ConfigureAwait(false);
-            return;
-        }
-
-        if (killedObject is not null && killedObject.Attributes[Stats.Level] < this.GameContext.Configuration.MinimumMonsterLevelForMasterExperience)
-        {
-            await this.InvokeViewPlugInAsync<IAddExperiencePlugIn>(p => p.AddExperienceAsync(0, killedObject, ExperienceType.MonsterLevelTooLowForMasterExperience)).ConfigureAwait(false);
-            return;
-        }
-
-        long exp = experience;
-
-        // Add the Exp
-        bool lvlup = false;
-        var expTable = this.GameContext.MasterExperienceTable;
-        if (expTable[(int)this.Attributes[Stats.MasterLevel] + 1] - this.SelectedCharacter!.MasterExperience < exp)
-        {
-            exp = expTable[(int)this.Attributes[Stats.MasterLevel] + 1] - this.SelectedCharacter.MasterExperience;
-            lvlup = true;
-        }
-
-        this.SelectedCharacter.MasterExperience += exp;
-
-        // Tell it to the Player
-        await this.InvokeViewPlugInAsync<IAddExperiencePlugIn>(p => p.AddExperienceAsync((int)exp, killedObject, ExperienceType.Master)).ConfigureAwait(false);
-
-        // Check the lvl up
-        if (lvlup)
-        {
-            this.Attributes[Stats.MasterLevel]++;
-            this.SelectedCharacter.MasterLevelUpPoints += (int)this.Attributes[Stats.MasterPointsPerLevelUp];
-            this.SetReclaimableAttributesToMaximum();
-            this.Logger.LogDebug("Character {0} leveled up to master level {1}", this.SelectedCharacter.Name, this.Attributes[Stats.MasterLevel]);
-            await this.InvokeViewPlugInAsync<IUpdateLevelPlugIn>(p => p.UpdateMasterLevelAsync()).ConfigureAwait(false);
-            await this.ForEachWorldObserverAsync<IShowEffectPlugIn>(p => p.ShowEffectAsync(this, IShowEffectPlugIn.EffectType.LevelUp), true).ConfigureAwait(false);
-        }
-    }
-
     /// <summary>
     /// Adds the experience to the current character.
     /// </summary>
-    /// <param name="experience">The experience which should be added.</param>
-    /// <param name="killedObject">The killed object which caused the experience gain.</param>
+    /// <param name="experience">The experience that should be added.</param>
+    /// <param name="killedObject">The killed object that caused the experience gain.</param>
     public async ValueTask AddExperienceAsync(int experience, IAttackable? killedObject)
     {
         using var d = await this._experienceLock.LockAsync().ConfigureAwait(false);
         await this.AddExperienceCoreAsync(experience, killedObject).ConfigureAwait(false);
-    }
-
-    private async ValueTask AddExperienceCoreAsync(int experience, IAttackable? killedObject)
-    {
-        var remainingExperience = experience;
-        while (remainingExperience > 0)
-        {
-            if (this.Attributes![Stats.Level] >= this.GameContext.Configuration.MaximumLevel)
-            {
-                await this.InvokeViewPlugInAsync<IAddExperiencePlugIn>(p => p.AddExperienceAsync(0, killedObject, ExperienceType.MaxLevelReached)).ConfigureAwait(false);
-                return;
-            }
-
-            long gainedExperience = remainingExperience;
-            bool isLevelUp = false;
-            var expTable = this.GameContext.ExperienceTable;
-            var expForNextLevel = expTable[(int)this.Attributes[Stats.Level] + 1];
-            if (expForNextLevel - this.SelectedCharacter!.Experience < gainedExperience)
-            {
-                gainedExperience = expForNextLevel - this.SelectedCharacter.Experience;
-                isLevelUp = true;
-            }
-
-            this.SelectedCharacter.Experience += gainedExperience;
-
-            // Tell it to the Player
-            await this.InvokeViewPlugInAsync<IAddExperiencePlugIn>(p => p.AddExperienceAsync((int)gainedExperience, killedObject, ExperienceType.Normal)).ConfigureAwait(false);
-
-            if (!isLevelUp)
-            {
-                return;
-            }
-
-            this.Attributes[Stats.Level]++;
-            this.SelectedCharacter.LevelUpPoints += (int)this.Attributes[Stats.PointsPerLevelUp];
-            this.SetReclaimableAttributesToMaximum();
-            this.Logger.LogDebug("Character {0} leveled up to {1}", this.SelectedCharacter.Name, this.Attributes[Stats.Level]);
-
-            this.GameContext.PlugInManager.GetPlugInPoint<ICharacterLevelUpPlugIn>()?.CharacterLeveledUp(this);
-
-            await this.InvokeViewPlugInAsync<IUpdateLevelPlugIn>(p => p.UpdateLevelAsync()).ConfigureAwait(false);
-            await this.ForEachWorldObserverAsync<IShowEffectPlugIn>(p => p.ShowEffectAsync(this, IShowEffectPlugIn.EffectType.LevelUp), true).ConfigureAwait(false);
-
-            remainingExperience -= (int)gainedExperience;
-            if (remainingExperience <= 0
-                || this.Attributes[Stats.Level] >= this.GameContext.Configuration.MaximumLevel
-                || this.GameContext.Configuration.PreventExperienceOverflow)
-            {
-                return;
-            }
-        }
     }
 
     /// <summary>
@@ -1477,8 +1384,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 if (r.CurrentAttribute == Stats.CurrentShield && !this.IsAtSafezone() &&
                     attributes[Stats.ShieldRecoveryEverywhere] < 1)
                 {
-                    // Shield recovery is only possible at safe-zone, except the character has an specific attribute which has the effect that it's recovered everywhere.
-                    // This attribute is usually provided by a level 380 armor and a Guardian Option.
+                    // Shield recovery is only possible at safe-zone, except the character has a specific attribute which has the effect that it's recovered everywhere.
+                    // This attribute is usually provided by level 380 armor and a Guardian Option.
                     continue;
                 }
 
@@ -1493,7 +1400,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
         catch (InvalidOperationException)
         {
-            // may happen after a character disconnected in the mean time.
+            // May happen after a character disconnected in the meantime.
         }
         catch (Exception ex)
         {
@@ -1548,7 +1455,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return;
         }
 
-        using var _ = await this.ObserverLock.WriterLockAsync();
+        using var l = await this.ObserverLock.WriterLockAsync();
         this.Observers.Add(observer);
         if (this.Party is not null
             && observer is Player observingPlayer
@@ -1562,7 +1469,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <inheritdoc/>
     public async ValueTask RemoveObserverAsync(IWorldObserver observer)
     {
-        using var _ = await this.ObserverLock.WriterLockAsync();
+        using var l = await this.ObserverLock.WriterLockAsync();
         this.Observers.Remove(observer);
         if (this.Party is not null
             && observer is Player observingPlayer
@@ -1741,7 +1648,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// Creates the magic effect power up for the given definition.
     /// </summary>
     /// <param name="magicEffectDefinition">The definition for a magic effect.</param>
-    /// <returns></returns>
+    /// <returns>A tuple containing the duration element and the power-up elements.</returns>
     public (IElement DurationInSeconds, (AttributeDefinition Target, IElement BuffPowerUp)[] PowerUps) CreateMagicEffectPowerUp(MagicEffectDefinition magicEffectDefinition)
     {
         ArgumentNullException.ThrowIfNull(magicEffectDefinition);
@@ -1921,6 +1828,63 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         return true;
     }
 
+    /// <summary>
+    /// Is called after the player killed a <see cref="Player"/>.
+    /// Increment PK Level.
+    /// </summary>
+    /// <param name="killedPlayer">The player killed.</param>
+    internal async ValueTask AfterKilledPlayerAsync(Player killedPlayer)
+    {
+        if (this.DuelRoom?.State == DuelState.DuelStarted)
+        {
+            return;
+        }
+
+        var killedPlayerState = killedPlayer.SelectedCharacter?.State;
+        if (killedPlayerState is null)
+        {
+            return;
+        }
+
+        if (killedPlayerState >= HeroState.PlayerKiller1stStage)
+        {
+            // Killing PKs is allowed.
+            return;
+        }
+
+        if (killedPlayerState <= HeroState.PlayerKillWarning
+            && this.IsSelfDefenseActive(killedPlayer))
+        {
+            // Self-defense is allowed.
+            return;
+        }
+
+        // Killing a rival guild member (hostility) is allowed without PK penalty.
+        if (this.GuildStatus is { } killerStatus
+            && killedPlayer.GuildStatus is { } killedStatus
+            && this.GameContext is IGameServerContext serverContext
+            && serverContext.AreGuildsRival(killerStatus.GuildId, killedStatus.GuildId))
+        {
+            return;
+        }
+
+        if (this._selectedCharacter!.State != HeroState.PlayerKiller2ndStage)
+        {
+            if (this._selectedCharacter.State < HeroState.Normal)
+            {
+                this._selectedCharacter.State = HeroState.PlayerKillWarning;
+            }
+            else
+            {
+                this._selectedCharacter.State++;
+            }
+        }
+
+        this._selectedCharacter.StateRemainingSeconds += (int)TimeSpan.FromHours(1).TotalSeconds;
+        this._selectedCharacter.PlayerKillCount += 1;
+        await this.ForEachWorldObserverAsync<IUpdateCharacterHeroStatePlugIn>(o => o.UpdateCharacterHeroStateAsync(this), true).ConfigureAwait(false);
+    }
+
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore()
     {
@@ -1956,12 +1920,101 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
-    /// Creates the view plug in container.
+    /// Creates the view plugin container.
     /// </summary>
-    /// <returns>The created view plug in container.</returns>
+    /// <returns>The created view plugin container.</returns>
     protected virtual ICustomPlugInContainer<IViewPlugIn> CreateViewPlugInContainer()
     {
         throw new NotImplementedException("CreateViewPlugInContainer must be overwritten in derived classes.");
+    }
+
+    private async ValueTask AddMasterExperienceCoreAsync(int experience, IAttackable? killedObject)
+    {
+        if (this.Attributes![Stats.MasterLevel] >= this.GameContext.Configuration.MaximumMasterLevel)
+        {
+            await this.InvokeViewPlugInAsync<IAddExperiencePlugIn>(p => p.AddExperienceAsync(0, killedObject, ExperienceType.MaxMasterLevelReached)).ConfigureAwait(false);
+            return;
+        }
+
+        if (killedObject is not null && killedObject.Attributes[Stats.Level] < this.GameContext.Configuration.MinimumMonsterLevelForMasterExperience)
+        {
+            await this.InvokeViewPlugInAsync<IAddExperiencePlugIn>(p => p.AddExperienceAsync(0, killedObject, ExperienceType.MonsterLevelTooLowForMasterExperience)).ConfigureAwait(false);
+            return;
+        }
+
+        long exp = experience;
+
+        bool lvlup = false;
+        var expTable = this.GameContext.MasterExperienceTable;
+        if (expTable[(int)this.Attributes[Stats.MasterLevel] + 1] - this.SelectedCharacter!.MasterExperience < exp)
+        {
+            exp = expTable[(int)this.Attributes[Stats.MasterLevel] + 1] - this.SelectedCharacter.MasterExperience;
+            lvlup = true;
+        }
+
+        this.SelectedCharacter.MasterExperience += exp;
+
+        await this.InvokeViewPlugInAsync<IAddExperiencePlugIn>(p => p.AddExperienceAsync((int)exp, killedObject, ExperienceType.Master)).ConfigureAwait(false);
+
+        if (lvlup)
+        {
+            this.Attributes[Stats.MasterLevel]++;
+            this.SelectedCharacter.MasterLevelUpPoints += (int)this.Attributes[Stats.MasterPointsPerLevelUp];
+            this.SetReclaimableAttributesToMaximum();
+            this.Logger.LogDebug("Character {0} leveled up to master level {1}", this.SelectedCharacter.Name, this.Attributes[Stats.MasterLevel]);
+            await this.InvokeViewPlugInAsync<IUpdateLevelPlugIn>(p => p.UpdateMasterLevelAsync()).ConfigureAwait(false);
+            await this.ForEachWorldObserverAsync<IShowEffectPlugIn>(p => p.ShowEffectAsync(this, IShowEffectPlugIn.EffectType.LevelUp), true).ConfigureAwait(false);
+        }
+    }
+
+    private async ValueTask AddExperienceCoreAsync(int experience, IAttackable? killedObject)
+    {
+        var remainingExperience = experience;
+        while (remainingExperience > 0)
+        {
+            if (this.Attributes![Stats.Level] >= this.GameContext.Configuration.MaximumLevel)
+            {
+                await this.InvokeViewPlugInAsync<IAddExperiencePlugIn>(p => p.AddExperienceAsync(0, killedObject, ExperienceType.MaxLevelReached)).ConfigureAwait(false);
+                return;
+            }
+
+            long gainedExperience = remainingExperience;
+            bool isLevelUp = false;
+            var expTable = this.GameContext.ExperienceTable;
+            var expForNextLevel = expTable[(int)this.Attributes[Stats.Level] + 1];
+            if (expForNextLevel - this.SelectedCharacter!.Experience < gainedExperience)
+            {
+                gainedExperience = expForNextLevel - this.SelectedCharacter.Experience;
+                isLevelUp = true;
+            }
+
+            this.SelectedCharacter.Experience += gainedExperience;
+
+            await this.InvokeViewPlugInAsync<IAddExperiencePlugIn>(p => p.AddExperienceAsync((int)gainedExperience, killedObject, ExperienceType.Normal)).ConfigureAwait(false);
+
+            if (!isLevelUp)
+            {
+                return;
+            }
+
+            this.Attributes[Stats.Level]++;
+            this.SelectedCharacter.LevelUpPoints += (int)this.Attributes[Stats.PointsPerLevelUp];
+            this.SetReclaimableAttributesToMaximum();
+            this.Logger.LogDebug("Character {0} leveled up to {1}", this.SelectedCharacter.Name, this.Attributes[Stats.Level]);
+
+            this.GameContext.PlugInManager.GetPlugInPoint<ICharacterLevelUpPlugIn>()?.CharacterLeveledUp(this);
+
+            await this.InvokeViewPlugInAsync<IUpdateLevelPlugIn>(p => p.UpdateLevelAsync()).ConfigureAwait(false);
+            await this.ForEachWorldObserverAsync<IShowEffectPlugIn>(p => p.ShowEffectAsync(this, IShowEffectPlugIn.EffectType.LevelUp), true).ConfigureAwait(false);
+
+            remainingExperience -= (int)gainedExperience;
+            if (remainingExperience <= 0
+                || this.Attributes[Stats.Level] >= this.GameContext.Configuration.MaximumLevel
+                || this.GameContext.Configuration.PreventExperienceOverflow)
+            {
+                return;
+            }
+        }
     }
 
     /// <summary>
@@ -2085,7 +2138,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
             if (this.TemporaryStorage is not { ItemStorage.Items.Count: > 0 } temporaryStorage)
             {
-                // nothing to restore.
+                // Nothing to restore.
                 return;
             }
 
@@ -2134,7 +2187,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             currentCharacter.StateRemainingSeconds -= (int)Math.Round(secondsSinceLastRegenerate);
             if (currentCharacter.StateRemainingSeconds <= 0)
             {
-                // Change the status
+                // Change the status.
                 if (currentCharacter.State > HeroState.Normal)
                 {
                     currentCharacter.State--;
@@ -2145,7 +2198,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 }
                 else
                 {
-                    // State is already Normal, no change needed
+                    // State is already Normal, no change needed.
                 }
 
                 await this.ForEachWorldObserverAsync<IUpdateCharacterHeroStatePlugIn>(p => p.UpdateCharacterHeroStateAsync(this), true).ConfigureAwait(false);
@@ -2394,7 +2447,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     /// <summary>
     /// Called when this player is in a duel and was killed.
-    /// Sets the player back to its starting position and reclaims the attributes,
+    /// Sets the player back to its starting position and reclaims the attributes
     /// so that they're ready for the next round.
     /// </summary>
     private async ValueTask RespawnOfDuelPartnerIfInDuelAsync()
@@ -2410,62 +2463,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
     }
 
-    /// <summary>
-    /// Is called after the player killed a <see cref="Player"/>.
-    /// Increment PK Level.
-    /// </summary>
-    internal async ValueTask AfterKilledPlayerAsync(Player killedPlayer)
-    {
-        if (this.DuelRoom?.State == DuelState.DuelStarted)
-        {
-            return;
-        }
-
-        var killedPlayerState = killedPlayer.SelectedCharacter?.State;
-        if (killedPlayerState is null)
-        {
-            return;
-        }
-
-        if (killedPlayerState >= HeroState.PlayerKiller1stStage)
-        {
-            // Killing PKs is allowed.
-            return;
-        }
-
-        if (killedPlayerState <= HeroState.PlayerKillWarning
-            && this.IsSelfDefenseActive(killedPlayer))
-        {
-            // Self defense is allowed.
-            return;
-        }
-
-        // Killing a rival guild member (hostility) is allowed without PK penalty.
-        if (this.GuildStatus is { } killerStatus
-            && killedPlayer.GuildStatus is { } killedStatus
-            && this.GameContext is IGameServerContext serverContext
-            && serverContext.AreGuildsRival(killerStatus.GuildId, killedStatus.GuildId))
-        {
-            return;
-        }
-
-        if (this._selectedCharacter!.State != HeroState.PlayerKiller2ndStage)
-        {
-            if (this._selectedCharacter.State < HeroState.Normal)
-            {
-                this._selectedCharacter.State = HeroState.PlayerKillWarning;
-            }
-            else
-            {
-                this._selectedCharacter.State++;
-            }
-        }
-
-        this._selectedCharacter.StateRemainingSeconds += (int)TimeSpan.FromHours(1).TotalSeconds;
-        this._selectedCharacter.PlayerKillCount += 1;
-        await this.ForEachWorldObserverAsync<IUpdateCharacterHeroStatePlugIn>(o => o.UpdateCharacterHeroStateAsync(this), true).ConfigureAwait(false);
-    }
-
     private SkillComboDefinition? DetermineComboDefinition()
     {
         var characterClass = this.SelectedCharacter!.CharacterClass;
@@ -2477,7 +2474,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 return comboDefinition;
             }
 
-            // Check previous class
+            // Check previous class.
             characterClass = this.GameContext.Configuration.CharacterClasses.FirstOrDefault(c => c.NextGenerationClass == characterClass);
         }
 
@@ -2518,7 +2515,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
-    /// Adds the missing stat attributes, e.g. after the character class has been changed outside of the game.
+    /// Adds the missing stat attributes, e.g., after the character class has been changed outside the game.
     /// </summary>
     private void AddMissingStatAttributes()
     {
@@ -2596,7 +2593,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             await this.InvokeViewPlugInAsync<IMuHelperConfigurationUpdatePlugIn>(p => p.UpdateMuHelperConfigurationAsync(muHelperConfiguration)).ConfigureAwait(false);
         }
 
-        // Add GM mark (mu logo above character's head)
+        // Add GM mark (mu logo above character's head).
         if (selectedCharacter.CharacterStatus == CharacterStatus.GameMaster)
         {
             await this.MagicEffectList.AddEffectAsync(new MagicEffect(
@@ -2604,7 +2601,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             GMEffect)).ConfigureAwait(false);
         }
 
-        // Restore previously opened Store
+        // Restore previously opened Store.
         if (selectedCharacter.IsStoreOpened
             && !string.IsNullOrWhiteSpace(selectedCharacter.StoreName)
             && this.IsPlayerStoreOpeningAfterEnterSupported)
@@ -2662,7 +2659,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     /// <summary>
     /// Sets the reclaimable attributes before a character enters the game.
-    /// Current shield and mana is set to their maximum values.
+    /// Current shield and mana are set to their maximum values.
     /// Current ability starts at the half of the maximum (as at the original server).
     /// The current health value was restored from the previous session and is not set to the maximum value - it's just limited by the maximum value.
     /// </summary>
@@ -2828,18 +2825,16 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         Item? GetTrainablePet(byte inventorySlot)
         {
-#pragma warning disable SA1513 // Closing brace should be followed by blank line
-            if (this.Inventory?.GetItem(inventorySlot) is
-                {
-                    Definition.PetExperienceFormula: not null,
-                    Definition.MaximumItemLevel: > 0,
-                    Durability: > 0
-                } pet
+            var pet = this.Inventory?.GetItem(inventorySlot);
+            if (pet is not null
+                && pet.Definition is not null
+                && pet.Definition.PetExperienceFormula is not null
+                && pet.Definition.MaximumItemLevel > 0
+                && pet.Durability > 0
                 && pet.Level < pet.Definition.MaximumItemLevel)
             {
                 return pet;
             }
-#pragma warning restore SA1513 // Closing brace should be followed by blank line
 
             return null;
         }

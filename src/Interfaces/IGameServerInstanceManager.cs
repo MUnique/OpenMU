@@ -13,7 +13,6 @@ public interface IGameServerInstanceManager
     /// Restarts all servers of this container.
     /// </summary>
     /// <param name="onDatabaseInit">If set to <c>true</c>, this method is called during a database initialization.</param>
-    /// <returns></returns>
     ValueTask RestartAllAsync(bool onDatabaseInit);
 
     /// <summary>

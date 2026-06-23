@@ -1,4 +1,4 @@
-﻿// <copyright file="Weapons.cs" company="MUnique">
+// <copyright file="Weapons.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -229,11 +229,30 @@ internal class Weapons : InitializerBase
     /// <param name="knightClass">The knight class.</param>
     /// <param name="elfClass">The elf class.</param>
     /// <param name="isAmmunition">If set to <c>true</c>, the item is ammunition for a weapon.</param>
-    protected void CreateWeapon(byte @group, byte number, byte slot, int skillNumber, byte width, byte height,
-        bool dropsFromMonsters, string name, byte dropLevel, int minimumDamage, int maximumDamage, int attackSpeed,
-        byte durability, int magicPower, int levelRequirement, int strengthRequirement, int agilityRequirement,
-        int energyRequirement, int vitalityRequirement,
-        int wizardClass, int knightClass, int elfClass, bool isAmmunition = false)
+    protected void CreateWeapon(
+        byte @group,
+        byte number,
+        byte slot,
+        int skillNumber,
+        byte width,
+        byte height,
+        bool dropsFromMonsters,
+        string name,
+        byte dropLevel,
+        int minimumDamage,
+        int maximumDamage,
+        int attackSpeed,
+        byte durability,
+        int magicPower,
+        int levelRequirement,
+        int strengthRequirement,
+        int agilityRequirement,
+        int energyRequirement,
+        int vitalityRequirement,
+        int wizardClass,
+        int knightClass,
+        int elfClass,
+        bool isAmmunition = false)
     {
         var item = this.Context.CreateNew<ItemDefinition>();
         this.GameConfiguration.Items.Add(item);

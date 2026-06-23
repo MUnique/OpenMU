@@ -1,4 +1,4 @@
-﻿// <copyright file="QuestDefinitionExtensions.cs" company="MUnique">
+// <copyright file="QuestDefinitionExtensions.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -81,9 +81,16 @@ internal static class QuestDefinitionExtensions
     /// <param name="hasLuck">if set to <c>true</c> [has luck].</param>
     /// <param name="hasSkill">if set to <c>true</c> [has skill].</param>
     /// <returns>This quest definition.</returns>
-    public static QuestDefinition WithItemReward(this QuestDefinition questDefinition, int itemGroup,
-        int itemNumber, IContext context, GameConfiguration gameConfiguration,
-        byte itemLevel = 0, int itemOption = 0, bool hasLuck = false, bool hasSkill = false)
+    public static QuestDefinition WithItemReward(
+        this QuestDefinition questDefinition,
+        int itemGroup,
+        int itemNumber,
+        IContext context,
+        GameConfiguration gameConfiguration,
+        byte itemLevel = 0,
+        int itemOption = 0,
+        bool hasLuck = false,
+        bool hasSkill = false)
     {
         var reward = context.CreateNew<QuestReward>();
         reward.RewardType = QuestRewardType.Item;
@@ -131,9 +138,18 @@ internal static class QuestDefinitionExtensions
     /// <param name="hasSkill">If set to <c>true</c>, the item must have skill.</param>
     /// <param name="itemCount">The item count, default 1.</param>
     /// <returns>This quest definition.</returns>
-    public static QuestDefinition WithItemRequirement(this QuestDefinition questDefinition, int itemGroup,
-        int itemNumber, IContext context, GameConfiguration gameConfiguration, byte durability = 0, byte itemLevel = 0,
-        int itemOption = 0, bool hasLuck = false, bool hasSkill = false, byte itemCount = 1)
+    public static QuestDefinition WithItemRequirement(
+        this QuestDefinition questDefinition,
+        int itemGroup,
+        int itemNumber,
+        IContext context,
+        GameConfiguration gameConfiguration,
+        byte durability = 0,
+        byte itemLevel = 0,
+        int itemOption = 0,
+        bool hasLuck = false,
+        bool hasSkill = false,
+        byte itemCount = 1)
     {
         var requirement = context.CreateNew<QuestItemRequirement>();
         requirement.MinimumNumber = itemCount;

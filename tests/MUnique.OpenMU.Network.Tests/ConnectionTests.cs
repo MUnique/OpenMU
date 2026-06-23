@@ -58,7 +58,9 @@ public class ConnectionTests
         _ = connection.BeginReceiveAsync();
         await connection.Output.WriteAsync(malformedData).ConfigureAwait(false);
 
-        Assert.Throws<InvalidPacketHeaderException>(() => duplexPipe.SendPipe.Reader.ReadAsync().GetAwaiter().GetResult());
+        Assert.That(
+            async () => await duplexPipe.SendPipe.Reader.ReadAsync().ConfigureAwait(false),
+            Throws.TypeOf<InvalidPacketHeaderException>());
     }
 
     /// <summary>

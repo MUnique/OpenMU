@@ -17,6 +17,9 @@ using MUnique.OpenMU.Persistence.InMemory;
 /// </summary>
 public class GuildTestBase
 {
+    /// <summary>
+    /// The default guild name used in tests.
+    /// </summary>
     protected const string GuildName = "Foobar";
 
     /// <summary>

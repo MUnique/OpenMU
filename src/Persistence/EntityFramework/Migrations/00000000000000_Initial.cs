@@ -9,6 +9,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
     using System;
     using Microsoft.EntityFrameworkCore.Migrations;
 
+    /// <summary>
+    /// Initial database schema creation.
+    /// </summary>
     public partial class Initial : Migration
     {
         /// <inheritdoc/>

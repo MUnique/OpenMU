@@ -20,6 +20,12 @@ public static class ModelResourceProvider
 
     private static readonly ConcurrentDictionary<Assembly, ResourceManager?> ResourceManagersByAssembly = new();
 
+    /// <summary>
+    /// Gets the localized caption for the specified model type <typeparamref name="TModel"/>.
+    /// </summary>
+    /// <param name="cultureInfo">Optional culture to use. If null, <see cref="CultureInfo.CurrentUICulture"/> is used.</param>
+    /// <typeparam name="TModel">The model type for which to get the caption.</typeparam>
+    /// <returns>The localized caption or a spaced fallback type name.</returns>
     public static string GetTypeCaption<TModel>(CultureInfo? cultureInfo = null)
     {
         return typeof(TModel).GetTypeCaption(cultureInfo);

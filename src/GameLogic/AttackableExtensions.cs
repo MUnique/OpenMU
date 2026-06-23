@@ -129,7 +129,7 @@ public static class AttackableExtensions
 
             if (attacker.Attributes[Stats.HasDoubleWield] > 0)
             {
-                // double wield => 110% dmg (55% + 55%)
+                // Double wield => 110% dmg (55% + 55%).
                 dmg += dmg;
             }
 
@@ -153,7 +153,7 @@ public static class AttackableExtensions
         }
         else
         {
-            // Wizardry, Curse, and Fenrir
+            // Wizardry, Curse, and Fenrir.
             if (isExcellentHit)
             {
                 dmg = (int)((baseMaxDamage * duelDmgDec) - defense);
@@ -235,7 +235,8 @@ public static class AttackableExtensions
                 {
                     multiplier = skillMultiplier;
 
-                    if (skill.Skill!.Number == 265 && !isPvp) // DragonSlasher
+                    // DragonSlasher.
+                    if (skill.Skill!.Number == 265 && !isPvp)
                     {
                         multiplier *= 3;
                     }
@@ -821,7 +822,7 @@ public static class AttackableExtensions
                 maximumBaseDamage = (int)attackerStats[Stats.FenrirBaseDmg] + skillMaximumDamage;
                 break;
             default:
-                // the skill has some other damage type defined that is not applicable to this calculation
+                // The skill has some other damage type defined that is not applicable to this calculation.
                 break;
         }
 
@@ -940,15 +941,20 @@ public static class AttackableExtensions
         {
             int bonusDamage = 0;
 
-            if (attacker.Attributes[Stats.IsSpearEquipped] > 0) // always two-handed
+            // Always two-handed.
+            if (attacker.Attributes[Stats.IsSpearEquipped] > 0)
             {
                 bonusDamage = (int)attacker.Attributes[Stats.SpearBonusDamage];
             }
-            else if (attacker.Attributes[Stats.IsScepterEquipped] > 0) // impossible to double wield
+
+            // Impossible to double wield.
+            else if (attacker.Attributes[Stats.IsScepterEquipped] > 0)
             {
                 bonusDamage = (int)attacker.Attributes[Stats.ScepterStrBonusDamage];
             }
-            else if (attacker.Attributes[Stats.IsGloveWeaponEquipped] > 0) // impossible to double wield
+
+            // Impossible to double wield.
+            else if (attacker.Attributes[Stats.IsGloveWeaponEquipped] > 0)
             {
                 bonusDamage = (int)attacker.Attributes[Stats.GloveWeaponBonusDamage];
             }
@@ -961,7 +967,7 @@ public static class AttackableExtensions
 
                 if (attacker.Attributes[Stats.IsMaceEquipped] > 0)
                 {
-                    // In case of a double wield with different possible bonuses, take the average
+                    // In case of a double wielding with different possible bonuses, take the average.
                     bonusDamage = (int)(bonusDamage == 0
                         ? attacker.Attributes[Stats.MaceBonusDamage]
                         : (bonusDamage + attacker.Attributes[Stats.MaceBonusDamage]) / 2);

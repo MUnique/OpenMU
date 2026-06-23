@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.Web.Shared;
 using System.Collections.Immutable;
 
 /// <summary>
-/// Class which holds the script exports of this project.
+/// Class that holds the script exports of this project.
 /// </summary>
 /// <remarks>
 /// TODO: Instead of a static class, create an interface, so we can inject an instance into the layout.
@@ -15,11 +15,6 @@ using System.Collections.Immutable;
 /// </remarks>
 public static class Exports
 {
-    /// <summary>
-    /// Gets the url prefix to the scripts of this project.
-    /// </summary>
-    private static string Prefix { get; } = $"_content/{typeof(Exports).Namespace}";
-
     /// <summary>
     /// Gets the scripts.
     /// </summary>
@@ -47,8 +42,13 @@ public static class Exports
     {
         get
         {
-            yield return $"{Prefix}/css/shared.css";
-            yield return $"{Prefix}/css/theme.css";
+            yield return $"{GetPrefix()}/css/shared.css";
+            yield return $"{GetPrefix()}/css/theme.css";
         }
     }
+
+    /// <summary>
+    /// Gets the url prefix to the scripts of this project.
+    /// </summary>
+    private static string GetPrefix() => $"_content/{typeof(Exports).Namespace}";
 }

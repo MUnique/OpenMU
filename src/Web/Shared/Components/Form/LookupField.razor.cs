@@ -43,6 +43,9 @@ public partial class LookupField<TObject>
     [Parameter]
     public ILookupController? ExplicitLookupController { get; set; }
 
+    /// <summary>
+    /// Gets or sets the caption factory.
+    /// </summary>
     [Parameter]
     public Func<TObject, string> CaptionFactory { get; set; } = obj => obj.GetName();
 

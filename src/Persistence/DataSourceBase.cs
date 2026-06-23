@@ -44,7 +44,7 @@ public abstract class DataSourceBase<TOwner> : IDataSource<TOwner>
     }
 
     /// <summary>
-    /// Gets the mapping of a <see cref="Type"/> to their <see cref="IEnumerable{T}"/> of the <see cref="TOwner"/>.
+    /// Gets the mapping of a <see cref="Type"/> to their <see cref="IEnumerable{T}"/> of the <typeparamref name="TOwner"/>.
     /// </summary>
     protected abstract IReadOnlyDictionary<Type, Func<TOwner, IEnumerable>> TypeToEnumerables { get; }
 
