@@ -54,7 +54,7 @@ public sealed class OfflinePlayer : Player
                 return false;
             }
 
-            var character = account.Characters.FirstOrDefault(c => c.Name == characterName);
+            var character = account.Characters?.FirstOrDefault(c => c.Name == characterName);
             if (character is null)
             {
                 this.Logger.LogError("Character {CharacterName} not found in account {LoginName}.", characterName, loginName);
@@ -101,15 +101,6 @@ public sealed class OfflinePlayer : Player
         {
             await intelligence.DisposeAsync().ConfigureAwait(false);
             this._intelligence = null;
-        }
-
-        try
-        {
-            await this.SaveProgressAsync().ConfigureAwait(false);
-        }
-        catch (Exception ex)
-        {
-            this.Logger.LogError(ex, "Failed to save progress of offline player {AccountLoginName}.", this.AccountLoginName);
         }
 
         await base.InternalDisconnectAsync().ConfigureAwait(false);

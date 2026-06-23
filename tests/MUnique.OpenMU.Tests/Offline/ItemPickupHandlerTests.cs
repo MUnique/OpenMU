@@ -89,7 +89,7 @@ public class ItemPickupHandlerTests
     }
 
     /// <summary>
-    /// Tests that jewel pickup option only picks up actual jewels.
+    /// Tests that a jewel pickup option only picks up actual jewels.
     /// </summary>
     [Test]
     public async ValueTask PickJewel_PicksUpJewelsOnlyAsync()

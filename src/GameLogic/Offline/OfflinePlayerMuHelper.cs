@@ -116,7 +116,7 @@ public sealed class OfflinePlayerMuHelper : AsyncDisposable
                 await this.SafeTickAsync(this._cts.Token).ConfigureAwait(false);
             }
         }
-        catch (OperationCanceledException)
+        catch (Exception ex) when (ex is OperationCanceledException or ObjectDisposedException)
         {
             // Expected during shutdown.
         }
