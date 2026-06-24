@@ -232,7 +232,7 @@ public sealed class SkillList : ISkillList, IDisposable
 
             if (isDurabilityReductionFactor)
             {
-                this.Value = -1 / 500f;
+                this.Value = -this._skillEntry.Level / 500f;
                 this.AggregateType = AggregateType.AddRaw;
                 this._skillEntry.PropertyChanged += this.OnDurabilityReductionSkillEntryOnPropertyChanged;
             }

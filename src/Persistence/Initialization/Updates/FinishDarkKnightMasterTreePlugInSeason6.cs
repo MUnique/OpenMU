@@ -102,9 +102,16 @@ public class FinishDarkKnightMasterTreePlugInSeason6 : FinishDarkKnightMasterTre
         }
 
         // Restore iced effect (revert bug)
-        if (gameConfiguration.MagicEffects.First(e => e.Number == (short)MagicEffectNumber.Iced && e.Chance is { }) is { } originalIced)
+        if (gameConfiguration.MagicEffects.FirstOrDefault(e => e.Number == (short)MagicEffectNumber.Iced && e.Chance is { }) is { } originalIced)
         {
             originalIced.Chance = null;
+        }
+
+        // Remove existing cold effect
+        var existingColdEffect = gameConfiguration.MagicEffects.FirstOrDefault(e => e.Number == (short)MagicEffectNumber.Cold);
+        if (existingColdEffect is not null)
+        {
+            gameConfiguration.MagicEffects.Remove(existingColdEffect);
         }
 
         // Create chain drive cold effect
@@ -246,6 +253,7 @@ public class FinishDarkKnightMasterTreePlugInSeason6 : FinishDarkKnightMasterTre
             powerUpCopy.TargetAttribute = powerUp.TargetAttribute!.GetPersistent(gameConfiguration);
             powerUpCopy.Boost = context.CreateNew<PowerUpDefinitionValue>();
             powerUpCopy.Boost.ConstantValue.Value = powerUp.Boost!.ConstantValue.Value;
+            powerUpCopy.Boost.MaximumValue = powerUp.Boost.MaximumValue;
 
             foreach (var boostRelatedValue in powerUp.Boost.RelatedValues)
             {
@@ -288,6 +296,23 @@ public class FinishDarkKnightMasterTreePlugInSeason6 : FinishDarkKnightMasterTre
         powerUpDefinition.Boost = context.CreateNew<PowerUpDefinitionValue>();
         powerUpDefinition.Boost.ConstantValue.Value = 1;
         powerUpDefinition.TargetAttribute = targetAttribute.GetPersistent(gameConfiguration);
+        if (targetAttribute == Stats.IsIced)
+        {
+            var movementSpeedFactorPowerUp = context.CreateNew<PowerUpDefinition>();
+            effect.PowerUpDefinitions.Add(movementSpeedFactorPowerUp);
+            movementSpeedFactorPowerUp.Boost = context.CreateNew<PowerUpDefinitionValue>();
+            movementSpeedFactorPowerUp.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
+            movementSpeedFactorPowerUp.TargetAttribute = Stats.MovementSpeedFactor.GetPersistent(gameConfiguration);
+
+            if (effectNumber == MagicEffectNumber.Cold)
+            {
+                movementSpeedFactorPowerUp.Boost.ConstantValue.Value = MovementSpeedConstants.ColdMovementSpeedFactor;
+            }
+            else
+            {
+                movementSpeedFactorPowerUp.Boost.ConstantValue.Value = MovementSpeedConstants.IcedMovementSpeedFactor;
+            }
+        }
 
         if (chance > 0)
         {

@@ -20,7 +20,6 @@ using MUnique.OpenMU.Pathfinding;
 public static class AttackableExtensions
 {
     private const short ExplosionMagicEffectNumber = 75;   // 0x4B
-
     private const short StunnedMagicEffectNumber = 61;     // 0x3D
 
     private static readonly IDictionary<AttributeDefinition, AttributeDefinition> ReductionModifiers =
@@ -29,8 +28,6 @@ public static class AttackableExtensions
             { Stats.CurrentMana, Stats.ManaUsageReduction },
             { Stats.CurrentAbility, Stats.AbilityUsageReduction },
         };
-
-    private static MagicEffectDefinition? stunEffectDefinition;
 
     extension(IAttackable attackable)
     {
@@ -625,7 +622,7 @@ public static class AttackableExtensions
     /// <returns>A task representing the asynchronous operation.</returns>
     public static async ValueTask ApplyMaceMasteryStunEffectAsync(this Player attacker, IAttackable attackable)
     {
-        stunEffectDefinition ??= attacker.GameContext.Configuration.MagicEffects.First(m => m.Number == StunnedMagicEffectNumber);
+        var stunEffectDefinition = attacker.GameContext.Configuration.MagicEffects.First(m => m.Number == StunnedMagicEffectNumber);
         var powerUp = attackable.Attributes.CreateElement(stunEffectDefinition.PowerUpDefinitions.First(pu => pu.TargetAttribute == Stats.IsStunned));
         var magicEffect = new MagicEffect(TimeSpan.FromSeconds(2), stunEffectDefinition, [new MagicEffect.ElementWithTarget(powerUp, Stats.IsStunned)]);
         await attackable.MagicEffectList.AddEffectAsync(magicEffect).ConfigureAwait(false);
