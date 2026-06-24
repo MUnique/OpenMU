@@ -216,6 +216,7 @@ internal partial class {propertyInfo.ReflectedType.Name}
 
 namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
 
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.Persistence;
 using Mapster;
 
@@ -238,6 +239,15 @@ public static class MapsterConfigurator
 
         Mapster.TypeAdapterConfig.GlobalSettings.Default.PreserveReference(true);
         Mapster.TypeAdapterConfig.GlobalSettings.Default.IgnoreMember((member, side) => member.Name.StartsWith(""Raw""));
+        Mapster.TypeAdapterConfig.GlobalSettings.Default.IgnoreMember(
+            (member, side) =>
+            {{
+                static bool ContainsIElement(Type t) =>
+                    typeof(IElement).IsAssignableFrom(t)
+                    || (t.IsArray && t.GetElementType() is {{ }} et && ContainsIElement(et))
+                    || (t.IsGenericType && t.GetGenericArguments().Any(ContainsIElement));
+                return ContainsIElement(member.Type);
+            }});
 
 {configs}
         isConfigured = true;
