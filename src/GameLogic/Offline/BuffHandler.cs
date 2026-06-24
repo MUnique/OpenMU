@@ -127,19 +127,39 @@ public sealed class BuffHandler
     /// <returns>True if the buff was applied.</returns>
     private async ValueTask<bool> TryApplySelfBuffAsync(SkillEntry skillEntry)
     {
-        if (!this.NeedsBuff(this._player, skillEntry))
-        {
-            return false;
-        }
+        bool selfNeeds = this.NeedsBuff(this._player, skillEntry);
+        bool partyNeeds = false;
 
         if (skillEntry.Skill?.Target == SkillTarget.ImplicitParty)
         {
+            if (this._config is { SupportParty: true } && this._player.Party is { } party)
+            {
+                foreach (var member in party.PartyList.OfType<IAttackable>())
+                {
+                    if (member != this._player && this.NeedsPartyBuff(member, skillEntry))
+                    {
+                        partyNeeds = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!selfNeeds && !partyNeeds)
+            {
+                return false;
+            }
+
             var strategy = this._player.GameContext.PlugInManager
                                .GetStrategy<short, ITargetedSkillPlugin>(skillEntry.Skill!.Number)
                            ?? DefaultPlugin;
 
             await strategy.PerformSkillAsync(this._player, this._player, (ushort)skillEntry.Skill.Number).ConfigureAwait(false);
             return true;
+        }
+
+        if (!selfNeeds)
+        {
+            return false;
         }
 
         await this._player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(
