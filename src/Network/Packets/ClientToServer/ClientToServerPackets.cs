@@ -9425,7 +9425,7 @@ public readonly struct TargetedSkill095
 
 
 /// <summary>
-/// Is sent by the client when: A player cancels a specific magic effect of a skill, usually 'Infinity Arrow' and 'Wizardy Enhance'.
+/// Is sent by the client when: A player cancels a specific magic effect of a skill, usually 'Infinity Arrow' and 'Wizardry Enhance'.
 /// Causes reaction on server side: The effect is cancelled and an update is sent to the player and all surrounding players.
 /// </summary>
 public readonly struct MagicEffectCancelRequest

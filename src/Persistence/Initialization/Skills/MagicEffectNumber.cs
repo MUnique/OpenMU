@@ -298,6 +298,7 @@ internal enum MagicEffectNumber : short
 
     /// <summary>
     /// The cold effect caused by skills such as Chain Drive and Strike of Destruction.
+    /// Like <see cref="Iced"/>, it slows down movement, but more so.
     /// </summary>
     Cold = 0x56,
 
@@ -322,14 +323,19 @@ internal enum MagicEffectNumber : short
     DecreaseBlock = 132,
 
     /// <summary>
+    /// The greater fortitude (swell life proficiency) effect.
+    /// </summary>
+    GreaterFortitudeProficiency = 135,
+
+    /// <summary>
     /// The wiz enhance strengthener effect.
     /// </summary>
-    WizEnhance2 = 138,
+    WizEnhanceStrengthener = 138,
 
     /// <summary>
     /// The wiz enhance mastery effect.
     /// </summary>
-    WizEnhance3 = 139,
+    WizEnhanceMastery = 139,
 
     /// <summary>
     /// The critical damage increase mastery effect.

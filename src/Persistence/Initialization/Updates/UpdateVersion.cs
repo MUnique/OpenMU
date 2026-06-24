@@ -439,4 +439,24 @@ public enum UpdateVersion
     /// The version of the <see cref="AddMovementSpeedAttributesPlugInSeason6"/>.
     /// </summary>
     AddMovementSpeedAttributesSeason6 = 86,
+
+    /// <summary>
+    /// The version of the <see cref="FinishDarkKnightMasterTreePlugIn075"/>.
+    /// </summary>
+    FinishDarkKnightMasterTree075 = 87,
+
+    /// <summary>
+    /// The version of the <see cref="FinishDarkKnightMasterTreePlugIn095D"/>.
+    /// </summary>
+    FinishDarkKnightMasterTree095d = 88,
+
+    /// <summary>
+    /// The version of the <see cref="FinishDarkKnightMasterTreePlugInSeason6"/>.
+    /// </summary>
+    FinishDarkKnightMasterTreeSeason6 = 89,
+
+    /// <summary>
+    /// The version of the <see cref="FinishDarkWizardMasterTreePlugIn"/>.
+    /// </summary>
+    FinishDarkWizardMasterTree = 90,
 }
