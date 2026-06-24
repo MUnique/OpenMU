@@ -15,6 +15,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
     [Migration("20221018194652_Combo")]
     partial class Combo
     {
+        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618

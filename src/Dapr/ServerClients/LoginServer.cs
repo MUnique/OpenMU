@@ -4,8 +4,8 @@
 
 namespace MUnique.OpenMU.ServerClients;
 
-using Microsoft.Extensions.Logging;
 using Dapr.Client;
+using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Interfaces;
 
 /// <summary>

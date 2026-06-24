@@ -16,6 +16,7 @@ using MUnique.OpenMU.Persistence.Initialization.Skills;
 /// </summary>
 internal class SkillsInitializer : SkillsInitializerBase
 {
+#pragma warning disable SA1600 // formula constants are documented by their name and inline skill number comment
     internal const string Formula1204 = "(1 + (((((((level - 30) ^ 3) + 25000) / 499) / 6)))) * 10"; // 17
     internal const string Formula61408 = "(1 + (((((((level - 30) ^ 3) + 25000) / 499) / 50) * 100) / 12)) * 85 * 6"; // 12
     internal const string Formula51173 = "(1 + (((((((level - 30) ^ 3) + 25000) / 499) / 50) * 100) / 12)) * 85 * 5"; // 13
@@ -48,6 +49,7 @@ internal class SkillsInitializer : SkillsInitializerBase
     internal const string Formula1806 = "(1 + (((((((level - 30) ^ 3) + 25000) / 499) / 6)))) * 15"; // 15
     internal const string Formula32751 = "(1 + ( ( ( ( ( ( (level - 30) ^ 3) + 25000) / 499) / 50) * 100) / 12)) * 85 * 3.2"; // 31
     internal const string Formula5418 = "(1 + ( ( ( ( ( ( (level - 30) ^ 3) + 25000) / 499) / 50) * 100) / 12)) * 45"; // 34
+#pragma warning restore SA1600
 
     private static readonly IDictionary<SkillNumber, MagicEffectNumber> EffectsOfSkills = new Dictionary<SkillNumber, MagicEffectNumber>
     {
@@ -71,6 +73,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         { SkillNumber.Weakness, MagicEffectNumber.WeaknessSummoner },
         { SkillNumber.Innovation, MagicEffectNumber.Innovation },
         { SkillNumber.DamageReflection, MagicEffectNumber.Reflection },
+        { SkillNumber.StrikeofDestruction, MagicEffectNumber.Cold },
         { SkillNumber.BeastUppercut, MagicEffectNumber.DefenseReductionBeastUppercut },
         { SkillNumber.PhoenixShot, MagicEffectNumber.DecreaseBlock },
         { SkillNumber.Explosion223, MagicEffectNumber.Explosion },
@@ -694,6 +697,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         new WeaknessSummonerEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new InnovationEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new ReflectionEffectInitializer(this.Context, this.GameConfiguration).Initialize();
+        new ColdEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new DefenseReductionBeastUppercutEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new DecreaseBlockEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new ExplosionEffectInitializer(this.Context, this.GameConfiguration).Initialize();

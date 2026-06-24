@@ -13,11 +13,11 @@ using MUnique.OpenMU.Network.PlugIns;
 [TestFixture]
 public class ClientAttributeTest
 {
-    private static readonly MinimumClientAttribute Season6E3English = new (6, 3, ClientLanguage.English);
-    private static readonly MinimumClientAttribute Season6E3Japanese = new (6, 3, ClientLanguage.Japanese);
+    private static readonly MinimumClientAttribute Season6E3English = new(6, 3, ClientLanguage.English);
+    private static readonly MinimumClientAttribute Season6E3Japanese = new(6, 3, ClientLanguage.Japanese);
 
-    private static readonly MinimumClientAttribute Season9E2English = new (9, 2, ClientLanguage.English);
-    private static readonly MinimumClientAttribute Season9E2EnglishOtherInstance = new (9, 2, ClientLanguage.English);
+    private static readonly MinimumClientAttribute Season9E2English = new(9, 2, ClientLanguage.English);
+    private static readonly MinimumClientAttribute Season9E2EnglishOtherInstance = new(9, 2, ClientLanguage.English);
 
     /// <summary>
     /// Tests less than using <see cref="IComparable"/>.

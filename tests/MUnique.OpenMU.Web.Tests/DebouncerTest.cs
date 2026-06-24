@@ -162,8 +162,7 @@ public class DebouncerTests
         using var debouncer = new Debouncer(50);
 
         // Act & Assert
-        Assert.ThrowsAsync<ArgumentNullException>(() => 
-            debouncer.DebounceAsync((Func<Task>)null!));
+        Assert.That(async () => await debouncer.DebounceAsync((Func<Task>)null!), Throws.TypeOf<ArgumentNullException>());
     }
 
     /// <summary>
@@ -176,12 +175,11 @@ public class DebouncerTests
         using var debouncer = new Debouncer(50);
 
         // Act & Assert
-        Assert.ThrowsAsync<ArgumentNullException>(() => 
-            debouncer.DebounceAsync((Func<CancellationToken, Task>)null!));
+        Assert.That(async () => await debouncer.DebounceAsync((Func<CancellationToken, Task>)null!), Throws.TypeOf<ArgumentNullException>());
     }
 
     /// <summary>
-    /// Tests that actions spaced beyond the debounce window each execute independently.
+    /// Tests that actions spaced beyond the debounced window each execute independently.
     /// </summary>
     [Test]
     public async Task DebounceAsync_SpacedCalls_EachExecutes()

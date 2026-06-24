@@ -7,8 +7,8 @@ namespace MUnique.OpenMU.ConnectServer.Host;
 using System.Net;
 using System.Threading;
 using Microsoft.Extensions.Logging;
-using Nito.AsyncEx;
 using MUnique.OpenMU.Interfaces;
+using Nito.AsyncEx;
 
 /// <summary>
 /// A registry which keeps track of available <see cref="IGameServer"/>s.

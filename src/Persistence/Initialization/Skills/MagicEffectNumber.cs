@@ -297,7 +297,7 @@ internal enum MagicEffectNumber : short
     WizEnhance = 0x52,
 
     /// <summary>
-    /// The cold effect caused by chain drive and strike of destruction skills.
+    /// The cold effect caused by skills such as Chain Drive and Strike of Destruction.
     /// Like <see cref="Iced"/>, it also slows down movement, but more so.
     /// </summary>
     Cold = 0x56,

@@ -384,7 +384,12 @@ public class GameContext : AsyncDisposable, IGameContext
         await playerList.Select(action).WhenAll().ConfigureAwait(false);
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Executes the specified action for each player, grouped by their culture.
+    /// </summary>
+    /// <param name="stateFactory">The state factory which creates a state for each culture group.</param>
+    /// <param name="action">The action to execute for each player and culture state.</param>
+    /// <typeparam name="TCultureState">The type of the culture state.</typeparam>
     public async ValueTask ForEachPlayerGroupedByCultureAsync<TCultureState>(Func<CultureInfo, TCultureState> stateFactory, Func<Player, TCultureState, Task> action)
     {
         if (this._playerList.Count == 0)

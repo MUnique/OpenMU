@@ -12,13 +12,23 @@ using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// Updates some item requirements for elf bows which were intialized wrongly.
+/// Updates some item requirements for elf bows that were initialized wrongly.
 /// </summary>
 [PlugIn]
 [Display(Name = PlugInName, Description = PlugInDescription)]
 [Guid("9E8DB2CB-1972-40D3-9129-6964ABFEB4DC")]
 public class FixItemRequirementsPlugIn : UpdatePlugInBase
 {
+    /// <summary>
+    /// The plugin name.
+    /// </summary>
+    internal const string PlugInName = "Fix Item Requirements (Elf Bows)";
+
+    /// <summary>
+    /// The plugin description.
+    /// </summary>
+    internal const string PlugInDescription = "Updates some item requirements for elf bows which were initialized wrongly.";
+
     private static readonly List<(int Group, int Number, int StrengthRequirement, int AgilityRequirement, int EnergyRequirement, int VitalityRequirement)> RequirementCorrections =
     [
         (4, 0, 20, 80, 0, 0), // Short Bow
@@ -67,16 +77,6 @@ public class FixItemRequirementsPlugIn : UpdatePlugInBase
         (15, 36, 0, 0, ?, 0), // Increase Block Parchment
         */
     ];
-
-    /// <summary>
-    /// The plug in name.
-    /// </summary>
-    internal const string PlugInName = "Fix Item Requirements (Elf Bows)";
-
-    /// <summary>
-    /// The plug in description.
-    /// </summary>
-    internal const string PlugInDescription = "Updates some item requirements for elf bows which were intialized wrongly.";
 
     /// <inheritdoc />
     public override UpdateVersion Version => UpdateVersion.FixItemRequirements;

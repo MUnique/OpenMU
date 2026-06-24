@@ -1,4 +1,4 @@
-﻿// <copyright file="Weapons.cs" company="MUnique">
+// <copyright file="Weapons.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -198,8 +198,8 @@ internal class Weapons : InitializerBase
         this.CreateWeapon(2, 16, 0, 0, 1, 3, true, "Frost Mace", 121, 106, 146, 50, 80, 0, 0, 27, 19, 0, 0, 0, 0, 2, 0, 0, 0, 0);
         this.CreateWeapon(2, 17, 0, 66, 1, 4, true, "Absolute Scepter", 135, 114, 132, 40, 90, 72, 0, 119, 24, 0, 0, 0, 0, 0, 0, 1, 0, 0);
         this.CreateWeapon(2, 18, 0, 66, 1, 4, false, "Stryker Scepter", 147, 112, 124, 40, 86, 70, 0, 87, 20, 0, 0, 0, 0, 0, 0, 1, 0, 0);
-        // this.CreateWeapon(2, 22, 0, 0, 1, 3, true, "Mace of The king", 54, 132, 153, 45, 40, 3, 0, 80, 17, 0, 0, 0, 1, 1, 1, 1, 0, 0);
 
+        // this.CreateWeapon(2, 22, 0, 0, 1, 3, true, "Mace of The king", 54, 132, 153, 45, 40, 3, 0, 80, 17, 0, 0, 0, 1, 1, 1, 1, 0, 0);
         this.CreateWeapon(3, 0, 0, 22, 2, 4, true, "Light Spear", 42, 50, 63, 25, 56, 0, 0, 60, 70, 0, 0, 0, 1, 1, 1, 0, 0, 0);
         this.CreateWeapon(3, 1, 0, 0, 2, 4, true, "Spear", 23, 30, 41, 30, 42, 0, 0, 70, 50, 0, 0, 0, 1, 1, 1, 0, 0, 0);
         this.CreateWeapon(3, 2, 0, 0, 2, 4, true, "Dragon Lance", 15, 21, 33, 30, 34, 0, 0, 70, 50, 0, 0, 0, 1, 1, 1, 0, 0, 0);
@@ -301,11 +301,33 @@ internal class Weapons : InitializerBase
     /// <param name="darkLordClass">The dark lord class.</param>
     /// <param name="summonerClass">The summoner class.</param>
     /// <param name="ragefighterClass">The ragefighter class.</param>
-    protected void CreateWeapon(byte @group, byte number, byte slot, int skillNumber, byte width, byte height,
-        bool dropsFromMonsters, string name, byte dropLevel, int minimumDamage, int maximumDamage, int attackSpeed,
-        byte durability, int magicPower, int levelRequirement, int strengthRequirement, int agilityRequirement,
-        int energyRequirement, int vitalityRequirement,
-        int wizardClass, int knightClass, int elfClass, int magicGladiatorClass, int darkLordClass, int summonerClass, int ragefighterClass)
+    protected void CreateWeapon(
+        byte @group,
+        byte number,
+        byte slot,
+        int skillNumber,
+        byte width,
+        byte height,
+        bool dropsFromMonsters,
+        string name,
+        byte dropLevel,
+        int minimumDamage,
+        int maximumDamage,
+        int attackSpeed,
+        byte durability,
+        int magicPower,
+        int levelRequirement,
+        int strengthRequirement,
+        int agilityRequirement,
+        int energyRequirement,
+        int vitalityRequirement,
+        int wizardClass,
+        int knightClass,
+        int elfClass,
+        int magicGladiatorClass,
+        int darkLordClass,
+        int summonerClass,
+        int ragefighterClass)
     {
         var item = this.Context.CreateNew<ItemDefinition>();
         this.GameConfiguration.Items.Add(item);
@@ -338,7 +360,8 @@ internal class Weapons : InitializerBase
         var qualifiedCharacterClasses = this.GameConfiguration.DetermineCharacterClasses(wizardClass, knightClass, elfClass, magicGladiatorClass, darkLordClass, summonerClass, ragefighterClass);
         qualifiedCharacterClasses.ToList().ForEach(item.QualifiedCharacters.Add);
 
-        if (height == 1) // bolts and arrows
+        // Bolts and arrows.
+        if (height == 1)
         {
             var damagePowerUp = this.CreateItemBasePowerUpDefinition(Stats.AmmunitionDamageBonus, 0f, AggregateType.AddRaw);
             damagePowerUp.BonusPerLevelTable = this._ammunitionDamageIncreaseTable;
@@ -441,7 +464,8 @@ internal class Weapons : InitializerBase
             item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsTwoHandedWeaponEquipped, 1, AggregateType.AddRaw));
         }
 
-        if (group == (int)ItemGroups.Swords || (group == (int)ItemGroups.Scepters && number == 5)) // Crystal Sword
+        // Crystal Sword.
+        if (group == (int)ItemGroups.Swords || (group == (int)ItemGroups.Scepters && number == 5))
         {
             if (ragefighterClass == 0 || number < 2)
             {

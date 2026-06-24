@@ -1,12 +1,20 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿// <copyright file="20221018194652_Combo.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
 
 #nullable disable
 
 namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 {
+    using System;
+    using Microsoft.EntityFrameworkCore.Migrations;
+
+    /// <summary>
+    /// Adds skill combo definitions and steps.
+    /// </summary>
     public partial class Combo : Migration
     {
+        /// <inheritdoc/>
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<Guid>(
@@ -23,7 +31,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
-                    MaximumCompletionTime = table.Column<TimeSpan>(type: "interval", nullable: false)
+                    MaximumCompletionTime = table.Column<TimeSpan>(type: "interval", nullable: false),
                 },
                 constraints: table =>
                 {
@@ -39,7 +47,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     SkillId = table.Column<Guid>(type: "uuid", nullable: true),
                     SkillComboDefinitionId = table.Column<Guid>(type: "uuid", nullable: true),
                     Order = table.Column<int>(type: "integer", nullable: false),
-                    IsFinalStep = table.Column<bool>(type: "boolean", nullable: false)
+                    IsFinalStep = table.Column<bool>(type: "boolean", nullable: false),
                 },
                 constraints: table =>
                 {
@@ -86,6 +94,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 principalColumn: "Id");
         }
 
+        /// <inheritdoc/>
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(

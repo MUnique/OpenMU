@@ -2,11 +2,10 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using Nito.AsyncEx.Synchronous;
-
 namespace MUnique.OpenMU.FriendServer;
 
 using System.Threading;
+using Nito.AsyncEx.Synchronous;
 
 /// <summary>
 /// Represents an online friend who can observe his other friends, and be subscribed by other friends.
@@ -23,7 +22,7 @@ public sealed class OnlineFriend : IObservable<OnlineFriend>, IObserver<OnlineFr
     /// <summary>
     /// The synchronize object which is used for locks.
     /// </summary>
-    private readonly ReaderWriterLockSlim _readerWriterLock = new ();
+    private readonly ReaderWriterLockSlim _readerWriterLock = new();
 
     /// <summary>
     /// This are all subscriptions, to which this player subscribed.
@@ -56,7 +55,7 @@ public sealed class OnlineFriend : IObservable<OnlineFriend>, IObserver<OnlineFr
     public int ServerId { get; set; }
 
     /// <summary>
-    /// Gets a value indicating this friend is invisible or offline.
+    /// Gets a value indicating whether this friend is invisible or offline.
     /// </summary>
     public bool IsInvisibleOrOffline => this.ServerId == FriendServer.InvisibleServerId || this.ServerId == FriendServer.OfflineServerId;
 

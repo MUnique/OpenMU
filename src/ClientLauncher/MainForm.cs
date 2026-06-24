@@ -1,8 +1,8 @@
-﻿// <copyright file="MainForm.cs" company="MUnique">
+// <copyright file="MainForm.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-#pragma warning disable CA1416 This project is compiled for windows
+#pragma warning disable CA1416 // This project is compiled for windows
 namespace MUnique.OpenMU.ClientLauncher;
 
 using System.ComponentModel;

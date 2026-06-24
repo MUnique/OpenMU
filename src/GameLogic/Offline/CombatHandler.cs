@@ -18,20 +18,20 @@ using MUnique.OpenMU.Pathfinding;
 public sealed class CombatHandler
 {
     private const byte DefaultRange = 1;
+    private const byte BowRange = 6;
     private const int ComboFinisherDelayTicks = 3;
     private const int InterSkillDelayTicks = 1;
     private const int MinComboSkillCount = 3;
-
-    private static readonly TargetedSkillDefaultPlugin DefaultPlugin = new();
 
     private const short DrainLifeBaseSkillId = 214;
     private const short DrainLifeStrengthenerSkillId = 458;
     private const short DrainLifeMasterySkillId = 462;
 
+    private static readonly TargetedSkillDefaultPlugin DefaultPlugin = new();
+
     private readonly OfflinePlayer _player;
     private readonly IMuHelperSettings? _config;
     private readonly MovementHandler _movementHandler;
-    private readonly BuffHandler _buffHandler;
     private readonly Point _originPosition;
     private readonly ConditionalSkillSlot[] _conditionalSkillSlots;
 
@@ -46,14 +46,12 @@ public sealed class CombatHandler
     /// <param name="player">The offline player.</param>
     /// <param name="config">The MU helper settings.</param>
     /// <param name="movementHandler">The movement handler.</param>
-    /// <param name="buffHandler">The buff handler.</param>
     /// <param name="originPosition">The original position to hunt around.</param>
-    public CombatHandler(OfflinePlayer player, IMuHelperSettings? config, MovementHandler movementHandler, BuffHandler buffHandler, Point originPosition)
+    public CombatHandler(OfflinePlayer player, IMuHelperSettings? config, MovementHandler movementHandler, Point originPosition)
     {
         this._player = player;
         this._config = config;
         this._movementHandler = movementHandler;
-        this._buffHandler = buffHandler;
         this._originPosition = originPosition;
         this._conditionalSkillSlots = config is null ? [] :
         [
@@ -101,7 +99,6 @@ public sealed class CombatHandler
     /// <summary>
     /// Performs combat attacks on targets.
     /// </summary>
-    /// <returns>A value task representing the asynchronous operation.</returns>
     public async ValueTask PerformAttackAsync()
     {
         this.RefreshTarget();
@@ -163,14 +160,9 @@ public sealed class CombatHandler
     private async ValueTask ExecuteAttackAsync(IAttackable target)
     {
         var skill = this.SelectAttackSkill();
-        if (skill == null)
+        if (skill == null && this._config?.FallbackBasicAttack != true)
         {
-            // Do not attack if there are buffs configured to handle buff-only classes.
-            var buffs = this._buffHandler.ConfiguredBuffIds;
-            if (buffs.Any(id => id > 0))
-            {
-                return;
-            }
+            return;
         }
 
         await this.ExecuteAttackAsync(target, skill, false).ConfigureAwait(false);
@@ -520,6 +512,12 @@ public sealed class CombatHandler
             {
                 return (byte)ranges.Min();
             }
+        }
+
+        if (this._player.Attributes is { } attributes
+            && (attributes[Stats.IsBowEquipped] > 0 || attributes[Stats.IsCrossBowEquipped] > 0))
+        {
+            return BowRange;
         }
 
         return DefaultRange;

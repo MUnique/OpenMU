@@ -17,8 +17,14 @@ using MUnique.OpenMU.PlugIns;
 [Guid("D4E5F6A0-1B2C-3D4E-5F6A-7B8C9D0E1F2A")]
 public class FixBloodCastleMonsterAttributesUpdatePlugIn : UpdatePlugInBase
 {
+    /// <summary>
+    /// Gets the plugin name.
+    /// </summary>
     internal const string PlugInName = "Fix Blood Castle 7/8 Monster Attributes";
 
+    /// <summary>
+    /// Gets the plugin description.
+    /// </summary>
     internal const string PlugInDescription = "Swaps attribute values between BC7 (monsters 138-143) and BC8 (monsters 428-433) so progression is correct: BC6 → BC7 → BC8.";
 
     private static readonly Guid LevelId = new("560931AD-0901-4342-B7F4-FD2E2FCC0563");

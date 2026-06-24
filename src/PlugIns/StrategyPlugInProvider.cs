@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 /// The implementation for the <see cref="IStrategyPlugInProvider{TKey,TPlugIn}"/> which provides plugins by their key.
 /// </summary>
 /// <typeparam name="TKey">The type of the key.</typeparam>
-/// <typeparam name="TPlugIn">The type of the plug in.</typeparam>
+/// <typeparam name="TPlugIn">The type of the plugin.</typeparam>
 /// <seealso cref="MUnique.OpenMU.PlugIns.IStrategyPlugInProvider{TKey, TPlugIn}" />
 /// <seealso cref="IPlugInContainer{TPlugIn}" />
 public class StrategyPlugInProvider<TKey, TPlugIn> : PlugInContainerBase<TPlugIn>, IStrategyPlugInProvider<TKey, TPlugIn>
@@ -23,12 +23,22 @@ public class StrategyPlugInProvider<TKey, TPlugIn> : PlugInContainerBase<TPlugIn
     /// <summary>
     /// Initializes a new instance of the <see cref="StrategyPlugInProvider{TKey, TPlugIn}" /> class.
     /// </summary>
-    /// <param name="manager">The plugin manager which manages this instance.</param>
+    /// <param name="manager">The plugin manager that manages this instance.</param>
     /// <param name="loggerFactory">The logger factory.</param>
     public StrategyPlugInProvider(PlugInManager manager, ILoggerFactory loggerFactory)
         : base(manager)
     {
         this.Logger = loggerFactory.CreateLogger(this.GetType());
+    }
+
+    /// <inheritdoc />
+    public IEnumerable<TPlugIn> AvailableStrategies
+    {
+        get
+        {
+            using var l = this.Lock.ReaderLock();
+            return this._effectiveStrategies.Values.ToList();
+        }
     }
 
     /// <summary>
@@ -54,21 +64,11 @@ public class StrategyPlugInProvider<TKey, TPlugIn> : PlugInContainerBase<TPlugIn
         }
     }
 
-    /// <inheritdoc />
-    public IEnumerable<TPlugIn> AvailableStrategies
-    {
-        get
-        {
-            using var l = this.Lock.ReaderLock();
-            return this._effectiveStrategies.Values.ToList();
-        }
-    }
-
     /// <summary>
     /// Tries the get the plug in with the specified key.
     /// </summary>
     /// <param name="key">The key.</param>
-    /// <param name="plugIn">The plug in.</param>
+    /// <param name="plugIn">The plugin.</param>
     /// <returns><c>True</c>, if the plugin has been found and returned; Otherwise, <c>false</c>.</returns>
     protected bool TryGetPlugIn(TKey key, [MaybeNullWhen(false)] out TPlugIn plugIn) => this._effectiveStrategies.TryGetValue(key, out plugIn);
 
@@ -99,7 +99,7 @@ public class StrategyPlugInProvider<TKey, TPlugIn> : PlugInContainerBase<TPlugIn
     /// <summary>
     /// Sets the effective plugin.
     /// </summary>
-    /// <param name="plugIn">The plug in.</param>
+    /// <param name="plugIn">The plugin.</param>
     protected void SetEffectivePlugin(TPlugIn plugIn)
     {
         this._effectiveStrategies.Remove(plugIn.Key);

@@ -2,10 +2,9 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using System.ComponentModel;
-
 namespace MUnique.OpenMU.DataModel.Entities;
 
+using System.ComponentModel;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 

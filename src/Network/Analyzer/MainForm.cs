@@ -9,6 +9,7 @@ using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
+using System.Runtime.Versioning;
 using System.Windows.Forms;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -19,11 +20,12 @@ using Zuby.ADGV;
 /// <summary>
 /// The main form of the analyzer.
 /// </summary>
+[SupportedOSPlatform("windows")]
 public partial class MainForm : Form
 {
-    private readonly BindingList<ICapturedConnection> _proxiedConnections = new ();
+    private readonly BindingList<ICapturedConnection> _proxiedConnections = new();
 
-    private readonly Dictionary<ClientVersion, string> _clientVersions = new ()
+    private readonly Dictionary<ClientVersion, string> _clientVersions = new()
     {
         { new ClientVersion(106, 3, ClientLanguage.English), "Extended S6E3 (2.04d)" },
         { new ClientVersion(6, 3, ClientLanguage.English), "S6E3 (1.04d)" },
@@ -59,7 +61,7 @@ public partial class MainForm : Form
         this._analyzer = new PacketAnalyzer();
         this.Disposed += (_, _) => this._analyzer.Dispose();
 
-        this.clientVersionComboBox.SelectedIndexChanged += OnSelectedClientVersionChanged;
+        this.clientVersionComboBox.SelectedIndexChanged += this.OnSelectedClientVersionChanged;
         this.clientVersionComboBox.DataSource = new BindingSource(this._clientVersions, string.Empty);
         this.clientVersionComboBox.DisplayMember = "Value";
         this.clientVersionComboBox.ValueMember = "Key";
@@ -116,7 +118,7 @@ public partial class MainForm : Form
     }
 
     /// <inheritdoc />
-    protected override void OnClosed(EventArgs e)
+    protected override void OnFormClosed(FormClosedEventArgs e)
     {
         if (this._clientListener != null)
         {
@@ -124,7 +126,7 @@ public partial class MainForm : Form
             this._clientListener = null;
         }
 
-        base.OnClosed(e);
+        base.OnFormClosed(e);
     }
 
     private static string ConvertFilterStringToExpressionString(string filter)
@@ -250,7 +252,7 @@ public partial class MainForm : Form
 
         var newPacket = sourceList[e.NewIndex];
         newPacket.AnalyzingRequested += this.OnPacketAnalyzingRequested;
-        
+
         if (this._filterMethod is { } filter
             && filter.DynamicInvoke(newPacket) is true)
         {
@@ -274,6 +276,7 @@ public partial class MainForm : Form
             }
         }
     }
+
     private void OnPacketFilterStringChanged(object? sender, AdvancedDataGridView.FilterEventArgs e)
     {
         try

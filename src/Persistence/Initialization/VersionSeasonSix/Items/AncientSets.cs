@@ -2,8 +2,6 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.Network;
-
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 
 using MUnique.OpenMU.AttributeSystem;
@@ -11,6 +9,7 @@ using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Persistence.Initialization.Items;
 
 /// <summary>

@@ -72,14 +72,14 @@ public static class ItemExtensions
 
     /// <summary>
     /// Gets the dark raven leadership requirement, based on pet level.
-    /// TODO: Make somehow configurable?
+    /// TODO: Make somehow configurable?.
     /// </summary>
     /// <param name="item">The item.</param>
     /// <param name="petLevel">The pet level.</param>
     /// <returns>The required leadership.</returns>
     public static int GetDarkRavenLeadershipRequirement(this Item item, int petLevel)
     {
-        return petLevel * 15 + 185;
+        return (petLevel * 15) + 185;
     }
 
     /// <summary>

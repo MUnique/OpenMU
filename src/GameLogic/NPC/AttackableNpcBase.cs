@@ -24,6 +24,7 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
     private readonly IEventStateProvider? _eventStateProvider;
     private readonly IDropGenerator _dropGenerator;
     private readonly PlugInManager _plugInManager;
+    private readonly List<IDisposable> _registrations = new();
 
     private int _health;
 
@@ -103,7 +104,7 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
     /// <inheritdoc />
     public async ValueTask<HitInfo?> AttackByAsync(IAttacker attacker, SkillEntry? skill, bool isCombo, double damageFactor = 1.0, bool? isFinalStreakHit = null)
     {
-        if (this.Definition.ObjectKind == NpcObjectKind.Guard)
+        if (this.Definition.ObjectKind == NpcObjectKind.Guard || this.IsAttackBlockedBySafezone(attacker))
         {
             return null;
         }
@@ -166,6 +167,25 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
         this.IsAlive = true;
     }
 
+    /// <summary>
+    /// Reloads the attributes from the <see cref="NonPlayerCharacter.Definition"/>, so that changes
+    /// to the monster definition take effect on this already spawned instance.
+    /// </summary>
+    public void ReloadAttributes()
+    {
+        (this.Attributes as MonsterAttributeHolder)?.ApplyChanges();
+    }
+
+    /// <summary>
+    /// Registers a disposable (e.g. a configuration change registration) to be disposed
+    /// together with this instance.
+    /// </summary>
+    /// <param name="disposable">The disposable.</param>
+    public void RegisterDisposable(IDisposable disposable)
+    {
+        this._registrations.Add(disposable);
+    }
+
     /// <inheritdoc/>
     protected override void Dispose(bool managed)
     {
@@ -173,6 +193,12 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
         {
             this.Died = null;
             this.IsAlive = false;
+            foreach (var registration in this._registrations)
+            {
+                registration.Dispose();
+            }
+
+            this._registrations.Clear();
         }
 
         base.Dispose(managed);

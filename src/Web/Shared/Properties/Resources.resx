@@ -273,4 +273,13 @@
   <data name="Refresh" xml:space="preserve">
     <value>Refresh</value>
   </data>
+  <data name="ToggleTheme" xml:space="preserve">
+    <value>Toggle theme</value>
+  </data>
+  <data name="SwitchToDarkMode" xml:space="preserve">
+    <value>Switch to dark mode</value>
+  </data>
+  <data name="SwitchToLightMode" xml:space="preserve">
+    <value>Switch to light mode</value>
+  </data>
 </root>

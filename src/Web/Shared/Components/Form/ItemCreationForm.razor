@@ -28,8 +28,10 @@ else
             <CreationAutoFields/>
             <ValidationSummary/>
         </CascadingValue>
-        <button type="submit" class="primary-button">@Resources.Submit</button>
-        <button type="button" @onclick="@this.OnCancel" class="cancel-button">@Resources.Cancel</button>
+        <div class="form-actions">
+            <button type="submit" class="primary-button">@Resources.Submit</button>
+            <button type="button" @onclick="@this.OnCancel" class="cancel-button">@Resources.Cancel</button>
+        </div>
     </EditForm>
 }
 

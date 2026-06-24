@@ -12,6 +12,8 @@ using MUnique.OpenMU.DataModel;
 /// </summary>
 internal static class ModelGeneratorHelper
 {
+    private static IList<Type> _customTypes;
+
     /// <summary>
     /// Gets a header template for a generated file.
     /// </summary>
@@ -32,15 +34,13 @@ internal static class ModelGeneratorHelper
     /// </summary>
     public static string ConfigurationNamespace => "MUnique.OpenMU.DataModel.Configuration";
 
-    private static IList<Type> _customTypes;
-
     /// <summary>
     /// Gets the types which need to be customized for persistence.
     /// </summary>
     public static IEnumerable<Type> CustomTypes => _customTypes ??= GetCustomTypes();
 
     /// <summary>
-    /// Determines whether the given type is a is configuration type.
+    /// Determines whether the given type is a configuration type.
     /// </summary>
     /// <param name="type">The type.</param>
     /// <returns><c>true</c> if the given type is a configuration type; otherwise, <c>false</c>.</returns>
@@ -115,7 +115,7 @@ internal static class ModelGeneratorHelper
 
     /// <summary>
     /// Overrides the <see cref="ICloneable{T}"/> implementation, so that the correct class instance
-    /// is created and the Id is assigned.
+    /// is created and the id is assigned.
     /// </summary>
     /// <param name="type">The type.</param>
     /// <param name="className">Name of the class.</param>
@@ -144,7 +144,7 @@ internal static class ModelGeneratorHelper
     /// <summary>
     /// Determines the types which require customization.
     /// </summary>
-    /// <returns>The types which require customization.</returns>
+    /// <returns>The types that require customization.</returns>
     private static List<Type> GetCustomTypes()
     {
         var result = new List<Type>();

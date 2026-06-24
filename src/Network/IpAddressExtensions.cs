@@ -32,7 +32,7 @@ public static class IpAddressExtensions
         {
             return true;
         }
-        
+
         _localIpAddresses ??= Dns.GetHostAddresses(Dns.GetHostName()).ToHashSet();
         return _localIpAddresses.Contains(address);
     }

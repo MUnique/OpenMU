@@ -5,8 +5,8 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Items;
 
 using System.ComponentModel;
-using MUnique.OpenMU.DataModel.Configuration;
 using Microsoft.Extensions.Logging;
+using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.Inventory;

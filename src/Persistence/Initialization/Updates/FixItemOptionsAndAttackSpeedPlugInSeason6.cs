@@ -134,13 +134,14 @@ public class FixItemOptionsAndAttackSpeedPlugInSeason6 : FixItemOptionsAndAttack
                 staff.BasePowerUpAttributes.Remove(twoHandedWeapon);
             }
 
-            if (staff.Number == 9 // Dragon Soul Staff
-                || staff.Number == 11 // Kundun Staff
-                || staff.Number == 12 // Grand Viper Staff
-                || staff.Number == 13 // Platina Staff
-                || staff.Number == 30 // Deadly Staff
-                || staff.Number == 31 // Imperial Staff
-                || staff.Number == 33) // Chromatic Staff
+            // Dragon Soul Staff, Kundun Staff, Grand Viper Staff, Platina Staff, Deadly Staff, Imperial Staff, Chromatic Staff.
+            if (staff.Number == 9
+                || staff.Number == 11
+                || staff.Number == 12
+                || staff.Number == 13
+                || staff.Number == 30
+                || staff.Number == 31
+                || staff.Number == 33)
             {
                 staff.BasePowerUpAttributes.Add(CreateNewBasePowerUpDefinition(Stats.IsOneHandedStaffEquipped));
             }

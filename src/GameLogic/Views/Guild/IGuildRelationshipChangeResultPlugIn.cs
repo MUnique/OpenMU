@@ -51,59 +51,119 @@ public enum GuildRelationshipRequestType
     Disband,
 }
 
+/// <summary>
+/// The result of a guild relationship change request.
+/// </summary>
 public enum GuildRelationshipChangeResultType
 {
+    /// <summary>
+    /// The request failed.
+    /// </summary>
     Failed,
 
+    /// <summary>
+    /// The request succeeded.
+    /// </summary>
     Success,
 
+    /// <summary>
+    /// The guild was not found.
+    /// </summary>
     GuildNotFound,
 
-    // GUILD_ANS_UNIONFAIL_BY_CASTLE: Alliance function will be restricted due to the Castle Siege.
+    /// <summary>
+    /// Failed because the alliance function is restricted due to the Castle Siege.
+    /// </summary>
+    // GUILD_ANS_UNIONFAIL_BY_CASTLE
     FailedDuringCastleSiege,
 
+    /// <summary>
+    /// No authorization for the request.
+    /// </summary>
     // GUILD_ANS_NOTEXIST_PERMISSION
     NoAuthorization,
 
+    /// <summary>
+    /// The guilds are already in an alliance.
+    /// </summary>
     // GUILD_ANS_EXIST_RELATIONSHIP_UNION
     AlreadyInAlliance,
 
+    /// <summary>
+    /// The guilds are already in a hostility relationship.
+    /// </summary>
     // GUILD_ANS_EXIST_RELATIONSHIP_RIVAL
     AlreadyInHostility,
 
+    /// <summary>
+    /// The guild alliance already exists.
+    /// </summary>
     // GUILD_ANS_EXIST_UNION
     GuildAllianceExists,
 
+    /// <summary>
+    /// The hostile guild already exists.
+    /// </summary>
     // GUILD_ANS_EXIST_RIVAL
     HostileGuildExists,
 
+    /// <summary>
+    /// The guild alliance does not exist.
+    /// </summary>
     // GUILD_ANS_NOTEXIST_UNION
     GuildAllianceDoesNotExist,
 
+    /// <summary>
+    /// The hostile guild does not exist.
+    /// </summary>
     // GUILD_ANS_NOTEXIST_RIVAL
     HostileGuildDoesNotExist,
 
+    /// <summary>
+    /// The requesting guild master is not the master of the alliance.
+    /// </summary>
     // GUILD_ANS_NOT_UNION_MASTER
     NotMasterOfGuildAlliance,
 
+    /// <summary>
+    /// The requesting guild is not a rival.
+    /// </summary>
     // GUILD_ANS_NOT_GUILD_RIVAL
     NotGuildRival,
 
+    /// <summary>
+    /// Incomplete requirements to create an alliance.
+    /// </summary>
     // GUILD_ANS_CANNOT_BE_UNION_MASTER_GUILD
     IncompleteRequirementsToCreateAlliance,
 
+    /// <summary>
+    /// The maximum number of guilds in an alliance was reached.
+    /// </summary>
     // GUILD_ANS_EXCEED_MAX_UNION_MEMBER
     MaximumNumberOfGuildsInAllianceReached,
 
+    /// <summary>
+    /// The request was cancelled.
+    /// </summary>
     // GUILD_ANS_CANCEL_REQUEST
     RequestCancelled,
 
+    /// <summary>
+    /// The alliance master is not in Gens.
+    /// </summary>
     // GUILD_ANS_UNION_MASTER_NOT_GENS
     AllianceMasterNotInGens,
 
+    /// <summary>
+    /// The guild master is not in Gens.
+    /// </summary>
     // GUILD_ANS_GUILD_MASTER_NOT_GENS
     GuildMasterNotInGens,
 
+    /// <summary>
+    /// The guilds are in different Gens factions.
+    /// </summary>
     // GUILD_ANS_UNION_MASTER_DISAGREE_GENS
     DifferentGens = 0xA3,
 }

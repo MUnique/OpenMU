@@ -40,6 +40,13 @@ internal class Atlans : BaseMapInitializer
     /// <inheritdoc/>
     protected override string MapName => Name;
 
+    /// <inheritdoc />
+    protected override void AdditionalInitialization(GameMapDefinition mapDefinition)
+    {
+        base.AdditionalInitialization(mapDefinition);
+        this.AddUnderwaterMovementPowerUp();
+    }
+
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
     {
@@ -277,6 +284,7 @@ internal class Atlans : BaseMapInitializer
         yield return this.CreateMonsterSpawn(325, this.NpcDictionary[51], 62, 140);
         yield return this.CreateMonsterSpawn(326, this.NpcDictionary[51], 70, 133);
         yield return this.CreateMonsterSpawn(327, this.NpcDictionary[51], 168, 54);
+
         // yield return this.CreateMonsterSpawn(this2NpcDictionary[51], 7, 52);
         yield return this.CreateMonsterSpawn(330, this.NpcDictionary[51], 225, 45);
         yield return this.CreateMonsterSpawn(331, this.NpcDictionary[51], 207, 9);

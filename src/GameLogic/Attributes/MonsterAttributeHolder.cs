@@ -21,6 +21,7 @@ public class MonsterAttributeHolder : IAttributeSystem
             { Stats.DefensePvp, m => m.Attributes.GetValueOfAttribute(Stats.DefenseBase) + ((m as Monster)?.SummonedBy?.Attributes?[Stats.SummonedMonsterDefenseIncrease] ?? 0) },
             { Stats.DamageReceiveDecrement, m => 1.0f },
             { Stats.AttackDamageIncrease, m => 1.0f },
+            { Stats.MovementSpeedFactor, m => 1.0f },
             { Stats.ShieldBypassChance, m => 1.0f },
             { Stats.DefenseDecrement, m => 1.0f - m.Attributes.GetValueOfAttribute(Stats.InnovationDefDecrement) },
         };
@@ -35,9 +36,9 @@ public class MonsterAttributeHolder : IAttributeSystem
 
     private readonly AttackableNpcBase _monster;
 
-    private readonly IDictionary<AttributeDefinition, float> _statAttributes;
-
     private readonly object _attributesLock = new();
+
+    private IDictionary<AttributeDefinition, float> _statAttributes;
 
     /// <summary>
     /// Attribute dictionary of a monster instance.
@@ -131,7 +132,7 @@ public class MonsterAttributeHolder : IAttributeSystem
         if (attributes.TryGetValue(targetAttribute, out var attribute))
         {
             attribute.RemoveElement(element);
-            if (attribute.Elements.Skip(1).Take(1).Any())
+            if (!attribute.Elements.Skip(1).Any())
             {
                 attributes.Remove(targetAttribute);
             }
@@ -158,11 +159,36 @@ public class MonsterAttributeHolder : IAttributeSystem
         throw new NotImplementedException();
     }
 
+    /// <summary>
+    /// Reloads the stat attributes from the (possibly changed) <see cref="MonsterDefinition"/>,
+    /// so that configuration changes take effect on the running game server.
+    /// </summary>
+    public void ApplyChanges()
+    {
+        // When many instances of the same monster are spawned, all of them get notified about the
+        // same change. The first one rebuilds the shared cache; the others just adopt the new one.
+        if (MonsterStatAttributesCache.TryGetValue(this._monster.Definition, out var cached)
+            && !ReferenceEquals(cached, this._statAttributes))
+        {
+            this._statAttributes = cached;
+            return;
+        }
+
+        var statAttributes = BuildStatAttributes(this._monster.Definition);
+        MonsterStatAttributesCache[this._monster.Definition] = statAttributes;
+        this._statAttributes = statAttributes;
+    }
+
     private static IDictionary<AttributeDefinition, float> GetStatAttributeOfMonster(MonsterDefinition monsterDefinition)
     {
-        return MonsterStatAttributesCache.GetOrAdd(monsterDefinition, monsterDef => monsterDef.Attributes.ToDictionary(
-                m => m.AttributeDefinition ?? throw Error.NotInitializedProperty(m, nameof(m.AttributeDefinition)),
-                m => m.Value));
+        return MonsterStatAttributesCache.GetOrAdd(monsterDefinition, BuildStatAttributes);
+    }
+
+    private static IDictionary<AttributeDefinition, float> BuildStatAttributes(MonsterDefinition monsterDefinition)
+    {
+        return monsterDefinition.Attributes.ToDictionary(
+            m => m.AttributeDefinition ?? throw Error.NotInitializedProperty(m, nameof(m.AttributeDefinition)),
+            m => m.Value);
     }
 
     private IDictionary<AttributeDefinition, IComposableAttribute> GetAttributeDictionary()

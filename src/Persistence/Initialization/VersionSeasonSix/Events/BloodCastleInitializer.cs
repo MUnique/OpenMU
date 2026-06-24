@@ -18,12 +18,13 @@ internal class BloodCastleInitializer : InitializerBase
 
     private const short RequiredKillsBeforeBridgePerPlayer = 40;
     private const short RequiredKillsAfterGatePerPlayer = 2;
-    private static readonly Point StatusOfSaintSpawnPoint = new (14, 95);
 
     /// <summary>
     /// The score penalty which gets applied when the event wasn't won by any participating player.
     /// </summary>
     private const int ScorePenaltyAtLoss = -300;
+
+    private static readonly Point StatusOfSaintSpawnPoint = new(14, 95);
 
     /// <summary>
     /// Gets the rewards based on game level and rank, in case the event was won (even by another player).
@@ -40,10 +41,10 @@ internal class BloodCastleInitializer : InitializerBase
         (8, (130000, 130000, 40000), 300, (250000, 120000)),
     };
 
-    private static readonly Dictionary<int, List<(MiniGameSuccessFlags Success, int Score)>> ScoreTableWithWinner = new ()
+    private static readonly Dictionary<int, List<(MiniGameSuccessFlags Success, int Score)>> ScoreTableWithWinner = new()
     {
         {
-            1, new ()
+            1, new()
             {
                 (MiniGameSuccessFlags.Alive, 600),
                 (MiniGameSuccessFlags.Dead, 300),
@@ -53,7 +54,7 @@ internal class BloodCastleInitializer : InitializerBase
             }
         },
         {
-            2, new ()
+            2, new()
             {
                 (MiniGameSuccessFlags.Alive, 600),
                 (MiniGameSuccessFlags.Dead, 300),
@@ -63,7 +64,7 @@ internal class BloodCastleInitializer : InitializerBase
             }
         },
         {
-            3, new ()
+            3, new()
             {
                 (MiniGameSuccessFlags.Alive, 600),
                 (MiniGameSuccessFlags.Dead, 300),
@@ -73,7 +74,7 @@ internal class BloodCastleInitializer : InitializerBase
             }
         },
         {
-            4, new ()
+            4, new()
             {
                 (MiniGameSuccessFlags.Alive, 600),
                 (MiniGameSuccessFlags.Dead, 300),
@@ -83,7 +84,7 @@ internal class BloodCastleInitializer : InitializerBase
             }
         },
         {
-            5, new ()
+            5, new()
             {
                 (MiniGameSuccessFlags.Alive, 600),
                 (MiniGameSuccessFlags.Dead, 300),
@@ -93,7 +94,7 @@ internal class BloodCastleInitializer : InitializerBase
             }
         },
         {
-            6, new ()
+            6, new()
             {
                 (MiniGameSuccessFlags.Alive, 600),
                 (MiniGameSuccessFlags.Dead, 300),
@@ -103,7 +104,7 @@ internal class BloodCastleInitializer : InitializerBase
             }
         },
         {
-            7, new ()
+            7, new()
             {
                 (MiniGameSuccessFlags.Alive, 600),
                 (MiniGameSuccessFlags.Dead, 300),
@@ -113,7 +114,7 @@ internal class BloodCastleInitializer : InitializerBase
             }
         },
         {
-            8, new ()
+            8, new()
             {
                 (MiniGameSuccessFlags.Alive, 600),
                 (MiniGameSuccessFlags.Dead, 300),

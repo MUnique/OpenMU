@@ -4,8 +4,8 @@
 
 namespace MUnique.OpenMU.ServerClients;
 
-using Microsoft.Extensions.Logging;
 using Dapr.Client;
+using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Interfaces;
 
 /// <summary>
@@ -79,6 +79,20 @@ public class FriendServer : IFriendServer
         catch (Exception ex)
         {
             this._logger.LogError(ex, "Unexpected error when setting the friend visibility state.");
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<bool> IsFriendAsync(string characterName, string friendName)
+    {
+        try
+        {
+            return await this._daprClient.InvokeMethodAsync<RequestArguments, bool>(this._targetAppId, nameof(this.IsFriendAsync), new RequestArguments(characterName, friendName)).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Unexpected error when checking friendship.");
+            return false;
         }
     }
 

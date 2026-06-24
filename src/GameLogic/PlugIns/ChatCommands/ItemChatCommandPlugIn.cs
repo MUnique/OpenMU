@@ -92,7 +92,8 @@ public class ItemChatCommandPlugIn : ChatCommandPlugInBase<ItemChatCommandArgs>
                 .Where(o => o.OptionType == ItemOptionTypes.Option);
             IncreasableItemOption itemOption;
 
-            if (item.Definition.Skill?.Number == 49) // Dinorant
+            // Dinorant.
+            if (item.Definition.Skill?.Number == 49)
             {
                 if ((arguments.Opt & 1) > 0)
                 {

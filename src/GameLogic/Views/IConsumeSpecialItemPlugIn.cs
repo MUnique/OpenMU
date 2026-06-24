@@ -1,4 +1,4 @@
-﻿// <copyright file="IDrinkAlcoholPlugIn.cs" company="MUnique">
+﻿// <copyright file="IConsumeSpecialItemPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -14,6 +14,5 @@ public interface IConsumeSpecialItemPlugIn : IViewPlugIn
     /// </summary>
     /// <param name="item">The item.</param>
     /// <param name="effectTimeInSeconds">The effect time in seconds.</param>
-    /// <returns></returns>
     ValueTask ConsumeSpecialItemAsync(Item item, ushort effectTimeInSeconds);
 }

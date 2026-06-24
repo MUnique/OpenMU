@@ -2,12 +2,11 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.DataModel.Configuration;
-
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel;
+using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Interfaces;
 
 /// <summary>
@@ -29,7 +28,7 @@ internal class CacheAwareRepositoryProvider : ICacheAwareRepositoryProvider, ICo
     /// Initializes a new instance of the <see cref="CacheAwareRepositoryProvider"/> class.
     /// </summary>
     /// <param name="loggerFactory">The logger factory.</param>
-    /// <param name="configurationChangePublisher">The configuration change publisher.</param>
+    /// <param name="configurationChangeListener">The configuration change listener.</param>
     public CacheAwareRepositoryProvider(ILoggerFactory loggerFactory, IConfigurationChangeListener? configurationChangeListener)
     {
         this._loggerFactory = loggerFactory;

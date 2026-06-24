@@ -2,18 +2,19 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.Network;
-using MUnique.OpenMU.Persistence.Initialization.Updates;
-
 namespace MUnique.OpenMU.Persistence.Initialization;
 
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using MUnique.OpenMU.AttributeSystem;
+using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Network;
+using MUnique.OpenMU.Persistence.Initialization.Updates;
 
 /// <summary>
 /// Base class for a map initializer which provides some common basic functionality.
@@ -98,9 +99,9 @@ internal abstract class BaseMapInitializer : IMapInitializer
                 return this.MapDefinition.Number;
             }
 
-            return NumberConversionExtensions.MakeWord(
+            return (short)NumberConversionExtensions.MakeWord(
                 (byte)this._mapDefinition!.Number,
-                (byte)this._mapDefinition.Discriminator).ToSigned();
+                (byte)this._mapDefinition.Discriminator);
         }
     }
 
@@ -293,6 +294,35 @@ internal abstract class BaseMapInitializer : IMapInitializer
         requirement.Attribute = attribute.GetPersistent(this.GameConfiguration);
         requirement.MinimumValue = minimumValue;
         this._mapDefinition.MapRequirements.Add(requirement);
+    }
+
+    /// <summary>
+    /// Adds a character power up to the current map.
+    /// </summary>
+    /// <param name="attribute">The target attribute.</param>
+    /// <param name="value">The power up value.</param>
+    /// <param name="aggregateType">The aggregate type.</param>
+    protected void AddCharacterPowerUp(AttributeDefinition attribute, float value, AggregateType aggregateType = AggregateType.AddRaw)
+    {
+        if (this._mapDefinition is null)
+        {
+            throw new InvalidOperationException("MapDefinition not set yet.");
+        }
+
+        var powerUp = this.Context.CreateNew<PowerUpDefinition>();
+        powerUp.TargetAttribute = attribute.GetPersistent(this.GameConfiguration);
+        powerUp.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        powerUp.Boost.ConstantValue.Value = value;
+        powerUp.Boost.ConstantValue.AggregateType = aggregateType;
+        this._mapDefinition.CharacterPowerUpDefinitions.Add(powerUp);
+    }
+
+    /// <summary>
+    /// Marks the current map as underwater for character movement.
+    /// </summary>
+    protected void AddUnderwaterMovementPowerUp()
+    {
+        this.AddCharacterPowerUp(Stats.IsUnderwater, 1);
     }
 
     private string? GetTerrainFileName()

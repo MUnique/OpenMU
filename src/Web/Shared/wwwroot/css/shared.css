@@ -9686,6 +9686,11 @@ mark {
     transform: rotate(360deg);
   }
 }
+.sidebar {
+  display: flex;
+  flex-direction: column;
+}
+
 .sidebar > nav {
   background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
 }
@@ -9697,10 +9702,7 @@ mark {
 @media (min-width: 768px) {
   .sidebar > nav {
     width: 250px;
-    height: 100%;
-    position: sticky;
-    top: 0;
-    min-height: inherit;
+    min-height: 100%;
   }
   .sidebar > nav > div:first-child > button {
     display: none;
@@ -10022,9 +10024,10 @@ mark {
     padding-right: 1.5rem !important;
   }
 }
-/*.validation-message {
-    @extend .invalid-feedback;
-}*/
+input[type=checkbox] {
+  max-width: 10%;
+}
+
 form > div > div > div:first-of-type > span {
   height: 38px;
 }
@@ -10061,8 +10064,21 @@ label > details[open] {
   z-index: 1;
 }
 
-.blazored-typeahead:valid, .blazored-typeahead.valid.modified {
-  padding: 0px 0px 0px 0px !important;
+.auto-form-search-group {
+  position: relative;
+}
+
+.auto-form-search-group .form-control, .auto-form-search-group th input, th .auto-form-search-group input, .auto-form-search-group select, .auto-form-search-group form input, form .auto-form-search-group input, .auto-form-search-group .invalid .valid, .invalid .auto-form-search-group .valid, .auto-form-search-group .valid.modified {
+  padding-left: 2.25rem;
+}
+
+.auto-form-search-group .search-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--omu-text-muted);
+  pointer-events: none;
 }
 
 @keyframes FadeIn {

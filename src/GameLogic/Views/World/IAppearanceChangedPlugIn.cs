@@ -14,6 +14,6 @@ public interface IAppearanceChangedPlugIn : IViewPlugIn
     /// </summary>
     /// <param name="changedPlayer">The changed player.</param>
     /// <param name="changedItem">The changed item.</param>
-    /// <param name="isEquipped"></param>
+    /// <param name="isEquipped">True if the item is equipped, false otherwise.</param>
     ValueTask AppearanceChangedAsync(Player changedPlayer, Item changedItem, bool isEquipped);
 }

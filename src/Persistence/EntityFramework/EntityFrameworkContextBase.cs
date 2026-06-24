@@ -2,13 +2,11 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using System.Threading;
-using Nito.Disposables;
-
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
 using System.Collections;
 using System.Reflection;
+using System.Threading;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -16,6 +14,7 @@ using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Composition;
 using MUnique.OpenMU.DataModel.Configuration;
 using Nito.AsyncEx;
+using Nito.Disposables;
 
 /// <summary>
 /// Abstract base class for an <see cref="IContext"/> which uses an <see cref="DbContext"/>.
@@ -126,21 +125,6 @@ internal class EntityFrameworkContextBase : IContext
     {
         using var l = this._lock.Lock();
         this.Context.Attach(item);
-    }
-
-    private bool DetachInternal(object item)
-    {
-        var entry = this.Context.Entry(item);
-        if (entry is null)
-        {
-            return false;
-        }
-
-        var previousState = entry.State;
-        entry.State = EntityState.Detached;
-        this.ForEachAggregate(item, obj => this.DetachInternal(obj));
-
-        return previousState != EntityState.Added;
     }
 
     /// <inheritdoc />
@@ -280,6 +264,21 @@ internal class EntityFrameworkContextBase : IContext
         }
 
         this.Context.Dispose();
+    }
+
+    private bool DetachInternal(object item)
+    {
+        var entry = this.Context.Entry(item);
+        if (entry is null)
+        {
+            return false;
+        }
+
+        var previousState = entry.State;
+        entry.State = EntityState.Detached;
+        this.ForEachAggregate(item, obj => this.DetachInternal(obj));
+
+        return previousState != EntityState.Added;
     }
 
     private IRepository<T> GetRepository<T>()

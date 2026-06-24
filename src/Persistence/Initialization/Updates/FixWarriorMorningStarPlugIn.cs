@@ -1,4 +1,8 @@
-﻿namespace MUnique.OpenMU.Persistence.Initialization.Updates;
+﻿// <copyright file="FixWarriorMorningStarPlugIn.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.Persistence.Initialization.Updates;
 
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Configuration;

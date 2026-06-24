@@ -59,7 +59,7 @@ public class Wings : WingsInitializerBase
 
         if (damageIncreaseInitial > 0)
         {
-            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.AttackDamageIncrease, 1f + damageIncreaseInitial / 100f, AggregateType.Multiplicate);
+            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.AttackDamageIncrease, 1f + (damageIncreaseInitial / 100f), AggregateType.Multiplicate);
             powerUp.BonusPerLevelTable = this._damageIncreaseByLevelTable;
             wing.BasePowerUpAttributes.Add(powerUp);
         }
@@ -116,6 +116,9 @@ public class Wings : WingsInitializerBase
         canFlyPowerUp.TargetAttribute = Stats.CanFly.GetPersistent(this.GameConfiguration);
         canFlyPowerUp.BaseValue = 1;
         wing.BasePowerUpAttributes.Add(canFlyPowerUp);
+
+        wing.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.MovementSpeed, MovementSpeedConstants.DefaultWingMovementSpeed, AggregateType.Maximum));
+        wing.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.MovementSpeedUnderwater, MovementSpeedConstants.DefaultWingMovementSpeed, AggregateType.Maximum));
 
         return wing;
     }

@@ -51,6 +51,7 @@ internal class ConfigurationTypeRepository<T> : IRepository<T>, IConfigurationTy
     /// <summary>
     /// Gets all objects by using the <see cref="_collectionSelector"/> to the current <see cref="GameConfiguration"/>.
     /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>All objects of the repository.</returns>
     public ValueTask<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default)
     {
@@ -111,7 +112,7 @@ internal class ConfigurationTypeRepository<T> : IRepository<T>, IConfigurationTy
 
     /// <summary>
     /// Ensures the cache for the current configuration.
-    /// TODO: Call this at a better place and time - so that we can remove this check before every GetById
+    /// TODO: Call this at a better place and time - so that we can remove this check before every GetById.
     /// </summary>
     public void EnsureCacheForCurrentConfiguration()
     {

@@ -13,7 +13,7 @@ public static class ResetProgressionCalculator
     /// Calculates the reset progression for the next reset.
     /// </summary>
     /// <param name="currentResetCount">The current reset count.</param>
-    /// <param name="pointsPerResetOverride">The player specific points per reset override (0 means not configured).</param>
+    /// <param name="pointsPerResetOverride">The player-specific points per reset override (0 means not configured).</param>
     /// <param name="configuration">The reset configuration.</param>
     /// <returns>The calculated progression.</returns>
     public static ResetProgression Calculate(int currentResetCount, int pointsPerResetOverride, ResetConfiguration configuration)
@@ -91,18 +91,3 @@ public static class ResetProgressionCalculator
             .FirstOrDefault(tier => getMinimumResetCount(tier) <= resetCount);
     }
 }
-
-/// <summary>
-/// A value object which contains costs and rewards for the next reset.
-/// </summary>
-/// <param name="NextResetCount">The resulting reset count after a successful reset.</param>
-/// <param name="RequiredZen">The required zen for the reset.</param>
-/// <param name="RequiredItemAmount">The required amount of configured reset items.</param>
-/// <param name="PointsForReset">The amount of points granted for the reset.</param>
-/// <param name="TotalPointsAfterReset">The total amount of points after the reset when replacement mode is active.</param>
-public readonly record struct ResetProgression(
-    int NextResetCount,
-    int RequiredZen,
-    int RequiredItemAmount,
-    int PointsForReset,
-    int TotalPointsAfterReset);

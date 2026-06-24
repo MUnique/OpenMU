@@ -189,8 +189,10 @@ public class GuildServer : IGuildServer
         if (this._guildDictionary.TryGetValue(guildId, out var guild))
         {
             guild.SetServerId(guildMemberId, OfflineServerId);
+
+            // Keep alliances in memory for simplicity.
             if (guild.Members.Values.All(member => member.ServerId == OfflineServerId)
-                && guild.Guild.AllianceGuild is null) // Keep alliances in memory for simplicity
+                && guild.Guild.AllianceGuild is null)
             {
                 this.RemoveGuildContainer(guild);
             }
@@ -353,7 +355,11 @@ public class GuildServer : IGuildServer
         }
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Disbands the alliance of the specified master guild, removing all alliance relationships for all members of the alliance.
+    /// </summary>
+    /// <param name="masterGuildId">The ID of the master guild.</param>
+    /// <returns>True if the alliance was disbanded, false otherwise.</returns>
     public async ValueTask<bool> DisbandAllianceAsync(uint masterGuildId)
     {
         if (!this._guildDictionary.TryGetValue(masterGuildId, out var masterContainer))

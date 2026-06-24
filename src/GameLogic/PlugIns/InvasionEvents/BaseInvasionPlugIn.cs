@@ -388,5 +388,4 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
                 this._mapEventType);
         }
     }
-
 }

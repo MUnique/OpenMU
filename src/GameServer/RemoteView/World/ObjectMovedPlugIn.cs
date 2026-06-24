@@ -40,7 +40,7 @@ public class ObjectMovedPlugIn : IObjectMovedPlugIn
     /// Gets or sets a value indicating whether the directions provided by <see cref="ISupportWalk.GetDirectionsAsync"/> should be send when an object moved.
     /// This is usually not required, because the game client calculates a proper path anyway and doesn't use the suggested path.
     /// </summary>
-    public bool SendWalkDirections { get; set; } = true;
+    public bool SendWalkDirections { get; set; }
 
     /// <inheritdoc/>
     public async ValueTask ObjectMovedAsync(ILocateable obj, MoveType type)
@@ -95,7 +95,7 @@ public class ObjectMovedPlugIn : IObjectMovedPlugIn
     {
         int Write()
         {
-            var stepsSize = steps.Length == 0 ? 1 : (steps.Length / 2) + 2;
+            var stepsSize = stepsLength == 0 ? 0 : (stepsLength / 2) + 2;
             var size = ObjectWalkedRef.GetRequiredSize(stepsSize);
             var span = connection.Output.GetSpan(size)[..size];
 
@@ -109,11 +109,37 @@ public class ObjectMovedPlugIn : IObjectMovedPlugIn
                 StepCount = (byte)stepsLength,
             };
 
-            this.SetStepData(walkPacket, steps.Span, stepsSize);
+            this.SetStepData(walkPacket, steps.Span[..stepsLength], stepsSize);
             return size;
         }
 
         await connection.SendAsync(Write).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the walk code for the current client version.
+    /// </summary>
+    /// <returns>The walk code.</returns>
+    protected byte GetWalkCode()
+    {
+        if (this._player.ClientVersion.Season == 0)
+        {
+            return 0x10;
+        }
+
+        switch (this._player.ClientVersion.Language)
+        {
+            case ClientLanguage.English: return 0xD4;
+            case ClientLanguage.Japanese: return 0x1D;
+            case ClientLanguage.Chinese:
+            case ClientLanguage.Vietnamese:
+                return 0xD9;
+            case ClientLanguage.Filipino: return 0xDD;
+            case ClientLanguage.Korean: return 0xD3;
+            case ClientLanguage.Thai: return 0xD7;
+            default:
+                return (byte)PacketType.Walk;
+        }
     }
 
     private async ValueTask ObjectWalkedAsync(ILocateable obj)
@@ -197,28 +223,6 @@ public class ObjectMovedPlugIn : IObjectMovedPlugIn
             case ClientLanguage.Thai: return 0xD9;
             default:
                 return (byte)PacketType.Teleport;
-        }
-    }
-
-    protected byte GetWalkCode()
-    {
-        if (this._player.ClientVersion.Season == 0)
-        {
-            return 0x10;
-        }
-
-        switch (this._player.ClientVersion.Language)
-        {
-            case ClientLanguage.English: return 0xD4;
-            case ClientLanguage.Japanese: return 0x1D;
-            case ClientLanguage.Chinese:
-            case ClientLanguage.Vietnamese:
-                return 0xD9;
-            case ClientLanguage.Filipino: return 0xDD;
-            case ClientLanguage.Korean: return 0xD3;
-            case ClientLanguage.Thai: return 0xD7;
-            default:
-                return (byte)PacketType.Walk;
         }
     }
 }

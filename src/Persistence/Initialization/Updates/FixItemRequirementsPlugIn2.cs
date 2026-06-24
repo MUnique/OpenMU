@@ -20,6 +20,16 @@ using MUnique.OpenMU.PlugIns;
 [Guid("A7C9D4E1-8F2B-4A3C-9E6D-7B8F9A0E1C2D")]
 public class FixItemRequirementsPlugIn2 : UpdatePlugInBase
 {
+    /// <summary>
+    /// The plugin name.
+    /// </summary>
+    internal const string PlugInName = "Fix Item Requirements (Elf Bows) v2";
+
+    /// <summary>
+    /// The plugin description.
+    /// </summary>
+    internal const string PlugInDescription = "Updates some item requirements for elf bows which were initialized wrongly. This fixes configurations created after the initial fix but before the base data was corrected.";
+
     private static readonly List<(int Group, int Number, int StrengthRequirement, int AgilityRequirement, int EnergyRequirement, int VitalityRequirement)> RequirementCorrections =
     [
         (4, 0, 20, 80, 0, 0), // Short Bow
@@ -30,16 +40,6 @@ public class FixItemRequirementsPlugIn2 : UpdatePlugInBase
         (4, 5, 30, 100, 0, 0), // Silver Bow
         (4, 6, 40, 150, 0, 0), // Chaos Nature Bow
     ];
-
-    /// <summary>
-    /// The plug in name.
-    /// </summary>
-    internal const string PlugInName = "Fix Item Requirements (Elf Bows) v2";
-
-    /// <summary>
-    /// The plug in description.
-    /// </summary>
-    internal const string PlugInDescription = "Updates some item requirements for elf bows which were initialized wrongly. This fixes configurations created after the initial fix but before the base data was corrected.";
 
     /// <inheritdoc />
     public override UpdateVersion Version => UpdateVersion.FixItemRequirements2;

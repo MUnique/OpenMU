@@ -16,8 +16,6 @@ public class MonsterAttributeScalerConfiguration
     private float _defensePercentage = 25.0f;
     private float _healthPercentage = 25.0f;
 
-    private bool ScaleAllActive => this._scaleAllPercentage > 0;
-
     /// <summary>
     /// Gets or sets the percentage applied to all stats at once.
     /// When set above 0, cascades to all individual fields.
@@ -49,7 +47,7 @@ public class MonsterAttributeScalerConfiguration
     }
 
     /// <summary>
-    /// Gets or sets the percentage by which monster attack rate is increased.
+    /// Gets or sets the percentage by which the monster attack rate is increased.
     /// </summary>
     public float AttackRatePercentage
     {
@@ -83,6 +81,8 @@ public class MonsterAttributeScalerConfiguration
         get => this.ScaleAllActive ? this._scaleAllPercentage : this._healthPercentage;
         set => this.SetIndividualField(ref this._healthPercentage, value);
     }
+
+    private bool ScaleAllActive => this._scaleAllPercentage > 0;
 
     private void SetIndividualField(ref float field, float value)
     {

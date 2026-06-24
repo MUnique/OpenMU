@@ -26,7 +26,6 @@ public class UpdateStatsPlugIn : UpdateStatsBasePlugIn
         { Stats.CurrentShield, OnCurrentHealthOrShieldChangedAsync },
         { Stats.MaximumHealth, OnMaximumHealthOrShieldChangedAsync },
         { Stats.MaximumShield, OnMaximumHealthOrShieldChangedAsync },
-
         { Stats.CurrentMana, OnCurrentManaOrAbilityChangedAsync },
         { Stats.CurrentAbility, OnCurrentManaOrAbilityChangedAsync },
         { Stats.MaximumMana, OnMaximumManaOrAbilityChangedAsync },

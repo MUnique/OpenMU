@@ -1,5 +1,10 @@
 ﻿@import "Common";
 
+.sidebar {
+    display: flex;
+    flex-direction: column;
+}
+
 .sidebar > nav {
   @extend .rounded-bottom;
   @extend .shadow-lg;
@@ -17,10 +22,7 @@
 @media (min-width: $widthThreshold) {
   .sidebar > nav {
     width: 250px;
-    height: 100%;
-    position: sticky;
-    top: 0;
-    min-height: inherit;
+    min-height: 100%;
   }
 
     .sidebar > nav > div:first-child > button {

@@ -1,4 +1,4 @@
-﻿// <copyright file="ChatRoom.cs" company="MUnique">
+// <copyright file="ChatRoom.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -26,7 +26,7 @@ internal sealed class ChatRoom : IDisposable
     /// </summary>
     private readonly List<IChatClient> _connectedClients;
 
-    private ReaderWriterLockSlim? _lockSlim = new ();
+    private ReaderWriterLockSlim? _lockSlim = new();
 
     private int _lastUsedClientIndex = -1;
 
@@ -164,9 +164,7 @@ internal sealed class ChatRoom : IDisposable
             throw new ObjectDisposedException("Chat room is already disposed.");
         }
 
-        this._logger.LogDebug(
-            "Client {ChatClientIndex} is trying to join the room {RoomId} with token '{AuthenticationToken}'",
-            chatClient.Index, this.RoomId, chatClient.AuthenticationToken);
+        this._logger.LogDebug("Client {ChatClientIndex} is trying to join the room {RoomId} with token '{AuthenticationToken}'", chatClient.Index, this.RoomId, chatClient.AuthenticationToken);
 
         this._lockSlim?.EnterWriteLock();
         try
@@ -178,7 +176,10 @@ internal sealed class ChatRoom : IDisposable
                 {
                     this._logger.LogInformation(
                         "Client {ChatClientIndex} has tried to join the room {RoomId} with token '{AuthenticationToken}', but was too late. It was valid until {AuthenticationRequiredUntil}.",
-                        chatClient.Index, this.RoomId, chatClient.AuthenticationToken, authenticationInformation.AuthenticationRequiredUntil);
+                        chatClient.Index,
+                        this.RoomId,
+                        chatClient.AuthenticationToken,
+                        authenticationInformation.AuthenticationRequiredUntil);
                 }
                 else
                 {
@@ -193,9 +194,7 @@ internal sealed class ChatRoom : IDisposable
             }
             else
             {
-                this._logger.LogInformation(
-                    "Client {ChatClientIndex} has tried to join the room {RoomId} with token '{AuthenticationToken}', but was not registered.",
-                    chatClient.Index, this.RoomId, chatClient.AuthenticationToken);
+                this._logger.LogInformation("Client {ChatClientIndex} has tried to join the room {RoomId} with token '{AuthenticationToken}', but was not registered.", chatClient.Index, this.RoomId, chatClient.AuthenticationToken);
             }
         }
         finally

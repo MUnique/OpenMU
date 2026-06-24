@@ -103,13 +103,6 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
     private string? NameFilter { get; set; }
 
     /// <inheritdoc />
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        this.CreationPanelService.ItemCreated += this.OnItemCreatedAsync;
-    }
-
-    /// <inheritdoc />
     public async ValueTask DisposeAsync()
     {
         this.CreationPanelService.ItemCreated -= this.OnItemCreatedAsync;
@@ -130,6 +123,13 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
         {
             // and we should not throw exceptions in the dispose method ...
         }
+    }
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        this.CreationPanelService.ItemCreated += this.OnItemCreatedAsync;
     }
 
     /// <inheritdoc />
@@ -198,8 +198,8 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
             var toDelete = await deleteContext.GetByIdAsync(viewModel.Id, this.Type!, cancellationToken).ConfigureAwait(false);
             if (toDelete is null)
             {
-                 this.ToastService.ShowError(string.Format(Resources.CouldNotFindToDelete, viewModel.Name));
-                 return;
+                this.ToastService.ShowError(string.Format(Resources.CouldNotFindToDelete, viewModel.Name));
+                return;
             }
 
             await deleteContext.DeleteAsync(toDelete).ConfigureAwait(false);
@@ -211,8 +211,8 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
         }
         catch (Exception ex)
         {
-             this.Logger.LogError(ex, "Couldn't delete {viewModelName}, probably because it's referenced by another object.", viewModel.Name);
-             this.ToastService.ShowError(Resources.DeleteFailedReferenced);
+            this.Logger.LogError(ex, "Couldn't delete {viewModelName}, probably because it's referenced by another object.", viewModel.Name);
+            this.ToastService.ShowError(Resources.DeleteFailedReferenced);
         }
     }
 
@@ -413,8 +413,8 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
         var clearMethod = targetValue!.GetType().GetMethod("Clear");
         clearMethod?.Invoke(targetValue, null);
 
-        var itemType = prop.PropertyType.IsGenericType 
-            ? prop.PropertyType.GetGenericArguments().FirstOrDefault() 
+        var itemType = prop.PropertyType.IsGenericType
+            ? prop.PropertyType.GetGenericArguments().FirstOrDefault()
             : null;
 
         foreach (var item in sourceCollection)
