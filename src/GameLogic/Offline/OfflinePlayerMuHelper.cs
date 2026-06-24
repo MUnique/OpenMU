@@ -155,7 +155,15 @@ public sealed class OfflinePlayerMuHelper : AsyncDisposable
             return;
         }
 
-        await this._zenHandler.DeductZenAsync().ConfigureAwait(false);
+        if (!await this._zenHandler.DeductZenAsync().ConfigureAwait(false))
+        {
+            if (this._player.Account?.LoginName is { } loginName)
+            {
+                await this._player.GameContext.OfflinePlayerManager.StopAsync(loginName).ConfigureAwait(false);
+            }
+
+            return;
+        }
 
         await this._repairHandler.PerformRepairsAsync().ConfigureAwait(false);
         await this._petHandler.CheckPetDurabilityAsync().ConfigureAwait(false);

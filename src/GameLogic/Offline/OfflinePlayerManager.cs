@@ -77,9 +77,23 @@ public sealed class OfflinePlayerManager
     /// <param name="loginName">The account login name.</param>
     public async ValueTask StopAsync(string loginName)
     {
-        if (this._activePlayers.TryRemove(loginName, out var offlinePlayer))
+        if (!this._activePlayers.TryRemove(loginName, out var offlinePlayer))
+        {
+            // The session might have been started and stopped outside the manager (e.g. in tests).
+            return;
+        }
+
+        try
         {
             await offlinePlayer.StopAsync().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            offlinePlayer.Logger.LogError(ex, "Error stopping offline player session for {0}.", loginName);
+        }
+        finally
+        {
+            await offlinePlayer.GameContext.RemovePlayerAsync(offlinePlayer).ConfigureAwait(false);
             await offlinePlayer.DisposeAsync().ConfigureAwait(false);
         }
     }

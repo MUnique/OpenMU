@@ -15,6 +15,7 @@ using MUnique.OpenMU.PlugIns;
 public sealed class OfflinePlayer : Player
 {
     private OfflinePlayerMuHelper? _intelligence;
+    private Task? _intelligenceDisposeTask;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="OfflinePlayer"/> class.
@@ -99,11 +100,32 @@ public sealed class OfflinePlayer : Player
     {
         if (this._intelligence is { } intelligence)
         {
-            await intelligence.DisposeAsync().ConfigureAwait(false);
             this._intelligence = null;
+            this._intelligenceDisposeTask = Task.Run(async () =>
+            {
+                try
+                {
+                    await intelligence.DisposeAsync().ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    this.Logger.LogError(ex, "Error disposing intelligence for offline player {AccountLoginName}.", this.AccountLoginName);
+                }
+            });
         }
 
         await base.InternalDisconnectAsync().ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    protected override async ValueTask DisposeAsyncCore()
+    {
+        if (this._intelligenceDisposeTask is { } disposeTask)
+        {
+            await disposeTask.ConfigureAwait(false);
+        }
+
+        await base.DisposeAsyncCore().ConfigureAwait(false);
     }
 
     /// <inheritdoc />
