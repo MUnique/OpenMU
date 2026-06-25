@@ -36,8 +36,8 @@ public sealed class OfflinePlayerMuHelper : AsyncDisposable
     private readonly PetHandler _petHandler;
     private readonly CancellationTokenSource _cts = new();
     private readonly EventHandler<DeathInformation> _deathHandler;
+    private readonly PeriodicTimer _timer = new(TimeSpan.FromMilliseconds(500));
 
-    private Timer? _aiTimer;
     private bool _isDead;
 
     /// <summary>
@@ -72,21 +72,17 @@ public sealed class OfflinePlayerMuHelper : AsyncDisposable
         this._player.Died += this._deathHandler;
     }
 
-    /// <summary>Starts the 500 ms AI timer and a separate pet AI.</summary>
+    /// <summary>Starts the AI loop and a separate pet AI.</summary>
     public void Start()
     {
         _ = this._petHandler.InitializeAsync();
-
-        this._aiTimer ??= new Timer(
-            state => _ = this.SafeTickAsync(this._cts.Token),
-            null,
-            TimeSpan.FromSeconds(1),
-            TimeSpan.FromMilliseconds(500));
+        _ = this.RunLoopAsync();
     }
 
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore()
     {
+        this._timer.Dispose();
         await this._cts.CancelAsync().ConfigureAwait(false);
         await this._petHandler.StopAsync().ConfigureAwait(false);
         await base.DisposeAsyncCore().ConfigureAwait(false);
@@ -98,8 +94,6 @@ public sealed class OfflinePlayerMuHelper : AsyncDisposable
         if (disposing)
         {
             this._player.Died -= this._deathHandler;
-            this._aiTimer?.Dispose();
-            this._aiTimer = null;
             this._cts.Dispose();
         }
 
@@ -110,7 +104,22 @@ public sealed class OfflinePlayerMuHelper : AsyncDisposable
     {
         this._player.Logger.LogDebug("Offline player '{Name}' died. Killer: {KillerName}.", this._player.Name, e.KillerName);
         this._isDead = true;
-        this._cts.Cancel();
+    }
+
+    private async Task RunLoopAsync()
+    {
+        try
+        {
+            while (!this.IsDisposed
+                   && await this._timer.WaitForNextTickAsync(this._cts.Token).ConfigureAwait(false))
+            {
+                await this.SafeTickAsync(this._cts.Token).ConfigureAwait(false);
+            }
+        }
+        catch (Exception ex) when (ex is OperationCanceledException or ObjectDisposedException)
+        {
+            // Expected during shutdown.
+        }
     }
 
     private async Task SafeTickAsync(CancellationToken cancellationToken)
@@ -146,7 +155,15 @@ public sealed class OfflinePlayerMuHelper : AsyncDisposable
             return;
         }
 
-        await this._zenHandler.DeductZenAsync().ConfigureAwait(false);
+        if (!await this._zenHandler.DeductZenAsync().ConfigureAwait(false))
+        {
+            if (this._player.Account?.LoginName is { } loginName)
+            {
+                await this._player.GameContext.OfflinePlayerManager.StopAsync(loginName).ConfigureAwait(false);
+            }
+
+            return;
+        }
 
         await this._repairHandler.PerformRepairsAsync().ConfigureAwait(false);
         await this._petHandler.CheckPetDurabilityAsync().ConfigureAwait(false);
@@ -156,7 +173,7 @@ public sealed class OfflinePlayerMuHelper : AsyncDisposable
             return;
         }
 
-        // CMuHelper::Work() order: Buff → RecoverHealth → ObtainItem → Regroup → Attack
+        // CMuHelper::Work() order: Buff → RecoverHealth → ObtainItem → Regroup → Attack.
         if (!await this._buffHandler.PerformBuffsAsync().ConfigureAwait(false))
         {
             return;
@@ -185,7 +202,7 @@ public sealed class OfflinePlayerMuHelper : AsyncDisposable
         {
             if (!this._player.IsAlive)
             {
-                // The offline player is dead. We wait for the server's 3-second respawn timer to finish.
+                // Player hasn't respawned yet, skip the tick and check again on the next interval.
                 return true;
             }
 

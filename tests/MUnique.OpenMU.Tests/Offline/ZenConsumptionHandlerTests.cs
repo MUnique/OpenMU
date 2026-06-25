@@ -67,10 +67,11 @@ public class ZenConsumptionHandlerTests
     }
 
     /// <summary>
-    /// Tests that offline player stops when the player has insufficient Zen.
+    /// Tests that <see cref="ZenConsumptionHandler.DeductZenAsync"/> returns false
+    /// when the player has insufficient Zen.
     /// </summary>
     [Test]
-    public async ValueTask StopsOfflineLevelingWhenInsufficientZenAsync()
+    public async ValueTask ReturnsFalseWhenInsufficientZenAsync()
     {
         // Arrange
         var player = await this.CreateOfflinePlayerAsync().ConfigureAwait(false);
@@ -81,10 +82,10 @@ public class ZenConsumptionHandlerTests
         player.StartTimestamp = DateTime.UtcNow.AddMinutes(-2);
 
         // Act
-        await handler.DeductZenAsync().ConfigureAwait(false);
+        var result = await handler.DeductZenAsync().ConfigureAwait(false);
 
         // Assert
-        Assert.That(player.PlayerState.CurrentState, Is.EqualTo(PlayerState.Finished));
+        Assert.That(result, Is.False);
     }
 
     private async ValueTask<OfflinePlayer> CreateOfflinePlayerAsync()

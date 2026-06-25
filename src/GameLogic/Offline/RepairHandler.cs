@@ -12,6 +12,12 @@ using MUnique.OpenMU.GameLogic.PlayerActions.Items;
 /// </summary>
 internal sealed class RepairHandler
 {
+    /// <summary>
+    /// The durability health threshold (inclusive, in percent) below which a repair is triggered.
+    /// Mirrors the client's <c>DEFAULT_DURABILITY_THRESHOLD</c> constant in MuHelper.cpp.
+    /// </summary>
+    private const int DurabilityRepairThresholdPercent = 50;
+
     private readonly Player _player;
     private readonly IMuHelperSettings? _config;
     private readonly ItemRepairAction _repairAction = new();
@@ -28,7 +34,8 @@ internal sealed class RepairHandler
     }
 
     /// <summary>
-    /// Performs repairs on equipped items if the configuration allows it.
+    /// Performs repairs on equipped items if the configuration allows it
+    /// and the item's durability is at or below <see cref="DurabilityRepairThresholdPercent"/>%.
     /// </summary>
     public async ValueTask PerformRepairsAsync()
     {
@@ -47,12 +54,35 @@ internal sealed class RepairHandler
                 continue;
             }
 
-            if (this._player.Inventory?.GetItem(i) is null)
+            var item = this._player.Inventory?.GetItem(i);
+            if (item is null)
+            {
+                continue;
+            }
+
+            if (!NeedsDurabilityRepair(item))
             {
                 continue;
             }
 
             await this._repairAction.RepairItemAsync(this._player, i).ConfigureAwait(false);
         }
+    }
+
+    /// <summary>
+    /// Returns <see langword="true"/> when the item's durability health is at or below
+    /// <see cref="DurabilityRepairThresholdPercent"/>%, using ceiling-integer arithmetic
+    /// to match the client formula: <c>iHealth = (durability * 100 + max - 1) / max</c>.
+    /// </summary>
+    private static bool NeedsDurabilityRepair(Item item)
+    {
+        var max = item.GetMaximumDurabilityOfOnePiece();
+        if (max == 0)
+        {
+            return false;
+        }
+
+        var durabilityHealthPercent = ((int)item.Durability * 100 + max - 1) / max;
+        return durabilityHealthPercent <= DurabilityRepairThresholdPercent;
     }
 }

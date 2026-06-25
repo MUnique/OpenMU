@@ -16,7 +16,6 @@ using MUnique.OpenMU.Interfaces;
 public sealed class ItemPickupHandler
 {
     private const byte MinPickupRange = 1;
-    private const byte JewelItemGroup = 14;
 
     private static readonly PickupItemAction PickupAction = new();
 
@@ -35,7 +34,7 @@ public sealed class ItemPickupHandler
     }
 
     /// <summary>
-    /// Scans for and picks up items within configurable range.
+    /// Scans for and picks up items within a configurable range.
     /// </summary>
     public async ValueTask PickupItemsAsync()
     {
@@ -59,6 +58,17 @@ public sealed class ItemPickupHandler
                 await PickupAction.PickupItemAsync(this._player, drop.Id).ConfigureAwait(false);
             }
         }
+    }
+
+    private static bool IsJewel(Item item)
+    {
+        if (item.Definition is not { } definition)
+        {
+            return false;
+        }
+
+        return (definition.Group == 14 && definition.Number is 13 or 14 or 16 or 22 or 31 or 41 or 42 or 43 or 44)
+               || (definition.Group == 12 && definition.Number == 15);
     }
 
     private bool ShouldPickUpDrop(IIdentifiable drop)
@@ -93,7 +103,7 @@ public sealed class ItemPickupHandler
             return false;
         }
 
-        if (this._config.PickJewel && item.Definition?.Group == JewelItemGroup)
+        if (this._config.PickJewel && IsJewel(item))
         {
             return true;
         }
