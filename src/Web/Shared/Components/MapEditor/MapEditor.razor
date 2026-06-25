@@ -66,7 +66,7 @@
                 </button>
             }
             <button type="button"
-                    class="btn btn-primary ms-2"
+                    class="btn btn-primary"
                     @onclick="@this.SaveAsync"
                     title="@Resources.Save">
                 <span class="oi oi-cloud-upload"></span> @Resources.Save
@@ -160,30 +160,30 @@
         @if (!this._createMode)
         {
             <div class="map-object-filter mb-2">
-                <div class="btn-group w-100 mb-1" role="group" aria-label="@Resources.TypeFilter">
+                <div class="btn-group w-100 mb-1 flex-wrap" role="group" aria-label="@Resources.TypeFilter">
                     <button type="button"
-                            class="btn btn-sm @(this._activeFilter == ObjectTypeFilter.All ? "btn-primary" : "btn-outline-primary")"
-                            @onclick="@(() => this.SetActiveFilter(ObjectTypeFilter.All))">
+                            class="btn btn-sm @(this._activeFilter == ObjectTypeFilter.None ? "btn-primary" : "btn-outline-primary")"
+                            @onclick="@this.SetAllFilter">
                         @Resources.All
                     </button>
                     <button type="button"
-                            class="btn btn-sm @(this._activeFilter == ObjectTypeFilter.Monsters ? "btn-primary" : "btn-outline-primary")"
-                            @onclick="@(() => this.SetActiveFilter(ObjectTypeFilter.Monsters))">
+                            class="btn btn-sm @(this.IsFilterActive(ObjectTypeFilter.Monsters) ? "btn-primary" : "btn-outline-primary")"
+                            @onclick="@(() => this.ToggleFilter(ObjectTypeFilter.Monsters))">
                         @Resources.Monsters
                     </button>
                     <button type="button"
-                            class="btn btn-sm @(this._activeFilter == ObjectTypeFilter.Npcs ? "btn-primary" : "btn-outline-primary")"
-                            @onclick="@(() => this.SetActiveFilter(ObjectTypeFilter.Npcs))">
+                            class="btn btn-sm @(this.IsFilterActive(ObjectTypeFilter.Npcs) ? "btn-primary" : "btn-outline-primary")"
+                            @onclick="@(() => this.ToggleFilter(ObjectTypeFilter.Npcs))">
                         @Resources.Npcs
                     </button>
                     <button type="button"
-                            class="btn btn-sm @(this._activeFilter == ObjectTypeFilter.Gates ? "btn-primary" : "btn-outline-primary")"
-                            @onclick="@(() => this.SetActiveFilter(ObjectTypeFilter.Gates))">
+                            class="btn btn-sm @(this.IsFilterActive(ObjectTypeFilter.Gates) ? "btn-primary" : "btn-outline-primary")"
+                            @onclick="@(() => this.ToggleFilter(ObjectTypeFilter.Gates))">
                         @Resources.Gates
                     </button>
                     <button type="button"
-                            class="btn btn-sm @(this._activeFilter == ObjectTypeFilter.Others ? "btn-primary" : "btn-outline-primary")"
-                            @onclick="@(() => this.SetActiveFilter(ObjectTypeFilter.Others))">
+                            class="btn btn-sm @(this.IsFilterActive(ObjectTypeFilter.Others) ? "btn-primary" : "btn-outline-primary")"
+                            @onclick="@(() => this.ToggleFilter(ObjectTypeFilter.Others))">
                         @Resources.Others
                     </button>
                 </div>

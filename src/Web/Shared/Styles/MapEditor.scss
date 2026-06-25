@@ -138,32 +138,61 @@ $map-host-size: 768px;
 
 .gate-enter {
     @extend .map-object;
-    background: rgba(64, 224, 208, 0.6);
-    border: 2px solid turquoise;
+    --obj-color: rgb(120, 20, 170);
+    background: rgba(120, 20, 170, 0.7);
+    border: 2px solid rgb(160, 40, 220);
 }
 
 .gate-exit {
     @extend .map-object;
-    background: rgba(65, 105, 225, 0.6);
-    border: 2px solid royalblue;
+    --obj-color: rgb(65, 5, 110);
+    background: rgba(65, 5, 110, 0.7);
+    border: 2px solid rgb(90, 15, 150);
 }
 
-.spawn {
+.spawn-monster-area {
     @extend .map-object;
-    background: rgba(138, 43, 226, 0.6);
+    --obj-color: rgb(200, 0, 0);
+    background: rgba(200, 0, 0, 0.7);
+    border: 2px dashed rgb(255, 0, 0);
 }
 
-.spawn-area {
-    @extend .spawn;
-    opacity: 0.5;
-    border: 2px dashed rgba(255, 255, 255, 0.6);
-}
-
-.spawn-single {
-    @extend .spawn;
-    opacity: 0.8;
+.spawn-monster-single {
+    @extend .map-object;
+    --obj-color: rgb(200, 0, 0);
+    background: rgba(200, 0, 0, 0.7);
     border-radius: 50%;
-    border: 2px solid rgba(255, 255, 255, 0.6);
+    border: 2px solid rgb(255, 0, 0);
+}
+
+.spawn-npc-area {
+    @extend .map-object;
+    --obj-color: rgb(0, 60, 200);
+    background: rgba(0, 60, 200, 0.7);
+    border: 2px dashed rgb(0, 100, 255);
+}
+
+.spawn-npc-single {
+    @extend .map-object;
+    --obj-color: rgb(0, 60, 200);
+    background: rgba(0, 60, 200, 0.7);
+    border-radius: 50%;
+    border: 2px solid rgb(0, 100, 255);
+}
+
+.spawn-other-area {
+    @extend .map-object;
+    --obj-color: rgb(200, 180, 0);
+    background: rgba(200, 180, 0, 0.7);
+    border: 2px dashed rgb(255, 230, 0);
+}
+
+.spawn-other-single {
+    @extend .map-object;
+    --obj-color: rgb(200, 180, 0);
+    background: rgba(200, 180, 0, 0.7);
+    border-radius: 50%;
+    border: 2px solid rgb(255, 230, 0);
 }
 
 .focused-object {
@@ -179,8 +208,8 @@ $map-host-size: 768px;
     width: 14px;
     height: 14px;
     border-radius: 50%;
-    background: #6a0dad;
-    border: 3px solid white;
+    background: var(--obj-color);
+    border: 2px solid rgba(255, 255, 255, 0.85);
     position: absolute;
     z-index: 30;
 
@@ -217,11 +246,6 @@ $map-host-size: 768px;
         min-width: 70px;
         font-family: monospace;
     }
-}
-
-.map-object-form {
-    max-height: $map-host-size;
-    overflow-y: auto;
 }
 
 .object-size-label {

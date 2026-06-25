@@ -76,7 +76,7 @@ internal abstract class BaseMapInitializer : IMapInitializer
     protected abstract string MapName { get; }
 
     /// <summary>
-    /// Gets the version prefix for Terrain ressources.
+    /// Gets the version prefix for Terrain resources.
     /// </summary>
     protected virtual string TerrainVersionPrefix => string.Empty;
 
@@ -323,35 +323,5 @@ internal abstract class BaseMapInitializer : IMapInitializer
     protected void AddUnderwaterMovementPowerUp()
     {
         this.AddCharacterPowerUp(Stats.IsUnderwater, 1);
-    }
-
-    private string? GetTerrainFileName()
-    {
-        var assembly = Assembly.GetExecutingAssembly();
-        var resourceNames = assembly.GetManifestResourceNames();
-        for (var mapNumber = this.MapNumber + 1; mapNumber > 0 && mapNumber > this.MapNumber - 10; mapNumber--)
-        {
-            var candidate = $"{assembly.GetName().Name}.Resources.{this.TerrainVersionPrefix}Terrain{mapNumber}{(this.Discriminator > 0 ? ("_" + this.Discriminator) : string.Empty)}.att";
-            if (resourceNames.Contains(candidate))
-            {
-                return candidate;
-            }
-
-            if (this.Discriminator > 0)
-            {
-                var candidate2 = $"{assembly.GetName().Name}.Resources.{this.TerrainVersionPrefix}Terrain{mapNumber}.att";
-                if (resourceNames.Contains(candidate2))
-                {
-                    return candidate2;
-                }
-            }
-
-            if (!char.IsDigit(this.MapName[^1]))
-            {
-                break;
-            }
-        }
-
-        return null;
     }
 }

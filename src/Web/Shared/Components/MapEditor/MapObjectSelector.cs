@@ -125,7 +125,7 @@ public sealed class MapObjectSelector
             return bestSpawn;
         }
 
-        if (filter is ObjectTypeFilter.All or ObjectTypeFilter.Gates)
+        if (filter == ObjectTypeFilter.None || filter.HasFlag(ObjectTypeFilter.Gates))
         {
             foreach (var gate in map.ExitGates)
             {
@@ -149,12 +149,17 @@ public sealed class MapObjectSelector
 
     private static bool MatchesTypeFilter(object obj, ObjectTypeFilter filter)
     {
-        return filter switch
+        if (filter == ObjectTypeFilter.None)
         {
-            ObjectTypeFilter.All => true,
-            ObjectTypeFilter.Gates => obj is EnterGate or ExitGate,
-            _ => obj is MonsterSpawnArea spawn && SpawnMatchesFilter(spawn, filter),
-        };
+            return true;
+        }
+
+        if (filter.HasFlag(ObjectTypeFilter.Gates) && obj is EnterGate or ExitGate)
+        {
+            return true;
+        }
+
+        return obj is MonsterSpawnArea spawn && SpawnMatchesFilter(spawn, filter);
     }
 
     private static bool MatchesSearch(object obj, string? search)
@@ -197,19 +202,33 @@ public sealed class MapObjectSelector
 
     private static bool SpawnMatchesFilter(MonsterSpawnArea spawn, ObjectTypeFilter filter)
     {
-        var objectKind = spawn.MonsterDefinition?.ObjectKind;
-
-        return filter switch
+        if (filter == ObjectTypeFilter.None)
         {
-            ObjectTypeFilter.Gates => false,
-            ObjectTypeFilter.Monsters => objectKind == NpcObjectKind.Monster,
-            ObjectTypeFilter.Npcs => objectKind == NpcObjectKind.PassiveNpc || objectKind == NpcObjectKind.Guard,
-            ObjectTypeFilter.Others => objectKind == NpcObjectKind.Trap
-                                       || objectKind == NpcObjectKind.Statue
-                                       || objectKind == NpcObjectKind.SoccerBall
-                                       || objectKind == NpcObjectKind.Destructible,
-            _ => true,
-        };
+            return true;
+        }
+
+        var objectKind = spawn.MonsterDefinition?.ObjectKind;
+        var result = false;
+
+        if (filter.HasFlag(ObjectTypeFilter.Monsters))
+        {
+            result |= objectKind == NpcObjectKind.Monster;
+        }
+
+        if (filter.HasFlag(ObjectTypeFilter.Npcs))
+        {
+            result |= objectKind == NpcObjectKind.PassiveNpc || objectKind == NpcObjectKind.Guard;
+        }
+
+        if (filter.HasFlag(ObjectTypeFilter.Others))
+        {
+            result |= objectKind == NpcObjectKind.Trap
+                      || objectKind == NpcObjectKind.Statue
+                      || objectKind == NpcObjectKind.SoccerBall
+                      || objectKind == NpcObjectKind.Destructible;
+        }
+
+        return result;
     }
 
     /// <summary>

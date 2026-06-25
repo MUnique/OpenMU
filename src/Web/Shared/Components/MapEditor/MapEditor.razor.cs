@@ -57,7 +57,7 @@ public partial class MapEditor : IAsyncDisposable
     private bool _showGrid;
 
     private string _searchFilter = string.Empty;
-    private ObjectTypeFilter _activeFilter = ObjectTypeFilter.All;
+    private ObjectTypeFilter _activeFilter = ObjectTypeFilter.None;
 
     private int _mouseMapX;
     private int _mouseMapY;
@@ -198,6 +198,7 @@ public partial class MapEditor : IAsyncDisposable
             _ = this._jsModule?.InvokeVoidAsync("setPanning", true);
         }
 
+        _ = this.UpdateSelectValueAsync();
         this.StateHasChanged();
     }
 
@@ -379,15 +380,24 @@ public partial class MapEditor : IAsyncDisposable
         }
     }
 
-    private void SetActiveFilter(ObjectTypeFilter filter)
+    private void ToggleFilter(ObjectTypeFilter filter)
     {
-        this._activeFilter = filter;
+        this._activeFilter ^= filter;
         if (this._focusedObject is not null &&
             !MapObjectSelector.MatchesFilters(this._focusedObject, this._activeFilter, this._searchFilter))
         {
             this._focusedObject = null;
         }
     }
+
+    private void SetAllFilter()
+    {
+        this._activeFilter = ObjectTypeFilter.None;
+        this._focusedObject = null;
+    }
+
+    private bool IsFilterActive(ObjectTypeFilter filter) =>
+        this._activeFilter.HasFlag(filter);
 
     private int GetObjectListSize()
     {
@@ -404,21 +414,23 @@ public partial class MapEditor : IAsyncDisposable
 
     private IEnumerable<object> GetMapObjects()
     {
-        return this._activeFilter switch
+        var objects = Enumerable.Empty<object>();
+
+        if (this._activeFilter == ObjectTypeFilter.None || this._activeFilter.HasFlag(ObjectTypeFilter.Gates))
         {
-            ObjectTypeFilter.All =>
-                this.SelectedMap.EnterGates.Cast<object>()
-                    .Concat(this.SelectedMap.ExitGates)
-                    .Concat(this.SelectedMap.MonsterSpawns)
-                    .Where(o => MapObjectSelector.MatchesFilters(o, this._activeFilter, this._searchFilter)),
-            ObjectTypeFilter.Gates =>
-                this.SelectedMap.EnterGates.Cast<object>()
-                    .Concat(this.SelectedMap.ExitGates)
-                    .Where(o => MapObjectSelector.MatchesFilters(o, this._activeFilter, this._searchFilter)),
-            _ =>
-                this.SelectedMap.MonsterSpawns
-                    .Where(s => MapObjectSelector.MatchesFilters(s, this._activeFilter, this._searchFilter)),
-        };
+            objects = objects.Concat(this.SelectedMap.EnterGates)
+                            .Concat(this.SelectedMap.ExitGates);
+        }
+
+        if (this._activeFilter == ObjectTypeFilter.None
+            || this._activeFilter.HasFlag(ObjectTypeFilter.Monsters)
+            || this._activeFilter.HasFlag(ObjectTypeFilter.Npcs)
+            || this._activeFilter.HasFlag(ObjectTypeFilter.Others))
+        {
+            objects = objects.Concat(this.SelectedMap.MonsterSpawns);
+        }
+
+        return objects.Where(o => MapObjectSelector.MatchesFilters(o, this._activeFilter, this._searchFilter));
     }
 
     private string? GetObjectSize(object obj) =>
@@ -788,10 +800,10 @@ public partial class MapEditor : IAsyncDisposable
     /// </summary>
     public sealed class BoundingClientRect
     {
-        /// <summary>Gets or sets the left edge position relative to the viewport.</summary>
+        /// <summary>Gets or sets the left-edge position relative to the viewport.</summary>
         public double Left { get; set; }
 
-        /// <summary>Gets or sets the top edge position relative to the viewport.</summary>
+        /// <summary>Gets or sets the top-edge position relative to the viewport.</summary>
         public double Top { get; set; }
     }
 
