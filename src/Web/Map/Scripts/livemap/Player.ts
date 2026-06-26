@@ -11,10 +11,11 @@ export class Player extends Attackable<PlayerData> {
             Player.defaultGeometry,
             new THREE.MeshBasicMaterial({
                 alphaMap: attackableAlphaMapTexture,
-                color: 0xFF0000 + data.id,
+                color: 0x8C50C8,
                 transparent: true,
             }),
         );
+        this.renderOrder = 1;
     }
 
     public update(): void {

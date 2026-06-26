@@ -2,14 +2,14 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-const BASE_SIZE = 1024;
-const MIN_ZOOM = 0.75;
+const BASE_SIZE = 768;
+const MIN_ZOOM = 1.0;
 const MAX_ZOOM = 4.0;
 
 let _element = null;
 let _dotNetRef = null;
-let _baseScale = 4;
-let _defaultZoom = 0.75;
+let _baseScale = 3;
+let _defaultZoom = 1.0;
 let _zoomLevel = _defaultZoom;
 let _isDragging = false;
 let _isPanning = false;
@@ -259,8 +259,9 @@ export function initialize(element, dotNetRef, initialZoom, baseScale) {
 
     _element = element;
     _dotNetRef = dotNetRef;
-    _baseScale = baseScale;
-    _zoomLevel = initialZoom;
+    _baseScale = baseScale || _baseScale;
+    _defaultZoom = initialZoom;
+    _zoomLevel = _defaultZoom;
     _applyZoom(_zoomLevel);
 
     document.removeEventListener("mousedown", _onDocumentMouseDown);
@@ -422,7 +423,7 @@ export function resetZoom(element) {
     }
 
     _zoomLevel = _defaultZoom;
-    _applyZoom(_zoomLevel);
+    _applyZoom(_defaultZoom);
     element.scrollLeft = 0;
     element.scrollTop = 0;
 

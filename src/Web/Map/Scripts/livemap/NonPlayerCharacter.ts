@@ -17,9 +17,9 @@ enum NpcObjectKind {
 }
 
 const enum NpcColors {
-    Monster = 0x00FFFF,
-    Passive = 0xFF8800,
-    Default = 0xFFFF00,
+    Monster = 0xC85050,
+    Passive = 0x5050C8,
+    Default = 0xC8C850,
 }
 
 export class NonPlayerCharacter extends Attackable<NpcData> {

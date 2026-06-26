@@ -13030,54 +13030,54 @@ mark, .mark {
 }
 
 .gate-enter {
-  --obj-color: rgb(120, 20, 170);
-  background: rgba(120, 20, 170, 0.7);
-  border: 2px solid rgb(160, 40, 220);
+  --obj-color: rgb(200, 160, 240);
+  background: rgba(200, 160, 240, 0.7);
+  border: 2px solid rgb(230, 190, 255);
 }
 
 .gate-exit {
-  --obj-color: rgb(65, 5, 110);
-  background: rgba(65, 5, 110, 0.7);
-  border: 2px solid rgb(90, 15, 150);
+  --obj-color: rgb(140, 80, 200);
+  background: rgba(140, 80, 200, 0.7);
+  border: 2px solid rgb(170, 110, 230);
 }
 
 .spawn-monster-area {
-  --obj-color: rgb(200, 0, 0);
-  background: rgba(200, 0, 0, 0.7);
-  border: 2px dashed rgb(255, 0, 0);
+  --obj-color: rgb(200, 80, 80);
+  background: rgba(200, 80, 80, 0.7);
+  border: 2px dashed rgb(230, 110, 110);
 }
 
 .spawn-monster-single {
-  --obj-color: rgb(200, 0, 0);
-  background: rgba(200, 0, 0, 0.7);
+  --obj-color: rgb(200, 80, 80);
+  background: rgba(200, 80, 80, 0.7);
   border-radius: 50%;
-  border: 2px solid rgb(255, 0, 0);
+  border: 2px solid rgb(230, 110, 110);
 }
 
 .spawn-npc-area {
-  --obj-color: rgb(0, 60, 200);
-  background: rgba(0, 60, 200, 0.7);
-  border: 2px dashed rgb(0, 100, 255);
+  --obj-color: rgb(80, 80, 200);
+  background: rgba(80, 80, 200, 0.7);
+  border: 2px dashed rgb(110, 110, 230);
 }
 
 .spawn-npc-single {
-  --obj-color: rgb(0, 60, 200);
-  background: rgba(0, 60, 200, 0.7);
+  --obj-color: rgb(80, 80, 200);
+  background: rgba(80, 80, 200, 0.7);
   border-radius: 50%;
-  border: 2px solid rgb(0, 100, 255);
+  border: 2px solid rgb(110, 110, 230);
 }
 
 .spawn-other-area {
-  --obj-color: rgb(200, 180, 0);
-  background: rgba(200, 180, 0, 0.7);
-  border: 2px dashed rgb(255, 230, 0);
+  --obj-color: rgb(200, 200, 80);
+  background: rgba(200, 200, 80, 0.7);
+  border: 2px dashed rgb(230, 230, 110);
 }
 
 .spawn-other-single {
-  --obj-color: rgb(200, 180, 0);
-  background: rgba(200, 180, 0, 0.7);
+  --obj-color: rgb(200, 200, 80);
+  background: rgba(200, 200, 80, 0.7);
   border-radius: 50%;
-  border: 2px solid rgb(255, 230, 0);
+  border: 2px solid rgb(230, 230, 110);
 }
 
 .focused-object {

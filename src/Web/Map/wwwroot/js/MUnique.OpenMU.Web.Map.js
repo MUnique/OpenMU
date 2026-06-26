@@ -510,11 +510,13 @@ System.register("Player", ["three", "Attackable"], function (exports_8, context_
             Player = (function (_super) {
                 __extends(Player, _super);
                 function Player(data) {
-                    return _super.call(this, data, Player.defaultGeometry, new THREE.MeshBasicMaterial({
+                    var _this = _super.call(this, data, Player.defaultGeometry, new THREE.MeshBasicMaterial({
                         alphaMap: Attackable_1.attackableAlphaMapTexture,
-                        color: 0xFF0000 + data.id,
+                        color: 0x8C50C8,
                         transparent: true,
                     })) || this;
+                    _this.renderOrder = 1;
+                    return _this;
                 }
                 Player.prototype.update = function () {
                     var highlightedScale = 1.5;
@@ -560,9 +562,9 @@ System.register("NonPlayerCharacter", ["three", "Attackable"], function (exports
                 NpcObjectKind[NpcObjectKind["Destructible"] = 7] = "Destructible";
             })(NpcObjectKind || (NpcObjectKind = {}));
             (function (NpcColors) {
-                NpcColors[NpcColors["Monster"] = 65535] = "Monster";
-                NpcColors[NpcColors["Passive"] = 16746496] = "Passive";
-                NpcColors[NpcColors["Default"] = 16776960] = "Default";
+                NpcColors[NpcColors["Monster"] = 13127760] = "Monster";
+                NpcColors[NpcColors["Passive"] = 5263560] = "Passive";
+                NpcColors[NpcColors["Default"] = 13158480] = "Default";
             })(NpcColors || (NpcColors = {}));
             NonPlayerCharacter = (function (_super) {
                 __extends(NonPlayerCharacter, _super);
@@ -573,12 +575,12 @@ System.register("NonPlayerCharacter", ["three", "Attackable"], function (exports
                 NonPlayerCharacter.getColorForObjectKind = function (kind) {
                     switch (kind) {
                         case NpcObjectKind.Monster:
-                            return 65535;
+                            return 13127760;
                         case NpcObjectKind.PassiveNpc:
                         case NpcObjectKind.Guard:
-                            return 16746496;
+                            return 5263560;
                         default:
-                            return 16776960;
+                            return 13158480;
                     }
                 };
                 NonPlayerCharacter.size = 4;

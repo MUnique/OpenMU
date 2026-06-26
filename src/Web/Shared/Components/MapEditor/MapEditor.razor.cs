@@ -28,8 +28,6 @@ public partial class MapEditor : IAsyncDisposable
     private static readonly string JsModulePath =
         $"./_content/{typeof(MapEditor).Assembly.GetName().Name}/Components/MapEditor/{nameof(MapEditor)}.razor.js";
 
-    private static readonly string AssemblyName = typeof(MapEditor).Assembly.GetName().Name!;
-
     private static readonly string[] DirectionNames = Enum.GetNames<Direction>()
         .Select(d => d.ToLowerInvariant())
         .ToArray();
@@ -67,8 +65,6 @@ public partial class MapEditor : IAsyncDisposable
     private Resizers.ResizerPosition? _resizerPosition;
     private MapDragState _dragState;
     private bool _hasDragSnapshot;
-    private bool _mapImageError;
-
     /// <summary>
     /// Gets or sets the callback invoked before the selected map changes,
     /// allowing the caller to cancel the change.
@@ -121,9 +117,7 @@ public partial class MapEditor : IAsyncDisposable
     /// <summary>
     /// Gets the effective pixel scale for the current zoom level.
     /// </summary>
-    private float EffectiveScale => this._coordinateService.GetEffectiveScale(this._zoomManager?.ZoomLevel ?? 0.75f);
-
-    private string MapImageUrl => $"./_content/{AssemblyName}/img/map/{this.SelectedMap.Number}.webp";
+    private float EffectiveScale => this._coordinateService.GetEffectiveScale(this._zoomManager?.ZoomLevel ?? MapZoomManager.DefaultZoom);
 
     /// <summary>
     /// Gets or sets the currently selected map, rebuilding the terrain image when changed.
@@ -135,7 +129,6 @@ public partial class MapEditor : IAsyncDisposable
         {
             this._terrainImage?.Dispose();
             this._selectedMap = value;
-            this._mapImageError = false;
             this._terrainImage = new GameMapTerrain(this.SelectedMap).ToImage();
             this._terrainImageDataUrl = this._terrainImage.ToBase64String(PngFormat.Instance);
         }
@@ -298,7 +291,7 @@ public partial class MapEditor : IAsyncDisposable
 
         if (!this._isInitialized)
         {
-            var zoomLevel = this._zoomManager?.ZoomLevel ?? 0.75f;
+            var zoomLevel = this._zoomManager?.ZoomLevel ?? MapZoomManager.DefaultZoom;
             this._zoomManager = new MapZoomManager(jsModule, this._mapHostRef);
             this._objectFactory = new MapObjectFactory(this.PersistenceContext);
             this._dotNetRef = DotNetObjectReference.Create(this);
@@ -319,7 +312,7 @@ public partial class MapEditor : IAsyncDisposable
         {
             // Re-register document listeners after each render,
             // keeping them resilient to DOM replacement by Blazor.
-            var zoomLevel = this._zoomManager?.ZoomLevel ?? 0.75f;
+            var zoomLevel = this._zoomManager?.ZoomLevel ?? MapZoomManager.DefaultZoom;
             await jsModule.InvokeVoidAsync(
                 "initialize",
                 this._mapHostRef,
@@ -790,11 +783,6 @@ public partial class MapEditor : IAsyncDisposable
         }
 
         this._resizerPosition = position;
-    }
-
-    private void OnMapImageError()
-    {
-        this._mapImageError = true;
     }
 
     /// <summary>
