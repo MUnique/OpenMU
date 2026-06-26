@@ -14,9 +14,9 @@ using Microsoft.JSInterop;
 public sealed class MapZoomManager
 {
     // Values match MIN_ZOOM / MAX_ZOOM in MapEditor.razor.js.
-    private const float MinZoom = 1.0f;
+    private const float MinZoom = 0.75f;
     private const float MaxZoom = 4.0f;
-    private const float ZoomButtonFactor = 1.25f;
+    private static readonly float[] ZoomLevels = [0.75f, 1.0f, 1.5f, 2.0f, 3.0f, 4.0f];
 
     private readonly IJSObjectReference _jsModule;
     private readonly ElementReference _mapHostRef;
@@ -35,7 +35,7 @@ public sealed class MapZoomManager
     /// <summary>
     /// Gets the current zoom level, where 1.0 represents 100%.
     /// </summary>
-    public float ZoomLevel { get; private set; } = 1.0f;
+    public float ZoomLevel { get; private set; } = 0.75f;
 
     /// <summary>
     /// Gets the current zoom level expressed as a rounded percentage.
@@ -53,25 +53,31 @@ public sealed class MapZoomManager
     public bool IsAtMaxZoom => this.ZoomLevel >= MaxZoom;
 
     /// <summary>
-    /// Increases the zoom level by the zoom button factor, up to <see cref="MaxZoom"/>.
+    /// Increases the zoom level to the next predefined step, up to <see cref="MaxZoom"/>.
     /// </summary>
     public async Task ZoomInAsync()
     {
-        var newZoom = Math.Min(this.ZoomLevel * ZoomButtonFactor, MaxZoom);
-        this.ZoomLevel = await this._jsModule
-            .InvokeAsync<float>("zoomTo", this._mapHostRef, newZoom)
-            .ConfigureAwait(false);
+        var next = ZoomLevels.FirstOrDefault(z => z > this.ZoomLevel + 0.01f);
+        if (next > 0)
+        {
+            this.ZoomLevel = await this._jsModule
+                .InvokeAsync<float>("zoomTo", this._mapHostRef, next)
+                .ConfigureAwait(false);
+        }
     }
 
     /// <summary>
-    /// Decreases the zoom level by the zoom button factor, down to <see cref="MinZoom"/>.
+    /// Decreases the zoom level to the previous predefined step, down to <see cref="MinZoom"/>.
     /// </summary>
     public async Task ZoomOutAsync()
     {
-        var newZoom = Math.Max(this.ZoomLevel / ZoomButtonFactor, MinZoom);
-        this.ZoomLevel = await this._jsModule
-            .InvokeAsync<float>("zoomTo", this._mapHostRef, newZoom)
-            .ConfigureAwait(false);
+        var prev = ZoomLevels.LastOrDefault(z => z < this.ZoomLevel - 0.01f);
+        if (prev > 0)
+        {
+            this.ZoomLevel = await this._jsModule
+                .InvokeAsync<float>("zoomTo", this._mapHostRef, prev)
+                .ConfigureAwait(false);
+        }
     }
 
     /// <summary>

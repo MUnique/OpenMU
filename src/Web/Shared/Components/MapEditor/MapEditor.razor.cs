@@ -23,10 +23,12 @@ using SixLabors.ImageSharp.PixelFormats;
 /// </summary>
 public partial class MapEditor : IAsyncDisposable
 {
-    private const int MaxObjectSelectSize = 30;
+    private const int MaxObjectSelectSize = 20;
 
     private static readonly string JsModulePath =
         $"./_content/{typeof(MapEditor).Assembly.GetName().Name}/Components/MapEditor/{nameof(MapEditor)}.razor.js";
+
+    private static readonly string AssemblyName = typeof(MapEditor).Assembly.GetName().Name!;
 
     private static readonly string[] DirectionNames = Enum.GetNames<Direction>()
         .Select(d => d.ToLowerInvariant())
@@ -65,6 +67,7 @@ public partial class MapEditor : IAsyncDisposable
     private Resizers.ResizerPosition? _resizerPosition;
     private MapDragState _dragState;
     private bool _hasDragSnapshot;
+    private bool _mapImageError;
 
     /// <summary>
     /// Gets or sets the callback invoked before the selected map changes,
@@ -118,7 +121,9 @@ public partial class MapEditor : IAsyncDisposable
     /// <summary>
     /// Gets the effective pixel scale for the current zoom level.
     /// </summary>
-    private float EffectiveScale => this._coordinateService.GetEffectiveScale(this._zoomManager?.ZoomLevel ?? 1.0f);
+    private float EffectiveScale => this._coordinateService.GetEffectiveScale(this._zoomManager?.ZoomLevel ?? 0.75f);
+
+    private string MapImageUrl => $"./_content/{AssemblyName}/img/map/{this.SelectedMap.Number}.webp";
 
     /// <summary>
     /// Gets or sets the currently selected map, rebuilding the terrain image when changed.
@@ -130,6 +135,7 @@ public partial class MapEditor : IAsyncDisposable
         {
             this._terrainImage?.Dispose();
             this._selectedMap = value;
+            this._mapImageError = false;
             this._terrainImage = new GameMapTerrain(this.SelectedMap).ToImage();
             this._terrainImageDataUrl = this._terrainImage.ToBase64String(PngFormat.Instance);
         }
@@ -172,19 +178,12 @@ public partial class MapEditor : IAsyncDisposable
         var objectAtPosition = this._objectSelector.GetObjectAtPosition(
             this.SelectedMap, x, y, this._activeFilter, this._searchFilter);
 
-        if (objectAtPosition is MonsterSpawnArea spawn)
+        if (objectAtPosition is IMapArea mapArea)
         {
-            this._focusedObject = spawn;
+            this._focusedObject = objectAtPosition;
             this._dragState.StartX = x;
             this._dragState.StartY = y;
-            this._dragState.Capture(spawn);
-        }
-        else if (objectAtPosition is Gate gate)
-        {
-            this._focusedObject = gate;
-            this._dragState.StartX = x;
-            this._dragState.StartY = y;
-            this._dragState.Capture(gate);
+            this._dragState.Capture(mapArea);
         }
         else if (objectAtPosition is not null)
         {
@@ -213,26 +212,14 @@ public partial class MapEditor : IAsyncDisposable
         this._mouseMapX = x;
         this._mouseMapY = y;
 
-        if (this._resizerPosition is { } pos && this._focusedObject is not null)
+        if (this._resizerPosition is { } pos && this._focusedObject is IMapArea resizeTarget)
         {
-            switch (this._focusedObject)
-            {
-                case MonsterSpawnArea spawn:
-                    MapObjectResizer.Resize(spawn, pos, x, y);
-                    break;
-                case Gate gate:
-                    MapObjectResizer.Resize(gate, pos, x, y);
-                    break;
-                default:
-                    // Not supported.
-                    break;
-            }
-
+            MapObjectResizer.Resize(resizeTarget, pos, x, y);
             this.NotificationService.NotifyChange(this._focusedObject, null);
             return;
         }
 
-        if (this._focusedObject is Gate or MonsterSpawnArea)
+        if (this._focusedObject is IMapArea)
         {
             this.OnObjectDragging(x, y);
             this.NotificationService.NotifyChange(this._focusedObject, null);
@@ -311,7 +298,7 @@ public partial class MapEditor : IAsyncDisposable
 
         if (!this._isInitialized)
         {
-            var zoomLevel = this._zoomManager?.ZoomLevel ?? 1.0f;
+            var zoomLevel = this._zoomManager?.ZoomLevel ?? 0.75f;
             this._zoomManager = new MapZoomManager(jsModule, this._mapHostRef);
             this._objectFactory = new MapObjectFactory(this.PersistenceContext);
             this._dotNetRef = DotNetObjectReference.Create(this);
@@ -320,7 +307,11 @@ public partial class MapEditor : IAsyncDisposable
                 "initialize",
                 this._mapHostRef,
                 this._dotNetRef,
-                zoomLevel).ConfigureAwait(true);
+                zoomLevel,
+                MapCoordinateService.BaseScale).ConfigureAwait(true);
+
+            await jsModule.InvokeVoidAsync(
+                "setScroll", this._mapHostRef, 0, 0).ConfigureAwait(true);
 
             this._isInitialized = true;
         }
@@ -328,12 +319,13 @@ public partial class MapEditor : IAsyncDisposable
         {
             // Re-register document listeners after each render,
             // keeping them resilient to DOM replacement by Blazor.
-            var zoomLevel = this._zoomManager?.ZoomLevel ?? 1.0f;
+            var zoomLevel = this._zoomManager?.ZoomLevel ?? 0.75f;
             await jsModule.InvokeVoidAsync(
                 "initialize",
                 this._mapHostRef,
                 this._dotNetRef,
-                zoomLevel).ConfigureAwait(true);
+                zoomLevel,
+                MapCoordinateService.BaseScale).ConfigureAwait(true);
         }
         else
         {
@@ -460,6 +452,22 @@ public partial class MapEditor : IAsyncDisposable
     private string GetGridStyle() =>
         this._coordinateService.GetGridStyle(this.EffectiveScale);
 
+    private Dictionary<string, object> GetDataAttributes(object obj)
+    {
+        if (obj is IMapArea area)
+        {
+            return new Dictionary<string, object>
+            {
+                ["data-x1"] = area.X1,
+                ["data-y1"] = area.Y1,
+                ["data-x2"] = area.X2,
+                ["data-y2"] = area.Y2,
+            };
+        }
+
+        return [];
+    }
+
     private string GetSizeAndPositionStyle(object obj) =>
         this._styleService.GetSizeAndPositionStyle(obj, this.EffectiveScale);
 
@@ -560,10 +568,7 @@ public partial class MapEditor : IAsyncDisposable
 
     private void OnObjectDragging(byte x, byte y)
     {
-        if (!this._dragState.ApplyDrag(x, y, out var newX1, out var newY1, out var newX2, out var newY2))
-        {
-            return;
-        }
+        this._dragState.ApplyDrag(x, y, out var newX1, out var newY1, out var newX2, out var newY2);
 
         if (!this._hasDragSnapshot)
         {
@@ -576,6 +581,7 @@ public partial class MapEditor : IAsyncDisposable
 
     private void RecordDragSnapshot()
     {
+        // MonsterSpawnArea snapshot also captures Direction, so the two overloads are intentionally distinct.
         switch (this._focusedObject)
         {
             case MonsterSpawnArea spawn:
@@ -592,24 +598,15 @@ public partial class MapEditor : IAsyncDisposable
 
     private void ApplyNewBounds(byte x1, byte y1, byte x2, byte y2)
     {
-        switch (this._focusedObject)
+        if (this._focusedObject is not IMapArea area)
         {
-            case MonsterSpawnArea spawn:
-                spawn.X1 = x1;
-                spawn.Y1 = y1;
-                spawn.X2 = x2;
-                spawn.Y2 = y2;
-                break;
-            case Gate gate:
-                gate.X1 = x1;
-                gate.Y1 = y1;
-                gate.X2 = x2;
-                gate.Y2 = y2;
-                break;
-            default:
-                // Not supported.
-                break;
+            return;
         }
+
+        area.X1 = x1;
+        area.Y1 = y1;
+        area.X2 = x2;
+        area.Y2 = y2;
     }
 
     private string? GetFocusedRotation()
@@ -793,6 +790,11 @@ public partial class MapEditor : IAsyncDisposable
         }
 
         this._resizerPosition = position;
+    }
+
+    private void OnMapImageError()
+    {
+        this._mapImageError = true;
     }
 
     /// <summary>

@@ -2,13 +2,15 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-const BASE_SIZE = 768;
-const MIN_ZOOM = 1.0;
+const BASE_SIZE = 1024;
+const MIN_ZOOM = 0.75;
 const MAX_ZOOM = 4.0;
 
 let _element = null;
 let _dotNetRef = null;
-let _zoomLevel = 1.0;
+let _baseScale = 4;
+let _defaultZoom = 0.75;
+let _zoomLevel = _defaultZoom;
 let _isDragging = false;
 let _isPanning = false;
 let _isResizing = false;
@@ -42,7 +44,7 @@ function _getMapTileCoords(clientX, clientY) {
     const rect = _element.getBoundingClientRect();
     let contentX = (clientX - rect.left) + _element.scrollLeft;
     let contentY = (clientY - rect.top) + _element.scrollTop;
-    let scale = 3 * _zoomLevel;
+    let scale = _baseScale * _zoomLevel;
 
     return {
         x: Math.floor(contentY / scale),
@@ -50,40 +52,58 @@ function _getMapTileCoords(clientX, clientY) {
     };
 }
 
-function _updateZoomDisplay() {
-    let container = _element ? _element.closest(".map-host-container") : null;
-    if (!container) {
-        return;
-    }
-
-    let zoomLabel = container.querySelector(".zoom-label");
-    if (zoomLabel) {
-        zoomLabel.textContent = Math.round(_zoomLevel * 100) + "%";
-    }
-}
-
-function _applyZoom(zoom) {
+function _updateOverlayScales() {
     if (!_element) {
         return;
     }
 
-    let content = _element.querySelector(".map-content");
-    let img = _element.querySelector(".map-content img");
-
+    const scale = _baseScale * _zoomLevel;
+    const content = _element.querySelector('.map-content');
     if (!content) {
         return;
     }
 
-    let size = Math.round(BASE_SIZE * zoom);
-    content.style.width = size + "px";
-    content.style.height = size + "px";
+    const overlays = content.querySelectorAll('[data-x1]');
+    for (const el of overlays) {
+        const x1 = parseFloat(el.getAttribute('data-x1'));
+        const y1 = parseFloat(el.getAttribute('data-y1'));
+        const x2 = parseFloat(el.getAttribute('data-x2'));
+        const y2 = parseFloat(el.getAttribute('data-y2'));
+        const isSingle = el.classList.contains('spawn-monster-single') ||
+                         el.classList.contains('spawn-npc-single') ||
+                         el.classList.contains('spawn-other-single');
+        const objScale = isSingle ? 1.75 : 1.0;
+        const width = objScale * scale * (1 + y2 - y1);
+        const height = objScale * scale * (1 + x2 - x1);
+        const offset = (objScale - 1.0) * scale * 0.5;
+        const top = (scale * x1) - offset;
+        const left = (scale * y1) - offset;
 
-    if (img) {
-        img.style.width = size + "px";
-        img.style.height = size + "px";
+        el.style.width = width + 'px';
+        el.style.height = height + 'px';
+        el.style.top = top + 'px';
+        el.style.left = left + 'px';
+    }
+}
+
+function _applyZoom() {
+    if (!_element) {
+        return;
     }
 
-    _updateZoomDisplay();
+    const size = Math.round(BASE_SIZE * _zoomLevel);
+
+    const content = _element.querySelector('.map-content');
+    if (content) {
+        content.style.width = size + 'px';
+        content.style.height = size + 'px';
+    }
+
+    const img = _element.querySelector('.map-content > img');
+    if (img) {
+        img.style.width = size + 'px';
+        img.style.height = size + 'px';
+    }
 }
 
 function _updateCoordsLabel(mapX, mapY) {
@@ -250,15 +270,18 @@ function _onDocumentMouseUp(e) {
  * @param {object} dotNetRef - JSInvokable reference to the Blazor component.
  * @param {number} initialZoom - The initial zoom level to apply.
  */
-export function initialize(element, dotNetRef, initialZoom) {
+export function initialize(element, dotNetRef, initialZoom, baseScale) {
     if (!element) {
         return;
     }
 
     _element = element;
     _dotNetRef = dotNetRef;
+    _baseScale = baseScale;
     _zoomLevel = initialZoom;
-    _applyZoom(_zoomLevel);
+
+    _applyZoom();
+    _updateOverlayScales();
 
     document.removeEventListener("mousedown", _onDocumentMouseDown);
     document.removeEventListener("mousemove", _onDocumentMouseMove);
@@ -361,13 +384,11 @@ export function handleWheel(element, deltaY, clientX, clientY) {
     const baseY = (element.scrollTop + mouseY) / oldZoom;
 
     _zoomLevel = newZoom;
-    _applyZoom(_zoomLevel);
+    _applyZoom();
+    _updateOverlayScales();
 
-    const maxScrollLeft = Math.max(0, BASE_SIZE * newZoom - rect.width);
-    const maxScrollTop = Math.max(0, BASE_SIZE * newZoom - rect.height);
-
-    element.scrollLeft = Math.max(0, Math.min((baseX * newZoom) - mouseX, maxScrollLeft));
-    element.scrollTop = Math.max(0, Math.min((baseY * newZoom) - mouseY, maxScrollTop));
+    element.scrollLeft = Math.max(0, Math.min((baseX * newZoom) - mouseX, element.scrollWidth - element.clientWidth));
+    element.scrollTop = Math.max(0, Math.min((baseY * newZoom) - mouseY, element.scrollHeight - element.clientHeight));
 
     return {
         zoomLevel: newZoom,
@@ -397,13 +418,11 @@ export function zoomTo(element, newZoom) {
     const baseY = (element.scrollTop + centerY) / oldZoom;
 
     _zoomLevel = clampedZoom;
-    _applyZoom(_zoomLevel);
+    _applyZoom();
+    _updateOverlayScales();
 
-    const maxScrollLeft = Math.max(0, BASE_SIZE * clampedZoom - rect.width);
-    const maxScrollTop = Math.max(0, BASE_SIZE * clampedZoom - rect.height);
-
-    element.scrollLeft = Math.max(0, Math.min((baseX * clampedZoom) - centerX, maxScrollLeft));
-    element.scrollTop = Math.max(0, Math.min((baseY * clampedZoom) - centerY, maxScrollTop));
+    element.scrollLeft = Math.max(0, Math.min((baseX * clampedZoom) - centerX, element.scrollWidth - element.clientWidth));
+    element.scrollTop = Math.max(0, Math.min((baseY * clampedZoom) - centerY, element.scrollHeight - element.clientHeight));
 
     return clampedZoom;
 }
@@ -415,15 +434,16 @@ export function zoomTo(element, newZoom) {
  */
 export function resetZoom(element) {
     if (!element) {
-        return 1.0;
+        return _defaultZoom;
     }
 
-    _zoomLevel = 1.0;
-    _applyZoom(1.0);
+    _zoomLevel = _defaultZoom;
+    _applyZoom();
+    _updateOverlayScales();
     element.scrollLeft = 0;
     element.scrollTop = 0;
 
-    return 1.0;
+    return _defaultZoom;
 }
 
 /**

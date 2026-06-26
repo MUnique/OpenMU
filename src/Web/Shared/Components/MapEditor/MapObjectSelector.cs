@@ -31,9 +31,7 @@ public sealed class MapObjectSelector
         {
             MonsterSpawnArea spawn when !spawn.IsPoint() =>
                 $"{1 + spawn.Y2 - spawn.Y1}x{1 + spawn.X2 - spawn.X1}",
-            EnterGate gate =>
-                $"{1 + gate.Y2 - gate.Y1}x{1 + gate.X2 - gate.X1}",
-            ExitGate gate =>
+            Gate gate =>
                 $"{1 + gate.Y2 - gate.Y1}x{1 + gate.X2 - gate.X1}",
             _ => null,
         };

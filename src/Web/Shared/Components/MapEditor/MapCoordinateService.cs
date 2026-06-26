@@ -17,7 +17,7 @@ public sealed class MapCoordinateService
     /// <summary>
     /// Gets the base pixel scale factor before zoom is applied.
     /// </summary>
-    public static int BaseScale => 3;
+    public static int BaseScale => 4;
 
     /// <summary>
     /// Converts client mouse coordinates to map tile coordinates.

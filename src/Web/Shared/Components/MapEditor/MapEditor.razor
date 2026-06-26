@@ -86,14 +86,16 @@
                      @onwheel:preventDefault="true"
                      @onwheel:stopPropagation="true">
                     <div class="map-content">
-                        <img src="@this._terrainImageDataUrl"
+                        <img src="@(this._mapImageError ? this._terrainImageDataUrl : this.MapImageUrl)"
                              draggable="false"
-                             alt="@string.Format(Resources.TerrainOf, this.SelectedMap.Name)" />
+                             alt="@string.Format(Resources.TerrainOf, this.SelectedMap.Name)"
+                             @onerror="@this.OnMapImageError" />
                         @foreach (var obj in this.GetMapObjects())
                         {
                             <div class="@this.GetCssClass(obj)"
                                  title="@obj.ToString()"
-                                 style="@this.GetSizeAndPositionStyle(obj)">
+                                 style="@this.GetSizeAndPositionStyle(obj)"
+                                 @attributes="this.GetDataAttributes(obj)">
                                 @if (this.ShowResizers(obj))
                                 {
                                     <Resizers ResizeStart="@this.OnStartResizing" />
