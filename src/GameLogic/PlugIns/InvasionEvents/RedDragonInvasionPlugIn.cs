@@ -26,7 +26,7 @@ public sealed class RedDragonInvasionPlugIn : SimpleInvasionPlugIn
     /// Initializes a new instance of the <see cref="RedDragonInvasionPlugIn"/> class.
     /// </summary>
     public RedDragonInvasionPlugIn()
-        : base(MapEventType.RedDragonInvasion, DisplayMaps, () => InvasionConfigurationDefaults.RedDragon)
+        : base(MapEventType.RedDragonInvasion, DisplayMaps, () => InvasionConfigurationDefaults.RedDragon, InvasionMonsters.RedDragon)
     {
     }
 }
