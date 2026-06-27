@@ -4,7 +4,7 @@ import { WorldObjectPicker } from "./WorldObjectPicker";
 import { World } from "./World";
 import { ObjectData } from "./Types";
 
-/*
+/**
  * Class for a Map application which is shown on the whole browser page.
  */
 export class MapApp {
@@ -103,7 +103,7 @@ export class MapApp {
         this.renderer.render(this.scene, this.camera);
     }
 
-    /*
+    /**
      * Creates an orthographic camera which looks down to the map plane from the center.
      */
     private createCamera(): THREE.Camera {
@@ -121,7 +121,7 @@ export class MapApp {
         return camera;
     }
 
-    /*
+    /**
      * Handles the window resizing by updating the resolution of the renderer.
      */
     private onWindowResize(): void {
