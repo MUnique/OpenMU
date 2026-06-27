@@ -512,7 +512,7 @@ System.register("Player", ["three", "Attackable"], function (exports_8, context_
                 function Player(data) {
                     var _this = _super.call(this, data, Player.defaultGeometry, new THREE.MeshBasicMaterial({
                         alphaMap: Attackable_1.attackableAlphaMapTexture,
-                        color: 0x8C50C8,
+                        color: Player.defaultColor,
                         transparent: true,
                     })) || this;
                     _this.renderOrder = 1;
@@ -523,12 +523,16 @@ System.register("Player", ["three", "Attackable"], function (exports_8, context_
                     var normalScale = 1.0;
                     if (this.data.isHighlighted) {
                         this.scale.setScalar(highlightedScale);
+                        this.material.color.setHex(Player.highlightedColor);
                     }
                     else {
                         this.scale.setScalar(normalScale);
+                        this.material.color.setHex(Player.defaultColor);
                     }
                 };
                 Player.size = 4;
+                Player.defaultColor = 0xBE88E0;
+                Player.highlightedColor = 0xFFFFFF;
                 Player.defaultGeometry = new THREE.BoxGeometry(Player.size, Player.size, Player.size);
                 return Player;
             }(Attackable_1.Attackable));
@@ -747,6 +751,18 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                 World.prototype.dispose = function () {
                     delete this.objects;
                 };
+                World.prototype.highlightPlayerByName = function (playerName) {
+                    for (var id in this.objects) {
+                        if (this.objects.hasOwnProperty(id)) {
+                            var obj = this.objects[id];
+                            if (obj instanceof Player_1.Player && obj.data.name.indexOf("Character:[".concat(playerName, "]")) >= 0) {
+                                this.highlightOn(obj.data.id);
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
+                };
                 World.prototype.highlightOn = function (objectId) {
                     var player = this.getObjectById(objectId);
                     if (player != null) {
@@ -848,9 +864,7 @@ System.register("WorldObjectPicker", ["three"], function (exports_11, context_11
                 };
                 WorldObjectPicker.prototype.onClick = function (e) {
                     var data = this.pickAt(e.offsetX, e.offsetY);
-                    if (data !== null) {
-                        this.onObjectPicked(data);
-                    }
+                    this.onObjectPicked(data);
                 };
                 WorldObjectPicker.prototype.onMouseMove = function (e) {
                     var _this = this;
@@ -922,6 +936,7 @@ System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], func
             MapApp = (function () {
                 function MapApp(stats, serverId, mapId, mapContainer, onPickObjectHandler) {
                     var _this = this;
+                    this.lastHighlightedId = null;
                     this.isDisposing = false;
                     this.isDisposed = false;
                     this.stats = stats;
@@ -936,10 +951,27 @@ System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], func
                     this.onWindowResize();
                     this.resizeEventListener = function () { return _this.onWindowResize(); };
                     window.addEventListener("resize", this.resizeEventListener, false);
-                    this.picker = new WorldObjectPicker_1.WorldObjectPicker(this.renderer.domElement, this.world, this.camera, onPickObjectHandler, function (data) { return _this.onObjectHovered(data); });
+                    var hideInfo = function () {
+                        var info = document.getElementById("selected_info");
+                        if (info) {
+                            info.style.display = "none";
+                        }
+                    };
+                    this.picker = new WorldObjectPicker_1.WorldObjectPicker(this.renderer.domElement, this.world, this.camera, function (data) {
+                        _this.onObjectPicked(data);
+                        if (data !== null) {
+                            onPickObjectHandler(data);
+                        }
+                        else {
+                            hideInfo();
+                        }
+                    }, function (data) { return _this.onObjectHovered(data); });
                     this.container.appendChild(this.renderer.domElement);
                     this.animate();
                 }
+                MapApp.prototype.highlightByName = function (playerName) {
+                    return this.world.highlightPlayerByName(playerName);
+                };
                 MapApp.prototype.dispose = function () {
                     if (this.isDisposing || this.isDisposed) {
                         return;
@@ -983,6 +1015,16 @@ System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], func
                     var newSize = Math.min(preferredWidth, preferredHeigth);
                     this.renderer.setSize(newSize, newSize);
                     this.world.onSizeChanged(newSize);
+                };
+                MapApp.prototype.onObjectPicked = function (data) {
+                    if (this.lastHighlightedId !== null) {
+                        this.world.highlightOff(this.lastHighlightedId);
+                        this.lastHighlightedId = null;
+                    }
+                    if (data !== null) {
+                        this.world.highlightOn(data.id);
+                        this.lastHighlightedId = data.id;
+                    }
                 };
                 MapApp.prototype.onObjectHovered = function (data) {
                     if (data !== null) {

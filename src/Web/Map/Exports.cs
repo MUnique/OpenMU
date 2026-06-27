@@ -34,7 +34,10 @@ public static class Exports
     /// <summary>
     /// Gets the stylesheets.
     /// </summary>
-    public static ImmutableList<string> Stylesheets => Web.Shared.Exports.Stylesheets;
+    public static ImmutableList<string> Stylesheets { get; } = [
+        .. Web.Shared.Exports.Stylesheets,
+        $"{GetPrefix()}/MUnique.OpenMU.Web.Map.styles.css",
+    ];
 
     private static string GetPrefix() => $"_content/{typeof(Exports).Namespace}";
 }

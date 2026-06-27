@@ -1,20 +1,22 @@
 ﻿// plain javascript to make JS Interop easier
 
+window.mapApps = {};
+
 function CreateMap(serverId, mapId, containerId, appId) {
     console.debug("Creating map; serverId: ", serverId, ", mapId: ", mapId, ", containerId: ", containerId, ", appId: ", appId);
 
     let stats = null;
     if (typeof Stats === "function") {
         stats = new Stats();
-        stats.domElement.style.position = "relative";
-        stats.domElement.style.top = "0";
-        document.getElementById(containerId).appendChild(stats.domElement);
+        stats.domElement.style.position = "static";
+        document.getElementById(containerId).after(stats.domElement);
     }
 
     System.import("MapApp")
         .then((module) => {
             console.log('MapApp module resolved');
-            window[appId] = new module.MapApp(stats, serverId, mapId, document.getElementById(containerId), (data) => {
+            window.mapApps[serverId] = window.mapApps[serverId] || {};
+            window.mapApps[serverId][mapId] = new module.MapApp(stats, serverId, mapId, document.getElementById(containerId), (data) => {
                 const info = document.getElementById("selected_info");
                 if (info) {
                     info.style.display = "block";
@@ -24,6 +26,7 @@ function CreateMap(serverId, mapId, containerId, appId) {
                     document.getElementById("objectData_y").textContent = data.y;
                 }
             });
+            window[appId] = window.mapApps[serverId][mapId];
         });
 }
 
@@ -34,4 +37,12 @@ function DisposeMap(identifier) {
         map.dispose();
         delete window[identifier];
     }
+}
+
+function HighlightFollowedPlayer(serverId, mapId, playerName) {
+    var app = window.mapApps && window.mapApps[serverId] && window.mapApps[serverId][mapId];
+    if (app && app.highlightByName) {
+        return app.highlightByName(playerName);
+    }
+    return false;
 }
