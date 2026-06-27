@@ -145,6 +145,67 @@ public sealed class MapObjectSelector
         return null;
     }
 
+    /// <summary>
+    /// Returns all objects at the specified coordinates, ordered by priority:
+    /// point spawns first (by distance), then area spawns (by distance to center),
+    /// then exit gates, then enter gates.
+    /// </summary>
+    /// <param name="map">The map definition containing all objects to test.</param>
+    /// <param name="x">The map X coordinate to test.</param>
+    /// <param name="y">The map Y coordinate to test.</param>
+    /// <param name="filter">The active object type filter to apply.</param>
+    /// <param name="search">An optional search string to further restrict hits.</param>
+    /// <returns>All matching objects at the position, ordered by priority.</returns>
+    public IReadOnlyList<object> GetAllObjectsAtPosition(
+        GameMapDefinition map,
+        byte x,
+        byte y,
+        ObjectTypeFilter filter,
+        string? search = null)
+    {
+        var result = new List<object>();
+
+        foreach (var spawn in map.MonsterSpawns)
+        {
+            if (!SpawnMatchesFilter(spawn, filter))
+            {
+                continue;
+            }
+
+            if (!MatchesSearch(spawn, search))
+            {
+                continue;
+            }
+
+            GetDistanceToSpawn(spawn, x, y, out var isInside);
+            if (isInside)
+            {
+                result.Add(spawn);
+            }
+        }
+
+        if (filter == ObjectTypeFilter.None || filter.HasFlag(ObjectTypeFilter.Gates))
+        {
+            foreach (var gate in map.ExitGates)
+            {
+                if (MatchesSearch(gate, search) && IsPointInGate(gate, x, y))
+                {
+                    result.Add(gate);
+                }
+            }
+
+            foreach (var gate in map.EnterGates)
+            {
+                if (MatchesSearch(gate, search) && IsPointInGate(gate, x, y))
+                {
+                    result.Add(gate);
+                }
+            }
+        }
+
+        return result;
+    }
+
     private static bool MatchesTypeFilter(object obj, ObjectTypeFilter filter)
     {
         if (filter == ObjectTypeFilter.None)

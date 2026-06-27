@@ -65,6 +65,7 @@ public partial class MapEditor : IAsyncDisposable
     private Resizers.ResizerPosition? _resizerPosition;
     private MapDragState _dragState;
     private bool _hasDragSnapshot;
+
     /// <summary>
     /// Gets or sets the callback invoked before the selected map changes,
     /// allowing the caller to cancel the change.
@@ -160,11 +161,18 @@ public partial class MapEditor : IAsyncDisposable
     /// </summary>
     /// <param name="x">Map X coordinate.</param>
     /// <param name="y">Map Y coordinate.</param>
+    /// <param name="shiftKey">Whether the shift key was held during the click.</param>
     [JSInvokable]
-    public void OnPointerDown(byte x, byte y)
+    public void OnPointerDown(byte x, byte y, bool shiftKey = false)
     {
         if (this._resizerPosition is not null)
         {
+            return;
+        }
+
+        if (shiftKey)
+        {
+            this.HandleShiftClick(x, y);
             return;
         }
 
@@ -181,12 +189,10 @@ public partial class MapEditor : IAsyncDisposable
         else if (objectAtPosition is not null)
         {
             this._focusedObject = objectAtPosition;
-            _ = this._jsModule?.InvokeVoidAsync("setDragging", false);
         }
         else
         {
             this._focusedObject = null;
-            _ = this._jsModule?.InvokeVoidAsync("setDragging", false);
             _ = this._jsModule?.InvokeVoidAsync("setPanning", true);
         }
 
@@ -341,6 +347,19 @@ public partial class MapEditor : IAsyncDisposable
                 ? this.Maps.First()
                 : this.Maps.First(m => m.GetId() == this.SelectedMapId);
         }
+    }
+
+    private static int IndexOf(IReadOnlyList<object> items, object target)
+    {
+        for (int i = 0; i < items.Count; i++)
+        {
+            if (ReferenceEquals(items[i], target))
+            {
+                return i;
+            }
+        }
+
+        return -1;
     }
 
     [SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
@@ -783,6 +802,29 @@ public partial class MapEditor : IAsyncDisposable
         }
 
         this._resizerPosition = position;
+    }
+
+    private void HandleShiftClick(byte x, byte y)
+    {
+        if (this.SelectedMap is not { } map)
+        {
+            return;
+        }
+
+        var objects = this._objectSelector.GetAllObjectsAtPosition(
+            map, x, y, this._activeFilter, this._searchFilter);
+
+        if (objects.Count > 0)
+        {
+            var idx = this._focusedObject is not null
+                ? IndexOf(objects, this._focusedObject)
+                : -1;
+
+            this._focusedObject = objects[idx >= 0 ? (idx + 1) % objects.Count : 0];
+        }
+
+        _ = this.UpdateSelectValueAsync();
+        this.StateHasChanged();
     }
 
     /// <summary>

@@ -143,17 +143,23 @@
                         disabled="@(this._zoomManager is null || this._zoomManager.IsAtMaxZoom)">
                     <span class="oi oi-plus"></span>
                 </button>
-                <button type="button" class="btn btn-secondary ms-2"
+                <button type="button" class="btn btn-secondary"
                         @onclick="@this.ResetZoomAsync"
                         title="@Resources.ResetZoom">
                     <span class="oi oi-reload"></span>
                 </button>
-                <button type="button" class="btn @(this._showGrid ? "btn-primary" : "btn-secondary") ms-1"
+                <button type="button" class="btn @(this._showGrid ? "btn-primary" : "btn-secondary")"
                         @onclick="@(() => this._showGrid = !this._showGrid)"
                         title="@Resources.ToggleGrid">
                     <span class="oi oi-grid-three-up"></span>
                 </button>
             </div>
+        </div>
+
+        <div class="alert alert-info py-1 px-2 mb-0 small" role="alert">
+            <div>@Resources.MapEditorShortcutPan</div>
+            <div>@Resources.MapEditorShortcutDrag</div>
+            <div>@Resources.MapEditorShortcutCycle</div>
         </div>
     </div>
 

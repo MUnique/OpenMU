@@ -110,9 +110,9 @@ function _tryStartResize(e) {
     return false;
 }
 
-function _notifyPointerDown(x, y) {
+function _notifyPointerDown(x, y, shiftKey) {
     if (_dotNetRef) {
-        _dotNetRef.invokeMethodAsync("OnPointerDown", x, y);
+        _dotNetRef.invokeMethodAsync("OnPointerDown", x, y, shiftKey);
     }
 }
 
@@ -180,13 +180,13 @@ function _onDocumentMouseDown(e) {
     _lastClientX = e.clientX;
     _lastClientY = e.clientY;
     _hasMoved = false;
-    _isDragging = true;
+    _isDragging = e.ctrlKey;
 
     let coords = _getMapTileCoords(e.clientX, e.clientY);
     let x = Math.max(0, Math.min(255, coords.x));
     let y = Math.max(0, Math.min(255, coords.y));
 
-    _notifyPointerDown(x, y);
+    _notifyPointerDown(x, y, e.shiftKey);
 }
 
 function _isValidMouseMoveTarget(e) {
@@ -251,6 +251,7 @@ function _onDocumentMouseUp(e) {
  * @param {HTMLElement} element - The map host element.
  * @param {object} dotNetRef - JSInvokable reference to the Blazor component.
  * @param {number} initialZoom - The initial zoom level to apply.
+ * @param {number} baseScale - The base pixel scale factor for the map.
  */
 export function initialize(element, dotNetRef, initialZoom, baseScale) {
     if (!element) {
@@ -449,7 +450,7 @@ export function setDragging(dragging) {
 }
 
 /**
- * Cleans up state associated with the map editor module.
+ * Cleans up the state associated with the map editor module.
  * Called when the Blazor component is disposed.
  */
 export function dispose() {
