@@ -16,7 +16,6 @@ public sealed class MovementHandler
 
     private readonly OfflinePlayer _player;
     private readonly IMuHelperSettings? _config;
-    private readonly Point _originPosition;
 
     private DateTime? _outOfRangeSince;
 
@@ -25,13 +24,16 @@ public sealed class MovementHandler
     /// </summary>
     /// <param name="player">The offline player.</param>
     /// <param name="config">The MU Helper configuration.</param>
-    /// <param name="originPosition">The original spawn position.</param>
-    public MovementHandler(OfflinePlayer player, IMuHelperSettings? config, Point originPosition)
+    public MovementHandler(OfflinePlayer player, IMuHelperSettings? config)
     {
         this._player = player;
         this._config = config;
-        this._originPosition = originPosition;
     }
+
+    /// <summary>
+    /// Gets the position to hunt around. Dynamic so bots can roam between hunting grounds.
+    /// </summary>
+    private Point OriginPosition => this._player.HuntingOrigin;
 
     /// <summary>
     /// Gets the hunting range in tiles.
@@ -51,7 +53,7 @@ public sealed class MovementHandler
 
         if (this.ShouldRegroup(out var distance))
         {
-            await this.WalkToAsync(this._originPosition).ConfigureAwait(false);
+            await this.WalkToAsync(this.OriginPosition).ConfigureAwait(false);
             this._outOfRangeSince = null;
             return false;
         }
@@ -71,7 +73,7 @@ public sealed class MovementHandler
     /// <param name="range">The range to stop within.</param>
     public async ValueTask MoveCloserToTargetAsync(IAttackable target, byte range)
     {
-        if (target.IsInRange(this._originPosition, this.HuntingRange))
+        if (target.IsInRange(this.OriginPosition, this.HuntingRange))
         {
             var walkTarget = this._player.CurrentMap!.Terrain.GetRandomCoordinate(target.Position, range);
             await this.WalkToAsync(walkTarget).ConfigureAwait(false);
@@ -120,7 +122,7 @@ public sealed class MovementHandler
 
     private bool ShouldRegroup(out double distance)
     {
-        distance = this._player.GetDistanceTo(this._originPosition);
+        distance = this._player.GetDistanceTo(this.OriginPosition);
         if (distance <= RegroupDistanceThreshold)
         {
             return false;
