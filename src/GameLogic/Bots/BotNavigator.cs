@@ -8,6 +8,7 @@ using System.Threading;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Offline;
+using MUnique.OpenMU.GameLogic.PlayerActions;
 using MUnique.OpenMU.Pathfinding;
 
 /// <summary>
@@ -54,6 +55,9 @@ internal sealed class BotNavigator : AsyncDisposable
 
     private const int MaxPointPickAttempts = 25;
 
+    /// <summary>Minimum time between two cross-map warps, so a bot does not bounce between maps.</summary>
+    private static readonly TimeSpan WarpCooldown = TimeSpan.FromSeconds(60);
+
     /// <summary>
     /// A shared full-map path finder for long-distance travel. The pooled path finder uses a small scoped
     /// grid (it rejects start/end further apart than ~16 tiles), so it can only do local movement; this one
@@ -72,6 +76,7 @@ internal sealed class BotNavigator : AsyncDisposable
     private int _isEvaluating;
     private Point _destination;
     private bool _hasDestination;
+    private DateTime _lastWarpUtc = DateTime.MinValue;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BotNavigator"/> class.
@@ -191,6 +196,25 @@ internal sealed class BotNavigator : AsyncDisposable
 
         this._emptyGroundSince = null;
 
+        // If the current map offers no level-appropriate monsters, warp to a map that does, so the bot
+        // earns useful experience instead of grinding monsters far below (or above) its level. It warps
+        // to the destination map's safezone and then walks out to a hunting ground like a real player.
+        var botLevel = this.GetBotLevel();
+        if (DateTime.UtcNow - this._lastWarpUtc >= WarpCooldown
+            && !MapHasIdealBand(map.Definition, botLevel)
+            && this.TryPickTargetMap(botLevel, out var targetGate, out var targetMap))
+        {
+            this._lastWarpUtc = DateTime.UtcNow;
+            this._hasDestination = false;
+            this._player.Logger.LogInformation(
+                "Bot {Character} (level {Level}) warping to map {Map} for a better level match.",
+                this._player.Name,
+                botLevel,
+                targetMap.Name);
+            await this._player.WarpToAsync(targetGate).ConfigureAwait(false);
+            return;
+        }
+
         if (this.TryPickHuntingGround(map, out var ground, out var groundLevel))
         {
             this._destination = ground;
@@ -264,6 +288,54 @@ internal sealed class BotNavigator : AsyncDisposable
     }
 
     private int GetBotLevel() => (int)(this._player.Attributes?[Stats.Level] ?? 1);
+
+    /// <summary>
+    /// Determines whether the map has at least one monster spawn within the bot's full-experience,
+    /// reasonably safe level band - i.e. whether it is worth hunting on for that level.
+    /// </summary>
+    private static bool MapHasIdealBand(GameMapDefinition mapDefinition, int botLevel)
+    {
+        return mapDefinition.MonsterSpawns
+            .Where(a => a is { Quantity: > 0, MonsterDefinition.ObjectKind: NpcObjectKind.Monster })
+            .Select(a => GetMonsterLevel(a.MonsterDefinition!))
+            .Any(level => level > 0 && level >= botLevel - FullExpLowerHeadroom && level <= botLevel + SafeUpperHeadroom);
+    }
+
+    /// <summary>
+    /// Picks a random enterable map (other than the current one) whose monsters fit the bot's level,
+    /// together with one of its safezone spawn gates to warp to.
+    /// </summary>
+    private bool TryPickTargetMap(int botLevel, out ExitGate gate, out GameMapDefinition mapDefinition)
+    {
+        gate = default!;
+        mapDefinition = default!;
+        var currentDefinition = this._player.CurrentMap?.Definition;
+        var candidates = new List<(GameMapDefinition Map, ExitGate Gate)>();
+        foreach (var candidate in this._player.GameContext.Configuration.Maps)
+        {
+            if (ReferenceEquals(candidate, currentDefinition)
+                || !MapHasIdealBand(candidate, botLevel)
+                || candidate.TryGetRequirementError(this._player, out _))
+            {
+                continue;
+            }
+
+            if (candidate.ExitGates.Where(g => g.IsSpawnGate).SelectRandom() is { } spawnGate)
+            {
+                candidates.Add((candidate, spawnGate));
+            }
+        }
+
+        if (candidates.Count == 0)
+        {
+            return false;
+        }
+
+        var chosen = candidates[Rand.NextInt(0, candidates.Count)];
+        gate = chosen.Gate;
+        mapDefinition = chosen.Map;
+        return true;
+    }
 
     /// <summary>
     /// Picks a hunting ground point from the map's monster spawn areas, preferring monsters that suit the
