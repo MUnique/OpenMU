@@ -205,10 +205,108 @@ internal sealed class BotGenerator
         character.Experience = experienceTable[Math.Min(level, experienceTable.Length - 1)];
         character.LevelUpPoints = (int)((level - 1)
             * characterClass.StatAttributes.First(a => a.Attribute == Stats.PointsPerLevelUp).BaseValue);
+        DistributeStatPoints(character);
 
         character.Inventory = context.CreateNew<ItemStorage>();
         character.Inventory.Money = StartMoney;
+        this.EquipStarterGear(context, character, level);
 
         account.Characters.Add(character);
+    }
+
+    /// <summary>
+    /// Spends the character's level-up points, so a high-level bot actually has high-level stats.
+    /// Without this a generated level-80 bot would fight with level-1 base stats (tiny health and
+    /// damage) and die instantly. Half of the points go into vitality (health/survival) and half into
+    /// the class's main damage stat.
+    /// </summary>
+    private static void DistributeStatPoints(Character character)
+    {
+        var points = character.LevelUpPoints;
+        if (points <= 0)
+        {
+            return;
+        }
+
+        var mainStat = GetMainDamageStat(character);
+        var vitality = character.Attributes.FirstOrDefault(a => a.Definition == Stats.BaseVitality);
+        if (mainStat is null || vitality is null)
+        {
+            return;
+        }
+
+        var toVitality = points / 2;
+        vitality.Value += toVitality;
+        mainStat.Value += points - toVitality;
+        character.LevelUpPoints = 0;
+    }
+
+    private static StatAttribute? GetMainDamageStat(Character character)
+    {
+        return character.Attributes
+            .Where(a => a.Definition == Stats.BaseStrength
+                        || a.Definition == Stats.BaseAgility
+                        || a.Definition == Stats.BaseEnergy
+                        || a.Definition == Stats.BaseLeadership)
+            .OrderByDescending(a => a.Value)
+            .FirstOrDefault();
+    }
+
+    /// <summary>
+    /// Equips the bot with a basic, class-appropriate weapon and armor set (mirrors the low-level test
+    /// account gear), so it is not naked and punching with its fists. The item level scales modestly
+    /// with the bot level for a bit more defense/damage without raising the equip requirements too high.
+    /// </summary>
+    private void EquipStarterGear(IPlayerContext context, Character character, int level)
+    {
+        var inventory = character.Inventory!;
+        var itemLevel = (byte)Math.Clamp(level / 20, 0, 4);
+        var mainStat = GetMainDamageStat(character)?.Definition;
+
+        // The armor set is identified by the item NUMBER (5 = Leather, 2 = Pad, 10 = Vine), while the
+        // item GROUP is the equipment type (7 helm, 8 armor, 9 pants, 10 gloves, 11 boots). Weapons use
+        // their own group (1 axe, 4 bow, 5 staff) with number 0.
+        byte armorSet;
+        if (mainStat == Stats.BaseEnergy)
+        {
+            // Caster: Skull Staff + Pad set.
+            this.AddEquippedItem(context, inventory, InventoryConstants.LeftHandSlot, 5, 0, itemLevel);
+            armorSet = 2;
+        }
+        else if (mainStat == Stats.BaseAgility)
+        {
+            // Archer: Short Bow + arrows + Vine set.
+            this.AddEquippedItem(context, inventory, InventoryConstants.RightHandSlot, 4, 0, itemLevel);
+            this.AddEquippedItem(context, inventory, InventoryConstants.LeftHandSlot, 4, 15, 0, 255);
+            armorSet = 10;
+        }
+        else
+        {
+            // Melee (strength / leadership): Small Axe + Leather set.
+            this.AddEquippedItem(context, inventory, InventoryConstants.LeftHandSlot, 1, 0, itemLevel);
+            armorSet = 5;
+        }
+
+        this.AddEquippedItem(context, inventory, InventoryConstants.HelmSlot, 7, armorSet, itemLevel);
+        this.AddEquippedItem(context, inventory, InventoryConstants.ArmorSlot, 8, armorSet, itemLevel);
+        this.AddEquippedItem(context, inventory, InventoryConstants.PantsSlot, 9, armorSet, itemLevel);
+        this.AddEquippedItem(context, inventory, InventoryConstants.GlovesSlot, 10, armorSet, itemLevel);
+        this.AddEquippedItem(context, inventory, InventoryConstants.BootsSlot, 11, armorSet, itemLevel);
+    }
+
+    private void AddEquippedItem(IPlayerContext context, ItemStorage inventory, byte slot, int group, int number, byte itemLevel, byte? durability = null)
+    {
+        var definition = this._gameContext.Configuration.Items.FirstOrDefault(d => d.Group == group && d.Number == number);
+        if (definition is null)
+        {
+            return;
+        }
+
+        var item = context.CreateNew<Item>();
+        item.Definition = definition;
+        item.Level = itemLevel;
+        item.Durability = durability ?? definition.Durability;
+        item.ItemSlot = slot;
+        inventory.Items.Add(item);
     }
 }

@@ -23,11 +23,19 @@ internal sealed class BotNavigator : AsyncDisposable
     private static readonly TimeSpan EvaluationInterval = TimeSpan.FromSeconds(1);
     private static readonly TimeSpan EmptyGroundGrace = TimeSpan.FromSeconds(8);
 
-    /// <summary>Monsters up to this many levels below the bot still grant full experience (see <see cref="AttackableExtensions"/>).</summary>
-    private const int FullExpLowerHeadroom = 10;
+    /// <summary>
+    /// The strongest monster a bot should fight, as a fraction of its own level. In MU a monster is far
+    /// tougher than a character of the same level (a well-geared level 400 only just manages the ~140
+    /// level monsters of the hardest map), so bots target monsters well below their own level to survive
+    /// while still earning experience. Tunable; lower = safer/slower, higher = more experience/deadlier.
+    /// </summary>
+    private const float SafeMonsterFactor = 0.5f;
 
-    /// <summary>Preferred upper bound: monsters a few levels above the bot are still reasonably safe to fight.</summary>
-    private const int SafeUpperHeadroom = 5;
+    /// <summary>The minimum monster level a bot will hunt, so very low-level bots still find targets.</summary>
+    private const int MinHuntCap = 3;
+
+    /// <summary>A bot only warps to another map if it offers monsters at least this many levels stronger (avoids hopping for tiny gains).</summary>
+    private const int WarpImprovementMargin = 3;
 
     /// <summary>Width of the level band of areas we randomize between, so bots don't all stack on one spot.</summary>
     private const int BandWidth = 3;
@@ -196,21 +204,21 @@ internal sealed class BotNavigator : AsyncDisposable
 
         this._emptyGroundSince = null;
 
-        // If the current map offers no level-appropriate monsters, warp to a map that does, so the bot
-        // earns useful experience instead of grinding monsters far below (or above) its level. It warps
-        // to the destination map's safezone and then walks out to a hunting ground like a real player.
+        // Warp to the map that offers the strongest monsters this bot can still safely handle, so it
+        // earns the best experience without being slaughtered. It arrives at the destination safezone
+        // and walks out to a hunting ground like a real player.
         var botLevel = this.GetBotLevel();
         if (DateTime.UtcNow - this._lastWarpUtc >= WarpCooldown
-            && !MapHasIdealBand(map.Definition, botLevel)
-            && this.TryPickTargetMap(botLevel, out var targetGate, out var targetMap))
+            && this.TryPickBetterMap(botLevel, out var targetGate, out var targetMap, out var targetLevel))
         {
             this._lastWarpUtc = DateTime.UtcNow;
             this._hasDestination = false;
             this._player.Logger.LogInformation(
-                "Bot {Character} (level {Level}) warping to map {Map} for a better level match.",
+                "Bot {Character} (level {Level}) warping to map {Map} (monsters ~{MonsterLevel}).",
                 this._player.Name,
                 botLevel,
-                targetMap.Name);
+                targetMap.Name,
+                targetLevel);
             await this._player.WarpToAsync(targetGate).ConfigureAwait(false);
             return;
         }
@@ -289,52 +297,67 @@ internal sealed class BotNavigator : AsyncDisposable
 
     private int GetBotLevel() => (int)(this._player.Attributes?[Stats.Level] ?? 1);
 
-    /// <summary>
-    /// Determines whether the map has at least one monster spawn within the bot's full-experience,
-    /// reasonably safe level band - i.e. whether it is worth hunting on for that level.
-    /// </summary>
-    private static bool MapHasIdealBand(GameMapDefinition mapDefinition, int botLevel)
+    /// <summary>The highest monster level a bot of the given level should fight (see <see cref="SafeMonsterFactor"/>).</summary>
+    private static int GetHuntCap(int botLevel) => Math.Max(MinHuntCap, (int)(botLevel * SafeMonsterFactor));
+
+    /// <summary>The strongest monster level on the map which is still at or below the safe cap; 0 if none.</summary>
+    private static int BestHuntableLevel(GameMapDefinition mapDefinition, int cap)
     {
-        return mapDefinition.MonsterSpawns
-            .Where(a => a is { Quantity: > 0, MonsterDefinition.ObjectKind: NpcObjectKind.Monster })
-            .Select(a => GetMonsterLevel(a.MonsterDefinition!))
-            .Any(level => level > 0 && level >= botLevel - FullExpLowerHeadroom && level <= botLevel + SafeUpperHeadroom);
+        var best = 0;
+        foreach (var area in mapDefinition.MonsterSpawns)
+        {
+            if (area is not { Quantity: > 0, MonsterDefinition.ObjectKind: NpcObjectKind.Monster })
+            {
+                continue;
+            }
+
+            var level = GetMonsterLevel(area.MonsterDefinition!);
+            if (level > 0 && level <= cap && level > best)
+            {
+                best = level;
+            }
+        }
+
+        return best;
     }
 
     /// <summary>
-    /// Picks a random enterable map (other than the current one) whose monsters fit the bot's level,
-    /// together with one of its safezone spawn gates to warp to.
+    /// Picks the enterable map (other than the current one) that offers the strongest monsters the bot can
+    /// still safely handle, if it is meaningfully better than the current map, with one of its safezone gates.
     /// </summary>
-    private bool TryPickTargetMap(int botLevel, out ExitGate gate, out GameMapDefinition mapDefinition)
+    private bool TryPickBetterMap(int botLevel, out ExitGate gate, out GameMapDefinition mapDefinition, out int monsterLevel)
     {
         gate = default!;
         mapDefinition = default!;
-        var currentDefinition = this._player.CurrentMap?.Definition;
-        var candidates = new List<(GameMapDefinition Map, ExitGate Gate)>();
+        monsterLevel = 0;
+
+        var cap = GetHuntCap(botLevel);
+        var current = this._player.CurrentMap?.Definition;
+        var threshold = (current is null ? 0 : BestHuntableLevel(current, cap)) + WarpImprovementMargin;
+
         foreach (var candidate in this._player.GameContext.Configuration.Maps)
         {
-            if (ReferenceEquals(candidate, currentDefinition)
-                || !MapHasIdealBand(candidate, botLevel)
-                || candidate.TryGetRequirementError(this._player, out _))
+            if (ReferenceEquals(candidate, current))
+            {
+                continue;
+            }
+
+            var best = BestHuntableLevel(candidate, cap);
+            if (best < threshold || candidate.TryGetRequirementError(this._player, out _))
             {
                 continue;
             }
 
             if (candidate.ExitGates.Where(g => g.IsSpawnGate).SelectRandom() is { } spawnGate)
             {
-                candidates.Add((candidate, spawnGate));
+                gate = spawnGate;
+                mapDefinition = candidate;
+                monsterLevel = best;
+                threshold = best + 1; // keep only a strictly-stronger map after this one
             }
         }
 
-        if (candidates.Count == 0)
-        {
-            return false;
-        }
-
-        var chosen = candidates[Rand.NextInt(0, candidates.Count)];
-        gate = chosen.Gate;
-        mapDefinition = chosen.Map;
-        return true;
+        return mapDefinition is not null;
     }
 
     /// <summary>
@@ -347,7 +370,7 @@ internal sealed class BotNavigator : AsyncDisposable
         ground = default;
         groundLevel = 0;
 
-        var botLevel = this.GetBotLevel();
+        var cap = GetHuntCap(this.GetBotLevel());
         var candidates = map.Definition.MonsterSpawns
             .Where(a => a is { Quantity: > 0, MonsterDefinition.ObjectKind: NpcObjectKind.Monster })
             .Select(a => (Area: a, Level: GetMonsterLevel(a.MonsterDefinition!)))
@@ -358,26 +381,19 @@ internal sealed class BotNavigator : AsyncDisposable
             return false;
         }
 
-        var ideal = candidates.Where(x => x.Level >= botLevel - FullExpLowerHeadroom && x.Level <= botLevel + SafeUpperHeadroom).ToList();
+        // Prefer the strongest monsters the bot can safely handle (best experience); if none on this map
+        // are within the safe cap, fall back to the weakest available (the bot should warp away anyway).
+        var safe = candidates.Where(x => x.Level <= cap).ToList();
         List<(MonsterSpawnArea Area, int Level)> band;
-        if (ideal.Count > 0)
+        if (safe.Count > 0)
         {
-            var top = ideal.Max(x => x.Level);
-            band = ideal.Where(x => x.Level >= top - BandWidth).ToList();
+            var top = safe.Max(x => x.Level);
+            band = safe.Where(x => x.Level >= top - BandWidth).ToList();
         }
         else
         {
-            var below = candidates.Where(x => x.Level < botLevel - FullExpLowerHeadroom).ToList();
-            if (below.Count > 0)
-            {
-                var top = below.Max(x => x.Level);
-                band = below.Where(x => x.Level >= top - BandWidth).ToList();
-            }
-            else
-            {
-                var bottom = candidates.Min(x => x.Level);
-                band = candidates.Where(x => x.Level <= bottom + BandWidth).ToList();
-            }
+            var bottom = candidates.Min(x => x.Level);
+            band = candidates.Where(x => x.Level <= bottom + BandWidth).ToList();
         }
 
         // Weight the choice by spawn quantity and proximity, so the bot prefers nearby, dense grounds
