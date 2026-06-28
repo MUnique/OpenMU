@@ -1,6 +1,6 @@
 @typeparam TItem
 
-@inject IModalService _modalService;
+@using MUnique.OpenMU.Web.Shared.Components.Modal
 
 <EditForm Model="@this" class="modal-multi-selection">
   <div class="modal-multi-selection__content">
@@ -10,7 +10,7 @@
   </div>
 
   <div class="modal-multi-selection__actions">
-    <button type="submit" @onclick="@SubmitAsync" class="btn-primary">OK</button>
-    <button type="button" @onclick="@CancelAsync" class="btn-secondary">Cancel</button>
+    <button type="submit" @onclick="@SubmitAsync" class="btn btn-primary">OK</button>
+    <button type="button" @onclick="@CancelAsync" class="btn btn-secondary">Cancel</button>
   </div>
 </EditForm>

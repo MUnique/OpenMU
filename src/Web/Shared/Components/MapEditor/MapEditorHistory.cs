@@ -47,7 +47,7 @@ public sealed class MapEditorHistory
     /// <param name="gate">The gate to snapshot.</param>
     public void RecordSnapshot(Gate gate)
     {
-        this.Add(new GateSnapshot(gate));
+        this.Add(new AreaSnapshot(gate));
     }
 
     /// <summary>
@@ -103,60 +103,50 @@ public sealed class MapEditorHistory
         this._undoList.Add(step);
     }
 
-    private sealed class SpawnAreaSnapshot : IUndoStep
+    private sealed class SpawnAreaSnapshot : AreaSnapshot
     {
         private readonly MonsterSpawnArea _spawn;
-        private readonly byte _x1;
-        private readonly byte _y1;
-        private readonly byte _x2;
-        private readonly byte _y2;
         private readonly Direction _direction;
 
         public SpawnAreaSnapshot(MonsterSpawnArea spawn)
+            : base(spawn)
         {
             this._spawn = spawn;
-            this._x1 = spawn.X1;
-            this._y1 = spawn.Y1;
-            this._x2 = spawn.X2;
-            this._y2 = spawn.Y2;
             this._direction = spawn.Direction;
         }
 
-        public object? Undo()
+        public override object? Undo()
         {
-            this._spawn.X1 = this._x1;
-            this._spawn.Y1 = this._y1;
-            this._spawn.X2 = this._x2;
-            this._spawn.Y2 = this._y2;
+            base.Undo();
             this._spawn.Direction = this._direction;
             return this._spawn;
         }
     }
 
-    private sealed class GateSnapshot : IUndoStep
+    private class AreaSnapshot : IUndoStep
     {
-        private readonly Gate _gate;
+        private readonly IMapArea _area;
         private readonly byte _x1;
         private readonly byte _y1;
         private readonly byte _x2;
         private readonly byte _y2;
 
-        public GateSnapshot(Gate gate)
+        public AreaSnapshot(IMapArea area)
         {
-            this._gate = gate;
-            this._x1 = gate.X1;
-            this._y1 = gate.Y1;
-            this._x2 = gate.X2;
-            this._y2 = gate.Y2;
+            this._area = area;
+            this._x1 = area.X1;
+            this._y1 = area.Y1;
+            this._x2 = area.X2;
+            this._y2 = area.Y2;
         }
 
-        public object? Undo()
+        public virtual object? Undo()
         {
-            this._gate.X1 = this._x1;
-            this._gate.Y1 = this._y1;
-            this._gate.X2 = this._x2;
-            this._gate.Y2 = this._y2;
-            return this._gate;
+            this._area.X1 = this._x1;
+            this._area.Y1 = this._y1;
+            this._area.X2 = this._x2;
+            this._area.Y2 = this._y2;
+            return this._area;
         }
     }
 

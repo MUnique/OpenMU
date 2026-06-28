@@ -5,7 +5,7 @@
     <div class="btn-toolbar my-2 justify-content-between" role="toolbar" aria-label="Exit gate selector">
         <div class="btn-group w-100 rounded" role="group">
             <div></div>
-            <button type="button" class="btn btn-secondary w-100 rounded text-left" @onclick="() => this._showPicker = !this._showPicker">
+            <button type="button" class="btn btn-secondary w-100 rounded text-start" @onclick="() => this._showPicker = !this._showPicker">
                 @if (this._showPicker)
                 {
                     <span class="oi oi-expand-up"></span>
@@ -14,7 +14,7 @@
                 {
                     <span class="oi oi-expand-down"></span>
                 }
-                <span class="ml-3">@(this.CurrentValue?.ToString() ?? "None selected")</span>
+                <span class="ms-3">@(this.CurrentValue?.ToString() ?? "None selected")</span>
             </button>
         </div>
     </div>
