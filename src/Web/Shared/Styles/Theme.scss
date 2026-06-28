@@ -1,12 +1,15 @@
 // =============================================================================
-// Theme — light + dark design tokens and Bootstrap dark-mode overrides.
+// Theme — light + dark design tokens for custom components.
 //
-// The active theme is selected by [data-theme] on <html>, set in App.razor
-// from the OpenMU.Theme cookie (written by ThemeController).
+// BS5's built-in [data-bs-theme="dark"] (in _root.scss) handles all Bootstrap
+// component dark mode automatically. This file only provides:
+//   a) Custom --omu-* tokens for non-Boostrap components (sidebar,
+//      multi-lookup-field, sticky footers, etc.)
+//   b) Overrides for those custom components in dark mode
 // =============================================================================
 
 // -----------------------------------------------------------------------------
-// SCSS token maps — single source of truth for both themes.
+// SCSS token maps
 // -----------------------------------------------------------------------------
 
 $omu-light: (
@@ -51,7 +54,6 @@ $omu-dark: (
     spinner-dot:          #66b2ff,
 );
 
-// Emit one CSS custom property per token for the given selector.
 @mixin omu-theme-vars($map) {
     @each $key, $value in $map {
         --omu-#{$key}: #{$value};
@@ -63,281 +65,39 @@ $omu-dark: (
 // -----------------------------------------------------------------------------
 
 :root,
-[data-theme="light"] {
+[data-bs-theme="light"] {
     @include omu-theme-vars($omu-light);
 }
 
-[data-theme="dark"] {
-    // Tell the browser to render native form controls in their dark variant
-    // so unchecked checkboxes/radios don't render as bright white tiles.
-    color-scheme: dark;
-
+[data-bs-theme="dark"] {
     @include omu-theme-vars($omu-dark);
 }
 
 // -----------------------------------------------------------------------------
-// Base
+// Base background/color — defer to BS5 CSS variables
 // -----------------------------------------------------------------------------
 
 html,
 body {
-    background-color: var(--omu-bg);
-    color: var(--omu-text);
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
 }
 
 // -----------------------------------------------------------------------------
-// Dark-mode Bootstrap overrides
+// Custom-component dark overrides
 // -----------------------------------------------------------------------------
 
-[data-theme="dark"] {
+[data-bs-theme="dark"] {
 
-    // Surfaces
-    .bg-light,
-    .navbar-light,
-    .breadcrumb,
-    .breadcrumb-bar,
-    .bg-white {
-        background-color: var(--omu-surface) !important;
-        color: var(--omu-text);
-    }
-
-    .breadcrumb {
-        --bs-breadcrumb-item-active-color: var(--omu-text);
-        --bs-breadcrumb-divider-color: var(--omu-text-muted);
-    }
-
-    .breadcrumb-bar {
-        background-color: var(--omu-surface) !important;
-    }
-
-    // Borders
-    .border-bottom,
-    .border-top,
-    .border-left,
-    .border-right,
-    .border {
-        border-color: var(--omu-border) !important;
-    }
-
-    // Text helpers
-    .text-secondary,
-    small.text-secondary {
-        color: var(--omu-text-secondary) !important;
-    }
-
-    .text-muted {
-        color: var(--omu-text-muted) !important;
-    }
-
-    // Navbar
-    .navbar-light {
-        .navbar-text,
-        .navbar-brand,
-        .navbar-nav .nav-link {
-            color: var(--omu-text);
-        }
-    }
-
-    // Tables
-    .table {
-        --bs-table-bg: var(--omu-surface);
-        --bs-table-color: var(--omu-text);
-        --bs-table-striped-bg: rgba(255, 255, 255, 0.04);
-        --bs-table-hover-bg: rgba(255, 255, 255, 0.08);
-        color: var(--omu-text);
-        background-color: transparent;
-
-        th,
-        td {
-            border-color: var(--omu-border);
-        }
-    }
-
-    .table-striped > tbody > tr:nth-of-type(odd) > * {
-        --bs-table-accent-bg: var(--bs-table-striped-bg);
-        color: var(--omu-text);
-    }
-
-    .table-hover > tbody > tr:hover > * {
-        --bs-table-accent-bg: var(--bs-table-hover-bg);
-        color: var(--omu-text);
-    }
-
-    .quickgrid {
-        --bs-table-striped-bg: rgba(255, 255, 255, 0.04);
-        --bs-table-hover-bg: rgba(255, 255, 255, 0.08);
-    }
-
-    // Form controls
-    .form-control {
-        background-color: var(--omu-surface-muted);
-        color: var(--omu-text);
-        border-color: var(--omu-border);
-
-        &:focus {
-            background-color: var(--omu-surface-muted);
-            color: var(--omu-text);
-            border-color: var(--omu-link);
-            box-shadow: 0 0 0 0.2rem rgba(102, 178, 255, 0.25);
-        }
-
-        &::placeholder {
-            color: var(--omu-text-muted);
-            opacity: 1;
-        }
-    }
-
-    .form-select {
-        --bs-form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23d7d7d7' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
-        background-color: var(--omu-surface-muted);
-        color: var(--omu-text);
-        border-color: var(--omu-border);
-
-        &:focus {
-            background-color: var(--omu-surface-muted);
-            color: var(--omu-text);
-            border-color: var(--omu-link);
-            box-shadow: 0 0 0 0.2rem rgba(102, 178, 255, 0.25);
-        }
-    }
-
-    .input-group-text {
-        background-color: var(--omu-surface-hover);
-        color: var(--omu-text);
-        border-color: var(--omu-border);
-    }
-
-    // Dropdowns / popovers
-    .dropdown-menu {
-        background-color: var(--omu-surface);
-        color: var(--omu-text);
-        border-color: var(--omu-border);
-    }
-
-    .dropdown-item {
-        color: var(--omu-text);
-
-        &:hover,
-        &:focus {
-            background-color: var(--omu-surface-hover);
-            color: var(--omu-text);
-        }
-    }
-
-    // Modals
-    .modal-content {
-        background-color: var(--omu-surface);
-        color: var(--omu-text);
-        border-color: var(--omu-border);
-    }
-
-    .modal-header,
-    .modal-footer {
-        border-color: var(--omu-border);
-    }
-
-    .close {
-        color: var(--omu-text);
-        text-shadow: none;
-    }
-
-    // Alerts / cards / list groups
-    .alert-secondary {
-        background-color: var(--omu-surface-hover);
-        color: var(--omu-text);
-        border-color: var(--omu-border);
-    }
-
-    .card,
-    .list-group-item {
-        background-color: var(--omu-surface);
-        color: var(--omu-text);
-        border-color: var(--omu-border);
-    }
-
-    // Bootstrap alert variants (Updates and Install pages).
-    // Subtle tint over the dark surface — 15% bg, 40% border.
-    // .alert-secondary already overridden above.
-    .alert-primary {
-        background-color: rgba(46, 134, 214, 0.15);
-        color: #8ec5ff;
-        border-color: rgba(46, 134, 214, 0.4);
-    }
-
-    .alert-success {
-        background-color: rgba(40, 167, 69, 0.15);
-        color: #7dd87d;
-        border-color: rgba(40, 167, 69, 0.4);
-    }
-
-    .alert-info {
-        background-color: rgba(23, 162, 184, 0.15);
-        color: #6fc3d1;
-        border-color: rgba(23, 162, 184, 0.4);
-    }
-
-    .alert-warning {
-        background-color: rgba(255, 193, 7, 0.15);
-        color: #ffd96b;
-        border-color: rgba(255, 193, 7, 0.4);
-    }
-
-    .alert-danger {
-        background-color: rgba(220, 53, 69, 0.15);
-        color: #ef8993;
-        border-color: rgba(220, 53, 69, 0.4);
-    }
-
-    .alert-light {
-        background-color: var(--omu-surface);
-        color: var(--omu-text);
-        border-color: var(--omu-border);
-    }
-
-    // Bootstrap sets per-variant <hr> border colors that are bright tints of
-    // the alert hue; too loud over dark alert backgrounds.
-    .alert hr {
-        border-top-color: rgba(255, 255, 255, 0.15) !important;
-    }
-
-    // Buttons
-    .btn-secondary {
-        background-color: #3a3f47;
-        border-color: #3a3f47;
-        color: var(--omu-text);
-    }
-
-    .btn-light {
-        background-color: var(--omu-surface-hover);
-        border-color: var(--omu-border);
-        color: var(--omu-text);
-    }
-
-    .btn-primary {
-        background-color: var(--omu-link-primary);
-        border-color: var(--omu-link-primary-border);
-        color: #fff;
-    }
-
-    // Links — skip anchors styled as buttons (e.g. <a class="btn btn-info">)
-    // to avoid overriding their text colour. .btn-link is still a link.
-    a:not(.btn),
-    .btn-link {
-        color: var(--omu-link);
-    }
-
-    // Open-Iconic glyphs sometimes inherit black; force visible colour.
     .oi {
         color: inherit;
     }
 
-    // Sidebar
     .sidebar {
         .nav-link {
             color: var(--omu-nav-link);
         }
 
-        // Game Configuration submenu dropdown
         > nav > div > ul > li.dropdown {
             > div {
                 background-color: var(--omu-surface);
@@ -366,32 +126,27 @@ body {
         }
     }
 
-    // Blazor error banner
     #blazor-error-ui {
         background: var(--omu-error-bg);
         color: var(--omu-error-text);
     }
 
-    // CreationPanel sticky form-actions footer
     .creation-panel-body .form-actions {
         background-color: var(--omu-surface) !important;
         border-top: 1px solid var(--omu-border) !important;
     }
 
-    // Sticky "Add New" bar in EditConfigGrid
     .add-new-bar {
         background-color: var(--omu-surface) !important;
         border-top: var(--bs-border-width) solid var(--omu-border) !important;
     }
 
-    // Blazored.Modal (NuGet package hardcodes background-color: #fff)
     .blazored-modal {
         background-color: var(--omu-surface) !important;
         border-color: var(--omu-border) !important;
         color: var(--omu-text);
     }
 
-    // MultiLookupField
     .multi-lookup-field {
         &__selected-items {
             background: var(--omu-surface-2);
@@ -433,8 +188,6 @@ body {
         }
     }
 
-    // QuickGrid sort/paginator arrows are SVG data-URIs with no fill attribute
-    // (defaults to black). Invert flips them to white in dark mode.
     .sort-indicator,
     .go-first,
     .go-previous,

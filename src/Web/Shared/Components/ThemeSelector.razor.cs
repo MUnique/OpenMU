@@ -15,7 +15,7 @@ using Microsoft.JSInterop;
 public partial class ThemeSelector : IAsyncDisposable
 {
     private static readonly string JsModulePath =
-        $"./_content/{typeof(ThemeSelector).Assembly.GetName().Name}/themeSelector.js";
+        $"./_content/{typeof(ThemeSelector).Assembly.GetName().Name}/Components/{nameof(ThemeSelector)}.razor.js";
 
     private IJSObjectReference? _jsModule;
 
