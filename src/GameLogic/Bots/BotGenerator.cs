@@ -9,6 +9,7 @@ using System.Threading;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Persistence;
@@ -29,6 +30,27 @@ internal sealed class BotGenerator
     private const int MinLevel = 10;
     private const int MaxLevel = 80;
     private const int StartMoney = 100000;
+
+    /// <summary>Upgrade level (+6) of the starter gear, giving fresh bots a survival buffer until they can warp.</summary>
+    private const byte StarterItemLevel = 6;
+
+    /// <summary>Highest item group that is a melee weapon (0 sword, 1 axe, 2 mace, 3 spear).</summary>
+    private const byte MaxMeleeGroup = 3;
+
+    /// <summary>Item group of bows (need ammunition).</summary>
+    private const byte BowGroup = 4;
+
+    /// <summary>Item group of staves/sticks (casters).</summary>
+    private const byte StaffGroup = 5;
+
+    /// <summary>Item group of body armor; its item number identifies the armor set.</summary>
+    private const byte ArmorGroup = 8;
+
+    /// <summary>
+    /// Armor set numbers tried in thematic order; the first the class is qualified for (by its chest piece)
+    /// is used: 5 Leather (warriors), 2 Pad (wizards), 10 Vine (elves), 39 Mistery (summoners), then fallbacks.
+    /// </summary>
+    private static readonly byte[] ArmorSetCandidates = { 5, 2, 10, 39, 6, 0, 4, 8 };
 
     private readonly IGameContext _gameContext;
     private readonly ILogger _logger;
@@ -209,7 +231,7 @@ internal sealed class BotGenerator
 
         character.Inventory = context.CreateNew<ItemStorage>();
         character.Inventory.Money = StartMoney;
-        this.EquipStarterGear(context, character, level);
+        this.EquipStarterGear(context, character);
 
         account.Characters.Add(character);
     }
@@ -257,56 +279,135 @@ internal sealed class BotGenerator
     /// account gear), so it is not naked and punching with its fists. The item level scales modestly
     /// with the bot level for a bit more defense/damage without raising the equip requirements too high.
     /// </summary>
-    private void EquipStarterGear(IPlayerContext context, Character character, int level)
+    private void EquipStarterGear(IPlayerContext context, Character character)
     {
         var inventory = character.Inventory!;
-        var itemLevel = (byte)Math.Clamp(level / 20, 0, 4);
-        var mainStat = GetMainDamageStat(character)?.Definition;
+        var characterClass = character.CharacterClass!;
 
-        // The armor set is identified by the item NUMBER (5 = Leather, 2 = Pad, 10 = Vine), while the
-        // item GROUP is the equipment type (7 helm, 8 armor, 9 pants, 10 gloves, 11 boots). Weapons use
-        // their own group (1 axe, 4 bow, 5 staff) with number 0.
-        byte armorSet;
-        if (mainStat == Stats.BaseEnergy)
+        // Data-driven so every class gets gear it is actually QUALIFIED to wear (a Dark Lord must never
+        // end up in a Pad/wizard set). We pick the most basic options (lowest DropLevel) the class can use:
+        // - a weapon from the weapon groups (0 sword, 1 axe, 2 mace, 3 spear, 4 bow, 5 staff),
+        // - the armor set whose chest piece (group 8) has the lowest DropLevel; its NUMBER identifies the set,
+        //   and the equipment type is the GROUP (7 helm, 8 armor, 9 pants, 10 gloves, 11 boots).
+        // Choose the weapon type by the class's intrinsic stats: archers (agility) get a bow, pure casters
+        // (energy) a staff, everyone else (warriors and the Magic Gladiator hybrid) a melee blade. The Small
+        // Axe is qualified for almost every class, so without this casters and archers would all end up with one.
+        float ClassStat(AttributeDefinition attribute)
+            => characterClass.StatAttributes.FirstOrDefault(a => a.Attribute == attribute)?.BaseValue ?? 0f;
+        var strength = ClassStat(Stats.BaseStrength);
+        var agility = ClassStat(Stats.BaseAgility);
+        var energy = ClassStat(Stats.BaseEnergy);
+        Func<ItemDefinition, bool> isPreferredWeapon;
+        if (agility > strength && agility > energy)
         {
-            // Caster: Skull Staff + Pad set.
-            this.AddEquippedItem(context, inventory, InventoryConstants.LeftHandSlot, 5, 0, itemLevel);
-            armorSet = 2;
+            isPreferredWeapon = d => d.Group == BowGroup;
         }
-        else if (mainStat == Stats.BaseAgility)
+        else if (energy > strength)
         {
-            // Archer: Short Bow + arrows + Vine set.
-            this.AddEquippedItem(context, inventory, InventoryConstants.RightHandSlot, 4, 0, itemLevel);
-            this.AddEquippedItem(context, inventory, InventoryConstants.LeftHandSlot, 4, 15, 0, 255);
-            armorSet = 10;
+            isPreferredWeapon = d => d.Group == StaffGroup;
         }
         else
         {
-            // Melee (strength / leadership): Small Axe + Leather set.
-            this.AddEquippedItem(context, inventory, InventoryConstants.LeftHandSlot, 1, 0, itemLevel);
-            armorSet = 5;
+            isPreferredWeapon = d => d.Group <= MaxMeleeGroup;
         }
 
-        this.AddEquippedItem(context, inventory, InventoryConstants.HelmSlot, 7, armorSet, itemLevel);
-        this.AddEquippedItem(context, inventory, InventoryConstants.ArmorSlot, 8, armorSet, itemLevel);
-        this.AddEquippedItem(context, inventory, InventoryConstants.PantsSlot, 9, armorSet, itemLevel);
-        this.AddEquippedItem(context, inventory, InventoryConstants.GlovesSlot, 10, armorSet, itemLevel);
-        this.AddEquippedItem(context, inventory, InventoryConstants.BootsSlot, 11, armorSet, itemLevel);
+        var weapon = this._gameContext.Configuration.Items
+                .Where(d => isPreferredWeapon(d) && d.QualifiedCharacters.Contains(characterClass))
+                .MinBy(d => d.DropLevel)
+            ?? this._gameContext.Configuration.Items
+                .Where(d => d.Group <= StaffGroup && d.QualifiedCharacters.Contains(characterClass))
+                .MinBy(d => d.DropLevel);
+        if (weapon is not null)
+        {
+            if (weapon.Group == BowGroup)
+            {
+                // Bows need ammunition; the arrows go into the left hand.
+                this.AddEquippedItem(context, inventory, characterClass, InventoryConstants.RightHandSlot, weapon);
+                this.AddAmmunition(context, inventory);
+            }
+            else
+            {
+                this.AddEquippedItem(context, inventory, characterClass, InventoryConstants.LeftHandSlot, weapon);
+            }
+        }
+
+        // Choose a thematically appropriate armor set the class can wear, tried in order (warriors -> Leather,
+        // wizards -> Pad, elves -> Vine, summoners -> Mistery, then fallbacks). Each piece is added only if the
+        // class is qualified for it, so e.g. the Magic Gladiator keeps the set but skips the helm it can't wear.
+        foreach (var set in ArmorSetCandidates)
+        {
+            if (this._gameContext.Configuration.Items.FirstOrDefault(d => d.Group == ArmorGroup && d.Number == set) is not { } chest
+                || !chest.QualifiedCharacters.Contains(characterClass))
+            {
+                continue;
+            }
+
+            this.EquipArmorPiece(context, inventory, characterClass, InventoryConstants.HelmSlot, 7, set);
+            this.EquipArmorPiece(context, inventory, characterClass, InventoryConstants.ArmorSlot, 8, set);
+            this.EquipArmorPiece(context, inventory, characterClass, InventoryConstants.PantsSlot, 9, set);
+            this.EquipArmorPiece(context, inventory, characterClass, InventoryConstants.GlovesSlot, 10, set);
+            this.EquipArmorPiece(context, inventory, characterClass, InventoryConstants.BootsSlot, 11, set);
+            break;
+        }
+
+        this.AddHealthPotions(context, inventory);
     }
 
-    private void AddEquippedItem(IPlayerContext context, ItemStorage inventory, byte slot, int group, int number, byte itemLevel, byte? durability = null)
+    private void AddHealthPotions(IPlayerContext context, ItemStorage inventory)
+    {
+        // A stack of Large Healing Potions so the offline HealingHandler has something to drink. The
+        // BotNavigator tops this up at runtime, so the bot never runs dry. Durability holds the stack count.
+        var potion = this._gameContext.Configuration.Items.FirstOrDefault(d => d.Group == 14 && d.Number == 3);
+        if (potion is null)
+        {
+            return;
+        }
+
+        var item = context.CreateNew<Item>();
+        item.Definition = potion;
+        item.Durability = 255;
+        item.ItemSlot = InventoryConstants.EquippableSlotsCount; // first backpack slot
+        inventory.Items.Add(item);
+    }
+
+    private void EquipArmorPiece(IPlayerContext context, ItemStorage inventory, CharacterClass characterClass, byte slot, int group, int number)
     {
         var definition = this._gameContext.Configuration.Items.FirstOrDefault(d => d.Group == group && d.Number == number);
-        if (definition is null)
+        if (definition is null || !definition.QualifiedCharacters.Contains(characterClass))
+        {
+            return;
+        }
+
+        this.AddEquippedItem(context, inventory, characterClass, slot, definition);
+    }
+
+    private void AddEquippedItem(IPlayerContext context, ItemStorage inventory, CharacterClass characterClass, byte slot, ItemDefinition definition)
+    {
+        if (!definition.QualifiedCharacters.Contains(characterClass))
         {
             return;
         }
 
         var item = context.CreateNew<Item>();
         item.Definition = definition;
-        item.Level = itemLevel;
-        item.Durability = durability ?? definition.Durability;
+        item.Level = StarterItemLevel;
+        item.Durability = definition.Durability;
         item.ItemSlot = slot;
+        inventory.Items.Add(item);
+    }
+
+    private void AddAmmunition(IPlayerContext context, ItemStorage inventory)
+    {
+        var arrows = this._gameContext.Configuration.Items.FirstOrDefault(d => d.Group == 4 && d.Number == 15);
+        if (arrows is null)
+        {
+            return;
+        }
+
+        var item = context.CreateNew<Item>();
+        item.Definition = arrows;
+        item.Durability = 255;
+        item.ItemSlot = InventoryConstants.LeftHandSlot;
         inventory.Items.Add(item);
     }
 }

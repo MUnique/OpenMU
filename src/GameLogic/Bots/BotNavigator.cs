@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.Bots;
 
 using System.Threading;
+using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Offline;
@@ -37,11 +38,29 @@ internal sealed class BotNavigator : AsyncDisposable
     /// <summary>A bot only warps to another map if it offers monsters at least this many levels stronger (avoids hopping for tiny gains).</summary>
     private const int WarpImprovementMargin = 3;
 
+    /// <summary>
+    /// Below this level a bot never warps: it stays on its class starting map (e.g. elves in Noria,
+    /// summoners in Elvenland), so the newbie maps stay populated instead of everyone drifting to one map.
+    /// </summary>
+    private const int MinWarpLevel = 30;
+
     /// <summary>Width of the level band of areas we randomize between, so bots don't all stack on one spot.</summary>
     private const int BandWidth = 3;
 
     /// <summary>Range (tiles) around the origin that counts as "at the hunting ground".</summary>
     private const int HuntingRange = 6;
+
+    /// <summary>Item group of healing potions (Apple / Small / Medium / Large all share group 14).</summary>
+    private const int HealPotionGroup = 14;
+
+    /// <summary>Item number of the Large Healing Potion within <see cref="HealPotionGroup"/>.</summary>
+    private const int HealPotionNumber = 3;
+
+    /// <summary>Stack size (the potion item's Durability holds the remaining count; one is spent per heal).</summary>
+    private const byte HealPotionStack = 255;
+
+    /// <summary>Refill the stack once it drops below this, so the bot never runs out mid-fight.</summary>
+    private const int HealPotionRefillBelow = 30;
 
     /// <summary>Number of path steps to issue per travel hop. Short hops let the bot stop and fight between hops.</summary>
     private const int StepsPerHop = 3;
@@ -67,6 +86,12 @@ internal sealed class BotNavigator : AsyncDisposable
     private static readonly TimeSpan WarpCooldown = TimeSpan.FromSeconds(60);
 
     /// <summary>
+    /// If the bot's position has not changed for this long it is considered stuck (a wedged walk, or a
+    /// monster it can't reach). The navigator then forces a fresh destination so the bot gets going again.
+    /// </summary>
+    private static readonly TimeSpan StuckTimeout = TimeSpan.FromSeconds(8);
+
+    /// <summary>
     /// A shared full-map path finder for long-distance travel. The pooled path finder uses a small scoped
     /// grid (it rejects start/end further apart than ~16 tiles), so it can only do local movement; this one
     /// uses a <see cref="FullGridNetwork"/> which resolves routes across the whole map. A single instance is
@@ -85,6 +110,8 @@ internal sealed class BotNavigator : AsyncDisposable
     private Point _destination;
     private bool _hasDestination;
     private DateTime _lastWarpUtc = DateTime.MinValue;
+    private Point _lastPosition;
+    private DateTime _lastMoveUtc = DateTime.MinValue;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BotNavigator"/> class.
@@ -164,11 +191,46 @@ internal sealed class BotNavigator : AsyncDisposable
             return;
         }
 
+        // Make sure the bot always carries healing potions. Without them the offline HealingHandler has
+        // nothing to drink and the bot dies to any sustained damage. This also tops up already-generated
+        // bots at runtime, so the fix applies without regenerating them.
+        await this.EnsureHealthPotionsAsync().ConfigureAwait(false);
+
         // Keep the combat centre on the bot's current position, so the combat handler always engages
         // monsters right next to the bot - both at the hunting ground and while travelling through hostile
         // territory (self-defence). This is what keeps a travelling bot alive. The travel destination is
         // tracked separately in _destination.
-        this._player.HuntingOrigin = this._player.Position;
+        var inSafezone = map.Terrain.SafezoneMap[this._player.Position.X, this._player.Position.Y];
+
+        // Combat centre: normally the bot's own position (self-defence while travelling and at the hunting
+        // ground). But while inside the safezone we aim it at the destination, so the combat handler does NOT
+        // make the bot stand in town swinging at monsters just outside (which it can't damage from a safezone) -
+        // it should simply walk out of town instead.
+        this._player.HuntingOrigin = inSafezone && this._hasDestination ? this._destination : this._player.Position;
+
+        // Watchdog bookkeeping: remember when the bot last actually changed position.
+        if (this._player.Position != this._lastPosition)
+        {
+            this._lastPosition = this._player.Position;
+            this._lastMoveUtc = DateTime.UtcNow;
+        }
+
+        var monstersNearby = map.GetAttackablesInRange(this._player.Position, TravelStopRange)
+            .OfType<Monster>()
+            .Count(m => m.IsAlive && !m.IsAtSafezone());
+
+        // The bot counts as stuck only when it has been frozen on the spot with NOTHING to fight - i.e. a
+        // wedged walk or a blocked path. A bot standing still because it is fighting nearby monsters is fine.
+        var stuck = monstersNearby == 0 && DateTime.UtcNow - this._lastMoveUtc > StuckTimeout;
+        if (stuck)
+        {
+            // Break free: pick a fresh hunting ground and walk to it now. Issuing the walk resets the wedged
+            // walker, and a new destination avoids re-stalling on the same blocked path.
+            this._lastMoveUtc = DateTime.UtcNow;
+            this._emptyGroundSince = null;
+            await this.PickGroundAndTravelAsync(map).ConfigureAwait(false);
+            return;
+        }
 
         // A walk (travel hop or local combat move) is already in progress.
         if (this._player.IsWalking)
@@ -176,30 +238,40 @@ internal sealed class BotNavigator : AsyncDisposable
             return;
         }
 
-        var monstersNearby = map.GetAttackablesInRange(this._player.Position, TravelStopRange)
-            .OfType<Monster>()
-            .Count(m => m.IsAlive && !m.IsAtSafezone());
-
-        // Monsters right here: stop and let the combat handler fight them (don't walk away into more danger).
-        if (monstersNearby > 0)
+        // Inside the safezone the bot can't fight anyway, so it must keep walking out of town instead of
+        // freezing at the gate when a monster is just outside. Only stop to fight once it has left the safezone.
+        if (!inSafezone && monstersNearby > 0)
         {
             this._emptyGroundSince = null;
             return;
         }
 
-        // Nothing to fight here. If we still have a destination to reach, keep walking towards it.
+        // Nothing to fight here. If we still have a destination to reach, keep walking towards it. If the
+        // route turned out to be impossible (e.g. across a river), drop it and fall through to pick another
+        // ground in this same tick instead of standing still.
         if (this._hasDestination && this._player.GetDistanceTo(this._destination) > HuntingRange)
         {
-            await this.TravelTowardAsync(map, this._destination).ConfigureAwait(false);
+            if (!await this.TravelTowardAsync(map, this._destination).ConfigureAwait(false))
+            {
+                // Impossible route: pick another ground now (proximity-weighted toward nearby, reachable
+                // ones) instead of standing still re-issuing an impossible walk.
+                this._emptyGroundSince = null;
+                await this.PickGroundAndTravelAsync(map).ConfigureAwait(false);
+            }
+
             return;
         }
 
         // Arrived (or no destination) and the area is empty: wait out a short grace, then pick a new ground.
+        // In the safezone we skip the grace so a freshly-spawned bot heads out of town straight away.
         this._hasDestination = false;
-        this._emptyGroundSince ??= DateTime.UtcNow;
-        if (DateTime.UtcNow - this._emptyGroundSince < EmptyGroundGrace)
+        if (!inSafezone)
         {
-            return;
+            this._emptyGroundSince ??= DateTime.UtcNow;
+            if (DateTime.UtcNow - this._emptyGroundSince < EmptyGroundGrace)
+            {
+                return;
+            }
         }
 
         this._emptyGroundSince = null;
@@ -208,7 +280,8 @@ internal sealed class BotNavigator : AsyncDisposable
         // earns the best experience without being slaughtered. It arrives at the destination safezone
         // and walks out to a hunting ground like a real player.
         var botLevel = this.GetBotLevel();
-        if (DateTime.UtcNow - this._lastWarpUtc >= WarpCooldown
+        if (botLevel >= MinWarpLevel
+            && DateTime.UtcNow - this._lastWarpUtc >= WarpCooldown
             && this.TryPickBetterMap(botLevel, out var targetGate, out var targetMap, out var targetLevel))
         {
             this._lastWarpUtc = DateTime.UtcNow;
@@ -223,21 +296,7 @@ internal sealed class BotNavigator : AsyncDisposable
             return;
         }
 
-        if (this.TryPickHuntingGround(map, out var ground, out var groundLevel))
-        {
-            this._destination = ground;
-            this._hasDestination = true;
-            this._player.Logger.LogInformation(
-                "Bot {Character} (level {Level}) heading to hunting ground {Ground} (monster level ~{MonsterLevel}).",
-                this._player.Name,
-                this.GetBotLevel(),
-                ground,
-                groundLevel);
-        }
-        else
-        {
-            this._player.Logger.LogDebug("Bot {Character}: no reachable hunting ground found on map {Map}.", this._player.Name, map.Definition.Name);
-        }
+        await this.PickGroundAndTravelAsync(map).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -246,7 +305,7 @@ internal sealed class BotNavigator : AsyncDisposable
     /// issued; the remainder is recomputed from the new position on the next tick. The safe zone is allowed
     /// in the path so the bot can leave town.
     /// </summary>
-    private async ValueTask TravelTowardAsync(GameMap map, Point destination)
+    private async ValueTask<bool> TravelTowardAsync(GameMap map, Point destination)
     {
         var position = this._player.Position;
 
@@ -262,15 +321,11 @@ internal sealed class BotNavigator : AsyncDisposable
             TravelPathFinderLock.Release();
         }
 
-        this._player.Logger.LogDebug(
-            "Bot {Character}: travel {From} -> dest {Dest}, pathLen={PathLen}.",
-            this._player.Name,
-            position,
-            destination,
-            path?.Count ?? -1);
         if (path is null || path.Count == 0)
         {
-            return;
+            // No route to this ground (e.g. across a river): report it so the navigator picks another one
+            // straight away instead of standing still re-issuing an impossible walk.
+            return false;
         }
 
         var stepsCount = Math.Min(path.Count, StepsPerHop);
@@ -283,6 +338,76 @@ internal sealed class BotNavigator : AsyncDisposable
         }
 
         await this._player.WalkToAsync(steps[stepsCount - 1].To, steps).ConfigureAwait(false);
+        return true;
+    }
+
+    /// <summary>
+    /// Picks a hunting ground and starts walking to it. If the chosen ground turns out to be unreachable the
+    /// destination is dropped, so the next call (next tick) simply picks another one.
+    /// </summary>
+    private async ValueTask PickGroundAndTravelAsync(GameMap map)
+    {
+        if (!this.TryPickHuntingGround(map, out var ground, out var groundLevel))
+        {
+            this._hasDestination = false;
+            this._player.Logger.LogDebug("Bot {Character}: no hunting ground found on map {Map}.", this._player.Name, map.Definition.Name);
+            return;
+        }
+
+        this._destination = ground;
+        this._hasDestination = true;
+        this._player.Logger.LogInformation(
+            "Bot {Character} (level {Level}) heading to hunting ground {Ground} (monster level ~{MonsterLevel}).",
+            this._player.Name,
+            this.GetBotLevel(),
+            ground,
+            groundLevel);
+
+        if (!await this.TravelTowardAsync(map, ground).ConfigureAwait(false))
+        {
+            this._hasDestination = false;
+        }
+    }
+
+    /// <summary>
+    /// Ensures the bot keeps a stack of healing potions in its inventory. Creates the stack the first time
+    /// (covering bots generated before potions were granted) and refills it once it runs low, so the bot
+    /// never goes without a way to heal.
+    /// </summary>
+    private async ValueTask EnsureHealthPotionsAsync()
+    {
+        if (this._player.Inventory is not { } inventory)
+        {
+            return;
+        }
+
+        var potion = inventory.Items.FirstOrDefault(i =>
+            i.Definition?.Group == HealPotionGroup && i.Definition.Number == HealPotionNumber);
+        if (potion is not null)
+        {
+            if (potion.Durability < HealPotionRefillBelow)
+            {
+                potion.Durability = HealPotionStack;
+            }
+
+            return;
+        }
+
+        var definition = this._player.GameContext.Configuration.Items
+            .FirstOrDefault(d => d.Group == HealPotionGroup && d.Number == HealPotionNumber);
+        if (definition is null)
+        {
+            return;
+        }
+
+        var item = this._player.PersistenceContext.CreateNew<Item>();
+        item.Definition = definition;
+        item.Durability = HealPotionStack;
+        if (!await inventory.AddItemAsync(item).ConfigureAwait(false))
+        {
+            // No free slot (should not happen for a bot) - drop the throw-away item again.
+            await this._player.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
+        }
     }
 
     private static PathFinder CreateTravelPathFinder()
