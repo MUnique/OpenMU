@@ -1,4 +1,4 @@
-﻿// <copyright file="MonsterSpawnArea.cs" company="MUnique">
+// <copyright file="MonsterSpawnArea.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -65,10 +65,10 @@ public enum SpawnTrigger
 }
 
 /// <summary>
-/// Defines an monster spawn area.
+/// Defines a monster spawn area.
 /// </summary>
 [Cloneable]
-public partial class MonsterSpawnArea
+public partial class MonsterSpawnArea : IMapArea
 {
     /// <summary>
     /// Gets or sets the monster definition.

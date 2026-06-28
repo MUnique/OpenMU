@@ -22,7 +22,7 @@
       <td>@item.LoginName</td>
       <td>@item.Server</td>
       <td>
-        <button class="btn btn-warning" type="button" @onclick="() => this.AccountService.SetAccountOfflineAsync(item)">
+        <button class="btn btn-warning btn-sm" type="button" @onclick="() => this.AccountService.SetAccountOfflineAsync(item)">
           <span class="oi oi-bolt" aria-hidden="true" /> @Resources.Disconnect
         </button>
       </td>
@@ -45,7 +45,7 @@
       <td>@item.ServerId</td>
       <td>@item.StartedAt.ToString("yyyy-MM-dd HH:mm:ss") UTC</td>
       <td>
-        <button class="btn btn-warning" type="button" @onclick="() => this.OfflineService.StopOfflinePlayerAsync(item)">
+        <button class="btn btn-warning btn-sm" type="button" @onclick="() => this.OfflineService.StopOfflinePlayerAsync(item)">
           <span class="oi oi-media-stop" aria-hidden="true" /> @Resources.Stop
         </button>
       </td>

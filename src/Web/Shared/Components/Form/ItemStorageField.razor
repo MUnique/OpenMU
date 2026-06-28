@@ -67,16 +67,16 @@
                 }
             </div>
             <div class="col-1 middle-column">
-                <button @key="@("create-btn")" type="button" class="btn-info mb-1" @onmousedown="@this.OnCreateItemClickAsync" @onmousedown:preventDefault @onmousedown:stopPropagation title="Create"><span class="oi oi-plus"></span></button>
+                <button @key="@("create-btn")" type="button" class="btn btn-info mb-1" @onmousedown="@this.OnCreateItemClickAsync" @onmousedown:preventDefault @onmousedown:stopPropagation title="Create"><span class="oi oi-plus"></span></button>
                 @if (this._selectedItem is null)
                 {
-                    <button type="button" class="btn-secondary mb-1 disabled" title="Duplicate"><span class="oi oi-layers"></span></button>
-                    <button type="button" class="btn-warning mb-1 disabled" title="Delete"><span class="oi oi-trash"></span></button>
+                    <button type="button" class="btn btn-secondary mb-1 disabled" title="Duplicate"><span class="oi oi-layers"></span></button>
+                    <button type="button" class="btn btn-warning mb-1 disabled" title="Delete"><span class="oi oi-trash"></span></button>
                 }
                 else
                 {
-                    <button @key="@("duplicate-btn")" type="button" class="btn-secondary mb-1" @onmousedown="@this.OnDuplicateItemClickAsync" @onmousedown:preventDefault @onmousedown:stopPropagation title="Duplicate"><span class="oi oi-layers"></span></button>
-                    <button @key="@("delete-btn")" type="button" class="btn-warning mb-1" @onmousedown="this.OnItemDeleteClickAsync" @onmousedown:preventDefault @onmousedown:stopPropagation title="Delete"><span class="oi oi-trash"></span></button>
+                    <button @key="@("duplicate-btn")" type="button" class="btn btn-secondary mb-1" @onmousedown="@this.OnDuplicateItemClickAsync" @onmousedown:preventDefault @onmousedown:stopPropagation title="Duplicate"><span class="oi oi-layers"></span></button>
+                    <button @key="@("delete-btn")" type="button" class="btn btn-warning mb-1" @onmousedown="this.OnItemDeleteClickAsync" @onmousedown:preventDefault @onmousedown:stopPropagation title="Delete"><span class="oi oi-trash"></span></button>
                 }
             </div>
             <div class="col-7 right-column">

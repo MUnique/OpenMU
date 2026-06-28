@@ -4,7 +4,7 @@ import { WorldObjectPicker } from "./WorldObjectPicker";
 import { World } from "./World";
 import { ObjectData } from "./Types";
 
-/*
+/**
  * Class for a Map application which is shown on the whole browser page.
  */
 export class MapApp {
@@ -15,6 +15,7 @@ export class MapApp {
     private renderer: THREE.Renderer;
     private container: HTMLElement;
     private picker: WorldObjectPicker;
+    private lastHighlightedId: number | null = null;
     private isDisposing: boolean = false;
     private isDisposed: boolean = false;
     private resizeEventListener: () => void;
@@ -39,15 +40,33 @@ export class MapApp {
         this.resizeEventListener = () => this.onWindowResize();
         window.addEventListener("resize", this.resizeEventListener, false);
 
+        const hideInfo = () => {
+            const info = document.getElementById("selected_info");
+            if (info) {
+                info.style.display = "none";
+            }
+        };
+
         this.picker = new WorldObjectPicker(
             this.renderer.domElement,
             this.world,
             this.camera,
-            onPickObjectHandler,
+            (data) => {
+                this.onObjectPicked(data);
+                if (data !== null) {
+                    onPickObjectHandler(data);
+                } else {
+                    hideInfo();
+                }
+            },
             (data) => this.onObjectHovered(data));
         this.container.appendChild(this.renderer.domElement);
 
         this.animate(); //starts the rendering loop
+    }
+
+    public highlightByName(playerName: string): boolean {
+        return this.world.highlightPlayerByName(playerName);
     }
 
     public dispose(): void {
@@ -84,7 +103,7 @@ export class MapApp {
         this.renderer.render(this.scene, this.camera);
     }
 
-    /*
+    /**
      * Creates an orthographic camera which looks down to the map plane from the center.
      */
     private createCamera(): THREE.Camera {
@@ -102,7 +121,7 @@ export class MapApp {
         return camera;
     }
 
-    /*
+    /**
      * Handles the window resizing by updating the resolution of the renderer.
      */
     private onWindowResize(): void {
@@ -112,6 +131,18 @@ export class MapApp {
         const newSize = Math.min(preferredWidth, preferredHeigth);
         this.renderer.setSize(newSize, newSize);
         this.world.onSizeChanged(newSize);
+    }
+
+    private onObjectPicked(data: ObjectData | null): void {
+        if (this.lastHighlightedId !== null) {
+            this.world.highlightOff(this.lastHighlightedId);
+            this.lastHighlightedId = null;
+        }
+
+        if (data !== null) {
+            this.world.highlightOn(data.id);
+            this.lastHighlightedId = data.id;
+        }
     }
 
     private onObjectHovered(data: ObjectData | null): void {
