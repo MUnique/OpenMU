@@ -200,7 +200,7 @@ export class World extends THREE.Object3D {
         for (const id in this.objects) {
             if (this.objects.hasOwnProperty(id)) {
                 const obj = this.objects[id];
-                if (obj instanceof Player && obj.data.name.indexOf(`Character:[${playerName}]`) >= 0) {
+                if (obj instanceof Player && obj.data.name.includes(`Character:[${playerName}]`)) {
                     this.highlightOn(obj.data.id);
                     return true;
                 }
