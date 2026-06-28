@@ -4,6 +4,7 @@
 
 @using MUnique.OpenMU.Persistence
 @using MUnique.OpenMU.Web.Shared.Components.Form
+@using MUnique.OpenMU.Web.Shared.Components.Modal
 
 @typeparam TItem
 
@@ -15,11 +16,8 @@
 
 @code {
 
-    /// <summary>
-    /// Gets or sets the modal instance.
-    /// </summary>
-    [CascadingParameter]
-    BlazoredModalInstance BlazoredModal { get; set; } = null!;
+    [Parameter]
+    public ModalInstance Modal { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the item which should be created.
@@ -42,11 +40,11 @@
 
     private Task SubmitAsync()
     {
-        return this.BlazoredModal.CloseAsync(ModalResult.Ok(Item));
+        return this.Modal.CloseAsync(ModalResult.Ok(this.Item));
     }
 
     private Task CancelAsync()
     {
-        return this.BlazoredModal.CancelAsync();
+        return this.Modal.CancelAsync();
     }
 }

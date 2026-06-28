@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.Web.AdminPanel;
 
 using System.IO;
-using Blazored.Modal;
 using Blazored.Toast;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -18,6 +17,7 @@ using MUnique.OpenMU.Web.AdminPanel.Components;
 using MUnique.OpenMU.Web.AdminPanel.Services;
 using MUnique.OpenMU.Web.Shared;
 using MUnique.OpenMU.Web.Shared.Models;
+using MUnique.OpenMU.Web.Shared.Components.Modal;
 using MUnique.OpenMU.Web.Shared.Services;
 
 /// <summary>
@@ -61,8 +61,9 @@ public class Startup
             .ConfigureApplicationPartManager(setup =>
                 setup.FeatureProviders.Add(new GenericControllerFeatureProvider()));
 
-        services.AddBlazoredModal();
         services.AddBlazoredToast();
+        services.AddScoped<ModalService>();
+        services.AddScoped<IModalService>(sp => sp.GetRequiredService<ModalService>());
 
         services.AddSingleton<ILookupController, PersistentObjectsLookupController>();
         services.AddSingleton<ConfigurationSearchIndexCache>();

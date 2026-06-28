@@ -6,8 +6,8 @@ namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 
 using System.ComponentModel.DataAnnotations;
 using System.Threading;
-using Blazored.Modal.Services;
 using Blazored.Toast.Services;
+using MUnique.OpenMU.Web.Shared.Components.Modal;
 using Microsoft.AspNetCore.Components;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Interfaces;

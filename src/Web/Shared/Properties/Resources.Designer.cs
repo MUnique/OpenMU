@@ -392,5 +392,23 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
                 return ResourceManager.GetString("MapEditorShortcutCycle", resourceCulture);
             }
         }
+        
+        public static string MapEditorShortcutDelete {
+            get {
+                return ResourceManager.GetString("MapEditorShortcutDelete", resourceCulture);
+            }
+        }
+        
+        public static string ExportMap {
+            get {
+                return ResourceManager.GetString("ExportMap", resourceCulture);
+            }
+        }
+        
+        public static string ImportMap {
+            get {
+                return ResourceManager.GetString("ImportMap", resourceCulture);
+            }
+        }
     }
 }
