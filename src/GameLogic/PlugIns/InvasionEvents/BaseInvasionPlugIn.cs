@@ -41,6 +41,16 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
     /// </summary>
     protected virtual IReadOnlyList<ushort>? EventDisplayMapIds => null;
 
+    /// <summary>
+    /// Gets the monster ID of the featured monster whose actual spawn map(s) are named in the
+    /// start/end broadcast (e.g. the Golden Dragon for the Golden Invasion). When set, the
+    /// announcement always points at the map(s) where this monster really spawned this run -
+    /// the single chosen map for <see cref="SpawnMapStrategy.RandomMap"/>, or all its maps for
+    /// <see cref="SpawnMapStrategy.AllMaps"/>. When <c>null</c>, the display map falls back to
+    /// <see cref="EventDisplayMapIds"/>.
+    /// </summary>
+    protected virtual ushort? AnnouncedMonsterId => null;
+
     /// <inheritdoc />
     public virtual async ValueTask ObjectAddedToMapAsync(GameMap map, ILocateable addedObject)
     {
@@ -172,10 +182,7 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
             return;
         }
 
-        var mapName = state.Context.Configuration.Maps
-                          .FirstOrDefault(m => m.Number == state.MapId)
-                          ?.Name.GetTranslation(player.Culture)
-                      ?? string.Empty;
+        var mapName = BuildAnnouncedMapNames(state, player);
 
         var message = (configuration.StartMessage.GetTranslation(player.Culture)
                        ?? PlugInResources.BaseInvasionPlugIn_DefaultStartMessage)
@@ -204,10 +211,7 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
             return;
         }
 
-        var mapName = state.Context.Configuration.Maps
-                          .FirstOrDefault(m => m.Number == state.MapId)
-                          ?.Name.GetTranslation(player.Culture)
-                      ?? string.Empty;
+        var mapName = BuildAnnouncedMapNames(state, player);
 
         var message = (configuration.EndMessage.GetTranslation(player.Culture) ?? string.Empty)
             .Replace("{mapName}", mapName, StringComparison.InvariantCulture);
@@ -342,23 +346,74 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
             return;
         }
 
+        var announcedMaps = this.GetAnnouncedMaps(state);
+        if (announcedMaps.Count > 0)
+        {
+            state.SetAnnouncedMaps(announcedMaps);
+            return;
+        }
+
         if (this.EventDisplayMapIds is { Count: > 0 } displayMaps)
         {
             var eligible = state.MapIds
                 .Where(displayMaps.Contains)
                 .ToList();
 
-            state.MapId = eligible.Count switch
+            var mapId = eligible.Count switch
             {
                 0 => state.MapIds.Min(),
                 1 => eligible[0],
                 _ => eligible[Rand.NextInt(0, eligible.Count)],
             };
+            state.SetAnnouncedMaps([mapId]);
         }
         else
         {
-            state.MapId = state.MapIds.Min();
+            state.SetAnnouncedMaps([state.MapIds.Min()]);
         }
+    }
+
+    /// <summary>
+    /// Gets the maps where the featured <see cref="AnnouncedMonsterId"/> actually spawns this run,
+    /// so the broadcast names a map that really contains it. Returns an empty list when no announced
+    /// monster is configured or it did not spawn, in which case the caller falls back to
+    /// <see cref="EventDisplayMapIds"/>.
+    /// </summary>
+    /// <param name="state">The current invasion state.</param>
+    private IReadOnlyList<ushort> GetAnnouncedMaps(InvasionGameServerState state)
+    {
+        if (this.AnnouncedMonsterId is not { } monsterId)
+        {
+            return [];
+        }
+
+        // RandomMap: the single chosen map was recorded in SelectedMaps during SelectSpawnMaps.
+        if (state.SelectedMaps.TryGetValue(monsterId, out var selectedMapId))
+        {
+            return [selectedMapId];
+        }
+
+        // AllMaps: the monster spawns on every configured map, so name them all.
+        var mob = this.Configuration?.Mobs.FirstOrDefault(m => m.MonsterId == monsterId);
+        return mob is { IsSpawnOnAllMaps: true, MapIds.Count: > 0 }
+            ? mob.MapIds.ToArray()
+            : [];
+    }
+
+    /// <summary>
+    /// Builds the comma-separated, localized list of map names announced in the broadcast.
+    /// </summary>
+    /// <param name="state">The current invasion state.</param>
+    /// <param name="player">The player whose culture is used for translation.</param>
+    private static string BuildAnnouncedMapNames(InvasionGameServerState state, Player player)
+    {
+        var names = state.AnnouncedMapIds
+            .Select(id => state.Context.Configuration.Maps
+                .FirstOrDefault(m => m.Number == id)
+                ?.Name.GetTranslation(player.Culture))
+            .Where(name => !string.IsNullOrEmpty(name));
+
+        return string.Join(", ", names);
     }
 
     private bool IsPlayerOnRelevantMap(Player player, InvasionGameServerState state)
