@@ -6,7 +6,7 @@
 @typeparam TObject
 @inherits NotifyableInputBase<TObject>
 
-<div>
+<div class="mb-3">
     <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
     <Typeahead TItem="TObject" TValue="TObject"
                @bind-Value="@this.CurrentValue"

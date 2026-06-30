@@ -1,12 +1,4 @@
-﻿input[type="checkbox"] {
-  max-width: 10%;
-}
-
-form input {
-    @extend .form-control;
-}
-
-.invalid .valid {
+﻿.invalid .valid {
     @extend .form-control;
 }
 
@@ -20,38 +12,12 @@ form input {
     @extend .form-control, :valid;
 }
 
-// own style:
-.primary-button {
-    @extend .btn;
-    @extend .btn-primary;
-}
-
-.cancel-button {
-    @extend .btn;
-    @extend .btn-secondary;
-    @extend .ml-3;
-}
-
-form > div {
-    @extend .form-group;
-}
-
-form > div > div {
-    @extend .input-group;
-    @extend .mb-3;
-}
-
-form > div > div > div:first-of-type {
-    @extend .input-group-prepend;
-}
-
-form > div > div > div:first-of-type > span {
-    @extend .input-group-text;
-    height: 38px;
-}
-
-form > div > div > input {
-    @extend .form-control;
+.form-check-input {
+    padding: 0;
+    width: 1em;
+    height: 1em;
+    min-width: 1em;
+    min-height: 1em;
 }
 
 .blazored-modal {
@@ -69,48 +35,56 @@ form > div > div > input {
 }
 
 details > summary {
-    list-style-type: '🛈';
+    list-style: none;
 }
 
-details[open] > summary {
-    list-style-type: '✖';
+details > summary::-webkit-details-marker {
+    display: none;
 }
 
-label > details {
-    @extend .ml-2;
-    position: absolute;
-    display: inline;
-    z-index: 0;
+details > summary::before {
+    font-family: Icons;
+    content: '\e07c';
+    margin-right: 0.25em;
+}
+
+details[open] > summary::before {
+    content: '\e039';
+}
+
+label > details.info-popup {
+    position: relative;
+    display: inline-block;
 }
 
 label > details[open] {
-    z-index: 1;
+    z-index: 5;
 }
 
-label > details > div {
-    @extend .alert;
-    @extend .alert-secondary;
-    @extend .shadow;
-    @extend .mr-3;
+label > details.info-popup > div {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 0.25rem;
+    width: max-content;
+    max-width: min(600px, 90vw);
+    white-space: normal;
 }
 
-ul.socket {
-    @extend .list-group;
-    @extend .mb-3;
+.form-actions {
+    position: sticky;
+    bottom: 0;
+    background-color: var(--omu-surface-2);
+    padding: 1rem 1.5rem;
+    border-top: var(--bs-border-width) solid var(--omu-border);
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-start;
+    box-sizing: border-box;
 }
 
-ul.socket > li {
-    @extend .list-group-item;
-    @extend .d-flex;
-}
-
-ul.socket > li > div {
-    @extend .flex-fill;
-    @extend .w-50;
-}
-
-ul.socket > li > div:last-of-type {
-    @extend .ml-3;
+.form-actions .btn-secondary {
+    margin-left: 1rem;
 }
 
 .auto-form-search-group {

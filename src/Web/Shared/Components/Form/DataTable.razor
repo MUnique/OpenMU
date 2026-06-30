@@ -5,11 +5,11 @@
 <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
     <div class="btn-group" role="group" aria-label="Navigation group">
         <Button disabled="@(this.Page <= 1 || this._isLoading)" class="btn btn-sm btn-primary" @onclick=@this.GetPreviousPageAsync><span class="oi oi-arrow-thick-left" aria-hidden="true" /></Button>
-        <button class="btn btn-sm btn-light" disabled>
+        <button class="btn btn-sm btn-secondary" disabled>
             @if (this._isLoading)
             {
                 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                <span class="sr-only">Loading...</span>
+                <span class="visually-hidden">Loading...</span>
             }
             else
             {
@@ -20,7 +20,7 @@
     </div>
 </div>
 
-<table>
+<table class="table table-striped table-hover">
     <thead>
         <tr>@TableHeader</tr>
         @if (this.FilterHeader != null)
