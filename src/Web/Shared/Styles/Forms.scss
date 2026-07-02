@@ -1,8 +1,4 @@
-﻿.invalid .valid {
-    @extend .form-control;
-}
-
-.invalid.modified {
+﻿.invalid.modified {
     @extend .is-invalid;
 }
 

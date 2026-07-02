@@ -2110,7 +2110,7 @@ progress {
   color: var(--bs-secondary-color);
 }
 
-.form-control, .valid.modified, .invalid .valid {
+.form-control, .valid.modified {
   display: block;
   width: 100%;
   padding: 0.375rem 0.75rem;
@@ -2126,41 +2126,41 @@ progress {
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 @media (prefers-reduced-motion: reduce) {
-  .form-control, .valid.modified, .invalid .valid {
+  .form-control, .valid.modified {
     transition: none;
   }
 }
-.form-control[type=file], [type=file].valid.modified, .invalid [type=file].valid {
+.form-control[type=file], [type=file].valid.modified {
   overflow: hidden;
 }
-.form-control[type=file]:not(:disabled):not([readonly]), [type=file].valid.modified:not(:disabled):not([readonly]), .invalid [type=file].valid:not(:disabled):not([readonly]) {
+.form-control[type=file]:not(:disabled):not([readonly]), [type=file].valid.modified:not(:disabled):not([readonly]) {
   cursor: pointer;
 }
-.form-control:focus, .valid.modified:focus, .invalid .valid:focus {
+.form-control:focus, .valid.modified:focus {
   color: var(--bs-body-color);
   background-color: var(--bs-body-bg);
   border-color: rgb(141, 182.5, 224.5);
   outline: 0;
   box-shadow: 0 0 0 0.25rem rgba(27, 110, 194, 0.25);
 }
-.form-control::-webkit-date-and-time-value, .valid.modified::-webkit-date-and-time-value, .invalid .valid::-webkit-date-and-time-value {
+.form-control::-webkit-date-and-time-value, .valid.modified::-webkit-date-and-time-value {
   min-width: 85px;
   height: 1.5em;
   margin: 0;
 }
-.form-control::-webkit-datetime-edit, .valid.modified::-webkit-datetime-edit, .invalid .valid::-webkit-datetime-edit {
+.form-control::-webkit-datetime-edit, .valid.modified::-webkit-datetime-edit {
   display: block;
   padding: 0;
 }
-.form-control::placeholder, .valid.modified::placeholder, .invalid .valid::placeholder {
+.form-control::placeholder, .valid.modified::placeholder {
   color: var(--bs-secondary-color);
   opacity: 1;
 }
-.form-control:disabled, .valid.modified:disabled, .invalid .valid:disabled {
+.form-control:disabled, .valid.modified:disabled {
   background-color: var(--bs-secondary-bg);
   opacity: 1;
 }
-.form-control::file-selector-button, .valid.modified::file-selector-button, .invalid .valid::file-selector-button {
+.form-control::file-selector-button, .valid.modified::file-selector-button {
   padding: 0.375rem 0.75rem;
   margin: -0.375rem -0.75rem;
   margin-inline-end: 0.75rem;
@@ -2175,11 +2175,11 @@ progress {
   transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 @media (prefers-reduced-motion: reduce) {
-  .form-control::file-selector-button, .valid.modified::file-selector-button, .invalid .valid::file-selector-button {
+  .form-control::file-selector-button, .valid.modified::file-selector-button {
     transition: none;
   }
 }
-.form-control:hover:not(:disabled):not([readonly])::file-selector-button, .valid.modified:hover:not(:disabled):not([readonly])::file-selector-button, .invalid .valid:hover:not(:disabled):not([readonly])::file-selector-button {
+.form-control:hover:not(:disabled):not([readonly])::file-selector-button, .valid.modified:hover:not(:disabled):not([readonly])::file-selector-button {
   background-color: var(--bs-secondary-bg);
 }
 
@@ -2226,7 +2226,7 @@ progress {
   margin-inline-end: 1rem;
 }
 
-textarea.form-control, textarea.valid.modified, .invalid textarea.valid {
+textarea.form-control, textarea.valid.modified {
   min-height: calc(1.5em + 0.75rem + calc(var(--bs-border-width) * 2));
 }
 textarea.form-control-sm {
@@ -2535,7 +2535,7 @@ textarea.form-control-lg {
 .form-floating {
   position: relative;
 }
-.form-floating > .form-control, .form-floating > .valid.modified, .invalid .form-floating > .valid,
+.form-floating > .form-control, .form-floating > .valid.modified,
 .form-floating > .form-control-plaintext,
 .form-floating > .form-select {
   height: calc(3.5rem + calc(var(--bs-border-width) * 2));
@@ -2565,21 +2565,21 @@ textarea.form-control-lg {
     transition: none;
   }
 }
-.form-floating > .form-control, .form-floating > .valid.modified, .invalid .form-floating > .valid,
+.form-floating > .form-control, .form-floating > .valid.modified,
 .form-floating > .form-control-plaintext {
   padding: 1rem 0.75rem;
 }
-.form-floating > .form-control::placeholder, .form-floating > .valid.modified::placeholder, .invalid .form-floating > .valid::placeholder,
+.form-floating > .form-control::placeholder, .form-floating > .valid.modified::placeholder,
 .form-floating > .form-control-plaintext::placeholder {
   color: transparent;
 }
-.form-floating > .form-control:focus, .form-floating > .valid.modified:focus, .invalid .form-floating > .valid:focus, .form-floating > .form-control:not(:placeholder-shown), .form-floating > .valid.modified:not(:placeholder-shown), .invalid .form-floating > .valid:not(:placeholder-shown),
+.form-floating > .form-control:focus, .form-floating > .valid.modified:focus, .form-floating > .form-control:not(:placeholder-shown), .form-floating > .valid.modified:not(:placeholder-shown),
 .form-floating > .form-control-plaintext:focus,
 .form-floating > .form-control-plaintext:not(:placeholder-shown) {
   padding-top: 1.625rem;
   padding-bottom: 0.625rem;
 }
-.form-floating > .form-control:-webkit-autofill, .form-floating > .valid.modified:-webkit-autofill, .invalid .form-floating > .valid:-webkit-autofill,
+.form-floating > .form-control:-webkit-autofill, .form-floating > .valid.modified:-webkit-autofill,
 .form-floating > .form-control-plaintext:-webkit-autofill {
   padding-top: 1.625rem;
   padding-bottom: 0.625rem;
@@ -2589,15 +2589,14 @@ textarea.form-control-lg {
   padding-bottom: 0.625rem;
   padding-left: 0.75rem;
 }
-.form-floating > .form-control:focus ~ label, .form-floating > .valid.modified:focus ~ label, .invalid .form-floating > .valid:focus ~ label,
+.form-floating > .form-control:focus ~ label, .form-floating > .valid.modified:focus ~ label,
 .form-floating > .form-control:not(:placeholder-shown) ~ label,
 .form-floating > .valid.modified:not(:placeholder-shown) ~ label,
-.invalid .form-floating > .valid:not(:placeholder-shown) ~ label,
 .form-floating > .form-control-plaintext ~ label,
 .form-floating > .form-select ~ label {
   transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
 }
-.form-floating > .form-control:-webkit-autofill ~ label, .form-floating > .valid.modified:-webkit-autofill ~ label, .invalid .form-floating > .valid:-webkit-autofill ~ label {
+.form-floating > .form-control:-webkit-autofill ~ label, .form-floating > .valid.modified:-webkit-autofill ~ label {
   transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
 }
 .form-floating > textarea:focus ~ label::after,
@@ -2628,7 +2627,7 @@ textarea.form-control-lg {
   align-items: stretch;
   width: 100%;
 }
-.input-group > .form-control, .input-group > .valid.modified, .invalid .input-group > .valid,
+.input-group > .form-control, .input-group > .valid.modified,
 .input-group > .form-select,
 .input-group > .form-floating {
   position: relative;
@@ -2636,7 +2635,7 @@ textarea.form-control-lg {
   width: 1%;
   min-width: 0;
 }
-.input-group > .form-control:focus, .input-group > .valid.modified:focus, .invalid .input-group > .valid:focus,
+.input-group > .form-control:focus, .input-group > .valid.modified:focus,
 .input-group > .form-select:focus,
 .input-group > .form-floating:focus-within {
   z-index: 5;
@@ -2664,7 +2663,7 @@ textarea.form-control-lg {
   border-radius: var(--bs-border-radius);
 }
 
-.input-group-lg > .form-control, .input-group-lg > .valid.modified, .invalid .input-group-lg > .valid,
+.input-group-lg > .form-control, .input-group-lg > .valid.modified,
 .input-group-lg > .form-select,
 .input-group-lg > .input-group-text,
 .input-group-lg > .btn {
@@ -2673,7 +2672,7 @@ textarea.form-control-lg {
   border-radius: var(--bs-border-radius-lg);
 }
 
-.input-group-sm > .form-control, .input-group-sm > .valid.modified, .invalid .input-group-sm > .valid,
+.input-group-sm > .form-control, .input-group-sm > .valid.modified,
 .input-group-sm > .form-select,
 .input-group-sm > .input-group-text,
 .input-group-sm > .btn {
@@ -2691,7 +2690,6 @@ textarea.form-control-lg {
 .input-group:not(.has-validation) > .dropdown-toggle:nth-last-child(n+3),
 .input-group:not(.has-validation) > .form-floating:not(:last-child) > .form-control,
 .input-group:not(.has-validation) > .form-floating:not(:last-child) > .valid.modified,
-.invalid .input-group:not(.has-validation) > .form-floating:not(:last-child) > .valid,
 .input-group:not(.has-validation) > .form-floating:not(:last-child) > .form-select {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
@@ -2700,7 +2698,6 @@ textarea.form-control-lg {
 .input-group.has-validation > .dropdown-toggle:nth-last-child(n+4),
 .input-group.has-validation > .form-floating:nth-last-child(n+3) > .form-control,
 .input-group.has-validation > .form-floating:nth-last-child(n+3) > .valid.modified,
-.invalid .input-group.has-validation > .form-floating:nth-last-child(n+3) > .valid,
 .input-group.has-validation > .form-floating:nth-last-child(n+3) > .form-select {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
@@ -2710,7 +2707,7 @@ textarea.form-control-lg {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
-.input-group > .form-floating:not(:first-child) > .form-control, .input-group > .form-floating:not(:first-child) > .valid.modified, .invalid .input-group > .form-floating:not(:first-child) > .valid,
+.input-group > .form-floating:not(:first-child) > .form-control, .input-group > .form-floating:not(:first-child) > .valid.modified,
 .input-group > .form-floating:not(:first-child) > .form-select {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
@@ -2749,10 +2746,10 @@ textarea.form-control-lg {
   display: block;
 }
 
-.was-validated .form-control:valid, .valid.modified .form-control:valid, .was-validated .invalid .valid:valid, .valid.modified .invalid .valid:valid, .invalid .was-validated .valid:valid, .invalid .valid.modified .valid:valid, .form-control.is-valid, .valid.modified, .invalid .is-valid.valid {
+.was-validated .form-control:valid, .valid.modified .form-control:valid, .form-control.is-valid, .valid.modified {
   border-color: var(--bs-form-valid-border-color);
 }
-.was-validated .form-control:valid:focus, .valid.modified .form-control:valid:focus, .was-validated .invalid .valid:valid:focus, .valid.modified .invalid .valid:valid:focus, .invalid .was-validated .valid:valid:focus, .invalid .valid.modified .valid:valid:focus, .form-control.is-valid:focus, .valid.modified:focus, .invalid .is-valid.valid:focus {
+.was-validated .form-control:valid:focus, .valid.modified .form-control:valid:focus, .form-control.is-valid:focus, .valid.modified:focus {
   border-color: var(--bs-form-valid-border-color);
   box-shadow: 0 0 0 0.25rem rgba(var(--bs-success-rgb), 0.25);
 }
@@ -2782,7 +2779,7 @@ textarea.form-control-lg {
   margin-left: 0.5em;
 }
 
-.was-validated .input-group > .form-control:not(:focus):valid, .valid.modified .input-group > .form-control:not(:focus):valid, .was-validated .invalid .input-group > .valid:not(:focus):valid, .valid.modified .invalid .input-group > .valid:not(:focus):valid, .invalid .was-validated .input-group > .valid:not(:focus):valid, .invalid .valid.modified .input-group > .valid:not(:focus):valid, .input-group > .form-control:not(:focus).is-valid, .input-group > .valid.modified:not(:focus), .invalid .input-group > .valid:not(:focus).is-valid,
+.was-validated .input-group > .form-control:not(:focus):valid, .valid.modified .input-group > .form-control:not(:focus):valid, .input-group > .form-control:not(:focus).is-valid, .input-group > .valid.modified:not(:focus),
 .was-validated .input-group > .form-select:not(:focus):valid,
 .valid.modified .input-group > .form-select:not(:focus):valid,
 .input-group > .form-select:not(:focus).is-valid,
@@ -2825,10 +2822,10 @@ textarea.form-control-lg {
   display: block;
 }
 
-.was-validated .form-control:invalid, .was-validated .valid.modified:invalid, .valid.modified .form-control:invalid, .valid.modified .valid.modified:invalid, .was-validated .invalid .valid:invalid, .valid.modified .invalid .valid:invalid, .invalid .was-validated .valid:invalid, .invalid .valid.modified .valid:invalid, .form-control.is-invalid, .is-invalid.valid.modified, .form-control.invalid.modified, .invalid.modified.valid, .invalid .is-invalid.valid {
+.was-validated .form-control:invalid, .was-validated .valid.modified:invalid, .valid.modified .form-control:invalid, .valid.modified .valid.modified:invalid, .form-control.is-invalid, .is-invalid.valid.modified, .form-control.invalid.modified, .invalid.modified.valid {
   border-color: var(--bs-form-invalid-border-color);
 }
-.was-validated .form-control:invalid:focus, .was-validated .valid.modified:invalid:focus, .valid.modified .form-control:invalid:focus, .valid.modified .valid.modified:invalid:focus, .was-validated .invalid .valid:invalid:focus, .valid.modified .invalid .valid:invalid:focus, .invalid .was-validated .valid:invalid:focus, .invalid .valid.modified .valid:invalid:focus, .form-control.is-invalid:focus, .is-invalid.valid.modified:focus, .form-control.invalid.modified:focus, .invalid.modified.valid:focus, .invalid .is-invalid.valid:focus {
+.was-validated .form-control:invalid:focus, .was-validated .valid.modified:invalid:focus, .valid.modified .form-control:invalid:focus, .valid.modified .valid.modified:invalid:focus, .form-control.is-invalid:focus, .is-invalid.valid.modified:focus, .form-control.invalid.modified:focus, .invalid.modified.valid:focus {
   border-color: var(--bs-form-invalid-border-color);
   box-shadow: 0 0 0 0.25rem rgba(var(--bs-danger-rgb), 0.25);
 }
@@ -2858,7 +2855,7 @@ textarea.form-control-lg {
   margin-left: 0.5em;
 }
 
-.was-validated .input-group > .form-control:not(:focus):invalid, .was-validated .input-group > .valid.modified:not(:focus):invalid, .valid.modified .input-group > .form-control:not(:focus):invalid, .valid.modified .input-group > .valid.modified:not(:focus):invalid, .was-validated .invalid .input-group > .valid:not(:focus):invalid, .valid.modified .invalid .input-group > .valid:not(:focus):invalid, .invalid .was-validated .input-group > .valid:not(:focus):invalid, .invalid .valid.modified .input-group > .valid:not(:focus):invalid, .input-group > .form-control:not(:focus).is-invalid, .input-group > .valid.modified:not(:focus).is-invalid, .input-group > .form-control.invalid.modified:not(:focus), .input-group > .invalid.modified.valid:not(:focus), .invalid .input-group > .valid:not(:focus).is-invalid,
+.was-validated .input-group > .form-control:not(:focus):invalid, .was-validated .input-group > .valid.modified:not(:focus):invalid, .valid.modified .input-group > .form-control:not(:focus):invalid, .valid.modified .input-group > .valid.modified:not(:focus):invalid, .input-group > .form-control:not(:focus).is-invalid, .input-group > .valid.modified:not(:focus).is-invalid, .input-group > .form-control.invalid.modified:not(:focus), .input-group > .invalid.modified.valid:not(:focus),
 .was-validated .input-group > .form-select:not(:focus):invalid,
 .valid.modified .input-group > .form-select:not(:focus):invalid,
 .input-group > .form-select:not(:focus).is-invalid,
@@ -12171,7 +12168,7 @@ label > details.info-popup > div {
   position: relative;
 }
 
-.auto-form-search-group .form-control, .auto-form-search-group .invalid .valid, .invalid .auto-form-search-group .valid, .auto-form-search-group .valid.modified {
+.auto-form-search-group .form-control, .auto-form-search-group .valid.modified {
   padding-left: 2.25rem;
 }
 
