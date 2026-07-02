@@ -77,6 +77,7 @@ public class AddLorenMarketJuliaWarpPlugIn : UpdatePlugInBase
         juliaSpawn.SetGuid(JuliaNpcNumber);
         juliaSpawn.GameMap = lorencia;
         juliaSpawn.MonsterDefinition = julia;
+	juliaSpawn.Quantity = 1;
         juliaSpawn.SpawnTrigger = SpawnTrigger.Automatic;
         juliaSpawn.Direction = Direction.SouthEast;
         juliaSpawn.X1 = 139;
