@@ -1,4 +1,4 @@
-﻿// <copyright file="JsViewPlugInBase.cs" company="MUnique">
+// <copyright file="JsViewPlugInBase.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -65,6 +65,11 @@ public abstract class JsViewPlugInBase
             catch (TaskCanceledException)
             {
                 // don't need to handle that.
+                tryAgain = false;
+            }
+            catch (JSDisconnectedException)
+            {
+                // The browser session has disconnected. Expected when the tab is closed.
                 tryAgain = false;
             }
             catch (JSException e)
