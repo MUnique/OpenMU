@@ -26,7 +26,7 @@
             <td>@item.State.GetEnumCaption()</td>
             <td>@item.EMail</td>
             <td>
-                <NavLink href="@($"edit-account/{item.GetId()}/{typeof(Account).FullName}/{item.GetId()}")" class="btn btn-info"><span class="oi oi-pencil" aria-hidden="true"></span> Edit</NavLink>
+                <NavLink href="@($"edit-account/{item.GetId()}/{typeof(Account).FullName}/{item.GetId()}")" class="btn btn-primary"><span class="oi oi-pencil" aria-hidden="true"></span> Edit</NavLink>
             </td>
         </ItemTemplate>
         <TableFooter>
