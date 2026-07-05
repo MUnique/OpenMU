@@ -343,6 +343,17 @@ public class GameContext : AsyncDisposable, IGameContext
     /// <param name="player">The player.</param>
     public virtual async ValueTask RemovePlayerAsync(Player player)
     {
+        bool removed;
+        using (await this._playerListLock.WriterLockAsync())
+        {
+            removed = this._playerList.Remove(player);
+        }
+
+        if (!removed)
+        {
+            return;
+        }
+
         PlayerCounter.Add(-1);
         if (player.SelectedCharacter != null)
         {
@@ -350,11 +361,6 @@ public class GameContext : AsyncDisposable, IGameContext
         }
 
         player.CurrentMap?.RemoveAsync(player);
-
-        using (await this._playerListLock.WriterLockAsync())
-        {
-            this._playerList.Remove(player);
-        }
 
         player.PlayerDisconnected -= this.RemovePlayerAsync;
         player.PlayerEnteredWorld -= this.PlayerEnteredWorldAsync;

@@ -71,9 +71,9 @@ public sealed class MovementHandler
     /// <param name="range">The range to stop within.</param>
     public async ValueTask MoveCloserToTargetAsync(IAttackable target, byte range)
     {
-        if (target.IsInRange(this._originPosition, this.HuntingRange))
+        if (this._player.CurrentMap is { } map && target.IsInRange(this._originPosition, this.HuntingRange))
         {
-            var walkTarget = this._player.CurrentMap!.Terrain.GetRandomCoordinate(target.Position, range);
+            var walkTarget = map.Terrain.GetRandomCoordinate(target.Position, range);
             await this.WalkToAsync(walkTarget).ConfigureAwait(false);
         }
     }
