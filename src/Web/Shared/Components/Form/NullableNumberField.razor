@@ -4,9 +4,9 @@
 @using MUnique.OpenMU.PlugIns
 @inherits NotifyableInputBase<TNumber?>
 
-<div>
+<div class="mb-3">
     <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
-    <InputNumber TValue="TNumber?" id="@this.FieldIdentifier.FieldName" @bind-Value="@CurrentValue" min=@(Min ?? MinOfType) max=@(Max ?? MaxOfType) />
+    <InputNumber class="form-control" TValue="TNumber?" id="@this.FieldIdentifier.FieldName" @bind-Value="@CurrentValue" min=@(Min ?? MinOfType) max=@(Max ?? MaxOfType) />
     <ValidationMessage For=@this.ValueExpression />
 </div>
 

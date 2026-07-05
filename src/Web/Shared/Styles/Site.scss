@@ -3,7 +3,12 @@ $form-feedback-icon-valid: none;
 $form-feedback-icon-invalid: none;
 $enable-validation-icons: false;
 
-@import "bootstrap-4.6.1/scss/bootstrap";
+$primary: #1b6ec2;
+
+@import "bootstrap-5.3.8/scss/bootstrap";
+
+@import "Theme";
+
 @import "open-iconic/font/css/open-iconic-bootstrap.min.css";
 
 @import "Navigation";
@@ -17,7 +22,5 @@ $enable-validation-icons: false;
 @import "Common";
 
 @import "Log";
-
-@import "Map";
 
 @import "MapEditor";

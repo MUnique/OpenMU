@@ -15,9 +15,9 @@
     align-items: center;
     gap: 0.25rem;
     padding: 0.25rem;
-    border: 1px solid #ced4da;
+    border: var(--bs-border-width) solid var(--omu-border);
     border-radius: 0.25rem;
-    background: #fff;
+    background: var(--omu-surface-2);
     min-height: 2.4em;
     cursor: text;
     position: relative;
@@ -26,8 +26,8 @@
 .multi-lookup-field__tag {
     display: inline-flex;
     align-items: center;
-    background-color: #e9ecef;
-    border: 1px solid #ced4da;
+    background-color: var(--omu-surface-hover);
+    border: var(--bs-border-width) solid var(--omu-border);
     border-radius: 0.2rem;
     padding: 0.1rem 0.4rem;
     font-size: 1rem;
@@ -38,7 +38,7 @@
 .multi-lookup-field__tag-remove {
     background: none;
     border: none;
-    color: #6c757d;
+    color: var(--omu-text-muted);
     cursor: pointer;
     font-size: 1rem;
     line-height: 1;
@@ -47,7 +47,7 @@
 }
 
 .multi-lookup-field__tag-remove:hover {
-    color: #dc3545;
+    color: var(--bs-danger);
 }
 
 .multi-lookup-field__search-input {
@@ -57,8 +57,18 @@
     outline: none;
     padding: 0.15rem;
     font-size: 1rem;
-    background: transparent;
+    background: transparent !important;
     margin: 0.5rem 0.25rem;
+    color: inherit;
+}
+
+.multi-lookup-field__search-input::placeholder {
+    color: var(--omu-text-muted);
+}
+
+.multi-lookup-field__search-input:focus {
+    background: transparent !important;
+    color: inherit;
 }
 
 .multi-lookup-field__dropdown {
@@ -69,8 +79,8 @@
     width: 100%;
     max-height: 300px;
     overflow-y: auto;
-    background: #fff;
-    border: 1px solid #ced4da;
+    background: var(--omu-surface);
+    border: var(--bs-border-width) solid var(--omu-border);
     border-top: none;
     border-radius: 0 0 0.25rem 0.25rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
@@ -88,20 +98,20 @@
 }
 
 .multi-lookup-field__dropdown-item:hover {
-    background-color: #f0f0f0;
+    background-color: var(--omu-surface-hover);
 }
 
 .multi-lookup-field__dropdown-item--selected {
-    background-color: #e8f0fe;
+    background-color: var(--omu-surface-hover);
 }
 
 .multi-lookup-field__dropdown-item--selected:hover {
-    background-color: #d4e4fc;
+    background-color: var(--omu-surface-hover);
 }
 
 .multi-lookup-field__dropdown-item--loading,
 .multi-lookup-field__dropdown-item--empty {
-    color: #6c757d;
+    color: var(--omu-text-muted);
     cursor: default;
     font-style: italic;
 }

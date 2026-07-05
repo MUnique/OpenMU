@@ -2,38 +2,35 @@
 @using MUnique.OpenMU.DataModel.Configuration.Items
 @using MUnique.OpenMU.Web.AdminPanel.Properties
 
-<li class="dropdown">
-    <a href="" role="button" aria-haspopup="true" aria-expanded="false" @onclick="ToggleGameConfig">
+<li class="nav-item px-3 dropdown@(this._expandGameConfig ? " expanded" : "")">
+    <a class="nav-link dropdown-toggle" href="" role="button" aria-haspopup="true" aria-expanded="@(this._expandGameConfig)" @onclick="ToggleGameConfig" @onclick:preventDefault="true">
         <span class="oi oi-cog" aria-hidden="true"></span> @Resources.GameConfiguration
     </a>
-    @if (this._expandGameConfig)
-    {
-        <div>
-            <NavLink href="@($"edit-config/{typeof(SystemConfiguration).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.System</NavLink>
-            <NavLink href="@($"edit-config-grid/{typeof(GameClientDefinition).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.GameClients</NavLink>
-            <hr/>
-            <NavLink href="@($"edit-config/{typeof(GameConfiguration).FullName}/{this.GameConfigurationId}/hide-collections")" @onclick="() => NavigationHistory.Clear()">@Resources.General</NavLink>
-            <NavLink href="@($"edit-config-grid/{typeof(MonsterDefinition).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.Monsters</NavLink>
-            <NavLink href="@($"merchants/")" @onclick="() => NavigationHistory.Clear()">@Resources.MerchantStores</NavLink>
-            <NavLink href="@($"edit-config-grid/{typeof(CharacterClass).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.CharacterClasses</NavLink>
-            <NavLink href="@($"edit-config-grid/{typeof(Skill).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.Skills</NavLink>
-            <NavLink href="@($"edit-config-grid/{typeof(ItemDefinition).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.Items</NavLink>
-            <NavLink href="@($"edit-config-grid/{typeof(DropItemGroup).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.DropItemGroups</NavLink>
-            <NavLink href="@($"edit-config-grid/{typeof(GameMapDefinition).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.GameMaps</NavLink>
-            <NavLink href="@($"edit-config-grid/{typeof(MiniGameDefinition).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.MiniGames</NavLink>
-            <NavLink href="@($"edit-config-grid/{typeof(WarpInfo).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.WarpList</NavLink>
-            <NavLink href="@($"edit-config-grid/{typeof(JewelMix).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.JewelMixes</NavLink>
-            <hr/>
-            <NavLink href="plugins" @onclick="() => NavigationHistory.Clear()">
-                <span class="oi oi-puzzle-piece" aria-hidden="true"></span> @Resources.Plugins
-            </NavLink>
-            <NavLink href="map-editor" @onclick="() => NavigationHistory.Clear()">
-                <span class="oi oi-globe" aria-hidden="true"></span> @Resources.MapEditor
-            </NavLink>
-            <hr/>
-            <NavLink href="@($"edit-config/{typeof(GameConfiguration).FullName}/")" Match="NavLinkMatch.All" @onclick="() => NavigationHistory.Clear()">
-                <span class="oi oi-cog" aria-hidden="true"></span> @Resources.FullConfiguration
-            </NavLink>
-        </div>
-    }
+    <div class="dropdown-menu@(this._expandGameConfig ? " show" : "")">
+        <NavLink class="dropdown-item" href="@($"edit-config/{typeof(SystemConfiguration).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.System</NavLink>
+        <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(GameClientDefinition).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.GameClients</NavLink>
+        <hr class="dropdown-divider"/>
+        <NavLink class="dropdown-item" href="@($"edit-config/{typeof(GameConfiguration).FullName}/{this.GameConfigurationId}/hide-collections")" @onclick="() => NavigationHistory.Clear()">@Resources.General</NavLink>
+        <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(MonsterDefinition).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.Monsters</NavLink>
+        <NavLink class="dropdown-item" href="@($"merchants/")" @onclick="() => NavigationHistory.Clear()">@Resources.MerchantStores</NavLink>
+        <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(CharacterClass).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.CharacterClasses</NavLink>
+        <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(Skill).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.Skills</NavLink>
+        <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(ItemDefinition).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.Items</NavLink>
+        <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(DropItemGroup).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.DropItemGroups</NavLink>
+        <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(GameMapDefinition).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.GameMaps</NavLink>
+        <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(MiniGameDefinition).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.MiniGames</NavLink>
+        <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(WarpInfo).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.WarpList</NavLink>
+        <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(JewelMix).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.JewelMixes</NavLink>
+        <hr class="dropdown-divider"/>
+        <NavLink class="dropdown-item" href="plugins" @onclick="() => NavigationHistory.Clear()">
+            <span class="oi oi-puzzle-piece" aria-hidden="true"></span> @Resources.Plugins
+        </NavLink>
+        <NavLink class="dropdown-item" href="map-editor" @onclick="() => NavigationHistory.Clear()">
+            <span class="oi oi-globe" aria-hidden="true"></span> @Resources.MapEditor
+        </NavLink>
+        <hr class="dropdown-divider"/>
+        <NavLink class="dropdown-item" href="@($"edit-config/{typeof(GameConfiguration).FullName}/")" Match="NavLinkMatch.All" @onclick="() => NavigationHistory.Clear()">
+            <span class="oi oi-cog" aria-hidden="true"></span> @Resources.FullConfiguration
+        </NavLink>
+    </div>
 </li>

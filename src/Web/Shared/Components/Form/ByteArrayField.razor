@@ -8,7 +8,7 @@
 
 @inject IModalService _modalService
 
-    <div>
+    <div class="mb-3">
         <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
         @if (this.Value != null)
         {
@@ -19,12 +19,12 @@
             }
             else
             {
-                <input @bind="CurrentValueAsString" id="@this.FieldIdentifier.FieldName" class="@CssClass" />
+                <input @bind="CurrentValueAsString" id="@this.FieldIdentifier.FieldName" class="form-control @CssClass" />
             }
         }
         else
         {
-            <p><input @bind="CurrentValueAsString" id="@this.FieldIdentifier.FieldName" class="@CssClass" placeholder="It's currently empty. Either type in the value as hex string or upload a file." /></p>
+            <p><input @bind="CurrentValueAsString" id="@this.FieldIdentifier.FieldName" class="form-control @CssClass" placeholder="It's currently empty. Either type in the value as hex string or upload a file." /></p>
             <p>Load file: <BlazorInputFile.InputFile id="@this.FieldIdentifier.FieldName" OnChange="@this.OnSelectedFile" /></p>
         }
 

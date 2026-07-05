@@ -2,9 +2,9 @@
 @using System.Diagnostics.CodeAnalysis
 @inherits NotifyableInputBase<TimeOnly>
 
-    <div>
+    <div class="mb-3">
         <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
-        <input type="time" @bind="CurrentValue" id="@this.FieldIdentifier.FieldName" class="@CssClass" />
+        <input type="time" @bind="CurrentValue" id="@this.FieldIdentifier.FieldName" class="form-control @CssClass" />
         <ValidationMessage For=@this.ValueExpression />
     </div>
 

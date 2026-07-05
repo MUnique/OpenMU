@@ -43,7 +43,6 @@ public static class Exports
         get
         {
             yield return $"{GetPrefix()}/css/shared.css";
-            yield return $"{GetPrefix()}/css/theme.css";
         }
     }
 
