@@ -6,10 +6,8 @@ namespace MUnique.OpenMU.GameLogic.Offline;
 
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
-using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.MuHelper;
 using MUnique.OpenMU.GameLogic.PlayerActions.Items;
-using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Handles item and zen pickup for the offline player.
