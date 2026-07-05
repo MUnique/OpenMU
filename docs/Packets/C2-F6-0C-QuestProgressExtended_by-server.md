@@ -1,4 +1,4 @@
-# C1 F6 0C - QuestProgressExtended (by server)
+# C2 F6 0C - QuestProgressExtended (by server)
 
 ## Is sent when
 
@@ -12,10 +12,10 @@ The client shows the quest progress accordingly.
 
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
-| 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
-| 1 | 1 |    Byte   |   272   | Packet header - length of the packet |
-| 2 | 1 |    Byte   | 0xF6  | Packet header - packet type identifier |
-| 3 | 1 |    Byte   | 0x0C  | Packet header - sub packet type identifier |
+| 0 | 1 |   Byte   | 0xC2  | [Packet type](PacketTypes.md) |
+| 1 | 2 |    Short   |   272   | Packet header - length of the packet |
+| 3 | 1 |    Byte   | 0xF6  | Packet header - packet type identifier |
+| 4 | 1 |    Byte   | 0x0C  | Packet header - sub packet type identifier |
 | 5 | 1 | Byte |  | ConditionCount |
 | 6 | 1 | Byte |  | RewardCount |
 | 7 | 1 | Byte |  | RandomRewardCount |

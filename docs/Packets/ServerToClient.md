@@ -234,7 +234,7 @@
   * [C1 F6 0A - AvailableQuests (by server)](C1-F6-0A-AvailableQuests_by-server.md)
   * [C1 F6 0B - QuestStepInfo (by server)](C1-F6-0B-QuestStepInfo_by-server.md)
   * [C1 F6 0C - QuestProgress (by server)](C1-F6-0C-QuestProgress_by-server.md)
-  * [C1 F6 0C - QuestProgressExtended (by server)](C1-F6-0C-QuestProgressExtended_by-server.md)
+  * [C2 F6 0C - QuestProgressExtended (by server)](C2-F6-0C-QuestProgressExtended_by-server.md)
   * [C1 F6 0D - QuestCompletionResponse (by server)](C1-F6-0D-QuestCompletionResponse_by-server.md)
   * [C1 F6 0F - QuestCancelled (by server)](C1-F6-0F-QuestCancelled_by-server.md)
   * [C1 F6 1A - QuestStateList (by server)](C1-F6-1A-QuestStateList_by-server.md)
