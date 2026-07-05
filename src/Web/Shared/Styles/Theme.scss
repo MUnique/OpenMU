@@ -141,12 +141,6 @@ body {
         border-top: var(--bs-border-width) solid var(--omu-border) !important;
     }
 
-    .blazored-modal {
-        background-color: var(--omu-surface) !important;
-        border-color: var(--omu-border) !important;
-        color: var(--omu-text);
-    }
-
     .multi-lookup-field {
         &__selected-items {
             background: var(--omu-surface-2);

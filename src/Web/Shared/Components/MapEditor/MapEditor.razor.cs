@@ -113,6 +113,9 @@ public partial class MapEditor : IAsyncDisposable
     [Inject]
     private IChangeNotificationService NotificationService { get; set; } = null!;
 
+    [Inject]
+    private LoadingOverlayService LoadingOverlay { get; set; } = null!;
+
     /// <summary>
     /// Gets the current zoom level expressed as a rounded percentage.
     /// </summary>
@@ -807,6 +810,7 @@ public partial class MapEditor : IAsyncDisposable
         }
 
         this._isExporting = true;
+        using var loading = this.LoadingOverlay.ShowLoadingIndicator();
         try
         {
             await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
@@ -850,6 +854,7 @@ public partial class MapEditor : IAsyncDisposable
         }
 
         this._isImporting = true;
+        using var loading = this.LoadingOverlay.ShowLoadingIndicator();
         try
         {
             await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);

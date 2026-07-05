@@ -74,11 +74,12 @@ public sealed class MapExportImportService
     }
 
     /// <summary>
-    /// Applies a JSON import to the given map, replacing all existing spawns and gates
-    /// with those parsed from the JSON. Existing objects are deleted via the persistence context.
+    /// Applies a JSON import to the given map, replacing all monster spawns
+    /// with those parsed from the JSON. Existing spawns are deleted via the persistence context.
+    /// Gates are preserved to avoid breaking warp entries and cross-map references.
     /// </summary>
-    /// <param name="map">The map whose objects will be replaced.</param>
-    /// <param name="json">The JSON string containing the replacement objects.</param>
+    /// <param name="map">The map whose spawns will be replaced.</param>
+    /// <param name="json">The JSON string containing the replacement spawns.</param>
     /// <param name="context">The persistence context used for create and delete operations.</param>
     public async Task ApplyImportAsync(GameMapDefinition map, string json, IContext context)
     {
@@ -103,18 +104,6 @@ public sealed class MapExportImportService
             await context.DeleteAsync(spawn).ConfigureAwait(false);
         }
 
-        foreach (var gate in map.ExitGates.ToList())
-        {
-            map.ExitGates.Remove(gate);
-            await context.DeleteAsync(gate).ConfigureAwait(false);
-        }
-
-        foreach (var gate in map.EnterGates.ToList())
-        {
-            map.EnterGates.Remove(gate);
-            await context.DeleteAsync(gate).ConfigureAwait(false);
-        }
-
         var monsters = await context.GetAsync<MonsterDefinition>().ConfigureAwait(false);
 
         foreach (var spawnDto in dto.Spawns)
@@ -132,36 +121,6 @@ public sealed class MapExportImportService
             spawn.MonsterDefinition = monsters.FirstOrDefault(m => m.Number == spawnDto.MonsterNumber);
             spawn.GameMap = map;
             map.MonsterSpawns.Add(spawn);
-        }
-
-        var guidMap = new Dictionary<Guid, ExitGate>();
-        foreach (var gateDto in dto.ExitGates)
-        {
-            var gate = context.CreateNew<ExitGate>();
-            gate.X1 = gateDto.X1;
-            gate.Y1 = gateDto.Y1;
-            gate.X2 = gateDto.X2;
-            gate.Y2 = gateDto.Y2;
-            gate.Direction = gateDto.Direction;
-            gate.IsSpawnGate = gateDto.IsSpawnGate;
-            gate.Map = map;
-            map.ExitGates.Add(gate);
-            guidMap[gateDto.Id] = gate;
-        }
-
-        foreach (var gateDto in dto.EnterGates)
-        {
-            var gate = context.CreateNew<EnterGate>();
-            gate.X1 = gateDto.X1;
-            gate.Y1 = gateDto.Y1;
-            gate.X2 = gateDto.X2;
-            gate.Y2 = gateDto.Y2;
-            gate.LevelRequirement = gateDto.LevelRequirement;
-            gate.Number = gateDto.Number;
-            gate.TargetGate = gateDto.TargetGateId is { } targetId && guidMap.TryGetValue(targetId, out var targetGate)
-                ? targetGate
-                : null;
-            map.EnterGates.Add(gate);
         }
 
         await context.SaveChangesAsync().ConfigureAwait(false);

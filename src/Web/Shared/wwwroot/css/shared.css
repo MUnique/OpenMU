@@ -11923,11 +11923,6 @@ body {
   background-color: var(--omu-surface) !important;
   border-top: var(--bs-border-width) solid var(--omu-border) !important;
 }
-[data-bs-theme=dark] .blazored-modal {
-  background-color: var(--omu-surface) !important;
-  border-color: var(--omu-border) !important;
-  color: var(--omu-text);
-}
 [data-bs-theme=dark] .multi-lookup-field__selected-items {
   background: var(--omu-surface-2);
   border-color: var(--omu-border);
@@ -12097,20 +12092,6 @@ body {
   min-height: 1em;
 }
 
-.blazored-modal {
-  max-height: 95%;
-}
-
-.blazored-modal-content {
-  overflow-y: auto;
-  padding-right: 10px;
-}
-
-.modal-edit-item {
-  width: 80%;
-  height: 80%;
-}
-
 details > summary {
   list-style: none;
 }
@@ -12151,6 +12132,7 @@ label > details.info-popup > div {
 .form-actions {
   position: sticky;
   bottom: 0;
+  z-index: 3;
   background-color: var(--omu-surface-2);
   padding: 1rem 1.5rem;
   border-top: var(--bs-border-width) solid var(--omu-border);

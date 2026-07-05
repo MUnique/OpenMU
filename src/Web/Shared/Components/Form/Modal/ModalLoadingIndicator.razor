@@ -2,17 +2,7 @@
 @inject LoadingOverlayService LoadingService
 @implements IDisposable
 
-@if (this.LoadingService.IsVisible)
-{
-    <div class="loading-overlay">
-        <div class="loading-overlay-backdrop"></div>
-        <div class="loading-overlay-content">
-            <div class="spinner-border text-light" role="status">
-                <span class="visually-hidden">@Resources.Loading</span>
-            </div>
-        </div>
-    </div>
-}
+<LoadingOverlay Visible="@this.LoadingService.IsVisible" />
 
 @code {
     /// <inheritdoc />
