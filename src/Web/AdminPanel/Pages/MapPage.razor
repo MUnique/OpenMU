@@ -97,7 +97,7 @@
             if (player?.CurrentMap?.Id == this.MapId)
             {
                 this._followedPlayerName = followParam.ToString();
-                this.TryHighlightFollowedPlayer();
+                _ = this.TryHighlightFollowedPlayerAsync();
                 this._followTimer = new Timer(this.CheckFollowedPlayer, null, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1));
             }
         }
@@ -121,7 +121,7 @@
     {
         this._followedPlayerName = playerName;
         this._followTimer?.Dispose();
-        this.TryHighlightFollowedPlayer();
+        _ = this.TryHighlightFollowedPlayerAsync();
         this._followTimer = new Timer(this.CheckFollowedPlayer, null, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1));
     }
 
@@ -132,7 +132,7 @@
         this._followTimer = null;
     }
 
-    private async void TryHighlightFollowedPlayer()
+    private async Task TryHighlightFollowedPlayerAsync()
     {
         if (this._followedPlayerName is null)
         {
@@ -149,34 +149,46 @@
         }
     }
 
-    private async void CheckFollowedPlayer(object? state)
+    private void CheckFollowedPlayer(object? state)
     {
-        if (this._followedPlayerName is null)
-        {
-            return;
-        }
+        _ = this.CheckFollowedPlayerAsync();
+    }
 
-        var player = this._gameContext?.GetPlayerByCharacterName(this._followedPlayerName);
-        if (player is null)
+    private async Task CheckFollowedPlayerAsync()
+    {
+        try
         {
-            return;
-        }
+            if (this._followedPlayerName is null)
+            {
+                return;
+            }
 
-        if (player.CurrentMap is null)
-        {
-            return;
-        }
+            var player = this._gameContext?.GetPlayerByCharacterName(this._followedPlayerName);
+            if (player is null)
+            {
+                return;
+            }
 
-        if (player.CurrentMap.Id != this.MapId)
-        {
-            this._followTimer?.Dispose();
-            this._followTimer = null;
-            var url = $"/gameServer/{this.GameServerId}/map/{player.CurrentMap.Id:N}?follow={Uri.EscapeDataString(this._followedPlayerName)}";
-            await this.InvokeAsync(() => this.NavigationManager.NavigateTo(url, forceLoad: true));
+            if (player.CurrentMap is null)
+            {
+                return;
+            }
+
+            if (player.CurrentMap.Id != this.MapId)
+            {
+                this._followTimer?.Dispose();
+                this._followTimer = null;
+                var url = $"/gameServer/{this.GameServerId}/map/{player.CurrentMap.Id:N}?follow={Uri.EscapeDataString(this._followedPlayerName)}";
+                await this.InvokeAsync(() => this.NavigationManager.NavigateTo(url, forceLoad: true));
+            }
+            else
+            {
+                await this.TryHighlightFollowedPlayerAsync();
+            }
         }
-        else
+        catch
         {
-            this.TryHighlightFollowedPlayer();
+            // Prevent background thread exceptions from crashing the application
         }
     }
 }

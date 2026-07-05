@@ -1,8 +1,4 @@
-﻿.invalid .valid {
-    @extend .form-control;
-}
-
-.invalid.modified {
+﻿.invalid.modified {
     @extend .is-invalid;
 }
 
@@ -18,15 +14,6 @@
     height: 1em;
     min-width: 1em;
     min-height: 1em;
-}
-
-.blazored-modal {
-    max-height: 95%;
-}
-
-.blazored-modal-content {
-    overflow-y: auto;
-    padding-right: 10px;
 }
 
 .modal-edit-item {

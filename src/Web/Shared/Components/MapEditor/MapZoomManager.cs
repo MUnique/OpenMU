@@ -13,8 +13,12 @@ using Microsoft.JSInterop;
 /// </summary>
 public sealed class MapZoomManager
 {
+    /// <summary>
+    /// Gets the default zoom level (1.0 = 100%).
+    /// </summary>
+    public static readonly float DefaultZoom = 1.0f;
+
     // Values match MIN_ZOOM / MAX_ZOOM in MapEditor.razor.js.
-    public const float DefaultZoom = 1.0f;
     private const float MinZoom = 1.0f;
     private const float MaxZoom = 4.0f;
     private const float ZoomButtonFactor = 1.25f;
