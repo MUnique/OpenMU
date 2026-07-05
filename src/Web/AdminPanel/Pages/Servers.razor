@@ -48,7 +48,7 @@ else
 }
 
 <div>
-  <table>
+  <table class="table table-striped table-hover">
     <thead>
     <tr>
       <th></th>
@@ -70,7 +70,7 @@ else
     <tr>
       <td></td>
       <td>
-        <NavLink class="btn btn-primary" href="create-game-server">
+        <NavLink class="btn btn-primary me-1" href="create-game-server">
           <span class="oi oi-plus"></span> @Resources.GameServer
         </NavLink>
         <NavLink class="btn btn-primary" href="create-connect-server">
@@ -84,14 +84,14 @@ else
         {
           @if (this._isRestarting)
           {
-            <button type="button" class="btn-warning" disabled="disabled">
+            <button type="button" class="btn btn-warning btn-sm" disabled="disabled">
               <div class="spinner-border text-secondary" role="status">
               </div>
             </button>
           }
           else
           {
-            <button type="button" class="btn-warning" @onclick="this.OnReloadAndRestartClickAsync">
+            <button type="button" class="btn btn-warning btn-sm" @onclick="this.OnReloadAndRestartClickAsync">
               <span class="oi oi-reload"></span>
               @Resources.ReloadConfigurationAndRestartAllGameServers
             </button>
