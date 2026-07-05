@@ -28,7 +28,8 @@ public static class IpAddressResolverFactory
         var (resolver, source) = DetermineBestFittingResolverWithSource(args, configuration);
         var allowRuntimeReconfiguration = source is not ResolverSource.StartParameter and not ResolverSource.EnvironmentVariable;
 
-        System.Console.WriteLine($"[IP RESOLVER DEBUG] args: {string.Join(" ", args)} | config: {configuration} | resolved: ({resolver.Type}, {resolver.Parameter}) | source: {source}");
+        var logger = loggerFactory.CreateLogger(nameof(IpAddressResolverFactory));
+        logger.LogDebug("args: {Args} | config: {Config} | resolved: ({ResolverType}, {ResolverParameter}) | source: {Source}", string.Join(" ", args), configuration, resolver.Type, resolver.Parameter, source);
         return new ConfigurableIpResolver(resolver.Type, resolver.Parameter, loggerFactory, allowRuntimeReconfiguration);
     }
 
@@ -57,7 +58,7 @@ public static class IpAddressResolverFactory
             { } when parameter.Equals(LoopbackIpResolve, StringComparison.InvariantCultureIgnoreCase) => (Type: IpResolverType.Loopback, Parameter: (string?)null),
             { } when parameter.Equals(PublicIpResolve, StringComparison.InvariantCultureIgnoreCase) => (Type: IpResolverType.Public, Parameter: (string?)null),
             { } when parameter.Equals(LocalIpResolve, StringComparison.InvariantCultureIgnoreCase) => (Type: IpResolverType.Local, Parameter: (string?)null),
-            _ => (Type: IpResolverType.Custom, Parameter: (string?)ExtractIpFromParameter(parameter)),
+            _ => (Type: IpResolverType.Custom, Parameter: ExtractIpFromParameter(parameter)),
         };
 
         if (parsed.Type == IpResolverType.Custom && string.IsNullOrWhiteSpace(parsed.Parameter))
@@ -116,11 +117,7 @@ public static class IpAddressResolverFactory
 
         if (configuration is { } byConfiguration)
         {
-            if (byConfiguration.Type == IpResolverType.Custom && string.IsNullOrWhiteSpace(byConfiguration.Parameter))
-            {
-                // Invalid custom configuration, ignore it to fall back to environment default
-            }
-            else
+            if (byConfiguration.Type != IpResolverType.Custom || !string.IsNullOrWhiteSpace(byConfiguration.Parameter))
             {
                 return (byConfiguration, ResolverSource.Configuration);
             }
