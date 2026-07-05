@@ -1,4 +1,4 @@
-﻿// <copyright file="TargetedSkillDefaultPlugin.cs" company="MUnique">
+// <copyright file="TargetedSkillDefaultPlugin.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -70,6 +70,16 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
         if (skill is null || skill.SkillType == SkillType.PassiveBoost)
         {
             return;
+        }
+
+        if (skill.SkillType != SkillType.Buff && skill.SkillType != SkillType.Regeneration && skill.SkillType != SkillType.SummonMonster)
+        {
+            if (player.CheckAttackSpeedHack())
+            {
+                player.Logger.LogWarning("Speedhack detected on skill {0} ({1}) for player {2}", skill.Name, skill.Number, player.Name);
+                await player.RecordViolationAsync().ConfigureAwait(false);
+                return;
+            }
         }
 
         var miniGame = player.CurrentMiniGame;
