@@ -83,6 +83,157 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     private Lazy<ComboStateMachine>? _comboStateLazy;
 
+    private const int NormalStepDelayMs = 300;
+    private const int WalkSpeedToleranceMs = 900;
+    private const int MaxAllowedWalkStartOffset = 5;
+    private const int MaxWarningsLimit = 3;
+    private const int AlertDebounceSeconds = 5;
+    private const int WarningHistoryHours = 1;
+    private const double MaxAttackTokens = 5.0;
+    private const double AttackSpeedBaseDelayMs = 450.0;
+    private const double AttackSpeedScalingFactor = 1.2;
+    private const double AttackSpeedMinIntervalMs = 60.0;
+
+    private readonly object _speedHackLock = new();
+
+    private double _attackTokens = MaxAttackTokens;
+    private DateTime _lastAttackTokenUpdateTime = DateTime.MinValue;
+
+    internal DateTime _lastAlertTime = DateTime.MinValue;
+
+    internal readonly System.Collections.Generic.Queue<DateTime> _alertTimes = new();
+
+    private struct WalkHistoryEntry : IEquatable<WalkHistoryEntry>
+    {
+        public DateTime Time;
+        public Point StartPoint;
+
+        public readonly bool Equals(WalkHistoryEntry other)
+        {
+            return this.Time == other.Time && this.StartPoint == other.StartPoint;
+        }
+
+        public override readonly bool Equals(object? obj)
+        {
+            return obj is WalkHistoryEntry other && this.Equals(other);
+        }
+
+        public override readonly int GetHashCode()
+        {
+            return HashCode.Combine(this.Time, this.StartPoint);
+        }
+
+        public static bool operator ==(WalkHistoryEntry left, WalkHistoryEntry right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(WalkHistoryEntry left, WalkHistoryEntry right)
+        {
+            return !left.Equals(right);
+        }
+    }
+
+    private readonly System.Collections.Generic.Queue<WalkHistoryEntry> _recentWalks = new();
+
+    private DateTime _lastWalkStartTime = DateTime.MinValue;
+
+    /// <summary>
+    /// Records a speed hack violation. If the violation limit is exceeded, BANS the user.
+    /// </summary>
+    public async ValueTask RecordViolationAsync()
+    {
+        var now = DateTime.UtcNow;
+        bool shouldBan = false;
+        bool shouldWarn = false;
+
+        lock (this._speedHackLock)
+        {
+            if (now - this._lastAlertTime < TimeSpan.FromSeconds(AlertDebounceSeconds))
+            {
+                // Debounce alerts to prevent spamming/jitter issues
+                return;
+            }
+
+            this._lastAlertTime = now;
+            this._alertTimes.Enqueue(now);
+
+            // Remove old warnings (older than 1 hour)
+            while (this._alertTimes.Count > 0 && now - this._alertTimes.Peek() > TimeSpan.FromHours(WarningHistoryHours))
+            {
+                this._alertTimes.Dequeue();
+            }
+
+            this.Logger.LogWarning("Speedhack warning issued for player {0}. Total warnings in last hour: {1}", this.Name, this._alertTimes.Count);
+
+            if (this._alertTimes.Count > MaxWarningsLimit)
+            {
+                this.Logger.LogError("Player {0} exceeded speedhack warning limit. Banning account {1} and disconnecting.", this.Name, this.Account?.LoginName);
+                if (this.Account is { } account)
+                {
+                    account.State = AccountState.Banned;
+                    shouldBan = true;
+                }
+            }
+            else
+            {
+                shouldWarn = true;
+            }
+        }
+
+        if (shouldBan)
+        {
+            await this.SaveProgressAsync().ConfigureAwait(false);
+            await this.DisconnectAsync().ConfigureAwait(false);
+        }
+        else if (shouldWarn)
+        {
+            // Show an in-game message
+            await this.ShowBlueMessageAsync("Warning: Unusual activity detected (speed check). Repeated violations will result in account restriction.").ConfigureAwait(false);
+        }
+        else
+        {
+            // No action needed (e.g. alert was debounced).
+        }
+    }
+
+    public bool CheckAttackSpeedHack()
+    {
+        if (this.Attributes is not { } attributes)
+        {
+            return false;
+        }
+
+        var attackSpeed = attributes[Stats.AttackSpeed];
+        var now = DateTime.UtcNow;
+
+        var minIntervalMs = Math.Max(AttackSpeedMinIntervalMs, AttackSpeedBaseDelayMs - (attackSpeed * AttackSpeedScalingFactor));
+
+        lock (this._speedHackLock)
+        {
+            if (this._lastAttackTokenUpdateTime == DateTime.MinValue)
+            {
+                this._lastAttackTokenUpdateTime = now;
+                this._attackTokens = MaxAttackTokens - 1.0;
+                return false;
+            }
+
+            var elapsedMs = (now - this._lastAttackTokenUpdateTime).TotalMilliseconds;
+            this._lastAttackTokenUpdateTime = now;
+
+            var regen = elapsedMs / minIntervalMs;
+            this._attackTokens = Math.Min(MaxAttackTokens, this._attackTokens + regen);
+
+            if (this._attackTokens >= 1.0)
+            {
+                this._attackTokens -= 1.0;
+                return false;
+            }
+
+            return true;
+        }
+    }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Player" /> class.
     /// </summary>di
@@ -831,6 +982,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
             await this._walker.StopAsync().ConfigureAwait(false);
 
+            lock (this._speedHackLock)
+            {
+                this._lastWalkStartTime = DateTime.MinValue;
+                this._recentWalks.Clear();
+            }
+
             var previous = this.Position;
             this.Position = target;
 
@@ -1294,6 +1451,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     {
         this.Logger.LogDebug("MoveAsync: Player is moving to {0}", target);
         await this._walker.StopAsync().ConfigureAwait(false);
+        lock (this._speedHackLock)
+        {
+            this._lastWalkStartTime = DateTime.MinValue; // RESET speedhack walk start tracker
+            this._recentWalks.Clear();
+        }
         await this.CurrentMap!.MoveAsync(this, target, this._moveLock, MoveType.Instant).ConfigureAwait(false);
         this.Logger.LogDebug("MoveAsync: Observer Count: {0}", this.Observers.Count);
     }
@@ -1329,14 +1491,109 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         await this._walker.StopAsync().ConfigureAwait(false);
 
         var startPoint = steps.Span[0].From;
+
+        bool isSafezone = this.IsAtSafezone();
+        bool shouldRecordViolation = false;
+
+        lock (this._speedHackLock)
+        {
+            if (isSafezone)
+            {
+                this._recentWalks.Clear();
+                this._lastWalkStartTime = DateTime.MinValue;
+            }
+            else
+            {
+                var now = DateTime.UtcNow;
+                if (this._lastWalkStartTime > DateTime.MinValue)
+                {
+                    if (now - this._lastWalkStartTime > TimeSpan.FromSeconds(2))
+                    {
+                        this._recentWalks.Clear();
+                    }
+                }
+
+                this._recentWalks.Enqueue(new WalkHistoryEntry { Time = now, StartPoint = startPoint });
+                this._lastWalkStartTime = now;
+
+                while (this._recentWalks.Count > 5)
+                {
+                    this._recentWalks.Dequeue();
+                }
+
+                if (this._recentWalks.Count >= 3)
+                {
+                    var first = this._recentWalks.Peek();
+                    var elapsed = now - first.Time;
+
+                    // Compute cumulative Chebyshev path length between consecutive start positions.
+                    // This measures actual physical displacement regardless of packet path length or
+                    // direction changes, avoiding false positives on direction reversals or large
+                    // declared paths.
+                    var cumulativeTiles = 0;
+                    Point? prevPoint = null;
+                    foreach (var entry in this._recentWalks)
+                    {
+                        if (prevPoint.HasValue)
+                        {
+                            cumulativeTiles += Math.Max(
+                                Math.Abs((int)entry.StartPoint.X - prevPoint.Value.X),
+                                Math.Abs((int)entry.StartPoint.Y - prevPoint.Value.Y));
+                        }
+
+                        prevPoint = entry.StartPoint;
+                    }
+
+                    if (cumulativeTiles > 0)
+                    {
+                        // Subtract a safety margin from StepDelay to accommodate client ticks/desync.
+                        // Scale safety margin and tolerance by the speed ratio compared to normal walking speed.
+                        const double BaseStepDelayMarginMs = 50.0;
+                        const double MinStepDelayMs = 50.0;
+                        double stepDelayMs = this.StepDelay.TotalMilliseconds;
+                        double scalingFactor = stepDelayMs / NormalStepDelayMs;
+
+                        double stepDelayMarginMs = BaseStepDelayMarginMs * scalingFactor;
+                        double checkStepDelayMs = Math.Max(Math.Min(MinStepDelayMs, stepDelayMs), stepDelayMs - stepDelayMarginMs);
+                        var expectedTime = TimeSpan.FromMilliseconds(cumulativeTiles * checkStepDelayMs);
+                        var deficit = expectedTime - elapsed;
+                        var tolerance = TimeSpan.FromMilliseconds(WalkSpeedToleranceMs * scalingFactor);
+
+                        if (deficit > tolerance)
+                        {
+                            this.Logger.LogWarning(
+                                "Speedhack detected on walk: traveled {0} tiles in {1}ms (expected at least {2}ms). Deficit: {3}ms.",
+                                cumulativeTiles,
+                                elapsed.TotalMilliseconds,
+                                expectedTime.TotalMilliseconds,
+                                deficit.TotalMilliseconds);
+                            shouldRecordViolation = true;
+                            this._recentWalks.Clear(); // Clear to avoid double triggers
+                            this._lastWalkStartTime = DateTime.MinValue; // Reset tracker
+                        }
+                    }
+                }
+            }
+        }
+
+        if (shouldRecordViolation)
+        {
+            await this.RecordViolationAsync().ConfigureAwait(false);
+            return;
+        }
+
         var currentPosition = this.Position;
         var startOffset = startPoint.EuclideanDistanceTo(currentPosition);
-        const int maxAllowedWalkStartOffset = 3;
-        if (startOffset > maxAllowedWalkStartOffset)
+        if (startOffset > MaxAllowedWalkStartOffset)
         {
-            this.Logger.LogWarning("WalkToAsync: Player requested to walk from {0}, but it's currently at {1}", startPoint, currentPosition);
+            this.Logger.LogWarning("WalkToAsync: Player requested to walk from {0}, but it's currently at {1} (offset {2} > {3}). Resynchronizing client.", startPoint, currentPosition, startOffset, MaxAllowedWalkStartOffset);
+            lock (this._speedHackLock)
+            {
+                this._lastWalkStartTime = DateTime.MinValue; // RESET speedhack walk start tracker
+                this._recentWalks.Clear();
+            }
 
-            // Send current position back to the client, so that it can re-synchronize.
+            // Send current position back to the client, so that it can re-synchronize (rubberband).
             await this.InvokeViewPlugInAsync<IObjectMovedPlugIn>(p => p.ObjectMovedAsync(this, MoveType.Instant)).ConfigureAwait(false);
             return;
         }
@@ -2075,6 +2332,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.SelectedCharacter.PositionY = (byte)Rand.NextInt(gate.Y1, gate.Y2);
         this.SelectedCharacter.CurrentMap = gate.Map;
         this.Rotation = gate.Direction;
+
+        lock (this._speedHackLock)
+        {
+            this._lastWalkStartTime = DateTime.MinValue;
+            this._recentWalks.Clear();
+        }
 
         if (this.Summon?.Item1 is { IsAlive: true } summon)
         {
