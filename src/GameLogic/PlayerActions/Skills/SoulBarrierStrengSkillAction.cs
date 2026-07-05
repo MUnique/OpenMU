@@ -1,4 +1,4 @@
-﻿// <copyright file="SoulBarrierStrengSkillAction.cs" company="MUnique">
+// <copyright file="SoulBarrierStrengSkillAction.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -37,7 +37,7 @@ public class SoulBarrierStrengSkillAction : TargetedSkillDefaultPlugin
         var miniGame = player.CurrentMiniGame;
         var inMiniGame = miniGame is { };
         var isBuff = skill.SkillType is SkillType.Buff or SkillType.Regeneration;
-        if (player.IsAtSafezone() && !(inMiniGame && isBuff))
+        if (player.IsAtSafezone() && !(inMiniGame || isBuff))
         {
             return;
         }
