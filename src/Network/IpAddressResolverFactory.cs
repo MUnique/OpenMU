@@ -1,4 +1,4 @@
-﻿// <copyright file="IpAddressResolverFactory.cs" company="MUnique">
+// <copyright file="IpAddressResolverFactory.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -28,6 +28,7 @@ public static class IpAddressResolverFactory
         var (resolver, source) = DetermineBestFittingResolverWithSource(args, configuration);
         var allowRuntimeReconfiguration = source is not ResolverSource.StartParameter and not ResolverSource.EnvironmentVariable;
 
+        System.Console.WriteLine($"[IP RESOLVER DEBUG] args: {string.Join(" ", args)} | config: {configuration} | resolved: ({resolver.Type}, {resolver.Parameter}) | source: {source}");
         return new ConfigurableIpResolver(resolver.Type, resolver.Parameter, loggerFactory, allowRuntimeReconfiguration);
     }
 
@@ -51,13 +52,20 @@ public static class IpAddressResolverFactory
             return default;
         }
 
-        return parameter! switch
+        var parsed = parameter! switch
         {
-            { } when parameter.Equals(LoopbackIpResolve, StringComparison.InvariantCultureIgnoreCase) => (IpResolverType.Loopback, null),
-            { } when parameter.Equals(PublicIpResolve, StringComparison.InvariantCultureIgnoreCase) => (IpResolverType.Public, null),
-            { } when parameter.Equals(LocalIpResolve, StringComparison.InvariantCultureIgnoreCase) => ((IpResolverType, string?)?)(IpResolverType.Local, null),
-            _ => (IpResolverType.Custom, ExtractIpFromParameter(parameter)),
+            { } when parameter.Equals(LoopbackIpResolve, StringComparison.InvariantCultureIgnoreCase) => (Type: IpResolverType.Loopback, Parameter: (string?)null),
+            { } when parameter.Equals(PublicIpResolve, StringComparison.InvariantCultureIgnoreCase) => (Type: IpResolverType.Public, Parameter: (string?)null),
+            { } when parameter.Equals(LocalIpResolve, StringComparison.InvariantCultureIgnoreCase) => (Type: IpResolverType.Local, Parameter: (string?)null),
+            _ => (Type: IpResolverType.Custom, Parameter: (string?)ExtractIpFromParameter(parameter)),
         };
+
+        if (parsed.Type == IpResolverType.Custom && string.IsNullOrWhiteSpace(parsed.Parameter))
+        {
+            return default;
+        }
+
+        return parsed;
     }
 
     private static (IpResolverType Type, string? Parameter)? DetermineResolverByEnvironmentVariable(string variableName = "RESOLVE_IP")
@@ -108,7 +116,14 @@ public static class IpAddressResolverFactory
 
         if (configuration is { } byConfiguration)
         {
-            return (byConfiguration, ResolverSource.Configuration);
+            if (byConfiguration.Type == IpResolverType.Custom && string.IsNullOrWhiteSpace(byConfiguration.Parameter))
+            {
+                // Invalid custom configuration, ignore it to fall back to environment default
+            }
+            else
+            {
+                return (byConfiguration, ResolverSource.Configuration);
+            }
         }
 
         return (DetermineResolverByEnvironment(), ResolverSource.Environment);
