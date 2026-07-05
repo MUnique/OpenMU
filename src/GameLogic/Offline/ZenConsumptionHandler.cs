@@ -31,11 +31,12 @@ internal sealed class ZenConsumptionHandler
     /// <summary>
     /// Deducts Zen from the player based on the server configuration and the player's level.
     /// </summary>
-    public async Task DeductZenAsync()
+    /// <returns><c>true</c> if the player can continue; <c>false</c> if insufficient Zen.</returns>
+    public async ValueTask<bool> DeductZenAsync()
     {
         if (DateTime.UtcNow - this._lastPayTimestamp < this._configuration.PayInterval)
         {
-            return;
+            return true;
         }
 
         var amount = MuHelperZenCostCalculator.Calculate(this._player, this._configuration, this._player.StartTimestamp);
@@ -46,15 +47,15 @@ internal sealed class ZenConsumptionHandler
             await this._player
                 .InvokeViewPlugInAsync<IMuHelperStatusUpdatePlugIn>(p => p.ConsumeMoneyAsync((uint)amount))
                 .ConfigureAwait(false);
+            return true;
         }
-        else if (amount > 0)
+
+        if (amount > 0)
         {
-            this._player.Logger.LogDebug("Offline player stopped for {CharacterName} due to insufficient Zen.", this._player.Name);
-            await this._player.StopAsync().ConfigureAwait(false);
+            this._player.Logger.LogDebug("Insufficient Zen for {CharacterName}.", this._player.Name);
+            return false;
         }
-        else
-        {
-            // Price is 0 or less, no action required.
-        }
+
+        return true;
     }
 }

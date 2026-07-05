@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.Offline;
 
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.MuHelper;
+using MUnique.OpenMU.GameLogic.Views.Login;
 
 /// <summary>
 /// Manages active <see cref="OfflinePlayer"/> sessions.
@@ -29,10 +30,9 @@ public sealed class OfflinePlayerManager
     /// <returns><c>true</c> if the offline session was started successfully.</returns>
     public async ValueTask<bool> StartAsync(Player realPlayer, string loginName)
     {
-        var account = realPlayer.Account;
-        var character = realPlayer.SelectedCharacter;
+        var characterName = realPlayer.SelectedCharacter?.Name;
 
-        if (account is null || character is null)
+        if (string.IsNullOrEmpty(characterName))
         {
             return false;
         }
@@ -56,9 +56,9 @@ public sealed class OfflinePlayerManager
         {
             await this.TransitionToOfflineAsync(realPlayer, loginName).ConfigureAwait(false);
 
-            if (!await sentinel.InitializeAsync(account, character).ConfigureAwait(false))
+            if (!await sentinel.InitializeAsync(loginName, characterName).ConfigureAwait(false))
             {
-                this._activePlayers.TryRemove(loginName, out _);
+                await this.RemoveAndDisposeAsync(loginName, sentinel).ConfigureAwait(false);
                 return false;
             }
 
@@ -66,7 +66,7 @@ public sealed class OfflinePlayerManager
         }
         catch
         {
-            this._activePlayers.TryRemove(loginName, out _);
+            await this.RemoveAndDisposeAsync(loginName, sentinel).ConfigureAwait(false);
             throw;
         }
     }
@@ -77,9 +77,24 @@ public sealed class OfflinePlayerManager
     /// <param name="loginName">The account login name.</param>
     public async ValueTask StopAsync(string loginName)
     {
-        if (this._activePlayers.TryRemove(loginName, out var offlinePlayer))
+        if (!this._activePlayers.TryRemove(loginName, out var offlinePlayer))
+        {
+            // The session might have been started and stopped outside the manager (e.g. in tests).
+            return;
+        }
+
+        try
         {
             await offlinePlayer.StopAsync().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            offlinePlayer.Logger.LogError(ex, "Error stopping offline player session for {0}.", loginName);
+        }
+        finally
+        {
+            await offlinePlayer.GameContext.RemovePlayerAsync(offlinePlayer).ConfigureAwait(false);
+            await offlinePlayer.DisposeAsync().ConfigureAwait(false);
         }
     }
 
@@ -102,9 +117,12 @@ public sealed class OfflinePlayerManager
     {
         await this.LogOffFromLoginServerAsync(realPlayer, loginName).ConfigureAwait(false);
 
-        realPlayer.SuppressDisconnectedEvent();
+        // Send a close-game packet so the client exits cleanly without auto-reconnecting.
+        // DisconnectAsync will then fire PlayerDisconnected, which triggers
+        // RemovePlayerAsync (player list cleanup) and OnPlayerDisconnectedAsync (dispose).
+        await realPlayer.InvokeViewPlugInAsync<ILogoutPlugIn>(p => p.LogoutAsync(LogoutType.CloseGame)).ConfigureAwait(false);
+
         await realPlayer.DisconnectAsync().ConfigureAwait(false);
-        realPlayer.PersistenceContext.Dispose();
     }
 
     /// <summary>
