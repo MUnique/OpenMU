@@ -18,7 +18,7 @@
             <td class="d-flex gap-1">
                 <button type="button" class="btn btn-secondary btn-sm" @onclick=@(async () => await player.DisconnectAsync()) title="@(Resources.Disconnect)"><i class="oi oi-account-logout"></i></button>
                 <button type="button" class="btn btn-secondary btn-sm" @onclick=@(async () => { if (player.Account is not null) { player.Account.State = AccountState.TemporarilyBanned; } await player.DisconnectAsync(); }) title="@(Resources.TemporarilyBan)"><i class="oi oi-ban"></i></button>
-                @if (this.FollowedPlayerName == player.SelectedCharacter?.Name)
+                @if (this.FollowedPlayerName is not null && this.FollowedPlayerName == player.SelectedCharacter?.Name)
                 {
                     <button type="button" class="btn btn-info btn-sm" @onclick="() => this.OnFollowPlayer.InvokeAsync(null)" title="@(Resources.Following)"><i class="oi oi-eye"></i></button>
                 }

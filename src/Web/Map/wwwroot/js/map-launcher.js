@@ -35,6 +35,15 @@ function DisposeMap(identifier) {
     let map = window[identifier];
     if (map) {
         map.dispose();
+        if (window.mapApps) {
+            for (const serverId in window.mapApps) {
+                for (const mapId in window.mapApps[serverId]) {
+                    if (window.mapApps[serverId][mapId] === map) {
+                        delete window.mapApps[serverId][mapId];
+                    }
+                }
+            }
+        }
         delete window[identifier];
     }
 }

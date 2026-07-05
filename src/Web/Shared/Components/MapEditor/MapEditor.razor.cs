@@ -580,7 +580,10 @@ public partial class MapEditor : IAsyncDisposable
 
     private void OnObjectDragging(byte x, byte y)
     {
-        this._dragState.ApplyDrag(x, y, out var newX1, out var newY1, out var newX2, out var newY2);
+        if (!this._dragState.ApplyDrag(x, y, out var newX1, out var newY1, out var newX2, out var newY2))
+        {
+            return;
+        }
 
         if (!this._hasDragSnapshot)
         {
