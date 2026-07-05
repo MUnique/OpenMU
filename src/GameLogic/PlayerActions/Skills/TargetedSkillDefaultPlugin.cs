@@ -72,6 +72,16 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
             return;
         }
 
+        if (skill.SkillType != SkillType.Buff && skill.SkillType != SkillType.Regeneration && skill.SkillType != SkillType.SummonMonster)
+        {
+            if (player.CheckAttackSpeedHack())
+            {
+                player.Logger.LogWarning("Speedhack detected on skill {0} ({1}) for player {2}", skill.Name, skill.Number, player.Name);
+                await player.RecordViolationAsync().ConfigureAwait(false);
+                return;
+            }
+        }
+
         var miniGame = player.CurrentMiniGame;
         var inMiniGame = miniGame is { };
         var isBuff = skill.SkillType is SkillType.Buff or SkillType.Regeneration || skill.SkillType == SkillType.SummonMonster;

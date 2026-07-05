@@ -1,4 +1,4 @@
-﻿// <copyright file="HitAction.cs" company="MUnique">
+// <copyright file="HitAction.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -41,6 +41,13 @@ public class HitAction
         if (player.IsAtSafezone())
         {
             player.Logger.LogWarning("Probably Hacker - player {Player} is attacking from safezone", player);
+            return;
+        }
+
+        if (player.CheckAttackSpeedHack())
+        {
+            player.Logger.LogWarning("Speedhack detected on hit for player {0}", player.Name);
+            await player.RecordViolationAsync().ConfigureAwait(false);
             return;
         }
 
