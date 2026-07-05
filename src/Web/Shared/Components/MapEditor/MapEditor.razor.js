@@ -475,7 +475,7 @@ export function setDragging(dragging) {
  * Triggers a click on the file input used for importing map spawn data.
  */
 export function triggerFileInput() {
-    document.getElementById('import-file-input')?.click();
+    document.getElementById("import-file-input")?.click();
 }
 
 /**
@@ -484,10 +484,10 @@ export function triggerFileInput() {
  * @param {string} base64 - The base64-encoded file content.
  */
 export function downloadFile(fileName, base64) {
-    const bytes = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
-    const blob = new Blob([bytes], { type: 'application/json' });
+    const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+    const blob = new Blob([bytes], { type: "application/json" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
     a.download = fileName;
     document.body.appendChild(a);
