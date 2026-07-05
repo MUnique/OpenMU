@@ -350,7 +350,10 @@ export function centerOn(element, mapX, mapY, baseScale) {
  */
 export function handleWheel(element, deltaY, clientX, clientY) {
     if (!element) {
-        return { zoomLevel: _defaultZoom, handled: false };
+        return {
+            zoomLevel: _defaultZoom,
+            handled: false
+        };
     }
 
     const oldZoom = _zoomLevel;
