@@ -38,6 +38,8 @@ public sealed class OfflinePlayerMuHelper : AsyncDisposable
     private readonly EventHandler<DeathInformation> _deathHandler;
     private readonly PeriodicTimer _timer = new(TimeSpan.FromMilliseconds(500));
 
+    private Task? _loopTask;
+
     private bool _isDead;
 
     /// <summary>
@@ -76,7 +78,7 @@ public sealed class OfflinePlayerMuHelper : AsyncDisposable
     public void Start()
     {
         _ = this._petHandler.InitializeAsync();
-        _ = this.RunLoopAsync();
+        this._loopTask = this.RunLoopAsync(this._cts.Token);
     }
 
     /// <inheritdoc />
@@ -84,6 +86,23 @@ public sealed class OfflinePlayerMuHelper : AsyncDisposable
     {
         this._timer.Dispose();
         await this._cts.CancelAsync().ConfigureAwait(false);
+
+        if (this._loopTask is { } loopTask)
+        {
+            try
+            {
+                await loopTask.ConfigureAwait(false);
+            }
+            catch (Exception ex) when (ex is OperationCanceledException or ObjectDisposedException)
+            {
+                // Expected during shutdown.
+            }
+            catch (Exception ex)
+            {
+                this._player.Logger.LogError(ex, "Error in offline player helper loop task for {AccountLoginName}.", this._player.AccountLoginName);
+            }
+        }
+
         await this._petHandler.StopAsync().ConfigureAwait(false);
         await base.DisposeAsyncCore().ConfigureAwait(false);
     }
@@ -106,19 +125,12 @@ public sealed class OfflinePlayerMuHelper : AsyncDisposable
         this._isDead = true;
     }
 
-    private async Task RunLoopAsync()
+    private async Task RunLoopAsync(CancellationToken cancellationToken)
     {
-        try
+        while (await this._timer.WaitForNextTickAsync(cancellationToken).ConfigureAwait(false))
         {
-            while (!this.IsDisposed
-                   && await this._timer.WaitForNextTickAsync(this._cts.Token).ConfigureAwait(false))
-            {
-                await this.SafeTickAsync(this._cts.Token).ConfigureAwait(false);
-            }
-        }
-        catch (Exception ex) when (ex is OperationCanceledException or ObjectDisposedException)
-        {
-            // Expected during shutdown.
+            cancellationToken.ThrowIfCancellationRequested();
+            await this.SafeTickAsync(cancellationToken).ConfigureAwait(false);
         }
     }
 

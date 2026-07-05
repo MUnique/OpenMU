@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.Offline;
 
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.MuHelper;
 using MUnique.OpenMU.GameLogic.PlayerActions.Items;
 using MUnique.OpenMU.Interfaces;
@@ -18,6 +19,20 @@ public sealed class ItemPickupHandler
     private const byte MinPickupRange = 1;
 
     private static readonly PickupItemAction PickupAction = new();
+
+    private static readonly HashSet<ItemIdentifier> Jewels =
+    [
+        ItemConstants.JewelOfChaos,
+        ItemConstants.JewelOfBless,
+        ItemConstants.JewelOfSoul,
+        ItemConstants.JewelOfLife,
+        ItemConstants.JewelOfCreation,
+        ItemConstants.JewelOfGuardian,
+        ItemConstants.Gemstone,
+        ItemConstants.JewelOfHarmony,
+        ItemConstants.LowerRefineStone,
+        ItemConstants.HigherRefineStone,
+    ];
 
     private readonly OfflinePlayer _player;
     private readonly IMuHelperSettings? _config;
@@ -67,8 +82,7 @@ public sealed class ItemPickupHandler
             return false;
         }
 
-        return (definition.Group == 14 && definition.Number is 13 or 14 or 16 or 22 or 31 or 41 or 42 or 43 or 44)
-               || (definition.Group == 12 && definition.Number == 15);
+        return Jewels.Contains(new(definition.Number, definition.Group));
     }
 
     private bool ShouldPickUpDrop(IIdentifiable drop)
