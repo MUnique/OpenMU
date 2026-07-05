@@ -16,6 +16,7 @@ public class InvasionGameServerState : PeriodicTaskGameServerState
 {
     private readonly HashSet<ushort> _mapIds = [];
     private readonly Dictionary<ushort, ushort> _selectedMaps = [];
+    private readonly List<ushort> _announcedMapIds = [];
     private readonly ConcurrentDictionary<Monster, byte> _monsters = new();
 
     /// <summary>
@@ -45,6 +46,25 @@ public class InvasionGameServerState : PeriodicTaskGameServerState
     public IReadOnlyDictionary<ushort, ushort> SelectedMaps => this._selectedMaps;
 
     /// <summary>
+    /// Gets the list of map identifiers that are named in the invasion start/end broadcast.
+    /// These are the maps on which the announced (featured) monster actually spawns this run,
+    /// so the message always points players at a map that really contains it.
+    /// </summary>
+    public IReadOnlyList<ushort> AnnouncedMapIds => this._announcedMapIds;
+
+    /// <summary>
+    /// Sets the maps named in the broadcast message and the single <see cref="MapId"/> used
+    /// for the map-event UI state.
+    /// </summary>
+    /// <param name="mapIds">The maps on which the announced monster spawns this run.</param>
+    internal void SetAnnouncedMaps(IReadOnlyCollection<ushort> mapIds)
+    {
+        this._announcedMapIds.Clear();
+        this._announcedMapIds.AddRange(mapIds);
+        this.MapId = this._announcedMapIds.Count > 0 ? this._announcedMapIds[0] : null;
+    }
+
+    /// <summary>
     /// Registers a map as active for this run and optionally records which map was
     /// randomly chosen for a particular monster type.
     /// </summary>
@@ -70,6 +90,7 @@ public class InvasionGameServerState : PeriodicTaskGameServerState
         this.MapId = null;
         this._mapIds.Clear();
         this._selectedMaps.Clear();
+        this._announcedMapIds.Clear();
     }
 
     /// <summary>
