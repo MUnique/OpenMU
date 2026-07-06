@@ -15,18 +15,11 @@ using MUnique.OpenMU.PlugIns;
 [Guid("4B5D0F55-5B26-4447-B9C0-C272E5D0A141")]
 public sealed class WhiteWizardInvasionPlugIn : SimpleInvasionPlugIn
 {
-    private static readonly IReadOnlyList<ushort> DisplayMaps =
-    [
-        InvasionMaps.Lorencia,
-        InvasionMaps.Noria,
-        InvasionMaps.Devias,
-    ];
-
     /// <summary>
     /// Initializes a new instance of the <see cref="WhiteWizardInvasionPlugIn"/> class.
     /// </summary>
     public WhiteWizardInvasionPlugIn()
-        : base(DisplayMaps, () => InvasionConfigurationDefaults.WhiteWizard)
+        : base(() => InvasionConfigurationDefaults.WhiteWizard)
     {
     }
 
