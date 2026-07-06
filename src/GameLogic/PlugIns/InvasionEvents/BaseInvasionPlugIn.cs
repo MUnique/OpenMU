@@ -114,7 +114,7 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
 
             if (announceDeath)
             {
-                this.AttachDeathBroadcast(monster, gameContext);
+                this.AttachDeathBroadcast(monster, state);
             }
         }
     }
@@ -476,15 +476,16 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
         }
     }
 
-    private void AttachDeathBroadcast(Monster monster, IGameContext gameContext)
+    private void AttachDeathBroadcast(Monster monster, InvasionGameServerState state)
     {
+        var context = state.Context;
         void Handler(object? sender, DeathInformation e)
         {
             if (sender is Monster m)
             {
                 m.Died -= Handler;
                 var mapDefinition = m.CurrentMap?.Definition;
-                _ = Task.Run(() => BroadcastMonsterDeathAsync(m, mapDefinition, e, gameContext));
+                _ = Task.Run(() => BroadcastMonsterDeathAsync(m, mapDefinition, e, context));
             }
         }
 
