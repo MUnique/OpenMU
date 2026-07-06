@@ -501,25 +501,27 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
         if (sender is Monster monster)
         {
             monster.Died -= this.OnAnnouncedMonsterDied;
-            _ = Task.Run(() => this.BroadcastMonsterDeathAsync(monster, e));
+            var mapDefinition = monster.CurrentMap?.Definition;
+            _ = Task.Run(() => this.BroadcastMonsterDeathAsync(monster, mapDefinition, e));
         }
     }
 
-    private async Task BroadcastMonsterDeathAsync(Monster monster, DeathInformation e)
+    private async Task BroadcastMonsterDeathAsync(Monster monster, GameMapDefinition? mapDefinition, DeathInformation e)
     {
         var context = this._gameContext;
-        if (context is null)
+        if (context is null || mapDefinition is null)
         {
             return;
         }
 
         try
         {
+            var mapName = mapDefinition.Name;
             await context.ForEachPlayerAsync(async player =>
             {
-                var mapName = monster.CurrentMap.Definition.Name.GetTranslation(player.Culture);
+                var translatedMapName = mapName.GetTranslation(player.Culture);
                 var monsterName = monster.Definition.Designation;
-                var message = $"{e.KillerName} has defeated the {mapName} {monsterName}!";
+                var message = $"{e.KillerName} has defeated the {translatedMapName} {monsterName}!";
 
                 try
                 {
