@@ -449,4 +449,9 @@ public enum UpdateVersion
     /// The version of the <see cref="AddWhiteWizardInvasionMobsUpdatePlugIn"/>.
     /// </summary>
     AddWhiteWizardInvasionMobs = 88,
+
+    /// <summary>
+    /// The version of the <see cref="LimitWhiteWizardDropsUpdatePlugIn"/>.
+    /// </summary>
+    LimitWhiteWizardDrops = 89,
 }
