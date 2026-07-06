@@ -96,7 +96,7 @@ public class AddWhiteWizardInvasionMobsUpdatePlugIn : UpdatePlugInBase
         itemDrop.Chance = 1.0;
         itemDrop.Description = "Jewel of Bless from White Wizard";
         itemDrop.Monster = monster;
-        itemDrop.PossibleItems.Add(gameConfiguration.Items.First(item => item.Group == 14 && item.Number == 13));
+        itemDrop.PossibleItems.Add(gameConfiguration.Items.First(item => item.Number == ItemConstants.JewelOfBless.Number && item.Group == ItemConstants.JewelOfBless.Group));
         monster.DropItemGroups.Add(itemDrop);
         gameConfiguration.DropItemGroups.Add(itemDrop);
     }
