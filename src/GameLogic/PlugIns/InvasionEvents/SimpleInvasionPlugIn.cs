@@ -15,30 +15,20 @@ public abstract class SimpleInvasionPlugIn
 {
     private readonly IReadOnlyList<ushort> _displayMaps;
     private readonly Func<PeriodicInvasionConfiguration> _defaultConfigFactory;
-    private readonly ushort? _announcedMonsterId;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SimpleInvasionPlugIn"/> class.
     /// </summary>
-    /// <param name="mapEventType">The map-event type for UI broadcasting.</param>
     /// <param name="displayMaps">Maps eligible to be shown in the event UI.</param>
     /// <param name="defaultConfigFactory">Factory that returns the default configuration.</param>
-    /// <param name="announcedMonsterId">
-    /// The optional featured monster whose actual spawn map(s) are named in the broadcast.
-    /// </param>
-    protected SimpleInvasionPlugIn(MapEventType mapEventType, IReadOnlyList<ushort> displayMaps, Func<PeriodicInvasionConfiguration> defaultConfigFactory, ushort? announcedMonsterId = null)
-        : base(mapEventType)
+    protected SimpleInvasionPlugIn(IReadOnlyList<ushort> displayMaps, Func<PeriodicInvasionConfiguration> defaultConfigFactory)
     {
         this._displayMaps = displayMaps;
         this._defaultConfigFactory = defaultConfigFactory;
-        this._announcedMonsterId = announcedMonsterId;
     }
 
     /// <inheritdoc />
     protected override IReadOnlyList<ushort> EventDisplayMapIds => this._displayMaps;
-
-    /// <inheritdoc />
-    protected override ushort? AnnouncedMonsterId => this._announcedMonsterId;
 
     /// <inheritdoc />
     public object CreateDefaultConfig() => this._defaultConfigFactory();

@@ -26,7 +26,13 @@ public sealed class GoldenInvasionPlugIn : SimpleInvasionPlugIn
     /// Initializes a new instance of the <see cref="GoldenInvasionPlugIn"/> class.
     /// </summary>
     public GoldenInvasionPlugIn()
-        : base(MapEventType.GoldenDragonInvasion, DisplayMaps, () => InvasionConfigurationDefaults.Golden, InvasionMonsters.GoldenDragon)
+        : base(DisplayMaps, () => InvasionConfigurationDefaults.Golden)
     {
     }
+
+    /// <inheritdoc />
+    protected override MapEventType? EventType => MapEventType.GoldenDragonInvasion;
+
+    /// <inheritdoc />
+    protected override ushort? AnnouncedMonsterId => InvasionMonsters.GoldenDragon;
 }
