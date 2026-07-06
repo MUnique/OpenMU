@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.InvasionEvents;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
+using MUnique.OpenMU.GameLogic.Properties;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Pathfinding;
@@ -19,8 +20,6 @@ using MUnique.OpenMU.PlugIns;
 public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugIn<TConfiguration, InvasionGameServerState>, IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, ISupportCustomConfiguration<TConfiguration>
     where TConfiguration : PeriodicInvasionConfiguration
 {
-    private IGameContext? _gameContext;
-
     /// <summary>
     /// Gets the map-event type used for UI state broadcasts.
     /// Override to enable map-event state updates for a specific event type.
@@ -50,17 +49,7 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
     /// <inheritdoc />
     public virtual async ValueTask ObjectAddedToMapAsync(GameMap map, ILocateable addedObject)
     {
-        if (addedObject is Monster monster)
-        {
-            this.TryAttachDeathHandler(monster);
-        }
-
-        if (this.EventType is null)
-        {
-            return;
-        }
-
-        if (addedObject is Player player)
+        if (this.EventType is not null && addedObject is Player player)
         {
             var state = this.GetStateByGameContext(player.GameContext);
             await this.TrySendMapEventStateUpdateAsync(player, state).ConfigureAwait(false);
@@ -77,9 +66,10 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
     /// <param name="gameMap">The game map.</param>
     /// <param name="monsterDefinition">The monster definition.</param>
     /// <param name="quantity">The quantity.</param>
+    /// <param name="announceDeath">If set, a death-broadcast handler is attached to each spawned monster.</param>
     /// <param name="x">The optional fixed X coordinate.</param>
     /// <param name="y">The optional fixed Y coordinate.</param>
-    protected async ValueTask CreateMonstersAsync(IGameContext gameContext, ILogger logger, GameMap gameMap, MonsterDefinition monsterDefinition, ushort quantity, byte? x = null, byte? y = null)
+    protected async ValueTask CreateMonstersAsync(IGameContext gameContext, ILogger logger, GameMap gameMap, MonsterDefinition monsterDefinition, ushort quantity, bool announceDeath = false, byte? x = null, byte? y = null)
     {
         for (var i = 0; i < quantity; i++)
         {
@@ -121,6 +111,11 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
 
             var state = this.GetStateByGameContext(gameContext);
             state.AddMonster(monster);
+
+            if (announceDeath)
+            {
+                this.AttachDeathBroadcast(monster, gameContext);
+            }
         }
     }
 
@@ -144,7 +139,7 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
         {
             if (gameContext.Configuration.Monsters.FirstOrDefault(m => m.Number == spawn.MonsterId) is { } monsterDefinition)
             {
-                await this.CreateMonstersAsync(gameContext, logger, gameMap, monsterDefinition, spawn.Count, spawn.X, spawn.Y).ConfigureAwait(false);
+                await this.CreateMonstersAsync(gameContext, logger, gameMap, monsterDefinition, spawn.Count, spawn.AnnounceDeath, spawn.X, spawn.Y).ConfigureAwait(false);
             }
             else
             {
@@ -156,8 +151,6 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
     /// <inheritdoc />
     protected override async ValueTask OnPrepareEventAsync(InvasionGameServerState state)
     {
-        this._gameContext = state.Context;
-
         var config = this.Configuration;
         if (config?.Mobs is not { Count: > 0 } mobs)
         {
@@ -329,21 +322,26 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
     /// <param name="mobs">The mob spawn configurations.</param>
     private void SelectSingleMap(InvasionGameServerState state, IList<InvasionSpawnConfiguration> mobs)
     {
-        if (mobs[0].MapIds.Count == 0)
+        var source = this.AnnouncedMonsterId is { } announcedId
+            ? mobs.FirstOrDefault(m => m.MonsterId == announcedId)
+            : null;
+        source ??= mobs[0];
+
+        if (source.MapIds.Count == 0)
         {
             return;
         }
 
-        var chosenMap = mobs[0].MapIds.Count == 1
-            ? mobs[0].MapIds[0]
-            : mobs[0].MapIds[Rand.NextInt(0, mobs[0].MapIds.Count)];
+        var chosenMap = source.MapIds.Count == 1
+            ? source.MapIds[0]
+            : source.MapIds[Rand.NextInt(0, source.MapIds.Count)];
 
         foreach (var mob in mobs)
         {
             state.RegisterMap(chosenMap, mob.MonsterId);
         }
 
-        state.SetAnnouncedMaps(new[] { chosenMap });
+        state.SetAnnouncedMaps([chosenMap]);
     }
 
     /// <summary>
@@ -478,38 +476,24 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
         }
     }
 
-    private void TryAttachDeathHandler(Monster monster)
+    private void AttachDeathBroadcast(Monster monster, IGameContext gameContext)
     {
-        var config = this.Configuration;
-        if (config?.Mobs is null)
+        void Handler(object? sender, DeathInformation e)
         {
-            return;
-        }
-
-        foreach (var spawn in config.Mobs)
-        {
-            if (spawn.AnnounceDeath && spawn.MonsterId == monster.Definition.Number)
+            if (sender is Monster m)
             {
-                monster.Died += this.OnAnnouncedMonsterDied;
-                return;
+                m.Died -= Handler;
+                var mapDefinition = m.CurrentMap?.Definition;
+                _ = Task.Run(() => BroadcastMonsterDeathAsync(m, mapDefinition, e, gameContext));
             }
         }
+
+        monster.Died += Handler;
     }
 
-    private void OnAnnouncedMonsterDied(object? sender, DeathInformation e)
+    private static async Task BroadcastMonsterDeathAsync(Monster monster, GameMapDefinition? mapDefinition, DeathInformation e, IGameContext gameContext)
     {
-        if (sender is Monster monster)
-        {
-            monster.Died -= this.OnAnnouncedMonsterDied;
-            var mapDefinition = monster.CurrentMap?.Definition;
-            _ = Task.Run(() => this.BroadcastMonsterDeathAsync(monster, mapDefinition, e));
-        }
-    }
-
-    private async Task BroadcastMonsterDeathAsync(Monster monster, GameMapDefinition? mapDefinition, DeathInformation e)
-    {
-        var context = this._gameContext;
-        if (context is null || mapDefinition is null)
+        if (mapDefinition is null)
         {
             return;
         }
@@ -517,15 +501,14 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
         try
         {
             var mapName = mapDefinition.Name;
-            await context.ForEachPlayerAsync(async player =>
+            await gameContext.ForEachPlayerAsync(async player =>
             {
                 var translatedMapName = mapName.GetTranslation(player.Culture);
-                var monsterName = monster.Definition.Designation;
-                var message = $"{e.KillerName} has defeated the {translatedMapName} {monsterName}!";
+                var monsterName = monster.Definition.Designation.GetTranslation(player.Culture);
 
                 try
                 {
-                    await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.GoldenCenter)).ConfigureAwait(false);
+                    await player.ShowLocalizedGoldenMessageAsync(nameof(PlayerMessage.InvasionMonsterDefeated), e.KillerName, translatedMapName, monsterName).ConfigureAwait(false);
                 }
                 catch
                 {
@@ -535,7 +518,7 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
         }
         catch (Exception ex)
         {
-            context.LoggerFactory.CreateLogger(this.GetType()).LogError(ex, "Error during invasion monster death broadcast.");
+            gameContext.LoggerFactory.CreateLogger(typeof(BaseInvasionPlugIn<TConfiguration>)).LogError(ex, "Error during invasion monster death broadcast.");
         }
     }
 }
