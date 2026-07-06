@@ -236,10 +236,10 @@ internal class InvasionMobsInitialization : Version095d.InvasionMobsInitializati
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 135;
             monster.Designation = "White Wizard";
-            monster.MoveRange = 3;
-            monster.AttackRange = 3;
+            monster.MoveRange = 4;
+            monster.AttackRange = 5;
             monster.AttackSkill = this.GameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.MonsterSkill);
-            monster.ViewRange = 7;
+            monster.ViewRange = 6;
             monster.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
             monster.AttackDelay = new TimeSpan(1400 * TimeSpan.TicksPerMillisecond);
             monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
@@ -254,6 +254,10 @@ internal class InvasionMobsInitialization : Version095d.InvasionMobsInitializati
                 { Stats.DefenseBase, 400 },
                 { Stats.AttackRatePvm, 550 },
                 { Stats.DefenseRatePvm, 200 },
+                { Stats.IceResistance, 15f / 255 },
+                { Stats.PoisonResistance, 15f / 255 },
+                { Stats.LightningResistance, 20f / 255 },
+                { Stats.FireResistance, 15f / 255 },
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
 
@@ -275,7 +279,7 @@ internal class InvasionMobsInitialization : Version095d.InvasionMobsInitializati
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.AttackSkill = this.GameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.MonsterSkill);
-            monster.ViewRange = 7;
+            monster.ViewRange = 3;
             monster.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
             monster.AttackDelay = new TimeSpan(1400 * TimeSpan.TicksPerMillisecond);
             monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
@@ -290,6 +294,10 @@ internal class InvasionMobsInitialization : Version095d.InvasionMobsInitializati
                 { Stats.DefenseBase, 180 },
                 { Stats.AttackRatePvm, 400 },
                 { Stats.DefenseRatePvm, 125 },
+                { Stats.IceResistance, 7f / 255 },
+                { Stats.PoisonResistance, 7f / 255 },
+                { Stats.LightningResistance, 7f / 255 },
+                { Stats.FireResistance, 7f / 255 },
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
 
@@ -309,9 +317,9 @@ internal class InvasionMobsInitialization : Version095d.InvasionMobsInitializati
             monster.Number = 137;
             monster.Designation = "Destructive Ogre Archer";
             monster.MoveRange = 3;
-            monster.AttackRange = 4;
+            monster.AttackRange = 5;
             monster.AttackSkill = this.GameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.MonsterSkill);
-            monster.ViewRange = 7;
+            monster.ViewRange = 5;
             monster.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
             monster.AttackDelay = new TimeSpan(1600 * TimeSpan.TicksPerMillisecond);
             monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
@@ -326,6 +334,10 @@ internal class InvasionMobsInitialization : Version095d.InvasionMobsInitializati
                 { Stats.DefenseBase, 190 },
                 { Stats.AttackRatePvm, 440 },
                 { Stats.DefenseRatePvm, 130 },
+                { Stats.IceResistance, 8f / 255 },
+                { Stats.PoisonResistance, 8f / 255 },
+                { Stats.LightningResistance, 8f / 255 },
+                { Stats.FireResistance, 8f / 255 },
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
 
