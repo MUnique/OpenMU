@@ -7,12 +7,12 @@ namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 using System.ComponentModel.DataAnnotations;
 using System.Threading;
 using Blazored.Toast.Services;
-using MUnique.OpenMU.Web.Shared.Components.Modal;
 using Microsoft.AspNetCore.Components;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
+using MUnique.OpenMU.Web.Shared.Components.Modal;
 
 /// <summary>
 /// Razor page that shows objects of the specified type in a grid.

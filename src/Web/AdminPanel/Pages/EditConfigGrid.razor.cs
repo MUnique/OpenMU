@@ -9,7 +9,6 @@ using System.ComponentModel;
 using System.Reflection;
 using System.Threading;
 using Blazored.Toast.Services;
-using MUnique.OpenMU.Web.Shared.Components.Modal;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.QuickGrid;
 using Microsoft.Extensions.Logging;
@@ -18,6 +17,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
 using MUnique.OpenMU.Web.Shared;
+using MUnique.OpenMU.Web.Shared.Components.Modal;
 using MUnique.OpenMU.Web.Shared.Services;
 
 /// <summary>
