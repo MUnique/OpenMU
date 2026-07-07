@@ -5,8 +5,10 @@
 namespace MUnique.OpenMU.PlugIns.Tests;
 
 using System.ComponentModel.Design;
+using System.Reflection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using MUnique.OpenMU.PlugIns;
 using MUnique.OpenMU.Tests;
 
 /// <summary>
@@ -15,6 +17,24 @@ using MUnique.OpenMU.Tests;
 [TestFixture]
 public class PlugInManagerTest
 {
+    /// <summary>
+    /// Tests that every <see cref="PlugInAttribute"/>-decorated type has a unique GUID.
+    /// </summary>
+    [Test]
+    public void AllPluginTypesHaveUniqueGuids()
+    {
+        var duplicates = AppDomain.CurrentDomain.GetAssemblies()
+            .SelectMany(a => a.DefinedTypes)
+            .Where(t => t.GetCustomAttribute<PlugInAttribute>() != null)
+            .GroupBy(t => t.GUID)
+            .Where(g => g.Count() > 1)
+            .ToList();
+
+        Assert.That(duplicates, Is.Empty,
+            $"Duplicate plugin GUIDs: {string.Join("; ", duplicates.Select(g =>
+                $"{g.Key} used by {string.Join(", ", g.Select(t => t.FullName))}"))}");
+    }
+
     /// <summary>
     /// Tests if registering a plugin type creates a proxy for it.
     /// </summary>
