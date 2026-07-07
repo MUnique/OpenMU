@@ -5,16 +5,16 @@
 namespace MUnique.OpenMU.GameServer.MessageHandler;
 
 using System.Runtime.InteropServices;
-using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.PlayerActions;
 using MUnique.OpenMU.GameServer.MessageHandler.MuHelper;
 using MUnique.OpenMU.Network.Packets.ClientToServer;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// Handler for the <see cref="EnterMarketPlaceRequest"/>, sent by the 'Warp' button of the
-/// Market Union Member Julia window. It warps the player between Lorencia and the Loren Market,
-/// depending on which side the player is currently on.
+/// Market Union Member Julia window. It delegates to the <see cref="EnterMarketPlaceAction"/>,
+/// which warps the player between Lorencia and the Loren Market.
 /// </summary>
 [PlugIn]
 [Display(Name = PlugInName, Description = PlugInDescription)]
@@ -26,15 +26,7 @@ internal class EnterMarketPlaceHandlerPlugIn : ISubPacketHandlerPlugIn
 
     private const string PlugInDescription = "Handler which warps a player between Lorencia and the Loren Market when using the 'Warp' button of Market Union Member Julia.";
 
-    /// <summary>
-    /// The map number of the Loren Market.
-    /// </summary>
-    private const short LorenMarketMapNumber = 79;
-
-    /// <summary>
-    /// The map number of Lorencia, where the player is warped back to.
-    /// </summary>
-    private const short LorenciaMapNumber = 0;
+    private readonly EnterMarketPlaceAction _enterMarketPlaceAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;
@@ -50,26 +42,6 @@ internal class EnterMarketPlaceHandlerPlugIn : ISubPacketHandlerPlugIn
             return;
         }
 
-        // Only allow the warp through the actual Julia window, so a crafted packet can't be used
-        // as a free teleport from anywhere.
-        if (player.OpenedNpc?.Definition.NpcWindow != NpcWindow.JuliaWarpMarketServer)
-        {
-            return;
-        }
-
-        // Julia warps both ways: from the Loren Market back to Lorencia, and from anywhere else
-        // (her counterpart in Lorencia) into the Loren Market.
-        var targetMapNumber = player.CurrentMap?.Definition.Number == LorenMarketMapNumber
-            ? LorenciaMapNumber
-            : LorenMarketMapNumber;
-
-        var targetMap = await player.GameContext.GetMapAsync((ushort)targetMapNumber).ConfigureAwait(false);
-        if (targetMap?.SafeZoneSpawnGate is not { } targetGate)
-        {
-            return;
-        }
-
-        player.OpenedNpc = null;
-        await player.WarpToAsync(targetGate).ConfigureAwait(false);
+        await this._enterMarketPlaceAction.WarpToMarketPlaceAsync(player).ConfigureAwait(false);
     }
 }
