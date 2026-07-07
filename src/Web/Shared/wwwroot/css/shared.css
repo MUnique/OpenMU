@@ -11857,6 +11857,8 @@ textarea.form-control-lg {
   --omu-sidebar-gradient: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
   --omu-nav-link: #d7d7d7;
   --omu-spinner-dot: rgb(5, 39, 103);
+  --omu-overlay-bg: rgba(0, 0, 0, 0.5);
+  --omu-overlay-spinner: #ffffff;
 }
 
 [data-bs-theme=dark] {
@@ -11878,6 +11880,8 @@ textarea.form-control-lg {
   --omu-sidebar-gradient: linear-gradient(180deg, #0a1330 0%, #1a0322 70%);
   --omu-nav-link: #d7d7d7;
   --omu-spinner-dot: #66b2ff;
+  --omu-overlay-bg: rgba(0, 0, 0, 0.5);
+  --omu-overlay-spinner: #ffffff;
 }
 
 html,
@@ -11922,11 +11926,6 @@ body {
 [data-bs-theme=dark] .add-new-bar {
   background-color: var(--omu-surface) !important;
   border-top: var(--bs-border-width) solid var(--omu-border) !important;
-}
-[data-bs-theme=dark] .blazored-modal {
-  background-color: var(--omu-surface) !important;
-  border-color: var(--omu-border) !important;
-  color: var(--omu-text);
 }
 [data-bs-theme=dark] .multi-lookup-field__selected-items {
   background: var(--omu-surface-2);
@@ -12097,20 +12096,6 @@ body {
   min-height: 1em;
 }
 
-.blazored-modal {
-  max-height: 95%;
-}
-
-.blazored-modal-content {
-  overflow-y: auto;
-  padding-right: 10px;
-}
-
-.modal-edit-item {
-  width: 80%;
-  height: 80%;
-}
-
 details > summary {
   list-style: none;
 }
@@ -12151,6 +12136,7 @@ label > details.info-popup > div {
 .form-actions {
   position: sticky;
   bottom: 0;
+  z-index: 3;
   background-color: var(--omu-surface-2);
   padding: 1rem 1.5rem;
   border-top: var(--bs-border-width) solid var(--omu-border);

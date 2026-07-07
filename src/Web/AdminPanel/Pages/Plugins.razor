@@ -31,16 +31,16 @@
             <td class="text-nowrap">
                 @if (item.IsActive)
                 {
-                    <Button class="btn btn-warning me-1" @onclick="async () => await this.PlugInController.DeactivateAsync(item)">@Resources.Deactivate</Button>
+                    <button class="btn btn-warning me-1" @onclick="async () => await this.PlugInController.DeactivateAsync(item)">@Resources.Deactivate</button>
                 }
                 else
                 {
-                    <Button class="btn btn-success me-1" @onclick="async () => await this.PlugInController.ActivateAsync(item)">@Resources.Activate</Button>
+                    <button class="btn btn-success me-1" @onclick="async () => await this.PlugInController.ActivateAsync(item)">@Resources.Activate</button>
                 }
 
                 @if (item.ConfigurationType is { })
                 {
-                    <Button class="btn btn-secondary" @onclick="() => this.PlugInController.ShowPlugInConfigAsync(item)"><span class="oi oi-cog" aria-hidden="true"></span></Button>
+                    <button class="btn btn-secondary" @onclick="() => this.PlugInController.ShowPlugInConfigAsync(item)"><span class="oi oi-cog" aria-hidden="true"></span></button>
                 }
             </td>
         </ItemTemplate>

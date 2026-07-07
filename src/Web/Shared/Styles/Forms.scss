@@ -16,20 +16,6 @@
     min-height: 1em;
 }
 
-.blazored-modal {
-    max-height: 95%;
-}
-
-.blazored-modal-content {
-    overflow-y: auto;
-    padding-right: 10px;
-}
-
-.modal-edit-item {
-    width: 80%;
-    height: 80%;
-}
-
 details > summary {
     list-style: none;
 }
@@ -70,6 +56,7 @@ label > details.info-popup > div {
 .form-actions {
     position: sticky;
     bottom: 0;
+    z-index: 3;
     background-color: var(--omu-surface-2);
     padding: 1rem 1.5rem;
     border-top: var(--bs-border-width) solid var(--omu-border);

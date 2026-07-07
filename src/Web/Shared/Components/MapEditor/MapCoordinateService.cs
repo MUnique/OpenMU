@@ -34,8 +34,8 @@ public sealed class MapCoordinateService
     public (byte X, byte Y)? GetMapCoordinates(
         double clientX,
         double clientY,
-        MapEditor.BoundingClientRect rect,
-        MapEditor.ScrollInfo scroll,
+        BoundingClientRect rect,
+        ScrollInfo scroll,
         float zoomLevel)
     {
         var contentX = (clientX - rect.Left) + scroll.ScrollLeft;

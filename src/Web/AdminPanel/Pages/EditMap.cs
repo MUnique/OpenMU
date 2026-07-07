@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 
 using System.Reflection;
 using System.Threading;
-using Blazored.Modal.Services;
 using Blazored.Toast.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
@@ -19,6 +18,8 @@ using MUnique.OpenMU.Web.AdminPanel.Properties;
 using MUnique.OpenMU.Web.Shared;
 using MUnique.OpenMU.Web.Shared.Components;
 using MUnique.OpenMU.Web.Shared.Components.MapEditor;
+using MUnique.OpenMU.Web.Shared.Components.Modal;
+using MUnique.OpenMU.Web.Shared.Services;
 
 /// <summary>
 /// A page, which shows an <see cref="MapEditor"/> for all <see cref="GameConfiguration.Maps"/>.
@@ -43,6 +44,12 @@ public sealed class EditMap : ComponentBase, IDisposable
     /// </summary>
     [Inject]
     private IModalService ModalService { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the loading overlay service.
+    /// </summary>
+    [Inject]
+    private LoadingOverlayService LoadingOverlay { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the toast service.
@@ -176,11 +183,29 @@ public sealed class EditMap : ComponentBase, IDisposable
         }
 
         await this.GameConfigurationSource.DiscardChangesAsync().ConfigureAwait(true);
-        this._maps = null;
 
-        this._context = await this.GameConfigurationSource
-            .GetContextAsync(cancellationToken)
-            .ConfigureAwait(true);
+        IDisposable? loadingOverlay = null;
+        var showOverlayTask = this.InvokeAsync(() => loadingOverlay = this.LoadingOverlay.ShowLoadingIndicator());
+
+        try
+        {
+            this._context = await this.GameConfigurationSource
+                .GetContextAsync(cancellationToken)
+                .ConfigureAwait(true);
+
+            var gameConfig = await this.GameConfigurationSource
+                .GetOwnerAsync(Guid.Empty, cancellationToken)
+                .ConfigureAwait(false);
+
+            this._maps = gameConfig.Maps.OrderBy(c => c.Number).ToList();
+        }
+        finally
+        {
+            await showOverlayTask.ConfigureAwait(false);
+            loadingOverlay?.Dispose();
+        }
+
+        await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
 
         return true;
     }
@@ -188,7 +213,7 @@ public sealed class EditMap : ComponentBase, IDisposable
     private async Task LoadDataAsync(CancellationToken cancellationToken)
     {
         IDisposable? modal = null;
-        var showModalTask = this.InvokeAsync(() => modal = this.ModalService.ShowLoadingIndicator());
+        var showModalTask = this.InvokeAsync(() => modal = this.LoadingOverlay.ShowLoadingIndicator());
 
         try
         {

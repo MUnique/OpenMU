@@ -17,12 +17,21 @@
 
 <div class="map-select">
     <label for="mapSelect">@Resources.SelectedMap:</label>
-    <select class="form-select" title="Map" @onchange=this.OnMapSelectedAsync id="mapSelect" autocomplete="off" @ref="_mapSelectRef">
-        @foreach (var map in this.Maps ?? Enumerable.Empty<GameMapDefinition>())
-        {
-            <option value="@map.GetId()" selected=@(object.Equals(this.SelectedMap, map))>@Resources.Map: @map.ToString()</option>
-        }
-    </select>
+    <div class="d-flex align-items-center gap-2">
+        <select class="form-select flex-grow-1" title="Map" @onchange=this.OnMapSelectedAsync id="mapSelect" autocomplete="off" @ref="_mapSelectRef">
+            @foreach (var map in this.Maps ?? Enumerable.Empty<GameMapDefinition>())
+            {
+                <option value="@map.GetId()" selected=@(object.Equals(this.SelectedMap, map))>@Resources.Map: @map.ToString()</option>
+            }
+        </select>
+        <button type="button" class="btn btn-secondary text-nowrap" disabled="@this._isExporting" @onclick="@this.ExportMapAsync" title="@Resources.ExportMap">
+            <span class="oi oi-data-transfer-download"></span> @Resources.ExportMap
+        </button>
+        <button type="button" class="btn btn-secondary text-nowrap" disabled="@this._isImporting" @onclick="@this.TriggerFileImportAsync" title="@Resources.ImportMap">
+            <span class="oi oi-data-transfer-upload"></span> @Resources.ImportMap
+        </button>
+        <BlazorInputFile.InputFile OnChange="@ImportFileSelected" accept=".json" style="display:none" id="import-file-input" />
+    </div>
 </div>
 
 <div class="btn-toolbar my-2" role="toolbar" aria-label="@Resources.Toolbar">
@@ -115,8 +124,8 @@
                         {
                             <div class="coordinate-grid" style="@this.GetGridStyle()"></div>
                         }
-                    </div>
-                </div>
+    </div>
+</div>
 
                 <div class="map-coordinates-overlay">
                     <span class="coord-label">X: @this._mouseMapX, Y: @this._mouseMapY</span>
@@ -160,6 +169,7 @@
             <div>@Resources.MapEditorShortcutPan</div>
             <div>@Resources.MapEditorShortcutDrag</div>
             <div>@Resources.MapEditorShortcutCycle</div>
+            <div>@Resources.MapEditorShortcutDelete</div>
         </div>
     </div>
 
@@ -169,7 +179,7 @@
             <div class="map-object-filter mb-2">
                 <div class="btn-group w-100 mb-1 flex-wrap" role="group" aria-label="@Resources.TypeFilter">
                     <button type="button"
-                            class="btn btn-sm @(this._activeFilter == ObjectTypeFilter.None ? "btn-primary" : "btn-outline-primary")"
+                            class="btn btn-sm @(this._filterService.ActiveFilter == ObjectTypeFilter.None ? "btn-primary" : "btn-outline-primary")"
                             @onclick="@this.SetAllFilter">
                         @Resources.All
                     </button>
@@ -197,7 +207,7 @@
                 <input class="small form-control"
                        type="search"
                        autofocus
-                       @bind="@this._searchFilter"
+                       @bind="@this._filterService.SearchFilter"
                        @bind:event="oninput"
                        placeholder="@Resources.Search ..." />
             </div>
@@ -211,19 +221,19 @@
                         disabled="@this._createMode"
                         @ref="_objectSelectRef">
                     <option value="@Guid.Empty" selected=@(this._focusedObject is null)>&lt;@Resources.NoSelection&gt;</option>
-                    @foreach (var enterGate in this.SelectedMap.EnterGates.Where(g => MapObjectSelector.MatchesFilters(g, this._activeFilter, this._searchFilter)))
+                    @foreach (var enterGate in this.SelectedMap.EnterGates.Where(g => MapObjectSelector.MatchesFilters(g, this._filterService.ActiveFilter, this._filterService.SearchFilter)))
                     {
                         <option value="@enterGate.GetId()" selected=@(object.Equals(this._focusedObject, enterGate))>
                             @typeof(EnterGate).GetTypeCaption(): @enterGate.ToString()
                         </option>
                     }
-                    @foreach (var exitGate in this.SelectedMap.ExitGates.Where(g => MapObjectSelector.MatchesFilters(g, this._activeFilter, this._searchFilter)))
+                    @foreach (var exitGate in this.SelectedMap.ExitGates.Where(g => MapObjectSelector.MatchesFilters(g, this._filterService.ActiveFilter, this._filterService.SearchFilter)))
                     {
                         <option value="@exitGate.GetId()" selected=@(object.Equals(this._focusedObject, exitGate))>
                             @typeof(ExitGate).GetTypeCaption(): @exitGate.ToString()
                         </option>
                     }
-                    @foreach (var spawn in this.SelectedMap.MonsterSpawns.Where(s => MapObjectSelector.MatchesFilters(s, this._activeFilter, this._searchFilter)))
+                    @foreach (var spawn in this.SelectedMap.MonsterSpawns.Where(s => MapObjectSelector.MatchesFilters(s, this._filterService.ActiveFilter, this._filterService.SearchFilter)))
                     {
                         <option value="@spawn.GetId()" selected=@(object.Equals(this._focusedObject, spawn))>
                             @typeof(MonsterSpawnArea).GetTypeCaption(): @spawn.ToString()

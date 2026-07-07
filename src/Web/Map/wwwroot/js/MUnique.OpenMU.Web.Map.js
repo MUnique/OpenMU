@@ -755,7 +755,7 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                     for (var id in this.objects) {
                         if (this.objects.hasOwnProperty(id)) {
                             var obj = this.objects[id];
-                            if (obj instanceof Player_1.Player && obj.data.name.indexOf("Character:[".concat(playerName, "]")) >= 0) {
+                            if (obj instanceof Player_1.Player && obj.data.name.includes("Character:[".concat(playerName, "]"))) {
                                 this.highlightOn(obj.data.id);
                                 return true;
                             }

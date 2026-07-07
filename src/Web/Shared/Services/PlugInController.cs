@@ -6,8 +6,7 @@ namespace MUnique.OpenMU.Web.Shared.Services;
 
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
-using Blazored.Modal;
-using Blazored.Modal.Services;
+using MUnique.OpenMU.Web.Shared.Components.Modal;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
