@@ -444,7 +444,7 @@ public enum UpdateVersion
     /// The version of the <see cref="AddMissingMerchantStoresPlugIn"/>.
     /// </summary>
     AddMissingMerchantStores = 87,
-    
+
     /// <summary>
     /// The version of the <see cref="FinishDarkKnightMasterTreePlugIn075"/>.
     /// </summary>
