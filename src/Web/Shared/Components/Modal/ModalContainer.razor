@@ -80,21 +80,27 @@
             }
         }
 
-        result["Modal"] = this.ModalService.Current!.Instance;
+        if (this.ModalService.Current is { } current)
+        {
+            result["Modal"] = current.Instance;
+        }
         return result;
     }
 
-    private async Task HandleBackdropClickAsync()
+    private Task HandleBackdropClickAsync()
     {
         if (this.ModalService.Current?.Options?.DisableBackgroundCancel != true)
         {
-            await this.DismissAsync();
+            return this.DismissAsync();
         }
+
+        return Task.CompletedTask;
     }
 
-    private async Task DismissAsync()
+    private Task DismissAsync()
     {
         this.ModalService.Dismiss();
+        return Task.CompletedTask;
     }
 
     /// <inheritdoc />

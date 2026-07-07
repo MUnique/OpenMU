@@ -187,17 +187,24 @@ public sealed class EditMap : ComponentBase, IDisposable
         IDisposable? loadingOverlay = null;
         var showOverlayTask = this.InvokeAsync(() => loadingOverlay = this.LoadingOverlay.ShowLoadingIndicator());
 
-        this._context = await this.GameConfigurationSource
-            .GetContextAsync(cancellationToken)
-            .ConfigureAwait(true);
+        try
+        {
+            this._context = await this.GameConfigurationSource
+                .GetContextAsync(cancellationToken)
+                .ConfigureAwait(true);
 
-        var gameConfig = await this.GameConfigurationSource
-            .GetOwnerAsync(Guid.Empty, cancellationToken)
-            .ConfigureAwait(false);
+            var gameConfig = await this.GameConfigurationSource
+                .GetOwnerAsync(Guid.Empty, cancellationToken)
+                .ConfigureAwait(false);
 
-        this._maps = gameConfig.Maps.OrderBy(c => c.Number).ToList();
-        await showOverlayTask.ConfigureAwait(false);
-        loadingOverlay?.Dispose();
+            this._maps = gameConfig.Maps.OrderBy(c => c.Number).ToList();
+        }
+        finally
+        {
+            await showOverlayTask.ConfigureAwait(false);
+            loadingOverlay?.Dispose();
+        }
+
         await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
 
         return true;

@@ -105,9 +105,19 @@ public sealed class MapExportImportService
         }
 
         var monsters = await context.GetAsync<MonsterDefinition>().ConfigureAwait(false);
+        if (monsters is null || dto.Spawns is null)
+        {
+            return;
+        }
 
         foreach (var spawnDto in dto.Spawns)
         {
+            var monsterDef = monsters.FirstOrDefault(m => m.Number == spawnDto.MonsterNumber);
+            if (monsterDef is null)
+            {
+                continue;
+            }
+
             var spawn = context.CreateNew<MonsterSpawnArea>();
             spawn.X1 = spawnDto.X1;
             spawn.Y1 = spawnDto.Y1;
@@ -118,11 +128,9 @@ public sealed class MapExportImportService
             spawn.SpawnTrigger = spawnDto.SpawnTrigger;
             spawn.WaveNumber = spawnDto.WaveNumber;
             spawn.MaximumHealthOverride = spawnDto.MaximumHealthOverride;
-            spawn.MonsterDefinition = monsters.FirstOrDefault(m => m.Number == spawnDto.MonsterNumber);
+            spawn.MonsterDefinition = monsterDef;
             spawn.GameMap = map;
             map.MonsterSpawns.Add(spawn);
         }
-
-        await context.SaveChangesAsync().ConfigureAwait(false);
     }
 }

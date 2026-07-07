@@ -34,7 +34,11 @@ public sealed class ModalService : IModalService, IDisposable
     /// <inheritdoc />
     public IModalReference Show(Type componentType, string title, ModalParameters? parameters = null, ModalOptions? options = null)
     {
-        this.Dismiss();
+        if (this._state is { } state)
+        {
+            state.Reference.TrySetResult(ModalResult.Cancel());
+        }
+
         var reference = new ModalReference();
         var instance = new ModalInstance(reference, this.Dismiss);
         this._state = new ModalState(componentType, title, parameters, options, instance, reference);
