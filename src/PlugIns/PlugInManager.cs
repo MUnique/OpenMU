@@ -90,7 +90,7 @@ public class PlugInManager
     public void DiscoverAndRegisterPlugIns()
     {
         var plugIns = this.DiscoverNewPlugIns();
-        ValidateNoDuplicateGuids(plugIns);
+        this.ValidateNoDuplicateGuids(plugIns);
         this.RegisterPlugIns(plugIns);
     }
 
@@ -101,7 +101,7 @@ public class PlugInManager
     public void DiscoverAndRegisterPlugIns(Assembly assembly)
     {
         var plugIns = this.DiscoverNewPlugIns(this.DiscoverPlugIns(assembly));
-        ValidateNoDuplicateGuids(plugIns);
+        this.ValidateNoDuplicateGuids(plugIns);
         this.RegisterPlugIns(plugIns);
     }
 
@@ -355,16 +355,17 @@ public class PlugInManager
         }
     }
 
-    private static void ValidateNoDuplicateGuids(IEnumerable<Type> plugIns)
+    private void ValidateNoDuplicateGuids(IEnumerable<Type> plugIns)
     {
-        var duplicates = plugIns.GroupBy(t => t.GUID).Where(g => g.Count() > 1).ToList();
+        var allPlugIns = plugIns.Concat(this._knownPlugIns.Values).Distinct();
+        var duplicates = allPlugIns.GroupBy(t => t.GUID).Where(g => g.Count() > 1).ToList();
         if (duplicates.Count == 0)
         {
             return;
         }
 
         var message = string.Join("; ", duplicates.Select(g =>
-            $"{g.Key} used by {string.Join(", ", g.Select(t => t.FullName))}"));
+            $"{g.Key} used by {string.Join(", ", g.Select(t => t.FullName ?? t.Name))}"));
         throw new DuplicatePlugInGuidException(message);
     }
 
