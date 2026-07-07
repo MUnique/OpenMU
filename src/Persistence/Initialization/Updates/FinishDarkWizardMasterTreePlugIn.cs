@@ -46,7 +46,7 @@ public class FinishDarkWizardMasterTreePlugIn : UpdatePlugInBase
     public override bool IsMandatory => true;
 
     /// <inheritdoc />
-    public override DateTime CreatedAt => new(2026, 5, 28, 16, 0, 0, DateTimeKind.Utc);
+    public override DateTime CreatedAt => new(2026, 7, 7, 16, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
@@ -69,7 +69,7 @@ public class FinishDarkWizardMasterTreePlugIn : UpdatePlugInBase
         minWizDmgPerEnergy.InputOperand = 0.2f / 9; // 45 energy adds 1 min wiz damage
         minWizDmgPowerUp.Boost.RelatedValues.Add(minWizDmgPerEnergy);
 
-        // Create Critical Damage Increase Mastery Skill Effect
+        // Create Wiz Enhance Strengthener & Mastery Skill Effects
         var wizEnhanceStrengthenerEffect = this.CreateWizEnhanceStrengthenerEffect(context, gameConfiguration);
         var wizEnhanceMasteryEffect = this.CreateWizEnhanceMasteryEffect(context, gameConfiguration);
 
