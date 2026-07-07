@@ -139,6 +139,12 @@ public interface IGameContext
     ValueTask AddPlayerAsync(Player player);
 
     /// <summary>
+    /// Removes the player from the game.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    ValueTask RemovePlayerAsync(Player player);
+
+    /// <summary>
     /// Gets the maps which is meant to be hosted by the game.
     /// </summary>
     /// <param name="mapId">The map identifier.</param>

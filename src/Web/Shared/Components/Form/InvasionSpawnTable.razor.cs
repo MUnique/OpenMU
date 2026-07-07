@@ -201,6 +201,16 @@ public partial class InvasionSpawnTable : InputBase<IList<InvasionSpawnConfigura
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether to announce the death of this monster type globally.
+        /// Delegates to <see cref="InvasionSpawnConfiguration.AnnounceDeath"/>.
+        /// </summary>
+        public bool AnnounceDeath
+        {
+            get => this._model.AnnounceDeath;
+            set => this._model.AnnounceDeath = value;
+        }
+
+        /// <summary>
         /// Gets or sets the fixed X coordinate.
         /// </summary>
         public int? X

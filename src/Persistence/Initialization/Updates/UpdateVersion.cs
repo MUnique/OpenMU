@@ -441,22 +441,37 @@ public enum UpdateVersion
     AddMovementSpeedAttributesSeason6 = 86,
 
     /// <summary>
+    /// The version of the <see cref="AddMissingMerchantStoresPlugIn"/>.
+    /// </summary>
+    AddMissingMerchantStores = 87,
+    
+    /// <summary>
     /// The version of the <see cref="FinishDarkKnightMasterTreePlugIn075"/>.
     /// </summary>
-    FinishDarkKnightMasterTree075 = 87,
+    FinishDarkKnightMasterTree075 = 88,
 
     /// <summary>
     /// The version of the <see cref="FinishDarkKnightMasterTreePlugIn095D"/>.
     /// </summary>
-    FinishDarkKnightMasterTree095d = 88,
+    FinishDarkKnightMasterTree095d = 89,
 
     /// <summary>
     /// The version of the <see cref="FinishDarkKnightMasterTreePlugInSeason6"/>.
     /// </summary>
-    FinishDarkKnightMasterTreeSeason6 = 89,
+    FinishDarkKnightMasterTreeSeason6 = 90,
+
+    /// <summary>
+    /// The version of the <see cref="AddWhiteWizardInvasionMobsUpdatePlugIn"/>.
+    /// </summary>
+    AddWhiteWizardInvasionMobs = 91,
+
+    /// <summary>
+    /// The version of the <see cref="LimitWhiteWizardDropsUpdatePlugIn"/>.
+    /// </summary>
+    LimitWhiteWizardDrops = 92,
 
     /// <summary>
     /// The version of the <see cref="FinishDarkWizardMasterTreePlugIn"/>.
     /// </summary>
-    FinishDarkWizardMasterTree = 90,
+    FinishDarkWizardMasterTree = 93,
 }

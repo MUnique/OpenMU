@@ -2,9 +2,9 @@
 @using System.Diagnostics.CodeAnalysis
 @inherits NotifyableInputBase<string>
 
-    <div>
+    <div class="mb-3">
         <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
-        <input @bind="CurrentValue" id="@this.FieldIdentifier.FieldName" class="@CssClass" />
+        <input @bind="CurrentValue" id="@this.FieldIdentifier.FieldName" class="form-control @CssClass" />
         <ValidationMessage For=@this.ValueExpression />
     </div>
 

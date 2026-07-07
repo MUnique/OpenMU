@@ -1,4 +1,4 @@
-﻿// <copyright file="ItemConstants.cs" company="MUnique">
+// <copyright file="ItemConstants.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -75,6 +75,11 @@ public class ItemConstants
     public static ItemIdentifier TownPortalScroll => new(10, 14);
 
     /// <summary>
+    /// Gets the identifier for the jewel of chaos.
+    /// </summary>
+    public static ItemIdentifier JewelOfChaos => new(15, 12);
+
+    /// <summary>
     /// Gets the identifier for the jewel of bless.
     /// </summary>
     public static ItemIdentifier JewelOfBless => new(13, 14);
@@ -88,6 +93,21 @@ public class ItemConstants
     /// Gets the identifier for the jewel of life.
     /// </summary>
     public static ItemIdentifier JewelOfLife => new(16, 14);
+
+    /// <summary>
+    /// Gets the identifier for the jewel of creation.
+    /// </summary>
+    public static ItemIdentifier JewelOfCreation => new(22, 14);
+
+    /// <summary>
+    /// Gets the identifier for the jewel of guardian.
+    /// </summary>
+    public static ItemIdentifier JewelOfGuardian => new(31, 14);
+
+    /// <summary>
+    /// Gets the identifier for the gemstone.
+    /// </summary>
+    public static ItemIdentifier Gemstone => new(41, 14);
 
     /// <summary>
     /// Gets the identifier for the small shield potion.
@@ -133,6 +153,11 @@ public class ItemConstants
     /// Gets the identifier for the higher refine stone.
     /// </summary>
     public static ItemIdentifier HigherRefineStone => new(44, 14);
+
+    /// <summary>
+    /// Gets the identifier for the wizard's ring (group 13, number 20).
+    /// </summary>
+    public static ItemIdentifier WizardsRing => new(20, 13);
 
     /// <summary>
     /// Gets all scrolls.

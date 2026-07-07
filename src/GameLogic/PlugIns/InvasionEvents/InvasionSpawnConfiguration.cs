@@ -28,13 +28,15 @@ public class InvasionSpawnConfiguration
     /// <param name="mapStrategy">Controls whether to spawn on a random map or all maps.</param>
     /// <param name="x">The optional fixed X coordinate.</param>
     /// <param name="y">The optional fixed Y coordinate.</param>
+    /// <param name="announceDeath">Indicates whether the death of this monster type should be announced globally.</param>
     public InvasionSpawnConfiguration(
         ushort monsterId,
         ushort count,
         IList<ushort> mapIds,
         SpawnMapStrategy mapStrategy,
         byte? x = null,
-        byte? y = null)
+        byte? y = null,
+        bool announceDeath = false)
     {
         this.MonsterId = monsterId;
         this.Count = count;
@@ -42,6 +44,7 @@ public class InvasionSpawnConfiguration
         this.MapStrategy = mapStrategy;
         this.X = x;
         this.Y = y;
+        this.AnnounceDeath = announceDeath;
     }
 
     /// <summary>
@@ -67,6 +70,12 @@ public class InvasionSpawnConfiguration
     /// Gets or sets the strategy used to select a map when spawning.
     /// </summary>
     public SpawnMapStrategy MapStrategy { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the death of this monster type
+    /// should be announced with a global broadcast message.
+    /// </summary>
+    public bool AnnounceDeath { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether the monster spawns on all maps in <see cref="MapIds"/>.

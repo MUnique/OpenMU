@@ -48,7 +48,7 @@
     color: var(--omu-text);
 }
 
-@media (max-width: 640.98px) {
+@media (max-width: 767.98px) {
     .configuration-search {
         width: 100%;
         min-width: 0;

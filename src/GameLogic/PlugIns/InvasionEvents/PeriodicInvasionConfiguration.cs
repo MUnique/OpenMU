@@ -24,8 +24,17 @@ public class PeriodicInvasionConfiguration : PeriodicTaskConfiguration
     }
 
     /// <summary>
+    /// Gets or sets a value indicating whether all mobs should spawn on a single map,
+    /// determined from the first mob's <see cref="InvasionSpawnConfiguration.MapIds"/>.
+    /// When <c>true</c>, every mob in the invasion is placed on the same randomly-selected map
+    /// rather than distributing across maps per their individual configurations.
+    /// </summary>
+    [Display(Name = "Force Single Map", Order = 6)]
+    public bool ForceSingleMap { get; set; }
+
+    /// <summary>
     /// Gets or sets the monster spawns for this invasion.
     /// </summary>
-    [Display(Name = "Monster Spawns", Order = 6)]
+    [Display(Name = "Monster Spawns", Order = 7)]
     public IList<InvasionSpawnConfiguration> Mobs { get; set; } = [];
 }
