@@ -28,7 +28,7 @@ public class PollutionSkillPlugIn : IAreaSkillPlugIn
         if (!target.IsAlive
             || target is not IMovable movableTarget
             || target.CurrentMap is not { } currentMap
-            || !Rand.NextRandomBool(Convert.ToDouble(attacker.Attributes[Stats.PollutionMoveTargetChance])))
+            || !Rand.NextRandomBool(attacker.Attributes[Stats.MasteryMoveTargetChance]))
         {
             return;
         }

@@ -15,6 +15,13 @@ using Nito.AsyncEx.Synchronous;
 /// </summary>
 public sealed class SkillList : ISkillList, IDisposable
 {
+    private const ushort DurabilityReduction1SkillId = 300;
+    private const ushort DurabilityReduction1FistMasterSkillId = 578;
+    private const short TwistingSlashMasterySkillId = 332;
+    private const short RagefulBlowMasterySkillId = 333;
+
+    private readonly short[] _castedSkillsWithPassiveBoost = [TwistingSlashMasterySkillId, RagefulBlowMasterySkillId];
+
     private readonly IDictionary<ushort, SkillEntry> _availableSkills;
 
     private readonly ICollection<SkillEntry> _learnedSkills;
@@ -52,7 +59,8 @@ public sealed class SkillList : ISkillList, IDisposable
             .Where(item => (item.Definition ?? throw Error.NotInitializedProperty(item, nameof(item.Definition))).Skill != null)
             .ForEach(item => this.AddItemSkillAsync(item.Definition!.Skill!).AsTask().WaitAndUnwrapException());
         this._player.Inventory.EquippedItemsChanged += this.Inventory_WearingItemsChangedAsync;
-        foreach (var skill in this._learnedSkills.Where(s => s.Skill!.SkillType == SkillType.PassiveBoost))
+        foreach (var skill in this._learnedSkills
+            .Where(s => s.Skill!.SkillType == SkillType.PassiveBoost || this._castedSkillsWithPassiveBoost.Contains(s.Skill.Number)))
         {
             this.CreatePowerUpForPassiveSkill(skill);
         }
@@ -153,11 +161,12 @@ public sealed class SkillList : ISkillList, IDisposable
         this._availableSkills.Add(skill.Skill!.Number.ToUnsigned(), skill);
         this._learnedSkills.Add(skill);
 
-        if (skill.Skill.SkillType == SkillType.PassiveBoost)
+        if (skill.Skill.SkillType == SkillType.PassiveBoost || this._castedSkillsWithPassiveBoost.Contains(skill.Skill.Number))
         {
             this.CreatePowerUpForPassiveSkill(skill);
         }
-        else
+
+        if (skill.Skill.SkillType != SkillType.PassiveBoost)
         {
             await this._player.InvokeViewPlugInAsync<ISkillListViewPlugIn>(p => p.AddSkillAsync(skill.Skill)).ConfigureAwait(false);
         }
@@ -185,6 +194,13 @@ public sealed class SkillList : ISkillList, IDisposable
         var passiveBoost = new PassiveSkillBoostPowerUp(skillEntry);
         this.PassivePowerUps.Add(passiveBoost);
         this.PassivePowerUps.Add(new PowerUpWrapper(passiveBoost, masterDefinition.TargetAttribute, this._player.Attributes!));
+
+        if (skillEntry.Skill.Number == DurabilityReduction1SkillId || skillEntry.Skill.Number == DurabilityReduction1FistMasterSkillId)
+        {
+            var durabilityReductionFactorBoost = new PassiveSkillBoostPowerUp(skillEntry, true);
+            this.PassivePowerUps.Add(durabilityReductionFactorBoost);
+            this.PassivePowerUps.Add(new PowerUpWrapper(durabilityReductionFactorBoost, Stats.DurabilityReductionFactor, this._player.Attributes!));
+        }
     }
 
     private async ValueTask Inventory_WearingItemsChangedAsync(ItemEventArgs eventArgs)
@@ -210,12 +226,22 @@ public sealed class SkillList : ISkillList, IDisposable
     {
         private readonly SkillEntry _skillEntry;
 
-        public PassiveSkillBoostPowerUp(SkillEntry skillEntry)
+        public PassiveSkillBoostPowerUp(SkillEntry skillEntry, bool isDurabilityReductionFactor = false)
         {
             this._skillEntry = skillEntry;
-            this.Value = this._skillEntry.CalculateValue();
-            this.AggregateType = this._skillEntry.Skill!.MasterDefinition!.Aggregation;
-            this._skillEntry.PropertyChanged += this.OnSkillEntryOnPropertyChanged;
+
+            if (isDurabilityReductionFactor)
+            {
+                this.Value = -this._skillEntry.Level / 500f;
+                this.AggregateType = AggregateType.AddRaw;
+                this._skillEntry.PropertyChanged += this.OnDurabilityReductionSkillEntryOnPropertyChanged;
+            }
+            else
+            {
+                this.Value = this._skillEntry.CalculateValue();
+                this.AggregateType = this._skillEntry.Skill!.MasterDefinition!.Aggregation;
+                this._skillEntry.PropertyChanged += this.OnSkillEntryOnPropertyChanged;
+            }
         }
 
         public event EventHandler? ValueChanged;
@@ -227,6 +253,7 @@ public sealed class SkillList : ISkillList, IDisposable
         public void Dispose()
         {
             this._skillEntry.PropertyChanged -= this.OnSkillEntryOnPropertyChanged;
+            this._skillEntry.PropertyChanged -= this.OnDurabilityReductionSkillEntryOnPropertyChanged;
         }
 
         /// <inheritdoc/>
@@ -240,6 +267,15 @@ public sealed class SkillList : ISkillList, IDisposable
             if (eventArgs.PropertyName == nameof(SkillEntry.Level))
             {
                 this.Value = this._skillEntry.CalculateValue();
+                this.ValueChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        private void OnDurabilityReductionSkillEntryOnPropertyChanged(object? sender, PropertyChangedEventArgs eventArgs)
+        {
+            if (eventArgs.PropertyName == nameof(SkillEntry.Level))
+            {
+                this.Value = -this._skillEntry.Level / 500f;
                 this.ValueChanged?.Invoke(this, EventArgs.Empty);
             }
         }

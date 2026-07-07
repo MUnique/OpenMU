@@ -31,7 +31,7 @@ internal static class InvasionConfigurationDefaults
             new(InvasionMonsters.GoldenLizardKing, 10, [InvasionMaps.Atlans], SpawnMapStrategy.RandomMap),
             new(InvasionMonsters.GoldenWheel, 20, [InvasionMaps.Tarkan], SpawnMapStrategy.RandomMap),
             new(InvasionMonsters.GoldenTantallos, 10, [InvasionMaps.Tarkan], SpawnMapStrategy.RandomMap),
-            new(InvasionMonsters.GoldenDragon, 10, [InvasionMaps.Lorencia, InvasionMaps.Noria, InvasionMaps.Devias, InvasionMaps.Atlans, InvasionMaps.Tarkan], SpawnMapStrategy.RandomMap),
+            new(InvasionMonsters.GoldenDragon, 10, [InvasionMaps.Lorencia, InvasionMaps.Noria, InvasionMaps.Devias], SpawnMapStrategy.RandomMap),
         ],
     };
 
@@ -48,6 +48,25 @@ internal static class InvasionConfigurationDefaults
         Mobs =
         [
             new(InvasionMonsters.RedDragon, 5, [InvasionMaps.Lorencia, InvasionMaps.Noria, InvasionMaps.Devias], SpawnMapStrategy.RandomMap),
+        ],
+    };
+
+    /// <summary>
+    /// Gets the default configuration for the White Wizard Invasion event.
+    /// </summary>
+    public static PeriodicInvasionConfiguration WhiteWizard => new()
+    {
+        TaskDuration = TimeSpan.FromMinutes(30),
+        PreStartMessageDelay = TimeSpan.FromSeconds(3),
+        StartMessage = "[{mapName}] White Wizard corps invasion!",
+        EndMessage = "[{mapName}] White Wizard corps invasion has ended.",
+        ForceSingleMap = true,
+        Timetable = PeriodicTaskConfiguration.GenerateTimeSequence(TimeSpan.FromHours(2), new TimeOnly(12, 0), new TimeOnly(23, 0)).ToList(),
+        Mobs =
+        [
+            new(InvasionMonsters.WhiteWizard, 1, [InvasionMaps.Lorencia, InvasionMaps.Noria, InvasionMaps.Devias], SpawnMapStrategy.RandomMap, announceDeath: true),
+            new(InvasionMonsters.DestructiveOgreSoldier, 15, [], SpawnMapStrategy.RandomMap),
+            new(InvasionMonsters.DestructiveOgreArcher, 10, [], SpawnMapStrategy.RandomMap),
         ],
     };
 }

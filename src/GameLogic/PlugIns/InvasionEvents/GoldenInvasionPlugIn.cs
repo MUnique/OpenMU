@@ -15,18 +15,20 @@ using MUnique.OpenMU.PlugIns;
 [Guid("06D18A9E-2919-4C17-9DBC-6E4F7756495C")]
 public sealed class GoldenInvasionPlugIn : SimpleInvasionPlugIn
 {
-    private static readonly IReadOnlyList<ushort> DisplayMaps =
-    [
-        InvasionMaps.Lorencia,
-        InvasionMaps.Noria,
-        InvasionMaps.Devias,
-    ];
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GoldenInvasionPlugIn"/> class.
     /// </summary>
     public GoldenInvasionPlugIn()
-        : base(MapEventType.GoldenDragonInvasion, DisplayMaps, () => InvasionConfigurationDefaults.Golden)
+        : base(() => InvasionConfigurationDefaults.Golden)
     {
     }
+
+    /// <inheritdoc />
+    protected override MapEventType? EventType => MapEventType.GoldenDragonInvasion;
+
+    /// <inheritdoc />
+    protected override ushort? AnnouncedMonsterId => InvasionMonsters.GoldenDragon;
+
+    /// <inheritdoc />
+    protected override IReadOnlyList<ushort>? EventDisplayMapIds => [InvasionMaps.Lorencia, InvasionMaps.Noria, InvasionMaps.Devias];
 }

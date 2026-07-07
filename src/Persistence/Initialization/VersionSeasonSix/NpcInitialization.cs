@@ -941,6 +941,7 @@ internal partial class NpcInitialization : Version095d.NpcInitialization
             def.Designation = "Christine the General Goods Merchant";
             def.NpcWindow = NpcWindow.Merchant;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
+            def.MerchantStore = this.CreatePotionGirlItemStorage(def.Number);
             def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
         }

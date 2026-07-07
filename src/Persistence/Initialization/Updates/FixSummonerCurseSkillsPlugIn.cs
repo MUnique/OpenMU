@@ -57,10 +57,10 @@ public class FixSummonerCurseSkillsPlugIn : UpdatePlugInBase
         var bleedingDamageMultiplier = Stats.BleedingDamageMultiplier.GetPersistent(gameConfiguration);
         this.AddStatIfNotExists(context, gameConfiguration, Stats.IsBleeding);
         var isBleeding = Stats.IsBleeding.GetPersistent(gameConfiguration);
-        this.AddStatIfNotExists(context, gameConfiguration, Stats.StunChance);
-        var stunChance = Stats.StunChance.GetPersistent(gameConfiguration);
-        this.AddStatIfNotExists(context, gameConfiguration, Stats.PollutionMoveTargetChance);
-        var pollutionMoveTargetChance = Stats.PollutionMoveTargetChance.GetPersistent(gameConfiguration);
+        this.AddStatIfNotExists(context, gameConfiguration, Stats.MasteryStunChance);
+        var stunChance = Stats.MasteryStunChance.GetPersistent(gameConfiguration);
+        this.AddStatIfNotExists(context, gameConfiguration, Stats.MasteryMoveTargetChance);
+        var masteryMoveTargetChance = Stats.MasteryMoveTargetChance.GetPersistent(gameConfiguration);
 
         // Add new base attribute to summoner classes
         var summonerClassNumbers = new[] { (int)CharacterClassNumber.Summoner, (int)CharacterClassNumber.BloodySummoner, (int)CharacterClassNumber.DimensionMaster };
@@ -122,7 +122,7 @@ public class FixSummonerCurseSkillsPlugIn : UpdatePlugInBase
 
         if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.LightningTomeMastery)?.MasterDefinition is { } lightningTomeMastery)
         {
-            lightningTomeMastery.TargetAttribute = pollutionMoveTargetChance;
+            lightningTomeMastery.TargetAttribute = masteryMoveTargetChance;
             lightningTomeMastery.Aggregation = AggregateType.AddRaw;
             lightningTomeMastery.ValueFormula = $"{lightningTomeMastery.ValueFormula} / 100";
         }

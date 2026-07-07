@@ -8,7 +8,6 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.MuHelper;
 using MUnique.OpenMU.GameLogic.PlayerActions.Items;
-using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Handles item and zen pickup for the offline player.
@@ -16,9 +15,22 @@ using MUnique.OpenMU.Interfaces;
 public sealed class ItemPickupHandler
 {
     private const byte MinPickupRange = 1;
-    private const byte JewelItemGroup = 14;
 
     private static readonly PickupItemAction PickupAction = new();
+
+    private static readonly HashSet<ItemIdentifier> Jewels =
+    [
+        ItemConstants.JewelOfChaos,
+        ItemConstants.JewelOfBless,
+        ItemConstants.JewelOfSoul,
+        ItemConstants.JewelOfLife,
+        ItemConstants.JewelOfCreation,
+        ItemConstants.JewelOfGuardian,
+        ItemConstants.Gemstone,
+        ItemConstants.JewelOfHarmony,
+        ItemConstants.LowerRefineStone,
+        ItemConstants.HigherRefineStone,
+    ];
 
     private readonly OfflinePlayer _player;
     private readonly IMuHelperSettings? _config;
@@ -35,7 +47,7 @@ public sealed class ItemPickupHandler
     }
 
     /// <summary>
-    /// Scans for and picks up items within configurable range.
+    /// Scans for and picks up items within a configurable range.
     /// </summary>
     public async ValueTask PickupItemsAsync()
     {
@@ -59,6 +71,16 @@ public sealed class ItemPickupHandler
                 await PickupAction.PickupItemAsync(this._player, drop.Id).ConfigureAwait(false);
             }
         }
+    }
+
+    private static bool IsJewel(Item item)
+    {
+        if (item.Definition is not { } definition)
+        {
+            return false;
+        }
+
+        return Jewels.Contains(new(definition.Number, definition.Group));
     }
 
     private bool ShouldPickUpDrop(IIdentifiable drop)
@@ -93,7 +115,7 @@ public sealed class ItemPickupHandler
             return false;
         }
 
-        if (this._config.PickJewel && item.Definition?.Group == JewelItemGroup)
+        if (this._config.PickJewel && IsJewel(item))
         {
             return true;
         }

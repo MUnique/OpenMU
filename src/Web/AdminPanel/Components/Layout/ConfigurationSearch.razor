@@ -2,11 +2,9 @@
 
 <div class="configuration-search">
     <div class="input-group configuration-search-container">
-        <div class="input-group-prepend">
-            <span class="input-group-text">
-                <span class="oi oi-magnifying-glass" aria-hidden="true"></span>
-            </span>
-        </div>
+        <span class="input-group-text">
+            <span class="oi oi-magnifying-glass" aria-hidden="true"></span>
+        </span>
         <input type="search"
                class="form-control configuration-search__input"
                placeholder="@($"{Resources.Search}...")"
@@ -20,11 +18,9 @@
                autocomplete="off" />
         @if (this._isLoading)
         {
-            <div class="input-group-append">
-                <span class="input-group-text">
-                    <div class="spinner-border spinner-border-sm text-muted" role="status"></div>
-                </span>
-            </div>
+            <span class="input-group-text">
+                <div class="spinner-border spinner-border-sm text-muted" role="status"></div>
+            </span>
         }
     </div>
     @if (this._searchResults.Count > 0 && !string.IsNullOrWhiteSpace(this._searchText))
