@@ -39,7 +39,7 @@ internal sealed class ZenConsumptionHandler
         // players (IsBot == false) keep paying as before.
         if (this._player.Account?.IsBot == true)
         {
-            return;
+            return true;
         }
 
         if (DateTime.UtcNow - this._lastPayTimestamp < this._configuration.PayInterval)

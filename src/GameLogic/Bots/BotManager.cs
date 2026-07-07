@@ -73,7 +73,7 @@ public sealed class BotManager
             // Provide AI settings so the bot actually hunts (a missing config means a single-tile range).
             bot.MuHelperSettings = new BotMuHelperSettings();
 
-            if (!await bot.InitializeAsync(account, character).ConfigureAwait(false))
+            if (!await bot.InitializeAsync(loginName, character.Name).ConfigureAwait(false))
             {
                 await this.RemoveAndDisposeAsync(key, bot).ConfigureAwait(false);
                 return false;
