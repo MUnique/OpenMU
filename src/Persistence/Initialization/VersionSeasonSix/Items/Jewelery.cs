@@ -175,6 +175,7 @@ internal class Jewelery : Version095d.Items.Jewelery
         var ring = this.CreateJewelery(20, 10, false, "Wizard's Ring", 0, 250, null, null, null);
         ring.MaximumItemLevel = 2;
         ring.IsBoundToCharacter = true;
+        ring.StorageLimitPerCharacter = 1;
         ring.Durability = 30;
 
         ring.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.MinimumPhysBaseDmg, 1.1f, AggregateType.Multiplicate));

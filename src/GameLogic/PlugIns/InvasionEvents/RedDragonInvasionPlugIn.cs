@@ -15,18 +15,20 @@ using MUnique.OpenMU.PlugIns;
 [Guid("548A76CC-242C-441C-BC9D-6C22745A2D72")]
 public sealed class RedDragonInvasionPlugIn : SimpleInvasionPlugIn
 {
-    private static readonly IReadOnlyList<ushort> DisplayMaps =
-    [
-        InvasionMaps.Lorencia,
-        InvasionMaps.Noria,
-        InvasionMaps.Devias,
-    ];
-
     /// <summary>
     /// Initializes a new instance of the <see cref="RedDragonInvasionPlugIn"/> class.
     /// </summary>
     public RedDragonInvasionPlugIn()
-        : base(MapEventType.RedDragonInvasion, DisplayMaps, () => InvasionConfigurationDefaults.RedDragon, InvasionMonsters.RedDragon)
+        : base(() => InvasionConfigurationDefaults.RedDragon)
     {
     }
+
+    /// <inheritdoc />
+    protected override MapEventType? EventType => MapEventType.RedDragonInvasion;
+
+    /// <inheritdoc />
+    protected override ushort? AnnouncedMonsterId => InvasionMonsters.RedDragon;
+
+    /// <inheritdoc />
+    protected override IReadOnlyList<ushort>? EventDisplayMapIds => [InvasionMaps.Lorencia, InvasionMaps.Noria, InvasionMaps.Devias];
 }

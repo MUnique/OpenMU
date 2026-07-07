@@ -261,6 +261,18 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
             }
         }
         
+        public static string AnnounceDeath {
+            get {
+                return ResourceManager.GetString("AnnounceDeath", resourceCulture);
+            }
+        }
+        
+        public static string AnnounceDeathTooltip {
+            get {
+                return ResourceManager.GetString("AnnounceDeathTooltip", resourceCulture);
+            }
+        }
+        
         public static string AddValue {
             get {
                 return ResourceManager.GetString("AddValue", resourceCulture);
