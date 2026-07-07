@@ -292,10 +292,12 @@ public sealed class CombatHandler
             return null;
         }
 
-        // If no skills are configured at all, don't attack.
+        // If no skills are configured at all, don't attack - unless the AI is allowed to pick a skill
+        // on its own (bots), in which case we fall through to the automatic selection below.
         if (this._config.BasicSkillId == 0
             && this._config.ActivationSkill1Id == 0
-            && this._config.ActivationSkill2Id == 0)
+            && this._config.ActivationSkill2Id == 0
+            && !this._config.AutoSelectBestSkill)
         {
             return null;
         }
@@ -318,7 +320,54 @@ public sealed class CombatHandler
             }
         }
 
+        // No explicitly configured skill fired: let the AI pick the strongest affordable learned attack
+        // skill. This scales with the character's level and mana pool, so higher-level bots naturally cast
+        // stronger spells, and drop back to a basic attack (via FallbackBasicAttack) only when out of mana.
+        if (this._config.AutoSelectBestSkill)
+        {
+            return this.SelectBestAffordableSkill();
+        }
+
         return null;
+    }
+
+    /// <summary>
+    /// Picks the strongest attack skill the character has learned and can currently afford (enough mana
+    /// and ability). Only attack skills (direct hit or area damage) are considered; learned skills are
+    /// always class-qualified, so this can never cast a skill the class is not entitled to.
+    /// </summary>
+    private SkillEntry? SelectBestAffordableSkill()
+    {
+        if (this._player.SkillList is not { } skillList)
+        {
+            return null;
+        }
+
+        SkillEntry? best = null;
+        var bestDamage = 0;
+        foreach (var entry in skillList.Skills)
+        {
+            if (entry.Skill is not { } skill || skill.AttackDamage <= 0)
+            {
+                continue;
+            }
+
+            if (skill.SkillType is not (SkillType.DirectHit
+                or SkillType.AreaSkillAutomaticHits
+                or SkillType.AreaSkillExplicitHits
+                or SkillType.AreaSkillExplicitTarget))
+            {
+                continue;
+            }
+
+            if (skill.AttackDamage > bestDamage && this.HasEnoughResources(entry))
+            {
+                best = entry;
+                bestDamage = skill.AttackDamage;
+            }
+        }
+
+        return best;
     }
 
     /// <summary>
@@ -514,6 +563,15 @@ public sealed class CombatHandler
             {
                 return (byte)ranges.Min();
             }
+        }
+
+        // Bots have no configured skill IDs but auto-select their attack skill; use the range of the skill
+        // they would actually cast now, so ranged casters attack from a distance instead of closing to melee.
+        if (this._config.AutoSelectBestSkill
+            && this.SelectBestAffordableSkill()?.Skill?.Range is { } autoRange
+            && autoRange > 0)
+        {
+            return (byte)autoRange;
         }
 
         if (this._player.Attributes is { } attributes

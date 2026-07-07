@@ -152,4 +152,12 @@ public interface IMuHelperSettings
 
     /// <summary>Gets a value indicating whether to use basic attack as fallback when the configured skill cannot be used.</summary>
     bool FallbackBasicAttack { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether the combat AI should automatically cast the strongest learned
+    /// attack skill the character can currently afford, instead of relying on the explicitly configured
+    /// skill IDs. Used by server-side bots (which have no client-side MU Helper config) so they fight
+    /// with class- and level-appropriate skills; human offline sessions keep their explicit configuration.
+    /// </summary>
+    bool AutoSelectBestSkill { get; }
 }

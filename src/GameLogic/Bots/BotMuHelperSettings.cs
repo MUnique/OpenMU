@@ -128,7 +128,9 @@ internal sealed class BotMuHelperSettings : IMuHelperSettings
     public bool PickAllItems => false;
 
     /// <inheritdoc />
-    public bool PickSelectItems => false;
+    // Must be true: the pickup handler bails out early unless PickAllItems or PickSelectItems is set,
+    // so with this off the selective PickZen/PickJewel/PickAncient flags below never take effect.
+    public bool PickSelectItems => true;
 
     /// <inheritdoc />
     public bool PickJewel => true;
@@ -166,4 +168,13 @@ internal sealed class BotMuHelperSettings : IMuHelperSettings
 
     /// <inheritdoc />
     public bool FallbackBasicAttack => true;
+
+    /// <inheritdoc />
+    /// <remarks>
+    /// Enabled for bots: they have no client-side skill configuration, so the combat AI auto-selects the
+    /// strongest learned attack skill the character can currently afford. Combined with the level-gated
+    /// skills granted at generation (see <see cref="BotGenerator"/>), this makes bots cast class- and
+    /// level-appropriate magic/skills instead of only swinging their weapon.
+    /// </remarks>
+    public bool AutoSelectBestSkill => true;
 }

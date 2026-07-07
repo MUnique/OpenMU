@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.Bots;
 
+using System.Collections.Concurrent;
 using System.Threading;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.Attributes;
@@ -92,14 +93,18 @@ internal sealed class BotNavigator : AsyncDisposable
     private static readonly TimeSpan StuckTimeout = TimeSpan.FromSeconds(8);
 
     /// <summary>
-    /// A shared full-map path finder for long-distance travel. The pooled path finder uses a small scoped
-    /// grid (it rejects start/end further apart than ~16 tiles), so it can only do local movement; this one
-    /// uses a <see cref="FullGridNetwork"/> which resolves routes across the whole map. A single instance is
-    /// reused under <see cref="TravelPathFinderLock"/> because a path finder is not safe for concurrent use.
+    /// A pool of full-map path finders for long-distance travel. The pooled (scoped) path finder rejects
+    /// start/end further apart than ~16 tiles, so travel uses a <see cref="FullGridNetwork"/> which resolves
+    /// routes across the whole map. A path finder is not safe for concurrent use, so we keep a small pool and
+    /// hand one out per call: several bots can plan routes in parallel (a single shared instance serialized
+    /// every bot and starved navigation once the population reached the hundreds), while the pool size caps
+    /// how many CPU cores whole-map searches may occupy at once.
     /// </summary>
-    private static readonly PathFinder TravelPathFinder = CreateTravelPathFinder();
+    private static readonly int TravelPathFinderPoolSize = Math.Clamp(Environment.ProcessorCount / 3, 2, 6);
 
-    private static readonly SemaphoreSlim TravelPathFinderLock = new(1, 1);
+    private static readonly SemaphoreSlim TravelPathFinderPool = new(TravelPathFinderPoolSize, TravelPathFinderPoolSize);
+
+    private static readonly ConcurrentBag<PathFinder> TravelPathFinders = CreateTravelPathFinderPool();
 
     private readonly OfflinePlayer _player;
     private readonly CancellationTokenSource _cts = new();
@@ -310,15 +315,26 @@ internal sealed class BotNavigator : AsyncDisposable
         var position = this._player.Position;
 
         IList<PathResultNode>? path;
-        await TravelPathFinderLock.WaitAsync().ConfigureAwait(false);
+        await TravelPathFinderPool.WaitAsync().ConfigureAwait(false);
+        PathFinder? finder = null;
         try
         {
-            TravelPathFinder.ResetPathFinder();
-            path = TravelPathFinder.FindPath(position, destination, map.Terrain.AIgrid, true);
+            if (!TravelPathFinders.TryTake(out finder))
+            {
+                finder = CreateTravelPathFinder();
+            }
+
+            finder.ResetPathFinder();
+            path = finder.FindPath(position, destination, map.Terrain.AIgrid, true);
         }
         finally
         {
-            TravelPathFinderLock.Release();
+            if (finder is not null)
+            {
+                TravelPathFinders.Add(finder);
+            }
+
+            TravelPathFinderPool.Release();
         }
 
         if (path is null || path.Count == 0)
@@ -418,6 +434,17 @@ internal sealed class BotNavigator : AsyncDisposable
             HeuristicEstimate = TravelHeuristicWeight,
             SearchLimit = TravelSearchLimit,
         };
+    }
+
+    private static ConcurrentBag<PathFinder> CreateTravelPathFinderPool()
+    {
+        var pool = new ConcurrentBag<PathFinder>();
+        for (var i = 0; i < TravelPathFinderPoolSize; i++)
+        {
+            pool.Add(CreateTravelPathFinder());
+        }
+
+        return pool;
     }
 
     private int GetBotLevel() => (int)(this._player.Attributes?[Stats.Level] ?? 1);

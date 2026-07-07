@@ -34,6 +34,14 @@ internal sealed class BotGenerator
     /// <summary>Upgrade level (+6) of the starter gear, giving fresh bots a survival buffer until they can warp.</summary>
     private const byte StarterItemLevel = 6;
 
+    /// <summary>
+    /// Skill-tier scaling: a class attack skill becomes learnable once the character level reaches roughly
+    /// its attack-damage rating times this factor. Attack damage is a monotonic proxy for the skill tier
+    /// within a class (e.g. Dark Wizard: Energy Ball 3 → Hellfire 120), so higher-level bots progressively
+    /// unlock stronger spells while low-level ones only get the basics - always only for their own class.
+    /// </summary>
+    private const double SkillLearnDamageFactor = 0.9;
+
     /// <summary>Highest item group that is a melee weapon (0 sword, 1 axe, 2 mace, 3 spear).</summary>
     private const byte MaxMeleeGroup = 3;
 
@@ -106,6 +114,11 @@ internal sealed class BotGenerator
         var reservedNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var created = 0;
 
+        // Build a balanced, shuffled queue of classes so the whole population is evenly split across
+        // all creatable classes. Independent random draws leave visible skew at this scale (e.g. 11
+        // Summoners vs 4 Elves for 50 bots); the quota queue guarantees ~even counts, drawn per character.
+        var classQueue = BuildBalancedClassQueue(creatableClasses, numberOfAccounts * perAccount);
+
         for (var i = 1; i <= numberOfAccounts; i++)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -124,7 +137,7 @@ internal sealed class BotGenerator
 
             for (byte slot = 0; slot < perAccount; slot++)
             {
-                var characterClass = creatableClasses.SelectRandom()!;
+                var characterClass = classQueue.Count > 0 ? classQueue.Dequeue() : creatableClasses.SelectRandom()!;
                 var level = Rand.NextInt(minLevel, maxLevel + 1);
                 var name = await this._nameGenerator.GenerateUniqueAsync(context, reservedNames, cancellationToken).ConfigureAwait(false);
                 this.CreateCharacter(context, account, name, characterClass, level, slot, experienceTable);
@@ -140,6 +153,30 @@ internal sealed class BotGenerator
         }
 
         return created;
+    }
+
+    /// <summary>
+    /// Builds a shuffled queue of character classes with even quotas across <paramref name="classes"/>,
+    /// so the generated population is balanced instead of relying on the variance of independent random
+    /// draws. The order is randomized so accounts do not get a predictable class pattern.
+    /// </summary>
+    private static Queue<CharacterClass> BuildBalancedClassQueue(IList<CharacterClass> classes, int total)
+    {
+        var pool = new List<CharacterClass>(total);
+        for (var n = 0; n < total; n++)
+        {
+            // Even quotas: class index cycles, so each class appears total/count times (+1 for the first remainder classes).
+            pool.Add(classes[n % classes.Count]);
+        }
+
+        // Fisher-Yates shuffle so the balanced pool is handed out in random order.
+        for (var n = pool.Count - 1; n > 0; n--)
+        {
+            var j = Rand.NextInt(0, n + 1);
+            (pool[n], pool[j]) = (pool[j], pool[n]);
+        }
+
+        return new Queue<CharacterClass>(pool);
     }
 
     /// <summary>
@@ -229,6 +266,8 @@ internal sealed class BotGenerator
             * characterClass.StatAttributes.First(a => a.Attribute == Stats.PointsPerLevelUp).BaseValue);
         DistributeStatPoints(character);
 
+        this.LearnClassSkills(context, character, characterClass, level);
+
         character.Inventory = context.CreateNew<ItemStorage>();
         character.Inventory.Money = StartMoney;
         this.EquipStarterGear(context, character);
@@ -261,6 +300,46 @@ internal sealed class BotGenerator
         vitality.Value += toVitality;
         mainStat.Value += points - toVitality;
         character.LevelUpPoints = 0;
+    }
+
+    /// <summary>
+    /// Teaches the character the class attack skills appropriate to its level, so bots fight with spells and
+    /// skills instead of only their weapon. Only skills the class is qualified for are ever learned (so a bot
+    /// can never end up with another class's magic), gated by a per-skill learn level derived from the skill's
+    /// attack damage (its tier). Combined with the runtime auto-selection in <see cref="Offline.CombatHandler"/>,
+    /// the character casts the strongest of these it can currently afford.
+    /// </summary>
+    private void LearnClassSkills(IPlayerContext context, Character character, CharacterClass characterClass, int level)
+    {
+        var learnedNumbers = new HashSet<short>(character.LearnedSkills.Select(s => s.Skill!.Number));
+        foreach (var skill in this._gameContext.Configuration.Skills)
+        {
+            if (skill.AttackDamage <= 0
+                || skill.SkillType is not (SkillType.DirectHit
+                    or SkillType.AreaSkillAutomaticHits
+                    or SkillType.AreaSkillExplicitHits
+                    or SkillType.AreaSkillExplicitTarget))
+            {
+                continue;
+            }
+
+            if (!skill.QualifiedCharacters.Contains(characterClass) || !learnedNumbers.Add(skill.Number))
+            {
+                continue;
+            }
+
+            var learnLevel = Math.Max(1, (int)Math.Ceiling(skill.AttackDamage * SkillLearnDamageFactor));
+            if (level < learnLevel)
+            {
+                learnedNumbers.Remove(skill.Number);
+                continue;
+            }
+
+            var entry = context.CreateNew<SkillEntry>();
+            entry.Skill = skill;
+            entry.Level = 0;
+            character.LearnedSkills.Add(entry);
+        }
     }
 
     private static StatAttribute? GetMainDamageStat(Character character)

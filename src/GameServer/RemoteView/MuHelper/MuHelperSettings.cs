@@ -156,6 +156,10 @@ public sealed class MuHelperSettings : IMuHelperSettings
     public bool FallbackBasicAttack { get; init; }
 
     /// <inheritdoc />
+    /// <remarks>Human MU Helper sessions drive their skills through the explicit client configuration, so this is always <c>false</c>.</remarks>
+    public bool AutoSelectBestSkill => false;
+
+    /// <inheritdoc />
     public override string ToString()
     {
         return $"[MuHelperSettings: BasicSkill={this.BasicSkillId}, Act1={this.ActivationSkill1Id}, Act2={this.ActivationSkill2Id}, Buffs={this.BuffSkill0Id}/{this.BuffSkill1Id}/{this.BuffSkill2Id}, HP={this.PotionThresholdPercent}%, Party={this.SupportParty}, PickAll={this.PickAllItems}, PickZen={this.PickZen}]";
