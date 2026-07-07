@@ -25,15 +25,6 @@ internal class MagicEffectCancelHandlerPlugIn : IPacketHandlerPlugIn
     private const int ExpansionOfWizardryMastery = 383;
     private const int InfinityArrowStrengSkillId = 441;
 
-    private static readonly int[] CancellableSkills =
-    [
-        InfinityArrowSkillId,
-        ExpansionOfWizardrySkillId,
-        ExpansionOfWizardryStrengSkillId,
-        ExpansionOfWizardryMastery,
-        InfinityArrowStrengSkillId,
-    ];
-
     /// <inheritdoc/>
     public bool IsEncryptionExpected => true;
 
@@ -44,7 +35,7 @@ internal class MagicEffectCancelHandlerPlugIn : IPacketHandlerPlugIn
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         MagicEffectCancelRequest message = packet;
-        if (!CancellableSkills.Contains(message.SkillId) || player.SkillList is null || !player.SkillList.ContainsSkill(message.SkillId))
+        if (!IsCancellableSkill(message.SkillId) || player.SkillList is null || !player.SkillList.ContainsSkill(message.SkillId))
         {
             return;
         }
@@ -57,4 +48,14 @@ internal class MagicEffectCancelHandlerPlugIn : IPacketHandlerPlugIn
 
         await effect.DisposeAsync().ConfigureAwait(false);
     }
+
+    private static bool IsCancellableSkill(ushort skillId) => skillId switch
+    {
+        ExpansionOfWizardrySkillId => true,
+        ExpansionOfWizardryStrengSkillId => true,
+        ExpansionOfWizardryMastery => true,
+        InfinityArrowSkillId => true,
+        InfinityArrowStrengSkillId => true,
+        _ => false,
+    };
 }
