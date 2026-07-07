@@ -469,4 +469,9 @@ public enum UpdateVersion
     /// The version of the <see cref="LimitWhiteWizardDropsUpdatePlugIn"/>.
     /// </summary>
     LimitWhiteWizardDrops = 92,
+
+    /// <summary>
+    /// The version of the <see cref="AddLorenMarketJuliaWarpPlugIn"/>.
+    /// </summary>
+    AddLorenMarketJuliaWarp = 93,
 }
