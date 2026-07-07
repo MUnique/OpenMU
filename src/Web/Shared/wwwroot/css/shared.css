@@ -12842,34 +12842,60 @@ mark, .mark {
   width: 100%;
 }
 
-.map-object, .spawn, .spawn-single, .spawn-area, .gate-exit, .gate-enter {
+.map-object, .spawn-other-single, .spawn-other-area, .spawn-npc-single, .spawn-npc-area, .spawn-monster-single, .spawn-monster-area, .gate-exit, .gate-enter {
   position: absolute;
   box-sizing: border-box;
 }
 
 .gate-enter {
-  background: rgba(64, 224, 208, 0.6);
-  border: 2px solid turquoise;
+  --obj-color: rgb(200, 160, 240);
+  background: rgba(200, 160, 240, 0.7);
+  border: 2px solid rgb(230, 190, 255);
 }
 
 .gate-exit {
-  background: rgba(65, 105, 225, 0.6);
-  border: 2px solid royalblue;
+  --obj-color: rgb(140, 80, 200);
+  background: rgba(140, 80, 200, 0.7);
+  border: 2px solid rgb(170, 110, 230);
 }
 
-.spawn, .spawn-single, .spawn-area {
-  background: rgba(138, 43, 226, 0.6);
+.spawn-monster-area {
+  --obj-color: rgb(200, 80, 80);
+  background: rgba(200, 80, 80, 0.7);
+  border: 2px dashed rgb(230, 110, 110);
 }
 
-.spawn-area {
-  opacity: 0.5;
-  border: 2px dashed rgba(255, 255, 255, 0.6);
-}
-
-.spawn-single {
-  opacity: 0.8;
+.spawn-monster-single {
+  --obj-color: rgb(200, 80, 80);
+  background: rgba(200, 80, 80, 0.7);
   border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.6);
+  border: 2px solid rgb(230, 110, 110);
+}
+
+.spawn-npc-area {
+  --obj-color: rgb(80, 80, 200);
+  background: rgba(80, 80, 200, 0.7);
+  border: 2px dashed rgb(110, 110, 230);
+}
+
+.spawn-npc-single {
+  --obj-color: rgb(80, 80, 200);
+  background: rgba(80, 80, 200, 0.7);
+  border-radius: 50%;
+  border: 2px solid rgb(110, 110, 230);
+}
+
+.spawn-other-area {
+  --obj-color: rgb(200, 200, 80);
+  background: rgba(200, 200, 80, 0.7);
+  border: 2px dashed rgb(230, 230, 110);
+}
+
+.spawn-other-single {
+  --obj-color: rgb(200, 200, 80);
+  background: rgba(200, 200, 80, 0.7);
+  border-radius: 50%;
+  border: 2px solid rgb(230, 230, 110);
 }
 
 .focused-object {
@@ -12885,8 +12911,8 @@ mark, .mark {
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: #6a0dad;
-  border: 3px solid white;
+  background: var(--obj-color);
+  border: 2px solid rgba(255, 255, 255, 0.85);
   position: absolute;
   z-index: 30;
 }
@@ -12953,11 +12979,6 @@ mark, .mark {
 .map-zoom-toolbar .zoom-display {
   min-width: 70px;
   font-family: monospace;
-}
-
-.map-object-form {
-  max-height: 768px;
-  overflow-y: auto;
 }
 
 .object-size-label {

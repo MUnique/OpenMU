@@ -11,7 +11,9 @@
     @if (this._controller is { })
     {
         <div class="livemap-players">
-            <div><MapPlayerList MapController="@this._controller"/></div>
+            <div>
+                <MapPlayerList MapController="@this._controller" FollowedPlayerName="@FollowedPlayerName" OnFollowPlayer="@OnFollowPlayer"/>
+            </div>
             <div id="selected_info" style="display: none;" class="card mt-2 shadow-sm">
                 <div class="card-body py-2 px-3">
                     <h6 class="card-title mb-1 text-truncate" id="objectData_name"></h6>
@@ -44,6 +46,18 @@
     /// </summary>
     [Parameter]
     public Guid MapId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the followed player name.
+    /// </summary>
+    [Parameter]
+    public string? FollowedPlayerName { get; set; }
+
+    /// <summary>
+    /// Gets or sets the callback invoked when the follow button is clicked.
+    /// </summary>
+    [Parameter]
+    public EventCallback<string?> OnFollowPlayer { get; set; }
 
     private IMapController? _controller;
 

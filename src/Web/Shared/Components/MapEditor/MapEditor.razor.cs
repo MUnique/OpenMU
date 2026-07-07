@@ -23,7 +23,7 @@ using SixLabors.ImageSharp.PixelFormats;
 /// </summary>
 public partial class MapEditor : IAsyncDisposable
 {
-    private const int MaxObjectSelectSize = 30;
+    private const int MaxObjectSelectSize = 20;
 
     private static readonly string JsModulePath =
         $"./_content/{typeof(MapEditor).Assembly.GetName().Name}/Components/MapEditor/{nameof(MapEditor)}.razor.js";
@@ -57,7 +57,7 @@ public partial class MapEditor : IAsyncDisposable
     private bool _showGrid;
 
     private string _searchFilter = string.Empty;
-    private ObjectTypeFilter _activeFilter = ObjectTypeFilter.All;
+    private ObjectTypeFilter _activeFilter = ObjectTypeFilter.None;
 
     private int _mouseMapX;
     private int _mouseMapY;
@@ -118,7 +118,7 @@ public partial class MapEditor : IAsyncDisposable
     /// <summary>
     /// Gets the effective pixel scale for the current zoom level.
     /// </summary>
-    private float EffectiveScale => this._coordinateService.GetEffectiveScale(this._zoomManager?.ZoomLevel ?? 1.0f);
+    private float EffectiveScale => this._coordinateService.GetEffectiveScale(this._zoomManager?.ZoomLevel ?? MapZoomManager.DefaultZoom);
 
     /// <summary>
     /// Gets or sets the currently selected map, rebuilding the terrain image when changed.
@@ -161,43 +161,42 @@ public partial class MapEditor : IAsyncDisposable
     /// </summary>
     /// <param name="x">Map X coordinate.</param>
     /// <param name="y">Map Y coordinate.</param>
+    /// <param name="shiftKey">Whether the shift key was held during the click.</param>
     [JSInvokable]
-    public void OnPointerDown(byte x, byte y)
+    public void OnPointerDown(byte x, byte y, bool shiftKey = false)
     {
         if (this._resizerPosition is not null)
         {
             return;
         }
 
+        if (shiftKey)
+        {
+            this.HandleShiftClick(x, y);
+            return;
+        }
+
         var objectAtPosition = this._objectSelector.GetObjectAtPosition(
             this.SelectedMap, x, y, this._activeFilter, this._searchFilter);
 
-        if (objectAtPosition is MonsterSpawnArea spawn)
+        if (objectAtPosition is IMapArea mapArea)
         {
-            this._focusedObject = spawn;
+            this._focusedObject = objectAtPosition;
             this._dragState.StartX = x;
             this._dragState.StartY = y;
-            this._dragState.Capture(spawn);
-        }
-        else if (objectAtPosition is Gate gate)
-        {
-            this._focusedObject = gate;
-            this._dragState.StartX = x;
-            this._dragState.StartY = y;
-            this._dragState.Capture(gate);
+            this._dragState.Capture(mapArea);
         }
         else if (objectAtPosition is not null)
         {
             this._focusedObject = objectAtPosition;
-            _ = this._jsModule?.InvokeVoidAsync("setDragging", false);
         }
         else
         {
             this._focusedObject = null;
-            _ = this._jsModule?.InvokeVoidAsync("setDragging", false);
             _ = this._jsModule?.InvokeVoidAsync("setPanning", true);
         }
 
+        _ = this.UpdateSelectValueAsync();
         this.StateHasChanged();
     }
 
@@ -212,26 +211,14 @@ public partial class MapEditor : IAsyncDisposable
         this._mouseMapX = x;
         this._mouseMapY = y;
 
-        if (this._resizerPosition is { } pos && this._focusedObject is not null)
+        if (this._resizerPosition is { } pos && this._focusedObject is IMapArea resizeTarget)
         {
-            switch (this._focusedObject)
-            {
-                case MonsterSpawnArea spawn:
-                    MapObjectResizer.Resize(spawn, pos, x, y);
-                    break;
-                case Gate gate:
-                    MapObjectResizer.Resize(gate, pos, x, y);
-                    break;
-                default:
-                    // Not supported.
-                    break;
-            }
-
+            MapObjectResizer.Resize(resizeTarget, pos, x, y);
             this.NotificationService.NotifyChange(this._focusedObject, null);
             return;
         }
 
-        if (this._focusedObject is Gate or MonsterSpawnArea)
+        if (this._focusedObject is IMapArea)
         {
             this.OnObjectDragging(x, y);
             this.NotificationService.NotifyChange(this._focusedObject, null);
@@ -310,7 +297,7 @@ public partial class MapEditor : IAsyncDisposable
 
         if (!this._isInitialized)
         {
-            var zoomLevel = this._zoomManager?.ZoomLevel ?? 1.0f;
+            var zoomLevel = this._zoomManager?.ZoomLevel ?? MapZoomManager.DefaultZoom;
             this._zoomManager = new MapZoomManager(jsModule, this._mapHostRef);
             this._objectFactory = new MapObjectFactory(this.PersistenceContext);
             this._dotNetRef = DotNetObjectReference.Create(this);
@@ -319,7 +306,11 @@ public partial class MapEditor : IAsyncDisposable
                 "initialize",
                 this._mapHostRef,
                 this._dotNetRef,
-                zoomLevel).ConfigureAwait(true);
+                zoomLevel,
+                MapCoordinateService.BaseScale).ConfigureAwait(true);
+
+            await jsModule.InvokeVoidAsync(
+                "setScroll", this._mapHostRef, 0, 0).ConfigureAwait(true);
 
             this._isInitialized = true;
         }
@@ -327,12 +318,13 @@ public partial class MapEditor : IAsyncDisposable
         {
             // Re-register document listeners after each render,
             // keeping them resilient to DOM replacement by Blazor.
-            var zoomLevel = this._zoomManager?.ZoomLevel ?? 1.0f;
+            var zoomLevel = this._zoomManager?.ZoomLevel ?? MapZoomManager.DefaultZoom;
             await jsModule.InvokeVoidAsync(
                 "initialize",
                 this._mapHostRef,
                 this._dotNetRef,
-                zoomLevel).ConfigureAwait(true);
+                zoomLevel,
+                MapCoordinateService.BaseScale).ConfigureAwait(true);
         }
         else
         {
@@ -357,6 +349,19 @@ public partial class MapEditor : IAsyncDisposable
         }
     }
 
+    private static int IndexOf(IReadOnlyList<object> items, object target)
+    {
+        for (int i = 0; i < items.Count; i++)
+        {
+            if (ReferenceEquals(items[i], target))
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
     [SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
     private async void OnPropertyChanged(object? sender, PropertyChangedEventArgs args)
     {
@@ -379,15 +384,24 @@ public partial class MapEditor : IAsyncDisposable
         }
     }
 
-    private void SetActiveFilter(ObjectTypeFilter filter)
+    private void ToggleFilter(ObjectTypeFilter filter)
     {
-        this._activeFilter = filter;
+        this._activeFilter ^= filter;
         if (this._focusedObject is not null &&
             !MapObjectSelector.MatchesFilters(this._focusedObject, this._activeFilter, this._searchFilter))
         {
             this._focusedObject = null;
         }
     }
+
+    private void SetAllFilter()
+    {
+        this._activeFilter = ObjectTypeFilter.None;
+        this._focusedObject = null;
+    }
+
+    private bool IsFilterActive(ObjectTypeFilter filter) =>
+        this._activeFilter.HasFlag(filter);
 
     private int GetObjectListSize()
     {
@@ -404,21 +418,23 @@ public partial class MapEditor : IAsyncDisposable
 
     private IEnumerable<object> GetMapObjects()
     {
-        return this._activeFilter switch
+        var objects = Enumerable.Empty<object>();
+
+        if (this._activeFilter == ObjectTypeFilter.None || this._activeFilter.HasFlag(ObjectTypeFilter.Gates))
         {
-            ObjectTypeFilter.All =>
-                this.SelectedMap.EnterGates.Cast<object>()
-                    .Concat(this.SelectedMap.ExitGates)
-                    .Concat(this.SelectedMap.MonsterSpawns)
-                    .Where(o => MapObjectSelector.MatchesFilters(o, this._activeFilter, this._searchFilter)),
-            ObjectTypeFilter.Gates =>
-                this.SelectedMap.EnterGates.Cast<object>()
-                    .Concat(this.SelectedMap.ExitGates)
-                    .Where(o => MapObjectSelector.MatchesFilters(o, this._activeFilter, this._searchFilter)),
-            _ =>
-                this.SelectedMap.MonsterSpawns
-                    .Where(s => MapObjectSelector.MatchesFilters(s, this._activeFilter, this._searchFilter)),
-        };
+            objects = objects.Concat(this.SelectedMap.EnterGates)
+                            .Concat(this.SelectedMap.ExitGates);
+        }
+
+        if (this._activeFilter == ObjectTypeFilter.None
+            || this._activeFilter.HasFlag(ObjectTypeFilter.Monsters)
+            || this._activeFilter.HasFlag(ObjectTypeFilter.Npcs)
+            || this._activeFilter.HasFlag(ObjectTypeFilter.Others))
+        {
+            objects = objects.Concat(this.SelectedMap.MonsterSpawns);
+        }
+
+        return objects.Where(o => MapObjectSelector.MatchesFilters(o, this._activeFilter, this._searchFilter));
     }
 
     private string? GetObjectSize(object obj) =>
@@ -447,6 +463,22 @@ public partial class MapEditor : IAsyncDisposable
 
     private string GetGridStyle() =>
         this._coordinateService.GetGridStyle(this.EffectiveScale);
+
+    private Dictionary<string, object> GetDataAttributes(object obj)
+    {
+        if (obj is IMapArea area)
+        {
+            return new Dictionary<string, object>
+            {
+                ["data-x1"] = area.X1,
+                ["data-y1"] = area.Y1,
+                ["data-x2"] = area.X2,
+                ["data-y2"] = area.Y2,
+            };
+        }
+
+        return [];
+    }
 
     private string GetSizeAndPositionStyle(object obj) =>
         this._styleService.GetSizeAndPositionStyle(obj, this.EffectiveScale);
@@ -564,6 +596,7 @@ public partial class MapEditor : IAsyncDisposable
 
     private void RecordDragSnapshot()
     {
+        // MonsterSpawnArea snapshot also captures Direction, so the two overloads are intentionally distinct.
         switch (this._focusedObject)
         {
             case MonsterSpawnArea spawn:
@@ -580,24 +613,15 @@ public partial class MapEditor : IAsyncDisposable
 
     private void ApplyNewBounds(byte x1, byte y1, byte x2, byte y2)
     {
-        switch (this._focusedObject)
+        if (this._focusedObject is not IMapArea area)
         {
-            case MonsterSpawnArea spawn:
-                spawn.X1 = x1;
-                spawn.Y1 = y1;
-                spawn.X2 = x2;
-                spawn.Y2 = y2;
-                break;
-            case Gate gate:
-                gate.X1 = x1;
-                gate.Y1 = y1;
-                gate.X2 = x2;
-                gate.Y2 = y2;
-                break;
-            default:
-                // Not supported.
-                break;
+            return;
         }
+
+        area.X1 = x1;
+        area.Y1 = y1;
+        area.X2 = x2;
+        area.Y2 = y2;
     }
 
     private string? GetFocusedRotation()
@@ -783,15 +807,38 @@ public partial class MapEditor : IAsyncDisposable
         this._resizerPosition = position;
     }
 
+    private void HandleShiftClick(byte x, byte y)
+    {
+        if (this.SelectedMap is not { } map)
+        {
+            return;
+        }
+
+        var objects = this._objectSelector.GetAllObjectsAtPosition(
+            map, x, y, this._activeFilter, this._searchFilter);
+
+        if (objects.Count > 0)
+        {
+            var idx = this._focusedObject is not null
+                ? IndexOf(objects, this._focusedObject)
+                : -1;
+
+            this._focusedObject = objects[idx >= 0 ? (idx + 1) % objects.Count : 0];
+        }
+
+        _ = this.UpdateSelectValueAsync();
+        this.StateHasChanged();
+    }
+
     /// <summary>
     /// Represents the bounding client rectangle of an HTML element.
     /// </summary>
     public sealed class BoundingClientRect
     {
-        /// <summary>Gets or sets the left edge position relative to the viewport.</summary>
+        /// <summary>Gets or sets the left-edge position relative to the viewport.</summary>
         public double Left { get; set; }
 
-        /// <summary>Gets or sets the top edge position relative to the viewport.</summary>
+        /// <summary>Gets or sets the top-edge position relative to the viewport.</summary>
         public double Top { get; set; }
     }
 

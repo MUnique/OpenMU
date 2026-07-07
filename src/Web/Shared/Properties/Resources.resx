@@ -288,4 +288,13 @@
   <data name="SwitchToLightMode" xml:space="preserve">
     <value>Switch to light mode</value>
   </data>
+  <data name="MapEditorShortcutPan" xml:space="preserve">
+    <value>Click on empty space and drag to pan the map</value>
+  </data>
+  <data name="MapEditorShortcutDrag" xml:space="preserve">
+    <value>CTRL + Click on object to drag it</value>
+  </data>
+  <data name="MapEditorShortcutCycle" xml:space="preserve">
+    <value>SHIFT + Click to cycle overlapping items</value>
+  </data>
 </root>

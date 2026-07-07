@@ -31,24 +31,14 @@ internal struct MapDragState
 
     private const int MapSize = 256;
 
-    /// <summary>Captures the current bounds of the given spawn area as drag origin.</summary>
-    /// <param name="spawn">The spawn area to capture bounds from.</param>
-    public void Capture(MonsterSpawnArea spawn)
+    /// <summary>Captures the current bounds of the given map area as drag origin.</summary>
+    /// <param name="area">The map area to capture bounds from.</param>
+    public void Capture(IMapArea area)
     {
-        this.OrigX1 = spawn.X1;
-        this.OrigY1 = spawn.Y1;
-        this.OrigX2 = spawn.X2;
-        this.OrigY2 = spawn.Y2;
-    }
-
-    /// <summary>Captures the current bounds of the given gate as drag origin.</summary>
-    /// <param name="gate">The gate to capture bounds from.</param>
-    public void Capture(Gate gate)
-    {
-        this.OrigX1 = gate.X1;
-        this.OrigY1 = gate.Y1;
-        this.OrigX2 = gate.X2;
-        this.OrigY2 = gate.Y2;
+        this.OrigX1 = area.X1;
+        this.OrigY1 = area.Y1;
+        this.OrigX2 = area.X2;
+        this.OrigY2 = area.Y2;
     }
 
     /// <summary>

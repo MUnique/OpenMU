@@ -171,4 +171,10 @@
   <data name="Maps" xml:space="preserve">
     <value>Maps</value>
   </data>
+  <data name="Follow" xml:space="preserve">
+    <value>Follow</value>
+  </data>
+  <data name="Following" xml:space="preserve">
+    <value>Following</value>
+  </data>
 </root>
