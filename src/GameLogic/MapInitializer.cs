@@ -1,4 +1,4 @@
-// <copyright file="MapInitializer.cs" company="MUnique">
+﻿// <copyright file="MapInitializer.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -88,7 +88,7 @@ public class MapInitializer : IMapInitializer
         _ = this.PlugInManager ?? throw new InvalidOperationException("PlugInManager must be set first");
         _ = this.PathFinderPool ?? throw new InvalidOperationException("PathFinderPool must be set first");
 
-        this._logger.LogDebug("Start creating monster instances for map {createdMap}", createdMap);
+        this._logger.LogDebug("Start creating monster instances for map {createdMap}", createdMap.Definition.Name);
         var automaticSpawns = createdMap.Definition.MonsterSpawns
             .Where(m => m.MonsterDefinition is not null)
             .Where(m => m.SpawnTrigger is SpawnTrigger.Automatic);
@@ -117,7 +117,7 @@ public class MapInitializer : IMapInitializer
             this._spawnedMonsters.AddOrUpdate(spawnArea, spawnArea.Quantity, (_, _) => spawnArea.Quantity);
         });
 
-        this._logger.LogDebug("Finished creating monster instances for map {createdMap}", createdMap);
+        this._logger.LogDebug("Finished creating monster instances for map {createdMap}", createdMap.Definition.Name);
     }
 
     /// <summary>
@@ -130,7 +130,7 @@ public class MapInitializer : IMapInitializer
         _ = this.PlugInManager ?? throw new InvalidOperationException("PlugInManager must be set first");
         _ = this.PathFinderPool ?? throw new InvalidOperationException("PathFinderPool must be set first");
 
-        this._logger.LogDebug("Start creating event monster instances for map {createdMap}", createdMap);
+        this._logger.LogDebug("Start creating event monster instances for map {createdMap}", createdMap.Definition.Name);
         var eventSpawns = createdMap.Definition.MonsterSpawns
             .Where(m => m.MonsterDefinition is not null)
             .Where(m => m.SpawnTrigger is SpawnTrigger.OnceAtEventStart or SpawnTrigger.AutomaticDuringEvent);
@@ -143,7 +143,7 @@ public class MapInitializer : IMapInitializer
             }
         }
 
-        this._logger.LogDebug("Finished creating event monster instances for map {createdMap}", createdMap);
+        this._logger.LogDebug("Finished creating event monster instances for map {createdMap}", createdMap.Definition.Name);
     }
 
     /// <inheritdoc />
@@ -152,7 +152,7 @@ public class MapInitializer : IMapInitializer
         _ = this.PlugInManager ?? throw new InvalidOperationException("PlugInManager must be set first");
         _ = this.PathFinderPool ?? throw new InvalidOperationException("PathFinderPool must be set first");
 
-        this._logger.LogDebug("Start creating event monster instances for map {createdMap}", createdMap);
+        this._logger.LogDebug("Start creating event monster instances for map {createdMap}", createdMap.Definition.Name);
         var waveSpawns = createdMap.Definition.MonsterSpawns
             .Where(m => m.MonsterDefinition is not null)
             .Where(m => m.SpawnTrigger is SpawnTrigger.AutomaticDuringWave or SpawnTrigger.OnceAtWaveStart)
@@ -166,7 +166,7 @@ public class MapInitializer : IMapInitializer
             }
         }
 
-        this._logger.LogDebug("Finished creating event monster instances for map {createdMap}", createdMap);
+        this._logger.LogDebug("Finished creating event monster instances for map {createdMap}", createdMap.Definition.Name);
     }
 
     /// <inheritdoc />

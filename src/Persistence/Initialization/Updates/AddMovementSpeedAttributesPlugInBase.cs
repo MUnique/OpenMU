@@ -140,14 +140,13 @@ public abstract class AddMovementSpeedAttributesPlugInBase : UpdatePlugInBase
         if (coldEffect is null
             && gameConfiguration.Skills.Any(s => s.Number == (short)SkillNumber.StrikeofDestruction))
         {
-            new ColdEffectInitializer(context, gameConfiguration).Initialize();
-            coldEffect = gameConfiguration.MagicEffects.FirstOrDefault(e => e.Number == (short)MagicEffectNumber.Cold);
+            coldEffect = this.CreateEffect(context, gameConfiguration, ElementalType.Ice, MagicEffectNumber.Cold, Stats.IsIced, 10);
         }
 
         if (coldEffect is not null)
         {
             this.AddMovementSpeedFactorPowerUp(context, gameConfiguration, coldEffect, MovementSpeedConstants.ColdMovementSpeedFactor);
-            foreach (var skill in gameConfiguration.Skills.Where(s => s.Number == (short)SkillNumber.StrikeofDestruction))
+            foreach (var skill in gameConfiguration.Skills.Where(s => s.Number == (short)SkillNumber.StrikeofDestruction || s.Number == (short)SkillNumber.StrikeofDestrStr))
             {
                 skill.MagicEffectDef = coldEffect;
             }
@@ -313,5 +312,58 @@ public abstract class AddMovementSpeedAttributesPlugInBase : UpdatePlugInBase
         powerUp.Boost.ConstantValue.Value = value;
         powerUp.Boost.ConstantValue.AggregateType = aggregateType;
         return powerUp;
+    }
+
+    private MagicEffectDefinition CreateEffect(IContext context, GameConfiguration gameConfiguration, ElementalType type, MagicEffectNumber effectNumber, AttributeDefinition targetAttribute, float durationInSeconds, float chance = 0)
+    {
+        if (gameConfiguration.MagicEffects.FirstOrDefault(
+                e => e.Number == (short)effectNumber
+                     && e.SubType == (byte)(0xFF - type)
+                     && Equals(e.Duration?.ConstantValue.Value, durationInSeconds)
+                     && Equals(e.Chance?.ConstantValue.Value, chance)
+                     && e.PowerUpDefinitions.FirstOrDefault()?.TargetAttribute == targetAttribute) is { } existingEffect)
+        {
+            return existingEffect;
+        }
+
+        var effect = context.CreateNew<MagicEffectDefinition>();
+        gameConfiguration.MagicEffects.Add(effect);
+        effect.Name = Enum.GetName(effectNumber) ?? string.Empty;
+        effect.InformObservers = true;
+        effect.Number = (short)effectNumber;
+        effect.StopByDeath = true;
+        effect.SubType = (byte)(0xFF - type);
+        effect.Duration = context.CreateNew<PowerUpDefinitionValue>();
+        effect.Duration.ConstantValue.Value = durationInSeconds;
+        var powerUpDefinition = context.CreateNew<PowerUpDefinition>();
+        effect.PowerUpDefinitions.Add(powerUpDefinition);
+        powerUpDefinition.Boost = context.CreateNew<PowerUpDefinitionValue>();
+        powerUpDefinition.Boost.ConstantValue.Value = 1;
+        powerUpDefinition.TargetAttribute = targetAttribute.GetPersistent(gameConfiguration);
+        if (targetAttribute == Stats.IsIced)
+        {
+            var movementSpeedFactorPowerUp = context.CreateNew<PowerUpDefinition>();
+            effect.PowerUpDefinitions.Add(movementSpeedFactorPowerUp);
+            movementSpeedFactorPowerUp.Boost = context.CreateNew<PowerUpDefinitionValue>();
+            movementSpeedFactorPowerUp.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
+            movementSpeedFactorPowerUp.TargetAttribute = Stats.MovementSpeedFactor.GetPersistent(gameConfiguration);
+
+            if (effectNumber == MagicEffectNumber.Cold)
+            {
+                movementSpeedFactorPowerUp.Boost.ConstantValue.Value = MovementSpeedConstants.ColdMovementSpeedFactor;
+            }
+            else
+            {
+                movementSpeedFactorPowerUp.Boost.ConstantValue.Value = MovementSpeedConstants.IcedMovementSpeedFactor;
+            }
+        }
+
+        if (chance > 0)
+        {
+            effect.Chance = context.CreateNew<PowerUpDefinitionValue>();
+            effect.Chance.ConstantValue.Value = chance;
+        }
+
+        return effect;
     }
 }

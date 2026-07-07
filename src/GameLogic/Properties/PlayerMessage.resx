@@ -684,4 +684,7 @@
   <data name="StatsResetSuccessfully" xml:space="preserve">
     <value>Your stats have been reset. You have {0} level-up points available.</value>
   </data>
+  <data name="InvasionMonsterDefeated" xml:space="preserve">
+    <value>{0} has defeated the {1} {2}!</value>
+  </data>
 </root>

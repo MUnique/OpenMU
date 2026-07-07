@@ -574,6 +574,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} has defeated the {1} {2}!.
+        /// </summary>
+        public static string InvasionMonsterDefeated {
+            get {
+                return ResourceManager.GetString("InvasionMonsterDefeated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to [{0}] {1} created.
         /// </summary>
         public static string ItemCreatedResult {

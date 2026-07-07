@@ -155,6 +155,11 @@ public class ItemConstants
     public static ItemIdentifier HigherRefineStone => new(44, 14);
 
     /// <summary>
+    /// Gets the identifier for the wizard's ring (group 13, number 20).
+    /// </summary>
+    public static ItemIdentifier WizardsRing => new(20, 13);
+
+    /// <summary>
     /// Gets all scrolls.
     /// </summary>
     public static ItemIdentifier AllScrolls => new(null, 15);

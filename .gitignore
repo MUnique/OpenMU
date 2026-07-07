@@ -274,6 +274,7 @@ paket-files/
 
 # VS Code
 .vscode/
+*.lscache
 
 # CodeRush
 .cr/
