@@ -31,13 +31,13 @@ public class RequiemSkillPlugIn : IAreaSkillPlugIn
     {
         this._stunEffectDefinition ??= ((Player)attacker).GameContext.Configuration.MagicEffects.First(m => m.Number == StunnedMagicEffectNumber);
 
-        if (!target.IsAlive || !Rand.NextRandomBool(Convert.ToDouble(attacker.Attributes[Stats.StunChance])))
+        if (!target.IsAlive || !Rand.NextRandomBool(attacker.Attributes[Stats.MasteryStunChance]))
         {
             return;
         }
 
-        var powerUp = attacker.Attributes.CreateElement(this._stunEffectDefinition.PowerUpDefinitions.First());
-        var magicEffect = new MagicEffect(powerUp, this._stunEffectDefinition, TimeSpan.FromSeconds(3));
+        var powerUp = attacker.Attributes.CreateElement(this._stunEffectDefinition.PowerUpDefinitions.First(pu => pu.TargetAttribute == Stats.IsStunned));
+        var magicEffect = new MagicEffect(TimeSpan.FromSeconds(3), this._stunEffectDefinition, [new MagicEffect.ElementWithTarget(powerUp, Stats.IsStunned)]);
         await target.MagicEffectList.AddEffectAsync(magicEffect).ConfigureAwait(false);
 
         if (target is ISupportWalk walkSupporter && walkSupporter.IsWalking)
