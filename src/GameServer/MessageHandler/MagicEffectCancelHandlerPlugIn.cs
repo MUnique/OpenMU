@@ -22,7 +22,7 @@ internal class MagicEffectCancelHandlerPlugIn : IPacketHandlerPlugIn
     private const int InfinityArrowSkillId = 77;
     private const int ExpansionOfWizardrySkillId = 233;
     private const int ExpansionOfWizardryStrengSkillId = 380;
-    private const int ExpansionOfWizardryMastery = 383;
+    private const int ExpansionOfWizardryMasterySkillId = 383;
     private const int InfinityArrowStrengSkillId = 441;
 
     /// <inheritdoc/>
@@ -53,7 +53,7 @@ internal class MagicEffectCancelHandlerPlugIn : IPacketHandlerPlugIn
     {
         ExpansionOfWizardrySkillId => true,
         ExpansionOfWizardryStrengSkillId => true,
-        ExpansionOfWizardryMastery => true,
+        ExpansionOfWizardryMasterySkillId => true,
         InfinityArrowSkillId => true,
         InfinityArrowStrengSkillId => true,
         _ => false,
