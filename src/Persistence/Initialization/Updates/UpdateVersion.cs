@@ -459,4 +459,14 @@ public enum UpdateVersion
     /// The version of the <see cref="FinishDarkKnightMasterTreePlugInSeason6"/>.
     /// </summary>
     FinishDarkKnightMasterTreeSeason6 = 90,
+    
+    /// <summary>
+    /// The version of the <see cref="AddWhiteWizardInvasionMobsUpdatePlugIn"/>.
+    /// </summary>
+    AddWhiteWizardInvasionMobs = 91,
+
+    /// <summary>
+    /// The version of the <see cref="LimitWhiteWizardDropsUpdatePlugIn"/>.
+    /// </summary>
+    LimitWhiteWizardDrops = 92,
 }

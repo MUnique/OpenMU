@@ -58,4 +58,19 @@ internal static class InvasionMonsters
     /// The Red Dragon monster.
     /// </summary>
     public const ushort RedDragon = 44;
+
+    /// <summary>
+    /// The White Wizard monster.
+    /// </summary>
+    public const ushort WhiteWizard = 135;
+
+    /// <summary>
+    /// The Destructive Ogre Soldier monster.
+    /// </summary>
+    public const ushort DestructiveOgreSoldier = 136;
+
+    /// <summary>
+    /// The Destructive Ogre Archer monster.
+    /// </summary>
+    public const ushort DestructiveOgreArcher = 137;
 }

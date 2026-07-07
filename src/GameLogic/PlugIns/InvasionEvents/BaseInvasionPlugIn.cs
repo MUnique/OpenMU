@@ -4,8 +4,10 @@
 
 namespace MUnique.OpenMU.GameLogic.PlugIns.InvasionEvents;
 
+using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
+using MUnique.OpenMU.GameLogic.Properties;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Pathfinding;
@@ -18,19 +20,12 @@ using MUnique.OpenMU.PlugIns;
 public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugIn<TConfiguration, InvasionGameServerState>, IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, ISupportCustomConfiguration<TConfiguration>
     where TConfiguration : PeriodicInvasionConfiguration
 {
-    private readonly MapEventType? _mapEventType;
-
     /// <summary>
-    /// Initializes a new instance of the <see cref="BaseInvasionPlugIn{TConfiguration}"/> class.
+    /// Gets the map-event type used for UI state broadcasts.
+    /// Override to enable map-event state updates for a specific event type.
+    /// When <c>null</c>, map-event state updates are disabled.
     /// </summary>
-    /// <param name="mapEventType">
-    /// The map-event type used for UI state broadcasts.
-    /// Pass <c>null</c> to disable map-event state updates.
-    /// </param>
-    protected BaseInvasionPlugIn(MapEventType? mapEventType = null)
-    {
-        this._mapEventType = mapEventType;
-    }
+    protected virtual MapEventType? EventType => null;
 
     /// <summary>
     /// Gets the list of map IDs from which the event display map is randomly selected.
@@ -54,12 +49,7 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
     /// <inheritdoc />
     public virtual async ValueTask ObjectAddedToMapAsync(GameMap map, ILocateable addedObject)
     {
-        if (this._mapEventType is null)
-        {
-            return;
-        }
-
-        if (addedObject is Player player)
+        if (this.EventType is not null && addedObject is Player player)
         {
             var state = this.GetStateByGameContext(player.GameContext);
             await this.TrySendMapEventStateUpdateAsync(player, state).ConfigureAwait(false);
@@ -76,9 +66,10 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
     /// <param name="gameMap">The game map.</param>
     /// <param name="monsterDefinition">The monster definition.</param>
     /// <param name="quantity">The quantity.</param>
+    /// <param name="announceDeath">If set, a death-broadcast handler is attached to each spawned monster.</param>
     /// <param name="x">The optional fixed X coordinate.</param>
     /// <param name="y">The optional fixed Y coordinate.</param>
-    protected async ValueTask CreateMonstersAsync(IGameContext gameContext, ILogger logger, GameMap gameMap, MonsterDefinition monsterDefinition, ushort quantity, byte? x = null, byte? y = null)
+    protected async ValueTask CreateMonstersAsync(IGameContext gameContext, ILogger logger, GameMap gameMap, MonsterDefinition monsterDefinition, ushort quantity, bool announceDeath = false, byte? x = null, byte? y = null)
     {
         for (var i = 0; i < quantity; i++)
         {
@@ -120,6 +111,11 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
 
             var state = this.GetStateByGameContext(gameContext);
             state.AddMonster(monster);
+
+            if (announceDeath)
+            {
+                this.AttachDeathBroadcast(monster, state);
+            }
         }
     }
 
@@ -143,7 +139,7 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
         {
             if (gameContext.Configuration.Monsters.FirstOrDefault(m => m.Number == spawn.MonsterId) is { } monsterDefinition)
             {
-                await this.CreateMonstersAsync(gameContext, logger, gameMap, monsterDefinition, spawn.Count, spawn.X, spawn.Y).ConfigureAwait(false);
+                await this.CreateMonstersAsync(gameContext, logger, gameMap, monsterDefinition, spawn.Count, spawn.AnnounceDeath, spawn.X, spawn.Y).ConfigureAwait(false);
             }
             else
             {
@@ -158,6 +154,12 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
         var config = this.Configuration;
         if (config?.Mobs is not { Count: > 0 } mobs)
         {
+            return;
+        }
+
+        if (config.ForceSingleMap)
+        {
+            this.SelectSingleMap(state, mobs);
             return;
         }
 
@@ -236,7 +238,7 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
     {
         await state.Context.ForEachPlayerAsync(p => this.TrySendStartMessageAsync(p, state)).ConfigureAwait(false);
 
-        if (this._mapEventType is not null)
+        if (this.EventType is not null)
         {
             await state.Context.ForEachPlayerAsync(p => this.TrySendMapEventStateUpdateAsync(p, state)).ConfigureAwait(false);
         }
@@ -253,7 +255,7 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
     {
         await state.Context.ForEachPlayerAsync(p => this.TrySendEndMessageAsync(p, state)).ConfigureAwait(false);
 
-        if (this._mapEventType is not null)
+        if (this.EventType is not null)
         {
             await state.Context.ForEachPlayerAsync(p => this.TrySendMapEventStateUpdateAsync(p, state)).ConfigureAwait(false);
         }
@@ -294,6 +296,52 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
                 // This indicates an unexpected state or configuration mismatch.
             }
         }
+    }
+
+    /// <summary>
+    /// Builds the comma-separated, localized list of map names announced in the broadcast.
+    /// </summary>
+    /// <param name="state">The current invasion state.</param>
+    /// <param name="player">The player whose culture is used for translation.</param>
+    private static string BuildAnnouncedMapNames(InvasionGameServerState state, Player player)
+    {
+        var names = state.AnnouncedMapIds
+            .Select(id => state.Context.Configuration.Maps
+                .FirstOrDefault(m => m.Number == id)
+                ?.Name.GetTranslation(player.Culture))
+            .Where(name => !string.IsNullOrEmpty(name));
+
+        return string.Join(", ", names);
+    }
+
+    /// <summary>
+    /// Selects a single map from the first mob's configuration and registers all mobs on it.
+    /// Used when <see cref="PeriodicInvasionConfiguration.ForceSingleMap"/> is <c>true</c>.
+    /// </summary>
+    /// <param name="state">The invasion state.</param>
+    /// <param name="mobs">The mob spawn configurations.</param>
+    private void SelectSingleMap(InvasionGameServerState state, IList<InvasionSpawnConfiguration> mobs)
+    {
+        var source = this.AnnouncedMonsterId is { } announcedId
+            ? mobs.FirstOrDefault(m => m.MonsterId == announcedId)
+            : null;
+        source ??= mobs[0];
+
+        if (source.MapIds.Count == 0)
+        {
+            return;
+        }
+
+        var chosenMap = source.MapIds.Count == 1
+            ? source.MapIds[0]
+            : source.MapIds[Rand.NextInt(0, source.MapIds.Count)];
+
+        foreach (var mob in mobs)
+        {
+            state.RegisterMap(chosenMap, mob.MonsterId);
+        }
+
+        state.SetAnnouncedMaps([chosenMap]);
     }
 
     /// <summary>
@@ -400,22 +448,6 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
             : [];
     }
 
-    /// <summary>
-    /// Builds the comma-separated, localized list of map names announced in the broadcast.
-    /// </summary>
-    /// <param name="state">The current invasion state.</param>
-    /// <param name="player">The player whose culture is used for translation.</param>
-    private static string BuildAnnouncedMapNames(InvasionGameServerState state, Player player)
-    {
-        var names = state.AnnouncedMapIds
-            .Select(id => state.Context.Configuration.Maps
-                .FirstOrDefault(m => m.Number == id)
-                ?.Name.GetTranslation(player.Culture))
-            .Where(name => !string.IsNullOrEmpty(name));
-
-        return string.Join(", ", names);
-    }
-
     private bool IsPlayerOnRelevantMap(Player player, InvasionGameServerState state)
         => state.MapId.HasValue
            && player.CurrentMap is { } map
@@ -425,7 +457,7 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
 
     private async Task TrySendMapEventStateUpdateAsync(Player player, InvasionGameServerState state)
     {
-        if (this._mapEventType is null || !this.IsPlayerOnRelevantMap(player, state))
+        if (this.EventType is null || !this.IsPlayerOnRelevantMap(player, state))
         {
             return;
         }
@@ -433,14 +465,61 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
         try
         {
             var enabled = state.State != PeriodicTaskState.NotStarted;
-            await player.InvokeViewPlugInAsync<IMapEventStateUpdatePlugIn>(p => p.UpdateStateAsync(enabled, this._mapEventType.Value)).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IMapEventStateUpdatePlugIn>(p => p.UpdateStateAsync(enabled, this.EventType.Value)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
             player.Logger.LogDebug(
                 ex,
                 "Unexpected error sending map event state update, event type: {MapEventType}",
-                this._mapEventType);
+                this.EventType);
+        }
+    }
+
+    private void AttachDeathBroadcast(Monster monster, InvasionGameServerState state)
+    {
+        var context = state.Context;
+        void Handler(object? sender, DeathInformation e)
+        {
+            if (sender is Monster m)
+            {
+                m.Died -= Handler;
+                var mapDefinition = m.CurrentMap?.Definition;
+                _ = Task.Run(() => BroadcastMonsterDeathAsync(m, mapDefinition, e, context));
+            }
+        }
+
+        monster.Died += Handler;
+    }
+
+    private static async Task BroadcastMonsterDeathAsync(Monster monster, GameMapDefinition? mapDefinition, DeathInformation e, IGameContext gameContext)
+    {
+        if (mapDefinition is null)
+        {
+            return;
+        }
+
+        try
+        {
+            var mapName = mapDefinition.Name;
+            await gameContext.ForEachPlayerAsync(async player =>
+            {
+                var translatedMapName = mapName.GetTranslation(player.Culture);
+                var monsterName = monster.Definition.Designation.GetTranslation(player.Culture);
+
+                try
+                {
+                    await player.ShowLocalizedGoldenMessageAsync(nameof(PlayerMessage.InvasionMonsterDefeated), e.KillerName, translatedMapName, monsterName).ConfigureAwait(false);
+                }
+                catch
+                {
+                    // Ignore view invocation errors
+                }
+            }).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            gameContext.LoggerFactory.CreateLogger(typeof(BaseInvasionPlugIn<TConfiguration>)).LogError(ex, "Error during invasion monster death broadcast.");
         }
     }
 }

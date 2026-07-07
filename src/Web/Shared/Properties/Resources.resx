@@ -225,6 +225,12 @@
   <data name="SpawnOnAllSelectedMapsTooltip" xml:space="preserve">
     <value>If enabled spawn monster on all selected maps, if disabled, it will select a random map.</value>
   </data>
+  <data name="AnnounceDeath" xml:space="preserve">
+    <value>Announce Death</value>
+  </data>
+  <data name="AnnounceDeathTooltip" xml:space="preserve">
+    <value>Broadcasts a global message when this monster type is defeated.</value>
+  </data>
   <data name="AddValue" xml:space="preserve">
     <value>Add Value</value>
   </data>
