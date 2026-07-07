@@ -11857,6 +11857,8 @@ textarea.form-control-lg {
   --omu-sidebar-gradient: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
   --omu-nav-link: #d7d7d7;
   --omu-spinner-dot: rgb(5, 39, 103);
+  --omu-overlay-bg: rgba(0, 0, 0, 0.5);
+  --omu-overlay-spinner: #ffffff;
 }
 
 [data-bs-theme=dark] {
@@ -11878,6 +11880,8 @@ textarea.form-control-lg {
   --omu-sidebar-gradient: linear-gradient(180deg, #0a1330 0%, #1a0322 70%);
   --omu-nav-link: #d7d7d7;
   --omu-spinner-dot: #66b2ff;
+  --omu-overlay-bg: rgba(0, 0, 0, 0.5);
+  --omu-overlay-spinner: #ffffff;
 }
 
 html,

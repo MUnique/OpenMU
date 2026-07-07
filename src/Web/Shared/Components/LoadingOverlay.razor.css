@@ -4,7 +4,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    background: var(--omu-overlay-bg);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -14,5 +14,5 @@
 .loading-overlay .spinner-border {
     width: 4rem;
     height: 4rem;
-    color: #fff;
+    color: var(--omu-overlay-spinner);
 }

@@ -31,6 +31,8 @@ $omu-light: (
     sidebar-gradient:     linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%),
     nav-link:             #d7d7d7,
     spinner-dot:          rgb(5, 39, 103),
+    overlay-bg:           rgba(0, 0, 0, 0.5),
+    overlay-spinner:      #ffffff,
 );
 
 $omu-dark: (
@@ -52,6 +54,8 @@ $omu-dark: (
     sidebar-gradient:     linear-gradient(180deg, #0a1330 0%, #1a0322 70%),
     nav-link:             #d7d7d7,
     spinner-dot:          #66b2ff,
+    overlay-bg:           rgba(0, 0, 0, 0.5),
+    overlay-spinner:      #ffffff,
 );
 
 @mixin omu-theme-vars($map) {

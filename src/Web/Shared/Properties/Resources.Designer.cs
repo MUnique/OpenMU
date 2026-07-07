@@ -422,5 +422,17 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
                 return ResourceManager.GetString("ImportMap", resourceCulture);
             }
         }
+        
+        public static string Yes {
+            get {
+                return ResourceManager.GetString("Yes", resourceCulture);
+            }
+        }
+        
+        public static string No {
+            get {
+                return ResourceManager.GetString("No", resourceCulture);
+            }
+        }
     }
 }
