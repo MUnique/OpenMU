@@ -90,6 +90,7 @@ public class PlugInManager
     public void DiscoverAndRegisterPlugIns()
     {
         var plugIns = this.DiscoverNewPlugIns();
+        ValidateNoDuplicateGuids(plugIns);
         this.RegisterPlugIns(plugIns);
     }
 
@@ -100,6 +101,7 @@ public class PlugInManager
     public void DiscoverAndRegisterPlugIns(Assembly assembly)
     {
         var plugIns = this.DiscoverNewPlugIns(this.DiscoverPlugIns(assembly));
+        ValidateNoDuplicateGuids(plugIns);
         this.RegisterPlugIns(plugIns);
     }
 
@@ -304,7 +306,7 @@ public class PlugInManager
         }
         else
         {
-            this._logger.LogWarning($"Plugin {typeof(TPlugInClass)} wasn't registered, because it's not an implementation of an interface which is marked with {nameof(PlugInPointAttribute)} or {nameof(CustomPlugInContainerAttribute)}.");
+            this._logger.LogWarning("Plugin {PlugInClass} wasn't registered, because it's not an implementation of an interface which is marked with PlugInPointAttribute or CustomPlugInContainerAttribute.", typeof(TPlugInClass));
         }
     }
 
@@ -351,6 +353,19 @@ public class PlugInManager
         {
             this.ConfigurePlugIn(plugInType, configuration);
         }
+    }
+
+    private static void ValidateNoDuplicateGuids(IEnumerable<Type> plugIns)
+    {
+        var duplicates = plugIns.GroupBy(t => t.GUID).Where(g => g.Count() > 1).ToList();
+        if (duplicates.Count == 0)
+        {
+            return;
+        }
+
+        var message = string.Join("; ", duplicates.Select(g =>
+            $"{g.Key} used by {string.Join(", ", g.Select(t => t.FullName))}"));
+        throw new DuplicatePlugInGuidException(message);
     }
 
     private Type? GetCustomPlugInPointType(Type interfaceType)
@@ -415,13 +430,13 @@ public class PlugInManager
                 }
                 catch (Exception e)
                 {
-                    this._logger.LogError($"Error while loading external plugin assembly {configuration.ExternalAssemblyName} for plugin {configuration.TypeId}.", e);
+                    this._logger.LogError(e, "Error while loading external plugin assembly {ExternalAssemblyName} for plugin {TypeId}.", configuration.ExternalAssemblyName, configuration.TypeId);
                     return;
                 }
             }
             else if (!string.IsNullOrEmpty(configuration.CustomPlugInSource))
             {
-                this._logger.LogWarning($"Custom plugin source found at plugin configuration: {configuration}");
+                this._logger.LogWarning("Custom plugin source found at plugin configuration: {Configuration}", configuration);
                 /* TODO: Implement code signing, if we really need this feature.
                 Assembly customPlugInAssembly = this.CompileCustomPlugInAssembly(configuration);
                 this.DiscoverAndRegisterPlugIns(customPlugInAssembly);*/
@@ -447,7 +462,7 @@ public class PlugInManager
         }
         else
         {
-            this._logger.LogWarning($"Unknown plugin type for id {configuration.TypeId}");
+            this._logger.LogWarning("Unknown plugin type for id {TypeId}", configuration.TypeId);
         }
     }
 
@@ -535,11 +550,26 @@ public class PlugInManager
             }
             catch (Exception e)
             {
-                this._logger.LogError(e, $"Couldn't register plugin type {plugIn}");
+                this._logger.LogError(e, "Couldn't register plugin type {PlugIn}", plugIn);
                 this._logger.LogError("TODO: Use ServiceContainer");
             }
 
             this._lastCreatedPlugIn = null;
+        }
+    }
+
+    /// <summary>
+    /// Exception that is thrown when two different plugin types share the same <see cref="GuidAttribute"/>.
+    /// </summary>
+    public class DuplicatePlugInGuidException : InvalidOperationException
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DuplicatePlugInGuidException"/> class.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        public DuplicatePlugInGuidException(string message)
+            : base(message)
+        {
         }
     }
 
