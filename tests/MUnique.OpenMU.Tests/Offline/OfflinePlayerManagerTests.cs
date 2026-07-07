@@ -4,15 +4,12 @@
 
 namespace MUnique.OpenMU.Tests.Offline;
 
-using Moq;
 using MUnique.OpenMU.AttributeSystem;
-using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
-using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
-using MUnique.OpenMU.GameLogic.MuHelper;
 using MUnique.OpenMU.GameLogic.Offline;
+using MUnique.OpenMU.Persistence;
 
 /// <summary>
 /// Tests for <see cref="OfflinePlayerManager"/>.
@@ -21,8 +18,10 @@ using MUnique.OpenMU.GameLogic.Offline;
 public class OfflinePlayerManagerTests
 {
     private const string TestUserLoginName = "test";
+    private const string TestCharacterName = "testChar";
 
     private IGameContext _gameContext = null!;
+    private IPersistenceContextProvider _contextProvider = null!;
 
     /// <summary>
     /// Sets up a fresh game context before each test.
@@ -31,6 +30,7 @@ public class OfflinePlayerManagerTests
     public void SetUp()
     {
         this._gameContext = GameContextTestHelper.CreateGameContext();
+        this._contextProvider = this._gameContext.PersistenceContextProvider;
     }
 
     /// <summary>
@@ -41,8 +41,7 @@ public class OfflinePlayerManagerTests
     {
         // Arrange
         var manager = new OfflinePlayerManager();
-        var realPlayer = await PlayerTestHelper.CreatePlayerAsync(this._gameContext).ConfigureAwait(false);
-        realPlayer.Account!.LoginName = TestUserLoginName;
+        var realPlayer = await this.CreatePlayerWithPersistedAccountAsync().ConfigureAwait(false);
         realPlayer.TryAddMoney(1_000_000);
         realPlayer.Attributes![Stats.Level] = 100;
 
@@ -62,8 +61,7 @@ public class OfflinePlayerManagerTests
     {
         // Arrange
         var manager = new OfflinePlayerManager();
-        var realPlayer = await PlayerTestHelper.CreatePlayerAsync(this._gameContext).ConfigureAwait(false);
-        realPlayer.Account!.LoginName = TestUserLoginName;
+        var realPlayer = await this.CreatePlayerWithPersistedAccountAsync().ConfigureAwait(false);
         realPlayer.Money = 0; // No money
         realPlayer.Attributes![Stats.Level] = 100;
 
@@ -83,12 +81,12 @@ public class OfflinePlayerManagerTests
     {
         // Arrange
         var manager = new OfflinePlayerManager();
-        var realPlayer = await PlayerTestHelper.CreatePlayerAsync(this._gameContext).ConfigureAwait(false);
-        realPlayer.Account!.LoginName = TestUserLoginName;
+        var realPlayer = await this.CreatePlayerWithPersistedAccountAsync().ConfigureAwait(false);
         realPlayer.TryAddMoney(1_000_000);
         realPlayer.Attributes![Stats.Level] = 100;
 
-        await manager.StartAsync(realPlayer, TestUserLoginName).ConfigureAwait(false);
+        var started = await manager.StartAsync(realPlayer, TestUserLoginName).ConfigureAwait(false);
+        Assert.That(started, Is.True);
         Assert.That(manager.IsActive(TestUserLoginName), Is.True);
 
         // Act
@@ -96,5 +94,53 @@ public class OfflinePlayerManagerTests
 
         // Assert
         Assert.That(manager.IsActive(TestUserLoginName), Is.False);
+    }
+
+    /// <summary>
+    /// Creates a player whose account is stored in the in-memory repository,
+    /// so that <see cref="OfflinePlayer.InitializeAsync"/> can find it.
+    /// </summary>
+    private async ValueTask<Player> CreatePlayerWithPersistedAccountAsync()
+    {
+        var config = this._gameContext.Configuration;
+
+        // Create persisted account + character in the in-memory repository.
+        using (var ctx = this._contextProvider.CreateNewPlayerContext(config))
+        {
+            var account = ctx.CreateNew<MUnique.OpenMU.DataModel.Entities.Account>();
+            account.LoginName = TestUserLoginName;
+
+            var character = ctx.CreateNew<MUnique.OpenMU.DataModel.Entities.Character>();
+            character.Name = TestCharacterName;
+
+            if (config.CharacterClasses.FirstOrDefault() is { } existingClass)
+            {
+                character.CharacterClass = existingClass;
+            }
+            else
+            {
+                // Build a minimal CharacterClass so OnPlayerEnteredWorldAsync does not throw.
+                var characterClass = ctx.CreateNew<MUnique.OpenMU.DataModel.Configuration.CharacterClass>();
+                characterClass.HomeMap = config.Maps.FirstOrDefault();
+                character.CharacterClass = characterClass;
+            }
+
+            account.Characters.Add(character);
+            await ctx.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        var player = await PlayerTestHelper.CreatePlayerAsync(this._gameContext).ConfigureAwait(false);
+        player.Account!.LoginName = TestUserLoginName;
+
+        // Ensure the mock character name matches the persisted one.
+        var mockCharacter = player.SelectedCharacter!;
+        mockCharacter.Name = TestCharacterName;
+        mockCharacter.CharacterClass ??= player.Account.UnlockedCharacterClasses.FirstOrDefault();
+        if (mockCharacter.CharacterClass is null && config.CharacterClasses.FirstOrDefault() is { } cc)
+        {
+            mockCharacter.CharacterClass = cc;
+        }
+
+        return player;
     }
 }

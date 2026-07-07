@@ -81,7 +81,8 @@ public class FixSkillMultipliersPlugIn : UpdatePlugInBase
         // Fix RF classes skill multiplier
         gameConfiguration.CharacterClasses.ForEach(charClass =>
         {
-            if (charClass.Number == 24 || charClass.Number == 25) // RF classes
+            // RF classes.
+            if (charClass.Number == 24 || charClass.Number == 25)
             {
                 if (charClass.BaseAttributeValues.FirstOrDefault(a => a.Definition == Stats.SkillMultiplier) is { } skillMult)
                 {

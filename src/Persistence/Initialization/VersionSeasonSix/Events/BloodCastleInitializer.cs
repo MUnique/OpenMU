@@ -18,12 +18,13 @@ internal class BloodCastleInitializer : InitializerBase
 
     private const short RequiredKillsBeforeBridgePerPlayer = 40;
     private const short RequiredKillsAfterGatePerPlayer = 2;
-    private static readonly Point StatusOfSaintSpawnPoint = new(14, 95);
 
     /// <summary>
     /// The score penalty which gets applied when the event wasn't won by any participating player.
     /// </summary>
     private const int ScorePenaltyAtLoss = -300;
+
+    private static readonly Point StatusOfSaintSpawnPoint = new(14, 95);
 
     /// <summary>
     /// Gets the rewards based on game level and rank, in case the event was won (even by another player).

@@ -99,7 +99,6 @@ public sealed class CombatHandler
     /// <summary>
     /// Performs combat attacks on targets.
     /// </summary>
-    /// <returns>A value task representing the asynchronous operation.</returns>
     public async ValueTask PerformAttackAsync()
     {
         this.RefreshTarget();

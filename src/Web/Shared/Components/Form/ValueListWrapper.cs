@@ -26,6 +26,9 @@ public class ValueListWrapper<TValue> : List<ValueWrapper<TValue>>, IList<TValue
     }
 
     /// <inheritdoc />
+    public bool IsReadOnly => this._innerList.IsReadOnly;
+
+    /// <inheritdoc />
     TValue IList<TValue>.this[int index]
     {
         get => this._innerList[index];
@@ -85,9 +88,6 @@ public class ValueListWrapper<TValue> : List<ValueWrapper<TValue>>, IList<TValue
             this[i].Index = i;
         }
     }
-
-    /// <inheritdoc />
-    public bool IsReadOnly => this._innerList.IsReadOnly;
 
     /// <inheritdoc />
     public int IndexOf(TValue item)

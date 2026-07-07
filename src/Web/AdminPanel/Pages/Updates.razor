@@ -30,7 +30,7 @@
         @if (update.State == UpdateState.Started)
         {
             <div class="spinner-border text-secondary spinner-border-sm" role="status">
-                <span class="sr-only">@Resources.Updating</span>
+                <span class="visually-hidden">@Resources.Updating</span>
             </div>
         }
         else if (update.State == UpdateState.Failed)
@@ -43,11 +43,11 @@
         }
         else if (update.IsMandatory)
         {
-            <InputCheckbox @bind-Value="@update.Selected" disabled="disabled"></InputCheckbox>
+            <InputCheckbox class="form-check-input" @bind-Value="@update.Selected" disabled="disabled"></InputCheckbox>
         }
         else
         {
-            <InputCheckbox @bind-Value="@update.Selected"></InputCheckbox>
+            <InputCheckbox class="form-check-input" @bind-Value="@update.Selected"></InputCheckbox>
         }
         <span>&nbsp;@update.Name (#@update.Version)</span>
         <hr/>

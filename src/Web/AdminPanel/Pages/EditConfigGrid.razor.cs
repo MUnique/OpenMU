@@ -103,13 +103,6 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
     private string? NameFilter { get; set; }
 
     /// <inheritdoc />
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        this.CreationPanelService.ItemCreated += this.OnItemCreatedAsync;
-    }
-
-    /// <inheritdoc />
     public async ValueTask DisposeAsync()
     {
         this.CreationPanelService.ItemCreated -= this.OnItemCreatedAsync;
@@ -130,6 +123,13 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
         {
             // and we should not throw exceptions in the dispose method ...
         }
+    }
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        this.CreationPanelService.ItemCreated += this.OnItemCreatedAsync;
     }
 
     /// <inheritdoc />

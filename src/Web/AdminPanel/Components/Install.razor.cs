@@ -1,4 +1,4 @@
-﻿// <copyright file="Install.razor.cs" company="MUnique">
+// <copyright file="Install.razor.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -39,8 +39,6 @@ public sealed partial class Install
     /// </summary>
     public bool IsInstalled { get; private set; }
 
-    private int CurrentConnections => this.ServerProvider.Servers.Where(s => s.ServerState != ServerState.Timeout).Sum(s => s.CurrentConnections);
-
     /// <summary>
     /// Gets or sets the installation finished callback.
     /// </summary>
@@ -58,6 +56,8 @@ public sealed partial class Install
     /// </summary>
     [Inject]
     public IServerProvider ServerProvider { get; set; } = null!;
+
+    private int CurrentConnections => this.ServerProvider.Servers.Where(s => s.ServerState != ServerState.Timeout).Sum(s => s.CurrentConnections);
 
     /// <inheritdoc />
     protected override void OnParametersSet()

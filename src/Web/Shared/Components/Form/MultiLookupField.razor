@@ -9,7 +9,7 @@
 
 @inject IStringLocalizer<Resources> localizer
 
-<div class="multi-lookup-field">
+<div class="multi-lookup-field mb-3">
     <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
 
     <div class="multi-lookup-field__container">
@@ -58,7 +58,7 @@
                         <div class="multi-lookup-field__dropdown-item @(isSelected ? "multi-lookup-field__dropdown-item--selected" : "")"
                              @onmousedown="() => ToggleItem(item)"
                              @onmousedown:preventDefault="true">
-                            <input type="checkbox" checked="@isSelected" tabindex="-1" />
+                            <input type="checkbox" class="form-check-input" checked="@isSelected" tabindex="-1" />
                             <span>@CaptionFactory(item)</span>
                         </div>
                     }

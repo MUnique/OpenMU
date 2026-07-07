@@ -31,7 +31,7 @@ internal static class InvasionConfigurationDefaults
             new(InvasionMonsters.GoldenLizardKing, 10, [InvasionMaps.Atlans], SpawnMapStrategy.RandomMap),
             new(InvasionMonsters.GoldenWheel, 20, [InvasionMaps.Tarkan], SpawnMapStrategy.RandomMap),
             new(InvasionMonsters.GoldenTantallos, 10, [InvasionMaps.Tarkan], SpawnMapStrategy.RandomMap),
-            new(InvasionMonsters.GoldenDragon, 10, [InvasionMaps.Lorencia, InvasionMaps.Noria, InvasionMaps.Devias, InvasionMaps.Atlans, InvasionMaps.Tarkan], SpawnMapStrategy.RandomMap),
+            new(InvasionMonsters.GoldenDragon, 10, [InvasionMaps.Lorencia, InvasionMaps.Noria, InvasionMaps.Devias], SpawnMapStrategy.RandomMap),
         ],
     };
 

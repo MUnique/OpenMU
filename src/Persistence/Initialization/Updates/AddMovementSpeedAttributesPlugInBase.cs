@@ -27,6 +27,16 @@ using Kalima7Map = MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Ma
 /// </summary>
 public abstract class AddMovementSpeedAttributesPlugInBase : UpdatePlugInBase
 {
+    /// <summary>
+    /// The plug-in name.
+    /// </summary>
+    internal const string PlugInName = "Add Movement Speed Attributes";
+
+    /// <summary>
+    /// The plug-in description.
+    /// </summary>
+    internal const string PlugInDescription = "Adds attribute-based movement speed configuration for players, monsters, items, effects, and underwater maps.";
+
     private const byte PetItemGroup = (byte)ItemGroups.Misc1;
     private const byte UniriaNumber = 2;
     private const byte DinorantNumber = 3;
@@ -55,16 +65,6 @@ public abstract class AddMovementSpeedAttributesPlugInBase : UpdatePlugInBase
         Doppelgaenger3Map.Number,
     ];
 
-    /// <summary>
-    /// The plug in name.
-    /// </summary>
-    internal const string PlugInName = "Add Movement Speed Attributes";
-
-    /// <summary>
-    /// The plug in description.
-    /// </summary>
-    internal const string PlugInDescription = "Adds attribute-based movement speed configuration for players, monsters, items, effects, and underwater maps.";
-
     /// <inheritdoc />
     public override string Name => PlugInName;
 
@@ -85,16 +85,38 @@ public abstract class AddMovementSpeedAttributesPlugInBase : UpdatePlugInBase
     /// <inheritdoc />
     protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
-        AddStatIfNotExists(context, gameConfiguration, Stats.MovementSpeed);
-        AddStatIfNotExists(context, gameConfiguration, Stats.MovementSpeedUnderwater);
-        AddStatIfNotExists(context, gameConfiguration, Stats.MovementSpeedFactor);
-        AddStatIfNotExists(context, gameConfiguration, Stats.IsUnderwater);
+        this.AddStatIfNotExists(context, gameConfiguration, Stats.MovementSpeed);
+        this.AddStatIfNotExists(context, gameConfiguration, Stats.MovementSpeedUnderwater);
+        this.AddStatIfNotExists(context, gameConfiguration, Stats.MovementSpeedFactor);
+        this.AddStatIfNotExists(context, gameConfiguration, Stats.IsUnderwater);
 
         this.AddGlobalMovementSpeedFactor(context, gameConfiguration);
         this.AddEffectMovementSpeedFactors(context, gameConfiguration);
         this.AddItemMovementSpeeds(context, gameConfiguration);
         this.AddUnderwaterMapPowerUps(context, gameConfiguration);
         return ValueTask.CompletedTask;
+    }
+
+    private static bool IsWingSlotItem(ItemDefinition item)
+    {
+        return item.ItemSlot?.ItemSlots.Contains(InventoryConstants.WingsSlot) ?? false;
+    }
+
+    private static float GetWingMovementSpeed(ItemDefinition wing)
+    {
+        return wing.Number is WingsOfDragonNumber or WingOfStormNumber
+            ? MovementSpeedConstants.FastWingMovementSpeed
+            : MovementSpeedConstants.DefaultWingMovementSpeed;
+    }
+
+    private static float GetPetMovementSpeed(ItemDefinition pet)
+    {
+        return pet.Number switch
+        {
+            UniriaNumber or DinorantNumber => MovementSpeedConstants.BasicMountMovementSpeed,
+            DarkHorseNumber or FenrirNumber => MovementSpeedConstants.HorseOrFenrirMovementSpeed,
+            _ => 0f,
+        };
     }
 
     private void AddGlobalMovementSpeedFactor(IContext context, GameConfiguration gameConfiguration)
@@ -193,28 +215,6 @@ public abstract class AddMovementSpeedAttributesPlugInBase : UpdatePlugInBase
         }
 
         return table;
-    }
-
-    private static bool IsWingSlotItem(ItemDefinition item)
-    {
-        return item.ItemSlot?.ItemSlots.Contains(InventoryConstants.WingsSlot) ?? false;
-    }
-
-    private static float GetWingMovementSpeed(ItemDefinition wing)
-    {
-        return wing.Number is WingsOfDragonNumber or WingOfStormNumber
-            ? MovementSpeedConstants.FastWingMovementSpeed
-            : MovementSpeedConstants.DefaultWingMovementSpeed;
-    }
-
-    private static float GetPetMovementSpeed(ItemDefinition pet)
-    {
-        return pet.Number switch
-        {
-            UniriaNumber or DinorantNumber => MovementSpeedConstants.BasicMountMovementSpeed,
-            DarkHorseNumber or FenrirNumber => MovementSpeedConstants.HorseOrFenrirMovementSpeed,
-            _ => 0f,
-        };
     }
 
     private void AddMovementSpeedPowerUps(IContext context, GameConfiguration gameConfiguration, ItemDefinition item, float speed)

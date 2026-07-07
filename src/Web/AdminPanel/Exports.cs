@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.Web.AdminPanel;
 using System.Collections.Immutable;
 
 /// <summary>
-/// Class which holds the script exports of this project.
+/// Class that holds the script exports of this project.
 /// </summary>
 /// <remarks>
 /// TODO: Instead of a static class, create an interface, so we can inject an instance into the layout.
@@ -15,15 +15,6 @@ using System.Collections.Immutable;
 /// </remarks>
 public static class Exports
 {
-    /// <summary>
-    /// Gets the url prefix to the scripts of this project.
-    /// </summary>
-    private static string Prefix { get; } = $"_content/{typeof(Exports).Namespace}";
-
-    private static IEnumerable<string> AdminPanelScripts => [];
-
-    private static IEnumerable<string> AdminPanelStylesheets => [];
-
     /// <summary>
     /// Gets the scripts.
     /// </summary>
@@ -44,4 +35,8 @@ public static class Exports
     public static ImmutableList<string> Stylesheets { get; } = AdminPanelEnvironment.IsHostingEmbedded
         ? Web.Map.Exports.Stylesheets.Concat(AdminPanelStylesheets).ToImmutableList()
         : AdminPanelStylesheets.ToImmutableList();
+
+    private static IEnumerable<string> AdminPanelScripts => [];
+
+    private static IEnumerable<string> AdminPanelStylesheets => [];
 }

@@ -1,4 +1,4 @@
-﻿// <copyright file="Weapons.cs" company="MUnique">
+// <copyright file="Weapons.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -301,11 +301,33 @@ internal class Weapons : InitializerBase
     /// <param name="darkLordClass">The dark lord class.</param>
     /// <param name="summonerClass">The summoner class.</param>
     /// <param name="ragefighterClass">The ragefighter class.</param>
-    protected void CreateWeapon(byte @group, byte number, byte slot, int skillNumber, byte width, byte height,
-        bool dropsFromMonsters, string name, byte dropLevel, int minimumDamage, int maximumDamage, int attackSpeed,
-        byte durability, int magicPower, int levelRequirement, int strengthRequirement, int agilityRequirement,
-        int energyRequirement, int vitalityRequirement,
-        int wizardClass, int knightClass, int elfClass, int magicGladiatorClass, int darkLordClass, int summonerClass, int ragefighterClass)
+    protected void CreateWeapon(
+        byte @group,
+        byte number,
+        byte slot,
+        int skillNumber,
+        byte width,
+        byte height,
+        bool dropsFromMonsters,
+        string name,
+        byte dropLevel,
+        int minimumDamage,
+        int maximumDamage,
+        int attackSpeed,
+        byte durability,
+        int magicPower,
+        int levelRequirement,
+        int strengthRequirement,
+        int agilityRequirement,
+        int energyRequirement,
+        int vitalityRequirement,
+        int wizardClass,
+        int knightClass,
+        int elfClass,
+        int magicGladiatorClass,
+        int darkLordClass,
+        int summonerClass,
+        int ragefighterClass)
     {
         var item = this.Context.CreateNew<ItemDefinition>();
         this.GameConfiguration.Items.Add(item);
@@ -338,7 +360,8 @@ internal class Weapons : InitializerBase
         var qualifiedCharacterClasses = this.GameConfiguration.DetermineCharacterClasses(wizardClass, knightClass, elfClass, magicGladiatorClass, darkLordClass, summonerClass, ragefighterClass);
         qualifiedCharacterClasses.ToList().ForEach(item.QualifiedCharacters.Add);
 
-        if (height == 1) // bolts and arrows
+        // Bolts and arrows.
+        if (height == 1)
         {
             var damagePowerUp = this.CreateItemBasePowerUpDefinition(Stats.AmmunitionDamageBonus, 0f, AggregateType.AddRaw);
             damagePowerUp.BonusPerLevelTable = this._ammunitionDamageIncreaseTable;
@@ -441,7 +464,8 @@ internal class Weapons : InitializerBase
             item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsTwoHandedWeaponEquipped, 1, AggregateType.AddRaw));
         }
 
-        if (group == (int)ItemGroups.Swords || (group == (int)ItemGroups.Scepters && number == 5)) // Crystal Sword
+        // Crystal Sword.
+        if (group == (int)ItemGroups.Swords || (group == (int)ItemGroups.Scepters && number == 5))
         {
             if (ragefighterClass == 0 || number < 2)
             {

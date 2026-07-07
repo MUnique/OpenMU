@@ -30,6 +30,7 @@ public static class GameContextTestHelper
         gameConfig.MaximumPartySize = 5;
         gameConfig.RecoveryInterval = int.MaxValue;
         gameConfig.MaximumInventoryMoney = int.MaxValue;
+        gameConfig.ItemDropDuration = TimeSpan.FromMinutes(1);
 
         var mapInitializer = new MapInitializer(gameConfig, new NullLogger<MapInitializer>(), NullDropGenerator.Instance, null);
         var plugInConfigurations = new List<PlugInConfiguration>

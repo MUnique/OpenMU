@@ -9,6 +9,7 @@ using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
+using System.Runtime.Versioning;
 using System.Windows.Forms;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -19,6 +20,7 @@ using Zuby.ADGV;
 /// <summary>
 /// The main form of the analyzer.
 /// </summary>
+[SupportedOSPlatform("windows")]
 public partial class MainForm : Form
 {
     private readonly BindingList<ICapturedConnection> _proxiedConnections = new();
@@ -116,7 +118,7 @@ public partial class MainForm : Form
     }
 
     /// <inheritdoc />
-    protected override void OnClosed(EventArgs e)
+    protected override void OnFormClosed(FormClosedEventArgs e)
     {
         if (this._clientListener != null)
         {
@@ -124,7 +126,7 @@ public partial class MainForm : Form
             this._clientListener = null;
         }
 
-        base.OnClosed(e);
+        base.OnFormClosed(e);
     }
 
     private static string ConvertFilterStringToExpressionString(string filter)

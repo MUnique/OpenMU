@@ -116,6 +116,32 @@ public class ObjectMovedPlugIn : IObjectMovedPlugIn
         await connection.SendAsync(Write).ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// Gets the walk code for the current client version.
+    /// </summary>
+    /// <returns>The walk code.</returns>
+    protected byte GetWalkCode()
+    {
+        if (this._player.ClientVersion.Season == 0)
+        {
+            return 0x10;
+        }
+
+        switch (this._player.ClientVersion.Language)
+        {
+            case ClientLanguage.English: return 0xD4;
+            case ClientLanguage.Japanese: return 0x1D;
+            case ClientLanguage.Chinese:
+            case ClientLanguage.Vietnamese:
+                return 0xD9;
+            case ClientLanguage.Filipino: return 0xDD;
+            case ClientLanguage.Korean: return 0xD3;
+            case ClientLanguage.Thai: return 0xD7;
+            default:
+                return (byte)PacketType.Walk;
+        }
+    }
+
     private async ValueTask ObjectWalkedAsync(ILocateable obj)
     {
         var connection = this._player.Connection;
@@ -197,28 +223,6 @@ public class ObjectMovedPlugIn : IObjectMovedPlugIn
             case ClientLanguage.Thai: return 0xD9;
             default:
                 return (byte)PacketType.Teleport;
-        }
-    }
-
-    protected byte GetWalkCode()
-    {
-        if (this._player.ClientVersion.Season == 0)
-        {
-            return 0x10;
-        }
-
-        switch (this._player.ClientVersion.Language)
-        {
-            case ClientLanguage.English: return 0xD4;
-            case ClientLanguage.Japanese: return 0x1D;
-            case ClientLanguage.Chinese:
-            case ClientLanguage.Vietnamese:
-                return 0xD9;
-            case ClientLanguage.Filipino: return 0xDD;
-            case ClientLanguage.Korean: return 0xD3;
-            case ClientLanguage.Thai: return 0xD7;
-            default:
-                return (byte)PacketType.Walk;
         }
     }
 }

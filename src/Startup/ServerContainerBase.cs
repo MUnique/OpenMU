@@ -46,7 +46,6 @@ public abstract class ServerContainerBase : IHostedService
     /// Restarts all servers of this container.
     /// </summary>
     /// <param name="onDatabaseInit">If set to <c>true</c>, this method is called during a database initialization.</param>
-    /// <returns></returns>
     public virtual async ValueTask RestartAllAsync(bool onDatabaseInit)
     {
         await this.StopAsync(default).ConfigureAwait(false);
@@ -78,7 +77,6 @@ public abstract class ServerContainerBase : IHostedService
     /// </summary>
     /// <param name="onDatabaseInit">If set to <c>true</c>, this method is called during a database initialization.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns></returns>
     protected virtual async ValueTask BeforeStartAsync(bool onDatabaseInit, CancellationToken cancellationToken)
     {
         // can be overwritten

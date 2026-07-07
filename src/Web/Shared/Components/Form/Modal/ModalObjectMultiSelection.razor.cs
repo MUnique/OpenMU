@@ -9,6 +9,7 @@ using Blazored.Modal;
 using Blazored.Modal.Services;
 using Microsoft.AspNetCore.Components;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Web.Shared.Services;
 
 /// <summary>
 /// A component which allows to select multiple instances of <typeparamref name="TItem"/> through the <see cref="ILookupController"/>.

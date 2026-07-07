@@ -204,7 +204,7 @@ public sealed class Party : AsyncDisposable
     /// <returns>The total experience distributed.</returns>
     public async ValueTask<int> DistributeExperienceAfterKillAsync(IAttackable killedObject, IObservable killer)
     {
-        using var _ = await this._distributionLock.LockAsync();
+        using var l = await this._distributionLock.LockAsync();
         try
         {
             return await this.InternalDistributeExperienceAfterKillAsync(killedObject, killer).ConfigureAwait(false);
@@ -223,7 +223,7 @@ public sealed class Party : AsyncDisposable
     /// <param name="amount">The amount of money to distribute.</param>
     public async ValueTask DistributeMoneyAfterKillAsync(IAttackable killed, IPartyMember killer, uint amount)
     {
-        using var _ = await this._distributionLock.LockAsync();
+        using var l = await this._distributionLock.LockAsync();
         try
         {
             this._logger.LogDebug("Distributing money after killing {name}", killed.GetName());
@@ -257,7 +257,7 @@ public sealed class Party : AsyncDisposable
     /// <returns>A list of drop item groups from nearby party members' active quests.</returns>
     public async ValueTask<IList<DropItemGroup>> GetQuestDropItemGroupsAsync(IPartyMember killer)
     {
-        using var _ = await this._distributionLock.LockAsync();
+        using var l = await this._distributionLock.LockAsync();
         try
         {
             using (await killer.ObserverLock.ReaderLockAsync().ConfigureAwait(false))
@@ -501,7 +501,7 @@ public sealed class Party : AsyncDisposable
 
             try
             {
-                using var _ = await player.ObserverLock.ReaderLockAsync().ConfigureAwait(false);
+                using var l = await player.ObserverLock.ReaderLockAsync().ConfigureAwait(false);
                 attributes[Stats.NearbyPartyMemberCount] = this._partyMembers.Count(player.Observers.Contains);
             }
             catch (Exception ex)

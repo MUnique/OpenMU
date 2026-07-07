@@ -127,21 +127,6 @@ internal class EntityFrameworkContextBase : IContext
         this.Context.Attach(item);
     }
 
-    private bool DetachInternal(object item)
-    {
-        var entry = this.Context.Entry(item);
-        if (entry is null)
-        {
-            return false;
-        }
-
-        var previousState = entry.State;
-        entry.State = EntityState.Detached;
-        this.ForEachAggregate(item, obj => this.DetachInternal(obj));
-
-        return previousState != EntityState.Added;
-    }
-
     /// <inheritdoc />
     public T CreateNew<T>(params object?[] args)
         where T : class
@@ -279,6 +264,21 @@ internal class EntityFrameworkContextBase : IContext
         }
 
         this.Context.Dispose();
+    }
+
+    private bool DetachInternal(object item)
+    {
+        var entry = this.Context.Entry(item);
+        if (entry is null)
+        {
+            return false;
+        }
+
+        var previousState = entry.State;
+        entry.State = EntityState.Detached;
+        this.ForEachAggregate(item, obj => this.DetachInternal(obj));
+
+        return previousState != EntityState.Added;
     }
 
     private IRepository<T> GetRepository<T>()

@@ -18,7 +18,7 @@ public partial class AutoForm<T>
     private string? _lastIncomingSearchTerm;
 
     /// <summary>
-    /// Gets or sets the model of the form, <see cref="EditForm.Model"/>.
+    /// Gets or sets the model of the form.
     /// </summary>
     [Parameter]
     public T Model { get; set; } = default!;

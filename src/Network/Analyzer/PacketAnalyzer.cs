@@ -1,4 +1,4 @@
-﻿// <copyright file="PacketAnalyzer.cs" company="MUnique">
+// <copyright file="PacketAnalyzer.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -12,7 +12,7 @@ using MUnique.OpenMU.Network.PlugIns;
 using static System.Buffers.Binary.BinaryPrimitives;
 
 /// <summary>
-/// Analyzer which analyzes data packets by considering the configuration files.
+/// Analyzer that analyzes data packets by considering the configuration files.
 /// </summary>
 public sealed class PacketAnalyzer : IDisposable
 {
@@ -455,27 +455,33 @@ public sealed class PacketAnalyzer : IDisposable
         var itemData = restData.Slice(binaryField.Index);
         var size = 5;
         var options = itemData[4];
-        if ((options & 1) == 1) // Option
+
+        // Option
+        if ((options & 1) == 1)
         {
             size++;
         }
 
-        if ((options & 8) == 8) // Excellent
+        // Excellent
+        if ((options & 8) == 8)
         {
             size++;
         }
 
-        if ((options & 0x10) == 0x10) // Ancient
+        // Ancient
+        if ((options & 0x10) == 0x10)
         {
             size++;
         }
 
-        if ((options & 0x20) == 0x20) // Harmony
+        // Harmony
+        if ((options & 0x20) == 0x20)
         {
             size++;
         }
 
-        if ((options & 0x80) == 0x80) // Sockets
+        // Sockets
+        if ((options & 0x80) == 0x80)
         {
             size++;
             var socketCount = itemData[size] & 0xF;

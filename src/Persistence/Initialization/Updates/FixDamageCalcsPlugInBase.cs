@@ -1,4 +1,4 @@
-﻿// <copyright file="FixDamageCalcsPlugInBase.cs" company="MUnique">
+// <copyright file="FixDamageCalcsPlugInBase.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -255,10 +255,11 @@ public abstract class FixDamageCalcsPlugInBase : UpdatePlugInBase
             charClass.BaseAttributeValues.Add(context.CreateNew<ConstValueAttribute>(1, physicalBaseDmgIncrease));
             charClass.BaseAttributeValues.Add(context.CreateNew<ConstValueAttribute>(-1, hasDoubleWield));
 
-            // Add double wield attribute combos
-            if (charClass.Number == 4 || charClass.Number == 6 || charClass.Number == 7 // DK classes
-                || charClass.Number == 12 || charClass.Number == 13 // MG classes
-                || charClass.Number == 24 || charClass.Number == 25) // RF classes
+            // Add double wield attribute combos.
+            // DK classes, MG classes, RF classes.
+            if (charClass.Number == 4 || charClass.Number == 6 || charClass.Number == 7
+                || charClass.Number == 12 || charClass.Number == 13
+                || charClass.Number == 24 || charClass.Number == 25)
             {
                 var tempDoubleWield = context.CreateNew<AttributeDefinition>(Guid.NewGuid(), "Temp Double Wield multiplier", string.Empty);
                 gameConfiguration.Attributes.Add(tempDoubleWield);
@@ -306,10 +307,11 @@ public abstract class FixDamageCalcsPlugInBase : UpdatePlugInBase
                 charClass.AttributeCombinations.Add(maxPhysBaseDmgByRightWeaponToMaxPhysBaseDmgByWeapon);
             }
 
-            // Add wizardry damage attribute combos
-            if (charClass.Number == 0 || charClass.Number == 2 || charClass.Number == 3 // DW classes
-                || charClass.Number == 12 || charClass.Number == 13 // MG classes
-                || charClass.Number == 20 || charClass.Number == 22 || charClass.Number == 23) // Summoner classes
+            // Add wizardry damage attribute combos.
+            // DW classes, MG classes, Summoner classes.
+            if (charClass.Number == 0 || charClass.Number == 2 || charClass.Number == 3
+                || charClass.Number == 12 || charClass.Number == 13
+                || charClass.Number == 20 || charClass.Number == 22 || charClass.Number == 23)
             {
                 var baseMinDmgBonusToMinWizBaseDmg = context.CreateNew<AttributeRelationship>(
                     minimumWizBaseDmg,
@@ -360,7 +362,9 @@ public abstract class FixDamageCalcsPlugInBase : UpdatePlugInBase
             }
 
             var attrCombos = charClass.AttributeCombinations.ToList();
-            if (charClass.Number == 4 || charClass.Number == 6 || charClass.Number == 7) // DK classes
+
+            // DK classes.
+            if (charClass.Number == 4 || charClass.Number == 6 || charClass.Number == 7)
             {
                 foreach (var attrCombo in attrCombos)
                 {
@@ -382,13 +386,15 @@ public abstract class FixDamageCalcsPlugInBase : UpdatePlugInBase
                 charClass.AttributeCombinations.Add(weaponMasteryAttackSpeedToAttackSpeedAny);
             }
 
-            if (charClass.Number == 16 || charClass.Number == 17) // Lord classes
+            // Lord classes.
+            if (charClass.Number == 16 || charClass.Number == 17)
             {
                 foreach (var attrCombo in attrCombos)
                 {
+                    // RavenBonusDamage is the old RavenBaseDamage.
                     if ((attrCombo.TargetAttribute == Stats.RavenMinimumDamage || attrCombo.TargetAttribute == Stats.RavenMaximumDamage)
                         && attrCombo.InputOperand == 1
-                        && attrCombo.InputAttribute == Stats.RavenBonusDamage) // RavenBonusDamage is the old RavenBaseDamage
+                        && attrCombo.InputAttribute == Stats.RavenBonusDamage)
                     {
                         charClass.AttributeCombinations.Remove(attrCombo);
                     }
@@ -421,7 +427,8 @@ public abstract class FixDamageCalcsPlugInBase : UpdatePlugInBase
                 charClass.BaseAttributeValues.Add(context.CreateNew<ConstValueAttribute>(0.3f, ravenCriticalDamageChance));
             }
 
-            if (charClass.Number == 0 || charClass.Number == 2 || charClass.Number == 3) // DW classes
+            // DW classes.
+            if (charClass.Number == 0 || charClass.Number == 2 || charClass.Number == 3)
             {
                 var weaponMasteryAttackSpeedToAttackSpeedAny = context.CreateNew<AttributeRelationship>(
                     attackSpeedAny,
@@ -439,7 +446,8 @@ public abstract class FixDamageCalcsPlugInBase : UpdatePlugInBase
                 charClass.BaseAttributeValues.Add(context.CreateNew<ConstValueAttribute>(0, Stats.NovaStageDamage.GetPersistent(gameConfiguration)));
             }
 
-            if (charClass.Number == 8 || charClass.Number == 10 || charClass.Number == 11) // Elf classes
+            // Elf classes.
+            if (charClass.Number == 8 || charClass.Number == 10 || charClass.Number == 11)
             {
                 var ammunitionDmgIncrease = context.CreateNew<AttributeDefinition>(Guid.NewGuid(), "Ammunition damage increase", string.Empty);
                 gameConfiguration.Attributes.Add(ammunitionDmgIncrease);
@@ -571,7 +579,8 @@ public abstract class FixDamageCalcsPlugInBase : UpdatePlugInBase
                 charClass.AttributeCombinations.Add(weaponMasteryAttackSpeedToAttackSpeedAny);
             }
 
-            if (charClass.Number == 12 || charClass.Number == 13) // MG classes
+            // MG classes.
+            if (charClass.Number == 12 || charClass.Number == 13)
             {
                 foreach (var attrCombo in attrCombos)
                 {
@@ -607,7 +616,8 @@ public abstract class FixDamageCalcsPlugInBase : UpdatePlugInBase
                 charClass.BaseAttributeValues.Add(context.CreateNew<ConstValueAttribute>(0, isOneHandedSwordEquipped));
             }
 
-            if (charClass.Number == 24 || charClass.Number == 25) // RF classes
+            // RF classes.
+            if (charClass.Number == 24 || charClass.Number == 25)
             {
                 foreach (var attrCombo in attrCombos)
                 {
@@ -623,7 +633,8 @@ public abstract class FixDamageCalcsPlugInBase : UpdatePlugInBase
                 }
             }
 
-            if (charClass.Number == 20 || charClass.Number == 22 || charClass.Number == 23) // Summoner classes
+            // Summoner classes.
+            if (charClass.Number == 20 || charClass.Number == 22 || charClass.Number == 23)
             {
                 var statsDefense = context.CreateNew<AttributeDefinition>(Guid.NewGuid(), "Stats defense", string.Empty);
                 gameConfiguration.Attributes.Add(statsDefense);

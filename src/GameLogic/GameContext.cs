@@ -343,6 +343,17 @@ public class GameContext : AsyncDisposable, IGameContext
     /// <param name="player">The player.</param>
     public virtual async ValueTask RemovePlayerAsync(Player player)
     {
+        bool removed;
+        using (await this._playerListLock.WriterLockAsync())
+        {
+            removed = this._playerList.Remove(player);
+        }
+
+        if (!removed)
+        {
+            return;
+        }
+
         PlayerCounter.Add(-1);
         if (player.SelectedCharacter != null)
         {
@@ -350,11 +361,6 @@ public class GameContext : AsyncDisposable, IGameContext
         }
 
         player.CurrentMap?.RemoveAsync(player);
-
-        using (await this._playerListLock.WriterLockAsync())
-        {
-            this._playerList.Remove(player);
-        }
 
         player.PlayerDisconnected -= this.RemovePlayerAsync;
         player.PlayerEnteredWorld -= this.PlayerEnteredWorldAsync;
@@ -384,7 +390,12 @@ public class GameContext : AsyncDisposable, IGameContext
         await playerList.Select(action).WhenAll().ConfigureAwait(false);
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Executes the specified action for each player, grouped by their culture.
+    /// </summary>
+    /// <param name="stateFactory">The state factory which creates a state for each culture group.</param>
+    /// <param name="action">The action to execute for each player and culture state.</param>
+    /// <typeparam name="TCultureState">The type of the culture state.</typeparam>
     public async ValueTask ForEachPlayerGroupedByCultureAsync<TCultureState>(Func<CultureInfo, TCultureState> stateFactory, Func<Player, TCultureState, Task> action)
     {
         if (this._playerList.Count == 0)
