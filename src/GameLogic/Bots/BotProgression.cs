@@ -17,12 +17,40 @@ using MUnique.OpenMU.GameLogic.Attributes;
 internal static class BotProgression
 {
     /// <summary>
+    /// The character level at which a bot changes into its second-generation class (e.g. Dark Knight
+    /// to Blade Knight), the way a player completes the class-change quest. The quest itself boils down
+    /// to exactly this assignment (see <c>QuestCompletionAction</c>), so bots take the direct route.
+    /// </summary>
+    public const int ClassEvolutionLevel = 200;
+
+    /// <summary>
     /// The character class numbers from the game's data model (<c>CharacterClassNumber</c> lives in the
     /// initialization assembly which GameLogic does not reference, so the relevant values are mirrored here).
     /// </summary>
     private const byte FairyElfNumber = 8;
+    private const byte MuseElfNumber = 10;
     private const byte DarkLordNumber = 16;
+    private const byte LordEmperorNumber = 17;
     private const byte RageFighterNumber = 24;
+    private const byte FistMasterNumber = 25;
+
+    /// <summary>
+    /// The base classes which evolve into a second-generation class at <see cref="ClassEvolutionLevel"/>:
+    /// Dark Wizard, Dark Knight, Fairy Elf and Summoner. The Magic Gladiator, Dark Lord and Rage Fighter
+    /// have no second generation - their next class is the level-400 master evolution, out of bot scope.
+    /// </summary>
+    private static readonly byte[] EvolvableClassNumbers = [0, 4, 8, 20];
+
+    /// <summary>
+    /// Gets the class the character evolves into at <see cref="ClassEvolutionLevel"/>, or null when the
+    /// class has no (in-scope) evolution.
+    /// </summary>
+    public static CharacterClass? GetEvolutionTarget(CharacterClass characterClass)
+    {
+        return EvolvableClassNumbers.Contains(characterClass.Number)
+            ? characterClass.NextGenerationClass
+            : null;
+    }
 
     /// <summary>
     /// How a bot invests its stat points, per class. Mirrors a sensible human build: everyone puts a
@@ -36,9 +64,9 @@ internal static class BotProgression
     {
         return characterClass.Number switch
         {
-            FairyElfNumber => new[] { (Stats.BaseVitality, 40), (Stats.BaseAgility, 40), (Stats.BaseEnergy, 20) },
-            DarkLordNumber => new[] { (Stats.BaseStrength, 35), (Stats.BaseVitality, 30), (Stats.BaseLeadership, 25), (Stats.BaseEnergy, 10) },
-            RageFighterNumber => new[] { (Stats.BaseStrength, 45), (Stats.BaseVitality, 35), (Stats.BaseEnergy, 20) },
+            FairyElfNumber or MuseElfNumber => new[] { (Stats.BaseVitality, 40), (Stats.BaseAgility, 40), (Stats.BaseEnergy, 20) },
+            DarkLordNumber or LordEmperorNumber => new[] { (Stats.BaseStrength, 35), (Stats.BaseVitality, 30), (Stats.BaseLeadership, 25), (Stats.BaseEnergy, 10) },
+            RageFighterNumber or FistMasterNumber => new[] { (Stats.BaseStrength, 45), (Stats.BaseVitality, 35), (Stats.BaseEnergy, 20) },
             _ => new[] { (GetMainDamageStat(characterClass), 50), (Stats.BaseVitality, 50) },
         };
     }

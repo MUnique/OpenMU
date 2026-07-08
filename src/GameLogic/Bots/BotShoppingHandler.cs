@@ -36,6 +36,9 @@ internal static class BotShoppingHandler
     /// <summary>Maximum purchases per potion kind per trip.</summary>
     private const int MaxPurchasesPerKind = 20;
 
+    /// <summary>Zen the bot keeps in reserve - it stops buying rather than spend its last coin.</summary>
+    private const int MinZenReserve = 10000;
+
     private static readonly TalkNpcAction TalkAction = new();
     private static readonly SellItemToNpcAction SellAction = new();
     private static readonly BuyNpcItemAction BuyAction = new();
@@ -148,7 +151,9 @@ internal static class BotShoppingHandler
                     continue;
                 }
 
-                for (var i = 0; i < MaxPurchasesPerKind && GetPotionCharges(player, potionNumber) < PotionTargetCharges; i++)
+                for (var i = 0; i < MaxPurchasesPerKind
+                     && GetPotionCharges(player, potionNumber) < PotionTargetCharges
+                     && player.Money > MinZenReserve; i++)
                 {
                     var moneyBefore = player.Money;
                     await BuyAction.BuyItemAsync(player, storeItem.ItemSlot).ConfigureAwait(false);

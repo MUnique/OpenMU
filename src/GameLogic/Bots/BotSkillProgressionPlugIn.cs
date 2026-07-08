@@ -55,6 +55,7 @@ public class BotSkillProgressionPlugIn : ICharacterLevelUpPlugIn
     {
         try
         {
+            this.EvolveClassIfDue(player);
             await this.SpendStatPointsAsync(player).ConfigureAwait(false);
             await this.LearnNewSkillsAsync(player).ConfigureAwait(false);
         }
@@ -62,6 +63,30 @@ public class BotSkillProgressionPlugIn : ICharacterLevelUpPlugIn
         {
             player.Logger.LogError(ex, "Failed to progress bot '{Name}' after level-up.", player.Name);
         }
+    }
+
+    /// <summary>
+    /// Changes the bot into its second-generation class (Dark Knight -> Blade Knight etc.) once it
+    /// reaches <see cref="BotProgression.ClassEvolutionLevel"/> - the exact assignment the class-change
+    /// quest performs for a human player (see <c>QuestCompletionAction</c>); simulating the quest run
+    /// itself would be invisible to observers anyway. Skills and gear of the new class follow
+    /// automatically, because all bot progression keys off the current class's qualifications.
+    /// </summary>
+    private void EvolveClassIfDue(Player player)
+    {
+        var character = player.SelectedCharacter!;
+        if (player.Level < BotProgression.ClassEvolutionLevel
+            || BotProgression.GetEvolutionTarget(character.CharacterClass!) is not { } evolvedClass)
+        {
+            return;
+        }
+
+        character.CharacterClass = evolvedClass;
+        player.Logger.LogInformation(
+            "Bot '{Name}' evolved into {Class} at level {Level}.",
+            player.Name,
+            evolvedClass.Name,
+            player.Level);
     }
 
     private async ValueTask SpendStatPointsAsync(Player player)

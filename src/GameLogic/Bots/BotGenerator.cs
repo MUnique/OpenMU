@@ -28,7 +28,20 @@ internal sealed class BotGenerator
 {
     private const string LoginPrefix = "bot";
     private const int MinLevel = 10;
-    private const int MaxLevel = 80;
+
+    /// <summary>
+    /// The highest generated level. High enough that the upper maps (Tarkan, Aida, Kanturu, ...) get a
+    /// resident bot population and that some bots start beyond the class evolution level
+    /// (<see cref="BotProgression.ClassEvolutionLevel"/>) - those are created as their second-generation
+    /// class right away, like a player who did the class quest long ago.
+    /// </summary>
+    private const int MaxLevel = 250;
+
+    /// <summary>
+    /// Skew of the level distribution: values above 1 make low and mid levels more common than high
+    /// ones, like a real server's population pyramid (an even spread would feel top-heavy).
+    /// </summary>
+    private const double LevelSkew = 1.6;
     private const int StartMoney = 100000;
 
     /// <summary>Upgrade level (+6) of the starter gear, giving fresh bots a survival buffer until they can warp.</summary>
@@ -133,7 +146,7 @@ internal sealed class BotGenerator
             for (byte slot = 0; slot < perAccount; slot++)
             {
                 var characterClass = classQueue.Count > 0 ? classQueue.Dequeue() : creatableClasses.SelectRandom()!;
-                var level = Rand.NextInt(minLevel, maxLevel + 1);
+                var level = minLevel + (int)((maxLevel - minLevel) * Math.Pow(Rand.NextInt(0, 1001) / 1000.0, LevelSkew));
                 var name = await this._nameGenerator.GenerateUniqueAsync(context, reservedNames, cancellationToken).ConfigureAwait(false);
                 this.CreateCharacter(context, account, name, characterClass, level, slot, experienceTable);
             }
@@ -234,6 +247,15 @@ internal sealed class BotGenerator
 
     private void CreateCharacter(IPlayerContext context, Account account, string name, CharacterClass characterClass, int level, byte slot, long[] experienceTable)
     {
+        // A character generated beyond the class evolution level was created as its second-generation
+        // class right away - like a player who completed the class quest long ago. Everything downstream
+        // (stat weights, skills, gear) keys off the evolved class.
+        if (level >= BotProgression.ClassEvolutionLevel
+            && BotProgression.GetEvolutionTarget(characterClass) is { } evolvedClass)
+        {
+            characterClass = evolvedClass;
+        }
+
         var character = context.CreateNew<Character>();
         character.CharacterClass = characterClass;
         character.Name = name;
