@@ -229,8 +229,11 @@ public sealed class OfflinePlayerMuHelper : AsyncDisposable
             {
                 // Bots keep playing: reset the death state and re-anchor the hunting origin to the respawn
                 // position so the navigator picks a fresh hunting ground from where the bot came back to life.
+                // A death by a player's hand may have left a pending revenge - arm it now (the navigator
+                // then marches the bot back to its death site instead of picking a hunting ground).
                 this._isDead = false;
                 this._player.HuntingOrigin = this._player.Position;
+                this._player.ArmRevengeAfterRespawn();
                 this._player.Logger.LogInformation("Bot '{Name}' respawned; resuming.", this._player.Name);
                 return false;
             }

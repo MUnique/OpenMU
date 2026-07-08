@@ -105,6 +105,13 @@ internal sealed class BotNavigator : AsyncDisposable
     /// <summary>A party member keeps within this distance (tiles) of its leader; beyond it, it walks back.</summary>
     private const int FollowDistance = 10;
 
+    /// <summary>
+    /// Hunting grounds closer than this (tiles) to a recent death site are avoided after the same
+    /// player killed the bot repeatedly (see <see cref="OfflinePlayer.TryGetDeathSiteToAvoid"/>),
+    /// so the bot farms somewhere else instead of walking back into the same lost fight.
+    /// </summary>
+    private const int DeathSiteAvoidanceRange = 30;
+
     private static readonly TimeSpan EvaluationInterval = TimeSpan.FromSeconds(1);
     private static readonly TimeSpan EmptyGroundGrace = TimeSpan.FromSeconds(8);
 
@@ -236,11 +243,16 @@ internal sealed class BotNavigator : AsyncDisposable
 
     private static int GroundWeight(MonsterSpawnArea area, Point from)
     {
+        var proximity = Math.Max(1, 300 - GroundDistance(area, from));
+        return Math.Max(1, (int)area.Quantity) * proximity;
+    }
+
+    /// <summary>Manhattan distance between the center of the spawn area and the given point.</summary>
+    private static int GroundDistance(MonsterSpawnArea area, Point from)
+    {
         var centerX = (area.X1 + area.X2) / 2;
         var centerY = (area.Y1 + area.Y2) / 2;
-        var distance = Math.Abs(from.X - centerX) + Math.Abs(from.Y - centerY);
-        var proximity = Math.Max(1, 300 - distance);
-        return Math.Max(1, (int)area.Quantity) * proximity;
+        return Math.Abs(from.X - centerX) + Math.Abs(from.Y - centerY);
     }
 
     private async Task SafeEvaluateAsync(CancellationToken cancellationToken)
@@ -345,6 +357,16 @@ internal sealed class BotNavigator : AsyncDisposable
         // so it completes even for party members - the follow logic below would otherwise pull them
         // back to the leader mid-trade.
         if (await this.TryShoppingAsync(map, inSafezone).ConfigureAwait(false))
+        {
+            return;
+        }
+
+        // An armed revenge (a player killed this bot; it respawned on the same map) overrides the
+        // whole normal routine below, including following the party leader: the bot marches back to
+        // the place of its death. A leader on a revenge march still drags its followers along - the
+        // posse a wronged player would bring. Once the revenge is spent or times out, the bot falls
+        // back into the routine (and a follower rejoins its group).
+        if (await this.TryRevengeMarchAsync(map).ConfigureAwait(false))
         {
             return;
         }
@@ -496,6 +518,54 @@ internal sealed class BotNavigator : AsyncDisposable
 
         this._shoppingTarget = merchantPosition;
         this._player.Logger.LogInformation("Bot '{Name}' heads to the merchant for a shopping trip.", this._player.Name);
+        return true;
+    }
+
+    /// <summary>
+    /// Marches the bot back to the place of its death while a revenge is armed (see
+    /// <see cref="OfflinePlayer.TryGetRevengeDestination"/>). The single attempt is spent as soon as
+    /// the bot arrives or runs into its killer on the way - no extra combat logic is needed here,
+    /// because the re-armed aggressor memory already makes the combat handler attack the killer on
+    /// sight. Monsters along the route do not stop the march (self-defense still engages ones right
+    /// next to the bot); a bot that stopped to farm would never arrive within the revenge time.
+    /// </summary>
+    /// <param name="map">The current map.</param>
+    /// <returns>True, if the revenge march consumed this tick.</returns>
+    private async ValueTask<bool> TryRevengeMarchAsync(GameMap map)
+    {
+        if (!this._player.TryGetRevengeDestination(map.Definition, out var deathSite))
+        {
+            return false;
+        }
+
+        if (this._player.RecentAggressor is { } aggressor
+            && ReferenceEquals(aggressor.CurrentMap, map)
+            && this._player.GetDistanceTo(aggressor.Position) <= TravelStopRange)
+        {
+            // Ran into the killer before reaching the site - that is who we came for. Stop travelling
+            // and let the combat handler (which already prioritizes the aggressor) take over.
+            this._player.ExpireRevenge("the bot caught up with its killer");
+            return true;
+        }
+
+        if (this._player.GetDistanceTo(deathSite) <= HuntingRange)
+        {
+            // Arrived. If the killer still stands here, the armed aggressor memory makes the combat
+            // handler engage; otherwise the bot simply hunts on normally from this spot.
+            this._player.ExpireRevenge("the bot arrived at the death site");
+            return false;
+        }
+
+        this._destination = deathSite;
+        this._hasDestination = true;
+        if (!await this.TravelTowardAsync(map, deathSite).ConfigureAwait(false))
+        {
+            // No walkable route back (e.g. the respawn gate is across a river) - drop the attempt
+            // instead of re-issuing an impossible walk every tick.
+            this._player.ExpireRevenge("no route back to the death site");
+            return false;
+        }
+
         return true;
     }
 
@@ -978,6 +1048,21 @@ internal sealed class BotNavigator : AsyncDisposable
             band = candidates.Where(x => x.Level <= bottom + BandWidth).ToList();
         }
 
+        // After repeated deaths against the same player, the area around the death site is off the
+        // menu for a while (see OfflinePlayer.TryGetDeathSiteToAvoid): drop grounds close to it, so
+        // the bot farms somewhere else instead of walking back into the same lost fight. Only if
+        // EVERY candidate lies near the death site are they all kept - relocating within the band is
+        // still better than not picking any ground at all (the point pick below still steers away).
+        Point? siteToAvoid = this._player.TryGetDeathSiteToAvoid(map.Definition, out var avoidPoint) ? avoidPoint : null;
+        if (siteToAvoid is { } avoid)
+        {
+            var farGrounds = band.Where(x => GroundDistance(x.Area, avoid) > DeathSiteAvoidanceRange).ToList();
+            if (farGrounds.Count > 0)
+            {
+                band = farGrounds;
+            }
+        }
+
         // Weight the choice by spawn quantity and proximity, so the bot prefers nearby, dense grounds
         // (shorter, safer travel) while keeping some variety.
         var position = this._player.Position;
@@ -988,10 +1073,10 @@ internal sealed class BotNavigator : AsyncDisposable
         }
 
         groundLevel = chosen.Level;
-        return this.TryPickWalkablePoint(map, chosen.Area, out ground);
+        return this.TryPickWalkablePoint(map, chosen.Area, siteToAvoid, out ground);
     }
 
-    private bool TryPickWalkablePoint(GameMap map, MonsterSpawnArea area, out Point point)
+    private bool TryPickWalkablePoint(GameMap map, MonsterSpawnArea area, Point? avoidCenter, out Point point)
     {
         var minX = Math.Min(area.X1, area.X2);
         var maxX = Math.Max(area.X1, area.X2);
@@ -1002,11 +1087,23 @@ internal sealed class BotNavigator : AsyncDisposable
         {
             var x = Rand.NextInt(minX, maxX + 1);
             var y = Rand.NextInt(minY, maxY + 1);
-            if (map.Terrain.WalkMap[x, y] && !map.Terrain.SafezoneMap[x, y])
+            if (!map.Terrain.WalkMap[x, y] || map.Terrain.SafezoneMap[x, y])
             {
-                point = new Point((byte)x, (byte)y);
-                return true;
+                continue;
             }
+
+            // MU spawn areas can span most of the map, so a random point of an otherwise "far" area
+            // may still land right at the death site to avoid - re-roll such points. If the area
+            // offers nothing else, the attempts run out and the pick fails like for any other
+            // unusable area (the caller then simply retries next tick).
+            if (avoidCenter is { } avoid
+                && Math.Abs(x - avoid.X) + Math.Abs(y - avoid.Y) <= DeathSiteAvoidanceRange)
+            {
+                continue;
+            }
+
+            point = new Point((byte)x, (byte)y);
+            return true;
         }
 
         point = default;
