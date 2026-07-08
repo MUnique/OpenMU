@@ -26,10 +26,21 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
     /// </summary>
     private static readonly TimeSpan StartupDelay = TimeSpan.FromSeconds(15);
 
-    private readonly BotManager _botManager = new();
-
     private static readonly TimeSpan MaintenanceInterval = TimeSpan.FromSeconds(60);
     private static readonly TimeSpan PartyReformInterval = TimeSpan.FromMinutes(60);
+
+    /// <summary>
+    /// The typical activity of a player base by local hour (0..1): quietest in the early morning,
+    /// busiest in the evening. Scales between <see cref="BotConfiguration.MinOnlineSharePercent"/>
+    /// and 100% of the bot population.
+    /// </summary>
+    private static readonly double[] ActivityByHour =
+    [
+        0.30, 0.15, 0.05, 0.00, 0.00, 0.05, 0.10, 0.20, 0.30, 0.35, 0.40, 0.45,
+        0.50, 0.50, 0.55, 0.60, 0.70, 0.80, 0.90, 1.00, 1.00, 0.95, 0.80, 0.50,
+    ];
+
+    private readonly BotManager _botManager = new();
 
     private DateTime _nextRunUtc = DateTime.UtcNow + StartupDelay;
     private DateTime _nextMaintenanceUtc = DateTime.UtcNow + StartupDelay + StartupDelay;
@@ -157,16 +168,22 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
         }
     }
 
-    /// <summary>
-    /// The typical activity of a player base by local hour (0..1): quietest in the early morning,
-    /// busiest in the evening. Scales between <see cref="BotConfiguration.MinOnlineSharePercent"/>
-    /// and 100% of the bot population.
-    /// </summary>
-    private static readonly double[] ActivityByHour =
-    [
-        0.30, 0.15, 0.05, 0.00, 0.00, 0.05, 0.10, 0.20, 0.30, 0.35, 0.40, 0.45,
-        0.50, 0.50, 0.55, 0.60, 0.70, 0.80, 0.90, 1.00, 1.00, 0.95, 0.80, 0.50,
-    ];
+    /// <inheritdoc />
+    public void ForceStart()
+    {
+        this._nextRunUtc = DateTime.UtcNow;
+    }
+
+    /// <inheritdoc />
+    public object CreateDefaultConfig()
+    {
+        return CreateDefaultConfiguration();
+    }
+
+    private static BotConfiguration CreateDefaultConfiguration()
+    {
+        return new BotConfiguration();
+    }
 
     /// <summary>
     /// Runs the periodic post-spawn maintenance: the presence rotation (one bot in or out per pass, so
@@ -252,23 +269,6 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
                 logger.LogInformation("Bot presence rotation: -1 '{Name}' (online {Online}/{Target} of {Total}).", stopped, online - 1, targetOnline, totalPopulation);
             }
         }
-    }
-
-    /// <inheritdoc />
-    public void ForceStart()
-    {
-        this._nextRunUtc = DateTime.UtcNow;
-    }
-
-    /// <inheritdoc />
-    public object CreateDefaultConfig()
-    {
-        return CreateDefaultConfiguration();
-    }
-
-    private static BotConfiguration CreateDefaultConfiguration()
-    {
-        return new BotConfiguration();
     }
 
     /// <summary>

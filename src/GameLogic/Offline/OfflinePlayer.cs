@@ -15,8 +15,13 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 public class OfflinePlayer : Player
 {
+    /// <summary>How long an attack by a player stays "hot" as a self-defense target.</summary>
+    private static readonly TimeSpan AggressionMemory = TimeSpan.FromSeconds(15);
+
     private OfflinePlayerMuHelper? _intelligence;
     private Task? _intelligenceDisposeTask;
+    private Player? _lastAggressor;
+    private DateTime _lastAggressionUtc;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="OfflinePlayer"/> class.
@@ -57,12 +62,6 @@ public class OfflinePlayer : Player
     /// </summary>
     internal System.Collections.Concurrent.ConcurrentQueue<Func<ValueTask>> PendingBotActions { get; } = new();
 
-    /// <summary>How long an attack by a player stays "hot" as a self-defense target.</summary>
-    private static readonly TimeSpan AggressionMemory = TimeSpan.FromSeconds(15);
-
-    private Player? _lastAggressor;
-    private DateTime _lastAggressionUtc;
-
     /// <summary>
     /// Gets the player who most recently attacked this bot (self-defense target), if the aggression
     /// is recent enough and the aggressor is still a viable target.
@@ -80,33 +79,6 @@ public class OfflinePlayer : Player
             }
 
             return null;
-        }
-    }
-
-    /// <summary>
-    /// Registers a player who attacked this bot, so the combat AI can defend itself.
-    /// </summary>
-    internal void RegisterAggressor(Player aggressor)
-    {
-        this._lastAggressor = aggressor;
-        this._lastAggressionUtc = DateTime.UtcNow;
-    }
-
-    /// <summary>
-    /// Executes and removes all queued <see cref="PendingBotActions"/>.
-    /// </summary>
-    internal async ValueTask DrainPendingBotActionsAsync()
-    {
-        while (this.PendingBotActions.TryDequeue(out var action))
-        {
-            try
-            {
-                await action().ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                this.Logger.LogError(ex, "Queued bot action failed for {Account}.", this.AccountLoginName);
-            }
         }
     }
 
@@ -171,6 +143,34 @@ public class OfflinePlayer : Player
         await this.DisconnectAsync().ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// Registers a player who attacked this bot, so the combat AI can defend itself.
+    /// </summary>
+    /// <param name="aggressor">The player who attacked this bot.</param>
+    internal void RegisterAggressor(Player aggressor)
+    {
+        this._lastAggressor = aggressor;
+        this._lastAggressionUtc = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// Executes and removes all queued <see cref="PendingBotActions"/>.
+    /// </summary>
+    internal async ValueTask DrainPendingBotActionsAsync()
+    {
+        while (this.PendingBotActions.TryDequeue(out var action))
+        {
+            try
+            {
+                await action().ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                this.Logger.LogError(ex, "Queued bot action failed for {Account}.", this.AccountLoginName);
+            }
+        }
+    }
+
     /// <inheritdoc />
     protected override async ValueTask InternalDisconnectAsync()
     {
@@ -208,6 +208,15 @@ public class OfflinePlayer : Player
     protected override ICustomPlugInContainer<IViewPlugIn> CreateViewPlugInContainer()
         => new OfflineViewPlugInContainer(this);
 
+    /// <summary>
+    /// Starts the intelligence which drives this offline player. Overridden by bots to also run navigation.
+    /// </summary>
+    protected virtual void StartIntelligence()
+    {
+        this._intelligence = new OfflinePlayerMuHelper(this);
+        this._intelligence.Start();
+    }
+
     private async ValueTask AdvanceToCharacterSelectionStateAsync()
     {
         // Advance state to allow the intelligence to perform actions.
@@ -220,14 +229,5 @@ public class OfflinePlayer : Player
     {
         await this.GameContext.AddPlayerAsync(this).ConfigureAwait(false);
         await this.SetSelectedCharacterAsync(character).ConfigureAwait(false);
-    }
-
-    /// <summary>
-    /// Starts the intelligence which drives this offline player. Overridden by bots to also run navigation.
-    /// </summary>
-    protected virtual void StartIntelligence()
-    {
-        this._intelligence = new OfflinePlayerMuHelper(this);
-        this._intelligence.Start();
     }
 }

@@ -7,12 +7,12 @@ namespace MUnique.OpenMU.GameLogic.Bots;
 using System.Collections.Concurrent;
 using System.Threading;
 using MUnique.OpenMU.DataModel.Entities;
-using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Offline;
 using MUnique.OpenMU.GameLogic.PlayerActions;
 using MUnique.OpenMU.Pathfinding;
+using MUnique.OpenMU.Persistence;
 
 /// <summary>
 /// Drives a bot's high-level navigation. It picks a hunting ground that suits the bot's level from
@@ -22,9 +22,6 @@ using MUnique.OpenMU.Pathfinding;
 /// </summary>
 internal sealed class BotNavigator : AsyncDisposable
 {
-    private static readonly TimeSpan EvaluationInterval = TimeSpan.FromSeconds(1);
-    private static readonly TimeSpan EmptyGroundGrace = TimeSpan.FromSeconds(8);
-
     /// <summary>A bot only warps to another map if it offers monsters at least this many levels stronger (avoids hopping for tiny gains).</summary>
     private const int WarpImprovementMargin = 3;
 
@@ -80,15 +77,6 @@ internal sealed class BotNavigator : AsyncDisposable
     /// </summary>
     private const int PathReuseTolerance = 4;
 
-    /// <summary>How often the bot checks its backpack for equippable upgrades.</summary>
-    private static readonly TimeSpan EquipCheckInterval = TimeSpan.FromSeconds(8);
-
-    /// <summary>How often the bot considers whether it needs a shopping trip.</summary>
-    private static readonly TimeSpan ShoppingCheckInterval = TimeSpan.FromSeconds(30);
-
-    /// <summary>Cooldown after a shopping trip before considering the next one.</summary>
-    private static readonly TimeSpan ShoppingCooldown = TimeSpan.FromMinutes(10);
-
     /// <summary>How close (tiles) the bot must be to the merchant to trade.</summary>
     private const int MerchantTalkRange = 3;
 
@@ -109,14 +97,26 @@ internal sealed class BotNavigator : AsyncDisposable
 
     private const int MaxPointPickAttempts = 25;
 
+    /// <summary>A party member keeps within this distance (tiles) of its leader; beyond it, it walks back.</summary>
+    private const int FollowDistance = 10;
+
+    private static readonly TimeSpan EvaluationInterval = TimeSpan.FromSeconds(1);
+    private static readonly TimeSpan EmptyGroundGrace = TimeSpan.FromSeconds(8);
+
+    /// <summary>How often the bot checks its backpack for equippable upgrades.</summary>
+    private static readonly TimeSpan EquipCheckInterval = TimeSpan.FromSeconds(8);
+
+    /// <summary>How often the bot considers whether it needs a shopping trip.</summary>
+    private static readonly TimeSpan ShoppingCheckInterval = TimeSpan.FromSeconds(30);
+
+    /// <summary>Cooldown after a shopping trip before considering the next one.</summary>
+    private static readonly TimeSpan ShoppingCooldown = TimeSpan.FromMinutes(10);
+
     /// <summary>Minimum time between two cross-map warps, so a bot does not bounce between maps.</summary>
     private static readonly TimeSpan WarpCooldown = TimeSpan.FromSeconds(60);
 
     /// <summary>Cooldown for following the party leader to another map (shorter, so the group regroups quickly).</summary>
     private static readonly TimeSpan FollowWarpCooldown = TimeSpan.FromSeconds(20);
-
-    /// <summary>A party member keeps within this distance (tiles) of its leader; beyond it, it walks back.</summary>
-    private const int FollowDistance = 10;
 
     /// <summary>
     /// If the bot's position has not changed for this long it is considered stuck (a wedged walk, or a
@@ -203,6 +203,73 @@ internal sealed class BotNavigator : AsyncDisposable
         }
 
         base.Dispose(disposing);
+    }
+
+    /// <summary>
+    /// Determines whether the bot has outgrown the given map: the strongest monster it could safely
+    /// hunt anywhere is meaningfully above the strongest one this map has to offer.
+    /// </summary>
+    private static bool IsMapOutgrown(GameMapDefinition mapDefinition, int botLevel)
+    {
+        var cap = GetHuntCap(botLevel);
+        return BestHuntableLevel(mapDefinition, cap) + WarpImprovementMargin < cap;
+    }
+
+    private static PathFinder CreateTravelPathFinder()
+    {
+        return new PathFinder(new FullGridNetwork(true))
+        {
+            Heuristic = new ManhattanTravelHeuristic(),
+            HeuristicEstimate = TravelHeuristicWeight,
+            SearchLimit = TravelSearchLimit,
+        };
+    }
+
+    private static ConcurrentBag<PathFinder> CreateTravelPathFinderPool()
+    {
+        var pool = new ConcurrentBag<PathFinder>();
+        for (var i = 0; i < TravelPathFinderPoolSize; i++)
+        {
+            pool.Add(CreateTravelPathFinder());
+        }
+
+        return pool;
+    }
+
+    /// <summary>The highest monster level a bot of the given level should fight - shared with the combat AI.</summary>
+    private static int GetHuntCap(int botLevel) => CombatHandler.GetSafeHuntCap(botLevel);
+
+    /// <summary>The strongest monster level on the map which is still at or below the safe cap; 0 if none.</summary>
+    private static int BestHuntableLevel(GameMapDefinition mapDefinition, int cap)
+    {
+        var best = 0;
+        foreach (var area in mapDefinition.MonsterSpawns)
+        {
+            if (area is not { Quantity: > 0, MonsterDefinition.ObjectKind: NpcObjectKind.Monster })
+            {
+                continue;
+            }
+
+            var level = GetMonsterLevel(area.MonsterDefinition!);
+            if (level > 0 && level <= cap && level > best)
+            {
+                best = level;
+            }
+        }
+
+        return best;
+    }
+
+    private static int GetMonsterLevel(MonsterDefinition definition)
+        => (int)(definition.Attributes.FirstOrDefault(a => a.AttributeDefinition == Stats.Level)?.Value ?? 0f);
+
+    private static int GroundWeight(MonsterSpawnArea area, Point from)
+    {
+        var centerX = (area.X1 + area.X2) / 2;
+        var centerY = (area.Y1 + area.Y2) / 2;
+        var distance = Math.Abs(from.X - centerX) + Math.Abs(from.Y - centerY);
+        var proximity = Math.Max(1, 300 - distance);
+        return Math.Max(1, (int)area.Quantity) * proximity;
     }
 
     private async Task SafeEvaluateAsync(CancellationToken cancellationToken)
@@ -549,16 +616,6 @@ internal sealed class BotNavigator : AsyncDisposable
     }
 
     /// <summary>
-    /// Determines whether the bot has outgrown the given map: the strongest monster it could safely
-    /// hunt anywhere is meaningfully above the strongest one this map has to offer.
-    /// </summary>
-    private static bool IsMapOutgrown(GameMapDefinition mapDefinition, int botLevel)
-    {
-        var cap = GetHuntCap(botLevel);
-        return BestHuntableLevel(mapDefinition, cap) + WarpImprovementMargin < cap;
-    }
-
-    /// <summary>
     /// Walks the next stretch towards the destination. A full route is resolved with a heuristic search
     /// (so it goes around walls and out of the town gate) and the first <see cref="StepsPerHop"/> steps are
     /// issued; the remainder is recomputed from the new position on the next tick. The safe zone is allowed
@@ -765,27 +822,6 @@ internal sealed class BotNavigator : AsyncDisposable
         }
     }
 
-    private static PathFinder CreateTravelPathFinder()
-    {
-        return new PathFinder(new FullGridNetwork(true))
-        {
-            Heuristic = new ManhattanTravelHeuristic(),
-            HeuristicEstimate = TravelHeuristicWeight,
-            SearchLimit = TravelSearchLimit,
-        };
-    }
-
-    private static ConcurrentBag<PathFinder> CreateTravelPathFinderPool()
-    {
-        var pool = new ConcurrentBag<PathFinder>();
-        for (var i = 0; i < TravelPathFinderPoolSize; i++)
-        {
-            pool.Add(CreateTravelPathFinder());
-        }
-
-        return pool;
-    }
-
     /// <summary>
     /// Finds the position of the nearest live, attackable monster within <see cref="MonsterSeekRadius"/> that
     /// the bot can safely fight, so the bot heads straight for a real monster instead of a random tile in a
@@ -872,30 +908,6 @@ internal sealed class BotNavigator : AsyncDisposable
     }
 
     private int GetBotLevel() => (int)(this._player.Attributes?[Stats.Level] ?? 1);
-
-    /// <summary>The highest monster level a bot of the given level should fight - shared with the combat AI.</summary>
-    private static int GetHuntCap(int botLevel) => CombatHandler.GetSafeHuntCap(botLevel);
-
-    /// <summary>The strongest monster level on the map which is still at or below the safe cap; 0 if none.</summary>
-    private static int BestHuntableLevel(GameMapDefinition mapDefinition, int cap)
-    {
-        var best = 0;
-        foreach (var area in mapDefinition.MonsterSpawns)
-        {
-            if (area is not { Quantity: > 0, MonsterDefinition.ObjectKind: NpcObjectKind.Monster })
-            {
-                continue;
-            }
-
-            var level = GetMonsterLevel(area.MonsterDefinition!);
-            if (level > 0 && level <= cap && level > best)
-            {
-                best = level;
-            }
-        }
-
-        return best;
-    }
 
     /// <summary>
     /// Picks the enterable map (other than the current one) that offers the strongest monsters the bot can
@@ -985,30 +997,6 @@ internal sealed class BotNavigator : AsyncDisposable
         return this.TryPickWalkablePoint(map, chosen.Area, out ground);
     }
 
-    private static int GetMonsterLevel(MonsterDefinition definition)
-        => (int)(definition.Attributes.FirstOrDefault(a => a.AttributeDefinition == Stats.Level)?.Value ?? 0f);
-
-    private static int GroundWeight(MonsterSpawnArea area, Point from)
-    {
-        var centerX = (area.X1 + area.X2) / 2;
-        var centerY = (area.Y1 + area.Y2) / 2;
-        var distance = Math.Abs(from.X - centerX) + Math.Abs(from.Y - centerY);
-        var proximity = Math.Max(1, 300 - distance);
-        return Math.Max(1, (int)area.Quantity) * proximity;
-    }
-
-    /// <summary>
-    /// A Manhattan distance heuristic (the path finder applies its own estimate multiplier), used to turn the
-    /// otherwise unguided search into A* for long-distance bot travel.
-    /// </summary>
-    private sealed class ManhattanTravelHeuristic : IHeuristic
-    {
-        public int HeuristicEstimateMultiplier { get; set; }
-
-        public int CalculateHeuristicDistance(Point location, Point target)
-            => this.HeuristicEstimateMultiplier * (Math.Abs(location.X - target.X) + Math.Abs(location.Y - target.Y));
-    }
-
     private bool TryPickWalkablePoint(GameMap map, MonsterSpawnArea area, out Point point)
     {
         var minX = Math.Min(area.X1, area.X2);
@@ -1029,5 +1017,17 @@ internal sealed class BotNavigator : AsyncDisposable
 
         point = default;
         return false;
+    }
+
+    /// <summary>
+    /// A Manhattan distance heuristic (the path finder applies its own estimate multiplier), used to turn the
+    /// otherwise unguided search into A* for long-distance bot travel.
+    /// </summary>
+    private sealed class ManhattanTravelHeuristic : IHeuristic
+    {
+        public int HeuristicEstimateMultiplier { get; set; }
+
+        public int CalculateHeuristicDistance(Point location, Point target)
+            => this.HeuristicEstimateMultiplier * (Math.Abs(location.X - target.X) + Math.Abs(location.Y - target.Y));
     }
 }

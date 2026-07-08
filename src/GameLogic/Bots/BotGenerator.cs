@@ -164,30 +164,6 @@ internal sealed class BotGenerator
     }
 
     /// <summary>
-    /// Builds a shuffled queue of character classes with even quotas across <paramref name="classes"/>,
-    /// so the generated population is balanced instead of relying on the variance of independent random
-    /// draws. The order is randomized so accounts do not get a predictable class pattern.
-    /// </summary>
-    private static Queue<CharacterClass> BuildBalancedClassQueue(IList<CharacterClass> classes, int total)
-    {
-        var pool = new List<CharacterClass>(total);
-        for (var n = 0; n < total; n++)
-        {
-            // Even quotas: class index cycles, so each class appears total/count times (+1 for the first remainder classes).
-            pool.Add(classes[n % classes.Count]);
-        }
-
-        // Fisher-Yates shuffle so the balanced pool is handed out in random order.
-        for (var n = pool.Count - 1; n > 0; n--)
-        {
-            var j = Rand.NextInt(0, n + 1);
-            (pool[n], pool[j]) = (pool[j], pool[n]);
-        }
-
-        return new Queue<CharacterClass>(pool);
-    }
-
-    /// <summary>
     /// Deletes all bot accounts (and, by cascade, their characters and owned data).
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
@@ -245,6 +221,57 @@ internal sealed class BotGenerator
         return keyConfiguration;
     }
 
+    /// <summary>
+    /// Builds a shuffled queue of character classes with even quotas across <paramref name="classes"/>,
+    /// so the generated population is balanced instead of relying on the variance of independent random
+    /// draws. The order is randomized so accounts do not get a predictable class pattern.
+    /// </summary>
+    private static Queue<CharacterClass> BuildBalancedClassQueue(IList<CharacterClass> classes, int total)
+    {
+        var pool = new List<CharacterClass>(total);
+        for (var n = 0; n < total; n++)
+        {
+            // Even quotas: class index cycles, so each class appears total/count times (+1 for the first remainder classes).
+            pool.Add(classes[n % classes.Count]);
+        }
+
+        // Fisher-Yates shuffle so the balanced pool is handed out in random order.
+        for (var n = pool.Count - 1; n > 0; n--)
+        {
+            var j = Rand.NextInt(0, n + 1);
+            (pool[n], pool[j]) = (pool[j], pool[n]);
+        }
+
+        return new Queue<CharacterClass>(pool);
+    }
+
+    /// <summary>
+    /// Spends the character's level-up points, so a high-level bot actually has high-level stats.
+    /// Without this a generated level-80 bot would fight with level-1 base stats (tiny health and
+    /// damage) and die instantly. The split follows the class build in <see cref="BotProgression"/>:
+    /// vitality and the damage stat for everyone, plus the energy/leadership the class's own support
+    /// skills require - the same split the bot keeps using for points it earns at runtime.
+    /// </summary>
+    private static void DistributeStatPoints(Character character, CharacterClass characterClass)
+    {
+        var points = character.LevelUpPoints;
+        if (points <= 0)
+        {
+            return;
+        }
+
+        var weights = BotProgression.GetStatWeights(characterClass);
+        foreach (var (stat, amount) in BotProgression.SplitPoints(points, weights))
+        {
+            var attribute = character.Attributes.FirstOrDefault(a => a.Definition == stat);
+            if (attribute is not null)
+            {
+                attribute.Value += amount;
+                character.LevelUpPoints -= amount;
+            }
+        }
+    }
+
     private void CreateCharacter(IPlayerContext context, Account account, string name, CharacterClass characterClass, int level, byte slot, long[] experienceTable)
     {
         // A character generated beyond the class evolution level was created as its second-generation
@@ -291,33 +318,6 @@ internal sealed class BotGenerator
         this.EquipStarterGear(context, character);
 
         account.Characters.Add(character);
-    }
-
-    /// <summary>
-    /// Spends the character's level-up points, so a high-level bot actually has high-level stats.
-    /// Without this a generated level-80 bot would fight with level-1 base stats (tiny health and
-    /// damage) and die instantly. The split follows the class build in <see cref="BotProgression"/>:
-    /// vitality and the damage stat for everyone, plus the energy/leadership the class's own support
-    /// skills require - the same split the bot keeps using for points it earns at runtime.
-    /// </summary>
-    private static void DistributeStatPoints(Character character, CharacterClass characterClass)
-    {
-        var points = character.LevelUpPoints;
-        if (points <= 0)
-        {
-            return;
-        }
-
-        var weights = BotProgression.GetStatWeights(characterClass);
-        foreach (var (stat, amount) in BotProgression.SplitPoints(points, weights))
-        {
-            var attribute = character.Attributes.FirstOrDefault(a => a.Definition == stat);
-            if (attribute is not null)
-            {
-                attribute.Value += amount;
-                character.LevelUpPoints -= amount;
-            }
-        }
     }
 
     /// <summary>

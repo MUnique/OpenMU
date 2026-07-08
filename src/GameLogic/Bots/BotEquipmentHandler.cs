@@ -27,6 +27,8 @@ internal static class BotEquipmentHandler
     /// Determines whether the dropped item would be an upgrade over the bot's currently equipped gear,
     /// so the pickup handler only collects items worth carrying.
     /// </summary>
+    /// <param name="player">The bot player which would wear the item.</param>
+    /// <param name="item">The dropped item to evaluate.</param>
     public static bool IsUpgradeFor(Player player, Item item)
     {
         if (item.Definition is not { } definition
@@ -62,24 +64,11 @@ internal static class BotEquipmentHandler
     }
 
     /// <summary>
-    /// Whether the item is gear this bot would wear at all: an equippable, class-qualified piece which -
-    /// if it is a weapon - matches the class's fighting style (an elf only considers bows, a wizard only
-    /// staves), so bots don't fill their off-hand with random qualified junk like a Small Axe.
-    /// </summary>
-    private static bool IsWearableCandidate(ItemDefinition definition, CharacterClass characterClass)
-    {
-        const byte lastWeaponGroup = 5;
-        return definition.ItemSlot is { ItemSlots.Count: > 0 }
-               && !definition.IsAmmunition
-               && definition.QualifiedCharacters.Contains(characterClass)
-               && (definition.Group > lastWeaponGroup || BotProgression.IsPreferredWeaponGroup(characterClass, (byte)definition.Group));
-    }
-
-    /// <summary>
     /// Scans the bot's backpack for equippable upgrades and puts the best one on; the replaced piece is
     /// dropped to the ground (a real player would leave the outgrown junk behind too), unless it is
     /// something valuable (excellent/ancient), which stays in the backpack.
     /// </summary>
+    /// <param name="player">The bot player whose backpack is scanned.</param>
     public static async ValueTask TryEquipUpgradesAsync(OfflinePlayer player)
     {
         if (player.Inventory is not { } inventory
@@ -184,6 +173,20 @@ internal static class BotEquipmentHandler
             // One swap per pass keeps the work per tick small; the next pass picks up the rest.
             return;
         }
+    }
+
+    /// <summary>
+    /// Whether the item is gear this bot would wear at all: an equippable, class-qualified piece which -
+    /// if it is a weapon - matches the class's fighting style (an elf only considers bows, a wizard only
+    /// staves), so bots don't fill their off-hand with random qualified junk like a Small Axe.
+    /// </summary>
+    private static bool IsWearableCandidate(ItemDefinition definition, CharacterClass characterClass)
+    {
+        const byte lastWeaponGroup = 5;
+        return definition.ItemSlot is { ItemSlots.Count: > 0 }
+               && !definition.IsAmmunition
+               && definition.QualifiedCharacters.Contains(characterClass)
+               && (definition.Group > lastWeaponGroup || BotProgression.IsPreferredWeaponGroup(characterClass, (byte)definition.Group));
     }
 
     /// <summary>

@@ -18,6 +18,9 @@ using MUnique.OpenMU.Interfaces;
 /// </summary>
 public sealed class HealingHandler
 {
+    /// <summary>Drink a mana potion once mana falls below this share, so casters can keep casting.</summary>
+    private const int ManaThresholdPercent = 30;
+
     private static readonly ItemConsumeAction ConsumeAction = new();
 
     private static readonly ItemIdentifier[] HealthPotionPriority =
@@ -34,9 +37,6 @@ public sealed class HealingHandler
         ItemConstants.MediumManaPotion,
         ItemConstants.SmallManaPotion,
     ];
-
-    /// <summary>Drink a mana potion once mana falls below this share, so casters can keep casting.</summary>
-    private const int ManaThresholdPercent = 30;
 
     private readonly OfflinePlayer _player;
     private readonly IMuHelperSettings? _config;

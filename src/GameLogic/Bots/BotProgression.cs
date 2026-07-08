@@ -42,9 +42,18 @@ internal static class BotProgression
     private static readonly byte[] EvolvableClassNumbers = [0, 4, 8, 20];
 
     /// <summary>
+    /// Skills of the buff type which must never enter a bot's auto-buff rotation: the summoner's
+    /// enemy debuffs (Sleep/Weakness/Innovation - the offline buff handler casts buffs on SELF, so the
+    /// bot would put itself to sleep), and Defense (18), which players get from equipping a shield
+    /// rather than learning it.
+    /// </summary>
+    private static readonly short[] ExcludedBuffSkillNumbers = [18, 219, 221, 222];
+
+    /// <summary>
     /// Gets the class the character evolves into at <see cref="ClassEvolutionLevel"/>, or null when the
     /// class has no (in-scope) evolution.
     /// </summary>
+    /// <param name="characterClass">The character class.</param>
     public static CharacterClass? GetEvolutionTarget(CharacterClass characterClass)
     {
         return EvolvableClassNumbers.Contains(characterClass.Number)
@@ -60,6 +69,7 @@ internal static class BotProgression
     /// like a real player would. The requirement gate in <see cref="MeetsRequirements"/> then unlocks
     /// those skills exactly when the grown stats reach the game's own thresholds.
     /// </summary>
+    /// <param name="characterClass">The character class.</param>
     public static IReadOnlyList<(AttributeDefinition Stat, int Weight)> GetStatWeights(CharacterClass characterClass)
     {
         return characterClass.Number switch
@@ -75,6 +85,8 @@ internal static class BotProgression
     /// Splits the given points proportionally to the class's stat weights, returning whole-point
     /// amounts which sum up to <paramref name="points"/> (the remainder goes to the first stat).
     /// </summary>
+    /// <param name="points">The number of points to split.</param>
+    /// <param name="weights">The stat weights of the class.</param>
     public static IEnumerable<(AttributeDefinition Stat, int Amount)> SplitPoints(int points, IReadOnlyList<(AttributeDefinition Stat, int Weight)> weights)
     {
         var totalWeight = weights.Sum(w => w.Weight);
@@ -98,18 +110,11 @@ internal static class BotProgression
     }
 
     /// <summary>
-    /// Skills of the buff type which must never enter a bot's auto-buff rotation: the summoner's
-    /// enemy debuffs (Sleep/Weakness/Innovation - the offline buff handler casts buffs on SELF, so the
-    /// bot would put itself to sleep), and Defense (18), which players get from equipping a shield
-    /// rather than learning it.
-    /// </summary>
-    private static readonly short[] ExcludedBuffSkillNumbers = [18, 219, 221, 222];
-
-    /// <summary>
     /// Determines whether the skill is one a bot may learn: an actual attack skill, or a self/party
     /// buff or heal with a magic effect (which the offline buff/heal handlers know how to cast).
     /// Passive boosts, event skills, enemy debuffs and utility skills are left out.
     /// </summary>
+    /// <param name="skill">The skill to check.</param>
     public static bool IsBotLearnableSkill(Skill skill)
     {
         if (skill.AttackDamage > 0
@@ -132,6 +137,8 @@ internal static class BotProgression
     /// <paramref name="getAttributeValue"/> resolves an attribute's current value; returning null means
     /// the attribute is unknown in the caller's context, which conservatively fails the requirement.
     /// </summary>
+    /// <param name="skill">The skill whose requirements are checked.</param>
+    /// <param name="getAttributeValue">Resolves an attribute's current value; null means the attribute is unknown.</param>
     public static bool MeetsRequirements(Skill skill, Func<AttributeDefinition, float?> getAttributeValue)
     {
         foreach (var requirement in skill.Requirements)
@@ -155,6 +162,7 @@ internal static class BotProgression
     /// actually has, so requirements can be evaluated before the character was ever composed at runtime.
     /// Returns null for attributes that have no base-stat counterpart.
     /// </summary>
+    /// <param name="attribute">The "total" attribute to map.</param>
     public static AttributeDefinition? TotalToBaseStat(AttributeDefinition attribute)
     {
         if (attribute == Stats.TotalEnergy)
@@ -196,6 +204,8 @@ internal static class BotProgression
     /// starter-weapon choice of the <see cref="BotGenerator"/>, so an elf never swaps its bow for a
     /// random axe it happens to be qualified for (which would also displace its arrows).
     /// </summary>
+    /// <param name="characterClass">The character class.</param>
+    /// <param name="itemGroup">The item group of the weapon.</param>
     public static bool IsPreferredWeaponGroup(CharacterClass characterClass, byte itemGroup)
     {
         const byte maxMeleeGroup = 3;

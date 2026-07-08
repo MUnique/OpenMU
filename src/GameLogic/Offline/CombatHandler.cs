@@ -32,12 +32,12 @@ public sealed class CombatHandler
     /// <summary>After this many consecutive failed approaches the target counts as unreachable.</summary>
     private const int MaxApproachFailures = 3;
 
-    /// <summary>How long an unreachable target is ignored before it may be considered again.</summary>
-    private static readonly TimeSpan UnreachableTargetBlacklistDuration = TimeSpan.FromSeconds(10);
-
     private const short DrainLifeBaseSkillId = 214;
     private const short DrainLifeStrengthenerSkillId = 458;
     private const short DrainLifeMasterySkillId = 462;
+
+    /// <summary>How long an unreachable target is ignored before it may be considered again.</summary>
+    private static readonly TimeSpan UnreachableTargetBlacklistDuration = TimeSpan.FromSeconds(10);
 
     private static readonly TargetedSkillDefaultPlugin DefaultPlugin = new();
 
@@ -81,14 +81,14 @@ public sealed class CombatHandler
     public int SkillCooldownTicks => this._skillCooldownTicks;
 
     /// <summary>
-    /// Gets the position to hunt around. Dynamic so bots can roam between hunting grounds.
-    /// </summary>
-    private Point OriginPosition => this._player.HuntingOrigin;
-
-    /// <summary>
     /// Gets the hunting range in tiles.
     /// </summary>
     public byte HuntingRange => CalculateHuntingRange(this._config);
+
+    /// <summary>
+    /// Gets the position to hunt around. Dynamic so bots can roam between hunting grounds.
+    /// </summary>
+    private Point OriginPosition => this._player.HuntingOrigin;
 
     /// <summary>
     /// Calculates the hunting range in tiles from the specified configuration.
@@ -104,6 +104,15 @@ public sealed class CombatHandler
 
         return (byte)Math.Max(DefaultRange, config.HuntingRange);
     }
+
+    /// <summary>
+    /// The strongest monster level a bot of the given level should fight. In MU a monster is far tougher
+    /// than a character of the same level, so bots target monsters well below their own level to survive
+    /// while still earning experience. Shared by the combat AI and the bot navigator, so a bot never
+    /// stops travelling for (or engages) a monster it should not fight.
+    /// </summary>
+    /// <param name="botLevel">The bot's character level.</param>
+    public static int GetSafeHuntCap(int botLevel) => Math.Max(MinSafeHuntLevel, (int)(botLevel * SafeMonsterFactor));
 
     /// <summary>
     /// Decrements the skill cooldown counter by one tick.
@@ -341,14 +350,6 @@ public sealed class CombatHandler
         var botLevel = (int)(this._player.Attributes?[Stats.Level] ?? 1);
         return monster.Attributes[Stats.Level] <= GetSafeHuntCap(botLevel);
     }
-
-    /// <summary>
-    /// The strongest monster level a bot of the given level should fight. In MU a monster is far tougher
-    /// than a character of the same level, so bots target monsters well below their own level to survive
-    /// while still earning experience. Shared by the combat AI and the bot navigator, so a bot never
-    /// stops travelling for (or engages) a monster it should not fight.
-    /// </summary>
-    public static int GetSafeHuntCap(int botLevel) => Math.Max(MinSafeHuntLevel, (int)(botLevel * SafeMonsterFactor));
 
     private async ValueTask ExecutePhysicalAttackAsync(IAttackable target)
     {

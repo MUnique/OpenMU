@@ -62,6 +62,7 @@ internal static class BotShoppingHandler
     /// Determines whether the bot should go shopping: the backpack is filling up with sellable junk,
     /// or a potion stack is running low (and there is Zen to restock with).
     /// </summary>
+    /// <param name="player">The bot player.</param>
     public static bool NeedsShopping(OfflinePlayer player)
     {
         if (player.Inventory is not { } inventory)
@@ -87,6 +88,7 @@ internal static class BotShoppingHandler
     /// Finds the position of a merchant NPC on the map (from the map's spawn configuration; merchants
     /// are stationary), preferring one which sells potions.
     /// </summary>
+    /// <param name="map">The game map.</param>
     public static Point? FindMerchantPosition(GameMap map)
     {
         MonsterSpawnArea? best = null;
@@ -116,6 +118,9 @@ internal static class BotShoppingHandler
     /// Performs the actual trade with the merchant standing near the given position: opens the dialog,
     /// sells the junk loot, buys potion refills and closes the dialog again.
     /// </summary>
+    /// <param name="player">The bot player.</param>
+    /// <param name="map">The game map.</param>
+    /// <param name="merchantPosition">The position of the merchant.</param>
     /// <returns>True, if a merchant was found and the trade ran; false if no merchant is there.</returns>
     public static async ValueTask<bool> TryTradeAsync(OfflinePlayer player, GameMap map, Point merchantPosition)
     {

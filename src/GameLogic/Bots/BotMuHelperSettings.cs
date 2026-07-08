@@ -93,6 +93,7 @@ internal sealed class BotMuHelperSettings : IMuHelperSettings
 
     // With the class heal skill learned (e.g. elf Heal), the HealingHandler casts it below the threshold
     // before falling back to potions - the same order a real player follows.
+
     /// <inheritdoc />
     public bool AutoHeal => true;
 
