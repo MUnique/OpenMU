@@ -98,6 +98,12 @@ internal sealed class BotNavigator : AsyncDisposable
     /// <summary>Minimum time between two cross-map warps, so a bot does not bounce between maps.</summary>
     private static readonly TimeSpan WarpCooldown = TimeSpan.FromSeconds(60);
 
+    /// <summary>Cooldown for following the party leader to another map (shorter, so the group regroups quickly).</summary>
+    private static readonly TimeSpan FollowWarpCooldown = TimeSpan.FromSeconds(20);
+
+    /// <summary>A party member keeps within this distance (tiles) of its leader; beyond it, it walks back.</summary>
+    private const int FollowDistance = 10;
+
     /// <summary>
     /// If the bot's position has not changed for this long it is considered stuck (a wedged walk, or a
     /// monster it can't reach). The navigator then forces a fresh destination so the bot gets going again.
@@ -282,11 +288,26 @@ internal sealed class BotNavigator : AsyncDisposable
             return;
         }
 
+        // Party members follow their leader instead of roaming on their own: to the leader's map when
+        // it warped away, and towards the leader when it moved off. Near the leader they hunt normally
+        // (the party heal/buff handlers and the party experience bonus need the group to stay together).
+        // Followers never warp on their own - the leader (the lowest-level member, so it only ever picks
+        // maps the whole group can hunt on) decides where the party goes.
+        var leaderToFollow = this.GetPartyLeaderToFollow();
+        if (leaderToFollow is not null)
+        {
+            if (await this.TryFollowLeaderAsync(map, leaderToFollow).ConfigureAwait(false))
+            {
+                return;
+            }
+        }
+
         // A bot that has OUTGROWN its map warps away with priority - even though trivial monsters are
         // still around. Without this, the nearest-monster homing always finds SOMETHING huntable on the
         // starter map, the warp logic below is never reached, and high-level bots farm level-5 mobs on
         // Lorencia forever (with the experience penalty) instead of moving on to their level's maps.
-        if (IsMapOutgrown(map.Definition, this.GetBotLevel())
+        if (leaderToFollow is null
+            && IsMapOutgrown(map.Definition, this.GetBotLevel())
             && await this.TryWarpToBetterMapAsync().ConfigureAwait(false))
         {
             return;
@@ -353,12 +374,69 @@ internal sealed class BotNavigator : AsyncDisposable
 
         this._emptyGroundSince = null;
 
-        if (await this.TryWarpToBetterMapAsync().ConfigureAwait(false))
+        if (leaderToFollow is null && await this.TryWarpToBetterMapAsync().ConfigureAwait(false))
         {
             return;
         }
 
         await this.PickGroundAndTravelAsync(map).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the party leader this bot should follow, or null if the bot is solo, is the leader itself,
+    /// or the leader is currently not followable (dead, no map).
+    /// </summary>
+    private Player? GetPartyLeaderToFollow()
+    {
+        if (this._player.Party is not { } party
+            || party.PartyMaster is not Player leader
+            || ReferenceEquals(leader, this._player)
+            || !leader.IsAlive
+            || leader.CurrentMap is null)
+        {
+            return null;
+        }
+
+        return leader;
+    }
+
+    /// <summary>
+    /// Keeps a party member with its leader: warps to the leader's map when the leader warped away,
+    /// and walks towards the leader when it moved out of the follow range.
+    /// </summary>
+    /// <returns>True, if following consumed this tick; false, if the bot is close enough and should hunt normally.</returns>
+    private async ValueTask<bool> TryFollowLeaderAsync(GameMap map, Player leader)
+    {
+        if (!ReferenceEquals(leader.CurrentMap, map))
+        {
+            if (DateTime.UtcNow - this._lastWarpUtc >= FollowWarpCooldown
+                && leader.CurrentMap is { } leaderMap
+                && leaderMap.Definition.ExitGates.Where(g => g.IsSpawnGate).SelectRandom() is { } leaderGate)
+            {
+                this._lastWarpUtc = DateTime.UtcNow;
+                this._hasDestination = false;
+                this._travelPath = null;
+                this._player.Logger.LogInformation(
+                    "Bot {Character} following party leader {Leader} to map {Map}.",
+                    this._player.Name,
+                    leader.Name,
+                    leaderMap.Definition.Name);
+                await this._player.WarpToAsync(leaderGate).ConfigureAwait(false);
+                await this.TryPersistCurrentMapAsync(leaderMap.Definition).ConfigureAwait(false);
+            }
+
+            return true;
+        }
+
+        if (this._player.GetDistanceTo(leader.Position) > FollowDistance)
+        {
+            this._destination = leader.Position;
+            this._hasDestination = true;
+            await this.TravelTowardAsync(map, leader.Position).ConfigureAwait(false);
+            return true;
+        }
+
+        return false;
     }
 
     /// <summary>

@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.Bots;
 
 using System.Collections.Concurrent;
 using System.Linq;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Offline;
 
 /// <summary>
@@ -117,6 +118,69 @@ public sealed class BotManager
                     bot.Logger.LogError(ex, "Error while stopping bot '{Key}'.", key);
                 }
             }
+        }
+    }
+
+    /// <summary>
+    /// Groups a share of the active bots into small hunting parties of level-wise similar characters,
+    /// like real players do: the party members follow their leader (see the follow logic in
+    /// <see cref="BotNavigator"/>), the elf heals the group, buffs are shared and the party experience
+    /// bonus applies. The rest of the bots keep hunting solo, so the population stays varied.
+    /// </summary>
+    /// <param name="gameContext">The game context (provides the party manager).</param>
+    public async ValueTask FormPartiesAsync(IGameContext gameContext)
+    {
+        const int minPartySize = 2;
+        const int maxPartySize = 5;
+        const int maxLevelGap = 12;
+        const int partiedSharePercent = 60;
+
+        var candidates = this._bots.Values
+            .Where(b => b.Party is null && b.Attributes is not null)
+            .OrderBy(b => b.Attributes![Stats.Level])
+            .ToList();
+
+        var index = 0;
+        while (index < candidates.Count - 1)
+        {
+            if (Rand.NextInt(0, 100) >= partiedSharePercent)
+            {
+                index++; // this bot stays solo
+                continue;
+            }
+
+            var leader = candidates[index];
+            var leaderLevel = (int)leader.Attributes![Stats.Level];
+            var targetSize = Rand.NextInt(minPartySize, maxPartySize + 1);
+            var members = new List<BotPlayer> { leader };
+            var next = index + 1;
+            while (next < candidates.Count
+                   && members.Count < targetSize
+                   && (int)candidates[next].Attributes![Stats.Level] - leaderLevel <= maxLevelGap)
+            {
+                members.Add(candidates[next]);
+                next++;
+            }
+
+            if (members.Count >= minPartySize)
+            {
+                var party = gameContext.PartyManager.CreateParty();
+                foreach (var member in members)
+                {
+                    if (!await party.AddAsync(member).ConfigureAwait(false))
+                    {
+                        break;
+                    }
+                }
+
+                leader.Logger.LogInformation(
+                    "Formed bot party of {Count} around '{Leader}' (level {Level}).",
+                    members.Count,
+                    leader.Name,
+                    leaderLevel);
+            }
+
+            index = next;
         }
     }
 

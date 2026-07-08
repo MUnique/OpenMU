@@ -135,6 +135,15 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
         }
 
         logger.LogInformation("Bot feature started {Started} of {Total} bots.", started, total);
+
+        try
+        {
+            await this._botManager.FormPartiesAsync(gameContext).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to form bot parties.");
+        }
     }
 
     /// <inheritdoc />

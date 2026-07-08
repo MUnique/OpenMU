@@ -109,13 +109,15 @@ internal sealed class BotMuHelperSettings : IMuHelperSettings
     public int PotionThresholdPercent => 60;
 
     /// <inheritdoc />
-    public bool SupportParty => false;
+    // Bots hunt in small parties (see BotManager.FormParties): the elf heals the group, buffs are
+    // shared, and the party experience bonus applies - like a real group of players.
+    public bool SupportParty => true;
 
     /// <inheritdoc />
-    public bool AutoHealParty => false;
+    public bool AutoHealParty => true;
 
     /// <inheritdoc />
-    public int HealPartyThresholdPercent => 0;
+    public int HealPartyThresholdPercent => 60;
 
     /// <inheritdoc />
     public bool UseDarkRaven => false;
