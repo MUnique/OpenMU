@@ -27,8 +27,10 @@ public sealed class CombatHandler
     /// See <see cref="IsSafeTarget"/>: the largest share of the bot's maximum health a single average
     /// monster hit may take for the monster to count as safe. Sized so the bot survives several hits
     /// even when a few monsters aggro at once, with the healing handler (potions at 60%) keeping up.
+    /// Tightened from 0.20 with the player-meta stat builds: their small health pools mean melee bots
+    /// (which stand inside the monster pack) need a bigger margin per hit to survive a swarm.
     /// </summary>
-    private const float SafeHitHealthShare = 0.20f;
+    private const float SafeHitHealthShare = 0.15f;
 
     /// <summary>
     /// See <see cref="IsSafeTarget"/>: the bot's attack power must exceed the monster's defense by this

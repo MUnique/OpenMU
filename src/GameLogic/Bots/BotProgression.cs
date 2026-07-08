@@ -27,12 +27,30 @@ internal static class BotProgression
     /// The character class numbers from the game's data model (<c>CharacterClassNumber</c> lives in the
     /// initialization assembly which GameLogic does not reference, so the relevant values are mirrored here).
     /// </summary>
+    private const byte DarkWizardNumber = 0;
+    private const byte SoulMasterNumber = 2;
+    private const byte GrandMasterNumber = 3;
+    private const byte DarkKnightNumber = 4;
+    private const byte BladeKnightNumber = 6;
+    private const byte BladeMasterNumber = 7;
     private const byte FairyElfNumber = 8;
     private const byte MuseElfNumber = 10;
+    private const byte HighElfNumber = 11;
+    private const byte MagicGladiatorNumber = 12;
+    private const byte DuelMasterNumber = 13;
     private const byte DarkLordNumber = 16;
     private const byte LordEmperorNumber = 17;
+    private const byte SummonerNumber = 20;
+    private const byte BloodySummonerNumber = 22;
+    private const byte DimensionMasterNumber = 23;
     private const byte RageFighterNumber = 24;
     private const byte FistMasterNumber = 25;
+
+    /// <summary>
+    /// The share of each invested batch that goes into vitality on reset-meta servers, until the bot's
+    /// personal <see cref="GetVitalityTarget"/> is reached (out of a nominal weight total of ~100).
+    /// </summary>
+    private const int ResetMetaVitalityWeight = 5;
 
     /// <summary>
     /// The base classes which evolve into a second-generation class at <see cref="ClassEvolutionLevel"/>:
@@ -62,51 +80,186 @@ internal static class BotProgression
     }
 
     /// <summary>
-    /// How a bot invests its stat points, per class. Mirrors a sensible human build: everyone puts a
-    /// large share into vitality (survival) and their damage stat; classes whose class skills have
-    /// stat requirements additionally invest what those skills need - elves keep enough energy for
-    /// their heal/defense/damage orbs, rage fighters for their buffs, dark lords raise leadership
-    /// like a real player would. The requirement gate in <see cref="MeetsRequirements"/> then unlocks
-    /// those skills exactly when the grown stats reach the game's own thresholds.
+    /// How a bot invests its stat points, per class and per bot, in one of two meta profiles chosen
+    /// by the server type (see <see cref="BotResetHandler.GetResetConfiguration"/> at the call sites):
+    /// <list type="bullet">
+    /// <item><b>Reset meta</b> (reset feature enabled) - modeled on the actual endgame characters of a
+    /// reset server: everything goes into the class's combat stats (shield and agility-based defense do
+    /// the tanking there), vitality only receives a token share until the bot's personal
+    /// <see cref="GetVitalityTarget"/> is reached (enforce via <see cref="SplitPoints"/> capacities).</item>
+    /// <item><b>Classic meta</b> (no reset feature) - the builds of community stat guides for classic
+    /// servers, where point pools are small and vitality is a plain percentage of the build.</item>
+    /// </list>
+    /// Where a class has two established builds (knight agility/PK, gladiator warrior/mage, elf
+    /// archer/supporter), each bot picks one deterministically from its character name, so the
+    /// population is diverse but every bot keeps the same build across sessions and re-invests
+    /// consistently after each reset. The first entry is always the build's primary stat - it absorbs
+    /// rounding remainders and overflow from capped stats.
     /// </summary>
     /// <param name="characterClass">The character class.</param>
-    public static IReadOnlyList<(AttributeDefinition Stat, int Weight)> GetStatWeights(CharacterClass characterClass)
+    /// <param name="characterName">The character name; decides the build variant for two-build classes.</param>
+    /// <param name="resetMeta">Whether the reset-server meta profile applies.</param>
+    public static IReadOnlyList<(AttributeDefinition Stat, int Weight)> GetStatWeights(CharacterClass characterClass, string characterName, bool resetMeta)
     {
+        // Stable across processes (string.GetHashCode is randomized per run, which would re-spec
+        // the bot on every server restart).
+        var variant = characterName.Aggregate(0, (acc, c) => acc + c) % 2;
+        var vit = Stats.BaseVitality;
+        var str = Stats.BaseStrength;
+        var agi = Stats.BaseAgility;
+        var ene = Stats.BaseEnergy;
+        var cmd = Stats.BaseLeadership;
+
+        if (resetMeta)
+        {
+            const int v = ResetMetaVitalityWeight;
+            return characterClass.Number switch
+            {
+                DarkKnightNumber or BladeKnightNumber or BladeMasterNumber => variant == 0
+                    ? new[] { (str, 59), (agi, 39), (ene, 2), (vit, v) }
+                    : new[] { (str, 52), (agi, 35), (ene, 13), (vit, v) },
+                DarkWizardNumber or SoulMasterNumber or GrandMasterNumber =>
+                    new[] { (ene, 49), (agi, 47), (str, 4), (vit, v) },
+                FairyElfNumber or MuseElfNumber or HighElfNumber =>
+                    new[] { (agi, 67), (ene, 27), (str, 6), (vit, v) },
+                MagicGladiatorNumber or DuelMasterNumber => variant == 0
+                    ? new[] { (str, 57), (agi, 26), (ene, 17), (vit, v) }
+                    : new[] { (ene, 66), (agi, 18), (str, 16), (vit, v) },
+                DarkLordNumber or LordEmperorNumber =>
+                    new[] { (str, 54), (cmd, 23), (agi, 18), (ene, 5), (vit, v) },
+                SummonerNumber or BloodySummonerNumber or DimensionMasterNumber =>
+                    new[] { (ene, 70), (agi, 18), (str, 12), (vit, v) },
+                RageFighterNumber or FistMasterNumber =>
+                    new[] { (str, 64), (agi, 18), (ene, 18), (vit, v) },
+                _ when GetMainDamageStat(characterClass) == str =>
+                    new[] { (str, 60), (agi, 35), (vit, v) },
+                _ => new[] { (GetMainDamageStat(characterClass), 65), (agi, 30), (vit, v) },
+            };
+        }
+
         return characterClass.Number switch
         {
-            FairyElfNumber or MuseElfNumber => new[] { (Stats.BaseVitality, 40), (Stats.BaseAgility, 40), (Stats.BaseEnergy, 20) },
-            DarkLordNumber or LordEmperorNumber => new[] { (Stats.BaseStrength, 35), (Stats.BaseVitality, 30), (Stats.BaseLeadership, 25), (Stats.BaseEnergy, 10) },
-            RageFighterNumber or FistMasterNumber => new[] { (Stats.BaseStrength, 45), (Stats.BaseVitality, 35), (Stats.BaseEnergy, 20) },
-            _ => new[] { (GetMainDamageStat(characterClass), 50), (Stats.BaseVitality, 50) },
+            DarkKnightNumber or BladeKnightNumber or BladeMasterNumber => variant == 0
+                ? new[] { (str, 62), (agi, 26), (vit, 8), (ene, 4) }
+                : new[] { (str, 50), (vit, 28), (agi, 18), (ene, 4) },
+            DarkWizardNumber or SoulMasterNumber or GrandMasterNumber =>
+                new[] { (ene, 66), (vit, 22), (agi, 8), (str, 4) },
+            FairyElfNumber or MuseElfNumber or HighElfNumber => variant == 0
+                ? new[] { (agi, 62), (vit, 23), (ene, 10), (str, 5) }
+                : new[] { (ene, 65), (vit, 22), (agi, 8), (str, 5) },
+            MagicGladiatorNumber or DuelMasterNumber => variant == 0
+                ? new[] { (str, 57), (agi, 22), (vit, 15), (ene, 6) }
+                : new[] { (ene, 58), (vit, 26), (agi, 11), (str, 5) },
+            DarkLordNumber or LordEmperorNumber =>
+                new[] { (str, 38), (cmd, 30), (vit, 22), (agi, 8), (ene, 2) },
+            SummonerNumber or BloodySummonerNumber or DimensionMasterNumber =>
+                new[] { (ene, 64), (vit, 24), (agi, 8), (str, 4) },
+            RageFighterNumber or FistMasterNumber =>
+                new[] { (str, 45), (vit, 35), (ene, 20) },
+            _ => new[] { (GetMainDamageStat(characterClass), 50), (vit, 50) },
         };
     }
 
     /// <summary>
+    /// The bot's personal vitality target on reset-meta servers: how many points it invests into
+    /// vitality over its whole career (100..500, rolled deterministically from the character name,
+    /// so the population gets a natural spread from glassy to sturdy and every bot keeps its roll
+    /// across restarts and resets). The endgame players such servers breed leave vitality almost
+    /// untouched - shield and agility-based defense tank instead - so the target is intentionally low.
+    /// </summary>
+    /// <param name="characterName">The character name.</param>
+    public static int GetVitalityTarget(string characterName)
+    {
+        var sum = characterName.Aggregate(0, (acc, c) => acc + c);
+        return 100 + ((sum * 7919) % 401);
+    }
+
+    /// <summary>
     /// Splits the given points proportionally to the class's stat weights, returning whole-point
-    /// amounts which sum up to <paramref name="points"/> (the remainder goes to the first stat).
+    /// amounts which sum up to <paramref name="points"/> - unless capacities cut it short. The
+    /// optional <paramref name="capacityOf"/> callback limits how many points a stat may still take
+    /// (its <see cref="AttributeDefinition.MaximumValue"/> on fun servers, the vitality target on
+    /// reset-meta servers); a filled stat drops out of the split and its share flows to the remaining
+    /// stats over subsequent rounds. When every stat is full, the rest of the points stay unassigned,
+    /// like for a maxed-out human character.
     /// </summary>
     /// <param name="points">The number of points to split.</param>
     /// <param name="weights">The stat weights of the class.</param>
-    public static IEnumerable<(AttributeDefinition Stat, int Amount)> SplitPoints(int points, IReadOnlyList<(AttributeDefinition Stat, int Weight)> weights)
+    /// <param name="capacityOf">Optionally resolves how many more points a stat can take; null means unlimited.</param>
+    public static IEnumerable<(AttributeDefinition Stat, int Amount)> SplitPoints(
+        int points,
+        IReadOnlyList<(AttributeDefinition Stat, int Weight)> weights,
+        Func<AttributeDefinition, long>? capacityOf = null)
     {
-        var totalWeight = weights.Sum(w => w.Weight);
-        if (points <= 0 || totalWeight <= 0)
+        if (points <= 0 || weights.Count == 0)
         {
             yield break;
         }
 
-        var assigned = 0;
-        for (var i = 1; i < weights.Count; i++)
+        var allocated = new int[weights.Count];
+        var capacity = new long[weights.Count];
+        for (var i = 0; i < weights.Count; i++)
         {
-            var amount = points * weights[i].Weight / totalWeight;
-            assigned += amount;
-            if (amount > 0)
-            {
-                yield return (weights[i].Stat, amount);
-            }
+            capacity[i] = Math.Max(0, capacityOf?.Invoke(weights[i].Stat) ?? long.MaxValue);
         }
 
-        yield return (weights[0].Stat, points - assigned);
+        var remaining = points;
+        while (remaining > 0)
+        {
+            var activeTotalWeight = 0;
+            var firstActive = -1;
+            for (var i = 0; i < weights.Count; i++)
+            {
+                if (weights[i].Weight > 0 && allocated[i] < capacity[i])
+                {
+                    activeTotalWeight += weights[i].Weight;
+                    if (firstActive < 0)
+                    {
+                        firstActive = i;
+                    }
+                }
+            }
+
+            if (activeTotalWeight <= 0)
+            {
+                break; // every stat is at its capacity - the rest stays unspent.
+            }
+
+            var assignedThisRound = 0;
+            for (var i = 0; i < weights.Count; i++)
+            {
+                if (weights[i].Weight <= 0 || allocated[i] >= capacity[i])
+                {
+                    continue;
+                }
+
+                var share = (int)Math.Min((long)remaining * weights[i].Weight / activeTotalWeight, capacity[i] - allocated[i]);
+                allocated[i] += share;
+                assignedThisRound += share;
+            }
+
+            if (assignedThisRound == 0)
+            {
+                // Rounding tail (fewer points left than active stats): the primary stat takes it.
+                var tail = (int)Math.Min(remaining, capacity[firstActive] - allocated[firstActive]);
+                allocated[firstActive] += tail;
+                assignedThisRound = tail;
+                if (assignedThisRound == 0)
+                {
+                    break;
+                }
+            }
+
+            remaining -= assignedThisRound;
+        }
+
+        for (var i = 0; i < weights.Count; i++)
+        {
+            if (allocated[i] > 0)
+            {
+                yield return (weights[i].Stat, allocated[i]);
+            }
+        }
     }
 
     /// <summary>

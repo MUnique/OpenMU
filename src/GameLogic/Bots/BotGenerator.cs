@@ -257,11 +257,12 @@ internal sealed class BotGenerator
     /// <summary>
     /// Spends the character's level-up points, so a high-level bot actually has high-level stats.
     /// Without this a generated level-80 bot would fight with level-1 base stats (tiny health and
-    /// damage) and die instantly. The split follows the class build in <see cref="BotProgression"/>:
-    /// vitality and the damage stat for everyone, plus the energy/leadership the class's own support
-    /// skills require - the same split the bot keeps using for points it earns at runtime.
+    /// damage) and die instantly. The split follows the class build in <see cref="BotProgression"/>
+    /// for the server's meta profile (reset vs classic) - the same split the bot keeps using for
+    /// points it earns at runtime - and respects each stat's configured maximum (fun servers) as
+    /// well as the bot's personal vitality target on reset-meta servers.
     /// </summary>
-    private static void DistributeStatPoints(Character character, CharacterClass characterClass)
+    private static void DistributeStatPoints(Character character, CharacterClass characterClass, bool resetMeta)
     {
         var points = character.LevelUpPoints;
         if (points <= 0)
@@ -269,8 +270,34 @@ internal sealed class BotGenerator
             return;
         }
 
-        var weights = BotProgression.GetStatWeights(characterClass);
-        foreach (var (stat, amount) in BotProgression.SplitPoints(points, weights))
+        var weights = BotProgression.GetStatWeights(characterClass, character.Name, resetMeta);
+        var vitalityTarget = resetMeta ? BotProgression.GetVitalityTarget(character.Name) : (int?)null;
+
+        long CapacityOf(AttributeDefinition stat)
+        {
+            var attribute = character.Attributes.FirstOrDefault(a => a.Definition == stat);
+            if (attribute is null)
+            {
+                return 0;
+            }
+
+            var classBase = characterClass.StatAttributes.FirstOrDefault(a => a.Attribute == stat);
+            var capacity = long.MaxValue;
+            if (classBase?.Attribute?.MaximumValue is { } maximumValue)
+            {
+                capacity = (long)maximumValue - (long)attribute.Value;
+            }
+
+            if (vitalityTarget is { } target && stat == Stats.BaseVitality)
+            {
+                var invested = (long)attribute.Value - (long)(classBase?.BaseValue ?? 0f);
+                capacity = Math.Min(capacity, target - invested);
+            }
+
+            return capacity;
+        }
+
+        foreach (var (stat, amount) in BotProgression.SplitPoints(points, weights, CapacityOf))
         {
             var attribute = character.Attributes.FirstOrDefault(a => a.Definition == stat);
             if (attribute is not null)
@@ -366,7 +393,7 @@ internal sealed class BotGenerator
         character.Experience = experienceTable[Math.Min(level, experienceTable.Length - 1)];
         character.LevelUpPoints = CalculateLevelUpPoints(characterClass, level, seededResets, resetConfiguration);
         character.InventoryExtensions = BotInventoryExtensions;
-        DistributeStatPoints(character, characterClass);
+        DistributeStatPoints(character, characterClass, resetConfiguration is not null);
 
         // Skills survive resets, so a seeded veteran knows everything the highest level of its past
         // cycles unlocked - level-gated skills are checked against that level, not the current one.

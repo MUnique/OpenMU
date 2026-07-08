@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.PlayerActions.Character;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.PlugIns;
@@ -92,14 +93,40 @@ public class BotSkillProgressionPlugIn : ICharacterLevelUpPlugIn
     private async ValueTask SpendStatPointsAsync(Player player)
     {
         var character = player.SelectedCharacter!;
+        var characterClass = character.CharacterClass!;
         var points = character.LevelUpPoints;
         if (points <= 0)
         {
             return;
         }
 
-        var weights = BotProgression.GetStatWeights(character.CharacterClass!);
-        foreach (var (stat, amount) in BotProgression.SplitPoints(points, weights))
+        var resetMeta = BotResetHandler.GetResetConfiguration(player.GameContext) is not null;
+        var weights = BotProgression.GetStatWeights(characterClass, character.Name, resetMeta);
+        var vitalityTarget = resetMeta ? BotProgression.GetVitalityTarget(character.Name) : (int?)null;
+
+        // Mirrors the capacity checks of the stat-increase action (a stat's configured maximum on fun
+        // servers), plus the bot's personal vitality target on reset-meta servers: a full stat drops
+        // out of the split, so its share flows into the rest of the build instead of getting lost.
+        long CapacityOf(AttributeDefinition stat)
+        {
+            var classBase = characterClass.StatAttributes.FirstOrDefault(a => a.Attribute == stat);
+            var current = (long)(player.Attributes?[stat] ?? 0f);
+            var capacity = long.MaxValue;
+            if (classBase?.Attribute?.MaximumValue is { } maximumValue)
+            {
+                capacity = (long)maximumValue - current;
+            }
+
+            if (vitalityTarget is { } target && stat == Stats.BaseVitality)
+            {
+                var invested = current - (long)(classBase?.BaseValue ?? 0f);
+                capacity = Math.Min(capacity, target - invested);
+            }
+
+            return capacity;
+        }
+
+        foreach (var (stat, amount) in BotProgression.SplitPoints(points, weights, CapacityOf))
         {
             if (amount > 0)
             {
