@@ -51,6 +51,16 @@ internal sealed class BotNavigator : AsyncDisposable
     /// <summary>Range (tiles) around the origin that counts as "at the hunting ground".</summary>
     private const int HuntingRange = 6;
 
+    /// <summary>
+    /// How far the bot looks for an actual live monster to home in on. MU spawn areas span most of the map
+    /// (e.g. Lorencia's are ~86x233 / ~105x68 tiles) with only a few dozen monsters each, so their monsters
+    /// sit ~20 tiles apart. Walking to a random tile inside such an area almost never lands within the 6-tile
+    /// combat range of a real monster - the bot arrives, finds nothing to fight, and wanders off. So once the
+    /// bot is anywhere in the region it scans this radius for the nearest live monster and heads straight for
+    /// it. Kept modest so the per-tick area-of-interest scan stays cheap even with hundreds of bots.
+    /// </summary>
+    private const int MonsterSeekRadius = 40;
+
     /// <summary>Item group of healing potions (Apple / Small / Medium / Large all share group 14).</summary>
     private const int HealPotionGroup = 14;
 
@@ -251,6 +261,27 @@ internal sealed class BotNavigator : AsyncDisposable
             return;
         }
 
+        // Home in on the nearest live monster within the seek radius instead of walking to a random tile in a
+        // map-sized spawn area (where the bot would almost never arrive within combat range of an actual
+        // monster). This is what makes the bot converge on real monsters and actually fight. The bot walks
+        // toward the monster; once within the combat range the branch above takes over and the combat handler
+        // engages. Only when nothing is loaded within the seek radius (e.g. still in town, or all nearby
+        // monsters are too strong) do we fall back to the coarse spawn-area / warp logic below to relocate.
+        if (!inSafezone && this.TryFindNearestMonsterGround(map, out var monsterGround))
+        {
+            this._destination = monsterGround;
+            this._hasDestination = true;
+            if (await this.TravelTowardAsync(map, monsterGround).ConfigureAwait(false))
+            {
+                this._emptyGroundSince = null;
+                return;
+            }
+
+            // Unreachable monster (e.g. across a river): drop it and fall through to pick a spawn-area ground
+            // or warp, instead of re-targeting the same unreachable monster every tick.
+            this._hasDestination = false;
+        }
+
         // Nothing to fight here. If we still have a destination to reach, keep walking towards it. If the
         // route turned out to be impossible (e.g. across a river), drop it and fall through to pick another
         // ground in this same tick instead of standing still.
@@ -445,6 +476,55 @@ internal sealed class BotNavigator : AsyncDisposable
         }
 
         return pool;
+    }
+
+    /// <summary>
+    /// Finds the position of the nearest live, attackable monster within <see cref="MonsterSeekRadius"/> that
+    /// the bot can safely fight, so the bot heads straight for a real monster instead of a random tile in a
+    /// huge spawn area. Returns false when none are loaded nearby (or all are above the safe level cap), in
+    /// which case the caller falls back to coarse spawn-area travel / warping to relocate.
+    /// </summary>
+    private bool TryFindNearestMonsterGround(GameMap map, out Point ground)
+    {
+        ground = default;
+        var position = this._player.Position;
+        var cap = GetHuntCap(this.GetBotLevel());
+        Monster? nearest = null;
+        var nearestDistance = double.MaxValue;
+        foreach (var attackable in map.GetAttackablesInRange(position, MonsterSeekRadius))
+        {
+            if (attackable is not Monster monster
+                || !monster.IsAlive
+                || monster.IsAtSafezone())
+            {
+                continue;
+            }
+
+            var level = GetMonsterLevel(monster.Definition);
+            if (level <= 0 || level > cap)
+            {
+                // Above the safe cap (too tough) - leave it and let the warp / area logic relocate the bot
+                // to a map whose monsters it can handle.
+                continue;
+            }
+
+            var distance = monster.GetDistanceTo(position);
+            if (distance < nearestDistance)
+            {
+                nearest = monster;
+                nearestDistance = distance;
+            }
+        }
+
+        if (nearest is null)
+        {
+            return false;
+        }
+
+        // The monster stands on a walkable tile, so head straight for it; TravelTowardAsync walks a few steps
+        // per tick and re-homes as the monster roams, closing the gap until combat range is reached.
+        ground = nearest.Position;
+        return true;
     }
 
     private int GetBotLevel() => (int)(this._player.Attributes?[Stats.Level] ?? 1);
