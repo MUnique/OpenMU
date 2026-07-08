@@ -334,14 +334,6 @@ public sealed class CombatHandler
     {
         this._player.Rotation = this._player.GetDirectionTo(target);
 
-        if (target is Player)
-        {
-            // Self-defense against a player: plain attacks only. The area-skill path below deals its
-            // damage exclusively to monsters, so a skill cast would look flashy but hit nothing.
-            await this.ExecutePhysicalAttackAsync(target).ConfigureAwait(false);
-            return;
-        }
-
         if (skillEntry?.Skill is not { } skill)
         {
             await this.ExecutePhysicalAttackAsync(target).ConfigureAwait(false);
@@ -486,6 +478,14 @@ public sealed class CombatHandler
         foreach (var monster in monstersInRange)
         {
             await monster.AttackByAsync(this._player, skillEntry, isCombo).ConfigureAwait(false);
+        }
+
+        // A player target (the self-defense aggressor) is hit by the area skill as well - but ONLY
+        // the target itself. Any bystanding player in the blast radius is deliberately spared: a
+        // bot's self-defense must never splash uninvolved players, no matter what it casts.
+        if (target is Player playerTarget && playerTarget.IsAlive && !playerTarget.IsAtSafezone())
+        {
+            await playerTarget.AttackByAsync(this._player, skillEntry, isCombo).ConfigureAwait(false);
         }
     }
 
