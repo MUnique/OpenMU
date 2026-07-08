@@ -25,7 +25,6 @@
 
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" />
-    <PackageReference Include="Blazored.Modal" />
     <PackageReference Include="Blazored.Toast" />
     <PackageReference Include="BlazorInputFile" />
     <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" />

@@ -5,10 +5,9 @@
 namespace MUnique.OpenMU.Web.Shared.Components.Form.Modal;
 
 using System.Collections.Generic;
-using Blazored.Modal;
-using Blazored.Modal.Services;
 using Microsoft.AspNetCore.Components;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Web.Shared.Components.Modal;
 using MUnique.OpenMU.Web.Shared.Services;
 
 /// <summary>
@@ -27,8 +26,8 @@ public partial class ModalObjectMultiSelection<TItem>
     /// <summary>
     /// Gets or sets the modal instance.
     /// </summary>
-    [CascadingParameter]
-    public BlazoredModalInstance BlazoredModal { get; set; } = null!;
+    [Parameter]
+    public ModalInstance Modal { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the persistence context which should be used. It's required for lookups.
@@ -38,11 +37,11 @@ public partial class ModalObjectMultiSelection<TItem>
 
     private Task SubmitAsync()
     {
-        return this.BlazoredModal.CloseAsync(ModalResult.Ok(this.Items));
+        return this.Modal.CloseAsync(ModalResult.Ok(this.Items));
     }
 
     private Task CancelAsync()
     {
-        return this.BlazoredModal.CancelAsync();
+        return this.Modal.CancelAsync();
     }
 }

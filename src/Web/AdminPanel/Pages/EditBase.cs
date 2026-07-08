@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 
 using System.Reflection;
 using System.Threading;
-using Blazored.Modal.Services;
 using Blazored.Toast.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
@@ -19,6 +18,7 @@ using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
 using MUnique.OpenMU.Web.Shared;
 using MUnique.OpenMU.Web.Shared.Components;
+using MUnique.OpenMU.Web.Shared.Components.Modal;
 using MUnique.OpenMU.Web.Shared.Services;
 
 /// <summary>
@@ -82,6 +82,12 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
     /// </summary>
     [Inject]
     public IToastService ToastService { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the loading overlay service.
+    /// </summary>
+    [Inject]
+    public LoadingOverlayService LoadingOverlay { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the configuration data source.
@@ -233,7 +239,7 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
             {
                 if (this._loadingState != DataLoadingState.Loaded)
                 {
-                    this._modalDisposable = this.ModalService.ShowLoadingIndicator();
+                    this._modalDisposable = this.LoadingOverlay.ShowLoadingIndicator();
                     this.StateHasChanged();
                 }
             }).ConfigureAwait(false);

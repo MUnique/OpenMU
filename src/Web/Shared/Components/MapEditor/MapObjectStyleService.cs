@@ -40,7 +40,7 @@ public sealed class MapObjectStyleService
         {
             EnterGate => "gate-enter",
             ExitGate => "gate-exit",
-            MonsterSpawnArea spawn => spawn.IsPoint() ? "spawn-single" : "spawn-area",
+            MonsterSpawnArea spawn => GetSpawnClass(spawn),
             _ => string.Empty,
         };
 
@@ -50,6 +50,19 @@ public sealed class MapObjectStyleService
         }
 
         return result;
+    }
+
+    private static string GetSpawnClass(MonsterSpawnArea spawn)
+    {
+        var kind = spawn.MonsterDefinition?.ObjectKind;
+        var typeClass = kind switch
+        {
+            NpcObjectKind.Monster => "spawn-monster",
+            NpcObjectKind.PassiveNpc or NpcObjectKind.Guard => "spawn-npc",
+            _ => "spawn-other",
+        };
+
+        return spawn.IsPoint() ? $"{typeClass}-single" : $"{typeClass}-area";
     }
 
     /// <summary>

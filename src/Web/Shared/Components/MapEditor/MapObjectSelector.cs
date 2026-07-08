@@ -31,9 +31,7 @@ public sealed class MapObjectSelector
         {
             MonsterSpawnArea spawn when !spawn.IsPoint() =>
                 $"{1 + spawn.Y2 - spawn.Y1}x{1 + spawn.X2 - spawn.X1}",
-            EnterGate gate =>
-                $"{1 + gate.Y2 - gate.Y1}x{1 + gate.X2 - gate.X1}",
-            ExitGate gate =>
+            Gate gate =>
                 $"{1 + gate.Y2 - gate.Y1}x{1 + gate.X2 - gate.X1}",
             _ => null,
         };
@@ -125,7 +123,7 @@ public sealed class MapObjectSelector
             return bestSpawn;
         }
 
-        if (filter is ObjectTypeFilter.All or ObjectTypeFilter.Gates)
+        if (filter == ObjectTypeFilter.None || filter.HasFlag(ObjectTypeFilter.Gates))
         {
             foreach (var gate in map.ExitGates)
             {
@@ -147,14 +145,80 @@ public sealed class MapObjectSelector
         return null;
     }
 
+    /// <summary>
+    /// Returns all objects at the specified coordinates, ordered by priority:
+    /// point spawns first (by distance), then area spawns (by distance to center),
+    /// then exit gates, then enter gates.
+    /// </summary>
+    /// <param name="map">The map definition containing all objects to test.</param>
+    /// <param name="x">The map X coordinate to test.</param>
+    /// <param name="y">The map Y coordinate to test.</param>
+    /// <param name="filter">The active object type filter to apply.</param>
+    /// <param name="search">An optional search string to further restrict hits.</param>
+    /// <returns>All matching objects at the position, ordered by priority.</returns>
+    public IReadOnlyList<object> GetAllObjectsAtPosition(
+        GameMapDefinition map,
+        byte x,
+        byte y,
+        ObjectTypeFilter filter,
+        string? search = null)
+    {
+        var result = new List<object>();
+
+        foreach (var spawn in map.MonsterSpawns)
+        {
+            if (!SpawnMatchesFilter(spawn, filter))
+            {
+                continue;
+            }
+
+            if (!MatchesSearch(spawn, search))
+            {
+                continue;
+            }
+
+            GetDistanceToSpawn(spawn, x, y, out var isInside);
+            if (isInside)
+            {
+                result.Add(spawn);
+            }
+        }
+
+        if (filter == ObjectTypeFilter.None || filter.HasFlag(ObjectTypeFilter.Gates))
+        {
+            foreach (var gate in map.ExitGates)
+            {
+                if (MatchesSearch(gate, search) && IsPointInGate(gate, x, y))
+                {
+                    result.Add(gate);
+                }
+            }
+
+            foreach (var gate in map.EnterGates)
+            {
+                if (MatchesSearch(gate, search) && IsPointInGate(gate, x, y))
+                {
+                    result.Add(gate);
+                }
+            }
+        }
+
+        return result;
+    }
+
     private static bool MatchesTypeFilter(object obj, ObjectTypeFilter filter)
     {
-        return filter switch
+        if (filter == ObjectTypeFilter.None)
         {
-            ObjectTypeFilter.All => true,
-            ObjectTypeFilter.Gates => obj is EnterGate or ExitGate,
-            _ => obj is MonsterSpawnArea spawn && SpawnMatchesFilter(spawn, filter),
-        };
+            return true;
+        }
+
+        if (filter.HasFlag(ObjectTypeFilter.Gates) && obj is EnterGate or ExitGate)
+        {
+            return true;
+        }
+
+        return obj is MonsterSpawnArea spawn && SpawnMatchesFilter(spawn, filter);
     }
 
     private static bool MatchesSearch(object obj, string? search)
@@ -197,19 +261,33 @@ public sealed class MapObjectSelector
 
     private static bool SpawnMatchesFilter(MonsterSpawnArea spawn, ObjectTypeFilter filter)
     {
-        var objectKind = spawn.MonsterDefinition?.ObjectKind;
-
-        return filter switch
+        if (filter == ObjectTypeFilter.None)
         {
-            ObjectTypeFilter.Gates => false,
-            ObjectTypeFilter.Monsters => objectKind == NpcObjectKind.Monster,
-            ObjectTypeFilter.Npcs => objectKind == NpcObjectKind.PassiveNpc || objectKind == NpcObjectKind.Guard,
-            ObjectTypeFilter.Others => objectKind == NpcObjectKind.Trap
-                                       || objectKind == NpcObjectKind.Statue
-                                       || objectKind == NpcObjectKind.SoccerBall
-                                       || objectKind == NpcObjectKind.Destructible,
-            _ => true,
-        };
+            return true;
+        }
+
+        var objectKind = spawn.MonsterDefinition?.ObjectKind;
+        var result = false;
+
+        if (filter.HasFlag(ObjectTypeFilter.Monsters))
+        {
+            result |= objectKind == NpcObjectKind.Monster;
+        }
+
+        if (filter.HasFlag(ObjectTypeFilter.Npcs))
+        {
+            result |= objectKind == NpcObjectKind.PassiveNpc || objectKind == NpcObjectKind.Guard;
+        }
+
+        if (filter.HasFlag(ObjectTypeFilter.Others))
+        {
+            result |= objectKind == NpcObjectKind.Trap
+                      || objectKind == NpcObjectKind.Statue
+                      || objectKind == NpcObjectKind.SoccerBall
+                      || objectKind == NpcObjectKind.Destructible;
+        }
+
+        return result;
     }
 
     /// <summary>

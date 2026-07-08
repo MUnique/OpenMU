@@ -386,5 +386,53 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
                 return ResourceManager.GetString("SwitchToLightMode", resourceCulture);
             }
         }
+        
+        public static string MapEditorShortcutPan {
+            get {
+                return ResourceManager.GetString("MapEditorShortcutPan", resourceCulture);
+            }
+        }
+        
+        public static string MapEditorShortcutDrag {
+            get {
+                return ResourceManager.GetString("MapEditorShortcutDrag", resourceCulture);
+            }
+        }
+        
+        public static string MapEditorShortcutCycle {
+            get {
+                return ResourceManager.GetString("MapEditorShortcutCycle", resourceCulture);
+            }
+        }
+        
+        public static string MapEditorShortcutDelete {
+            get {
+                return ResourceManager.GetString("MapEditorShortcutDelete", resourceCulture);
+            }
+        }
+        
+        public static string ExportMap {
+            get {
+                return ResourceManager.GetString("ExportMap", resourceCulture);
+            }
+        }
+        
+        public static string ImportMap {
+            get {
+                return ResourceManager.GetString("ImportMap", resourceCulture);
+            }
+        }
+        
+        public static string Yes {
+            get {
+                return ResourceManager.GetString("Yes", resourceCulture);
+            }
+        }
+        
+        public static string No {
+            get {
+                return ResourceManager.GetString("No", resourceCulture);
+            }
+        }
     }
 }

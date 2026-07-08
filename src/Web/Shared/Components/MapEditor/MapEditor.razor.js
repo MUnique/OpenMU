@@ -8,7 +8,9 @@ const MAX_ZOOM = 4.0;
 
 let _element = null;
 let _dotNetRef = null;
-let _zoomLevel = 1.0;
+let _baseScale = 3;
+let _defaultZoom = 1.0;
+let _zoomLevel = _defaultZoom;
 let _isDragging = false;
 let _isPanning = false;
 let _isResizing = false;
@@ -42,7 +44,7 @@ function _getMapTileCoords(clientX, clientY) {
     const rect = _element.getBoundingClientRect();
     let contentX = (clientX - rect.left) + _element.scrollLeft;
     let contentY = (clientY - rect.top) + _element.scrollTop;
-    let scale = 3 * _zoomLevel;
+    let scale = _baseScale * _zoomLevel;
 
     return {
         x: Math.floor(contentY / scale),
@@ -108,9 +110,9 @@ function _tryStartResize(e) {
     return false;
 }
 
-function _notifyPointerDown(x, y) {
+function _notifyPointerDown(x, y, shiftKey) {
     if (_dotNetRef) {
-        _dotNetRef.invokeMethodAsync("OnPointerDown", x, y);
+        _dotNetRef.invokeMethodAsync("OnPointerDown", x, y, shiftKey);
     }
 }
 
@@ -178,13 +180,13 @@ function _onDocumentMouseDown(e) {
     _lastClientX = e.clientX;
     _lastClientY = e.clientY;
     _hasMoved = false;
-    _isDragging = true;
+    _isDragging = e.ctrlKey;
 
     let coords = _getMapTileCoords(e.clientX, e.clientY);
     let x = Math.max(0, Math.min(255, coords.x));
     let y = Math.max(0, Math.min(255, coords.y));
 
-    _notifyPointerDown(x, y);
+    _notifyPointerDown(x, y, e.shiftKey);
 }
 
 function _isValidMouseMoveTarget(e) {
@@ -244,28 +246,50 @@ function _onDocumentMouseUp(e) {
     _hasMoved = false;
 }
 
+function _onDocumentKeyDown(e) {
+    if (e.key !== "Delete" && e.key !== "Del") {
+        return;
+    }
+
+    // Don't interfere with text editing in input/textarea/select elements.
+    const tag = e.target.tagName;
+    if (tag === "INPUT" || tag === "TEXTAREA") {
+        return;
+    }
+
+    e.preventDefault();
+    if (_dotNetRef) {
+        _dotNetRef.invokeMethodAsync("OnDeleteKeyPressed");
+    }
+}
+
 /**
  * Initializes the map editor for the given host element.
  * @param {HTMLElement} element - The map host element.
  * @param {object} dotNetRef - JSInvokable reference to the Blazor component.
  * @param {number} initialZoom - The initial zoom level to apply.
+ * @param {number} baseScale - The base pixel scale factor for the map.
  */
-export function initialize(element, dotNetRef, initialZoom) {
+export function initialize(element, dotNetRef, initialZoom, baseScale) {
     if (!element) {
         return;
     }
 
     _element = element;
     _dotNetRef = dotNetRef;
-    _zoomLevel = initialZoom;
+    _baseScale = baseScale || _baseScale;
+    _defaultZoom = initialZoom;
+    _zoomLevel = _defaultZoom;
     _applyZoom(_zoomLevel);
 
     document.removeEventListener("mousedown", _onDocumentMouseDown);
     document.removeEventListener("mousemove", _onDocumentMouseMove);
     document.removeEventListener("mouseup", _onDocumentMouseUp);
+    document.removeEventListener("keydown", _onDocumentKeyDown);
     document.addEventListener("mousedown", _onDocumentMouseDown);
     document.addEventListener("mousemove", _onDocumentMouseMove);
     document.addEventListener("mouseup", _onDocumentMouseUp);
+    document.addEventListener("keydown", _onDocumentKeyDown);
 }
 
 /**
@@ -345,7 +369,10 @@ export function centerOn(element, mapX, mapY, baseScale) {
  */
 export function handleWheel(element, deltaY, clientX, clientY) {
     if (!element) {
-        return { zoomLevel: 1.0, handled: false };
+        return {
+            zoomLevel: _defaultZoom,
+            handled: false
+        };
     }
 
     const oldZoom = _zoomLevel;
@@ -383,7 +410,7 @@ export function handleWheel(element, deltaY, clientX, clientY) {
  */
 export function zoomTo(element, newZoom) {
     if (!element) {
-        return 1.0;
+        return _defaultZoom;
     }
 
     const oldZoom = _zoomLevel;
@@ -415,15 +442,15 @@ export function zoomTo(element, newZoom) {
  */
 export function resetZoom(element) {
     if (!element) {
-        return 1.0;
+        return _defaultZoom;
     }
 
-    _zoomLevel = 1.0;
-    _applyZoom(1.0);
+    _zoomLevel = _defaultZoom;
+    _applyZoom(_defaultZoom);
     element.scrollLeft = 0;
     element.scrollTop = 0;
 
-    return 1.0;
+    return _defaultZoom;
 }
 
 /**
@@ -445,13 +472,39 @@ export function setDragging(dragging) {
 }
 
 /**
- * Cleans up state associated with the map editor module.
+ * Triggers a click on the file input used for importing map spawn data.
+ */
+export function triggerFileInput() {
+    document.getElementById("import-file-input")?.click();
+}
+
+/**
+ * Downloads a base64-encoded byte array as a file via a temporary anchor element.
+ * @param {string} fileName - The suggested download file name.
+ * @param {string} base64 - The base64-encoded file content.
+ */
+export function downloadFile(fileName, base64) {
+    const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+    const blob = new Blob([bytes], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+/**
+ * Cleans up the state associated with the map editor module.
  * Called when the Blazor component is disposed.
  */
 export function dispose() {
     document.removeEventListener("mousedown", _onDocumentMouseDown);
     document.removeEventListener("mousemove", _onDocumentMouseMove);
     document.removeEventListener("mouseup", _onDocumentMouseUp);
+    document.removeEventListener("keydown", _onDocumentKeyDown);
     _element = null;
     _dotNetRef = null;
 }

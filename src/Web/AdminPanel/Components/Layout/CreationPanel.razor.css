@@ -58,6 +58,7 @@
 .creation-panel-body ::deep .form-actions {
     position: sticky;
     bottom: 0;
+    z-index: 3;
     background-color: var(--omu-surface-2);
     margin: 1rem -1.5rem -1rem -1.5rem;
     padding: 1rem 1.25rem;

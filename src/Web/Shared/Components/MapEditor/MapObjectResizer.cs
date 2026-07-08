@@ -12,64 +12,31 @@ using MUnique.OpenMU.DataModel.Configuration;
 internal static class MapObjectResizer
 {
     /// <summary>
-    /// Resizes a monster spawn area based on the dragged corner handle.
+    /// Resizes a map area based on the dragged corner handle.
     /// </summary>
-    /// <param name="spawn">The spawn to adjust.</param>
+    /// <param name="area">The map area to adjust.</param>
     /// <param name="position">The corner handle being dragged.</param>
     /// <param name="x">New X coordinate.</param>
     /// <param name="y">New Y coordinate.</param>
-    public static void Resize(MonsterSpawnArea spawn, Resizers.ResizerPosition position, byte x, byte y)
+    public static void Resize(IMapArea area, Resizers.ResizerPosition position, byte x, byte y)
     {
         switch (position)
         {
             case Resizers.ResizerPosition.TopLeft:
-                spawn.X1 = Math.Min(x, spawn.X2);
-                spawn.Y1 = Math.Min(y, spawn.Y2);
+                area.X1 = Math.Min(x, area.X2);
+                area.Y1 = Math.Min(y, area.Y2);
                 break;
             case Resizers.ResizerPosition.TopRight:
-                spawn.X1 = Math.Min(x, spawn.X2);
-                spawn.Y2 = Math.Max(y, spawn.Y1);
+                area.X1 = Math.Min(x, area.X2);
+                area.Y2 = Math.Max(y, area.Y1);
                 break;
             case Resizers.ResizerPosition.BottomRight:
-                spawn.X2 = Math.Max(x, spawn.X1);
-                spawn.Y2 = Math.Max(y, spawn.Y1);
+                area.X2 = Math.Max(x, area.X1);
+                area.Y2 = Math.Max(y, area.Y1);
                 break;
             case Resizers.ResizerPosition.BottomLeft:
-                spawn.X2 = Math.Max(x, spawn.X1);
-                spawn.Y1 = Math.Min(y, spawn.Y2);
-                break;
-            default:
-                // Not supported.
-                break;
-        }
-    }
-
-    /// <summary>
-    /// Resizes a gate based on the dragged corner handle.
-    /// </summary>
-    /// <param name="gate">The gate to adjust.</param>
-    /// <param name="position">The corner handle being dragged.</param>
-    /// <param name="x">New X coordinate.</param>
-    /// <param name="y">New Y coordinate.</param>
-    public static void Resize(Gate gate, Resizers.ResizerPosition position, byte x, byte y)
-    {
-        switch (position)
-        {
-            case Resizers.ResizerPosition.TopLeft:
-                gate.X1 = Math.Min(x, gate.X2);
-                gate.Y1 = Math.Min(y, gate.Y2);
-                break;
-            case Resizers.ResizerPosition.TopRight:
-                gate.X1 = Math.Min(x, gate.X2);
-                gate.Y2 = Math.Max(y, gate.Y1);
-                break;
-            case Resizers.ResizerPosition.BottomRight:
-                gate.X2 = Math.Max(x, gate.X1);
-                gate.Y2 = Math.Max(y, gate.Y1);
-                break;
-            case Resizers.ResizerPosition.BottomLeft:
-                gate.X2 = Math.Max(x, gate.X1);
-                gate.Y1 = Math.Min(y, gate.Y2);
+                area.X2 = Math.Max(x, area.X1);
+                area.Y1 = Math.Min(y, area.Y2);
                 break;
             default:
                 // Not supported.

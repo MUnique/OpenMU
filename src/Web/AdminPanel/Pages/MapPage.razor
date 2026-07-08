@@ -6,6 +6,10 @@
 @using MUnique.OpenMU.Web.Map
 @using MUnique.OpenMU.Interfaces
 @using MUnique.OpenMU.GameLogic
+@using System.Threading
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.WebUtilities
+@using Microsoft.JSInterop
 
 <PageTitle>OpenMU: @Resources.LiveMap</PageTitle>
 <Breadcrumb Caption="@Resources.LiveMap" />
@@ -16,11 +20,16 @@
         <NavLink href="" Match="NavLinkMatch.All">
             <span>@Resources.All</span>
         </NavLink>
-        <span> / @this._map?.MapName</span>
+        <span> / @this._map?.MapName
+            @if (this._followedPlayerName is not null)
+            {
+                <span class="ms-2 badge bg-info">@string.Format("Following: {0}", this._followedPlayerName)</span>
+            }
+        </span>
     </div>
 
     <CascadingValue Value="@_gameServer">
-        <Map Server="@_gameServer" MapId="@MapId"></Map>
+        <Map Server="@_gameServer" MapId="@MapId" FollowedPlayerName="@_followedPlayerName" OnFollowPlayer="@HandleFollowPlayer"></Map>
     </CascadingValue>
 }
 
@@ -30,6 +39,12 @@
     private IGameMapInfo? _map;
 
     private IObservableGameServer? _gameServer;
+
+    private IGameServerContext? _gameContext;
+
+    private string? _followedPlayerName;
+
+    private Timer? _followTimer;
 
     /// <summary>
     /// Gets or sets the server id on which the map is hosted.
@@ -49,10 +64,17 @@
     [Parameter]
     public int GameServerId { get; set; }
 
+    [Inject]
+    private NavigationManager NavigationManager { get; set; } = null!;
+
+    [Inject]
+    private IJSRuntime JsRuntime { get; set; } = null!;
+
     /// <inheritdoc />
     public void Dispose()
     {
         (this._gameServer as IDisposable)?.Dispose();
+        this._followTimer?.Dispose();
     }
 
     /// <inheritdoc />
@@ -63,8 +85,110 @@
         var adapter = new ObservableGameServerAdapter(context);
         await adapter.InitializeAsync();
 
+        this._gameContext = context;
         this._gameServer = adapter;
         this._map = this._gameServer.Maps.First(m => m.Id == this.MapId);
+
+        var uri = new Uri(this.NavigationManager.Uri);
+        var query = QueryHelpers.ParseQuery(uri.Query);
+        if (query.TryGetValue("follow", out var followParam))
+        {
+            var player = this._gameContext?.GetPlayerByCharacterName(followParam.ToString());
+            if (player?.CurrentMap?.Id == this.MapId)
+            {
+                this._followedPlayerName = followParam.ToString();
+                _ = this.TryHighlightFollowedPlayerAsync();
+                this._followTimer = new Timer(this.CheckFollowedPlayer, null, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1));
+            }
+        }
+
         await base.OnInitializedAsync();
+    }
+
+    private void HandleFollowPlayer(string? playerName)
+    {
+        if (playerName is null || playerName == this._followedPlayerName)
+        {
+            this.StopFollowing();
+        }
+        else
+        {
+            this.StartFollowing(playerName);
+        }
+    }
+
+    private void StartFollowing(string playerName)
+    {
+        this._followedPlayerName = playerName;
+        this._followTimer?.Dispose();
+        _ = this.TryHighlightFollowedPlayerAsync();
+        this._followTimer = new Timer(this.CheckFollowedPlayer, null, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1));
+    }
+
+    private void StopFollowing()
+    {
+        this._followedPlayerName = null;
+        this._followTimer?.Dispose();
+        this._followTimer = null;
+    }
+
+    private async Task TryHighlightFollowedPlayerAsync()
+    {
+        if (this._followedPlayerName is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await this.JsRuntime.InvokeVoidAsync("HighlightFollowedPlayer", this.GameServerId, this.MapId, this._followedPlayerName).ConfigureAwait(false);
+        }
+        catch
+        {
+            // player not yet in the Three.js scene - will retry on next timer tick
+        }
+    }
+
+    private void CheckFollowedPlayer(object? state)
+    {
+        _ = this.CheckFollowedPlayerAsync();
+    }
+
+    private async Task CheckFollowedPlayerAsync()
+    {
+        try
+        {
+            if (this._followedPlayerName is null)
+            {
+                return;
+            }
+
+            var player = this._gameContext?.GetPlayerByCharacterName(this._followedPlayerName);
+            if (player is null)
+            {
+                return;
+            }
+
+            if (player.CurrentMap is null)
+            {
+                return;
+            }
+
+            if (player.CurrentMap.Id != this.MapId)
+            {
+                this._followTimer?.Dispose();
+                this._followTimer = null;
+                var url = $"/gameServer/{this.GameServerId}/map/{player.CurrentMap.Id:N}?follow={Uri.EscapeDataString(this._followedPlayerName)}";
+                await this.InvokeAsync(() => this.NavigationManager.NavigateTo(url, forceLoad: true));
+            }
+            else
+            {
+                await this.TryHighlightFollowedPlayerAsync();
+            }
+        }
+        catch
+        {
+            // Prevent background thread exceptions from crashing the application
+        }
     }
 }
