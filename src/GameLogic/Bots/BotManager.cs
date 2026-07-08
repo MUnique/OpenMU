@@ -122,6 +122,45 @@ public sealed class BotManager
     }
 
     /// <summary>
+    /// Determines whether the given character of the given account is currently animated by a bot.
+    /// </summary>
+    /// <param name="loginName">The account login name.</param>
+    /// <param name="slot">The character slot.</param>
+    public bool IsActive(string loginName, byte slot) => this._bots.ContainsKey(GetKey(loginName, slot));
+
+    /// <summary>
+    /// Stops one randomly chosen bot (used by the presence rotation, so the population ebbs and flows
+    /// like a real player base). The bot leaves its party cleanly first, then disconnects - which also
+    /// saves its progress, like a regular logout.
+    /// </summary>
+    /// <returns>The name of the stopped bot's character, or null if no bot was active.</returns>
+    public async ValueTask<string?> StopRandomBotAsync()
+    {
+        var key = this._bots.Keys.ToList().SelectRandom();
+        if (key is null || !this._bots.TryRemove(key, out var bot))
+        {
+            return null;
+        }
+
+        var name = bot.Name;
+        try
+        {
+            if (bot.Party is { } party)
+            {
+                await party.KickMySelfAsync(bot).ConfigureAwait(false);
+            }
+
+            await bot.StopAsync().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            bot.Logger.LogError(ex, "Error while stopping bot '{Key}' for presence rotation.", key);
+        }
+
+        return name;
+    }
+
+    /// <summary>
     /// Groups a share of the active bots into small hunting parties of level-wise similar characters,
     /// like real players do: the party members follow their leader (see the follow logic in
     /// <see cref="BotNavigator"/>), the elf heals the group, buffs are shared and the party experience

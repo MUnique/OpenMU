@@ -32,6 +32,21 @@ public class BotConfiguration
     public bool ResetBots { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the bot population rotates its presence over the day:
+    /// fewer bots are online at night, most in the evening, with bots smoothly logging in and out -
+    /// like a real player base, instead of the same characters being online 24/7.
+    /// </summary>
+    [Display(Name = "Presence rotation", Description = "Bots log in and out over the day (fewest at night, most in the evening) instead of all being online 24/7.")]
+    public bool PresenceRotation { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the share (in percent) of bots which stays online at the quietest time of day.
+    /// 100 effectively disables the rotation effect.
+    /// </summary>
+    [Display(Name = "Min. online share %", Description = "Percentage of the bot population which stays online at the quietest hour (100 = no rotation effect).")]
+    public int MinOnlineSharePercent { get; set; } = 60;
+
+    /// <summary>
     /// Gets or sets the number of bot accounts. Together with <see cref="MaxCharactersPerAccount"/>
     /// this defines the bot population, e.g. 10 accounts × 5 characters = 50 bot characters.
     /// </summary>

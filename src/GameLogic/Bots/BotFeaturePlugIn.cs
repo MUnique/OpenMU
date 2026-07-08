@@ -28,7 +28,12 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
 
     private readonly BotManager _botManager = new();
 
+    private static readonly TimeSpan MaintenanceInterval = TimeSpan.FromSeconds(60);
+    private static readonly TimeSpan PartyReformInterval = TimeSpan.FromMinutes(60);
+
     private DateTime _nextRunUtc = DateTime.UtcNow + StartupDelay;
+    private DateTime _nextMaintenanceUtc = DateTime.UtcNow + StartupDelay + StartupDelay;
+    private DateTime _nextPartyReformUtc = DateTime.UtcNow + PartyReformInterval;
     private bool _spawned;
 
     /// <inheritdoc />
@@ -42,7 +47,13 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
     /// <inheritdoc />
     public async ValueTask ExecuteTaskAsync(GameContext gameContext)
     {
-        if (this._spawned || DateTime.UtcNow < this._nextRunUtc)
+        if (this._spawned)
+        {
+            await this.RunMaintenanceAsync(gameContext).ConfigureAwait(false);
+            return;
+        }
+
+        if (DateTime.UtcNow < this._nextRunUtc)
         {
             return;
         }
@@ -143,6 +154,103 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
         catch (Exception ex)
         {
             logger.LogError(ex, "Failed to form bot parties.");
+        }
+    }
+
+    /// <summary>
+    /// The typical activity of a player base by local hour (0..1): quietest in the early morning,
+    /// busiest in the evening. Scales between <see cref="BotConfiguration.MinOnlineSharePercent"/>
+    /// and 100% of the bot population.
+    /// </summary>
+    private static readonly double[] ActivityByHour =
+    [
+        0.30, 0.15, 0.05, 0.00, 0.00, 0.05, 0.10, 0.20, 0.30, 0.35, 0.40, 0.45,
+        0.50, 0.50, 0.55, 0.60, 0.70, 0.80, 0.90, 1.00, 1.00, 0.95, 0.80, 0.50,
+    ];
+
+    /// <summary>
+    /// Runs the periodic post-spawn maintenance: the presence rotation (one bot in or out per pass, so
+    /// the population ebbs and flows smoothly over the day) and an hourly party re-formation which
+    /// groups bots that lost or never had a party (e.g. after rotating back in).
+    /// </summary>
+    private async ValueTask RunMaintenanceAsync(GameContext gameContext)
+    {
+        if (DateTime.UtcNow < this._nextMaintenanceUtc)
+        {
+            return;
+        }
+
+        this._nextMaintenanceUtc = DateTime.UtcNow + MaintenanceInterval;
+
+        var configuration = this.Configuration;
+        if (configuration?.Enabled != true)
+        {
+            return;
+        }
+
+        var logger = gameContext.LoggerFactory.CreateLogger(this.GetType().Name);
+        try
+        {
+            if (configuration.PresenceRotation)
+            {
+                await this.RotatePresenceAsync(gameContext, configuration, logger).ConfigureAwait(false);
+            }
+
+            if (DateTime.UtcNow >= this._nextPartyReformUtc)
+            {
+                this._nextPartyReformUtc = DateTime.UtcNow + PartyReformInterval;
+                await this._botManager.FormPartiesAsync(gameContext).ConfigureAwait(false);
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Bot maintenance failed.");
+        }
+    }
+
+    private async ValueTask RotatePresenceAsync(GameContext gameContext, BotConfiguration configuration, ILogger logger)
+    {
+        var charactersPerAccount = configuration.GetEffectiveCharactersPerAccount();
+        var totalPopulation = configuration.NumberOfAccounts * charactersPerAccount;
+        if (totalPopulation <= 0)
+        {
+            return;
+        }
+
+        var minShare = Math.Clamp(configuration.MinOnlineSharePercent, 0, 100) / 100.0;
+        var activity = ActivityByHour[DateTime.Now.Hour];
+        var targetOnline = (int)Math.Round(totalPopulation * (minShare + ((1.0 - minShare) * activity)));
+        var online = this._botManager.Bots.Count;
+
+        if (online < targetOnline)
+        {
+            // Bring one bot online: pick a random character which is currently offline.
+            var offline = new List<(string Login, byte Slot)>();
+            for (var i = 1; i <= configuration.NumberOfAccounts; i++)
+            {
+                var loginName = BotGenerator.GetLoginName(i);
+                for (byte slot = 0; slot < charactersPerAccount; slot++)
+                {
+                    if (!this._botManager.IsActive(loginName, slot))
+                    {
+                        offline.Add((loginName, slot));
+                    }
+                }
+            }
+
+            if (offline.SelectRandom() is { Login: not null } candidate
+                && await this._botManager.SpawnBotAsync(gameContext, candidate.Login, candidate.Slot).ConfigureAwait(false))
+            {
+                logger.LogInformation("Bot presence rotation: +1 (online {Online}/{Target} of {Total}).", online + 1, targetOnline, totalPopulation);
+            }
+        }
+        else if (online > targetOnline)
+        {
+            var stopped = await this._botManager.StopRandomBotAsync().ConfigureAwait(false);
+            if (stopped is not null)
+            {
+                logger.LogInformation("Bot presence rotation: -1 '{Name}' (online {Online}/{Target} of {Total}).", stopped, online - 1, targetOnline, totalPopulation);
+            }
         }
     }
 
