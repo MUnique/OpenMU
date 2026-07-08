@@ -160,6 +160,22 @@ public sealed class MuHelperSettings : IMuHelperSettings
     public bool AutoSelectBestSkill => false;
 
     /// <inheritdoc />
+    /// <remarks>Human MU Helper sessions configure their buff slots explicitly, so this is always <c>false</c>.</remarks>
+    public bool AutoSelectBuffs => false;
+
+    /// <inheritdoc />
+    /// <remarks>The client-side MU Helper has no mana potion setting; this only exists for server-side bots.</remarks>
+    public bool UseManaPotion => false;
+
+    /// <inheritdoc />
+    /// <remarks>A human picked their hunting spot deliberately, so their offline session fights whatever is there.</remarks>
+    public bool OnlyHuntSafeMonsters => false;
+
+    /// <inheritdoc />
+    /// <remarks>Equipment progression is a server-side bot behavior only.</remarks>
+    public bool PickUpgradeItems => false;
+
+    /// <inheritdoc />
     public override string ToString()
     {
         return $"[MuHelperSettings: BasicSkill={this.BasicSkillId}, Act1={this.ActivationSkill1Id}, Act2={this.ActivationSkill2Id}, Buffs={this.BuffSkill0Id}/{this.BuffSkill1Id}/{this.BuffSkill2Id}, HP={this.PotionThresholdPercent}%, Party={this.SupportParty}, PickAll={this.PickAllItems}, PickZen={this.PickZen}]";

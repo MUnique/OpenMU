@@ -38,7 +38,9 @@ public sealed class BuffHandler
     }
 
     /// <summary>
-    /// Gets the configured buff skill IDs from the settings.
+    /// Gets the configured buff skill IDs from the settings. With <see cref="IMuHelperSettings.AutoSelectBuffs"/>
+    /// enabled (server-side bots), the character's learned buff skills are used instead of the explicitly
+    /// configured slots, so each class keeps its own buffs up without any per-character configuration.
     /// </summary>
     public IList<int> ConfiguredBuffIds
     {
@@ -47,6 +49,24 @@ public sealed class BuffHandler
             if (this._config is null)
             {
                 return [];
+            }
+
+            if (this._config.AutoSelectBuffs && this._player.SkillList is { } skillList)
+            {
+                var learnedBuffs = skillList.Skills
+                    .Where(s => s.Skill is { SkillType: SkillType.Buff, MagicEffectDef: not null })
+                    .Select(s => (int)s.Skill!.Number)
+                    .OrderBy(n => n)
+                    .Take(BuffSlotCount)
+                    .ToList();
+
+                // Pad to the fixed slot count - the caller indexes all three slots; 0 means "slot empty".
+                while (learnedBuffs.Count < BuffSlotCount)
+                {
+                    learnedBuffs.Add(0);
+                }
+
+                return learnedBuffs;
             }
 
             return [this._config.BuffSkill0Id, this._config.BuffSkill1Id, this._config.BuffSkill2Id];

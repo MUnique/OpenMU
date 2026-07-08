@@ -6,69 +6,94 @@ namespace MUnique.OpenMU.GameLogic.Bots;
 
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.GameLogic.PlayerActions.Character;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// Teaches a server-side bot the class attack skills it becomes eligible for as it levels up during play,
-/// so its spell repertoire grows over its lifetime just like a real player's. Skills are only ever learned
-/// for the character's own class (<see cref="Skill.QualifiedCharacters"/>), gated by a per-skill learn level
-/// derived from the skill's attack damage - the same rule the <see cref="BotGenerator"/> applies at creation.
+/// Grows a server-side bot like a real player when it levels up during play: the earned stat points are
+/// invested according to the bot's class build (see <see cref="BotProgression.GetStatWeights"/>), and any
+/// class skill whose learn requirements (total energy, leadership, character level, ...) are now met is
+/// learned - attack skills as well as the class's own buffs and heals. Skills are only ever learned for
+/// the character's own class (<see cref="Skill.QualifiedCharacters"/>), using the same requirements the
+/// game enforces for human players, so a grown bot matches a freshly generated one of the same level.
 /// </summary>
 [PlugIn]
-[Display(Name = "Bot skill progression", Description = "Teaches server-side bots new class- and level-appropriate attack skills as they level up.")]
+[Display(Name = "Bot skill progression", Description = "Invests level-up stat points and teaches server-side bots new class- and level-appropriate skills as they level up.")]
 [Guid("D1F4A7C2-6B3E-4A59-8E71-9C0D2F5B6A84")]
 public class BotSkillProgressionPlugIn : ICharacterLevelUpPlugIn
 {
-    /// <summary>
-    /// Skill-tier scaling: kept in sync with <see cref="BotGenerator"/> so runtime learning follows the same
-    /// progression a freshly generated bot of the new level would already have.
-    /// </summary>
-    private const double SkillLearnDamageFactor = 0.9;
+    private static readonly IncreaseStatsAction IncreaseStatsAction = new();
 
     /// <inheritdoc />
     public void CharacterLeveledUp(Player player)
     {
         if (player.Account?.IsBot != true
-            || player.SelectedCharacter?.CharacterClass is not { } characterClass
-            || player.SkillList is not { } skillList)
+            || player.SelectedCharacter?.CharacterClass is not { }
+            || player.SkillList is not { })
         {
             return;
         }
 
+        // Fire-and-forget from this synchronous hook; for an offline bot the involved view invocations
+        // are no-ops and the mutations are effectively synchronous. No own SaveChanges here - the new
+        // stats and skills are persisted by the periodic save, avoiding extra concurrency pressure.
+        _ = this.ProgressAsync(player);
+    }
+
+    private async Task ProgressAsync(Player player)
+    {
         try
         {
-            var level = player.Level;
-            foreach (var skill in player.GameContext.Configuration.Skills)
-            {
-                if (skill.AttackDamage <= 0
-                    || skill.SkillType is not (SkillType.DirectHit
-                        or SkillType.AreaSkillAutomaticHits
-                        or SkillType.AreaSkillExplicitHits
-                        or SkillType.AreaSkillExplicitTarget)
-                    || !skill.QualifiedCharacters.Contains(characterClass)
-                    || skillList.ContainsSkill((ushort)skill.Number))
-                {
-                    continue;
-                }
-
-                var learnLevel = Math.Max(1, (int)Math.Ceiling(skill.AttackDamage * SkillLearnDamageFactor));
-                if (level < learnLevel)
-                {
-                    continue;
-                }
-
-                // For an offline bot the view invocation is a no-op and the in-memory skill maps are updated
-                // synchronously, so the skill is immediately available to the combat AI; the new SkillEntry is
-                // persisted by the periodic save (no own SaveChanges here, to avoid extra concurrency pressure).
-                _ = skillList.AddLearnedSkillAsync(skill);
-                player.Logger.LogInformation("Bot '{Name}' learned '{Skill}' at level {Level}.", player.Name, skill.Name, level);
-            }
+            await this.SpendStatPointsAsync(player).ConfigureAwait(false);
+            await this.LearnNewSkillsAsync(player).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
-            player.Logger.LogError(ex, "Failed to progress bot skills for '{Name}'.", player.Name);
+            player.Logger.LogError(ex, "Failed to progress bot '{Name}' after level-up.", player.Name);
+        }
+    }
+
+    private async ValueTask SpendStatPointsAsync(Player player)
+    {
+        var character = player.SelectedCharacter!;
+        var points = character.LevelUpPoints;
+        if (points <= 0)
+        {
+            return;
+        }
+
+        var weights = BotProgression.GetStatWeights(character.CharacterClass!);
+        foreach (var (stat, amount) in BotProgression.SplitPoints(points, weights))
+        {
+            if (amount > 0)
+            {
+                await IncreaseStatsAction.IncreaseStatsAsync(player, stat, (ushort)amount).ConfigureAwait(false);
+            }
+        }
+    }
+
+    private async ValueTask LearnNewSkillsAsync(Player player)
+    {
+        var characterClass = player.SelectedCharacter!.CharacterClass!;
+        var skillList = player.SkillList!;
+
+        float? GetValue(AttributeDefinition attribute) => player.Attributes?[attribute];
+
+        foreach (var skill in player.GameContext.Configuration.Skills)
+        {
+            if (!BotProgression.IsBotLearnableSkill(skill)
+                || !skill.QualifiedCharacters.Contains(characterClass)
+                || skillList.ContainsSkill((ushort)skill.Number)
+                || !BotProgression.MeetsRequirements(skill, GetValue))
+            {
+                continue;
+            }
+
+            await skillList.AddLearnedSkillAsync(skill).ConfigureAwait(false);
+            player.Logger.LogInformation("Bot '{Name}' learned '{Skill}' at level {Level}.", player.Name, skill.Name, player.Level);
         }
     }
 }

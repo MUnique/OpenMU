@@ -19,9 +19,21 @@ public sealed class CombatHandler
 {
     private const byte DefaultRange = 1;
     private const byte BowRange = 6;
+
+    /// <summary>See <see cref="GetSafeHuntCap"/>: fraction of the bot's own level it hunts up to.</summary>
+    private const float SafeMonsterFactor = 0.5f;
+
+    /// <summary>The minimum monster level a bot will hunt, so very low-level bots still find targets.</summary>
+    private const int MinSafeHuntLevel = 3;
     private const int ComboFinisherDelayTicks = 3;
     private const int InterSkillDelayTicks = 1;
     private const int MinComboSkillCount = 3;
+
+    /// <summary>After this many consecutive failed approaches the target counts as unreachable.</summary>
+    private const int MaxApproachFailures = 3;
+
+    /// <summary>How long an unreachable target is ignored before it may be considered again.</summary>
+    private static readonly TimeSpan UnreachableTargetBlacklistDuration = TimeSpan.FromSeconds(10);
 
     private const short DrainLifeBaseSkillId = 214;
     private const short DrainLifeStrengthenerSkillId = 458;
@@ -38,6 +50,11 @@ public sealed class CombatHandler
     private int _nearbyMonsterCount;
     private int _currentComboStep;
     private int _skillCooldownTicks;
+    private int _approachFailures;
+    private ushort _unreachableTargetId;
+    private DateTime _unreachableTargetUntilUtc = DateTime.MinValue;
+    private SkillEntry? _tickBestSkill;
+    private bool _tickBestSkillComputed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CombatHandler"/> class.
@@ -113,9 +130,25 @@ public sealed class CombatHandler
         byte attackRange = this.GetEffectiveAttackRange();
         if (!this.IsTargetInAttackRange(this._currentTarget, attackRange))
         {
-            await this._movementHandler.MoveCloserToTargetAsync(this._currentTarget, attackRange).ConfigureAwait(false);
+            if (await this._movementHandler.MoveCloserToTargetAsync(this._currentTarget, attackRange).ConfigureAwait(false))
+            {
+                this._approachFailures = 0;
+            }
+            else if (++this._approachFailures >= MaxApproachFailures)
+            {
+                // The target is in (Euclidean) range but no walkable path leads to it - e.g. a monster
+                // across a wall or river. Blacklist it briefly and drop it, so the bot picks another
+                // target (or moves on) instead of standing in front of the obstacle forever.
+                this._unreachableTargetId = this._currentTarget.Id;
+                this._unreachableTargetUntilUtc = DateTime.UtcNow + UnreachableTargetBlacklistDuration;
+                this._currentTarget = null;
+                this._approachFailures = 0;
+            }
+
             return;
         }
+
+        this._approachFailures = 0;
 
         if (this._config?.UseCombo == true)
         {
@@ -192,6 +225,11 @@ public sealed class CombatHandler
 
     private void RefreshTarget()
     {
+        // The best-skill choice is cached for the duration of one tick (it is needed for both the range
+        // check and the actual attack); a new tick starts with a fresh choice.
+        this._tickBestSkill = null;
+        this._tickBestSkillComputed = false;
+
         if (this._currentTarget is { } t && !this.IsTargetStillValid(t))
         {
             this._currentTarget = null;
@@ -200,7 +238,16 @@ public sealed class CombatHandler
         if (this._currentTarget is null)
         {
             var monsters = this.GetAttackableMonstersInHuntingRange().ToList();
-            this._currentTarget = monsters.MinBy(m => m.GetDistanceTo(this._player));
+
+            // Choose randomly among the two nearest candidates instead of strictly the nearest one:
+            // with many bots on one ground, deterministic nearest-first makes them all dogpile the same
+            // monster and roam as a pack, which looks distinctly bot-like and wastes damage on overkill.
+            var candidates = monsters
+                .Where(m => m.Id != this._unreachableTargetId || DateTime.UtcNow >= this._unreachableTargetUntilUtc)
+                .OrderBy(m => m.GetDistanceTo(this._player))
+                .Take(2)
+                .ToList();
+            this._currentTarget = candidates.SelectRandom();
             this._nearbyMonsterCount = monsters.Count;
         }
         else
@@ -238,8 +285,35 @@ public sealed class CombatHandler
     {
         return monster.IsAlive
                && !monster.IsAtSafezone()
-               && monster.Definition.ObjectKind == NpcObjectKind.Monster;
+               && monster.Definition.ObjectKind == NpcObjectKind.Monster
+               && this.IsWithinSafeHuntLevel(monster);
     }
+
+    /// <summary>
+    /// With <see cref="IMuHelperSettings.OnlyHuntSafeMonsters"/> (server-side bots), the combat AI only
+    /// engages monsters up to the same safe level cap the bot navigator hunts by. Without this, a bot
+    /// travelling through hostile territory picks a fight with any monster that comes within range -
+    /// including ones far above its level - and dies. Human offline sessions keep the unrestricted
+    /// behavior, since the player chose their hunting spot deliberately.
+    /// </summary>
+    private bool IsWithinSafeHuntLevel(Monster monster)
+    {
+        if (this._config?.OnlyHuntSafeMonsters != true)
+        {
+            return true;
+        }
+
+        var botLevel = (int)(this._player.Attributes?[Stats.Level] ?? 1);
+        return monster.Attributes[Stats.Level] <= GetSafeHuntCap(botLevel);
+    }
+
+    /// <summary>
+    /// The strongest monster level a bot of the given level should fight. In MU a monster is far tougher
+    /// than a character of the same level, so bots target monsters well below their own level to survive
+    /// while still earning experience. Shared by the combat AI and the bot navigator, so a bot never
+    /// stops travelling for (or engages) a monster it should not fight.
+    /// </summary>
+    public static int GetSafeHuntCap(int botLevel) => Math.Max(MinSafeHuntLevel, (int)(botLevel * SafeMonsterFactor));
 
     private async ValueTask ExecutePhysicalAttackAsync(IAttackable target)
     {
@@ -338,6 +412,13 @@ public sealed class CombatHandler
     /// </summary>
     private SkillEntry? SelectBestAffordableSkill()
     {
+        if (this._tickBestSkillComputed)
+        {
+            // Computed once per tick: both the attack-range check and the attack itself need it.
+            return this._tickBestSkill;
+        }
+
+        this._tickBestSkillComputed = true;
         if (this._player.SkillList is not { } skillList)
         {
             return null;
@@ -367,6 +448,7 @@ public sealed class CombatHandler
             }
         }
 
+        this._tickBestSkill = best;
         return best;
     }
 

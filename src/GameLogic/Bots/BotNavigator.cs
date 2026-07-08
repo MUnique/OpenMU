@@ -21,20 +21,8 @@ using MUnique.OpenMU.Pathfinding;
 /// </summary>
 internal sealed class BotNavigator : AsyncDisposable
 {
-    private static readonly TimeSpan StartDelay = TimeSpan.FromSeconds(2);
     private static readonly TimeSpan EvaluationInterval = TimeSpan.FromSeconds(1);
     private static readonly TimeSpan EmptyGroundGrace = TimeSpan.FromSeconds(8);
-
-    /// <summary>
-    /// The strongest monster a bot should fight, as a fraction of its own level. In MU a monster is far
-    /// tougher than a character of the same level (a well-geared level 400 only just manages the ~140
-    /// level monsters of the hardest map), so bots target monsters well below their own level to survive
-    /// while still earning experience. Tunable; lower = safer/slower, higher = more experience/deadlier.
-    /// </summary>
-    private const float SafeMonsterFactor = 0.5f;
-
-    /// <summary>The minimum monster level a bot will hunt, so very low-level bots still find targets.</summary>
-    private const int MinHuntCap = 3;
 
     /// <summary>A bot only warps to another map if it offers monsters at least this many levels stronger (avoids hopping for tiny gains).</summary>
     private const int WarpImprovementMargin = 3;
@@ -61,11 +49,14 @@ internal sealed class BotNavigator : AsyncDisposable
     /// </summary>
     private const int MonsterSeekRadius = 40;
 
-    /// <summary>Item group of healing potions (Apple / Small / Medium / Large all share group 14).</summary>
+    /// <summary>Item group of potions (healing and mana potions share group 14).</summary>
     private const int HealPotionGroup = 14;
 
     /// <summary>Item number of the Large Healing Potion within <see cref="HealPotionGroup"/>.</summary>
     private const int HealPotionNumber = 3;
+
+    /// <summary>Item number of the Large Mana Potion within <see cref="HealPotionGroup"/>.</summary>
+    private const int ManaPotionNumber = 6;
 
     /// <summary>Stack size (the potion item's Durability holds the remaining count; one is spent per heal).</summary>
     private const byte HealPotionStack = 255;
@@ -75,6 +66,16 @@ internal sealed class BotNavigator : AsyncDisposable
 
     /// <summary>Number of path steps to issue per travel hop. Short hops let the bot stop and fight between hops.</summary>
     private const int StepsPerHop = 3;
+
+    /// <summary>
+    /// How far the travel destination may drift (e.g. a roaming monster the bot homes in on) before the
+    /// cached route is re-planned. Re-planning a whole-map A* every tick just to consume three steps
+    /// starved the path finder pool once dozens of bots travelled at the same time.
+    /// </summary>
+    private const int PathReuseTolerance = 4;
+
+    /// <summary>How often the bot checks its backpack for equippable upgrades.</summary>
+    private static readonly TimeSpan EquipCheckInterval = TimeSpan.FromSeconds(8);
 
     /// <summary>
     /// If a monster is within this range the bot stops travelling and lets the combat handler engage.
@@ -103,6 +104,13 @@ internal sealed class BotNavigator : AsyncDisposable
     private static readonly TimeSpan StuckTimeout = TimeSpan.FromSeconds(8);
 
     /// <summary>
+    /// Stuck timeout when huntable monsters are nearby: much longer, because a bot standing still while
+    /// monsters are around is usually just fighting them from one tile. It still eventually fires, which
+    /// breaks the rare deadlock of a monster that is in range but cannot be attacked or reached.
+    /// </summary>
+    private static readonly TimeSpan StuckWithMonstersTimeout = TimeSpan.FromSeconds(30);
+
+    /// <summary>
     /// A pool of full-map path finders for long-distance travel. The pooled (scoped) path finder rejects
     /// start/end further apart than ~16 tiles, so travel uses a <see cref="FullGridNetwork"/> which resolves
     /// routes across the whole map. A path finder is not safe for concurrent use, so we keep a small pool and
@@ -127,6 +135,10 @@ internal sealed class BotNavigator : AsyncDisposable
     private DateTime _lastWarpUtc = DateTime.MinValue;
     private Point _lastPosition;
     private DateTime _lastMoveUtc = DateTime.MinValue;
+    private DateTime _nextEquipCheckUtc = DateTime.MinValue;
+    private IList<PathResultNode>? _travelPath;
+    private int _travelPathIndex;
+    private Point _travelPathTarget;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BotNavigator"/> class.
@@ -138,14 +150,15 @@ internal sealed class BotNavigator : AsyncDisposable
     }
 
     /// <summary>
-    /// Starts the periodic navigation evaluation.
+    /// Starts the periodic navigation evaluation. The start delay is jittered per bot, so hundreds of
+    /// navigators do not all fire on the same second boundary (smoother load, less robotic synchrony).
     /// </summary>
     public void Start()
     {
         this._timer ??= new Timer(
             _ => _ = this.SafeEvaluateAsync(this._cts.Token),
             null,
-            StartDelay,
+            TimeSpan.FromMilliseconds(2000 + Rand.NextInt(0, 1500)),
             EvaluationInterval);
     }
 
@@ -206,10 +219,18 @@ internal sealed class BotNavigator : AsyncDisposable
             return;
         }
 
-        // Make sure the bot always carries healing potions. Without them the offline HealingHandler has
-        // nothing to drink and the bot dies to any sustained damage. This also tops up already-generated
-        // bots at runtime, so the fix applies without regenerating them.
-        await this.EnsureHealthPotionsAsync().ConfigureAwait(false);
+        // Make sure the bot always carries healing and mana potions. Without them the offline handlers
+        // have nothing to drink: the bot dies to sustained damage, and casters degrade to weak melee
+        // once their mana runs dry. This also tops up already-generated bots at runtime.
+        await this.EnsurePotionsAsync().ConfigureAwait(false);
+
+        // Periodically evaluate looted gear and equip upgrades (drops the replaced piece), so the bot's
+        // equipment progresses over its lifetime like a real player's.
+        if (DateTime.UtcNow >= this._nextEquipCheckUtc)
+        {
+            this._nextEquipCheckUtc = DateTime.UtcNow + EquipCheckInterval;
+            await BotEquipmentHandler.TryEquipUpgradesAsync(this._player).ConfigureAwait(false);
+        }
 
         // Keep the combat centre on the bot's current position, so the combat handler always engages
         // monsters right next to the bot - both at the hunting ground and while travelling through hostile
@@ -230,13 +251,20 @@ internal sealed class BotNavigator : AsyncDisposable
             this._lastMoveUtc = DateTime.UtcNow;
         }
 
+        // Only monsters the bot would actually fight count (the combat AI ignores ones above its safe
+        // level cap), so a too-strong monster next to the bot neither stops its travel nor suppresses
+        // the stuck watchdog.
+        var huntCap = GetHuntCap(this.GetBotLevel());
         var monstersNearby = map.GetAttackablesInRange(this._player.Position, TravelStopRange)
             .OfType<Monster>()
-            .Count(m => m.IsAlive && !m.IsAtSafezone());
+            .Count(m => m.IsAlive && !m.IsAtSafezone() && m.Attributes[Stats.Level] <= huntCap);
 
-        // The bot counts as stuck only when it has been frozen on the spot with NOTHING to fight - i.e. a
-        // wedged walk or a blocked path. A bot standing still because it is fighting nearby monsters is fine.
-        var stuck = monstersNearby == 0 && DateTime.UtcNow - this._lastMoveUtc > StuckTimeout;
+        // The bot counts as stuck when it has been frozen on the spot: quickly when there is nothing to
+        // fight (a wedged walk or blocked path), and after a much longer grace when huntable monsters are
+        // around - standing still next to monsters usually just means fighting, but if the position stays
+        // frozen well beyond that, something is wedged (e.g. a monster in range that cannot be reached).
+        var stuckTimeout = monstersNearby > 0 ? StuckWithMonstersTimeout : StuckTimeout;
+        var stuck = DateTime.UtcNow - this._lastMoveUtc > stuckTimeout;
         if (stuck)
         {
             // Break free: pick a fresh hunting ground and walk to it now. Issuing the walk resets the wedged
@@ -261,13 +289,15 @@ internal sealed class BotNavigator : AsyncDisposable
             return;
         }
 
-        // Home in on the nearest live monster within the seek radius instead of walking to a random tile in a
-        // map-sized spawn area (where the bot would almost never arrive within combat range of an actual
-        // monster). This is what makes the bot converge on real monsters and actually fight. The bot walks
-        // toward the monster; once within the combat range the branch above takes over and the combat handler
-        // engages. Only when nothing is loaded within the seek radius (e.g. still in town, or all nearby
-        // monsters are too strong) do we fall back to the coarse spawn-area / warp logic below to relocate.
-        if (!inSafezone && this.TryFindNearestMonsterGround(map, out var monsterGround))
+        // Home in on a nearby live monster instead of walking to a random tile in a map-sized spawn area
+        // (where the bot would almost never arrive within combat range of an actual monster). This is what
+        // makes the bot converge on real monsters and actually fight. The bot walks toward the monster;
+        // once within the combat range the branch above takes over and the combat handler engages. This
+        // also runs inside the safezone, so a bot in town heads straight for the monsters just outside the
+        // gate instead of a random far-away spawn point. Only when nothing is loaded within the seek radius
+        // (deep in town, or all nearby monsters too strong) does it fall back to the coarse spawn-area /
+        // warp logic below to relocate.
+        if (this.TryFindNearestMonsterGround(map, out var monsterGround))
         {
             this._destination = monsterGround;
             this._hasDestination = true;
@@ -322,6 +352,7 @@ internal sealed class BotNavigator : AsyncDisposable
         {
             this._lastWarpUtc = DateTime.UtcNow;
             this._hasDestination = false;
+            this._travelPath = null;
             this._player.Logger.LogInformation(
                 "Bot {Character} (level {Level}) warping to map {Map} (monsters ~{MonsterLevel}).",
                 this._player.Name,
@@ -344,6 +375,20 @@ internal sealed class BotNavigator : AsyncDisposable
     private async ValueTask<bool> TravelTowardAsync(GameMap map, Point destination)
     {
         var position = this._player.Position;
+
+        // Follow the cached route as long as it still leads to (roughly) the same destination and the
+        // bot is still on it. Re-planning a whole-map A* every tick just to consume three steps wasted
+        // CPU and starved the shared path finder pool once dozens of bots travelled at the same time.
+        if (this._travelPath is { } cached
+            && this._travelPathIndex < cached.Count
+            && destination.EuclideanDistanceTo(this._travelPathTarget) <= PathReuseTolerance
+            && position.EuclideanDistanceTo(cached[this._travelPathIndex].Point) <= 1.5)
+        {
+            await this.WalkCachedStepsAsync(position).ConfigureAwait(false);
+            return true;
+        }
+
+        this._travelPath = null;
 
         IList<PathResultNode>? path;
         await TravelPathFinderPool.WaitAsync().ConfigureAwait(false);
@@ -375,17 +420,31 @@ internal sealed class BotNavigator : AsyncDisposable
             return false;
         }
 
-        var stepsCount = Math.Min(path.Count, StepsPerHop);
+        this._travelPath = path;
+        this._travelPathIndex = 0;
+        this._travelPathTarget = destination;
+        await this.WalkCachedStepsAsync(position).ConfigureAwait(false);
+        return true;
+    }
+
+    /// <summary>
+    /// Issues the next few steps of the cached route (short hops, so the bot can stop and fight between
+    /// them) and advances the route cursor.
+    /// </summary>
+    private async ValueTask WalkCachedStepsAsync(Point position)
+    {
+        var path = this._travelPath!;
+        var stepsCount = Math.Min(path.Count - this._travelPathIndex, StepsPerHop);
         var steps = new WalkingStep[stepsCount];
         for (var i = 0; i < stepsCount; i++)
         {
-            var node = path[i];
+            var node = path[this._travelPathIndex + i];
             var previous = i == 0 ? position : steps[i - 1].To;
             steps[i] = new WalkingStep(previous, node.Point, previous.GetDirectionTo(node.Point));
         }
 
+        this._travelPathIndex += stepsCount;
         await this._player.WalkToAsync(steps[stepsCount - 1].To, steps).ConfigureAwait(false);
-        return true;
     }
 
     /// <summary>
@@ -417,11 +476,17 @@ internal sealed class BotNavigator : AsyncDisposable
     }
 
     /// <summary>
-    /// Ensures the bot keeps a stack of healing potions in its inventory. Creates the stack the first time
-    /// (covering bots generated before potions were granted) and refills it once it runs low, so the bot
-    /// never goes without a way to heal.
+    /// Ensures the bot keeps a stack of healing and a stack of mana potions in its inventory. Creates the
+    /// stacks the first time (covering bots generated before they were granted) and refills them once they
+    /// run low, so the bot never goes without a way to heal or to keep casting.
     /// </summary>
-    private async ValueTask EnsureHealthPotionsAsync()
+    private async ValueTask EnsurePotionsAsync()
+    {
+        await this.EnsurePotionStackAsync(HealPotionNumber).ConfigureAwait(false);
+        await this.EnsurePotionStackAsync(ManaPotionNumber).ConfigureAwait(false);
+    }
+
+    private async ValueTask EnsurePotionStackAsync(int potionNumber)
     {
         if (this._player.Inventory is not { } inventory)
         {
@@ -429,7 +494,7 @@ internal sealed class BotNavigator : AsyncDisposable
         }
 
         var potion = inventory.Items.FirstOrDefault(i =>
-            i.Definition?.Group == HealPotionGroup && i.Definition.Number == HealPotionNumber);
+            i.Definition?.Group == HealPotionGroup && i.Definition.Number == potionNumber);
         if (potion is not null)
         {
             if (potion.Durability < HealPotionRefillBelow)
@@ -441,7 +506,7 @@ internal sealed class BotNavigator : AsyncDisposable
         }
 
         var definition = this._player.GameContext.Configuration.Items
-            .FirstOrDefault(d => d.Group == HealPotionGroup && d.Number == HealPotionNumber);
+            .FirstOrDefault(d => d.Group == HealPotionGroup && d.Number == potionNumber);
         if (definition is null)
         {
             return;
@@ -489,8 +554,7 @@ internal sealed class BotNavigator : AsyncDisposable
         ground = default;
         var position = this._player.Position;
         var cap = GetHuntCap(this.GetBotLevel());
-        Monster? nearest = null;
-        var nearestDistance = double.MaxValue;
+        var candidates = new List<(Monster Monster, double Distance)>();
         foreach (var attackable in map.GetAttackablesInRange(position, MonsterSeekRadius))
         {
             if (attackable is not Monster monster
@@ -508,29 +572,37 @@ internal sealed class BotNavigator : AsyncDisposable
                 continue;
             }
 
-            var distance = monster.GetDistanceTo(position);
-            if (distance < nearestDistance)
-            {
-                nearest = monster;
-                nearestDistance = distance;
-            }
+            candidates.Add((monster, monster.GetDistanceTo(position)));
         }
 
-        if (nearest is null)
+        if (candidates.Count == 0)
+        {
+            return false;
+        }
+
+        // Head for one of the few nearest monsters, chosen randomly, instead of strictly the nearest:
+        // with many bots on one ground, deterministic nearest-first would send them all to the same
+        // monster and they would roam the map as one pack - a very bot-like look.
+        var chosen = candidates
+            .OrderBy(c => c.Distance)
+            .Take(3)
+            .Select(c => c.Monster)
+            .SelectRandom();
+        if (chosen is null)
         {
             return false;
         }
 
         // The monster stands on a walkable tile, so head straight for it; TravelTowardAsync walks a few steps
         // per tick and re-homes as the monster roams, closing the gap until combat range is reached.
-        ground = nearest.Position;
+        ground = chosen.Position;
         return true;
     }
 
     private int GetBotLevel() => (int)(this._player.Attributes?[Stats.Level] ?? 1);
 
-    /// <summary>The highest monster level a bot of the given level should fight (see <see cref="SafeMonsterFactor"/>).</summary>
-    private static int GetHuntCap(int botLevel) => Math.Max(MinHuntCap, (int)(botLevel * SafeMonsterFactor));
+    /// <summary>The highest monster level a bot of the given level should fight - shared with the combat AI.</summary>
+    private static int GetHuntCap(int botLevel) => CombatHandler.GetSafeHuntCap(botLevel);
 
     /// <summary>The strongest monster level on the map which is still at or below the safe cap; 0 if none.</summary>
     private static int BestHuntableLevel(GameMapDefinition mapDefinition, int cap)

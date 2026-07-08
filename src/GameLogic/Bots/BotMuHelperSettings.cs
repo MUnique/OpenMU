@@ -91,11 +91,13 @@ internal sealed class BotMuHelperSettings : IMuHelperSettings
     /// <inheritdoc />
     public int BuffCastIntervalSeconds => 0;
 
+    // With the class heal skill learned (e.g. elf Heal), the HealingHandler casts it below the threshold
+    // before falling back to potions - the same order a real player follows.
     /// <inheritdoc />
-    public bool AutoHeal => false;
+    public bool AutoHeal => true;
 
     /// <inheritdoc />
-    public int HealThresholdPercent => 30;
+    public int HealThresholdPercent => 60;
 
     /// <inheritdoc />
     public bool UseDrainLife => false;
@@ -177,4 +179,23 @@ internal sealed class BotMuHelperSettings : IMuHelperSettings
     /// level-appropriate magic/skills instead of only swinging their weapon.
     /// </remarks>
     public bool AutoSelectBestSkill => true;
+
+    /// <inheritdoc />
+    /// <remarks>Bots keep their class's learned buffs up automatically (e.g. elf Greater Defense/Greater Damage).</remarks>
+    public bool AutoSelectBuffs => true;
+
+    /// <inheritdoc />
+    /// <remarks>Casters drink mana potions, so they keep casting instead of degrading to weak melee.</remarks>
+    public bool UseManaPotion => true;
+
+    /// <inheritdoc />
+    /// <remarks>
+    /// Bots only engage monsters they can handle (the navigator's safe-monster cap). Without this, a bot
+    /// travelling through hostile territory picks fights with monsters far above its level and dies.
+    /// </remarks>
+    public bool OnlyHuntSafeMonsters => true;
+
+    /// <inheritdoc />
+    /// <remarks>Bots evaluate dropped gear and pick up upgrades for their own class (see <see cref="BotEquipmentHandler"/>).</remarks>
+    public bool PickUpgradeItems => true;
 }

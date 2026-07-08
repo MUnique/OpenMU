@@ -130,6 +130,13 @@ public sealed class ItemPickupHandler
             return true;
         }
 
+        if (this._config.PickUpgradeItems && Bots.BotEquipmentHandler.IsUpgradeFor(this._player, item))
+        {
+            // The item is class-qualified gear which beats what the bot currently wears - worth picking
+            // up; the BotEquipmentHandler will equip it on one of its next passes.
+            return true;
+        }
+
         if (this._config.PickExtraItems && item.Definition is { } definition)
         {
             return this._config.ExtraItemNames.Any(name => definition.Name.ToString()?.Contains(name, StringComparison.OrdinalIgnoreCase) ?? false);
