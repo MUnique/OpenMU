@@ -396,11 +396,13 @@ internal sealed class BotGenerator
             isPreferredWeapon = d => d.Group <= MaxMeleeGroup;
         }
 
+        // Ammunition shares the bow group (Bolt/Arrows have DropLevel 0), so without this filter every
+        // archer would get a bolt stack as its "weapon" and end up punching with its fists.
         var weapon = this._gameContext.Configuration.Items
-                .Where(d => isPreferredWeapon(d) && d.QualifiedCharacters.Contains(characterClass))
+                .Where(d => isPreferredWeapon(d) && !d.IsAmmunition && d.QualifiedCharacters.Contains(characterClass))
                 .MinBy(d => d.DropLevel)
             ?? this._gameContext.Configuration.Items
-                .Where(d => d.Group <= StaffGroup && d.QualifiedCharacters.Contains(characterClass))
+                .Where(d => d.Group <= StaffGroup && !d.IsAmmunition && d.QualifiedCharacters.Contains(characterClass))
                 .MinBy(d => d.DropLevel);
         if (weapon is not null)
         {
