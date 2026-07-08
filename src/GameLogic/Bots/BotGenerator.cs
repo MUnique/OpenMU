@@ -436,7 +436,11 @@ internal sealed class BotGenerator
 
         var item = context.CreateNew<Item>();
         item.Definition = potion;
-        item.Durability = 255;
+
+        // Only a handful of charges to start with: fresh bots head to the merchant right away and buy
+        // their supplies with their starting Zen, kicking off the shopping economy from minute one
+        // (kept just above the emergency top-up threshold, so the economy path - not the fallback - runs).
+        item.Durability = Rand.NextInt(10, 16);
         item.ItemSlot = slot;
         inventory.Items.Add(item);
     }

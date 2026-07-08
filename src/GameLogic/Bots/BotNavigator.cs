@@ -62,8 +62,13 @@ internal sealed class BotNavigator : AsyncDisposable
     /// <summary>Stack size (the potion item's Durability holds the remaining count; one is spent per heal).</summary>
     private const byte HealPotionStack = 255;
 
-    /// <summary>Refill the stack once it drops below this, so the bot never runs out mid-fight.</summary>
-    private const int HealPotionRefillBelow = 30;
+    /// <summary>
+    /// Emergency refill threshold: normally the bot restocks potions by BUYING them at a merchant (see
+    /// <see cref="BotShoppingHandler"/>, triggered well above this level); only when a stack still runs
+    /// this low (e.g. no Zen, merchant unreachable) is it topped up out of thin air as a last resort,
+    /// so the bot never dies over an empty bottle.
+    /// </summary>
+    private const int HealPotionRefillBelow = 10;
 
     /// <summary>Number of path steps to issue per travel hop. Short hops let the bot stop and fight between hops.</summary>
     private const int StepsPerHop = 3;
@@ -77,6 +82,15 @@ internal sealed class BotNavigator : AsyncDisposable
 
     /// <summary>How often the bot checks its backpack for equippable upgrades.</summary>
     private static readonly TimeSpan EquipCheckInterval = TimeSpan.FromSeconds(8);
+
+    /// <summary>How often the bot considers whether it needs a shopping trip.</summary>
+    private static readonly TimeSpan ShoppingCheckInterval = TimeSpan.FromSeconds(30);
+
+    /// <summary>Cooldown after a shopping trip before considering the next one.</summary>
+    private static readonly TimeSpan ShoppingCooldown = TimeSpan.FromMinutes(10);
+
+    /// <summary>How close (tiles) the bot must be to the merchant to trade.</summary>
+    private const int MerchantTalkRange = 3;
 
     /// <summary>
     /// If a monster is within this range the bot stops travelling and lets the combat handler engage.
@@ -146,6 +160,8 @@ internal sealed class BotNavigator : AsyncDisposable
     private IList<PathResultNode>? _travelPath;
     private int _travelPathIndex;
     private Point _travelPathTarget;
+    private Point? _shoppingTarget;
+    private DateTime _nextShoppingCheckUtc = DateTime.MinValue;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BotNavigator"/> class.
@@ -288,6 +304,14 @@ internal sealed class BotNavigator : AsyncDisposable
             return;
         }
 
+        // A shopping trip (selling junk loot, restocking potions with Zen) runs before everything else,
+        // so it completes even for party members - the follow logic below would otherwise pull them
+        // back to the leader mid-trade.
+        if (await this.TryShoppingAsync(map, inSafezone).ConfigureAwait(false))
+        {
+            return;
+        }
+
         // Party members follow their leader instead of roaming on their own: to the leader's map when
         // it warped away, and towards the leader when it moved off. Near the leader they hunt normally
         // (the party heal/buff handlers and the party experience bonus need the group to stay together).
@@ -380,6 +404,61 @@ internal sealed class BotNavigator : AsyncDisposable
         }
 
         await this.PickGroundAndTravelAsync(map).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Drives a shopping trip: when the backpack fills up or potions run low, the bot heads to a town
+    /// merchant (warping to the map's safezone first when out in the field, like using a town portal),
+    /// walks up to it and trades - selling junk loot and restocking potions with Zen.
+    /// </summary>
+    /// <returns>True, if the shopping trip consumed this tick.</returns>
+    private async ValueTask<bool> TryShoppingAsync(GameMap map, bool inSafezone)
+    {
+        if (this._shoppingTarget is { } target)
+        {
+            if (this._player.GetDistanceTo(target) > MerchantTalkRange)
+            {
+                if (!await this.TravelTowardAsync(map, target).ConfigureAwait(false))
+                {
+                    // No way to the merchant from here - give up this trip.
+                    this._shoppingTarget = null;
+                }
+
+                return true;
+            }
+
+            await BotShoppingHandler.TryTradeAsync(this._player, map, target).ConfigureAwait(false);
+            this._shoppingTarget = null;
+            this._nextShoppingCheckUtc = DateTime.UtcNow + ShoppingCooldown;
+            this._lastMoveUtc = DateTime.UtcNow; // standing at the shop is not "stuck"
+            return true;
+        }
+
+        if (DateTime.UtcNow < this._nextShoppingCheckUtc)
+        {
+            return false;
+        }
+
+        this._nextShoppingCheckUtc = DateTime.UtcNow + ShoppingCheckInterval;
+        if (!BotShoppingHandler.NeedsShopping(this._player)
+            || BotShoppingHandler.FindMerchantPosition(map) is not { } merchantPosition)
+        {
+            return false;
+        }
+
+        // Merchants stand in town: when out in the field, warp to the map's safezone first (like using
+        // a town portal scroll), then walk over to the merchant.
+        if (!inSafezone
+            && map.Definition.ExitGates.Where(g => g.IsSpawnGate).SelectRandom() is { } townGate)
+        {
+            this._travelPath = null;
+            this._hasDestination = false;
+            await this._player.WarpToAsync(townGate).ConfigureAwait(false);
+        }
+
+        this._shoppingTarget = merchantPosition;
+        this._player.Logger.LogInformation("Bot '{Name}' heads to the merchant for a shopping trip.", this._player.Name);
+        return true;
     }
 
     /// <summary>
