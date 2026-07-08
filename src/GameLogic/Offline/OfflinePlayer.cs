@@ -15,8 +15,12 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 public class OfflinePlayer : Player
 {
-    /// <summary>How long an attack by a player stays "hot" as a self-defense target.</summary>
-    private static readonly TimeSpan AggressionMemory = TimeSpan.FromSeconds(15);
+    /// <summary>
+    /// How long an attack by a player stays "hot" as a self-defense target, counted from the LAST hit
+    /// (every attack refreshes it). Long enough to hold a grudge: an attacker who breaks off and comes
+    /// back within this window is engaged again on sight, instead of being forgiven after seconds.
+    /// </summary>
+    private static readonly TimeSpan AggressionMemory = TimeSpan.FromMinutes(5);
 
     private OfflinePlayerMuHelper? _intelligence;
     private Task? _intelligenceDisposeTask;
