@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.Offline;
 
+using System.Collections.Concurrent;
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.MuHelper;
 using MUnique.OpenMU.GameLogic.NPC;
@@ -20,11 +22,28 @@ public sealed class CombatHandler
     private const byte DefaultRange = 1;
     private const byte BowRange = 6;
 
-    /// <summary>See <see cref="GetSafeHuntCap"/>: fraction of the bot's own level it hunts up to.</summary>
-    private const float SafeMonsterFactor = 0.5f;
+    /// <summary>
+    /// See <see cref="IsSafeTarget"/>: the largest share of the bot's maximum health a single average
+    /// monster hit may take for the monster to count as safe. Sized so the bot survives several hits
+    /// even when a few monsters aggro at once, with the healing handler (potions at 60%) keeping up.
+    /// </summary>
+    private const float SafeHitHealthShare = 0.20f;
 
-    /// <summary>The minimum monster level a bot will hunt, so very low-level bots still find targets.</summary>
-    private const int MinSafeHuntLevel = 3;
+    /// <summary>
+    /// See <see cref="IsSafeTarget"/>: the bot's attack power must exceed the monster's defense by this
+    /// factor. Without it a bot picks fights it can barely scratch - e.g. the Vulcanus tank monsters
+    /// (defense ~340, health ~100k) shrug off a modestly geared bot's hits, the "fight" lasts minutes,
+    /// and the accumulated damage kills the bot even though every single hit it takes looks survivable.
+    /// </summary>
+    private const float MinAttackAdvantage = 1.2f;
+
+    /// <summary>
+    /// See <see cref="IsSafeTarget"/>: the monster must die within this many net hits of the bot.
+    /// The per-hit checks alone let a fighter "safely" besiege a 100k-health tank monster for ten
+    /// minutes, until its potions ran dry and it died anyway - the fight length itself is the risk.
+    /// At the offline AI's attack pace this bounds a kill to roughly a minute or two.
+    /// </summary>
+    private const int MaxHitsToKill = 100;
     private const int ComboFinisherDelayTicks = 3;
     private const int InterSkillDelayTicks = 1;
     private const int MinComboSkillCount = 3;
@@ -40,6 +59,12 @@ public sealed class CombatHandler
     private static readonly TimeSpan UnreachableTargetBlacklistDuration = TimeSpan.FromSeconds(10);
 
     private static readonly TargetedSkillDefaultPlugin DefaultPlugin = new();
+
+    /// <summary>
+    /// Cache of the combat-relevant stats of monster definitions (config data, immutable at runtime),
+    /// so the safety checks of hundreds of bots don't re-scan the attribute lists every tick.
+    /// </summary>
+    private static readonly ConcurrentDictionary<MonsterDefinition, (int Level, float AverageDamage, float Defense, float Health)> MonsterStatsCache = new();
 
     private readonly OfflinePlayer _player;
     private readonly IMuHelperSettings? _config;
@@ -106,13 +131,50 @@ public sealed class CombatHandler
     }
 
     /// <summary>
-    /// The strongest monster level a bot of the given level should fight. In MU a monster is far tougher
-    /// than a character of the same level, so bots target monsters well below their own level to survive
-    /// while still earning experience. Shared by the combat AI and the bot navigator, so a bot never
-    /// stops travelling for (or engages) a monster it should not fight.
+    /// Determines whether the monster is one the bot can fight without dying, judged by the monster's
+    /// REAL combat stats instead of its nominal level: the average hit it lands (its base damage minus
+    /// the bot's PvM defense, the same subtraction the damage formula applies) must not exceed
+    /// <see cref="SafeHitHealthShare"/> of the bot's maximum health. A monster's level says nothing
+    /// about its punch - the high-end maps (Swamp of Calmness, LaCleon, the event fortresses) field
+    /// "level ~120" monsters which hit for 1000-2300 base damage, several times what regular maps'
+    /// monsters of the same level deal - so a level cap sent high-level bots in modest gear straight
+    /// into a death loop there. Judging by damage also scales naturally with equipment: better armor
+    /// raises the bot's defense and unlocks tougher maps, exactly like it does for a real player.
+    /// The bot's own offense must in turn exceed the monster's defense (<see cref="MinAttackAdvantage"/>),
+    /// so it never besieges a tank monster it can barely scratch, and the monster's level must not
+    /// exceed the bot's own.
+    /// Shared by the combat AI and the bot navigator, so a bot never stops travelling for (or engages)
+    /// a monster it should not fight.
     /// </summary>
-    /// <param name="botLevel">The bot's character level.</param>
-    public static int GetSafeHuntCap(int botLevel) => Math.Max(MinSafeHuntLevel, (int)(botLevel * SafeMonsterFactor));
+    /// <param name="player">The bot player.</param>
+    /// <param name="monster">The monster definition.</param>
+    public static bool IsSafeTarget(Player player, MonsterDefinition monster)
+    {
+        var (monsterLevel, averageDamage, monsterDefense, monsterHealth) = GetMonsterCombatStats(monster);
+        if (monsterLevel <= 0 || player.Attributes is not { } attributes)
+        {
+            return false;
+        }
+
+        if (monsterLevel > (int)attributes[Stats.Level])
+        {
+            return false;
+        }
+
+        var netHit = averageDamage - attributes[Stats.DefensePvm];
+        if (netHit > SafeHitHealthShare * Math.Max(1f, attributes[Stats.MaximumHealth]))
+        {
+            return false;
+        }
+
+        var attackPower = GetAttackPower(player);
+        if (attackPower <= monsterDefense * MinAttackAdvantage)
+        {
+            return false;
+        }
+
+        return (attackPower - monsterDefense) * MaxHitsToKill >= monsterHealth;
+    }
 
     /// <summary>
     /// Decrements the skill cooldown counter by one tick.
@@ -215,6 +277,46 @@ public sealed class CombatHandler
                 }
             }
         }
+    }
+
+    private static (int Level, float AverageDamage, float Defense, float Health) GetMonsterCombatStats(MonsterDefinition monster)
+    {
+        return MonsterStatsCache.GetOrAdd(monster, static m =>
+        {
+            float GetValue(AttributeDefinition attribute)
+                => m.Attributes.FirstOrDefault(a => a.AttributeDefinition == attribute)?.Value ?? 0f;
+
+            var level = (int)GetValue(Stats.Level);
+            var averageDamage = (GetValue(Stats.MinimumPhysBaseDmg) + GetValue(Stats.MaximumPhysBaseDmg)) / 2f;
+            return (level, averageDamage, GetValue(Stats.DefenseBase), GetValue(Stats.MaximumHealth));
+        });
+    }
+
+    /// <summary>
+    /// A rough estimate of the bot's punch: its best base damage kind (physical for fighters, wizardry
+    /// for casters, curse for summoners) plus the strongest attack skill it has learned - enough to tell
+    /// apart "kills this monster at a reasonable pace" from "barely scratches it".
+    /// </summary>
+    private static float GetAttackPower(Player player)
+    {
+        if (player.Attributes is not { } attributes)
+        {
+            return 0f;
+        }
+
+        var physical = (attributes[Stats.MinimumPhysBaseDmg] + attributes[Stats.MaximumPhysBaseDmg]) / 2f;
+        var wizardry = attributes[Stats.WizardryBaseDmg];
+        var curse = (attributes[Stats.MinimumCurseBaseDmg] + attributes[Stats.MaximumCurseBaseDmg]) / 2f;
+        var skillDamage = 0;
+        foreach (var entry in player.SkillList?.Skills ?? [])
+        {
+            if (entry.Skill is { AttackDamage: > 0 } skill && skill.AttackDamage > skillDamage)
+            {
+                skillDamage = skill.AttackDamage;
+            }
+        }
+
+        return Math.Max(physical, Math.Max(wizardry, curse)) + skillDamage;
     }
 
     private async ValueTask ExecuteAttackAsync(IAttackable target)
@@ -335,10 +437,10 @@ public sealed class CombatHandler
 
     /// <summary>
     /// With <see cref="IMuHelperSettings.OnlyHuntSafeMonsters"/> (server-side bots), the combat AI only
-    /// engages monsters up to the same safe level cap the bot navigator hunts by. Without this, a bot
-    /// travelling through hostile territory picks a fight with any monster that comes within range -
-    /// including ones far above its level - and dies. Human offline sessions keep the unrestricted
-    /// behavior, since the player chose their hunting spot deliberately.
+    /// engages monsters which pass the same <see cref="IsSafeTarget"/> check the bot navigator hunts by.
+    /// Without this, a bot travelling through hostile territory picks a fight with any monster that
+    /// comes within range - including ones far too strong - and dies. Human offline sessions keep the
+    /// unrestricted behavior, since the player chose their hunting spot deliberately.
     /// </summary>
     private bool IsWithinSafeHuntLevel(Monster monster)
     {
@@ -347,8 +449,7 @@ public sealed class CombatHandler
             return true;
         }
 
-        var botLevel = (int)(this._player.Attributes?[Stats.Level] ?? 1);
-        return monster.Attributes[Stats.Level] <= GetSafeHuntCap(botLevel);
+        return IsSafeTarget(this._player, monster.Definition);
     }
 
     private async ValueTask ExecutePhysicalAttackAsync(IAttackable target)
