@@ -12,6 +12,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.Resets;
 using MUnique.OpenMU.Persistence;
 
 /// <summary>
@@ -118,6 +119,13 @@ internal sealed class BotGenerator
         var maxLevel = Math.Min(MaxLevel, experienceTable.Length - 1);
         var minLevel = Math.Clamp(MinLevel, 1, maxLevel);
 
+        // On servers with the reset feature the existing population has resets, so freshly generated
+        // bots get a random reset history too - a visitor should meet believable veterans (even TOP,
+        // max-reset characters), not a population uniformly starting from zero. Only possible when the
+        // configuration bounds the resets; unlimited-reset servers keep unseeded bots.
+        var resetConfiguration = BotResetHandler.GetResetConfiguration(this._gameContext);
+        var maxSeededResets = resetConfiguration?.ResetLimit is > 0 ? resetConfiguration.ResetLimit.Value : 0;
+
         using var context = this._gameContext.PersistenceContextProvider.CreateNewPlayerContext(this._gameContext.Configuration);
         var reservedNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var created = 0;
@@ -147,8 +155,9 @@ internal sealed class BotGenerator
             {
                 var characterClass = classQueue.Count > 0 ? classQueue.Dequeue() : creatableClasses.SelectRandom()!;
                 var level = minLevel + (int)((maxLevel - minLevel) * Math.Pow(Rand.NextInt(0, 1001) / 1000.0, LevelSkew));
+                var seededResets = maxSeededResets > 0 ? Rand.NextInt(0, maxSeededResets + 1) : 0;
                 var name = await this._nameGenerator.GenerateUniqueAsync(context, reservedNames, cancellationToken).ConfigureAwait(false);
-                this.CreateCharacter(context, account, name, characterClass, level, slot, experienceTable);
+                this.CreateCharacter(context, account, name, characterClass, level, slot, experienceTable, seededResets, resetConfiguration);
             }
 
             // Save per account so a single failure does not roll back already generated accounts,
@@ -272,12 +281,53 @@ internal sealed class BotGenerator
         }
     }
 
-    private void CreateCharacter(IPlayerContext context, Account account, string name, CharacterClass characterClass, int level, byte slot, long[] experienceTable)
+    /// <summary>
+    /// Calculates the level-up points a character with the given reset history would have available,
+    /// so a seeded bot invests the same total a player of that history would: the points granted by
+    /// the resets themselves (looped through <see cref="ResetProgressionCalculator"/>, so tiers,
+    /// multipliers and the replace/add mode of the server's configuration all apply) plus the points
+    /// earned by leveling. With <see cref="ResetConfiguration.ResetStats"/> the level points of the
+    /// finished cycles were invested and wiped again at each reset, so only the current cycle's count;
+    /// without it every cycle's investment survived and still counts.
+    /// </summary>
+    private static int CalculateLevelUpPoints(CharacterClass characterClass, int level, int seededResets, ResetConfiguration? resetConfiguration)
+    {
+        var pointsPerLevel = (int)characterClass.StatAttributes.First(a => a.Attribute == Stats.PointsPerLevelUp).BaseValue;
+        if (seededResets <= 0 || resetConfiguration is null)
+        {
+            return (level - 1) * pointsPerLevel;
+        }
+
+        var pointsPerResetOverride = (int)(characterClass.StatAttributes.FirstOrDefault(a => a.Attribute == Stats.PointsPerReset)?.BaseValue ?? 0f);
+        var resetPoints = 0;
+        for (var reset = 0; reset < seededResets; reset++)
+        {
+            var progression = ResetProgressionCalculator.Calculate(reset, pointsPerResetOverride, resetConfiguration);
+            resetPoints = resetConfiguration.ReplacePointsPerReset
+                ? progression.TotalPointsAfterReset
+                : resetPoints + progression.PointsForReset;
+        }
+
+        var currentCyclePoints = Math.Max(0, level - resetConfiguration.LevelAfterReset) * pointsPerLevel;
+        if (resetConfiguration.ResetStats)
+        {
+            return resetPoints + currentCyclePoints;
+        }
+
+        var firstCyclePoints = Math.Max(0, resetConfiguration.RequiredLevel - 1) * pointsPerLevel;
+        var laterCyclesPoints = (seededResets - 1) * Math.Max(0, resetConfiguration.RequiredLevel - resetConfiguration.LevelAfterReset) * pointsPerLevel;
+        return resetPoints + firstCyclePoints + laterCyclesPoints + currentCyclePoints;
+    }
+
+    private void CreateCharacter(IPlayerContext context, Account account, string name, CharacterClass characterClass, int level, byte slot, long[] experienceTable, int seededResets, ResetConfiguration? resetConfiguration)
     {
         // A character generated beyond the class evolution level was created as its second-generation
         // class right away - like a player who completed the class quest long ago. Everything downstream
-        // (stat weights, skills, gear) keys off the evolved class.
-        if (level >= BotProgression.ClassEvolutionLevel
+        // (stat weights, skills, gear) keys off the evolved class. A character with a seeded reset
+        // history evolved in its first cycle at the latest (it passed the evolution level on the way
+        // to the reset level), regardless of its current in-cycle level.
+        var passedEvolutionInEarlierCycle = seededResets > 0 && resetConfiguration?.RequiredLevel >= BotProgression.ClassEvolutionLevel;
+        if ((level >= BotProgression.ClassEvolutionLevel || passedEvolutionInEarlierCycle)
             && BotProgression.GetEvolutionTarget(characterClass) is { } evolvedClass)
         {
             characterClass = evolvedClass;
@@ -305,13 +355,25 @@ internal sealed class BotGenerator
 
         var levelAttribute = character.Attributes.First(a => a.Definition == Stats.Level);
         levelAttribute.Value = level;
+        if (seededResets > 0
+            && character.Attributes.FirstOrDefault(a => a.Definition == Stats.Resets) is { } resetsAttribute)
+        {
+            // Persisted exactly like a real player's resets (a per-character stat attribute), so the
+            // reset counter, the effective level and the reset limit all see the seeded history.
+            resetsAttribute.Value = seededResets;
+        }
+
         character.Experience = experienceTable[Math.Min(level, experienceTable.Length - 1)];
-        character.LevelUpPoints = (int)((level - 1)
-            * characterClass.StatAttributes.First(a => a.Attribute == Stats.PointsPerLevelUp).BaseValue);
+        character.LevelUpPoints = CalculateLevelUpPoints(characterClass, level, seededResets, resetConfiguration);
         character.InventoryExtensions = BotInventoryExtensions;
         DistributeStatPoints(character, characterClass);
 
-        this.LearnClassSkills(context, character, characterClass, level);
+        // Skills survive resets, so a seeded veteran knows everything the highest level of its past
+        // cycles unlocked - level-gated skills are checked against that level, not the current one.
+        var highestLevelReached = seededResets > 0 && resetConfiguration is not null
+            ? Math.Max(level, resetConfiguration.RequiredLevel)
+            : level;
+        this.LearnClassSkills(context, character, characterClass, highestLevelReached);
 
         character.Inventory = context.CreateNew<ItemStorage>();
         character.Inventory.Money = StartMoney;

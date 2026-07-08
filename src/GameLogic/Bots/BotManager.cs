@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.GameLogic.Bots;
 
 using System.Collections.Concurrent;
 using System.Linq;
-using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Offline;
 
 /// <summary>
@@ -174,9 +173,11 @@ public sealed class BotManager
         const int maxLevelGap = 12;
         const int partiedSharePercent = 60;
 
+        // Matched by the reset-aware effective level (see BotResetHandler.GetEffectiveLevel), so on a
+        // reset server a freshly reset veteran groups with its peers instead of with real newbies.
         var candidates = this._bots.Values
             .Where(b => b.Party is null && b.Attributes is not null)
-            .OrderBy(b => b.Attributes![Stats.Level])
+            .OrderBy(BotResetHandler.GetEffectiveLevel)
             .ToList();
 
         var index = 0;
@@ -189,13 +190,13 @@ public sealed class BotManager
             }
 
             var leader = candidates[index];
-            var leaderLevel = (int)leader.Attributes![Stats.Level];
+            var leaderLevel = BotResetHandler.GetEffectiveLevel(leader);
             var targetSize = Rand.NextInt(minPartySize, maxPartySize + 1);
             var members = new List<BotPlayer> { leader };
             var next = index + 1;
             while (next < candidates.Count
                    && members.Count < targetSize
-                   && (int)candidates[next].Attributes![Stats.Level] - leaderLevel <= maxLevelGap)
+                   && BotResetHandler.GetEffectiveLevel(candidates[next]) - leaderLevel <= maxLevelGap)
             {
                 members.Add(candidates[next]);
                 next++;

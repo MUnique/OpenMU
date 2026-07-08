@@ -65,6 +65,15 @@ public class BotConfiguration
     public int MaxCharactersPerAccount { get; set; } = MaxCharactersPerAccountLimit;
 
     /// <summary>
+    /// Gets or sets a value indicating whether bots pay the configured reset costs (zen, reset items)
+    /// when they reset their character on a server with the reset feature enabled. Off by default:
+    /// bots don't take part in the player economy the costs are balanced for, so charging them only
+    /// stalls their progression (a bot can't farm zen for a billion-zen reset the way players trade).
+    /// </summary>
+    [Display(Name = "Bots pay reset costs", Description = "If enabled, bots consume the configured zen/item costs for their resets like human players (default: free bot resets).")]
+    public bool BotsPayResetCosts { get; set; }
+
+    /// <summary>
     /// Gets or sets a comma separated list of login names of existing accounts to animate as bots.
     /// This is the proof-of-concept entry point: every listed account gets a bot driving its
     /// first character. A later phase replaces this with generated, persistent bot accounts.

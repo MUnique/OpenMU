@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.Offline;
 using System.Collections.Concurrent;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.Bots;
 using MUnique.OpenMU.GameLogic.MuHelper;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlayerActions.Skills;
@@ -142,7 +143,8 @@ public sealed class CombatHandler
     /// raises the bot's defense and unlocks tougher maps, exactly like it does for a real player.
     /// The bot's own offense must in turn exceed the monster's defense (<see cref="MinAttackAdvantage"/>),
     /// so it never besieges a tank monster it can barely scratch, and the monster's level must not
-    /// exceed the bot's own.
+    /// exceed the bot's own (on reset servers: its reset-aware effective level, see
+    /// <see cref="BotResetHandler.GetEffectiveLevel"/>).
     /// Shared by the combat AI and the bot navigator, so a bot never stops travelling for (or engages)
     /// a monster it should not fight.
     /// </summary>
@@ -156,7 +158,10 @@ public sealed class CombatHandler
             return false;
         }
 
-        if (monsterLevel > (int)attributes[Stats.Level])
+        // Reset-aware: on servers with the reset feature a freshly reset character is nominally a
+        // low level again but keeps the strength of its resets - the effective level keeps it from
+        // being locked out of the maps it just hunted on.
+        if (monsterLevel > BotResetHandler.GetEffectiveLevel(player))
         {
             return false;
         }

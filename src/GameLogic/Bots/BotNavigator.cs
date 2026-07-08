@@ -131,6 +131,17 @@ internal sealed class BotNavigator : AsyncDisposable
     private static readonly TimeSpan FollowWarpCooldown = TimeSpan.FromSeconds(20);
 
     /// <summary>
+    /// Bounds of the random delay between becoming eligible for a character reset and performing it.
+    /// A real player finishes the fight, walks to town, maybe trades first - and 250 bots resetting
+    /// the very second they hit the required level would be an obvious give-away (and a thundering
+    /// herd of simultaneous re-gearing). The delay is rolled per bot when it becomes eligible.
+    /// </summary>
+    private static readonly TimeSpan MinResetDelay = TimeSpan.FromMinutes(1);
+
+    /// <summary>Upper bound of the random reset delay, see <see cref="MinResetDelay"/>.</summary>
+    private static readonly TimeSpan MaxResetDelay = TimeSpan.FromMinutes(10);
+
+    /// <summary>
     /// If the bot's position has not changed for this long it is considered stuck (a wedged walk, or a
     /// monster it can't reach). The navigator then forces a fresh destination so the bot gets going again.
     /// </summary>
@@ -174,6 +185,7 @@ internal sealed class BotNavigator : AsyncDisposable
     private Point _travelPathTarget;
     private Point? _shoppingTarget;
     private DateTime _nextShoppingCheckUtc = DateTime.MinValue;
+    private DateTime? _resetDueAtUtc;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BotNavigator"/> class.
@@ -349,6 +361,15 @@ internal sealed class BotNavigator : AsyncDisposable
 
         // A walk (travel hop or local combat move) is already in progress.
         if (this._player.IsWalking)
+        {
+            return;
+        }
+
+        // On servers with the reset feature, a due character reset outranks the whole routine below:
+        // the bot has reached the required level, so hunting on only gains it nothing until it resets.
+        // It keeps fighting normally through the random grace delay, then resets and starts its next
+        // cycle (see BotResetHandler).
+        if (await this.TryResetCharacterAsync().ConfigureAwait(false))
         {
             return;
         }
@@ -624,6 +645,59 @@ internal sealed class BotNavigator : AsyncDisposable
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// Performs the bot's character reset once it is due (reset feature enabled, required level
+    /// reached, reset limit not exhausted). The reset is not executed the moment the bot becomes
+    /// eligible: a random grace delay (<see cref="MinResetDelay"/>..<see cref="MaxResetDelay"/>) is
+    /// rolled first, during which the bot hunts on normally. After the reset the navigation state is
+    /// cleared, so the bot starts its next cycle fresh - re-investing its points (queued by the reset
+    /// handler) and heading for a hunting ground that suits it again.
+    /// </summary>
+    /// <returns>True, if a reset was performed.</returns>
+    private async ValueTask<bool> TryResetCharacterAsync()
+    {
+        if (BotResetHandler.GetResetConfiguration(this._player.GameContext) is not { } resetConfiguration
+            || !BotResetHandler.IsResetDue(this._player, resetConfiguration))
+        {
+            this._resetDueAtUtc = null;
+            return false;
+        }
+
+        if (this._resetDueAtUtc is not { } dueAt)
+        {
+            var delay = MinResetDelay + TimeSpan.FromSeconds(Rand.NextInt(0, (int)(MaxResetDelay - MinResetDelay).TotalSeconds + 1));
+            this._resetDueAtUtc = DateTime.UtcNow + delay;
+            this._player.Logger.LogDebug(
+                "Bot {Character} reached the reset level; resetting in {Delay}.",
+                this._player.Name,
+                delay);
+            return false;
+        }
+
+        if (DateTime.UtcNow < dueAt)
+        {
+            return false;
+        }
+
+        this._resetDueAtUtc = null;
+        var payCosts = this._player.GameContext.FeaturePlugIns.GetPlugIn<BotFeaturePlugIn>()?.Configuration?.BotsPayResetCosts == true;
+        if (!await BotResetHandler.TryResetAsync(this._player, resetConfiguration, payCosts).ConfigureAwait(false))
+        {
+            // E.g. unaffordable costs when BotsPayResetCosts is enabled - the eligibility check above
+            // re-schedules another attempt on a fresh delay next tick.
+            return false;
+        }
+
+        // Start the next cycle fresh: no stale destination or route, and no warp cooldown - a freshly
+        // reset player heads straight back out, and the point pool (queued by the reset handler into
+        // the bot's AI tick) is invested before the next evaluation gets this far.
+        this._hasDestination = false;
+        this._travelPath = null;
+        this._emptyGroundSince = null;
+        this._lastWarpUtc = DateTime.MinValue;
+        return true;
     }
 
     /// <summary>
@@ -946,7 +1020,13 @@ internal sealed class BotNavigator : AsyncDisposable
         }
     }
 
-    private int GetBotLevel() => (int)(this._player.Attributes?[Stats.Level] ?? 1);
+    /// <summary>
+    /// The bot's reset-aware effective level (see <see cref="BotResetHandler.GetEffectiveLevel"/>): on
+    /// reset servers a freshly reset bot is nominally level 10 again but keeps the strength of its
+    /// resets, so the plain level would send it back to the newbie routine (no warping below
+    /// <see cref="MinWarpLevel"/>, newbie maps) after every reset.
+    /// </summary>
+    private int GetBotLevel() => BotResetHandler.GetEffectiveLevel(this._player);
 
     /// <summary>
     /// The level of the strongest monster on the map which this bot can safely fight (judged by the
