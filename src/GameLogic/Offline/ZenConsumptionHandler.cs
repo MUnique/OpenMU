@@ -34,6 +34,14 @@ internal sealed class ZenConsumptionHandler
     /// <returns><c>true</c> if the player can continue; <c>false</c> if insufficient Zen.</returns>
     public async ValueTask<bool> DeductZenAsync()
     {
+        // Bots are exempt from the PC-Cafe fee: they don't accumulate Zen fast enough
+        // to cover it and would otherwise go bankrupt and stop. Human offline-leveling
+        // players (IsBot == false) keep paying as before.
+        if (this._player.Account?.IsBot == true)
+        {
+            return;
+        }
+
         if (DateTime.UtcNow - this._lastPayTimestamp < this._configuration.PayInterval)
         {
             return true;

@@ -1,0 +1,169 @@
+// <copyright file="BotMuHelperSettings.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.GameLogic.Bots;
+
+using MUnique.OpenMU.GameLogic.MuHelper;
+
+/// <summary>
+/// Default MU Helper settings used to drive a bot's combat AI.
+/// A bot never sends a client-side MU Helper configuration, so without this the player would
+/// fall back to a hunting range of a single tile (see <see cref="Offline.CombatHandler"/>).
+/// These defaults make the bot hunt nearby monsters, pick up the valuable drops and use
+/// potions, while staying close to its spawn origin.
+/// </summary>
+internal sealed class BotMuHelperSettings : IMuHelperSettings
+{
+    /// <inheritdoc />
+    public int BasicSkillId => 0;
+
+    /// <inheritdoc />
+    public int ActivationSkill1Id => 0;
+
+    /// <inheritdoc />
+    public int ActivationSkill2Id => 0;
+
+    /// <inheritdoc />
+    public int DelayMinSkill1 => 0;
+
+    /// <inheritdoc />
+    public int DelayMinSkill2 => 0;
+
+    /// <inheritdoc />
+    public bool Skill1UseTimer => false;
+
+    /// <inheritdoc />
+    public bool Skill1UseCondition => false;
+
+    /// <inheritdoc />
+    public bool Skill1ConditionAttacking => false;
+
+    /// <inheritdoc />
+    public int Skill1SubCondition => 0;
+
+    /// <inheritdoc />
+    public bool Skill2UseTimer => false;
+
+    /// <inheritdoc />
+    public bool Skill2UseCondition => false;
+
+    /// <inheritdoc />
+    public bool Skill2ConditionAttacking => false;
+
+    /// <inheritdoc />
+    public int Skill2SubCondition => 0;
+
+    /// <inheritdoc />
+    public bool UseCombo => false;
+
+    /// <inheritdoc />
+    public int HuntingRange => 6;
+
+    /// <inheritdoc />
+    public int MaxSecondsAway => 30;
+
+    /// <inheritdoc />
+    public bool LongRangeCounterAttack => false;
+
+    /// <inheritdoc />
+    /// <remarks>
+    /// Disabled for bots: the <see cref="BotNavigator"/> is the sole driver of travel between hunting
+    /// grounds, so the offline movement handler must not try to walk the bot back to its origin in parallel.
+    /// </remarks>
+    public bool ReturnToOriginalPosition => false;
+
+    /// <inheritdoc />
+    public int BuffSkill0Id => 0;
+
+    /// <inheritdoc />
+    public int BuffSkill1Id => 0;
+
+    /// <inheritdoc />
+    public int BuffSkill2Id => 0;
+
+    /// <inheritdoc />
+    public bool BuffOnDuration => false;
+
+    /// <inheritdoc />
+    public bool BuffDurationForParty => false;
+
+    /// <inheritdoc />
+    public int BuffCastIntervalSeconds => 0;
+
+    /// <inheritdoc />
+    public bool AutoHeal => false;
+
+    /// <inheritdoc />
+    public int HealThresholdPercent => 30;
+
+    /// <inheritdoc />
+    public bool UseDrainLife => false;
+
+    /// <inheritdoc />
+    public bool UseHealPotion => true;
+
+    /// <inheritdoc />
+    public int PotionThresholdPercent => 60;
+
+    /// <inheritdoc />
+    public bool SupportParty => false;
+
+    /// <inheritdoc />
+    public bool AutoHealParty => false;
+
+    /// <inheritdoc />
+    public int HealPartyThresholdPercent => 0;
+
+    /// <inheritdoc />
+    public bool UseDarkRaven => false;
+
+    /// <inheritdoc />
+    public int DarkRavenMode => 0;
+
+    /// <inheritdoc />
+    public int ObtainRange => 6;
+
+    /// <inheritdoc />
+    public bool PickAllItems => false;
+
+    /// <inheritdoc />
+    public bool PickSelectItems => false;
+
+    /// <inheritdoc />
+    public bool PickJewel => true;
+
+    /// <inheritdoc />
+    public bool PickZen => true;
+
+    /// <inheritdoc />
+    public bool PickAncient => true;
+
+    /// <inheritdoc />
+    public bool PickExcellent => true;
+
+    /// <inheritdoc />
+    public bool PickExtraItems => false;
+
+    /// <inheritdoc />
+    public IReadOnlyList<string> ExtraItemNames => Array.Empty<string>();
+
+    /// <inheritdoc />
+    /// <remarks>
+    /// Disabled on purpose: offline auto-repair has no NPC discount and drains Zen at an
+    /// increased rate. Bots should not burn their balance on repairs during the proof of concept.
+    /// </remarks>
+    public bool RepairItem => false;
+
+    /// <inheritdoc />
+    public bool UseSelfDefense => false;
+
+    /// <inheritdoc />
+    public bool AutoAcceptFriend => false;
+
+    /// <inheritdoc />
+    public bool AutoAcceptGuild => false;
+
+    /// <inheritdoc />
+    public bool FallbackBasicAttack => true;
+}

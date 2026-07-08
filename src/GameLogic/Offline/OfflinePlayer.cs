@@ -7,12 +7,13 @@ namespace MUnique.OpenMU.GameLogic.Offline;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.MuHelper;
 using MUnique.OpenMU.GameLogic.Views;
+using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// An offline player that continues leveling after the real client disconnects.
 /// </summary>
-public sealed class OfflinePlayer : Player
+public class OfflinePlayer : Player
 {
     private OfflinePlayerMuHelper? _intelligence;
     private Task? _intelligenceDisposeTask;
@@ -35,6 +36,18 @@ public sealed class OfflinePlayer : Player
     /// Gets the start timestamp of the offline session.
     /// </summary>
     public DateTime StartTimestamp { get; internal set; }
+
+    /// <summary>
+    /// Gets or sets the position the intelligence hunts around. For a plain offline player this is
+    /// the spawn position and never changes. Bots update it to roam between hunting grounds.
+    /// </summary>
+    public Point HuntingOrigin { get; set; }
+
+    /// <summary>
+    /// Gets a value indicating whether the player should keep playing after dying and respawning.
+    /// A normal offline session ends on death; bots override this to keep running forever.
+    /// </summary>
+    public virtual bool RespawnAndContinue => false;
 
     /// <summary>
     /// Initializes the offline player by loading the account fresh from the database.
@@ -70,6 +83,8 @@ public sealed class OfflinePlayer : Player
 
             await this.ClientReadyAfterMapChangeAsync().ConfigureAwait(false);
 
+            this.HuntingOrigin = this.Position;
+
             this.StartIntelligence();
 
             this.Logger.LogDebug(
@@ -90,7 +105,7 @@ public sealed class OfflinePlayer : Player
     /// <summary>
     /// Stops the offline player and removes it from the world.
     /// </summary>
-    public async ValueTask StopAsync()
+    public virtual async ValueTask StopAsync()
     {
         await this.DisconnectAsync().ConfigureAwait(false);
     }
@@ -146,7 +161,10 @@ public sealed class OfflinePlayer : Player
         await this.SetSelectedCharacterAsync(character).ConfigureAwait(false);
     }
 
-    private void StartIntelligence()
+    /// <summary>
+    /// Starts the intelligence which drives this offline player. Overridden by bots to also run navigation.
+    /// </summary>
+    protected virtual void StartIntelligence()
     {
         this._intelligence = new OfflinePlayerMuHelper(this);
         this._intelligence.Start();

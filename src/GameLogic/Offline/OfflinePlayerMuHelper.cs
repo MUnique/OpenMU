@@ -46,14 +46,13 @@ public sealed class OfflinePlayerMuHelper : AsyncDisposable
     public OfflinePlayerMuHelper(OfflinePlayer player)
     {
         this._player = player;
-        var originalPosition = player.Position;
         var config = player.MuHelperSettings;
 
         this._buffHandler = new BuffHandler(player, config);
         this._healingHandler = new HealingHandler(player, config);
         this._itemPickupHandler = new ItemPickupHandler(player, config);
-        this._movementHandler = new MovementHandler(player, config, originalPosition);
-        this._combatHandler = new CombatHandler(player, config, this._movementHandler, originalPosition);
+        this._movementHandler = new MovementHandler(player, config);
+        this._combatHandler = new CombatHandler(player, config, this._movementHandler);
         this._repairHandler = new RepairHandler(player, config);
         this._zenHandler = new ZenConsumptionHandler(player);
         this._petHandler = new PetHandler(player, config);
@@ -120,6 +119,9 @@ public sealed class OfflinePlayerMuHelper : AsyncDisposable
     {
         this._player.Logger.LogDebug("Offline player '{Name}' died. Killer: {KillerName}.", this._player.Name, e.KillerName);
         this._isDead = true;
+
+        // Do not cancel the loop here: a bot needs to keep ticking so it can resume after respawning.
+        // For a normal offline session the tick stops the session on respawn, which disposes (and cancels) this helper.
     }
 
     private async Task RunLoopAsync(CancellationToken cancellationToken)
@@ -213,6 +215,16 @@ public sealed class OfflinePlayerMuHelper : AsyncDisposable
             {
                 // Player hasn't respawned yet, skip the tick and check again on the next interval.
                 return true;
+            }
+
+            if (this._player.RespawnAndContinue)
+            {
+                // Bots keep playing: reset the death state and re-anchor the hunting origin to the respawn
+                // position so the navigator picks a fresh hunting ground from where the bot came back to life.
+                this._isDead = false;
+                this._player.HuntingOrigin = this._player.Position;
+                this._player.Logger.LogInformation("Bot '{Name}' respawned; resuming.", this._player.Name);
+                return false;
             }
 
             if (this._player.Account?.LoginName is { } loginName)

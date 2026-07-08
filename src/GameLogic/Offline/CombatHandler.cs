@@ -32,7 +32,6 @@ public sealed class CombatHandler
     private readonly OfflinePlayer _player;
     private readonly IMuHelperSettings? _config;
     private readonly MovementHandler _movementHandler;
-    private readonly Point _originPosition;
     private readonly ConditionalSkillSlot[] _conditionalSkillSlots;
 
     private IAttackable? _currentTarget;
@@ -46,13 +45,11 @@ public sealed class CombatHandler
     /// <param name="player">The offline player.</param>
     /// <param name="config">The MU helper settings.</param>
     /// <param name="movementHandler">The movement handler.</param>
-    /// <param name="originPosition">The original position to hunt around.</param>
-    public CombatHandler(OfflinePlayer player, IMuHelperSettings? config, MovementHandler movementHandler, Point originPosition)
+    public CombatHandler(OfflinePlayer player, IMuHelperSettings? config, MovementHandler movementHandler)
     {
         this._player = player;
         this._config = config;
         this._movementHandler = movementHandler;
-        this._originPosition = originPosition;
         this._conditionalSkillSlots = config is null ? [] :
         [
             new ConditionalSkillSlot(config.ActivationSkill1Id, config.Skill1UseTimer, config.DelayMinSkill1, config.Skill1UseCondition, config.Skill1ConditionAttacking, config.Skill1SubCondition),
@@ -64,6 +61,11 @@ public sealed class CombatHandler
     /// Gets the remaining skill cooldown ticks.
     /// </summary>
     public int SkillCooldownTicks => this._skillCooldownTicks;
+
+    /// <summary>
+    /// Gets the position to hunt around. Dynamic so bots can roam between hunting grounds.
+    /// </summary>
+    private Point OriginPosition => this._player.HuntingOrigin;
 
     /// <summary>
     /// Gets the hunting range in tiles.
@@ -214,7 +216,7 @@ public sealed class CombatHandler
             return [];
         }
 
-        return map.GetAttackablesInRange(this._originPosition, this.HuntingRange)
+        return map.GetAttackablesInRange(this.OriginPosition, this.HuntingRange)
             .OfType<Monster>()
             .Where(this.IsMonsterAttackable);
     }
@@ -229,7 +231,7 @@ public sealed class CombatHandler
         return target.IsAlive
                && !target.IsAtSafezone()
                && !target.IsTeleporting
-               && target.IsInRange(this._originPosition, this.HuntingRange);
+               && target.IsInRange(this.OriginPosition, this.HuntingRange);
     }
 
     private bool IsMonsterAttackable(Monster monster)
