@@ -202,8 +202,6 @@ public partial class Merchants : ComponentBase, IAsyncDisposable
         {
             var previousMerchantId = this._selectedMerchant?.Id;
             await this.DataSource.DiscardChangesAsync().ConfigureAwait(true);
-            this._viewModels = null;
-            this.StateHasChanged();
             await this.LoadDataAsync(this._disposeCts?.Token ?? default).ConfigureAwait(true);
             if (previousMerchantId is { } id && this._viewModels is not null)
             {

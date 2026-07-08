@@ -159,10 +159,10 @@ public partial class CreateGameServerConfig : ComponentBase, IAsyncDisposable
         try
         {
             this._isProcessing = true;
-            var gameConfiguration = await this.DataSource.GetOwnerAsync().ConfigureAwait(false);
+            var gameConfiguration = await this.DataSource.GetOwnerAsync().ConfigureAwait(true);
             using var saveContext = this.ContextProvider.CreateNewTypedContext(typeof(DataModel.Configuration.GameServerDefinition), true, gameConfiguration);
 
-            var existingServerDefinitions = (await saveContext.GetAsync<GameServerDefinition>().ConfigureAwait(false)).ToList();
+            var existingServerDefinitions = (await saveContext.GetAsync<GameServerDefinition>().ConfigureAwait(true)).ToList();
             if (existingServerDefinitions.Any(def => def.ServerID == this._viewModel?.ServerId))
             {
                 this.ToastService.ShowError(string.Format(Resources.ServerWithIdAlreadyExists, this._viewModel?.ServerId));
@@ -175,13 +175,13 @@ public partial class CreateGameServerConfig : ComponentBase, IAsyncDisposable
                 return;
             }
 
-            var gameServerDefinition = await this.CreateDefinitionByViewModelAsync(saveContext).ConfigureAwait(false);
+            var gameServerDefinition = await this.CreateDefinitionByViewModelAsync(saveContext).ConfigureAwait(true);
             var success = await saveContext.SaveChangesAsync().ConfigureAwait(true);
 
             if (success)
             {
                 this.ToastService.ShowSuccess(Resources.GameServerConfigurationSavedInfo);
-                await this.ServerInstanceManager.InitializeGameServerAsync(gameServerDefinition.ServerID);
+                await this.ServerInstanceManager.InitializeGameServerAsync(gameServerDefinition.ServerID).ConfigureAwait(true);
                 this.NavigationManager.NavigateTo("servers");
                 return;
             }
