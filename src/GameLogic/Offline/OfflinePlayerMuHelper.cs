@@ -126,6 +126,10 @@ public sealed class OfflinePlayerMuHelper : AsyncDisposable
 
     private async Task RunLoopAsync(CancellationToken cancellationToken)
     {
+        // Randomize the loop phase, so hundreds of concurrently started players don't all tick on the
+        // same 500ms boundary - smoother server load and less robotic synchrony between them.
+        await Task.Delay(Rand.NextInt(0, 500), cancellationToken).ConfigureAwait(false);
+
         while (await this._timer.WaitForNextTickAsync(cancellationToken).ConfigureAwait(false))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -151,6 +155,10 @@ public sealed class OfflinePlayerMuHelper : AsyncDisposable
 
     private async ValueTask TickAsync(CancellationToken cancellationToken)
     {
+        // Actions queued from outside the tick (e.g. skill learning on level-up) run here, serialized
+        // with the combat handler - so nothing mutates the skill list while combat is enumerating it.
+        await this._player.DrainPendingBotActionsAsync().ConfigureAwait(false);
+
         if (await this.HandleDeathAsync().ConfigureAwait(false))
         {
             return;

@@ -37,10 +37,18 @@ public class BotSkillProgressionPlugIn : ICharacterLevelUpPlugIn
             return;
         }
 
-        // Fire-and-forget from this synchronous hook; for an offline bot the involved view invocations
-        // are no-ops and the mutations are effectively synchronous. No own SaveChanges here - the new
-        // stats and skills are persisted by the periodic save, avoiding extra concurrency pressure.
-        _ = this.ProgressAsync(player);
+        // Queue the progression into the bot's AI tick instead of running it right here: this hook fires
+        // from the experience/level-up path while the combat handler may be enumerating the skill list on
+        // its own timer - the tick serializes both. No own SaveChanges here - the new stats and skills
+        // are persisted by the periodic save, avoiding extra concurrency pressure.
+        if (player is Offline.OfflinePlayer offlinePlayer)
+        {
+            offlinePlayer.PendingBotActions.Enqueue(() => new ValueTask(this.ProgressAsync(offlinePlayer)));
+        }
+        else
+        {
+            _ = this.ProgressAsync(player);
+        }
     }
 
     private async Task ProgressAsync(Player player)

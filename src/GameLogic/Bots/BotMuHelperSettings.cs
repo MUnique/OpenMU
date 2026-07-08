@@ -160,7 +160,8 @@ internal sealed class BotMuHelperSettings : IMuHelperSettings
     public bool RepairItem => false;
 
     /// <inheritdoc />
-    public bool UseSelfDefense => false;
+    /// <remarks>Bots fight back when a player attacks them (see <see cref="BotSelfDefensePlugIn"/>).</remarks>
+    public bool UseSelfDefense => true;
 
     /// <inheritdoc />
     public bool AutoAcceptFriend => false;

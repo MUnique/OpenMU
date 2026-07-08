@@ -50,6 +50,67 @@ public class OfflinePlayer : Player
     public virtual bool RespawnAndContinue => false;
 
     /// <summary>
+    /// Gets actions queued from outside the AI tick (e.g. skill learning on level-up), which the
+    /// <see cref="OfflinePlayerMuHelper"/> drains at the start of each tick. This serializes such
+    /// mutations with the combat handler, so e.g. the skill list is never modified while combat is
+    /// enumerating it.
+    /// </summary>
+    internal System.Collections.Concurrent.ConcurrentQueue<Func<ValueTask>> PendingBotActions { get; } = new();
+
+    /// <summary>How long an attack by a player stays "hot" as a self-defense target.</summary>
+    private static readonly TimeSpan AggressionMemory = TimeSpan.FromSeconds(15);
+
+    private Player? _lastAggressor;
+    private DateTime _lastAggressionUtc;
+
+    /// <summary>
+    /// Gets the player who most recently attacked this bot (self-defense target), if the aggression
+    /// is recent enough and the aggressor is still a viable target.
+    /// </summary>
+    internal Player? RecentAggressor
+    {
+        get
+        {
+            if (this._lastAggressor is { } aggressor
+                && DateTime.UtcNow - this._lastAggressionUtc <= AggressionMemory
+                && aggressor.IsAlive
+                && !aggressor.IsAtSafezone())
+            {
+                return aggressor;
+            }
+
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Registers a player who attacked this bot, so the combat AI can defend itself.
+    /// </summary>
+    internal void RegisterAggressor(Player aggressor)
+    {
+        this._lastAggressor = aggressor;
+        this._lastAggressionUtc = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// Executes and removes all queued <see cref="PendingBotActions"/>.
+    /// </summary>
+    internal async ValueTask DrainPendingBotActionsAsync()
+    {
+        while (this.PendingBotActions.TryDequeue(out var action))
+        {
+            try
+            {
+                await action().ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                this.Logger.LogError(ex, "Queued bot action failed for {Account}.", this.AccountLoginName);
+            }
+        }
+    }
+
+    /// <summary>
     /// Initializes the offline player by loading the account fresh from the database.
     /// </summary>
     /// <param name="loginName">The account login name.</param>

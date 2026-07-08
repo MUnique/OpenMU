@@ -55,6 +55,7 @@ public sealed class CombatHandler
     private DateTime _unreachableTargetUntilUtc = DateTime.MinValue;
     private SkillEntry? _tickBestSkill;
     private bool _tickBestSkillComputed;
+    private DateTime _engageAtUtc = DateTime.MinValue;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CombatHandler"/> class.
@@ -120,10 +121,25 @@ public sealed class CombatHandler
     /// </summary>
     public async ValueTask PerformAttackAsync()
     {
+        var previousTarget = this._currentTarget;
         this.RefreshTarget();
 
         if (this._currentTarget is null)
         {
+            return;
+        }
+
+        // A human doesn't strike the very same instant a new target appears: give each fresh target a
+        // small randomized reaction delay (the bot faces it, then engages) - the perfectly metronomic
+        // instant-strike cadence is one of the clearest bot giveaways.
+        if (!ReferenceEquals(previousTarget, this._currentTarget))
+        {
+            this._engageAtUtc = DateTime.UtcNow.AddMilliseconds(Rand.NextInt(250, 900));
+        }
+
+        if (DateTime.UtcNow < this._engageAtUtc)
+        {
+            this._player.Rotation = this._player.GetDirectionTo(this._currentTarget);
             return;
         }
 
@@ -207,6 +223,14 @@ public sealed class CombatHandler
     {
         this._player.Rotation = this._player.GetDirectionTo(target);
 
+        if (target is Player)
+        {
+            // Self-defense against a player: plain attacks only. The area-skill path below deals its
+            // damage exclusively to monsters, so a skill cast would look flashy but hit nothing.
+            await this.ExecutePhysicalAttackAsync(target).ConfigureAwait(false);
+            return;
+        }
+
         if (skillEntry?.Skill is not { } skill)
         {
             await this.ExecutePhysicalAttackAsync(target).ConfigureAwait(false);
@@ -229,6 +253,17 @@ public sealed class CombatHandler
         // check and the actual attack); a new tick starts with a fresh choice.
         this._tickBestSkill = null;
         this._tickBestSkillComputed = false;
+
+        // Self-defense has priority over farming: a player who recently attacked this bot becomes the
+        // target, as long as they are still viable and anywhere near. Without this the bot placidly
+        // keeps hitting monsters while a player kills it.
+        if (this._config?.UseSelfDefense == true
+            && this._player.RecentAggressor is { } aggressor
+            && aggressor.IsInRange(this._player.Position, this.HuntingRange * 2))
+        {
+            this._currentTarget = aggressor;
+            return;
+        }
 
         if (this._currentTarget is { } t && !this.IsTargetStillValid(t))
         {

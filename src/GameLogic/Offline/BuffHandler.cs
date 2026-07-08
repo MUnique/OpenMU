@@ -25,6 +25,8 @@ public sealed class BuffHandler
     private int _nextSlotIndex;
     private bool _buffTimerTriggered;
     private DateTime? _nextPeriodicBuffTime;
+    private IList<int>? _cachedAutoBuffIds;
+    private int _cachedAutoBuffSkillCount = -1;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BuffHandler"/> class.
@@ -53,20 +55,30 @@ public sealed class BuffHandler
 
             if (this._config.AutoSelectBuffs && this._player.SkillList is { } skillList)
             {
-                var learnedBuffs = skillList.Skills
-                    .Where(s => s.Skill is { SkillType: SkillType.Buff, MagicEffectDef: not null })
-                    .Select(s => (int)s.Skill!.Number)
-                    .OrderBy(n => n)
-                    .Take(BuffSlotCount)
-                    .ToList();
-
-                // Pad to the fixed slot count - the caller indexes all three slots; 0 means "slot empty".
-                while (learnedBuffs.Count < BuffSlotCount)
+                // The learned buffs only change when a new skill is learned, so the list is cached and
+                // only rebuilt when the skill count changes - building it fresh with LINQ on every
+                // 500ms tick of hundreds of bots was measurable CPU for no benefit.
+                var skillCount = skillList.Skills.Count();
+                if (this._cachedAutoBuffIds is null || skillCount != this._cachedAutoBuffSkillCount)
                 {
-                    learnedBuffs.Add(0);
+                    var learnedBuffs = skillList.Skills
+                        .Where(s => s.Skill is { SkillType: SkillType.Buff, MagicEffectDef: not null })
+                        .Select(s => (int)s.Skill!.Number)
+                        .OrderBy(n => n)
+                        .Take(BuffSlotCount)
+                        .ToList();
+
+                    // Pad to the fixed slot count - the caller indexes all three slots; 0 means "slot empty".
+                    while (learnedBuffs.Count < BuffSlotCount)
+                    {
+                        learnedBuffs.Add(0);
+                    }
+
+                    this._cachedAutoBuffIds = learnedBuffs;
+                    this._cachedAutoBuffSkillCount = skillCount;
                 }
 
-                return learnedBuffs;
+                return this._cachedAutoBuffIds;
             }
 
             return [this._config.BuffSkill0Id, this._config.BuffSkill1Id, this._config.BuffSkill2Id];

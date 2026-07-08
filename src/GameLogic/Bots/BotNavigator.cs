@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.Bots;
 using System.Collections.Concurrent;
 using System.Threading;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Offline;
@@ -281,6 +282,16 @@ internal sealed class BotNavigator : AsyncDisposable
             return;
         }
 
+        // A bot that has OUTGROWN its map warps away with priority - even though trivial monsters are
+        // still around. Without this, the nearest-monster homing always finds SOMETHING huntable on the
+        // starter map, the warp logic below is never reached, and high-level bots farm level-5 mobs on
+        // Lorencia forever (with the experience penalty) instead of moving on to their level's maps.
+        if (IsMapOutgrown(map.Definition, this.GetBotLevel())
+            && await this.TryWarpToBetterMapAsync().ConfigureAwait(false))
+        {
+            return;
+        }
+
         // Inside the safezone the bot can't fight anyway, so it must keep walking out of town instead of
         // freezing at the gate when a monster is just outside. Only stop to fight once it has left the safezone.
         if (!inSafezone && monstersNearby > 0)
@@ -342,28 +353,52 @@ internal sealed class BotNavigator : AsyncDisposable
 
         this._emptyGroundSince = null;
 
-        // Warp to the map that offers the strongest monsters this bot can still safely handle, so it
-        // earns the best experience without being slaughtered. It arrives at the destination safezone
-        // and walks out to a hunting ground like a real player.
-        var botLevel = this.GetBotLevel();
-        if (botLevel >= MinWarpLevel
-            && DateTime.UtcNow - this._lastWarpUtc >= WarpCooldown
-            && this.TryPickBetterMap(botLevel, out var targetGate, out var targetMap, out var targetLevel))
+        if (await this.TryWarpToBetterMapAsync().ConfigureAwait(false))
         {
-            this._lastWarpUtc = DateTime.UtcNow;
-            this._hasDestination = false;
-            this._travelPath = null;
-            this._player.Logger.LogInformation(
-                "Bot {Character} (level {Level}) warping to map {Map} (monsters ~{MonsterLevel}).",
-                this._player.Name,
-                botLevel,
-                targetMap.Name,
-                targetLevel);
-            await this._player.WarpToAsync(targetGate).ConfigureAwait(false);
             return;
         }
 
         await this.PickGroundAndTravelAsync(map).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Warps to the map that offers the strongest monsters this bot can still safely handle, so it
+    /// earns the best experience without being slaughtered. It arrives at the destination safezone
+    /// and walks out to a hunting ground like a real player.
+    /// </summary>
+    /// <returns>True, if a warp was performed.</returns>
+    private async ValueTask<bool> TryWarpToBetterMapAsync()
+    {
+        var botLevel = this.GetBotLevel();
+        if (botLevel < MinWarpLevel
+            || DateTime.UtcNow - this._lastWarpUtc < WarpCooldown
+            || !this.TryPickBetterMap(botLevel, out var targetGate, out var targetMap, out var targetLevel))
+        {
+            return false;
+        }
+
+        this._lastWarpUtc = DateTime.UtcNow;
+        this._hasDestination = false;
+        this._travelPath = null;
+        this._player.Logger.LogInformation(
+            "Bot {Character} (level {Level}) warping to map {Map} (monsters ~{MonsterLevel}).",
+            this._player.Name,
+            botLevel,
+            targetMap.Name,
+            targetLevel);
+        await this._player.WarpToAsync(targetGate).ConfigureAwait(false);
+        await this.TryPersistCurrentMapAsync(targetMap).ConfigureAwait(false);
+        return true;
+    }
+
+    /// <summary>
+    /// Determines whether the bot has outgrown the given map: the strongest monster it could safely
+    /// hunt anywhere is meaningfully above the strongest one this map has to offer.
+    /// </summary>
+    private static bool IsMapOutgrown(GameMapDefinition mapDefinition, int botLevel)
+    {
+        var cap = GetHuntCap(botLevel);
+        return BestHuntableLevel(mapDefinition, cap) + WarpImprovementMargin < cap;
     }
 
     /// <summary>
@@ -484,6 +519,57 @@ internal sealed class BotNavigator : AsyncDisposable
     {
         await this.EnsurePotionStackAsync(HealPotionNumber).ConfigureAwait(false);
         await this.EnsurePotionStackAsync(ManaPotionNumber).ConfigureAwait(false);
+        await this.EnsureAmmunitionAsync().ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Keeps an archer's ammunition topped up. With the starter bow the offline attack path does not
+    /// consume arrows, but an upgraded bow can carry an ammunition consumption rate - without this the
+    /// bot would eventually shoot its quiver empty and its bow skills would stop working.
+    /// </summary>
+    private async ValueTask EnsureAmmunitionAsync()
+    {
+        if (this._player.Inventory is not { } inventory)
+        {
+            return;
+        }
+
+        if (inventory.EquippedAmmunitionItem is { } ammo)
+        {
+            if (ammo.Durability < HealPotionRefillBelow)
+            {
+                ammo.Durability = HealPotionStack;
+            }
+
+            return;
+        }
+
+        // Ammo ran out completely (an empty stack gets destroyed): if a bow is equipped, put a fresh
+        // stack of arrows into the other hand.
+        var bow = inventory.EquippedItems.FirstOrDefault(i =>
+            i.Definition is { Group: 4, IsAmmunition: false });
+        if (bow is null)
+        {
+            return;
+        }
+
+        var arrows = this._player.GameContext.Configuration.Items
+            .FirstOrDefault(d => d.Group == 4 && d.Number == 15);
+        if (arrows is null)
+        {
+            return;
+        }
+
+        var item = this._player.PersistenceContext.CreateNew<Item>();
+        item.Definition = arrows;
+        item.Durability = HealPotionStack;
+        var targetSlot = bow.ItemSlot == InventoryConstants.RightHandSlot
+            ? InventoryConstants.LeftHandSlot
+            : InventoryConstants.RightHandSlot;
+        if (!await inventory.AddItemAsync(targetSlot, item).ConfigureAwait(false))
+        {
+            await this._player.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
+        }
     }
 
     private async ValueTask EnsurePotionStackAsync(int potionNumber)
@@ -597,6 +683,35 @@ internal sealed class BotNavigator : AsyncDisposable
         // per tick and re-homes as the monster roams, closing the gap until combat range is reached.
         ground = chosen.Position;
         return true;
+    }
+
+    /// <summary>
+    /// Re-resolves the warp destination map through the bot's own persistence context and assigns that
+    /// instance to the character. The warp itself assigns the GLOBAL configuration instance, which the
+    /// bot's context does not track - the CurrentMapId foreign key silently never got saved, so a
+    /// restarted bot always woke up on its home map and warped all over again (warp burst on restart).
+    /// </summary>
+    private async ValueTask TryPersistCurrentMapAsync(GameMapDefinition mapDefinition)
+    {
+        try
+        {
+            if (this._player.SelectedCharacter is not { } character)
+            {
+                return;
+            }
+
+            var ownInstance = await this._player.PersistenceContext
+                .GetByIdAsync<GameMapDefinition>(mapDefinition.GetId()).ConfigureAwait(false);
+            if (ownInstance is not null)
+            {
+                character.CurrentMap = ownInstance;
+            }
+        }
+        catch (Exception ex)
+        {
+            // Not worth failing the warp over - worst case the map is (as before) not persisted.
+            this._player.Logger.LogDebug(ex, "Could not persist current map for bot {Character}.", this._player.Name);
+        }
     }
 
     private int GetBotLevel() => (int)(this._player.Attributes?[Stats.Level] ?? 1);
