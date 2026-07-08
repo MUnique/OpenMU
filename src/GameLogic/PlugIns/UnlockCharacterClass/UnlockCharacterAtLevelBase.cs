@@ -29,8 +29,13 @@ public abstract class UnlockCharacterAtLevelBase : ICharacterLevelUpPlugIn
     /// <inheritdoc />
     public void CharacterLeveledUp(Player player)
     {
+        // Server-side bots are excluded: they never create new characters, and animating several
+        // characters of one account concurrently (each with its own persistence context and thus its
+        // own stale copy of the account) lets two siblings pass the duplicate check below at the same
+        // time - both insert the same unlock row and the account's saves keep failing with a duplicate
+        // key of "PK_AccountCharacterClass" until the next restart.
         if (player.Level >= this._minimumLevel
-            && player.Account is { } account
+            && player.Account is { IsBot: false } account
             && account.UnlockedCharacterClasses.All(c => c.Number != this._classNumber))
         {
             var unlockedClass = player.GameContext.Configuration.CharacterClasses.FirstOrDefault(c => c.Number == this._classNumber);
