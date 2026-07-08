@@ -13,6 +13,7 @@ using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
 using MUnique.OpenMU.Web.Shared.Components.Modal;
+using MUnique.OpenMU.Web.Shared.Services;
 
 /// <summary>
 /// Razor page that shows objects of the specified type in a grid.
@@ -23,7 +24,7 @@ public partial class CreateGameServerConfig : ComponentBase, IAsyncDisposable
     private CancellationTokenSource? _disposeCts;
 
     private GameServerViewModel? _viewModel;
-    private string? _initState;
+    private bool _isProcessing;
 
     /// <summary>
     /// Gets or sets the context provider.
@@ -61,6 +62,12 @@ public partial class CreateGameServerConfig : ComponentBase, IAsyncDisposable
     [Inject]
     public NavigationManager NavigationManager { get; set; } = null!;
 
+    /// <summary>
+    /// Gets or sets the loading overlay service.
+    /// </summary>
+    [Inject]
+    public LoadingOverlayService LoadingService { get; set; } = null!;
+
     /// <inheritdoc />
     public async ValueTask DisposeAsync()
     {
@@ -93,6 +100,7 @@ public partial class CreateGameServerConfig : ComponentBase, IAsyncDisposable
 
     private async Task LoadDataAsync(CancellationToken cancellationToken)
     {
+        using var loading = this.LoadingService.ShowLoadingIndicator();
         cancellationToken.ThrowIfCancellationRequested();
 
         var gameConfiguration = await this.DataSource.GetOwnerAsync(default, cancellationToken).ConfigureAwait(true);
@@ -150,8 +158,8 @@ public partial class CreateGameServerConfig : ComponentBase, IAsyncDisposable
     {
         try
         {
+            this._isProcessing = true;
             var gameConfiguration = await this.DataSource.GetOwnerAsync().ConfigureAwait(false);
-
             using var saveContext = this.ContextProvider.CreateNewTypedContext(typeof(DataModel.Configuration.GameServerDefinition), true, gameConfiguration);
 
             var existingServerDefinitions = (await saveContext.GetAsync<GameServerDefinition>().ConfigureAwait(false)).ToList();
@@ -167,19 +175,12 @@ public partial class CreateGameServerConfig : ComponentBase, IAsyncDisposable
                 return;
             }
 
-            this._initState = Resources.CreatingConfigurationInfo;
-            await this.InvokeAsync(this.StateHasChanged);
             var gameServerDefinition = await this.CreateDefinitionByViewModelAsync(saveContext).ConfigureAwait(false);
-            this._initState = Resources.SavingConfigurationInfo;
-            await this.InvokeAsync(this.StateHasChanged);
             var success = await saveContext.SaveChangesAsync().ConfigureAwait(true);
 
-            // if success, init new game server instance
             if (success)
             {
                 this.ToastService.ShowSuccess(Resources.GameServerConfigurationSavedInfo);
-                this._initState = Resources.InitializingGameServerInfo;
-                await this.InvokeAsync(this.StateHasChanged);
                 await this.ServerInstanceManager.InitializeGameServerAsync(gameServerDefinition.ServerID);
                 this.NavigationManager.NavigateTo("servers");
                 return;
@@ -191,8 +192,10 @@ public partial class CreateGameServerConfig : ComponentBase, IAsyncDisposable
         {
             this.ToastService.ShowError(string.Format(Resources.UnexpectedErrorOccurred, ex.Message));
         }
-
-        this._initState = null;
+        finally
+        {
+            this._isProcessing = false;
+        }
     }
 
     /// <summary>
