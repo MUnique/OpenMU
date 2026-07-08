@@ -76,6 +76,7 @@ public class BotConfiguration
     /// Gets the effective, clamped number of characters per account.
     /// </summary>
     /// <returns>A value between 1 and <see cref="MaxCharactersPerAccountLimit"/>.</returns>
+    /// <remarks>Deliberately a method: a get-only property would end up in the serialized plugin configuration JSON.</remarks>
     public int GetEffectiveCharactersPerAccount()
         => Math.Clamp(this.MaxCharactersPerAccount, 1, MaxCharactersPerAccountLimit);
 
@@ -83,7 +84,8 @@ public class BotConfiguration
     /// Parses <see cref="ProofOfConceptAccounts"/> into the distinct, trimmed login names.
     /// </summary>
     /// <returns>The list of login names.</returns>
-    public IReadOnlyList<string> GetProofOfConceptAccounts()
+    /// <remarks>Deliberately a method: a get-only property would end up in the serialized plugin configuration JSON.</remarks>
+    public IReadOnlyList<string> ParseProofOfConceptAccounts()
         => this.ProofOfConceptAccounts
             .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
             .Distinct(StringComparer.OrdinalIgnoreCase)

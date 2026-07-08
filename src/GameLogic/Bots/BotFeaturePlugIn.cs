@@ -141,7 +141,7 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
         }
 
         // The proof-of-concept accounts remain an optional extra hook to animate existing (non-bot) accounts.
-        foreach (var loginName in configuration.GetProofOfConceptAccounts())
+        foreach (var loginName in configuration.ParseProofOfConceptAccounts())
         {
             try
             {

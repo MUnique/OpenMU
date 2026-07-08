@@ -184,7 +184,7 @@ internal sealed class BotNavigator : AsyncDisposable
     public void Start()
     {
         this._timer ??= new Timer(
-            _ => _ = this.SafeEvaluateAsync(this._cts.Token),
+            state => _ = this.SafeEvaluateAsync(this._cts.Token),
             null,
             TimeSpan.FromMilliseconds(2000 + Rand.NextInt(0, 1500)),
             EvaluationInterval);

@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.Bots;
 
+using System.Globalization;
 using System.Threading;
 using MUnique.OpenMU.Persistence;
 
@@ -78,7 +79,7 @@ internal sealed class BotNameGenerator
         // without ever exceeding the 10 character limit.
         if (attempt > 30)
         {
-            var suffix = (attempt % 10).ToString();
+            var suffix = (attempt % 10).ToString(CultureInfo.InvariantCulture);
             name = (name.Length >= 10 ? name[..9] : name) + suffix;
         }
         else if (name.Length > 10)
