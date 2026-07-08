@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.Bots;
 
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.Attributes;
@@ -709,9 +710,31 @@ internal sealed class BotNavigator : AsyncDisposable
     private async ValueTask<bool> TryWarpToBetterMapAsync()
     {
         var botLevel = this.GetBotLevel();
-        if (botLevel < MinWarpLevel
-            || DateTime.UtcNow - this._lastWarpUtc < WarpCooldown
-            || !this.TryPickBetterMap(out var targetGate, out var targetMap, out var targetLevel))
+        var plainLevel = (int)(this._player.Attributes?[Stats.Level] ?? 1);
+
+        // Two situations force the bot OFF its current map, bypassing the usual minimum warp level:
+        // a map without a single safe monster is hostile territory (aggressive monsters kill the bot
+        // while it cannot fight back), and a map the bot could not legally warp to with its plain
+        // level is off-limits regardless of its strength - a real character of that level cannot be
+        // there, so neither may the bot (e.g. a veteran stranded on a high map after its reset).
+        var currentMap = this._player.CurrentMap?.Definition;
+        var mapIsHostile = currentMap is not null && this.BestSafeLevel(currentMap) == 0;
+        var mapIsIllegal = currentMap is not null
+                           && !this.TryGetLegalWarpGate(currentMap, out _)
+                           && currentMap.Number != this._player.SelectedCharacter?.CharacterClass?.HomeMap?.Number;
+        var mustEscape = mapIsHostile || mapIsIllegal;
+
+        if ((plainLevel < MinWarpLevel && !mustEscape)
+            || DateTime.UtcNow - this._lastWarpUtc < WarpCooldown)
+        {
+            return false;
+        }
+
+        // When escaping, any legal map with something safe to hunt beats staying - and with no legal
+        // warp target at all (a freshly reset veteran may be below every warp requirement), the bot
+        // retreats to its class home town, like a player using a town scroll.
+        if (!this.TryPickBetterMap(mustEscape, out var targetGate, out var targetMap, out var targetLevel)
+            && !(mustEscape && this.TryGetHomeEscapeGate(out targetGate, out targetMap, out targetLevel)))
         {
             return false;
         }
@@ -1021,12 +1044,67 @@ internal sealed class BotNavigator : AsyncDisposable
     }
 
     /// <summary>
-    /// The bot's reset-aware effective level (see <see cref="BotResetHandler.GetEffectiveLevel"/>): on
-    /// reset servers a freshly reset bot is nominally level 10 again but keeps the strength of its
-    /// resets, so the plain level would send it back to the newbie routine (no warping below
-    /// <see cref="MinWarpLevel"/>, newbie maps) after every reset.
+    /// The bot's reset-aware effective level (see <see cref="BotResetHandler.GetEffectiveLevel"/>),
+    /// used for hunting decisions (which monsters pay off). Map ACCESS is deliberately not decided
+    /// by this - the game gates warps by the plain character level (see <see cref="TryGetLegalWarpGate"/>),
+    /// and the bots must obey the same rule.
     /// </summary>
     private int GetBotLevel() => BotResetHandler.GetEffectiveLevel(this._player);
+
+    /// <summary>
+    /// Gets the gate through which the bot may legally warp to the given map, exactly like a player
+    /// using the in-game warp window: the map must have an entry in the server's warp list whose level
+    /// requirement (class-reduced, see <see cref="CharacterExtensions.GetEffectiveMoveLevelRequirement"/>)
+    /// is met by the bot's PLAIN character level. The reset-aware effective level intentionally plays
+    /// no role here - a freshly reset veteran cannot warp to high maps either, no matter its strength.
+    /// </summary>
+    /// <param name="mapDefinition">The target map.</param>
+    /// <param name="gate">The warp target gate, if a legal entry exists.</param>
+    /// <returns>True, if the bot may warp to the map.</returns>
+    private bool TryGetLegalWarpGate(GameMapDefinition mapDefinition, [MaybeNullWhen(false)] out ExitGate gate)
+    {
+        gate = null;
+        if (this._player.SelectedCharacter is not { } character)
+        {
+            return false;
+        }
+
+        var plainLevel = (int)(this._player.Attributes?[Stats.Level] ?? 1);
+        gate = this._player.GameContext.Configuration.WarpList
+            .Where(w => w.Gate?.Map?.Number == mapDefinition.Number
+                        && character.GetEffectiveMoveLevelRequirement(w.LevelRequirement) <= plainLevel)
+            .Select(w => w.Gate!)
+            .FirstOrDefault();
+        return gate is not null;
+    }
+
+    /// <summary>
+    /// Gets the escape gate to the bot's class home town, for when it must leave its current map but is
+    /// below every warp requirement (e.g. a freshly reset veteran) - the equivalent of a town scroll.
+    /// </summary>
+    /// <param name="gate">The home map safezone gate.</param>
+    /// <param name="mapDefinition">The home map.</param>
+    /// <param name="monsterLevel">The level of the strongest safe monster there (informational).</param>
+    /// <returns>True, if the bot has a home map it is not already on.</returns>
+    private bool TryGetHomeEscapeGate([MaybeNullWhen(false)] out ExitGate gate, [MaybeNullWhen(false)] out GameMapDefinition mapDefinition, out int monsterLevel)
+    {
+        gate = null;
+        mapDefinition = null;
+        monsterLevel = 0;
+
+        var homeMap = this._player.SelectedCharacter?.CharacterClass?.HomeMap;
+        if (homeMap is null
+            || homeMap.Number == this._player.CurrentMap?.Definition.Number
+            || homeMap.GetSafezoneGate() is not { } safezoneGate)
+        {
+            return false;
+        }
+
+        gate = safezoneGate;
+        mapDefinition = homeMap;
+        monsterLevel = this.BestSafeLevel(homeMap);
+        return true;
+    }
 
     /// <summary>
     /// The level of the strongest monster on the map which this bot can safely fight (judged by the
@@ -1055,17 +1133,19 @@ internal sealed class BotNavigator : AsyncDisposable
     }
 
     /// <summary>
-    /// Picks the enterable map (other than the current one) that offers the strongest monsters the bot can
-    /// still safely handle, if it is meaningfully better than the current map, with one of its safezone gates.
+    /// Picks the legally warpable map (other than the current one) that offers the strongest monsters the
+    /// bot can still safely handle, if it is meaningfully better than the current map, with its warp gate.
+    /// In escape mode (fleeing a hostile or illegal map) any legal map with something safe to hunt counts,
+    /// no matter how it compares to the current one.
     /// </summary>
-    private bool TryPickBetterMap(out ExitGate gate, out GameMapDefinition mapDefinition, out int monsterLevel)
+    private bool TryPickBetterMap(bool escape, out ExitGate gate, out GameMapDefinition mapDefinition, out int monsterLevel)
     {
         gate = default!;
         mapDefinition = default!;
         monsterLevel = 0;
 
         var current = this._player.CurrentMap?.Definition;
-        var threshold = (current is null ? 0 : this.BestSafeLevel(current)) + WarpImprovementMargin;
+        var threshold = escape ? 1 : (current is null ? 0 : this.BestSafeLevel(current)) + WarpImprovementMargin;
 
         foreach (var candidate in this._player.GameContext.Configuration.Maps)
         {
@@ -1080,9 +1160,9 @@ internal sealed class BotNavigator : AsyncDisposable
                 continue;
             }
 
-            if (candidate.ExitGates.Where(g => g.IsSpawnGate).SelectRandom() is { } spawnGate)
+            if (this.TryGetLegalWarpGate(candidate, out var warpGate))
             {
-                gate = spawnGate;
+                gate = warpGate;
                 mapDefinition = candidate;
                 monsterLevel = best;
                 threshold = best + 1; // keep only a strictly-stronger map after this one
