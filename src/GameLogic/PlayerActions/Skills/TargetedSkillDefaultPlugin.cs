@@ -1,4 +1,4 @@
-﻿// <copyright file="TargetedSkillDefaultPlugin.cs" company="MUnique">
+// <copyright file="TargetedSkillDefaultPlugin.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -74,8 +74,8 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
 
         var miniGame = player.CurrentMiniGame;
         var inMiniGame = miniGame is { };
-        var isBuff = skill.SkillType is SkillType.Buff or SkillType.Regeneration;
-        if (player.IsAtSafezone() && !(inMiniGame && isBuff))
+        var isBuff = skill.SkillType is SkillType.Buff or SkillType.Regeneration || skill.SkillType == SkillType.SummonMonster;
+        if (player.IsAtSafezone() && !(inMiniGame || isBuff))
         {
             return;
         }
@@ -163,7 +163,7 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
         {
             if (player.Party != null)
             {
-                return player.Party.PartyList.OfType<IAttackable>().Where(p => player.Observers.Contains((IWorldObserver)p));
+                return player.Party.PartyList.OfType<IAttackable>().Where(p => p == player || player.Observers.Contains((IWorldObserver)p));
             }
 
             return player.GetAsEnumerable();
@@ -275,8 +275,11 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
             }
             else if (skill.MagicEffectDef != null)
             {
-                // Buffs are allowed in the Safezone of Blood Castle.
-                var canDoBuff = !player.IsAtSafezone() || player.CurrentMiniGame is { };
+                // Buffs are allowed in the Safezone.
+                var canDoBuff = !player.IsAtSafezone()
+                    || player.CurrentMiniGame is { }
+                    || target == player
+                    || (player.Party is { } party && target is IPartyMember partyMember && party.PartyList.Contains(partyMember));
                 if (!canDoBuff)
                 {
                     player.Logger.LogWarning("Can't apply magic effect when being in the safe-zone. skill: {SkillName} ({SkillNumber}), skillType: {SkillType}.", skill.Name, skill.Number, skill.SkillType);
