@@ -32,6 +32,8 @@ public class MuHelper : AsyncDisposable
     /// </summary>
     private readonly MuHelperConfiguration _configuration;
 
+    private static readonly AsyncLocal<bool> IsExecutingLoop = new();
+
     private CancellationTokenSource? _stopCts;
     private Task? _runTask;
     private DateTime _startTimestamp;
@@ -84,8 +86,7 @@ public class MuHelper : AsyncDisposable
         this._player.Attributes?.AddElement(ActiveElement, Stats.IsMuHelperActive);
         this._stopCts?.Dispose();
         this._stopCts = new CancellationTokenSource();
-        var cts = this._stopCts.Token;
-        this._runTask = this.RunLoopAsync(cts);
+        this._runTask = this.RunLoopAsync(this._stopCts);
         return true;
     }
 
@@ -108,13 +109,12 @@ public class MuHelper : AsyncDisposable
 
             // Skip awaiting the loop task if we are currently executing inside it
             // (i.e. CollectAsync triggered StopAsync), to avoid a self-deadlock.
-            if (runTask.Id != Task.CurrentId)
+            if (!IsExecutingLoop.Value)
             {
                 await runTask.ConfigureAwait(false);
             }
 
             this._runTask = null;
-            stopCts.Dispose();
             this._stopCts = null;
 
             await this._player.InvokeViewPlugInAsync<IMuHelperStatusUpdatePlugIn>(p => p.StopAsync()).ConfigureAwait(false);
@@ -134,8 +134,10 @@ public class MuHelper : AsyncDisposable
     private int CalculateRequiredMoney() =>
         MuHelperZenCostCalculator.Calculate(this._player, this._configuration, this._startTimestamp);
 
-    private async Task RunLoopAsync(CancellationToken cancellationToken)
+    private async Task RunLoopAsync(CancellationTokenSource ctsOwner)
     {
+        var cancellationToken = ctsOwner.Token;
+        IsExecutingLoop.Value = true;
         try
         {
             if (this._configuration.PayInterval <= TimeSpan.Zero)
@@ -159,6 +161,11 @@ public class MuHelper : AsyncDisposable
         catch (Exception ex)
         {
             Debug.Fail(ex.Message, ex.StackTrace);
+        }
+        finally
+        {
+            IsExecutingLoop.Value = false;
+            ctsOwner.Dispose();
         }
     }
 
