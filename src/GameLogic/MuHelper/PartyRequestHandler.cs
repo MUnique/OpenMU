@@ -38,6 +38,13 @@ public static class PartyRequestHandler
             return true;
         }
 
+        if (settings.AutoAcceptAnyone && await Bots.BotPartyHandler.TryScheduleAcceptAsync(receiver, requester).ConfigureAwait(false))
+        {
+            // The actual accept happens shortly afterwards in the bot's own tick (a human-like delay);
+            // all bot-specific safeguards live in the handler, so this stays a thin criteria branch.
+            return true;
+        }
+
         return false;
     }
 

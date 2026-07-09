@@ -127,6 +127,31 @@ public class OfflinePlayer : Player
     }
 
     /// <summary>
+    /// Gets or sets the pending party invitation from a player, scheduled by
+    /// <see cref="Bots.BotPartyHandler"/> and executed with a human-like delay in the bot's tick.
+    /// </summary>
+    internal Bots.PendingPartyInvite? PendingPartyInvite { get; set; }
+
+    /// <summary>
+    /// Gets or sets the time at which the bot gets bored of its current party with a human player
+    /// and politely leaves it (managed by <see cref="Bots.BotPartyHandler"/>).
+    /// </summary>
+    internal DateTime? PartyBoredomAtUtc { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the bot is currently on a shopping trip (walking to
+    /// or trading with a merchant), maintained by <see cref="Bots.BotNavigator"/>. While on an errand
+    /// the bot declines party invitations, like a busy player would.
+    /// </summary>
+    internal bool IsOnShoppingTrip { get; set; }
+
+    /// <summary>
+    /// Gets a value indicating whether a revenge against a player killer is pending or armed - the
+    /// bot has unfinished business and is in no mood to group up.
+    /// </summary>
+    internal bool HasRevengeIntent => this._revenge is not null;
+
+    /// <summary>
     /// Initializes the offline player by loading the account fresh from the database.
     /// </summary>
     /// <param name="loginName">The account login name.</param>

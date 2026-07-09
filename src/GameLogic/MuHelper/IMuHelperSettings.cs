@@ -150,6 +150,13 @@ public interface IMuHelperSettings
     /// <summary>Gets a value indicating whether to automatically accept requests from guild.</summary>
     bool AutoAcceptGuild { get; }
 
+    /// <summary>
+    /// Gets a value indicating whether to automatically accept party requests from anyone, not just
+    /// friends or guild mates. Defaults to <c>false</c>; used by server-side bots so they group up
+    /// with players who invite them (see <c>Bots.BotPartyHandler</c> for the applied safeguards).
+    /// </summary>
+    bool AutoAcceptAnyone => false;
+
     /// <summary>Gets a value indicating whether to use basic attack as fallback when the configured skill cannot be used.</summary>
     bool FallbackBasicAttack { get; }
 

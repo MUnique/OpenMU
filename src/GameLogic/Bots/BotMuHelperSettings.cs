@@ -173,6 +173,13 @@ internal sealed class BotMuHelperSettings : IMuHelperSettings
     public bool AutoAcceptGuild => false;
 
     /// <inheritdoc />
+    /// <remarks>
+    /// Bots accept party invitations from any player, like a friendly stranger would - within the
+    /// safeguards applied by <see cref="BotPartyHandler"/> (level gap, not while busy, limited time).
+    /// </remarks>
+    public bool AutoAcceptAnyone => true;
+
+    /// <inheritdoc />
     public bool FallbackBasicAttack => true;
 
     /// <inheritdoc />

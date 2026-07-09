@@ -305,6 +305,10 @@ internal sealed class BotNavigator : AsyncDisposable
             return;
         }
 
+        // Party bookkeeping: answer a pending invitation from a player once its human-like delay
+        // passed, and leave a party with a human again when the bot got bored (see BotPartyHandler).
+        await BotPartyHandler.ProcessAsync(this._player).ConfigureAwait(false);
+
         // Make sure the bot always carries healing and mana potions. Without them the offline handlers
         // have nothing to drink: the bot dies to sustained damage, and casters degrade to weak melee
         // once their mana runs dry. This also tops up already-generated bots at runtime.
@@ -504,6 +508,7 @@ internal sealed class BotNavigator : AsyncDisposable
                 {
                     // No way to the merchant from here - give up this trip.
                     this._shoppingTarget = null;
+                    this._player.IsOnShoppingTrip = false;
                 }
 
                 return true;
@@ -517,6 +522,7 @@ internal sealed class BotNavigator : AsyncDisposable
             }
 
             this._shoppingTarget = null;
+            this._player.IsOnShoppingTrip = false;
             this._nextShoppingCheckUtc = DateTime.UtcNow + ShoppingCooldown;
             this._lastMoveUtc = DateTime.UtcNow; // standing at the shop is not "stuck"
             return true;
@@ -545,6 +551,7 @@ internal sealed class BotNavigator : AsyncDisposable
         }
 
         this._shoppingTarget = merchantPosition;
+        this._player.IsOnShoppingTrip = true;
         this._player.Logger.LogInformation("Bot '{Name}' heads to the merchant for a shopping trip.", this._player.Name);
         return true;
     }
@@ -624,6 +631,26 @@ internal sealed class BotNavigator : AsyncDisposable
     {
         if (!ReferenceEquals(leader.CurrentMap, map))
         {
+            if (leader.CurrentMap is { } targetMap
+                && !this.TryGetLegalWarpGate(targetMap.Definition, out _)
+                && targetMap.Definition.Number != this._player.SelectedCharacter?.CharacterClass?.HomeMap?.Number)
+            {
+                // The leader moved to a map the bot's plain character level cannot legally enter
+                // (level gates map access, the same rule as everywhere else). Rather than trail
+                // behind unreachable or sneak in through a back door, the bot leaves the group.
+                if (this._player.Party is { } party)
+                {
+                    this._player.Logger.LogInformation(
+                        "Bot {Character} leaves its party: it cannot legally follow '{Leader}' to map {Map}.",
+                        this._player.Name,
+                        leader.Name,
+                        targetMap.Definition.Name);
+                    await party.KickMySelfAsync(this._player).ConfigureAwait(false);
+                }
+
+                return true;
+            }
+
             if (DateTime.UtcNow - this._lastWarpUtc >= FollowWarpCooldown
                 && leader.CurrentMap is { } leaderMap
                 && leaderMap.Definition.ExitGates.Where(g => g.IsSpawnGate).SelectRandom() is { } leaderGate)
@@ -665,6 +692,14 @@ internal sealed class BotNavigator : AsyncDisposable
     /// <returns>True, if a reset was performed.</returns>
     private async ValueTask<bool> TryResetCharacterAsync()
     {
+        if (BotPartyHandler.HasHumanCompanion(this._player))
+        {
+            // Not in the middle of a hunting session with a player: the reset would wipe the bot's
+            // strength and teleport it home, deserting the group. It resets right after the party
+            // ends (the boredom timer of BotPartyHandler bounds how long that takes).
+            return false;
+        }
+
         if (BotResetHandler.GetResetConfiguration(this._player.GameContext) is not { } resetConfiguration
             || !BotResetHandler.IsResetDue(this._player, resetConfiguration))
         {
