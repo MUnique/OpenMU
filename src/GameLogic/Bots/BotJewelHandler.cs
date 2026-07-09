@@ -15,10 +15,12 @@ using MUnique.OpenMU.GameLogic.PlayerActions.Items;
 /// Soul or Life through the regular <see cref="ItemConsumeAction"/> - the same validations, success
 /// rates and failure penalties as for a human - and puts the piece back on.
 /// The policy mirrors common player behavior: Bless (always succeeds) pushes the weakest equipped
-/// piece towards +6; Soul (50%, +25% with luck, drops the level on failure) is only risked above +6
-/// with a spare in stock; Life (50%, removes the option on failure) is used sparingly on already
-/// upgraded gear. Only a couple of jewels are spent per trip, so the upgrades trickle in over many
-/// visits like for a player instead of the whole hoard being burned at once.
+/// piece towards +6, whether it has luck or not; Soul (50%, +25% with luck; a failure at +6 drops
+/// the item to +5, from +7 on it resets it to +0) is only risked with a spare in stock, on plain
+/// items only at +6 and up to +9 only on lucky ones; Life (50%, removes the option on failure) is
+/// used sparingly on already upgraded gear. Only a couple of jewels are spent per trip, so the
+/// upgrades trickle in over many visits like for a player instead of the whole hoard being burned
+/// at once.
 /// </summary>
 internal static class BotJewelHandler
 {
@@ -28,11 +30,22 @@ internal static class BotJewelHandler
     /// <summary>The Jewel of Bless upgrades item levels 0..5 (see <c>BlessJewelConsumeHandlerPlugIn</c>).</summary>
     private const byte BlessMaxTargetLevel = 5;
 
-    /// <summary>The Jewel of Soul risk window: +6..+8 (a failure above +6 resets the item to +0!).</summary>
+    /// <summary>Souls are never spent below +6 - that range is Bless territory (safe and cheap).</summary>
     private const byte SoulMinTargetLevel = 6;
 
-    /// <summary>The Jewel of Soul upgrades item levels up to 8 (see <c>SoulJewelConsumeHandlerPlugIn</c>).</summary>
-    private const byte SoulMaxTargetLevel = 8;
+    /// <summary>
+    /// Without luck a Soul is only risked at +6, where a failure merely drops the item to +5 (a Bless
+    /// restores that): from +7 on, a failed Soul resets the item to +0
+    /// (<c>ResetToLevel0WhenFailMinLevel</c> in <c>SoulJewelConsumeHandlerPlugIn</c>), and at the base
+    /// 50% success rate that gamble wipes gear more often than not.
+    /// </summary>
+    private const byte SoulMaxTargetLevelPlain = 6;
+
+    /// <summary>
+    /// With luck (+25% success) the Soul may be risked up to +8, so lucky items can reach the jewel
+    /// ceiling of +9 (<c>MaximumLevel</c> in <c>SoulJewelConsumeHandlerPlugIn</c>).
+    /// </summary>
+    private const byte SoulMaxTargetLevelLucky = 8;
 
     /// <summary>Only risk a Soul with at least this many in stock - one failure must not wipe out the reserve.</summary>
     private const int MinSoulStock = 2;
@@ -120,9 +133,12 @@ internal static class BotJewelHandler
             return (blessStock[0], blessTarget, false);
         }
 
-        // 2. Soul - risky: only with a spare in stock; luck (+25% success) makes an item the preferred target.
+        // 2. Soul - risky: only with a spare in stock, and only where the possible loss is bearable -
+        // items without luck stop at +6 -> +7 (see SoulMaxTargetLevelPlain), lucky ones may go for +9.
         if (soulStock.Count >= MinSoulStock
-            && equipped.Where(i => i.CanLevelBeUpgraded() && i.Level is >= SoulMinTargetLevel and <= SoulMaxTargetLevel)
+            && equipped.Where(i => i.CanLevelBeUpgraded()
+                                   && i.Level >= SoulMinTargetLevel
+                                   && i.Level <= (HasLuck(i) ? SoulMaxTargetLevelLucky : SoulMaxTargetLevelPlain))
                 .OrderByDescending(HasLuck)
                 .ThenBy(i => i.Level)
                 .FirstOrDefault() is { } soulTarget)

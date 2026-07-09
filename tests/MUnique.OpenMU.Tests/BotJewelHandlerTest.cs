@@ -81,6 +81,29 @@ public class BotJewelHandlerTest
     }
 
     /// <summary>
+    /// Without luck the Soul risk stops at +6 (a failure from +7 on resets the item to +0), so only
+    /// lucky items may be pushed further - up to the jewel ceiling of +9.
+    /// </summary>
+    /// <param name="itemLevel">The level of the equipped item.</param>
+    /// <param name="withLuck">Whether the equipped item has luck.</param>
+    /// <param name="expectsUse">Whether a jewel use is expected.</param>
+    [TestCase(7, false, false)]
+    [TestCase(7, true, true)]
+    [TestCase(8, true, true)]
+    [TestCase(9, true, false)]
+    public async ValueTask RisksSoulAbovePlusSixOnlyWithLuckAsync(byte itemLevel, bool withLuck, bool expectsUse)
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        await AddEquippedItemAsync(player, InventoryConstants.LeftHandSlot, itemLevel, withLuck).ConfigureAwait(false);
+        await AddJewelAsync(player, FirstBackpackSlot, ItemConstants.JewelOfSoul).ConfigureAwait(false);
+        await AddJewelAsync(player, FirstBackpackSlot + 1, ItemConstants.JewelOfSoul).ConfigureAwait(false);
+
+        var plan = BotJewelHandler.PlanNextUse(player, false);
+
+        Assert.That(plan.HasValue, Is.EqualTo(expectsUse));
+    }
+
+    /// <summary>
     /// Life is the last resort and is planned at most once per trip.
     /// </summary>
     /// <param name="lifeAlreadyUsed">Whether a life was already used within the trip.</param>
