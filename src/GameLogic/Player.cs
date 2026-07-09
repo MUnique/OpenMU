@@ -1688,7 +1688,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 if (this.PlayerDisconnected is { } disconnectedEventHandler)
                 {
                     this.PlayerDisconnected = null;
-                    await disconnectedEventHandler(this).ConfigureAwait(false);
+                    await disconnectedEventHandler.SafeInvokeAsync(this).ConfigureAwait(false);
                 }
             }
             finally

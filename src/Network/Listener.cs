@@ -1,4 +1,4 @@
-﻿// <copyright file="Listener.cs" company="MUnique">
+// <copyright file="Listener.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -148,6 +148,7 @@ public class Listener
             if (cancel is null || !cancel.Cancel)
             {
                 socket.NoDelay = true; // todo: option?
+                this.ConfigureKeepAlive(socket);
                 var connection = this.CreateConnection(socket);
 
                 if (this.ClientAccepted is { } clientAccepted)
@@ -163,6 +164,21 @@ public class Listener
         catch (Exception ex)
         {
             this._logger.LogError(ex, "Unexpected error in OnAccept.");
+        }
+    }
+
+    private void ConfigureKeepAlive(Socket socket)
+    {
+        try
+        {
+            socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);
+            socket.SetSocketOption(SocketOptionLevel.Tcp, SocketOptionName.TcpKeepAliveTime, 30);
+            socket.SetSocketOption(SocketOptionLevel.Tcp, SocketOptionName.TcpKeepAliveInterval, 5);
+            socket.SetSocketOption(SocketOptionLevel.Tcp, SocketOptionName.TcpKeepAliveRetryCount, 3);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogDebug(ex, "Failed to configure TCP keep-alive on accepted socket.");
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿// <copyright file="AsyncEventHandler.cs" company="MUnique">
+// <copyright file="AsyncEventHandler.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -27,14 +27,25 @@ public static class EventExtensions
     /// <typeparam name="T">The type of the event args.</typeparam>
     /// <param name="handler">The handler.</param>
     /// <param name="argsFactory">The arguments factory.</param>
-    public static ValueTask SafeInvokeAsync<T>(this AsyncEventHandler<T>? handler, Func<T> argsFactory)
+    public static async ValueTask SafeInvokeAsync<T>(this AsyncEventHandler<T>? handler, Func<T> argsFactory)
     {
         if (handler is null)
         {
-            return ValueTask.CompletedTask;
+            return;
         }
 
-        return handler.Invoke(argsFactory());
+        var invocationList = handler.GetInvocationList();
+        if (invocationList.Length == 1)
+        {
+            await ((AsyncEventHandler<T>)invocationList[0])(argsFactory()).ConfigureAwait(false);
+            return;
+        }
+
+        var args = argsFactory();
+        foreach (var sub in invocationList)
+        {
+            await ((AsyncEventHandler<T>)sub)(args).ConfigureAwait(false);
+        }
     }
 
     /// <summary>
@@ -43,27 +54,35 @@ public static class EventExtensions
     /// <typeparam name="T">The type of the event args.</typeparam>
     /// <param name="handler">The handler.</param>
     /// <param name="args">The arguments.</param>
-    public static ValueTask SafeInvokeAsync<T>(this AsyncEventHandler<T>? handler, T args)
+    public static async ValueTask SafeInvokeAsync<T>(this AsyncEventHandler<T>? handler, T args)
     {
         if (handler is null)
         {
-            return ValueTask.CompletedTask;
+            return;
         }
 
-        return handler.Invoke(args);
+        var invocationList = handler.GetInvocationList();
+        foreach (var sub in invocationList)
+        {
+            await ((AsyncEventHandler<T>)sub)(args).ConfigureAwait(false);
+        }
     }
 
     /// <summary>
     /// Invokes an event if any event handler is registered. If none is registered, nothing happens.
     /// </summary>
     /// <param name="handler">The handler.</param>
-    public static ValueTask SafeInvokeAsync(this AsyncEventHandler? handler)
+    public static async ValueTask SafeInvokeAsync(this AsyncEventHandler? handler)
     {
         if (handler is null)
         {
-            return ValueTask.CompletedTask;
+            return;
         }
 
-        return handler.Invoke();
+        var invocationList = handler.GetInvocationList();
+        foreach (var sub in invocationList)
+        {
+            await ((AsyncEventHandler)sub)().ConfigureAwait(false);
+        }
     }
 }
