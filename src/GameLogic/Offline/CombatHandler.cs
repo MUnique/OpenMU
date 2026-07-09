@@ -339,6 +339,13 @@ public sealed class CombatHandler
 
     private async ValueTask ExecuteAttackAsync(IAttackable target, SkillEntry? skillEntry, bool isCombo)
     {
+        // Last line of defense for the "bot must never become an outlaw" invariant: no strike ever
+        // leaves this handler against a player who isn't a legal PvP target right now.
+        if (target is Player playerTarget && !BotPvpRules.IsLegalPvpTarget(this._player, playerTarget))
+        {
+            return;
+        }
+
         this._player.Rotation = this._player.GetDirectionTo(target);
 
         if (skillEntry?.Skill is not { } skill)
@@ -366,10 +373,14 @@ public sealed class CombatHandler
 
         // Self-defense has priority over farming: a player who recently attacked this bot becomes the
         // target, as long as they are still viable and anywhere near. Without this the bot placidly
-        // keeps hitting monsters while a player kills it.
+        // keeps hitting monsters while a player kills it. The aggressor memory only sets the PRIORITY,
+        // though - whether the bot may actually strike is decided by BotPvpRules per attack: the grudge
+        // outlives the game's self-defense window, and striking outside of it would turn the bot into
+        // an outlaw (see BotPvpRules.IsLegalPvpTarget).
         if (this._config?.UseSelfDefense == true
             && this._player.RecentAggressor is { } aggressor
-            && aggressor.IsInRange(this._player.Position, this.HuntingRange * 2))
+            && aggressor.IsInRange(this._player.Position, this.HuntingRange * 2)
+            && BotPvpRules.IsLegalPvpTarget(this._player, aggressor))
         {
             this._currentTarget = aggressor;
             return;
@@ -420,6 +431,14 @@ public sealed class CombatHandler
 
     private bool IsTargetStillValid(IAttackable target)
     {
+        // A player target must stay legal for the whole fight: the self-defense window can expire
+        // mid-fight (the player stopped hitting back and ran), and every further strike past that
+        // point would be an unprovoked attack that escalates the bot's own hero state.
+        if (target is Player playerTarget && !BotPvpRules.IsLegalPvpTarget(this._player, playerTarget))
+        {
+            return false;
+        }
+
         return target.IsAlive
                && !target.IsAtSafezone()
                && !target.IsTeleporting
@@ -489,8 +508,11 @@ public sealed class CombatHandler
 
         // A player target (the self-defense aggressor) is hit by the area skill as well - but ONLY
         // the target itself. Any bystanding player in the blast radius is deliberately spared: a
-        // bot's self-defense must never splash uninvolved players, no matter what it casts.
-        if (target is Player playerTarget && playerTarget.IsAlive && !playerTarget.IsAtSafezone())
+        // bot's self-defense must never splash uninvolved players, no matter what it casts. The
+        // legality re-check right at the strike closes the last race: the target was legal when it
+        // was picked, but the self-defense window may have run out in the meantime.
+        if (target is Player playerTarget && playerTarget.IsAlive && !playerTarget.IsAtSafezone()
+            && BotPvpRules.IsLegalPvpTarget(this._player, playerTarget))
         {
             await playerTarget.AttackByAsync(this._player, skillEntry, isCombo).ConfigureAwait(false);
         }
