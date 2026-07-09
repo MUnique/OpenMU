@@ -12,7 +12,8 @@ namespace MUnique.OpenMU.GameLogic.Bots;
 /// is a broken toy - it can be killed penalty-free forever, loses the warp command, and visibly
 /// marks itself as a misbehaving AI. The game escalates the killer's hero state (see
 /// <c>Player.AfterKilledPlayerAsync</c>) unless the victim is already an outlaw or the kill happened
-/// in active self-defense, so those two cases are exactly - and exclusively - what this rule allows.
+/// in active self-defense (duels and rival-guild wars are exempt as well, but bots have neither),
+/// so those two cases are exactly what this rule allows.
 /// The bot's grudge memory (<see cref="Offline.OfflinePlayer.RecentAggressor"/>, ~5 minutes, and the
 /// revenge march after a death) is deliberately longer than the game's self-defense window: the
 /// grudge only decides WHOM the bot prioritizes and where it walks; whether it may actually strike
@@ -25,7 +26,7 @@ public static class BotPvpRules
     /// legality check runs when the attack is issued, but the kill (and with it the game's own
     /// self-defense evaluation) can land moments later - without a margin, a final blow right at
     /// the window's edge would escalate the bot's hero state after all. While the player keeps
-    /// attacking, every hit renews the window, so the margin never interrupts an ongoing fight.
+    /// attacking, every damaging hit renews the window, so the margin never interrupts an ongoing fight.
     /// </summary>
     private static readonly TimeSpan SelfDefenseSafetyMargin = TimeSpan.FromSeconds(3);
 
@@ -45,7 +46,7 @@ public static class BotPvpRules
         }
 
         // Active self-defense: the target attacked this bot recently (SelfDefenseState is keyed
-        // (attacker, defender) and renewed on every hit by the SelfDefensePlugIn).
+        // (attacker, defender) and renewed on every damaging hit by the SelfDefensePlugIn).
         if (bot.GameContext.SelfDefenseState.TryGetValue((target, bot), out var timeout)
             && timeout > DateTime.UtcNow.Add(SelfDefenseSafetyMargin))
         {

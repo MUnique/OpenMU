@@ -351,8 +351,9 @@ internal sealed class BotGenerator
         // A character generated beyond the class evolution level was created as its second-generation
         // class right away - like a player who completed the class quest long ago. Everything downstream
         // (stat weights, skills, gear) keys off the evolved class. A character with a seeded reset
-        // history evolved in its first cycle at the latest (it passed the evolution level on the way
-        // to the reset level), regardless of its current in-cycle level.
+        // history evolved in its first cycle at the latest - provided the reset's required level lies
+        // beyond the evolution level (the check below), which makes it pass the evolution on the way
+        // to its first reset regardless of its current in-cycle level.
         var passedEvolutionInEarlierCycle = seededResets > 0 && resetConfiguration?.RequiredLevel >= BotProgression.ClassEvolutionLevel;
         if ((level >= BotProgression.ClassEvolutionLevel || passedEvolutionInEarlierCycle)
             && BotProgression.GetEvolutionTarget(characterClass) is { } evolvedClass)

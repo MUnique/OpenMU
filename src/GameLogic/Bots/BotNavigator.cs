@@ -560,8 +560,9 @@ internal sealed class BotNavigator : AsyncDisposable
     /// Marches the bot back to the place of its death while a revenge is armed (see
     /// <see cref="OfflinePlayer.TryGetRevengeDestination"/>). The single attempt is spent as soon as
     /// the bot arrives or runs into its killer on the way - no extra combat logic is needed here,
-    /// because the re-armed aggressor memory already makes the combat handler attack the killer on
-    /// sight. Monsters along the route do not stop the march (self-defense still engages ones right
+    /// because the re-armed aggressor memory already keeps the combat handler prioritizing the
+    /// killer, struck only when legal (see <see cref="BotPvpRules"/>).
+    /// Monsters along the route do not stop the march (self-defense still engages ones right
     /// next to the bot); a bot that stopped to farm would never arrive within the revenge time.
     /// </summary>
     /// <param name="map">The current map.</param>

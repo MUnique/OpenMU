@@ -22,8 +22,8 @@ internal static class BotPartyHandler
     /// <see cref="BotResetHandler.GetEffectiveLevel"/>) between the bot and the inviter. Within one
     /// reset worth of levels plus some slack, hunting together still makes sense for both; grouping a
     /// fresh character with a 15-resets veteran would only be a power-leveling service. On servers
-    /// without the reset feature the plain levels always lie within this bound, matching the original
-    /// game, which does not restrict party formation by level either.
+    /// without the reset feature the plain levels always lie within this bound, matching OpenMU's own
+    /// party action, which has no level gate at all.
     /// </summary>
     private const int MaxEffectiveLevelGap = 500;
 

@@ -35,7 +35,8 @@ internal static class BotResetHandler
 
     /// <summary>
     /// Gets the player's effective level for bot decisions: on a reset server a freshly reset
-    /// character is level 10 again but fights with the accumulated power of all its resets, so the
+    /// character is back at the configured <see cref="ResetConfiguration.LevelAfterReset"/> but
+    /// fights with the accumulated power of all its resets, so the
     /// plain level would misjudge it everywhere (target safety, map choice, party matching). Each
     /// reset counts as the level span it took (<see cref="ResetConfiguration.RequiredLevel"/>).
     /// Without the reset feature this is simply the character level.

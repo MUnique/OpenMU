@@ -24,7 +24,8 @@ public class OfflinePlayer : Player
     /// <summary>
     /// How long an attack by a player stays "hot" as a self-defense target, counted from the LAST hit
     /// (every attack refreshes it). Long enough to hold a grudge: an attacker who breaks off and comes
-    /// back within this window is engaged again on sight, instead of being forgiven after seconds.
+    /// back within this window stays the bot's priority target instead of being forgiven after
+    /// seconds - whether it may actually be struck is decided per attack by <see cref="Bots.BotPvpRules"/>.
     /// </summary>
     private static readonly TimeSpan AggressionMemory = TimeSpan.FromMinutes(5);
 
@@ -265,7 +266,8 @@ public class OfflinePlayer : Player
     /// Arms a pending revenge once the bot respawned, called by the <see cref="OfflinePlayerMuHelper"/>
     /// when a bot resumes after death. Only a respawn on the map the bot died on qualifies (from any
     /// other map the march back would be meaningless); the aggressor memory is re-armed, so the combat
-    /// AI attacks the killer on sight, and the revenge gets its time-to-live.
+    /// AI keeps the killer prioritized (struck only when legal, see <see cref="Bots.BotPvpRules"/>),
+    /// and the revenge gets its time-to-live.
     /// </summary>
     internal void ArmRevengeAfterRespawn()
     {

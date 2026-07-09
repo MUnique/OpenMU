@@ -14,8 +14,8 @@ using MUnique.OpenMU.PlugIns;
 /// its death after respawning and take revenge on the killer. A bot which shrugs off being killed
 /// and calmly heads for the next hunting ground is an obvious bot giveaway - a real player comes
 /// back angry. The return march happens in the <see cref="BotNavigator"/>; the counter-attack in
-/// the offline <see cref="CombatHandler"/>, whose re-armed aggressor memory makes the bot engage
-/// the killer on sight.
+/// the offline <see cref="CombatHandler"/>, whose re-armed aggressor memory keeps the killer
+/// prioritized - struck only once the game's own rules make it legal (see <see cref="BotPvpRules"/>).
 /// </summary>
 [PlugIn]
 [Display(Name = "Bot revenge", Description = "Makes server-side bots return to their death site and take revenge on the player who killed them.")]
