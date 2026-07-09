@@ -17,8 +17,8 @@ using MUnique.OpenMU.GameLogic.PlayerActions.Items;
 /// The policy mirrors common player behavior: Bless (always succeeds) pushes the weakest equipped
 /// piece towards +6; Soul (50%, +25% with luck, drops the level on failure) is only risked above +6
 /// with a spare in stock; Life (50%, removes the option on failure) is used sparingly on already
-/// upgraded gear. Only a couple of jewels are spent per trip, so the hoard lasts - and drops for
-/// players hunting the bot.
+/// upgraded gear. Only a couple of jewels are spent per trip, so the upgrades trickle in over many
+/// visits like for a player instead of the whole hoard being burned at once.
 /// </summary>
 internal static class BotJewelHandler
 {
