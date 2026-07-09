@@ -509,7 +509,13 @@ internal sealed class BotNavigator : AsyncDisposable
                 return true;
             }
 
-            await BotShoppingHandler.TryTradeAsync(this._player, map, target).ConfigureAwait(false);
+            if (await BotShoppingHandler.TryTradeAsync(this._player, map, target).ConfigureAwait(false))
+            {
+                // Still standing safely at the merchant with the dialog closed - the player-like moment
+                // to spend a few looted jewels on the own gear (see BotJewelHandler).
+                await BotJewelHandler.TryUpgradeGearAsync(this._player).ConfigureAwait(false);
+            }
+
             this._shoppingTarget = null;
             this._nextShoppingCheckUtc = DateTime.UtcNow + ShoppingCooldown;
             this._lastMoveUtc = DateTime.UtcNow; // standing at the shop is not "stuck"
