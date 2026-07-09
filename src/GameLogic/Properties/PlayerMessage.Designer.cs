@@ -1769,5 +1769,14 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("StatsResetSuccessfully", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This item doesn't belong to you..
+        /// </summary>
+        public static string ItemDoesNotBelongToYou {
+            get {
+                return ResourceManager.GetString("ItemDoesNotBelongToYou", resourceCulture);
+            }
+        }
     }
 }

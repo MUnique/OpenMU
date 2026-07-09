@@ -687,4 +687,7 @@
   <data name="InvasionMonsterDefeated" xml:space="preserve">
     <value>{0} has defeated the {1} {2}!</value>
   </data>
+  <data name="ItemDoesNotBelongToYou" xml:space="preserve">
+    <value>This item doesn't belong to you.</value>
+  </data>
 </root>

@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Items;
 
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.DataModel.Configuration.Quests;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.Interfaces;
@@ -92,6 +93,20 @@ public class PickupItemAction
         return player.Inventory?.Items.Count(item => item.Definition == itemDefinition) >= itemDefinition.StorageLimitPerCharacter;
     }
 
+    private static bool PlayerHasActiveQuestForItem(Player player, Item item)
+    {
+        var questStates = player.SelectedCharacter?.QuestStates;
+        if (questStates is null)
+        {
+            return false;
+        }
+
+        return questStates
+            .Where(q => q.ActiveQuest is not null)
+            .SelectMany(q => q.ActiveQuest!.RequiredItems)
+            .Any(r => r.Item == item.Definition && (r.DropItemGroup?.ItemLevel is null || r.DropItemGroup.ItemLevel == item.Level));
+    }
+
     private static async ValueTask<(bool Success, Item? StackTarget)> TryPickupItemAsync(Player player, DroppedItem droppedItem)
     {
         if (!CanPickup(player, droppedItem))
@@ -116,6 +131,19 @@ public class PickupItemAction
         var slot = player.Inventory?.CheckInvSpace(droppedItem.Item);
         if (slot < InventoryConstants.EquippableSlotsCount)
         {
+            return (false, null);
+        }
+
+        if (droppedItem.Item.Definition?.IsBoundToCharacter == true
+            && !PlayerHasActiveQuestForItem(player, droppedItem.Item))
+        {
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.ItemDoesNotBelongToYou)).ConfigureAwait(false);
+            return (false, null);
+        }
+
+        if (!droppedItem.IsPlayerAnOwner(player) && droppedItem.IsOwnerPickupPriorityActive)
+        {
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.ItemDoesNotBelongToYou)).ConfigureAwait(false);
             return (false, null);
         }
 
