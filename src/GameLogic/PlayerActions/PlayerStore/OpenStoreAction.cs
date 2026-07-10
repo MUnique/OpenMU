@@ -70,6 +70,7 @@ public class OpenStoreAction
             && !string.IsNullOrWhiteSpace(character.StoreName)
             && isStoreOpeningAfterEnterSupported)
         {
+            character.IsStoreOpened = false;
             await this.OpenStoreAsync(player, character.StoreName).ConfigureAwait(false);
         }
         else
