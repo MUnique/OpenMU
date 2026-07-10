@@ -687,6 +687,18 @@
   <data name="InvasionMonsterDefeated" xml:space="preserve">
     <value>{0} has defeated the {1} {2}!</value>
   </data>
+  <data name="PkClearCommandOnlyForGameMasters" xml:space="preserve">
+    <value>This command is only available to Game Masters.</value>
+  </data>
+  <data name="PkClearOnlyClearOwnPk" xml:space="preserve">
+    <value>You can only clear your own PK status.</value>
+  </data>
+  <data name="PkClearTargetNotPlayerKiller" xml:space="preserve">
+    <value>{0} is not a Player Killer.</value>
+  </data>
+  <data name="PkClearYouAreNotPlayerKiller" xml:space="preserve">
+    <value>You are not a Player Killer.</value>
+  </data>
   <data name="ItemDoesNotBelongToYou" xml:space="preserve">
     <value>This item doesn't belong to you.</value>
   </data>
