@@ -183,4 +183,33 @@ public class PKClearChatCommandPlugInTest
         Assert.That(targetPlayer.SelectedCharacter.State, Is.EqualTo(HeroState.PlayerKiller2ndStage));
         Assert.That(player.Money, Is.EqualTo(50_000_000));
     }
+
+    /// <summary>
+    /// Verifies that integer overflow in cost calculation is prevented and capped at int.MaxValue.
+    /// </summary>
+    [Test]
+    public async ValueTask RegularPlayerZenOverflowPreventionAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        player.SelectedCharacter!.CharacterStatus = CharacterStatus.Normal;
+        player.SelectedCharacter.PlayerKillCount = 215;
+        player.SelectedCharacter.State = HeroState.PlayerKiller2ndStage;
+        player.Money = int.MaxValue - 1;
+
+        var plugin = new PkClearChatCommandPlugIn
+        {
+            Configuration = new PkClearChatCommandPlugIn.PKClearConfiguration
+            {
+                AllowRegularPlayers = true,
+                ZenCostPerKill = 10_000_000,
+            }
+        };
+
+        await plugin.HandleCommandAsync(player, "/pkclear").ConfigureAwait(false);
+
+        // Verify status is NOT cleared and money is NOT deducted.
+        Assert.That(player.SelectedCharacter.PlayerKillCount, Is.EqualTo(215));
+        Assert.That(player.SelectedCharacter.State, Is.EqualTo(HeroState.PlayerKiller2ndStage));
+        Assert.That(player.Money, Is.EqualTo(int.MaxValue - 1));
+    }
 }

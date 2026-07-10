@@ -38,8 +38,14 @@ public class PkClearChatCommandPlugIn : ChatCommandPlugInBase<PkClearChatCommand
     /// <inheritdoc />
     protected override async ValueTask DoHandleCommandAsync(Player player, PkClearChatCommandArgs arguments)
     {
-        var configuration = this.Configuration ??= (PKClearConfiguration)this.CreateDefaultConfig();
-        var isGameMaster = player.SelectedCharacter!.CharacterStatus >= CharacterStatus.GameMaster;
+        var selectedCharacter = player.SelectedCharacter;
+        if (selectedCharacter is null)
+        {
+            return;
+        }
+
+        var configuration = this.Configuration ?? (PKClearConfiguration)this.CreateDefaultConfig();
+        var isGameMaster = selectedCharacter.CharacterStatus >= CharacterStatus.GameMaster;
 
         Player? targetPlayer;
         if (isGameMaster)
@@ -54,7 +60,13 @@ public class PkClearChatCommandPlugIn : ChatCommandPlugInBase<PkClearChatCommand
         {
             if (!configuration.AllowRegularPlayers)
             {
-                await player.ShowBlueMessageAsync("This command is only available to Game Masters.").ConfigureAwait(false);
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.PkClearCommandOnlyForGameMasters)).ConfigureAwait(false);
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(arguments.CharacterName) && !arguments.CharacterName.Equals(player.Name, StringComparison.OrdinalIgnoreCase))
+            {
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.PkClearOnlyClearOwnPk)).ConfigureAwait(false);
                 return;
             }
 
@@ -69,16 +81,27 @@ public class PkClearChatCommandPlugIn : ChatCommandPlugInBase<PkClearChatCommand
 
         if (targetCharacter.PlayerKillCount == 0 && targetCharacter.State < HeroState.PlayerKillWarning)
         {
-            await player.ShowBlueMessageAsync(isGameMaster
-                ? $"{targetCharacter.Name} is not a Player Killer."
-                : "You are not a Player Killer.").ConfigureAwait(false);
+            if (isGameMaster)
+            {
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.PkClearTargetNotPlayerKiller), targetCharacter.Name).ConfigureAwait(false);
+            }
+            else
+            {
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.PkClearYouAreNotPlayerKiller)).ConfigureAwait(false);
+            }
+
             return;
         }
 
         if (!isGameMaster)
         {
-            var cost = targetCharacter.PlayerKillCount * configuration.ZenCostPerKill;
-            if (cost > 0 && !player.TryRemoveMoney(cost))
+            var cost = (long)targetCharacter.PlayerKillCount * configuration.ZenCostPerKill;
+            if (cost > int.MaxValue)
+            {
+                cost = int.MaxValue;
+            }
+
+            if (cost > 0 && !player.TryRemoveMoney((int)cost))
             {
                 await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.NotEnoughMoney)).ConfigureAwait(false);
                 return;
