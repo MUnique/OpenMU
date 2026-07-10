@@ -62,6 +62,12 @@ public class PickupItemAction
         }
     }
 
+    private static async ValueTask<(bool Success, Item? StackTarget)> RejectAsync(Player player, string messageKey)
+    {
+        await player.ShowLocalizedBlueMessageAsync(messageKey).ConfigureAwait(false);
+        return (false, null);
+    }
+
     private static bool CanPickup(Player player, ILocateable droppedLocateable)
     {
         if (!player.IsAlive)
@@ -134,17 +140,21 @@ public class PickupItemAction
             return (false, null);
         }
 
-        if (droppedItem.Item.Definition?.IsBoundToCharacter == true
+        if (droppedItem.Item.Definition?.IsQuestItem == true
             && !PlayerHasActiveQuestForItem(player, droppedItem.Item))
         {
-            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.ItemDoesNotBelongToYou)).ConfigureAwait(false);
-            return (false, null);
+            return await RejectAsync(player, nameof(PlayerMessage.ItemDoesNotBelongToYou)).ConfigureAwait(false);
+        }
+
+        if (droppedItem.Item.Definition?.IsBoundToCharacter == true
+            && !droppedItem.IsPlayerAnOwner(player))
+        {
+            return await RejectAsync(player, nameof(PlayerMessage.ItemDoesNotBelongToYou)).ConfigureAwait(false);
         }
 
         if (!droppedItem.IsPlayerAnOwner(player) && droppedItem.IsOwnerPickupPriorityActive)
         {
-            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.ItemDoesNotBelongToYou)).ConfigureAwait(false);
-            return (false, null);
+            return await RejectAsync(player, nameof(PlayerMessage.ItemDoesNotBelongToYou)).ConfigureAwait(false);
         }
 
         var result = await droppedItem.TryPickUpByAsync(player).ConfigureAwait(false);
