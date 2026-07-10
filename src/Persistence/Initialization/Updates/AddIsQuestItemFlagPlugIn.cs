@@ -16,7 +16,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [PlugIn]
 [Display(Name = PlugInName, Description = PlugInDescription)]
-[Guid("9374e428-cf5c-44b1-aab9-0369c77af7c6")]
+[Guid("9374E428-CF5C-44B1-AAB9-0369C77AF7C6")]
 public class AddIsQuestItemFlagPlugIn : UpdatePlugInBase
 {
     /// <summary>
