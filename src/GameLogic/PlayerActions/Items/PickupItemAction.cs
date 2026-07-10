@@ -108,8 +108,9 @@ public class PickupItemAction
         }
 
         return questStates
-            .Where(q => q.ActiveQuest?.RequiredItems is not null)
-            .SelectMany(q => q.ActiveQuest!.RequiredItems)
+            .Select(q => q.ActiveQuest)
+            .OfType<QuestDefinition>()
+            .SelectMany(q => q.RequiredItems)
             .Any(r => r.Item == item.Definition && (r.DropItemGroup?.ItemLevel is null || r.DropItemGroup.ItemLevel == item.Level));
     }
 
