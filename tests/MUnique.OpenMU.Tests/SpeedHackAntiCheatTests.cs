@@ -21,6 +21,7 @@ using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
+using MUnique.OpenMU.GameLogic.PlugIns;
 using NUnit.Framework;
 
 /// <summary>
@@ -313,6 +314,66 @@ public class SpeedHackAntiCheatTests
         Assert.That(player._alertTimes.Count, Is.EqualTo(0));
     }
 
+    [Test]
+    public async Task TestBypassedWhenPluginDisabledAsync()
+    {
+        var player = await CreatePlayerWithSpeedAttributesAsync().ConfigureAwait(false);
+        // Deactivate the plugin
+        player.GameContext.PlugInManager.DeactivatePlugIn<SpeedHackDetectPlugIn>();
+
+        Assert.That(player.Account?.State, Is.EqualTo(AccountState.Normal));
+
+        // Rapid walks which would normally ban the player
+        for (int i = 0; i < 12; i++)
+        {
+            var nextFrom = new Point((byte)(StartPoint.X + i * 2), StartPoint.Y);
+            var nextTo = new Point((byte)(StartPoint.X + i * 2 + 2), StartPoint.Y);
+            
+            player.Position = nextFrom;
+            player._lastAlertTime = DateTime.MinValue;
+
+            WalkingStep[] steps = [new() { From = nextFrom, To = nextTo, Direction = Direction.East }];
+
+            await player.WalkToAsync(nextTo, steps).ConfigureAwait(false);
+        }
+
+        // The account should remain normal because plugin is disabled
+        Assert.That(player.Account?.State, Is.EqualTo(AccountState.Normal));
+        Assert.That(player._alertTimes.Count, Is.EqualTo(0));
+    }
+
+    [Test]
+    public async Task TestCustomizedWarningThresholdAndNoBanAsync()
+    {
+        var player = await CreatePlayerWithSpeedAttributesAsync().ConfigureAwait(false);
+        var plugin = player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>();
+        Assert.That(plugin, Is.Not.Null);
+        
+        // Customize configuration: 5 warnings limit, no autoban, no disconnect
+        plugin!.Configuration!.MaxWarnings = 5;
+        plugin.Configuration.AutoBan = false;
+        plugin.Configuration.DisconnectOnViolation = false;
+
+        // Perform rapid walks to exceed the original 3 warnings limit, and the new 5 warnings limit.
+        // Needs 3 walks per warning, so 3 * 6 warnings = 18 walks to trigger warnings beyond limit.
+        for (int i = 0; i < 18; i++)
+        {
+            var nextFrom = new Point((byte)(StartPoint.X + i * 2), StartPoint.Y);
+            var nextTo = new Point((byte)(StartPoint.X + i * 2 + 2), StartPoint.Y);
+            
+            player.Position = nextFrom;
+            player._lastAlertTime = DateTime.MinValue;
+
+            WalkingStep[] steps = [new() { From = nextFrom, To = nextTo, Direction = Direction.East }];
+
+            await player.WalkToAsync(nextTo, steps).ConfigureAwait(false);
+        }
+
+        // The account should still be normal (no autoban) and not disconnected
+        Assert.That(player.Account?.State, Is.EqualTo(AccountState.Normal));
+        Assert.That(player._alertTimes.Count, Is.GreaterThan(5));
+    }
+
     private static async ValueTask<Player> CreatePlayerWithSpeedAttributesAsync(List<Item>? inventoryItems = null)
     {
         var gameConfig = new Mock<GameConfiguration>();
@@ -400,6 +461,9 @@ public class SpeedHackAntiCheatTests
         var account = new TestAccount { State = AccountState.Normal };
 
         var player = new TestPlayer(gameContext) { Account = account };
+        var speedHackDetectPlugIn = new SpeedHackDetectPlugIn { Configuration = new SpeedHackDetectConfiguration() };
+        player.GameContext.PlugInManager.RegisterPlugInAtPlugInPoint<IFeaturePlugIn>(speedHackDetectPlugIn);
+        player.GameContext.FeaturePlugIns.AddPlugIn(speedHackDetectPlugIn, true);
         await player.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
         await player.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
         await player.PlayerState.TryAdvanceToAsync(PlayerState.CharacterSelection).ConfigureAwait(false);
