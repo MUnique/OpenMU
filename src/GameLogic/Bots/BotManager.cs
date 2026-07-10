@@ -160,6 +160,59 @@ public sealed class BotManager
     }
 
     /// <summary>
+    /// Stops the given bot like a regular logout and immediately brings the same character back
+    /// online - the ghost equivalent of a player relogging. Used after the master evolution: the
+    /// master class's base attributes (master experience rate, master points per level) and the
+    /// master level stat are only mounted when the character enters the world, so the class change
+    /// must be followed by a fresh world entry before master experience can flow.
+    /// </summary>
+    /// <param name="gameContext">The game context.</param>
+    /// <param name="bot">The bot to restart.</param>
+    /// <returns><c>true</c> if the bot came back online.</returns>
+    public async ValueTask<bool> RestartBotAsync(IGameContext gameContext, BotPlayer bot)
+    {
+        // Captured before the stop - the disposed bot loses its account and character.
+        var loginName = bot.Account?.LoginName;
+        var characterSlot = bot.SelectedCharacter?.CharacterSlot;
+        if (loginName is null
+            || characterSlot is not { } slot
+            || !this._bots.TryRemove(GetKey(loginName, slot), out var removed))
+        {
+            return false;
+        }
+
+        if (removed.Party is { } party)
+        {
+            try
+            {
+                await party.KickMySelfAsync(removed).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                // A failed party goodbye must not skip the stop below - the party cleans up a
+                // disconnected member itself.
+                removed.Logger.LogWarning(ex, "Bot '{Login}/{Slot}' couldn't leave its party for the restart.", loginName, slot);
+            }
+        }
+
+        try
+        {
+            await removed.StopAsync().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            // The old instance may still be (partially) alive - put it back under management and
+            // don't spawn a second player driving the same character (two persistence contexts
+            // saving one character would be last-write-wins data loss). Retried on a later pass.
+            removed.Logger.LogError(ex, "Error while stopping bot '{Login}/{Slot}' for a restart; keeping the old instance.", loginName, slot);
+            this._bots.TryAdd(GetKey(loginName, slot), removed);
+            return false;
+        }
+
+        return await this.SpawnBotAsync(gameContext, loginName, slot).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Groups a share of the active bots into small hunting parties of level-wise similar characters,
     /// like real players do: the party members follow their leader (see the follow logic in
     /// <see cref="BotNavigator"/>), the elf heals the group, buffs are shared and the party experience

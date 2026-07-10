@@ -39,13 +39,16 @@ internal static class BotResetHandler
     /// fights with the accumulated power of all its resets, so the
     /// plain level would misjudge it everywhere (target safety, map choice, party matching). Each
     /// reset counts as the level span it took (<see cref="ResetConfiguration.RequiredLevel"/>).
-    /// Without the reset feature this is simply the character level.
+    /// Master levels count on top (like the game's own total level), so an evolved master keeps
+    /// being judged stronger than a plain level-capped character.
+    /// Without the reset feature this is the character level plus the master level.
     /// </summary>
     /// <param name="player">The player.</param>
     /// <returns>The effective level.</returns>
     public static int GetEffectiveLevel(Player player)
     {
-        var level = (int)(player.Attributes?[Stats.Level] ?? 1);
+        var level = (int)(player.Attributes?[Stats.Level] ?? 1)
+                    + (int)(player.Attributes?[Stats.MasterLevel] ?? 0f);
         if (GetResetConfiguration(player.GameContext) is not { } configuration)
         {
             return level;

@@ -312,14 +312,19 @@ internal sealed class BotNavigator : AsyncDisposable
         // Make sure the bot always carries healing and mana potions. Without them the offline handlers
         // have nothing to drink: the bot dies to sustained damage, and casters degrade to weak melee
         // once their mana runs dry. This also tops up already-generated bots at runtime.
-        await this.EnsurePotionsAsync().ConfigureAwait(false);
+        // Queued into the MuHelper tick: an ammunition refill lands in an equipped hand slot, which
+        // mounts item power-ups into the attribute system - and any attribute mutation from this
+        // (separate) timer racing the combat handler's recalculations can corrupt the attribute
+        // graph permanently (see PendingBotActions).
+        this._player.PendingBotActions.Enqueue(() => this.EnsurePotionsAsync());
 
         // Periodically evaluate looted gear and equip upgrades (drops the replaced piece), so the bot's
-        // equipment progresses over its lifetime like a real player's.
+        // equipment progresses over its lifetime like a real player's. Queued for the same reason:
+        // equipping mounts/unmounts item power-ups.
         if (DateTime.UtcNow >= this._nextEquipCheckUtc)
         {
             this._nextEquipCheckUtc = DateTime.UtcNow + EquipCheckInterval;
-            await BotEquipmentHandler.TryEquipUpgradesAsync(this._player).ConfigureAwait(false);
+            this._player.PendingBotActions.Enqueue(() => BotEquipmentHandler.TryEquipUpgradesAsync(this._player));
         }
 
         // Keep the combat centre on the bot's current position, so the combat handler always engages
@@ -377,6 +382,15 @@ internal sealed class BotNavigator : AsyncDisposable
         if (await this.TryResetCharacterAsync().ConfigureAwait(false))
         {
             return;
+        }
+
+        // A master bot invests freshly earned master points (one per master level). Queued into the
+        // MuHelper tick like the level-up progression - learning a skill mutates the skill list, which
+        // must never happen while the combat handler enumerates it (see PendingBotActions). The master
+        // evolution itself is handled by the feature plugin's maintenance pass, because it restarts the bot.
+        if (BotMasterHandler.HasMasterPointsToSpend(this._player))
+        {
+            this._player.PendingBotActions.Enqueue(() => BotMasterHandler.TrySpendMasterPointsAsync(this._player));
         }
 
         // A shopping trip (selling junk loot, restocking potions with Zen) runs before everything else,
@@ -517,8 +531,10 @@ internal sealed class BotNavigator : AsyncDisposable
             if (await BotShoppingHandler.TryTradeAsync(this._player, map, target).ConfigureAwait(false))
             {
                 // Still standing safely at the merchant with the dialog closed - the player-like moment
-                // to spend a few looted jewels on the own gear (see BotJewelHandler).
-                await BotJewelHandler.TryUpgradeGearAsync(this._player).ConfigureAwait(false);
+                // to spend a few looted jewels on the own gear (see BotJewelHandler). Queued into the
+                // MuHelper tick: applying a jewel takes gear off and back on, and such attribute
+                // mutations must not race the combat handler (see PendingBotActions).
+                this._player.PendingBotActions.Enqueue(() => BotJewelHandler.TryUpgradeGearAsync(this._player));
             }
 
             this._shoppingTarget = null;
@@ -726,16 +742,21 @@ internal sealed class BotNavigator : AsyncDisposable
 
         this._resetDueAtUtc = null;
         var payCosts = this._player.GameContext.FeaturePlugIns.GetPlugIn<BotFeaturePlugIn>()?.Configuration?.BotsPayResetCosts == true;
-        if (!await BotResetHandler.TryResetAsync(this._player, resetConfiguration, payCosts).ConfigureAwait(false))
+
+        // Queued into the MuHelper tick: the reset writes the level/reset/stat attributes, and such
+        // mutations must not race the combat handler's recalculations (see PendingBotActions). The
+        // queued call re-validates the eligibility itself; if it refuses (e.g. unaffordable costs
+        // when BotsPayResetCosts is enabled), the check above re-schedules a fresh grace delay.
+        var player = this._player;
+        player.PendingBotActions.Enqueue(async () =>
         {
-            // E.g. unaffordable costs when BotsPayResetCosts is enabled - the eligibility check above
-            // re-schedules another attempt on a fresh delay next tick.
-            return false;
-        }
+            await BotResetHandler.TryResetAsync(player, resetConfiguration, payCosts).ConfigureAwait(false);
+        });
 
         // Start the next cycle fresh: no stale destination or route, and no warp cooldown - a freshly
         // reset player heads straight back out, and the point pool (queued by the reset handler into
-        // the bot's AI tick) is invested before the next evaluation gets this far.
+        // the bot's AI tick) is invested before the next evaluation gets this far. Cleared
+        // optimistically - if the queued reset refuses, the bot merely re-picks its hunting ground.
         this._hasDestination = false;
         this._travelPath = null;
         this._emptyGroundSince = null;

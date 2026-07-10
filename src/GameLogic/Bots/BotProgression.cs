@@ -80,6 +80,23 @@ internal static class BotProgression
     }
 
     /// <summary>
+    /// Gets the master class the character evolves into at the game's maximum level (the
+    /// third-generation evolution the level-400 master quests perform), or null when the current class
+    /// has none. Unlike <see cref="GetEvolutionTarget"/> this applies to all classes: the
+    /// second-generation classes evolve into their masters (Blade Knight -> Blade Master, ...), and
+    /// Magic Gladiator, Dark Lord and Rage Fighter - which have no second generation - evolve directly
+    /// (-> Duel Master, Lord Emperor, Fist Master). When and whether a bot takes this step is decided
+    /// by <see cref="BotMasterHandler.IsMasterEvolutionDue"/>.
+    /// </summary>
+    /// <param name="characterClass">The character class.</param>
+    public static CharacterClass? GetMasterEvolutionTarget(CharacterClass characterClass)
+    {
+        return characterClass is { IsMasterClass: false, NextGenerationClass: { IsMasterClass: true } masterClass }
+            ? masterClass
+            : null;
+    }
+
+    /// <summary>
     /// How a bot invests its stat points, per class and per bot, in one of two meta profiles chosen
     /// by the server type (see <see cref="BotResetHandler.GetResetConfiguration"/> at the call sites):
     /// <list type="bullet">
@@ -270,6 +287,13 @@ internal static class BotProgression
     /// <param name="skill">The skill to check.</param>
     public static bool IsBotLearnableSkill(Skill skill)
     {
+        if (skill.MasterDefinition is not null)
+        {
+            // Master skills are never learned for free - they cost the master points earned per master
+            // level and go through the regular action (see BotMasterHandler), like for a human player.
+            return false;
+        }
+
         if (skill.AttackDamage > 0
             && skill.SkillType is SkillType.DirectHit
                 or SkillType.AreaSkillAutomaticHits
