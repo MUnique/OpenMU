@@ -28,7 +28,6 @@ using MUnique.OpenMU.GameLogic.Views.Guild;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.GameLogic.Views.MuHelper;
 using MUnique.OpenMU.GameLogic.Views.Pet;
-using MUnique.OpenMU.GameLogic.Views.PlayerShop;
 using MUnique.OpenMU.GameLogic.Views.Quest;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Interfaces;
@@ -2596,18 +2595,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
 
         // Restore previously opened Store.
-        if (selectedCharacter.IsStoreOpened
-            && !string.IsNullOrWhiteSpace(selectedCharacter.StoreName)
-            && this.IsPlayerStoreOpeningAfterEnterSupported)
-        {
-            await this.InvokeViewPlugInAsync<IShowShopItemListPlugIn>(p => p.ShowShopItemListAsync(this, true)).ConfigureAwait(false);
-            var action = new PlayerActions.PlayerStore.OpenStoreAction();
-            await action.OpenStoreAsync(this, selectedCharacter.StoreName).ConfigureAwait(false);
-        }
-        else
-        {
-            selectedCharacter.IsStoreOpened = false;
-        }
+        var openStoreAction = new PlayerActions.PlayerStore.OpenStoreAction();
+        await openStoreAction.RestoreAfterEnterWorldAsync(this, this.IsPlayerStoreOpeningAfterEnterSupported).ConfigureAwait(false);
     }
 
     private void LogInvalidVaultItems()

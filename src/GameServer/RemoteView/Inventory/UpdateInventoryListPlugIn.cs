@@ -38,7 +38,9 @@ public class UpdateInventoryListPlugIn : IUpdateInventoryListPlugIn
         }
 
         // C4 00 00 00 F3 10 ...
-        var items = (this._player.Inventory?.Items ?? this._player.SelectedCharacter?.Inventory?.Items ?? Enumerable.Empty<Item>())
+        var items = (this._player.Inventory?.Items is { } inventoryItems
+                ? inventoryItems.Concat(this._player.ShopStorage?.Items ?? Enumerable.Empty<Item>())
+                : this._player.SelectedCharacter?.Inventory?.Items ?? Enumerable.Empty<Item>())
             .OrderBy(item => item.ItemSlot)
             .ToList();
         int Write()
