@@ -6,13 +6,9 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 {
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.Infrastructure;
     using Microsoft.EntityFrameworkCore.Migrations;
 
     /// <inheritdoc />
-    [DbContext(typeof(EntityDataContext))]
-    [Migration("20260627120000_AddAccountIsBot")]
     public partial class AddAccountIsBot : Migration
     {
         /// <inheritdoc />
