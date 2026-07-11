@@ -1340,8 +1340,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         var startPoint = steps.Span[0].From;
 
-        bool isSafezone = this.IsAtSafezone();
-
         var config = this.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()?.Configuration;
         int maxAllowedWalkStartOffset = config?.MaxAllowedWalkStartOffset ?? 5;
 

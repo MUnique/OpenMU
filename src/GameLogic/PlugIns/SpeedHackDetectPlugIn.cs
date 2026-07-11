@@ -299,12 +299,17 @@ public class SpeedHackDetectPlugIn : IFeaturePlugIn, ISupportCustomConfiguration
         {
             await player.ShowBlueMessageAsync("Warning: Unusual activity detected (speed check). Repeated violations will result in account restriction.").ConfigureAwait(false);
         }
+        else
+        {
+            // Do nothing if no actions are required.
+        }
     }
 
-    private struct WalkHistoryEntry
+    private readonly record struct WalkHistoryEntry
     {
-        public DateTime Time;
-        public Point StartPoint;
+        public DateTime Time { get; init; }
+
+        public Point StartPoint { get; init; }
     }
 
     private class SpeedHackState
