@@ -74,11 +74,14 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
 
         if (skill.SkillType != SkillType.Buff && skill.SkillType != SkillType.Regeneration && skill.SkillType != SkillType.SummonMonster)
         {
-            if (player.CheckAttackSpeedHack())
+            if (player.GameContext.PlugInManager.GetPlugInPoint<ISpeedHackCheatCheckPlugIn>() is { } speedCheck)
             {
-                player.Logger.LogWarning("Speedhack detected on skill {0} ({1}) for player {2}", skill.Name, skill.Number, player.Name);
-                await player.RecordViolationAsync().ConfigureAwait(false);
-                return;
+                var eventArgs = new SpeedHackCheckEventArgs();
+                await speedCheck.AttackCheatCheckAsync(player, eventArgs).ConfigureAwait(false);
+                if (eventArgs.IsCheatDetected)
+                {
+                    return;
+                }
             }
         }
 

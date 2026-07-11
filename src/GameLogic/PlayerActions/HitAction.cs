@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions;
 
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.World;
 
 /// <summary>
@@ -44,11 +45,14 @@ public class HitAction
             return;
         }
 
-        if (player.CheckAttackSpeedHack())
+        if (player.GameContext.PlugInManager.GetPlugInPoint<ISpeedHackCheatCheckPlugIn>() is { } speedCheck)
         {
-            player.Logger.LogWarning("Speedhack detected on hit for player {0}", player.Name);
-            await player.RecordViolationAsync().ConfigureAwait(false);
-            return;
+            var eventArgs = new SpeedHackCheckEventArgs();
+            await speedCheck.AttackCheatCheckAsync(player, eventArgs).ConfigureAwait(false);
+            if (eventArgs.IsCheatDetected)
+            {
+                return;
+            }
         }
 
         if (target.IsAtSafezone())

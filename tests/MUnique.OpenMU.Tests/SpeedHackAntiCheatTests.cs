@@ -32,6 +32,9 @@ public class SpeedHackAntiCheatTests
 {
     private static readonly Point StartPoint = new(100, 100);
 
+    /// <summary>
+    /// Tests that the speed check detects speed hacks on walk and bans the account after exceeding limits.
+    /// </summary>
     [Test]
     public async Task TestWalkSpeedHackDetectionBansAccountAsync()
     {
@@ -51,7 +54,7 @@ public class SpeedHackAntiCheatTests
             player.Position = nextFrom;
 
             // Reset the alert debounce to allow consecutive warnings.
-            player._lastAlertTime = DateTime.MinValue;
+            player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()!.SetLastAlertTime(player, DateTime.MinValue);
 
             WalkingStep[] steps = [new() { From = nextFrom, To = nextTo, Direction = Direction.East }];
 
@@ -79,7 +82,7 @@ public class SpeedHackAntiCheatTests
         await player.WalkToAsync(targetPoint, steps).ConfigureAwait(false);
 
         // Verify that no violation was recorded
-        Assert.That(player._alertTimes.Count, Is.EqualTo(0));
+        Assert.That(player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()!.GetWarningCount(player), Is.EqualTo(0));
 
         // Verify that the view plugin container for IObjectMovedPlugIn was called to warp the player back
         var objectMovedPlugIn = player.ViewPlugIns.GetPlugIn<IObjectMovedPlugIn>();
@@ -117,7 +120,7 @@ public class SpeedHackAntiCheatTests
             var nextTo = new Point((byte)(StartPoint.X + i * 2 + 2), StartPoint.Y);
             
             player.Position = nextFrom;
-            player._lastAlertTime = DateTime.MinValue;
+            player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()!.SetLastAlertTime(player, DateTime.MinValue);
 
             WalkingStep[] steps = [new() { From = nextFrom, To = nextTo, Direction = Direction.East }];
 
@@ -126,7 +129,7 @@ public class SpeedHackAntiCheatTests
 
         // Account should remain normal
         Assert.That(player.Account?.State, Is.EqualTo(AccountState.Normal));
-        Assert.That(player._alertTimes.Count, Is.EqualTo(0));
+        Assert.That(player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()!.GetWarningCount(player), Is.EqualTo(0));
     }
 
     /// <summary>
@@ -138,9 +141,13 @@ public class SpeedHackAntiCheatTests
         var player = await CreatePlayerWithSpeedAttributesAsync().ConfigureAwait(false);
         player.Attributes![Stats.AttackSpeed] = 20;
 
+        var speedCheck = player.GameContext.PlugInManager.GetPlugInPoint<ISpeedHackCheatCheckPlugIn>();
+        Assert.That(speedCheck, Is.Not.Null);
+
         // The first attack sets the timestamp tracker
-        var detectedFirst = player.CheckAttackSpeedHack();
-        Assert.That(detectedFirst, Is.False);
+        var argsFirst = new SpeedHackCheckEventArgs();
+        await speedCheck!.AttackCheatCheckAsync(player, argsFirst).ConfigureAwait(false);
+        Assert.That(argsFirst.IsCheatDetected, Is.False);
 
         // Perform rapid attacks in succession (0ms elapsed)
         // With attack speed 20, min expected interval is 1000 - 60 = 940ms.
@@ -148,7 +155,9 @@ public class SpeedHackAntiCheatTests
         bool detectedHack = false;
         for (int i = 0; i < 5; i++)
         {
-            if (player.CheckAttackSpeedHack())
+            var args = new SpeedHackCheckEventArgs();
+            await speedCheck.AttackCheatCheckAsync(player, args).ConfigureAwait(false);
+            if (args.IsCheatDetected)
             {
                 detectedHack = true;
                 break;
@@ -190,7 +199,7 @@ public class SpeedHackAntiCheatTests
         await player.WalkToAsync(new Point((byte)(newPosition.X + 1), newPosition.Y), steps2).ConfigureAwait(false);
 
         // Verify that no violation was recorded
-        Assert.That(player._alertTimes.Count, Is.EqualTo(0));
+        Assert.That(player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()!.GetWarningCount(player), Is.EqualTo(0));
     }
 
     /// <summary>
@@ -221,7 +230,7 @@ public class SpeedHackAntiCheatTests
             currentClientPos = nextTo;
 
             // Reset the alert debounce to allow consecutive warnings.
-            player._lastAlertTime = DateTime.MinValue;
+            player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()!.SetLastAlertTime(player, DateTime.MinValue);
 
             WalkingStep[] steps = [new() { From = nextFrom, To = nextTo, Direction = Direction.East }];
 
@@ -269,7 +278,7 @@ public class SpeedHackAntiCheatTests
             currentClientPos = nextTo;
 
             // Reset the alert debounce to allow consecutive warnings.
-            player._lastAlertTime = DateTime.MinValue;
+            player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()!.SetLastAlertTime(player, DateTime.MinValue);
 
             WalkingStep[] steps = [new() { From = nextFrom, To = nextTo, Direction = Direction.East }];
 
@@ -300,7 +309,7 @@ public class SpeedHackAntiCheatTests
             var nextFrom = new Point((byte)(StartPoint.X + i * 2), StartPoint.Y);
             var nextTo = new Point((byte)(StartPoint.X + i * 2 + 2), StartPoint.Y);
             player.Position = nextFrom;
-            player._lastAlertTime = DateTime.MinValue;
+            player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()!.SetLastAlertTime(player, DateTime.MinValue);
 
             WalkingStep[] steps = [new() { From = nextFrom, To = nextTo, Direction = Direction.East }];
 
@@ -311,9 +320,12 @@ public class SpeedHackAntiCheatTests
 
         // The account should remain normal.
         Assert.That(player.Account?.State, Is.EqualTo(AccountState.Normal));
-        Assert.That(player._alertTimes.Count, Is.EqualTo(0));
+        Assert.That(player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()!.GetWarningCount(player), Is.EqualTo(0));
     }
 
+    /// <summary>
+    /// Tests that the speed check is bypassed when the plugin is disabled.
+    /// </summary>
     [Test]
     public async Task TestBypassedWhenPluginDisabledAsync()
     {
@@ -330,7 +342,7 @@ public class SpeedHackAntiCheatTests
             var nextTo = new Point((byte)(StartPoint.X + i * 2 + 2), StartPoint.Y);
             
             player.Position = nextFrom;
-            player._lastAlertTime = DateTime.MinValue;
+            player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()?.SetLastAlertTime(player, DateTime.MinValue);
 
             WalkingStep[] steps = [new() { From = nextFrom, To = nextTo, Direction = Direction.East }];
 
@@ -339,9 +351,12 @@ public class SpeedHackAntiCheatTests
 
         // The account should remain normal because plugin is disabled
         Assert.That(player.Account?.State, Is.EqualTo(AccountState.Normal));
-        Assert.That(player._alertTimes.Count, Is.EqualTo(0));
+        Assert.That(player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()?.GetWarningCount(player) ?? 0, Is.EqualTo(0));
     }
 
+    /// <summary>
+    /// Tests that customized warning thresholds and ban rules are respected.
+    /// </summary>
     [Test]
     public async Task TestCustomizedWarningThresholdAndNoBanAsync()
     {
@@ -362,7 +377,7 @@ public class SpeedHackAntiCheatTests
             var nextTo = new Point((byte)(StartPoint.X + i * 2 + 2), StartPoint.Y);
             
             player.Position = nextFrom;
-            player._lastAlertTime = DateTime.MinValue;
+            player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()!.SetLastAlertTime(player, DateTime.MinValue);
 
             WalkingStep[] steps = [new() { From = nextFrom, To = nextTo, Direction = Direction.East }];
 
@@ -371,7 +386,7 @@ public class SpeedHackAntiCheatTests
 
         // The account should still be normal (no autoban) and not disconnected
         Assert.That(player.Account?.State, Is.EqualTo(AccountState.Normal));
-        Assert.That(player._alertTimes.Count, Is.GreaterThan(5));
+        Assert.That(player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()!.GetWarningCount(player), Is.GreaterThan(5));
     }
 
     private static async ValueTask<Player> CreatePlayerWithSpeedAttributesAsync(List<Item>? inventoryItems = null)
@@ -463,6 +478,7 @@ public class SpeedHackAntiCheatTests
         var player = new TestPlayer(gameContext) { Account = account };
         var speedHackDetectPlugIn = new SpeedHackDetectPlugIn { Configuration = new SpeedHackDetectConfiguration() };
         player.GameContext.PlugInManager.RegisterPlugInAtPlugInPoint<IFeaturePlugIn>(speedHackDetectPlugIn);
+        player.GameContext.PlugInManager.RegisterPlugInAtPlugInPoint<ISpeedHackCheatCheckPlugIn>(speedHackDetectPlugIn);
         player.GameContext.FeaturePlugIns.AddPlugIn(speedHackDetectPlugIn, true);
         await player.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
         await player.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
