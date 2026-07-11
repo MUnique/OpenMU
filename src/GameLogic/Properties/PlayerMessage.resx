@@ -699,4 +699,7 @@
   <data name="PkClearYouAreNotPlayerKiller" xml:space="preserve">
     <value>You are not a Player Killer.</value>
   </data>
+  <data name="ItemDoesNotBelongToYou" xml:space="preserve">
+    <value>This item doesn't belong to you.</value>
+  </data>
 </root>
