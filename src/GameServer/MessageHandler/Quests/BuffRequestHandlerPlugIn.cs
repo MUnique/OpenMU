@@ -11,7 +11,7 @@ using MUnique.OpenMU.Network.Packets.ClientToServer;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// Packet handler for (elf soldier) buff request packets (0xF6, 0x31 identifier).
+/// Packet handler for NPC buff request packets (0xF6, 0x31 identifier).
 /// </summary>
 [PlugIn]
 [Display(Name = nameof(PlugInResources.BuffRequestHandlerPlugIn_Name), Description = nameof(PlugInResources.BuffRequestHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
@@ -19,7 +19,7 @@ using MUnique.OpenMU.PlugIns;
 [BelongsToGroup(QuestGroupHandlerPlugIn.GroupKey)]
 public class BuffRequestHandlerPlugIn : ISubPacketHandlerPlugIn
 {
-    private readonly ElfSoldierBuffRequestAction _buffRequestAction = new();
+    private readonly NpcBuffRequestAction _buffRequestAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;

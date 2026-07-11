@@ -110,6 +110,27 @@ public partial class MonsterDefinition : MUnique.OpenMU.DataModel.Configuration.
     }
 
     /// <summary>
+    /// Gets the raw collection of <see cref="BuffRequests" />.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonPropertyName("buffRequests")]
+    public ICollection<BuffRequest> RawBuffRequests { get; } = new List<BuffRequest>();
+    
+    /// <inheritdoc/>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.BuffRequest> BuffRequests
+    {
+        get => base.BuffRequests ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.BuffRequest, BuffRequest>(this.RawBuffRequests);
+        protected set
+        {
+            this.BuffRequests.Clear();
+            foreach (var item in value)
+            {
+                this.BuffRequests.Add(item);
+            }
+        }
+    }
+
+    /// <summary>
     /// Gets the raw object of <see cref="AttackSkill" />.
     /// </summary>
     [System.Text.Json.Serialization.JsonPropertyName("attackSkill")]

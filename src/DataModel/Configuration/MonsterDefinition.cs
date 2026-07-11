@@ -329,6 +329,12 @@ public partial class MonsterDefinition
     public virtual ICollection<QuestDefinition> Quests { get; protected set; } = null!;
 
     /// <summary>
+    /// Gets or sets the buff requests which can be requested from this npc.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<BuffRequest> BuffRequests { get; protected set; } = null!;
+
+    /// <summary>
     /// Attribute default accessor.
     /// </summary>
     /// <param name="key">The attribute.</param>

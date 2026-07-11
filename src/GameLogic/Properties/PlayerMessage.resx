@@ -522,7 +522,7 @@
   <data name="PlayerStoreNotOpen" xml:space="preserve">
     <value>Player's Store not open.</value>
   </data>
-  <data name="ElfSoldierStrongEnoughMessage" xml:space="preserve">
+  <data name="CharacterTooStrongMessage" xml:space="preserve">
     <value>You're strong enough on your own.</value>
   </data>
   <data name="NotEnoughMoneyToProceed" xml:space="preserve">
@@ -701,5 +701,8 @@
   </data>
   <data name="ItemDoesNotBelongToYou" xml:space="preserve">
     <value>This item doesn't belong to you.</value>
+  </data>
+  <data name="CharacterNotStrongEnoughMessage" xml:space="preserve">
+    <value>You are not strong enough for this yet.</value>
   </data>
 </root>
