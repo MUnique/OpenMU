@@ -203,6 +203,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <inheritdoc/>
     public ushort Id { get; set; }
 
+    /// <summary>
+    /// Gets or sets the IP address of the player.
+    /// </summary>
+    public string? IpAddress { get; set; }
+
     /// <inheritdoc cref="IPartyMember" />
     public string Name => this.SelectedCharacter?.Name ?? string.Empty;
 
