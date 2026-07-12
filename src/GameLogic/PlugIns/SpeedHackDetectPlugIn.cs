@@ -34,9 +34,9 @@ public class SpeedHackDetectPlugIn : IFeaturePlugIn, ISupportCustomConfiguration
     public object CreateDefaultConfig() => new SpeedHackDetectConfiguration();
 
     /// <inheritdoc/>
-    public async ValueTask WalkCheatCheckAsync(Player player, WalkingStep[] steps, SpeedHackCheckEventArgs eventArgs)
+    public async ValueTask WalkCheatCheckAsync(Player player, Memory<WalkingStep> steps, SpeedHackCheckEventArgs eventArgs)
     {
-        if (steps is null || steps.Length == 0)
+        if (steps.IsEmpty)
         {
             return;
         }
@@ -49,7 +49,7 @@ public class SpeedHackDetectPlugIn : IFeaturePlugIn, ISupportCustomConfiguration
 
         bool isSafezone = player.IsAtSafezone();
         bool shouldRecordViolation = false;
-        var startPoint = steps[0].From;
+        var startPoint = steps.Span[0].From;
         var state = this.GetState(player);
 
         lock (state.Lock)

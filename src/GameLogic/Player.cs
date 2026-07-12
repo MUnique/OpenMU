@@ -1347,7 +1347,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         if (speedCheck is { })
         {
             var eventArgs = new SpeedHackCheckEventArgs();
-            await speedCheck.WalkCheatCheckAsync(this, steps.ToArray(), eventArgs).ConfigureAwait(false);
+            await speedCheck.WalkCheatCheckAsync(this, steps, eventArgs).ConfigureAwait(false);
             if (eventArgs.IsCheatDetected)
             {
                 return;

@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlugIns;
 
+using System;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using MUnique.OpenMU.Pathfinding;
@@ -22,7 +23,7 @@ public interface ISpeedHackCheatCheckPlugIn
     /// <param name="player">The player.</param>
     /// <param name="steps">The steps requested by the player.</param>
     /// <param name="eventArgs">The event args to mark a violation.</param>
-    ValueTask WalkCheatCheckAsync(Player player, WalkingStep[] steps, SpeedHackCheckEventArgs eventArgs);
+    ValueTask WalkCheatCheckAsync(Player player, Memory<WalkingStep> steps, SpeedHackCheckEventArgs eventArgs);
 
     /// <summary>
     /// Checks if the attack speed is within limits.
