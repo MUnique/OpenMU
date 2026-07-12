@@ -61,13 +61,13 @@ internal partial class MonsterDefinition : MUnique.OpenMU.DataModel.Configuratio
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.Quests.QuestDefinition> Quests => base.Quests ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Quests.QuestDefinition, QuestDefinition>(this.RawQuests);
 
     /// <summary>
-    /// Gets the raw collection of <see cref="BuffRequests" />.
+    /// Gets the raw collection of <see cref="Buffs" />.
     /// </summary>
-    public ICollection<BuffRequest> RawBuffRequests { get; } = new EntityFramework.List<BuffRequest>();
+    public ICollection<Buff> RawBuffs { get; } = new EntityFramework.List<Buff>();
     
     /// <inheritdoc/>
     [NotMapped]
-    public override ICollection<MUnique.OpenMU.DataModel.Configuration.BuffRequest> BuffRequests => base.BuffRequests ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.BuffRequest, BuffRequest>(this.RawBuffRequests);
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.Buff> Buffs => base.Buffs ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Buff, Buff>(this.RawBuffs);
 
     /// <summary>
     /// Gets or sets the identifier of <see cref="AttackSkill"/>.

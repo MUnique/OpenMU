@@ -6,13 +6,13 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 {
     /// <inheritdoc />
-    public partial class AddBuffRequest : Migration
+    public partial class AddBuff : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "BuffRequest",
+                name: "Buff",
                 schema: "config",
                 columns: table => new
                 {
@@ -24,16 +24,16 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_BuffRequest", x => x.Id);
+                    table.PrimaryKey("PK_Buff", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_BuffRequest_MagicEffectDefinition_MagicEffectDefinitionId",
+                        name: "FK_Buff_MagicEffectDefinition_MagicEffectDefinitionId",
                         column: x => x.MagicEffectDefinitionId,
                         principalSchema: "config",
                         principalTable: "MagicEffectDefinition",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_BuffRequest_MonsterDefinition_MonsterDefinitionId",
+                        name: "FK_Buff_MonsterDefinition_MonsterDefinitionId",
                         column: x => x.MonsterDefinitionId,
                         principalSchema: "config",
                         principalTable: "MonsterDefinition",
@@ -42,16 +42,16 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_BuffRequest_MagicEffectDefinitionId",
+                name: "IX_Buff_MagicEffectDefinitionId",
                 schema: "config",
-                table: "BuffRequest",
+                table: "Buff",
                 column: "MagicEffectDefinitionId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_BuffRequest_MonsterDefinitionId",
+                name: "IX_Buff_MonsterDefinitionId",
                 schema: "config",
-                table: "BuffRequest",
+                table: "Buff",
                 column: "MonsterDefinitionId");
         }
 
@@ -59,7 +59,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "BuffRequest",
+                name: "Buff",
                 schema: "config");
         }
     }

@@ -28,7 +28,7 @@ public class AddElfSoldierBuffPlugIn : UpdatePlugInBase
     /// <summary>
     /// The plug in description.
     /// </summary>
-    internal const string PlugInDescription = "This update adds the Elf Soldier buff (defense and damage boost) as a configurable BuffRequest.";
+    internal const string PlugInDescription = "This update adds the Elf Soldier buff (defense and damage boost) as a configurable Buff.";
 
     /// <inheritdoc />
     public override string Name => PlugInName;
@@ -57,7 +57,7 @@ public class AddElfSoldierBuffPlugIn : UpdatePlugInBase
             return;
         }
 
-        if (elfSoldier.BuffRequests.Any())
+        if (elfSoldier.Buffs.Any())
         {
             return;
         }
@@ -98,9 +98,9 @@ public class AddElfSoldierBuffPlugIn : UpdatePlugInBase
         damagePowerUp.Boost.RelatedValues.Add(damagePerLevel);
         buffEffect.PowerUpDefinitions.Add(damagePowerUp);
 
-        var buffRequest = context.CreateNew<BuffRequest>();
-        buffRequest.MagicEffectDefinition = buffEffect;
-        buffRequest.MaximumLevel = 220;
-        elfSoldier.BuffRequests.Add(buffRequest);
+        var buff = context.CreateNew<Buff>();
+        buff.MagicEffectDefinition = buffEffect;
+        buff.MaximumLevel = 220;
+        elfSoldier.Buffs.Add(buff);
     }
 }

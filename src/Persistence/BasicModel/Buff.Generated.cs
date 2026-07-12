@@ -1,4 +1,4 @@
-// <copyright file="BuffRequest.Generated.cs" company="MUnique">
+// <copyright file="Buff.Generated.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -15,9 +15,9 @@ namespace MUnique.OpenMU.Persistence.BasicModel;
 using MUnique.OpenMU.Persistence.Json;
 
 /// <summary>
-/// A plain implementation of <see cref="BuffRequest"/>.
+/// A plain implementation of <see cref="Buff"/>.
 /// </summary>
-public partial class BuffRequest : MUnique.OpenMU.DataModel.Configuration.BuffRequest, IIdentifiable, IConvertibleTo<BuffRequest>
+public partial class Buff : MUnique.OpenMU.DataModel.Configuration.Buff, IIdentifiable, IConvertibleTo<Buff>
 {
     
     /// <summary>
@@ -44,15 +44,15 @@ public partial class BuffRequest : MUnique.OpenMU.DataModel.Configuration.BuffRe
     }
 
     /// <inheritdoc />
-    public override MUnique.OpenMU.DataModel.Configuration.BuffRequest Clone(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    public override MUnique.OpenMU.DataModel.Configuration.Buff Clone(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
     {
-        var clone = new BuffRequest();
+        var clone = new Buff();
         clone.AssignValuesOf(this, gameConfiguration);
         return clone;
     }
     
     /// <inheritdoc />
-    public override void AssignValuesOf(MUnique.OpenMU.DataModel.Configuration.BuffRequest other, MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    public override void AssignValuesOf(MUnique.OpenMU.DataModel.Configuration.Buff other, MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
     {
         base.AssignValuesOf(other, gameConfiguration);
         this.Id = other.GetId();
@@ -77,5 +77,5 @@ public partial class BuffRequest : MUnique.OpenMU.DataModel.Configuration.BuffRe
     }
 
     /// <inheritdoc/>
-    public BuffRequest Convert() => this;
+    public Buff Convert() => this;
 }

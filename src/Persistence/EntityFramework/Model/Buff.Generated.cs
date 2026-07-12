@@ -1,4 +1,4 @@
-// <copyright file="BuffRequest.Generated.cs" company="MUnique">
+// <copyright file="Buff.Generated.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -16,10 +16,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 using MUnique.OpenMU.Persistence;
 
 /// <summary>
-/// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.BuffRequest"/>.
+/// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Buff"/>.
 /// </summary>
-[Table(nameof(BuffRequest), Schema = SchemaNames.Configuration)]
-internal partial class BuffRequest : MUnique.OpenMU.DataModel.Configuration.BuffRequest, IIdentifiable
+[Table(nameof(Buff), Schema = SchemaNames.Configuration)]
+internal partial class Buff : MUnique.OpenMU.DataModel.Configuration.Buff, IIdentifiable
 {
     
     
@@ -55,15 +55,15 @@ internal partial class BuffRequest : MUnique.OpenMU.DataModel.Configuration.Buff
     }
 
     /// <inheritdoc />
-    public override MUnique.OpenMU.DataModel.Configuration.BuffRequest Clone(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    public override MUnique.OpenMU.DataModel.Configuration.Buff Clone(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
     {
-        var clone = new BuffRequest();
+        var clone = new Buff();
         clone.AssignValuesOf(this, gameConfiguration);
         return clone;
     }
     
     /// <inheritdoc />
-    public override void AssignValuesOf(MUnique.OpenMU.DataModel.Configuration.BuffRequest other, MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    public override void AssignValuesOf(MUnique.OpenMU.DataModel.Configuration.Buff other, MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
     {
         base.AssignValuesOf(other, gameConfiguration);
         this.Id = other.GetId();

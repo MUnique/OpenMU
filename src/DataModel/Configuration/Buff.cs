@@ -1,4 +1,4 @@
-// <copyright file="BuffRequest.cs" company="MUnique">
+// <copyright file="Buff.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -7,10 +7,10 @@ namespace MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Annotations;
 
 /// <summary>
-/// A requestable buff from an NPC.
+/// A buff which can be granted by an NPC.
 /// </summary>
 [Cloneable]
-public partial class BuffRequest
+public partial class Buff
 {
     /// <summary>
     /// Gets or sets the magic effect definition which defines the buff and its duration.

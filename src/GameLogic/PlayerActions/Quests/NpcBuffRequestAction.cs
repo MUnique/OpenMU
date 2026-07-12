@@ -10,7 +10,7 @@ using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.Interfaces;
 
 /// <summary>
-/// Action which applies the <see cref="BuffRequest"/>s of the currently opened NPC.
+/// Action which applies the <see cref="Buff"/>s of the currently opened NPC.
 /// </summary>
 public class NpcBuffRequestAction
 {
@@ -20,7 +20,7 @@ public class NpcBuffRequestAction
     /// <param name="player">The player.</param>
     public async ValueTask RequestBuffAsync(Player player)
     {
-        if (player.OpenedNpc?.Definition is not { NpcWindow: NpcWindow.NpcDialog, BuffRequests: { } buffRequests } || !buffRequests.Any())
+        if (player.OpenedNpc?.Definition is not { NpcWindow: NpcWindow.NpcDialog, Buffs: { } buffs } || !buffs.Any())
         {
             return;
         }
@@ -29,22 +29,22 @@ public class NpcBuffRequestAction
         var anyTooLow = false;
         var anyTooStrong = false;
         var anyValidEffect = false;
-        foreach (var buffRequest in buffRequests)
+        foreach (var buff in buffs)
         {
-            if (buffRequest.MagicEffectDefinition is not { } effectDef)
+            if (buff.MagicEffectDefinition is not { } effectDef)
             {
                 continue;
             }
 
             anyValidEffect = true;
 
-            if (buffRequest.MinimumLevel.HasValue && player.Level < buffRequest.MinimumLevel.Value)
+            if (buff.MinimumLevel.HasValue && player.Level < buff.MinimumLevel.Value)
             {
                 anyTooLow = true;
                 continue;
             }
 
-            if (buffRequest.MaximumLevel.HasValue && player.Level > buffRequest.MaximumLevel.Value)
+            if (buff.MaximumLevel.HasValue && player.Level > buff.MaximumLevel.Value)
             {
                 anyTooStrong = true;
                 continue;

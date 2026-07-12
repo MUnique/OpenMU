@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 {
     [DbContext(typeof(EntityDataContext))]
-    [Migration("20260711171939_AddBuffRequest")]
-    partial class AddBuffRequest
+    [Migration("20260712014203_AddBuff")]
+    partial class AddBuff
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -350,7 +350,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.ToTable("BattleZoneDefinition", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.BuffRequest", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.Buff", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -375,7 +375,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasIndex("MonsterDefinitionId");
 
-                    b.ToTable("BuffRequest", "config");
+                    b.ToTable("Buff", "config");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.Character", b =>
@@ -3623,15 +3623,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Navigation("RawRightGoal");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.BuffRequest", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.Buff", b =>
                 {
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.MagicEffectDefinition", "RawMagicEffectDefinition")
                         .WithOne()
-                        .HasForeignKey("MUnique.OpenMU.Persistence.EntityFramework.Model.BuffRequest", "MagicEffectDefinitionId")
+                        .HasForeignKey("MUnique.OpenMU.Persistence.EntityFramework.Model.Buff", "MagicEffectDefinitionId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.MonsterDefinition", null)
-                        .WithMany("RawBuffRequests")
+                        .WithMany("RawBuffs")
                         .HasForeignKey("MonsterDefinitionId")
                         .OnDelete(DeleteBehavior.Cascade);
 
@@ -5239,7 +5239,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Navigation("RawAttributes");
 
-                    b.Navigation("RawBuffRequests");
+                    b.Navigation("RawBuffs");
 
                     b.Navigation("RawItemCraftings");
 
