@@ -50,6 +50,7 @@ public class MaximumConnectionsPerIpPlugIn : IPlayerStateChangingPlugIn, ISuppor
                 "Login request for IP '{IpAddress}' was cancelled. It exceeded the maximum connection limit of {Limit}.",
                 player.IpAddress,
                 config.MaximumConnectionsPerIp);
+            player.LoginResultOverride = Views.Login.LoginResult.ServerIsFull;
             eventArgs.Cancel = true;
         }
     }

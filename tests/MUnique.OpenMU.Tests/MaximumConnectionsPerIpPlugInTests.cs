@@ -94,6 +94,7 @@ public class MaximumConnectionsPerIpPlugInTests
 
         // Assert
         Assert.That(eventArgs.Cancel, Is.True);
+        Assert.That(joiningPlayer.LoginResultOverride, Is.EqualTo(GameLogic.Views.Login.LoginResult.ServerIsFull));
     }
 
     [Test]
