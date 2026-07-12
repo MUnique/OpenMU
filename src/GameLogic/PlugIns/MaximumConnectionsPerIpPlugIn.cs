@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic.PlugIns;
 
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -36,7 +35,7 @@ public class MaximumConnectionsPerIpPlugIn : IPlayerStateChangingPlugIn, ISuppor
             return;
         }
 
-        var config = this.Configuration ??= CreateDefaultConfiguration();
+        var config = this.Configuration ?? CreateDefaultConfiguration();
         var players = await player.GameContext.GetPlayersAsync().ConfigureAwait(false);
         var sameIpCount = players.Count(p =>
             p.IpAddress == player.IpAddress

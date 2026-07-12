@@ -4,7 +4,7 @@
 
 namespace MUnique.OpenMU.Tests;
 
-using System.Collections.Generic;
+
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
@@ -113,8 +113,8 @@ public class MaximumConnectionsPerIpPlugInTests
         player3.IpAddress = "127.0.0.1";
         await this._gameContext.AddPlayerAsync(player3).ConfigureAwait(false);
 
-        var joiningPlayer = await PlayerTestHelper.CreatePlayerAsync(this._gameContext).ConfigureAwait(false);
-        joiningPlayer.IpAddress = "192.168.1.100";
+        var joiningPlayer = new TestPlayer(this._gameContext);
+        joiningPlayer.IpAddress = new System.Net.IPAddress(new byte[] { 192, 168, 1, 100 }).ToString();
         await joiningPlayer.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
 
         var eventArgs = new StateMachine.StateChangeEventArgs { NextState = PlayerState.Authenticated };
@@ -139,12 +139,12 @@ public class MaximumConnectionsPerIpPlugInTests
         await this._gameContext.AddPlayerAsync(player2).ConfigureAwait(false);
 
         // This player is only at the login screen
-        var player3 = await PlayerTestHelper.CreatePlayerAsync(this._gameContext).ConfigureAwait(false);
+        var player3 = new TestPlayer(this._gameContext);
         player3.IpAddress = "127.0.0.1";
-        typeof(StateMachine).GetProperty("CurrentState")!.SetValue(player3.PlayerState, PlayerState.LoginScreen);
+        await player3.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
         await this._gameContext.AddPlayerAsync(player3).ConfigureAwait(false);
 
-        var joiningPlayer = await PlayerTestHelper.CreatePlayerAsync(this._gameContext).ConfigureAwait(false);
+        var joiningPlayer = new TestPlayer(this._gameContext);
         joiningPlayer.IpAddress = "127.0.0.1";
         await joiningPlayer.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
 
@@ -155,5 +155,18 @@ public class MaximumConnectionsPerIpPlugInTests
 
         // Assert
         Assert.That(eventArgs.Cancel, Is.False);
+    }
+
+    private class TestPlayer : Player
+    {
+        public TestPlayer(IGameContext gameContext)
+            : base(gameContext)
+        {
+        }
+
+        protected override ICustomPlugInContainer<GameLogic.Views.IViewPlugIn> CreateViewPlugInContainer()
+        {
+            return new MockViewPlugInContainer();
+        }
     }
 }
