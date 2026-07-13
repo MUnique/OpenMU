@@ -325,6 +325,11 @@ internal sealed class BotNavigator : AsyncDisposable
         {
             this._nextEquipCheckUtc = DateTime.UtcNow + EquipCheckInterval;
             this._player.PendingBotActions.Enqueue(() => BotEquipmentHandler.TryEquipUpgradesAsync(this._player));
+
+            // Wings don't drop, so the loot-driven equipment progression above never provides them;
+            // they are earned at the classic level milestones instead (see BotWingHandler). Queued
+            // for the same reason: equipping mounts item power-ups.
+            this._player.PendingBotActions.Enqueue(() => BotWingHandler.TryAdvanceWingsAsync(this._player));
         }
 
         // Keep the combat centre on the bot's current position, so the combat handler always engages
