@@ -62,8 +62,14 @@ internal sealed class BotNavigator : AsyncDisposable
     /// <summary>Item number of the Large Mana Potion within <see cref="HealPotionGroup"/>.</summary>
     private const int ManaPotionNumber = 6;
 
-    /// <summary>Stack size (the potion item's Durability holds the remaining count; one is spent per heal).</summary>
-    private const byte HealPotionStack = 255;
+    /// <summary>
+    /// How many charges an emergency refill stocks up (the potion item's Durability holds the remaining
+    /// count; one is spent per heal). Spread over as many item stacks as the definition's stack size
+    /// needs: a Large Healing Potion holds three charges per stack, so a bot handed a single 255-charge
+    /// "potion" carried an item the game cannot produce - its stack never looked low again (the shopping
+    /// loop for that potion kind went dead), and stacking it with a bought one underflowed the count.
+    /// </summary>
+    private const int EmergencyPotionCharges = 21;
 
     /// <summary>
     /// Emergency refill threshold: normally the bot restocks potions by BUYING them at a merchant (see
@@ -132,6 +138,13 @@ internal sealed class BotNavigator : AsyncDisposable
     private static readonly TimeSpan FollowWarpCooldown = TimeSpan.FromSeconds(20);
 
     /// <summary>
+    /// How long the party leader has to stay on a map before its bots follow him there. A leader who is
+    /// only passing through (a town trip for supplies, a gate on the way somewhere) must not drag his
+    /// whole party across the world and back - real party members wait to see where he settles, too.
+    /// </summary>
+    private static readonly TimeSpan LeaderSettleTime = TimeSpan.FromSeconds(20);
+
+    /// <summary>
     /// Bounds of the random delay between becoming eligible for a character reset and performing it.
     /// A real player finishes the fight, walks to town, maybe trades first - and 250 bots resetting
     /// the very second they hit the required level would be an obvious give-away (and a thundering
@@ -187,6 +200,8 @@ internal sealed class BotNavigator : AsyncDisposable
     private Point? _shoppingTarget;
     private DateTime _nextShoppingCheckUtc = DateTime.MinValue;
     private DateTime? _resetDueAtUtc;
+    private short _leaderMapNumber;
+    private DateTime _leaderOnMapSinceUtc = DateTime.MinValue;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BotNavigator"/> class.
@@ -203,8 +218,13 @@ internal sealed class BotNavigator : AsyncDisposable
     /// </summary>
     public void Start()
     {
+        // The token is captured ONCE, not read from the (later disposed) source on every shot: a timer
+        // callback which is already running when Dispose gets rid of the source would throw an
+        // ObjectDisposedException right in the callback - unhandled, on a thread pool thread, taking the
+        // whole server process down with it. Same pattern as the MU Helper tick.
+        var cancellationToken = this._cts.Token;
         this._timer ??= new Timer(
-            state => _ = this.SafeEvaluateAsync(this._cts.Token),
+            state => _ = this.SafeEvaluateAsync(cancellationToken),
             null,
             TimeSpan.FromMilliseconds(2000 + Rand.NextInt(0, 1500)),
             EvaluationInterval);
@@ -548,14 +568,12 @@ internal sealed class BotNavigator : AsyncDisposable
                 return true;
             }
 
-            if (await BotShoppingHandler.TryTradeAsync(this._player, map, target).ConfigureAwait(false))
-            {
-                // Still standing safely at the merchant with the dialog closed - the player-like moment
-                // to spend a few looted jewels on the own gear (see BotJewelHandler). Queued into the
-                // MuHelper tick: applying a jewel takes gear off and back on, and such attribute
-                // mutations must not race the combat handler (see PendingBotActions).
-                this._player.PendingBotActions.Enqueue(() => BotJewelHandler.TryUpgradeGearAsync(this._player));
-            }
+            // The trade itself runs in the MU Helper tick, not here: selling and buying mutate the
+            // inventory and the Zen of a character whose combat tick may be running at this very moment
+            // (the open NPC dialog only holds off the NEXT tick) - and both write through the same,
+            // not-thread-safe persistence context. Same rule as for every other bot-initiated mutation,
+            // see PendingBotActions. The jewels are spent right after the trade, in the same tick.
+            this._player.PendingBotActions.Enqueue(() => this.TradeAndUpgradeAsync(map, target));
 
             this._shoppingTarget = null;
             this._player.IsOnShoppingTrip = false;
@@ -609,6 +627,19 @@ internal sealed class BotNavigator : AsyncDisposable
         this._player.IsOnShoppingTrip = true;
         this._player.Logger.LogInformation("Bot '{Name}' heads to the merchant for a shopping trip.", this._player.Name);
         return true;
+    }
+
+    /// <summary>
+    /// The trade at the merchant, as it runs inside the MU Helper tick: sell the junk, restock the
+    /// potions and - still standing safely at the shop with the dialog closed - spend a few of the
+    /// looted jewels on the own gear, the player-like moment for it (see <see cref="BotJewelHandler"/>).
+    /// </summary>
+    private async ValueTask TradeAndUpgradeAsync(GameMap map, Point merchantPosition)
+    {
+        if (await BotShoppingHandler.TryTradeAsync(this._player, map, merchantPosition).ConfigureAwait(false))
+        {
+            await BotJewelHandler.TryUpgradeGearAsync(this._player).ConfigureAwait(false);
+        }
     }
 
     /// <summary>
@@ -800,6 +831,15 @@ internal sealed class BotNavigator : AsyncDisposable
                 return true;
             }
 
+            // Only follow a leader who SETTLED on the new map: a leader in transit (pulling a town
+            // scroll for shopping, passing through a gate, hopping back and forth) used to drag its
+            // whole party along on every hop - and since the followers land on the map's spawn gate
+            // rather than next to him, they were still walking over when he warped away again.
+            if (!this.HasLeaderSettled(leader))
+            {
+                return true;
+            }
+
             // Prefer a spawn gate of the leader's map; maps without one (the Dungeon has no town)
             // fall back to the warp list gate - the same spot the leader warped to. Without the
             // fallback a follower could neither warp after its leader nor hunt (following consumed
@@ -832,6 +872,26 @@ internal sealed class BotNavigator : AsyncDisposable
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// Whether the leader has been on his current map long enough (<see cref="LeaderSettleTime"/>) for the
+    /// bot to follow him there. Tracks the leader's map per bot, so each follower makes the call on its own.
+    /// </summary>
+    private bool HasLeaderSettled(Player leader)
+    {
+        if (leader.CurrentMap?.Definition is not { } leaderMap)
+        {
+            return false;
+        }
+
+        if (this._leaderMapNumber != leaderMap.Number)
+        {
+            this._leaderMapNumber = leaderMap.Number;
+            this._leaderOnMapSinceUtc = DateTime.UtcNow;
+        }
+
+        return DateTime.UtcNow - this._leaderOnMapSinceUtc >= LeaderSettleTime;
     }
 
     /// <summary>
@@ -1087,9 +1147,9 @@ internal sealed class BotNavigator : AsyncDisposable
 
         if (inventory.EquippedAmmunitionItem is { } ammo)
         {
-            if (ammo.Durability < HealPotionRefillBelow)
+            if (ammo.Durability < HealPotionRefillBelow && ammo.Definition is { } ammoDefinition)
             {
-                ammo.Durability = HealPotionStack;
+                ammo.Durability = Math.Max((byte)1, ammoDefinition.Durability);
             }
 
             return;
@@ -1113,7 +1173,7 @@ internal sealed class BotNavigator : AsyncDisposable
 
         var item = this._player.PersistenceContext.CreateNew<Item>();
         item.Definition = arrows;
-        item.Durability = HealPotionStack;
+        item.Durability = Math.Max((byte)1, arrows.Durability);
         var targetSlot = bow.ItemSlot == InventoryConstants.RightHandSlot
             ? InventoryConstants.LeftHandSlot
             : InventoryConstants.RightHandSlot;
@@ -1125,37 +1185,47 @@ internal sealed class BotNavigator : AsyncDisposable
 
     private async ValueTask EnsurePotionStackAsync(int potionNumber)
     {
-        if (this._player.Inventory is not { } inventory)
+        if (this._player.Inventory is not { } inventory
+            || this._player.GameContext.Configuration.Items
+                .FirstOrDefault(d => d.Group == HealPotionGroup && d.Number == potionNumber) is not { } definition)
         {
             return;
         }
 
-        var potion = inventory.Items.FirstOrDefault(i =>
-            i.Definition?.Group == HealPotionGroup && i.Definition.Number == potionNumber);
-        if (potion is not null)
+        var potions = inventory.Items
+            .Where(i => i.Definition?.Group == HealPotionGroup && i.Definition.Number == potionNumber)
+            .ToList();
+        var charges = potions.Sum(p => (int)p.Durability);
+        if (charges >= HealPotionRefillBelow)
         {
-            if (potion.Durability < HealPotionRefillBelow)
+            return;
+        }
+
+        // A stack holds as many charges as the item definition allows - no more (see EmergencyPotionCharges).
+        var stackSize = Math.Max((byte)1, definition.Durability);
+        foreach (var potion in potions.Where(p => p.Durability < stackSize))
+        {
+            charges += (int)(stackSize - potion.Durability);
+            potion.Durability = stackSize;
+            if (charges >= EmergencyPotionCharges)
             {
-                potion.Durability = HealPotionStack;
+                return;
+            }
+        }
+
+        while (charges < EmergencyPotionCharges)
+        {
+            var item = this._player.PersistenceContext.CreateNew<Item>();
+            item.Definition = definition;
+            item.Durability = stackSize;
+            if (!await inventory.AddItemAsync(item).ConfigureAwait(false))
+            {
+                // Backpack full - drop the throw-away item again; what is stocked has to do.
+                await this._player.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
+                return;
             }
 
-            return;
-        }
-
-        var definition = this._player.GameContext.Configuration.Items
-            .FirstOrDefault(d => d.Group == HealPotionGroup && d.Number == potionNumber);
-        if (definition is null)
-        {
-            return;
-        }
-
-        var item = this._player.PersistenceContext.CreateNew<Item>();
-        item.Definition = definition;
-        item.Durability = HealPotionStack;
-        if (!await inventory.AddItemAsync(item).ConfigureAwait(false))
-        {
-            // No free slot (should not happen for a bot) - drop the throw-away item again.
-            await this._player.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
+            charges += stackSize;
         }
     }
 
@@ -1316,7 +1386,7 @@ internal sealed class BotNavigator : AsyncDisposable
         var best = 0;
         foreach (var area in mapDefinition.MonsterSpawns)
         {
-            if (area is not { Quantity: > 0, MonsterDefinition.ObjectKind: NpcObjectKind.Monster })
+            if (!this.IsPermanentMonsterSpawn(area))
             {
                 continue;
             }
@@ -1329,6 +1399,19 @@ internal sealed class BotNavigator : AsyncDisposable
         }
 
         return best;
+    }
+
+    /// <summary>
+    /// Whether the spawn area holds monsters which actually stand on the map at all times. The event
+    /// spawns (golden monsters, the invasion and wave areas) are configured on the regular maps too, but
+    /// only exist while their event runs - a bot judging a map by them would travel to hunting grounds
+    /// which are empty most of the day, and would think its current map holds far stronger monsters than
+    /// it can find there. Same class of mistake as walking to a merchant that is only spawned now and
+    /// then, see <see cref="BotShoppingHandler.FindMerchantPosition"/>.
+    /// </summary>
+    private bool IsPermanentMonsterSpawn(MonsterSpawnArea area)
+    {
+        return area is { Quantity: > 0, SpawnTrigger: SpawnTrigger.Automatic, MonsterDefinition.ObjectKind: NpcObjectKind.Monster };
     }
 
     /// <summary>
@@ -1383,7 +1466,7 @@ internal sealed class BotNavigator : AsyncDisposable
         groundLevel = 0;
 
         var candidates = map.Definition.MonsterSpawns
-            .Where(a => a is { Quantity: > 0, MonsterDefinition.ObjectKind: NpcObjectKind.Monster })
+            .Where(this.IsPermanentMonsterSpawn)
             .Select(a => (Area: a, Level: GetMonsterLevel(a.MonsterDefinition!)))
             .Where(x => x.Level > 0)
             .ToList();

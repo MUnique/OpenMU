@@ -172,8 +172,11 @@ internal static class BotJewelHandler
     {
         var inventory = player.Inventory!;
         var equipSlot = target.ItemSlot;
-        var freeSlot = inventory.FreeSlots.FirstOrDefault(s => s > InventoryConstants.LastEquippableItemSlotIndex, (byte)0);
-        if (freeSlot == 0)
+
+        // A free slot is not enough - the piece needs a hole of its SIZE (a 2x3 armor does not fit into
+        // the 1x1 gap a jewel left behind), which is exactly what CheckInvSpace answers.
+        if (inventory.CheckInvSpace(target) is not { } freeSlot
+            || freeSlot <= InventoryConstants.LastEquippableItemSlotIndex)
         {
             return false;
         }

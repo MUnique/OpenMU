@@ -193,22 +193,30 @@ internal sealed class BotGenerator
             }
 
             var bots = page.Where(a => a.IsBot).ToList();
+            var removed = 0;
             foreach (var bot in bots)
             {
                 if (await context.DeleteAsync(bot).ConfigureAwait(false))
                 {
                     deleted++;
+                    removed++;
+                }
+                else
+                {
+                    // Not silent: a bot account which survives the reset is spawned again right after
+                    // it, and the paging below would never look at it a second time.
+                    this._logger.LogWarning("Bot account '{LoginName}' could not be deleted for the bot reset.", bot.LoginName);
                 }
             }
 
             // Commit this page's deletions before paging on, so the ordering used by the next query
-            // reflects the removals: the non-bot accounts of this page now occupy [skip, skip + nonBotCount).
-            if (bots.Count > 0)
+            // reflects the removals: what is left of this page now occupies [skip, skip + kept).
+            if (removed > 0)
             {
                 await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             }
 
-            skip += page.Count - bots.Count;
+            skip += page.Count - removed;
         }
 
         return deleted;
@@ -405,7 +413,7 @@ internal sealed class BotGenerator
 
         character.Inventory = context.CreateNew<ItemStorage>();
         character.Inventory.Money = StartMoney;
-        this.EquipStarterGear(context, character);
+        this.EquipStarterGear(context, character, resetConfiguration is not null);
 
         account.Characters.Add(character);
     }
@@ -454,7 +462,7 @@ internal sealed class BotGenerator
     /// account gear), so it is not naked and punching with its fists. The item level scales modestly
     /// with the bot level for a bit more defense/damage without raising the equip requirements too high.
     /// </summary>
-    private void EquipStarterGear(IPlayerContext context, Character character)
+    private void EquipStarterGear(IPlayerContext context, Character character, bool resetMeta)
     {
         var inventory = character.Inventory!;
         var characterClass = character.CharacterClass!;
@@ -464,32 +472,17 @@ internal sealed class BotGenerator
         // - a weapon from the weapon groups (0 sword, 1 axe, 2 mace, 3 spear, 4 bow, 5 staff),
         // - the armor set whose chest piece (group 8) has the lowest DropLevel; its NUMBER identifies the set,
         //   and the equipment type is the GROUP (7 helm, 8 armor, 9 pants, 10 gloves, 11 boots).
-        // Choose the weapon type by the class's intrinsic stats: archers (agility) get a bow, pure casters
-        // (energy) a staff, everyone else (warriors and the Magic Gladiator hybrid) a melee blade. The Small
-        // Axe is qualified for almost every class, so without this casters and archers would all end up with one.
-        float ClassStat(AttributeDefinition attribute)
-            => characterClass.StatAttributes.FirstOrDefault(a => a.Attribute == attribute)?.BaseValue ?? 0f;
-        var strength = ClassStat(Stats.BaseStrength);
-        var agility = ClassStat(Stats.BaseAgility);
-        var energy = ClassStat(Stats.BaseEnergy);
-        Func<ItemDefinition, bool> isPreferredWeapon;
-        if (agility > strength && agility > energy)
-        {
-            isPreferredWeapon = d => d.Group == BowGroup;
-        }
-        else if (energy > strength)
-        {
-            isPreferredWeapon = d => d.Group == StaffGroup;
-        }
-        else
-        {
-            isPreferredWeapon = d => d.Group <= MaxMeleeGroup;
-        }
+        // The weapon type follows the bot's BUILD (BotProgression.IsPreferredWeaponGroup - the same rule the
+        // later upgrades use), so an energy-specced Magic Gladiator starts with a staff instead of a blade.
+        // The Small Axe is qualified for almost every class, so without this filter casters and archers would
+        // all end up with one.
+        bool IsPreferredWeapon(ItemDefinition definition)
+            => BotProgression.IsPreferredWeaponGroup(characterClass, character.Name, resetMeta, (byte)definition.Group);
 
         // Ammunition shares the bow group (Bolt/Arrows have DropLevel 0), so without this filter every
         // archer would get a bolt stack as its "weapon" and end up punching with its fists.
         var weapon = this._gameContext.Configuration.Items
-                .Where(d => isPreferredWeapon(d) && !d.IsAmmunition && d.QualifiedCharacters.Contains(characterClass))
+                .Where(d => IsPreferredWeapon(d) && !d.IsAmmunition && d.QualifiedCharacters.Contains(characterClass))
                 .MinBy(d => d.DropLevel)
             ?? this._gameContext.Configuration.Items
                 .Where(d => d.Group <= StaffGroup && !d.IsAmmunition && d.QualifiedCharacters.Contains(characterClass))

@@ -63,6 +63,12 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
     /// </summary>
     private int _startupState;
 
+    /// <summary>
+    /// 1 while a maintenance pass runs, so the next timer tick doesn't start a second one in parallel
+    /// (see <see cref="RunMaintenanceAsync"/>).
+    /// </summary>
+    private int _maintenanceRunning;
+
     /// <inheritdoc />
     public BotConfiguration? Configuration { get; set; }
 
@@ -228,10 +234,11 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
             return;
         }
 
-        this._nextMaintenanceUtc = DateTime.UtcNow + MaintenanceInterval;
-
-        var configuration = this.Configuration;
-        if (configuration?.Enabled != true)
+        // The engine fires the periodic tasks every second WITHOUT awaiting the previous run, so a pass
+        // which takes longer than its interval (spawning a bot loads a whole account from the database)
+        // would otherwise overlap with itself: two passes restarting the same bot, rotating the presence
+        // twice, forming parties in parallel. One pass at a time - like the startup below.
+        if (Interlocked.CompareExchange(ref this._maintenanceRunning, 1, 0) != 0)
         {
             return;
         }
@@ -239,6 +246,14 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
         var logger = gameContext.LoggerFactory.CreateLogger(this.GetType().Name);
         try
         {
+            this._nextMaintenanceUtc = DateTime.UtcNow + MaintenanceInterval;
+
+            var configuration = this.Configuration;
+            if (configuration?.Enabled != true)
+            {
+                return;
+            }
+
             await this.RespawnPendingAsync(gameContext).ConfigureAwait(false);
             await this.EvolveDueMastersAsync(gameContext, logger).ConfigureAwait(false);
 
@@ -257,6 +272,10 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
         {
             logger.LogError(ex, "Bot maintenance failed.");
         }
+        finally
+        {
+            Interlocked.Exchange(ref this._maintenanceRunning, 0);
+        }
     }
 
     /// <summary>
@@ -270,11 +289,6 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
     {
         foreach (var bot in this._botManager.Bots)
         {
-            if (!BotMasterHandler.IsMasterEvolutionDue(bot))
-            {
-                continue;
-            }
-
             // Not while it hunts with a human (the restart would desert the group), sits in an NPC
             // dialog or lies dead - like a due reset, the evolution simply happens on a later pass.
             if (BotPartyHandler.HasHumanCompanion(bot)
@@ -284,27 +298,57 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
                 continue;
             }
 
-            // Captured before the restart - the disposed bot loses its account and character.
-            var loginName = bot.Account?.LoginName;
-            var characterSlot = bot.SelectedCharacter?.CharacterSlot;
-            try
+            if (bot.AwaitsMasterRestart)
             {
-                if (await BotMasterHandler.TryEvolveAsync(bot).ConfigureAwait(false)
-                    && !await this._botManager.RestartBotAsync(gameContext, bot).ConfigureAwait(false)
-                    && loginName is not null
-                    && characterSlot is { } slot)
+                await this.RestartEvolvedBotAsync(gameContext, bot, logger).ConfigureAwait(false);
+                continue;
+            }
+
+            if (BotMasterHandler.IsMasterEvolutionDue(bot))
+            {
+                // The class change and its save go through the bot's own tick, like every other
+                // bot-initiated mutation (see OfflinePlayer.PendingBotActions): running them from the
+                // maintenance pass would write the character through the same persistence context the
+                // combat tick is using at that very moment. The restart follows on the next pass -
+                // it must NOT happen from within one of the bot's own timer callbacks.
+                bot.PendingBotActions.Enqueue(async () =>
                 {
-                    // The evolution is persisted; only the presence is at risk. RespawnPendingAsync
-                    // drops the entry when the bot is (still or again) online, so a kept-alive old
-                    // instance or a rotation comeback doesn't get doubled.
-                    logger.LogWarning("Evolved bot '{Name}' could not be respawned right away; retrying on the next pass.", bot.Name);
-                    this._pendingRespawns.Enqueue((loginName, slot));
-                }
+                    if (await BotMasterHandler.TryEvolveAsync(bot).ConfigureAwait(false))
+                    {
+                        bot.AwaitsMasterRestart = true;
+                    }
+                });
             }
-            catch (Exception ex)
+        }
+    }
+
+    /// <summary>
+    /// Gives the freshly evolved bot the "relog" it needs: the master class's base attributes (master
+    /// experience rate, master points per level) and the master level stat are only mounted when a
+    /// character enters the world (see <see cref="BotManager.RestartBotAsync"/>).
+    /// </summary>
+    private async ValueTask RestartEvolvedBotAsync(GameContext gameContext, BotPlayer bot, ILogger logger)
+    {
+        // Captured before the restart - the disposed bot loses its account and character.
+        var loginName = bot.Account?.LoginName;
+        var characterSlot = bot.SelectedCharacter?.CharacterSlot;
+        bot.AwaitsMasterRestart = false;
+        try
+        {
+            if (!await this._botManager.RestartBotAsync(gameContext, bot).ConfigureAwait(false)
+                && loginName is not null
+                && characterSlot is { } slot)
             {
-                logger.LogError(ex, "Failed to evolve bot '{Name}' into its master class.", bot.Name);
+                // The evolution is persisted; only the presence is at risk. RespawnPendingAsync
+                // drops the entry when the bot is (still or again) online, so a kept-alive old
+                // instance or a rotation comeback doesn't get doubled.
+                logger.LogWarning("Evolved bot '{Name}' could not be respawned right away; retrying on the next pass.", bot.Name);
+                this._pendingRespawns.Enqueue((loginName, slot));
             }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to restart bot '{Name}' after its master evolution.", bot.Name);
         }
     }
 

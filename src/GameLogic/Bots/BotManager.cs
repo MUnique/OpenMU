@@ -108,14 +108,7 @@ public sealed class BotManager
         {
             if (this._bots.TryRemove(key, out var bot))
             {
-                try
-                {
-                    await bot.StopAsync().ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    bot.Logger.LogError(ex, "Error while stopping bot '{Key}'.", key);
-                }
+                await StopAndDisposeAsync(bot, key, "shutdown").ConfigureAwait(false);
             }
         }
     }
@@ -148,14 +141,15 @@ public sealed class BotManager
             {
                 await party.KickMySelfAsync(bot).ConfigureAwait(false);
             }
-
-            await bot.StopAsync().ConfigureAwait(false);
         }
         catch (Exception ex)
         {
-            bot.Logger.LogError(ex, "Error while stopping bot '{Key}' for presence rotation.", key);
+            // A failed party goodbye must not skip the stop below - the party cleans up a
+            // disconnected member itself.
+            bot.Logger.LogWarning(ex, "Bot '{Key}' couldn't leave its party for the presence rotation.", key);
         }
 
+        await StopAndDisposeAsync(bot, key, "presence rotation").ConfigureAwait(false);
         return name;
     }
 
@@ -208,6 +202,10 @@ public sealed class BotManager
             this._bots.TryAdd(GetKey(loginName, slot), removed);
             return false;
         }
+
+        // The stopped instance is done for good - release its persistence context and the tracked
+        // account graph before the fresh one loads them again.
+        await removed.DisposeAsync().ConfigureAwait(false);
 
         return await this.SpawnBotAsync(gameContext, loginName, slot).ConfigureAwait(false);
     }
@@ -278,6 +276,29 @@ public sealed class BotManager
     }
 
     private static string GetKey(string loginName, byte slot) => $"{loginName}/{slot}";
+
+    /// <summary>
+    /// Stops the bot like a regular logout (which saves its progress) and releases its resources.
+    /// A stopped-but-not-disposed player keeps its persistence context - and with it the whole tracked
+    /// account graph - alive; with the presence rotation stopping bots around the clock, that adds up
+    /// to a leak. Mirrors the teardown of the <see cref="Offline.OfflinePlayerManager"/>; the removal
+    /// from the game context happens through the disconnect event.
+    /// </summary>
+    private static async ValueTask StopAndDisposeAsync(BotPlayer bot, string key, string reason)
+    {
+        try
+        {
+            await bot.StopAsync().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            bot.Logger.LogError(ex, "Error while stopping bot '{Key}' ({Reason}).", key, reason);
+        }
+        finally
+        {
+            await bot.DisposeAsync().ConfigureAwait(false);
+        }
+    }
 
     private async ValueTask RemoveAndDisposeAsync(string key, BotPlayer bot)
     {

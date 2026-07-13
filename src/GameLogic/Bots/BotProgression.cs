@@ -376,14 +376,21 @@ internal static class BotProgression
     }
 
     /// <summary>
-    /// Determines whether a weapon of the given item group fits the class's fighting style: archers
-    /// (agility-based classes) use bows, pure casters staves, everyone else melee weapons. Mirrors the
-    /// starter-weapon choice of the <see cref="BotGenerator"/>, so an elf never swaps its bow for a
-    /// random axe it happens to be qualified for (which would also displace its arrows).
+    /// Determines whether a weapon of the given item group fits the fighting style of this bot's BUILD:
+    /// archers use bows, casters staves, everyone else melee weapons. The build decides, not just the
+    /// class - a Magic Gladiator specced into energy (see the variants in <see cref="GetStatWeights"/>)
+    /// is a caster and must get a staff, while its strength-specced sibling wants a blade; deciding by
+    /// the class's base attributes alone handed both of them swords. Classes whose base attributes make
+    /// them archers (the elves) keep their bow in every build - it is the only weapon they can wield.
+    /// Used both for the starter gear (<see cref="BotGenerator"/>) and for later upgrades
+    /// (<see cref="BotEquipmentHandler"/>), so an elf never swaps its bow for a random axe it happens to
+    /// be qualified for (which would also displace its arrows).
     /// </summary>
     /// <param name="characterClass">The character class.</param>
+    /// <param name="characterName">The character name; decides the build variant, see <see cref="GetStatWeights"/>.</param>
+    /// <param name="resetMeta">Whether the reset-server meta profile applies.</param>
     /// <param name="itemGroup">The item group of the weapon.</param>
-    public static bool IsPreferredWeaponGroup(CharacterClass characterClass, byte itemGroup)
+    public static bool IsPreferredWeaponGroup(CharacterClass characterClass, string characterName, bool resetMeta, byte itemGroup)
     {
         const byte maxMeleeGroup = 3;
         const byte bowGroup = 4;
@@ -401,7 +408,10 @@ internal static class BotProgression
             return itemGroup == bowGroup;
         }
 
-        if (energy > strength)
+        // The build's primary stat (the first weight, see GetStatWeights) tells a caster from a fighter;
+        // the class fallback covers classes without an energy build of their own.
+        var primaryStat = GetStatWeights(characterClass, characterName, resetMeta)[0].Stat;
+        if (primaryStat == Stats.BaseEnergy || energy > strength)
         {
             return itemGroup == staffGroup;
         }

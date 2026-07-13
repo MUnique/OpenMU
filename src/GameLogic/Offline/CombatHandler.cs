@@ -67,7 +67,7 @@ public sealed class CombatHandler
     /// Cache of the combat-relevant stats of monster definitions (config data, immutable at runtime),
     /// so the safety checks of hundreds of bots don't re-scan the attribute lists every tick.
     /// </summary>
-    private static readonly ConcurrentDictionary<MonsterDefinition, (int Level, float AverageDamage, float Defense, float Health)> MonsterStatsCache = new();
+    private static readonly ConcurrentDictionary<MonsterDefinition, (int Level, float AverageDamage, float Defense, float Health, float AttackRate)> MonsterStatsCache = new();
 
     private readonly OfflinePlayer _player;
     private readonly IMuHelperSettings? _config;
@@ -119,6 +119,14 @@ public sealed class CombatHandler
     private Point OriginPosition => this._player.HuntingOrigin;
 
     /// <summary>
+    /// Gets a value indicating whether this session animates a server-side bot rather than the offline
+    /// session of a real player. Bots trade a bit of hunting efficiency for looking human (reaction
+    /// delay, target spread); a player's offline session must behave exactly as it did before the bots
+    /// moved into this handler.
+    /// </summary>
+    private bool IsBot => this._player.Account?.IsBot == true;
+
+    /// <summary>
     /// Calculates the hunting range in tiles from the specified configuration.
     /// </summary>
     /// <param name="config">The configuration.</param>
@@ -154,7 +162,7 @@ public sealed class CombatHandler
     /// <param name="monster">The monster definition.</param>
     public static bool IsSafeTarget(Player player, MonsterDefinition monster)
     {
-        var (monsterLevel, averageDamage, monsterDefense, monsterHealth) = GetMonsterCombatStats(monster);
+        var (monsterLevel, averageDamage, monsterDefense, monsterHealth, monsterAttackRate) = GetMonsterCombatStats(monster);
         if (monsterLevel <= 0 || player.Attributes is not { } attributes)
         {
             return false;
@@ -168,7 +176,7 @@ public sealed class CombatHandler
             return false;
         }
 
-        var netHit = averageDamage - attributes[Stats.DefensePvm];
+        var netHit = Math.Max(0f, averageDamage - attributes[Stats.DefensePvm]) * GetExpectedHitShare(player, monsterAttackRate);
         if (netHit > SafeHitHealthShare * Math.Max(1f, attributes[Stats.MaximumHealth]))
         {
             return false;
@@ -209,16 +217,20 @@ public sealed class CombatHandler
 
         // A human doesn't strike the very same instant a new target appears: give each fresh target a
         // small randomized reaction delay (the bot faces it, then engages) - the perfectly metronomic
-        // instant-strike cadence is one of the clearest bot giveaways.
-        if (!ReferenceEquals(previousTarget, this._currentTarget))
+        // instant-strike cadence is one of the clearest bot giveaways. Only bots pay for the disguise:
+        // a player's own offline session must hunt exactly as fast as it always did.
+        if (this.IsBot)
         {
-            this._engageAtUtc = DateTime.UtcNow.AddMilliseconds(Rand.NextInt(250, 900));
-        }
+            if (!ReferenceEquals(previousTarget, this._currentTarget))
+            {
+                this._engageAtUtc = DateTime.UtcNow.AddMilliseconds(Rand.NextInt(250, 900));
+            }
 
-        if (DateTime.UtcNow < this._engageAtUtc)
-        {
-            this._player.Rotation = this._player.GetDirectionTo(this._currentTarget);
-            return;
+            if (DateTime.UtcNow < this._engageAtUtc)
+            {
+                this._player.Rotation = this._player.GetDirectionTo(this._currentTarget);
+                return;
+            }
         }
 
         byte attackRange = this.GetEffectiveAttackRange();
@@ -286,7 +298,7 @@ public sealed class CombatHandler
         }
     }
 
-    private static (int Level, float AverageDamage, float Defense, float Health) GetMonsterCombatStats(MonsterDefinition monster)
+    private static (int Level, float AverageDamage, float Defense, float Health, float AttackRate) GetMonsterCombatStats(MonsterDefinition monster)
     {
         return MonsterStatsCache.GetOrAdd(monster, static m =>
         {
@@ -295,8 +307,29 @@ public sealed class CombatHandler
 
             var level = (int)GetValue(Stats.Level);
             var averageDamage = (GetValue(Stats.MinimumPhysBaseDmg) + GetValue(Stats.MaximumPhysBaseDmg)) / 2f;
-            return (level, averageDamage, GetValue(Stats.DefenseBase), GetValue(Stats.MaximumHealth));
+            return (level, averageDamage, GetValue(Stats.DefenseBase), GetValue(Stats.MaximumHealth), GetValue(Stats.AttackRatePvm));
         });
+    }
+
+    /// <summary>
+    /// How much of the monster's average hit actually lands on the bot, over time: the engine rolls
+    /// every monster swing against the bot's defense rate (see the hit chance in
+    /// <see cref="AttackableExtensions"/>), so an agility-based character tanks by DODGING, not by
+    /// soaking. Judging its safety by the raw hit alone declared every such build too squishy for
+    /// anything past the starter maps - and left the whole caster population stuck on Lorencia.
+    /// The dodge credit is capped (a bot must not bet its life on a lucky evade streak).
+    /// </summary>
+    private static float GetExpectedHitShare(Player player, float monsterAttackRate)
+    {
+        const float minimumAssumedHitChance = 0.25f;
+        if (monsterAttackRate <= 0f || player.Attributes is not { } attributes)
+        {
+            return 1f;
+        }
+
+        var defenseRate = attributes[Stats.DefenseRatePvm];
+        var hitChance = defenseRate < monsterAttackRate ? 1f - (defenseRate / monsterAttackRate) : 0.03f;
+        return Math.Clamp(hitChance, minimumAssumedHitChance, 1f);
     }
 
     /// <summary>
@@ -312,7 +345,12 @@ public sealed class CombatHandler
         }
 
         var physical = (attributes[Stats.MinimumPhysBaseDmg] + attributes[Stats.MaximumPhysBaseDmg]) / 2f;
-        var wizardry = attributes[Stats.WizardryBaseDmg];
+
+        // The Min/Max wizardry damage is what a caster actually hits with (energy feeds it, see the
+        // class attribute relations); Stats.WizardryBaseDmg is only the bonus channel of the staff's
+        // rise - reading it made every caster look like it had no offense at all, so it never passed
+        // the checks below for anything but the starter maps and stayed there forever.
+        var wizardry = (attributes[Stats.MinimumWizBaseDmg] + attributes[Stats.MaximumWizBaseDmg]) / 2f;
         var curse = (attributes[Stats.MinimumCurseBaseDmg] + attributes[Stats.MaximumCurseBaseDmg]) / 2f;
         var skillDamage = 0;
         foreach (var entry in player.SkillList?.Skills ?? [])
@@ -394,15 +432,17 @@ public sealed class CombatHandler
         if (this._currentTarget is null)
         {
             var targets = this.GetAttackableTargetsInHuntingRange().ToList();
-
-            // Choose randomly among the two nearest candidates instead of strictly the nearest one:
-            // with many bots on one ground, deterministic nearest-first makes them all dogpile the same
-            // monster and roam as a pack, which looks distinctly bot-like and wastes damage on overkill.
             var candidates = targets
                 .Where(m => m.Id != this._unreachableTargetId || DateTime.UtcNow >= this._unreachableTargetUntilUtc)
                 .OrderBy(m => m.GetDistanceTo(this._player))
-                .Take(2)
+                .Take(this.IsBot ? 2 : 1)
                 .ToList();
+
+            // A bot chooses randomly among the two nearest candidates instead of strictly the nearest
+            // one: with many bots on one ground, deterministic nearest-first makes them all dogpile the
+            // same monster and roam as a pack, which looks distinctly bot-like and wastes damage on
+            // overkill. A player's own offline session keeps hitting the nearest monster - it is his
+            // character's hunting efficiency, not a crowd to camouflage.
             this._currentTarget = candidates.SelectRandom();
             this._nearbyMonsterCount = targets.Count;
         }

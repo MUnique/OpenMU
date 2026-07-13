@@ -27,6 +27,15 @@ public sealed class BotPlayer : OfflinePlayer
     /// <inheritdoc />
     public override bool RespawnAndContinue => true;
 
+    /// <summary>
+    /// Gets or sets a value indicating whether this bot evolved into its master class and still needs
+    /// the "relog" which mounts the master attributes (see <see cref="BotManager.RestartBotAsync"/>).
+    /// Set from the bot's own tick, where the evolution runs; acted upon by the maintenance pass, which
+    /// is the only place allowed to restart a bot (a restart from within the bot's own timer callback
+    /// would tear down the very loop it runs in).
+    /// </summary>
+    public bool AwaitsMasterRestart { get; set; }
+
     /// <inheritdoc />
     public override async ValueTask StopAsync()
     {

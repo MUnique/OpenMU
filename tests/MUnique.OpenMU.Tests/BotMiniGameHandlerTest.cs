@@ -42,6 +42,38 @@ public class BotMiniGameHandlerTest
     }
 
     /// <summary>
+    /// The special characters (Magic Gladiator, Dark Lord, Rage Fighter, Summoner) enter in their own
+    /// level bracket, exactly like they do for a player: a qualified Magic Gladiator must not be judged
+    /// - and kicked out of its leader's party - by the bracket of the regular classes.
+    /// </summary>
+    /// <param name="level">The bot's character level.</param>
+    /// <param name="expected">Whether the bot qualifies.</param>
+    [TestCase(200, false)]
+    [TestCase(221, true)]
+    [TestCase(280, true)]
+    [TestCase(281, false)]
+    public async ValueTask EnforcesSpecialCharacterLevelBracketAsync(int level, bool expected)
+    {
+        var gameContext = GameContextTestHelper.CreateGameContext();
+        var bot = await CreateBotAsync(gameContext).ConfigureAwait(false);
+        bot.Attributes![Stats.Level] = level;
+
+        // That is what makes a character "special" for the entry rules (see CharacterExtensions).
+        bot.SelectedCharacter!.CharacterClass!.LevelWarpRequirementReductionPercent = 50;
+        var definition = new MiniGameDefinition
+        {
+            MinimumCharacterLevel = 281,
+            MaximumCharacterLevel = 330,
+            MinimumSpecialCharacterLevel = 221,
+            MaximumSpecialCharacterLevel = 280,
+        };
+
+        var eligible = BotMiniGameHandler.IsEligible(bot, definition, out _);
+
+        Assert.That(eligible, Is.EqualTo(expected));
+    }
+
+    /// <summary>
     /// An event for master classes only is not entered before the bot's master evolution.
     /// </summary>
     /// <param name="isMasterClass">Whether the bot evolved into its master class.</param>
