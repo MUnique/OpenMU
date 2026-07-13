@@ -25,6 +25,7 @@ public class BotSelfDefensePlugIn : IAttackableGotHitPlugIn
     {
         if (attackable is OfflinePlayer bot
             && bot.Account?.IsBot == true
+            && bot.CurrentMiniGame is null // event fights (Chaos Castle) leave no grudge outside
             && attacker is Player aggressor
             && aggressor is not OfflinePlayer
             && !ReferenceEquals(aggressor, attackable))

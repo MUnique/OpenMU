@@ -393,22 +393,22 @@ public sealed class CombatHandler
 
         if (this._currentTarget is null)
         {
-            var monsters = this.GetAttackableMonstersInHuntingRange().ToList();
+            var targets = this.GetAttackableTargetsInHuntingRange().ToList();
 
             // Choose randomly among the two nearest candidates instead of strictly the nearest one:
             // with many bots on one ground, deterministic nearest-first makes them all dogpile the same
             // monster and roam as a pack, which looks distinctly bot-like and wastes damage on overkill.
-            var candidates = monsters
+            var candidates = targets
                 .Where(m => m.Id != this._unreachableTargetId || DateTime.UtcNow >= this._unreachableTargetUntilUtc)
                 .OrderBy(m => m.GetDistanceTo(this._player))
                 .Take(2)
                 .ToList();
             this._currentTarget = candidates.SelectRandom();
-            this._nearbyMonsterCount = monsters.Count;
+            this._nearbyMonsterCount = targets.Count;
         }
         else
         {
-            this._nearbyMonsterCount = this.GetAttackableMonstersInHuntingRange().Count();
+            this._nearbyMonsterCount = this.GetAttackableTargetsInHuntingRange().Count();
         }
     }
 
@@ -422,6 +422,37 @@ public sealed class CombatHandler
         return map.GetAttackablesInRange(this.OriginPosition, this.HuntingRange)
             .OfType<Monster>()
             .Where(this.IsMonsterAttackable);
+    }
+
+    /// <summary>
+    /// The regular target pool are the attackable monsters; inside a mini game which allows player
+    /// killing (Chaos Castle) the other participants join it - there everyone is opposition, and a
+    /// bot which placidly farms monsters while being cut down would be the obvious odd one out.
+    /// </summary>
+    private IEnumerable<IAttackable> GetAttackableTargetsInHuntingRange()
+    {
+        if (this._player.CurrentMap is not { } map)
+        {
+            return [];
+        }
+
+        var freeForAll = this._player.CurrentMiniGame is { AllowPlayerKilling: true };
+        return map.GetAttackablesInRange(this.OriginPosition, this.HuntingRange)
+            .Where(attackable => attackable switch
+            {
+                Monster monster => this.IsMonsterAttackable(monster),
+                Player player => freeForAll && this.IsEventRivalAttackable(player),
+                _ => false,
+            });
+    }
+
+    private bool IsEventRivalAttackable(Player target)
+    {
+        return !ReferenceEquals(target, this._player)
+               && target.IsAlive
+               && !target.IsAtSafezone()
+               && !target.IsTeleporting
+               && BotPvpRules.IsLegalPvpTarget(this._player, target);
     }
 
     private bool IsTargetInAttackRange(IAttackable target, byte range)
@@ -467,6 +498,14 @@ public sealed class CombatHandler
             return true;
         }
 
+        if (this._player.CurrentMiniGame is not null)
+        {
+            // Inside a mini game event the opposition is not the bot's choice - it fights what
+            // the event throws at it, like every other participant. Refusing "unsafe" waves
+            // would leave the bot idling in the middle of a Blood Castle.
+            return true;
+        }
+
         return IsSafeTarget(this._player, monster.Definition);
     }
 
@@ -506,15 +545,34 @@ public sealed class CombatHandler
             await monster.AttackByAsync(this._player, skillEntry, isCombo).ConfigureAwait(false);
         }
 
-        // A player target (the self-defense aggressor) is hit by the area skill as well - but ONLY
-        // the target itself. Any bystanding player in the blast radius is deliberately spared: a
-        // bot's self-defense must never splash uninvolved players, no matter what it casts. The
-        // legality re-check right at the strike closes the last race: the target was legal when it
-        // was picked, but the self-defense window may have run out in the meantime.
-        if (target is Player playerTarget && playerTarget.IsAlive && !playerTarget.IsAtSafezone()
-            && BotPvpRules.IsLegalPvpTarget(this._player, playerTarget))
+        // A player target is hit by the area skill as well. Outside of free-for-all events ONLY the
+        // target itself (the self-defense aggressor): any bystanding player in the blast radius is
+        // deliberately spared - a bot's self-defense must never splash uninvolved players, no
+        // matter what it casts. Inside a mini game with free player killing (Chaos Castle) there
+        // are no uninvolved players, so the skill splashes the other participants like any area
+        // skill would. The legality re-check right at the strike closes the last race: the target
+        // was legal when it was picked, but the situation may have changed in the meantime.
+        IEnumerable<Player> playerTargets;
+        if (this._player.CurrentMiniGame is { AllowPlayerKilling: true })
         {
-            await playerTarget.AttackByAsync(this._player, skillEntry, isCombo).ConfigureAwait(false);
+            playerTargets = this._player.CurrentMap?
+                    .GetAttackablesInRange(target.Position, skill.Range)
+                    .OfType<Player>()
+                    .Where(p => !ReferenceEquals(p, this._player))
+                ?? [];
+        }
+        else
+        {
+            playerTargets = target is Player playerTarget ? [playerTarget] : [];
+        }
+
+        foreach (var player in playerTargets)
+        {
+            if (player.IsAlive && !player.IsAtSafezone()
+                && BotPvpRules.IsLegalPvpTarget(this._player, player))
+            {
+                await player.AttackByAsync(this._player, skillEntry, isCombo).ConfigureAwait(false);
+            }
         }
     }
 

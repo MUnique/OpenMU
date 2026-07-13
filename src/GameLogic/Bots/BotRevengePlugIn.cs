@@ -27,6 +27,7 @@ public class BotRevengePlugIn : IAttackableGotKilledPlugIn
     {
         if (killed is OfflinePlayer bot
             && bot.Account?.IsBot == true
+            && bot.CurrentMiniGame is null // a death in an event (Chaos Castle) is part of the game, not a wrong to avenge
             && killer is Player killerPlayer
             && killerPlayer is not OfflinePlayer
             && !ReferenceEquals(killerPlayer, killed))

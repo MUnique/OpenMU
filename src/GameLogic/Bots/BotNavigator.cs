@@ -305,6 +305,15 @@ internal sealed class BotNavigator : AsyncDisposable
             return;
         }
 
+        // Inside a mini game event the whole normal routine below is suspended - the event
+        // dictates the pace, and every branch which could move the bot off the event map
+        // (shopping, revenge, warping, ground picking) must not run.
+        if (this._player.CurrentMiniGame is not null)
+        {
+            await this.EvaluateInsideMiniGameAsync(map).ConfigureAwait(false);
+            return;
+        }
+
         // Party bookkeeping: answer a pending invitation from a player once its human-like delay
         // passed, and leave a party with a human again when the bot got bored (see BotPartyHandler).
         await BotPartyHandler.ProcessAsync(this._player).ConfigureAwait(false);
@@ -627,8 +636,99 @@ internal sealed class BotNavigator : AsyncDisposable
     }
 
     /// <summary>
+    /// The bot's routine while it takes part in a mini game event (Blood Castle, Devil Square,
+    /// Chaos Castle): fight whatever the event throws at it, keep up with the party leader on the
+    /// way through the course, and close in on the action when it moved away - nothing else. Death
+    /// and the event's end need no handling here: the engine respawns a dead bot at the map's
+    /// safezone like a player (which removes it from the event), and the event warps the remaining
+    /// participants out when it ends.
+    /// </summary>
+    private async ValueTask EvaluateInsideMiniGameAsync(GameMap map)
+    {
+        // Keep the drinking supplies topped up - an event without potions ends quickly.
+        this._player.PendingBotActions.Enqueue(() => this.EnsurePotionsAsync());
+
+        // Fight from wherever the bot stands; the combat handler engages the targets around it.
+        this._player.HuntingOrigin = this._player.Position;
+
+        // The party boredom timer must not run down (let alone fire) mid-event; the window
+        // restarts once the event is over.
+        this._player.PartyBoredomAtUtc = null;
+
+        if (this._player.IsWalking)
+        {
+            return;
+        }
+
+        // Stay with the leader on the way through the event's course (the Blood Castle bridge) ...
+        if (this.GetPartyLeaderToFollow() is { } leader
+            && ReferenceEquals(leader.CurrentMap, map)
+            && this._player.GetDistanceTo(leader.Position) > FollowDistance)
+        {
+            await this.TravelTowardAsync(map, leader.Position).ConfigureAwait(false);
+            return;
+        }
+
+        // ... and otherwise close in on the nearest opposition instead of idling at the entrance
+        // when the wave spawned (or the Chaos Castle crowd moved) beyond the combat range.
+        if (!map.GetAttackablesInRange(this._player.Position, TravelStopRange).Any(this.IsEventTarget)
+            && this.TryFindNearestEventTargetGround(map, out var ground))
+        {
+            await this.TravelTowardAsync(map, ground).ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Whether the object is something this bot would fight inside a mini game event. Unlike in the
+    /// open world there is no safe-level filtering - the event's level bracket already matched the
+    /// bot, and the event dictates the opposition. Players count as targets only where the event
+    /// allows player killing (Chaos Castle, see <see cref="BotPvpRules"/>).
+    /// </summary>
+    private bool IsEventTarget(IAttackable attackable)
+    {
+        if (ReferenceEquals(attackable, this._player)
+            || !attackable.IsAlive
+            || attackable.IsAtSafezone())
+        {
+            return false;
+        }
+
+        return attackable switch
+        {
+            Monster monster => monster.Definition.ObjectKind == NpcObjectKind.Monster,
+            Player player => BotPvpRules.IsLegalPvpTarget(this._player, player),
+            _ => false,
+        };
+    }
+
+    /// <summary>
+    /// Finds the spot of a nearby opponent inside a mini game event, mirroring
+    /// <see cref="TryFindNearestMonsterGround"/> (random among the two nearest, so many bots
+    /// don't dogpile the same target).
+    /// </summary>
+    private bool TryFindNearestEventTargetGround(GameMap map, out Point ground)
+    {
+        ground = default;
+        var position = this._player.Position;
+        var candidates = map.GetAttackablesInRange(position, MonsterSeekRadius)
+            .Where(this.IsEventTarget)
+            .OrderBy(a => a.GetDistanceTo(position))
+            .Take(2)
+            .ToList();
+        if (candidates.Count == 0)
+        {
+            return false;
+        }
+
+        ground = candidates.SelectRandom()!.Position;
+        return true;
+    }
+
+    /// <summary>
     /// Gets the party leader this bot should follow, or null if the bot is solo, is the leader itself,
-    /// or the leader is currently not followable (dead, no map).
+    /// or the leader is currently not followable (dead, no map, or inside another mini game instance -
+    /// following into an event goes through the regular entry of <see cref="BotMiniGameHandler"/>,
+    /// never through a warp).
     /// </summary>
     private Player? GetPartyLeaderToFollow()
     {
@@ -636,7 +736,8 @@ internal sealed class BotNavigator : AsyncDisposable
             || party.PartyMaster is not Player leader
             || ReferenceEquals(leader, this._player)
             || !leader.IsAlive
-            || leader.CurrentMap is null)
+            || leader.CurrentMap is null
+            || !ReferenceEquals(leader.CurrentMiniGame, this._player.CurrentMiniGame))
         {
             return null;
         }
