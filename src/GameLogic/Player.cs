@@ -204,11 +204,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public ushort Id { get; set; }
 
     /// <summary>
-    /// Gets or sets the IP address of the player.
-    /// </summary>
-    public string? IpAddress { get; set; }
-
-    /// <summary>
     /// Gets or sets a custom login result to override the default when login fails.
     /// </summary>
     public Views.Login.LoginResult? LoginResultOverride { get; set; }

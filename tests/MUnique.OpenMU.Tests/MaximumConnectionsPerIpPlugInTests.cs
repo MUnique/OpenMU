@@ -46,16 +46,20 @@ public class MaximumConnectionsPerIpPlugInTests
     public async ValueTask UnderLimitSucceedsAsync()
     {
         // Arrange
-        var player1 = await PlayerTestHelper.CreatePlayerAsync(this._gameContext).ConfigureAwait(false);
-        player1.IpAddress = "127.0.0.1";
+        var player1 = new TestPlayer(this._gameContext);
+        player1.SetIpAddress("127.0.0.1");
+        await player1.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
+        await player1.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
         await this._gameContext.AddPlayerAsync(player1).ConfigureAwait(false);
 
-        var player2 = await PlayerTestHelper.CreatePlayerAsync(this._gameContext).ConfigureAwait(false);
-        player2.IpAddress = "127.0.0.1";
+        var player2 = new TestPlayer(this._gameContext);
+        player2.SetIpAddress("127.0.0.1");
+        await player2.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
+        await player2.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
         await this._gameContext.AddPlayerAsync(player2).ConfigureAwait(false);
 
-        var joiningPlayer = await PlayerTestHelper.CreatePlayerAsync(this._gameContext).ConfigureAwait(false);
-        joiningPlayer.IpAddress = "127.0.0.1";
+        var joiningPlayer = new TestPlayer(this._gameContext);
+        joiningPlayer.SetIpAddress("127.0.0.1");
         await joiningPlayer.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
 
         var eventArgs = new StateMachine.StateChangeEventArgs { NextState = PlayerState.Authenticated };
@@ -71,20 +75,26 @@ public class MaximumConnectionsPerIpPlugInTests
     public async ValueTask AtLimitCancelsTransitionAsync()
     {
         // Arrange
-        var player1 = await PlayerTestHelper.CreatePlayerAsync(this._gameContext).ConfigureAwait(false);
-        player1.IpAddress = "127.0.0.1";
+        var player1 = new TestPlayer(this._gameContext);
+        player1.SetIpAddress("127.0.0.1");
+        await player1.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
+        await player1.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
         await this._gameContext.AddPlayerAsync(player1).ConfigureAwait(false);
 
-        var player2 = await PlayerTestHelper.CreatePlayerAsync(this._gameContext).ConfigureAwait(false);
-        player2.IpAddress = "127.0.0.1";
+        var player2 = new TestPlayer(this._gameContext);
+        player2.SetIpAddress("127.0.0.1");
+        await player2.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
+        await player2.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
         await this._gameContext.AddPlayerAsync(player2).ConfigureAwait(false);
 
-        var player3 = await PlayerTestHelper.CreatePlayerAsync(this._gameContext).ConfigureAwait(false);
-        player3.IpAddress = "127.0.0.1";
+        var player3 = new TestPlayer(this._gameContext);
+        player3.SetIpAddress("127.0.0.1");
+        await player3.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
+        await player3.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
         await this._gameContext.AddPlayerAsync(player3).ConfigureAwait(false);
 
-        var joiningPlayer = await PlayerTestHelper.CreatePlayerAsync(this._gameContext).ConfigureAwait(false);
-        joiningPlayer.IpAddress = "127.0.0.1";
+        var joiningPlayer = new TestPlayer(this._gameContext);
+        joiningPlayer.SetIpAddress("127.0.0.1");
         await joiningPlayer.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
 
         var eventArgs = new StateMachine.StateChangeEventArgs { NextState = PlayerState.Authenticated };
@@ -101,20 +111,26 @@ public class MaximumConnectionsPerIpPlugInTests
     public async ValueTask DifferentIpDoesNotCountAsync()
     {
         // Arrange
-        var player1 = await PlayerTestHelper.CreatePlayerAsync(this._gameContext).ConfigureAwait(false);
-        player1.IpAddress = "127.0.0.1";
+        var player1 = new TestPlayer(this._gameContext);
+        player1.SetIpAddress("127.0.0.1");
+        await player1.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
+        await player1.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
         await this._gameContext.AddPlayerAsync(player1).ConfigureAwait(false);
 
-        var player2 = await PlayerTestHelper.CreatePlayerAsync(this._gameContext).ConfigureAwait(false);
-        player2.IpAddress = "127.0.0.1";
+        var player2 = new TestPlayer(this._gameContext);
+        player2.SetIpAddress("127.0.0.1");
+        await player2.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
+        await player2.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
         await this._gameContext.AddPlayerAsync(player2).ConfigureAwait(false);
 
-        var player3 = await PlayerTestHelper.CreatePlayerAsync(this._gameContext).ConfigureAwait(false);
-        player3.IpAddress = "127.0.0.1";
+        var player3 = new TestPlayer(this._gameContext);
+        player3.SetIpAddress("127.0.0.1");
+        await player3.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
+        await player3.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
         await this._gameContext.AddPlayerAsync(player3).ConfigureAwait(false);
 
         var joiningPlayer = new TestPlayer(this._gameContext);
-        joiningPlayer.IpAddress = new System.Net.IPAddress(new byte[] { 192, 168, 1, 100 }).ToString();
+        joiningPlayer.SetIpAddress(new System.Net.IPAddress(new byte[] { 192, 168, 1, 100 }).ToString());
         await joiningPlayer.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
 
         var eventArgs = new StateMachine.StateChangeEventArgs { NextState = PlayerState.Authenticated };
@@ -130,22 +146,26 @@ public class MaximumConnectionsPerIpPlugInTests
     public async ValueTask LoginScreenAndInitialPlayersDoNotCountAsync()
     {
         // Arrange
-        var player1 = await PlayerTestHelper.CreatePlayerAsync(this._gameContext).ConfigureAwait(false);
-        player1.IpAddress = "127.0.0.1";
+        var player1 = new TestPlayer(this._gameContext);
+        player1.SetIpAddress("127.0.0.1");
+        await player1.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
+        await player1.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
         await this._gameContext.AddPlayerAsync(player1).ConfigureAwait(false);
 
-        var player2 = await PlayerTestHelper.CreatePlayerAsync(this._gameContext).ConfigureAwait(false);
-        player2.IpAddress = "127.0.0.1";
+        var player2 = new TestPlayer(this._gameContext);
+        player2.SetIpAddress("127.0.0.1");
+        await player2.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
+        await player2.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
         await this._gameContext.AddPlayerAsync(player2).ConfigureAwait(false);
 
         // This player is only at the login screen
         var player3 = new TestPlayer(this._gameContext);
-        player3.IpAddress = "127.0.0.1";
+        player3.SetIpAddress("127.0.0.1");
         await player3.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
         await this._gameContext.AddPlayerAsync(player3).ConfigureAwait(false);
 
         var joiningPlayer = new TestPlayer(this._gameContext);
-        joiningPlayer.IpAddress = "127.0.0.1";
+        joiningPlayer.SetIpAddress("127.0.0.1");
         await joiningPlayer.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
 
         var eventArgs = new StateMachine.StateChangeEventArgs { NextState = PlayerState.Authenticated };
@@ -157,12 +177,20 @@ public class MaximumConnectionsPerIpPlugInTests
         Assert.That(eventArgs.Cancel, Is.False);
     }
 
-    private class TestPlayer : Player
+    private class TestPlayer : Player, IHasIpAddress
     {
+        private string? _ipAddress;
+
         public TestPlayer(IGameContext gameContext)
             : base(gameContext)
         {
         }
+
+        /// <inheritdoc />
+        public string? IpAddress => this._ipAddress;
+
+        /// <summary>Sets the IP address for testing purposes.</summary>
+        public void SetIpAddress(string? ip) => this._ipAddress = ip;
 
         protected override ICustomPlugInContainer<GameLogic.Views.IViewPlugIn> CreateViewPlugInContainer()
         {

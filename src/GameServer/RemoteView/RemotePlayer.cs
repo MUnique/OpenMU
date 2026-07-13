@@ -16,11 +16,13 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// A player which is playing through a remote connection.
 /// </summary>
-public class RemotePlayer : Player, IClientVersionProvider
+public class RemotePlayer : Player, IClientVersionProvider, IHasIpAddress
 {
     private readonly byte[] _packetBuffer = new byte[0xFF];
 
     private ClientVersion _clientVersion;
+
+    private readonly string? _ipAddress;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RemotePlayer"/> class.
@@ -33,7 +35,7 @@ public class RemotePlayer : Player, IClientVersionProvider
     {
         this.Connection = connection;
         this._clientVersion = clientVersion;
-        this.IpAddress = connection.EndPoint is System.Net.IPEndPoint ipEndPoint
+        this._ipAddress = connection.EndPoint is System.Net.IPEndPoint ipEndPoint
             ? (ipEndPoint.Address.IsIPv4MappedToIPv6 ? ipEndPoint.Address.MapToIPv4() : ipEndPoint.Address).ToString()
             : null;
         this.MainPacketHandler = new MainPacketHandlerPlugInContainer(this, gameContext.PlugInManager, gameContext.LoggerFactory);
@@ -44,6 +46,9 @@ public class RemotePlayer : Player, IClientVersionProvider
 
     /// <inheritdoc />
     public event EventHandler? ClientVersionChanged;
+
+    /// <inheritdoc />
+    public string? IpAddress => this._ipAddress;
 
     /// <summary>
     /// Gets the game server context.

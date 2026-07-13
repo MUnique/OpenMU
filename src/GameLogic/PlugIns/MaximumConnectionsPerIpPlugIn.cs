@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 [PlugIn]
 [Display(Name = "Maximum Connections Per IP", Description = "Limits the maximum number of parallel connections from the same IP address.")]
 [Guid("2C779F5E-379E-4CE0-BFCC-CA6455D757B3")]
-public class MaximumConnectionsPerIpPlugIn : IPlayerStateChangingPlugIn, ISupportCustomConfiguration<MaximumConnectionsPerIpPlugInConfiguration>, ISupportDefaultCustomConfiguration
+public class MaximumConnectionsPerIpPlugIn : IPlayerStateChangingPlugIn, ISupportCustomConfiguration<MaximumConnectionsPerIpPlugInConfiguration>, ISupportDefaultCustomConfiguration, IDisabledByDefault
 {
     /// <inheritdoc />
     public MaximumConnectionsPerIpPlugInConfiguration? Configuration { get; set; }
@@ -30,7 +30,8 @@ public class MaximumConnectionsPerIpPlugIn : IPlayerStateChangingPlugIn, ISuppor
             return;
         }
 
-        if (string.IsNullOrEmpty(player.IpAddress))
+        var ipAddress = (player as IHasIpAddress)?.IpAddress;
+        if (string.IsNullOrEmpty(ipAddress))
         {
             return;
         }
@@ -38,7 +39,7 @@ public class MaximumConnectionsPerIpPlugIn : IPlayerStateChangingPlugIn, ISuppor
         var config = this.Configuration ?? CreateDefaultConfiguration();
         var players = await player.GameContext.GetPlayersAsync().ConfigureAwait(false);
         var sameIpCount = players.Count(p =>
-            p.IpAddress == player.IpAddress
+            (p as IHasIpAddress)?.IpAddress == ipAddress
             && p != player
             && p.PlayerState.CurrentState != PlayerState.Initial
             && p.PlayerState.CurrentState != PlayerState.LoginScreen);
@@ -47,7 +48,7 @@ public class MaximumConnectionsPerIpPlugIn : IPlayerStateChangingPlugIn, ISuppor
         {
             player.Logger.LogWarning(
                 "Login request for IP '{IpAddress}' was cancelled. It exceeded the maximum connection limit of {Limit}.",
-                player.IpAddress,
+                ipAddress,
                 config.MaximumConnectionsPerIp);
             player.LoginResultOverride = Views.Login.LoginResult.ServerIsFull;
             eventArgs.Cancel = true;
