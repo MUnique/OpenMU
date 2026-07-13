@@ -9,16 +9,28 @@
 <Breadcrumb IsFirstFromRoot="true" Caption="@Resources.LogFiles"/>
 
 <div class="row">
-    <div class="col-12">
+    <!-- Left Column: File List -->
+    <div class="@(this._selectedFile != null ? "col-lg-3 col-md-4" : "col-12") transition-all">
         <div class="card shadow-sm border-0 mb-4">
-            <div class="card-body p-0">
+            <div class="card-header bg-light py-2 px-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <strong class="m-0">Log Files</strong>
+                    <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" @onclick="RefreshFileList" title="Reload File List">
+                        <span class="oi oi-reload" style="font-size: 11px;"></span>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body p-0" style="max-height: 620px; overflow-y: auto;">
                 <table class="table table-striped table-hover mb-0">
                     <thead class="table-light">
                     <tr>
                         <th>@Resources.FileName</th>
-                        <th>@Resources.LastUpdate</th>
-                        <th>@Resources.Size</th>
-                        <th class="text-end px-4">Actions</th>
+                        @if (this._selectedFile == null)
+                        {
+                            <th>@Resources.LastUpdate</th>
+                            <th>@Resources.Size</th>
+                        }
+                        <th class="text-end px-3">Actions</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -27,13 +39,20 @@
                         var isSelected = this._selectedFile?.FullName == entry.FullName;
                         <tr class="@(isSelected ? "table-info" : "")">
                             <td>
-                                <button type="button" class="btn btn-link p-0 text-start font-monospace text-decoration-none fw-bold" @onclick="() => SelectFile(entry)">
-                                    <span class="oi oi-terminal me-2 @(isSelected ? "text-primary" : "text-muted")"></span>@entry.Name
+                                <button type="button" class="btn btn-link p-0 text-start font-monospace text-decoration-none fw-bold text-truncate" style="max-width: @(this._selectedFile != null ? "140px" : "100%");" @onclick="() => SelectFile(entry)" title="@entry.Name">
+                                    <span class="oi oi-terminal me-1 @(isSelected ? "text-primary" : "text-muted")"></span>@entry.Name
                                 </button>
+                                @if (this._selectedFile != null)
+                                {
+                                    <div class="text-muted" style="font-size: 11px;">@FormatFileSize(entry.Length)</div>
+                                }
                             </td>
-                            <td>@entry.LastWriteTime</td>
-                            <td>@FormatFileSize(entry.Length)</td>
-                            <td class="text-end px-4">
+                            @if (this._selectedFile == null)
+                            {
+                                <td>@entry.LastWriteTime</td>
+                                <td>@FormatFileSize(entry.Length)</td>
+                            }
+                            <td class="text-end px-3">
                                 <a href="logs/@entry.Name" download class="btn btn-sm btn-outline-secondary py-0 px-2" title="Download File">
                                     <span class="oi oi-data-transfer-download" aria-hidden="true"></span>
                                 </a>
@@ -45,78 +64,80 @@
             </div>
         </div>
     </div>
-</div>
 
-@if (this._selectedFile != null)
-{
-    <div class="card border-secondary shadow-lg mb-4">
-        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center py-2 px-3">
-            <div class="d-flex align-items-center">
-                <span class="oi oi-terminal text-info me-2" aria-hidden="true"></span>
-                <span class="me-2">Log Viewer:</span>
-                <span class="badge bg-secondary font-monospace">@this._selectedFile.Name</span>
-                <span class="badge bg-dark border border-secondary ms-2 text-muted" style="font-size: 11px;">@FormatFileSize(this._selectedFile.Length)</span>
-            </div>
-            <div class="d-flex align-items-center gap-3">
-                <div class="form-check form-switch m-0 d-flex align-items-center gap-2">
-                    <input class="form-check-input cursor-pointer" type="checkbox" id="liveUpdateSwitch" @onchange="ToggleLiveUpdate" checked="@this._liveUpdate">
-                    <label class="form-check-label text-light select-none cursor-pointer" for="liveUpdateSwitch" style="font-size: 13px;">Live Update</label>
+    <!-- Right Column: Log Viewer Terminal -->
+    @if (this._selectedFile != null)
+    {
+        <div class="col-lg-9 col-md-8">
+            <div class="card border-secondary shadow-lg mb-4">
+                <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center py-2 px-3">
+                    <div class="d-flex align-items-center text-truncate me-2">
+                        <span class="oi oi-terminal text-info me-2" aria-hidden="true"></span>
+                        <span class="me-2 d-none d-sm-inline">Log Viewer:</span>
+                        <span class="badge bg-secondary font-monospace text-truncate" style="max-width: 250px;">@this._selectedFile.Name</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2 gap-sm-3 flex-shrink-0">
+                        <div class="form-check form-switch m-0 d-flex align-items-center gap-2">
+                            <input class="form-check-input cursor-pointer" type="checkbox" id="liveUpdateSwitch" @onchange="ToggleLiveUpdate" checked="@this._liveUpdate">
+                            <label class="form-check-label text-light select-none cursor-pointer" for="liveUpdateSwitch" style="font-size: 13px;">Live</label>
+                        </div>
+                        <button class="btn btn-sm btn-outline-info d-flex align-items-center gap-1 py-1" @onclick="RefreshLogLines">
+                            <span class="oi oi-reload" style="font-size: 11px;"></span> Refresh
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger d-flex align-items-center gap-1 py-1" @onclick="CloseViewer">
+                            <span class="oi oi-x" style="font-size: 11px;"></span> Close
+                        </button>
+                    </div>
                 </div>
-                <button class="btn btn-sm btn-outline-info d-flex align-items-center gap-1 py-1" @onclick="RefreshLogLines">
-                    <span class="oi oi-reload" style="font-size: 11px;"></span> Refresh
-                </button>
-                <button class="btn btn-sm btn-outline-danger d-flex align-items-center gap-1 py-1" @onclick="CloseViewer">
-                    <span class="oi oi-x" style="font-size: 11px;"></span> Close
-                </button>
-            </div>
-        </div>
-        <div class="card-body bg-dark p-3" style="background-color: #121214 !important;">
-            <div class="row g-2 mb-3">
-                <div class="col">
-                    <div class="input-group">
-                        <span class="input-group-text bg-secondary text-white border-0"><span class="oi oi-magnifying-glass" aria-hidden="true"></span></span>
-                        <input type="text" class="form-control bg-secondary text-white border-0" placeholder="Filter log entries..." @bind="this._searchText" @bind:event="oninput" style="background-color: #2b2b30 !important; color: #fff !important;" />
-                        @if (!string.IsNullOrEmpty(this._searchText))
+                <div class="card-body bg-dark p-3" style="background-color: #121214 !important;">
+                    <div class="row g-2 mb-3">
+                        <div class="col">
+                            <div class="input-group">
+                                <span class="input-group-text bg-secondary text-white border-0"><span class="oi oi-magnifying-glass" aria-hidden="true"></span></span>
+                                <input type="text" class="form-control bg-secondary text-white border-0" placeholder="Filter log entries..." @bind="this._searchText" @bind:event="oninput" style="background-color: #2b2b30 !important; color: #fff !important;" />
+                                @if (!string.IsNullOrEmpty(this._searchText))
+                                {
+                                    <button class="btn btn-secondary border-0" @onclick="ClearSearch"><span class="oi oi-x" aria-hidden="true"></span></button>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="log-terminal" class="p-3 rounded" style="height: 480px; overflow-y: auto; font-family: 'Consolas', 'Liberation Mono', Menlo, Courier, monospace; font-size: 13px; line-height: 1.5; white-space: pre-wrap; background-color: #0c0c0d !important; border: 1px solid #2d2d30;">
+                        @if (this._logLines.Count == 0)
                         {
-                            <button class="btn btn-secondary border-0" @onclick="ClearSearch"><span class="oi oi-x" aria-hidden="true"></span></button>
+                            <div class="text-muted text-center py-5">No log entries found.</div>
                         }
+                        else
+                        {
+                            var filteredLines = GetFilteredLines();
+                            @if (filteredLines.Count == 0)
+                            {
+                                <div class="text-muted text-center py-5">No log entries match your filter.</div>
+                            }
+                            else
+                            {
+                                @foreach (var line in filteredLines)
+                                {
+                                    <div style="@GetLineColorStyle(line)">@line</div>
+                                }
+                            }
+                        }
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center mt-2 text-muted" style="font-size: 12px;">
+                        <div>
+                            Showing @GetFilteredLines().Count of @this._logLines.Count lines (Last 300 lines loaded).
+                        </div>
+                        <button class="btn btn-sm btn-outline-secondary py-1 px-2" style="font-size: 12px; color: #a0a0a8;" @onclick="ScrollToBottom">
+                            <span class="oi oi-arrow-bottom" aria-hidden="true"></span> Scroll to Bottom
+                        </button>
                     </div>
                 </div>
             </div>
-            
-            <div id="log-terminal" class="p-3 rounded" style="height: 450px; overflow-y: auto; font-family: 'Consolas', 'Liberation Mono', Menlo, Courier, monospace; font-size: 13px; line-height: 1.5; white-space: pre-wrap; background-color: #0c0c0d !important; border: 1px solid #2d2d30;">
-                @if (this._logLines.Count == 0)
-                {
-                    <div class="text-muted text-center py-5">No log entries found.</div>
-                }
-                else
-                {
-                    var filteredLines = GetFilteredLines();
-                    @if (filteredLines.Count == 0)
-                    {
-                        <div class="text-muted text-center py-5">No log entries match your filter.</div>
-                    }
-                    else
-                    {
-                        @foreach (var line in filteredLines)
-                        {
-                            <div style="@GetLineColorStyle(line)">@line</div>
-                        }
-                    }
-                }
-            </div>
-            
-            <div class="d-flex justify-content-between align-items-center mt-2 text-muted" style="font-size: 12px;">
-                <div>
-                    Showing @GetFilteredLines().Count of @this._logLines.Count lines (Last 300 lines loaded).
-                </div>
-                <button class="btn btn-sm btn-outline-secondary py-1 px-2" style="font-size: 12px; color: #a0a0a8;" @onclick="ScrollToBottom">
-                    <span class="oi oi-arrow-bottom" aria-hidden="true"></span> Scroll to Bottom
-                </button>
-            </div>
         </div>
-    </div>
-}
+    }
+</div>
 
 @code {
     private readonly List<FileInfo> _files = new ();
