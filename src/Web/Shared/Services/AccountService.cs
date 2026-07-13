@@ -1,4 +1,4 @@
-﻿// <copyright file="AccountService.cs" company="MUnique">
+// <copyright file="AccountService.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -31,6 +31,25 @@ public class AccountService : IDataService<Account>, ISupportDataChangedNotifica
         this._modalService = modalService;
     }
 
+    private string _searchFilter = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the search filter query.
+    /// </summary>
+    public string SearchFilter
+    {
+        get => this._searchFilter;
+        set
+        {
+            var newValue = value ?? string.Empty;
+            if (this._searchFilter != newValue)
+            {
+                this._searchFilter = newValue;
+                this.RaiseDataChanged();
+            }
+        }
+    }
+
     /// <inheritdoc />
     public event EventHandler? DataChanged;
 
@@ -45,7 +64,24 @@ public class AccountService : IDataService<Account>, ISupportDataChangedNotifica
         try
         {
             var playerContext = (IPlayerContext)await this._dataSource.GetContextAsync().ConfigureAwait(false);
-            return (await playerContext.GetAccountsOrderedByLoginNameAsync(offset, count).ConfigureAwait(false)).ToList();
+            var filter = this.SearchFilter.Trim();
+            if (string.IsNullOrWhiteSpace(filter))
+            {
+                return (await playerContext.GetAccountsOrderedByLoginNameAsync(offset, count).ConfigureAwait(false)).ToList();
+            }
+
+            var allAccounts = await playerContext.GetAsync<Account>().ConfigureAwait(false);
+            var results = allAccounts.Where(account =>
+                (account.LoginName != null && account.LoginName.Contains(filter, StringComparison.InvariantCultureIgnoreCase))
+                || account.Characters.Any(c => c.Name != null && c.Name.Contains(filter, StringComparison.InvariantCultureIgnoreCase))
+            ).ToList();
+
+            if (offset >= results.Count)
+            {
+                return results.Take(count).ToList();
+            }
+
+            return results.Skip(offset).Take(count).ToList();
         }
         catch
         {

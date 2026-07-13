@@ -1,4 +1,4 @@
-﻿@page "/accounts"
+@page "/accounts"
 @using MUnique.OpenMU.DataModel
 @using MUnique.OpenMU.DataModel.Entities;
 @using MUnique.OpenMU.Persistence;
@@ -21,6 +21,15 @@
             <th class="col-2">@typeof(Account).GetPropertyCaption(nameof(Account.EMail))</th>
             <th class="col-2">@Resources.Action</th>
         </TableHeader>
+        <FilterHeader>
+            <th colspan="3">
+                <div class="input-group">
+                    <span class="input-group-text"><span class="oi oi-magnifying-glass" aria-hidden="true"></span></span>
+                    <input type="search" class="form-control" placeholder="Search by Account or Character Name..." @bind="@this._accountService.SearchFilter"/>
+                </div>
+            </th>
+            <th></th>
+        </FilterHeader>
         <ItemTemplate Context="item">
             <td>@item.LoginName</td>
             <td>@item.State.GetEnumCaption()</td>
