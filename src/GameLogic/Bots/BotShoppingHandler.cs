@@ -71,7 +71,7 @@ internal static class BotShoppingHandler
         }
 
         var freeSlots = inventory.FreeSlots.Count();
-        if (freeSlots < FreeSlotPressure && inventory.Items.Any(IsSellableJunk))
+        if (freeSlots < FreeSlotPressure && inventory.Items.Any(i => IsSellableJunk(player, i)))
         {
             return true;
         }
@@ -85,33 +85,21 @@ internal static class BotShoppingHandler
     }
 
     /// <summary>
-    /// Finds the position of a merchant NPC on the map (from the map's spawn configuration; merchants
-    /// are stationary), preferring one which sells potions.
+    /// Finds the position of a merchant NPC on the map, preferring one which sells potions. The
+    /// search runs over the map's LIVE objects, not the spawn configuration: wandering merchants
+    /// exist in the configuration but are only spawned now and then (their spawn trigger is not
+    /// automatic) - a bot walking to a configured but unspawned merchant would wait at an empty
+    /// spot and give up its trip, forever.
     /// </summary>
     /// <param name="map">The game map.</param>
     public static Point? FindMerchantPosition(GameMap map)
     {
-        MonsterSpawnArea? best = null;
-        foreach (var spawn in map.Definition.MonsterSpawns)
-        {
-            if (spawn.MonsterDefinition is not { ObjectKind: NpcObjectKind.PassiveNpc } definition
-                || definition.MerchantStore is not { Items.Count: > 0 } store)
-            {
-                continue;
-            }
-
-            var sellsPotions = store.Items.Any(i => i.Definition?.Group == 14 && i.Definition.Number is 3 or 6);
-            if (best is null || sellsPotions)
-            {
-                best = spawn;
-                if (sellsPotions)
-                {
-                    break;
-                }
-            }
-        }
-
-        return best is null ? null : new Point(best.X1, best.Y1);
+        // Covers the whole 256x256 map from its center.
+        var merchants = map.GetNpcsInRange(new Point(128, 128), 256)
+            .Where(n => n.Definition is { ObjectKind: NpcObjectKind.PassiveNpc, MerchantStore.Items.Count: > 0 })
+            .ToList();
+        var best = merchants.FirstOrDefault(m => SellsPotions(m.Definition.MerchantStore!)) ?? merchants.FirstOrDefault();
+        return best?.Position;
     }
 
     /// <summary>
@@ -128,19 +116,23 @@ internal static class BotShoppingHandler
             .FirstOrDefault(n => n.Definition is { ObjectKind: NpcObjectKind.PassiveNpc, MerchantStore.Items.Count: > 0 });
         if (merchant is null || player.Inventory is not { } inventory)
         {
+            // Not silent: exactly this case hid the wandering-merchant bug (a configured but
+            // unspawned merchant) for a long time.
+            player.Logger.LogInformation("Bot '{Name}' found no merchant near {Position} and gives up the trip.", player.Name, merchantPosition);
             return false;
         }
 
         await TalkAction.TalkToNpcAsync(player, merchant).ConfigureAwait(false);
         if (player.OpenedNpc is null)
         {
+            player.Logger.LogInformation("Bot '{Name}' could not open the dialog of '{Merchant}'.", player.Name, merchant.Definition.Designation);
             return false;
         }
 
         try
         {
             var soldCount = 0;
-            foreach (var junk in inventory.Items.Where(IsSellableJunk).ToList())
+            foreach (var junk in inventory.Items.Where(i => IsSellableJunk(player, i)).ToList())
             {
                 await SellAction.SellItemAsync(player, junk.ItemSlot).ConfigureAwait(false);
                 soldCount++;
@@ -171,16 +163,15 @@ internal static class BotShoppingHandler
                 }
             }
 
-            if (soldCount > 0 || boughtCount > 0)
-            {
-                player.Logger.LogInformation(
-                    "Bot '{Name}' traded with '{Merchant}': sold {Sold} item(s), bought {Bought} potion stack(s), {Money} zen left.",
-                    player.Name,
-                    merchant.Definition.Designation,
-                    soldCount,
-                    boughtCount,
-                    player.Money);
-            }
+            // Logged even for a 0/0 visit: an audit must be able to tell "went and had nothing to
+            // do" from a silently failed trip.
+            player.Logger.LogInformation(
+                "Bot '{Name}' traded with '{Merchant}': sold {Sold} item(s), bought {Bought} potion stack(s), {Money} zen left.",
+                player.Name,
+                merchant.Definition.Designation,
+                soldCount,
+                boughtCount,
+                player.Money);
         }
         finally
         {
@@ -214,10 +205,12 @@ internal static class BotShoppingHandler
     }
 
     /// <summary>
-    /// Sellable junk: plain unequipped gear in the backpack - not potions/ammunition, not jewels and
-    /// not excellent/ancient pieces (those stay as the bot's "wealth", like a player would keep them).
+    /// Sellable junk: unequipped gear in the backpack - not potions/ammunition and not jewels. An
+    /// excellent or ancient piece is junk too unless it is an upgrade the bot is about to wear:
+    /// unlike a player, a bot cannot trade its treasures away, so hoarding them only silts up the
+    /// backpack until the loot pickup stops entirely.
     /// </summary>
-    private static bool IsSellableJunk(Item item)
+    private static bool IsSellableJunk(OfflinePlayer player, Item item)
     {
         if (item.ItemSlot < InventoryConstants.EquippableSlotsCount
             || item.Definition is not { } definition)
@@ -235,8 +228,18 @@ internal static class BotShoppingHandler
             return false;
         }
 
-        var isExcellentOrAncient = item.ItemOptions.Any(o => o.ItemOption?.OptionType == DataModel.Configuration.Items.ItemOptionTypes.Excellent)
-                                   || item.ItemSetGroups.Any(s => s.AncientSetDiscriminator != 0);
-        return !isExcellentOrAncient;
+        var isTreasure = item.ItemOptions.Any(o => o.ItemOption?.OptionType == DataModel.Configuration.Items.ItemOptionTypes.Excellent)
+                         || item.ItemSetGroups.Any(s => s.AncientSetDiscriminator != 0);
+        if (isTreasure)
+        {
+            return !BotEquipmentHandler.IsUpgradeFor(player, item);
+        }
+
+        return true;
+    }
+
+    private static bool SellsPotions(DataModel.Entities.ItemStorage store)
+    {
+        return store.Items.Any(i => i.Definition?.Group == 14 && i.Definition.Number is 3 or 6);
     }
 }

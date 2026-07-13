@@ -278,8 +278,21 @@ public sealed class BuffHandler
             return false;
         }
 
-        return target.MagicEffectList.ActiveEffects.Values
-            .Any(e => e.Definition == effectDef);
+        try
+        {
+            // Eager snapshot, like the other readers of ActiveEffects (see MagicEffectsList): the
+            // list is mutated by the effect expiry timers, and a lazy enumeration from this
+            // (unsynchronized) helper tick raced them regularly at scale. A list shrinking in the
+            // middle of the copy can still leave null holes in the snapshot (hence the tolerant
+            // predicate) or throw out of the copy itself (hence the catch-all around this pure
+            // read) - any torn read simply counts as "active", and the next tick retries.
+            var activeEffects = target.MagicEffectList.ActiveEffects.Values.ToArray();
+            return activeEffects.Any(e => e?.Definition == effectDef);
+        }
+        catch (Exception)
+        {
+            return true;
+        }
     }
 
     private void UpdatePeriodicBuffTimer()

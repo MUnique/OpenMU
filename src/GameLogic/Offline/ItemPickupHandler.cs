@@ -120,14 +120,16 @@ public sealed class ItemPickupHandler
             return true;
         }
 
-        if (this._config.PickAncient && item.ItemSetGroups.Any(s => s.AncientSetDiscriminator != 0))
+        var isAncient = item.ItemSetGroups.Any(s => s.AncientSetDiscriminator != 0);
+        var isExcellent = item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Excellent);
+        if ((this._config.PickAncient && isAncient) || (this._config.PickExcellent && isExcellent))
         {
-            return true;
-        }
-
-        if (this._config.PickExcellent && item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Excellent))
-        {
-            return true;
+            // A human's helper hoards every excellent/ancient piece - its owner sorts the treasure
+            // out later. A bot has no later: it cannot trade, so it only takes what it can actually
+            // wear as an upgrade; everything else would silt up its backpack until the loot pickup
+            // stops.
+            return this._player.Account?.IsBot != true
+                   || Bots.BotEquipmentHandler.IsUpgradeFor(this._player, item);
         }
 
         if (this._config.PickUpgradeItems && Bots.BotEquipmentHandler.IsUpgradeFor(this._player, item))

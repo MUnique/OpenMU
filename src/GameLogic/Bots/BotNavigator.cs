@@ -489,10 +489,12 @@ internal sealed class BotNavigator : AsyncDisposable
         {
             if (!await this.TravelTowardAsync(map, this._destination).ConfigureAwait(false))
             {
-                // Impossible route: pick another ground now (proximity-weighted toward nearby, reachable
-                // ones) instead of standing still re-issuing an impossible walk.
-                this._emptyGroundSince = null;
-                await this.PickGroundAndTravelAsync(map).ConfigureAwait(false);
+                // Impossible route: drop the destination and wait out the empty-ground grace before
+                // picking another one. Re-picking immediately turned a pocket of unreachable picks
+                // into a full-tick churn - a new far-away ground every second, hammering the path
+                // finder without the bot ever moving.
+                this._hasDestination = false;
+                this._emptyGroundSince ??= DateTime.UtcNow;
             }
 
             return;
@@ -534,9 +536,13 @@ internal sealed class BotNavigator : AsyncDisposable
             {
                 if (!await this.TravelTowardAsync(map, target).ConfigureAwait(false))
                 {
-                    // No way to the merchant from here - give up this trip.
+                    // No way to the merchant from here - give up this trip and don't retry every
+                    // check interval (an unreachable merchant stays unreachable for a while; a bot
+                    // retrying twice a minute wastes its hunting time on futile marches).
+                    this._player.Logger.LogInformation("Bot '{Name}' gives up its shopping trip: no route to the merchant at {Target}.", this._player.Name, target);
                     this._shoppingTarget = null;
                     this._player.IsOnShoppingTrip = false;
+                    this._nextShoppingCheckUtc = DateTime.UtcNow + ShoppingCooldown;
                 }
 
                 return true;
@@ -564,9 +570,28 @@ internal sealed class BotNavigator : AsyncDisposable
         }
 
         this._nextShoppingCheckUtc = DateTime.UtcNow + ShoppingCheckInterval;
-        if (!BotShoppingHandler.NeedsShopping(this._player)
-            || BotShoppingHandler.FindMerchantPosition(map) is not { } merchantPosition)
+        if (!BotShoppingHandler.NeedsShopping(this._player))
         {
+            return false;
+        }
+
+        if (BotShoppingHandler.FindMerchantPosition(map) is not { } merchantPosition)
+        {
+            // No merchant lives on this map at all (the Dungeon has no town). Shopping here would
+            // starve the bot's logistics for as long as it stays - no potion restock, no selling, a
+            // slowly silting backpack. Like a player pulling a town scroll, it warps to its class
+            // home town and shops there; the better-map logic takes it back hunting afterwards.
+            if (this.TryGetHomeEscapeGate(out var homeGate, out var homeMap, out _))
+            {
+                this._travelPath = null;
+                this._hasDestination = false;
+                this._lastWarpUtc = DateTime.UtcNow;
+                this._nextShoppingCheckUtc = DateTime.UtcNow; // start the trip on the new map right away
+                this._player.Logger.LogInformation("Bot '{Name}' warps home to {Map} for a shopping trip - no merchant on its map.", this._player.Name, homeMap.Name);
+                await this._player.WarpToAsync(homeGate).ConfigureAwait(false);
+                return true;
+            }
+
             return false;
         }
 
@@ -754,8 +779,9 @@ internal sealed class BotNavigator : AsyncDisposable
     {
         if (!ReferenceEquals(leader.CurrentMap, map))
         {
+            ExitGate? warpListGate = null;
             if (leader.CurrentMap is { } targetMap
-                && !this.TryGetLegalWarpGate(targetMap.Definition, out _)
+                && !this.TryGetLegalWarpGate(targetMap.Definition, out warpListGate)
                 && targetMap.Definition.Number != this._player.SelectedCharacter?.CharacterClass?.HomeMap?.Number)
             {
                 // The leader moved to a map the bot's plain character level cannot legally enter
@@ -774,9 +800,13 @@ internal sealed class BotNavigator : AsyncDisposable
                 return true;
             }
 
+            // Prefer a spawn gate of the leader's map; maps without one (the Dungeon has no town)
+            // fall back to the warp list gate - the same spot the leader warped to. Without the
+            // fallback a follower could neither warp after its leader nor hunt (following consumed
+            // its ticks), and only the stuck watchdog kept it twitching between hunting grounds.
             if (DateTime.UtcNow - this._lastWarpUtc >= FollowWarpCooldown
                 && leader.CurrentMap is { } leaderMap
-                && leaderMap.Definition.ExitGates.Where(g => g.IsSpawnGate).SelectRandom() is { } leaderGate)
+                && (leaderMap.Definition.ExitGates.Where(g => g.IsSpawnGate).SelectRandom() ?? warpListGate) is { } leaderGate)
             {
                 this._lastWarpUtc = DateTime.UtcNow;
                 this._hasDestination = false;
