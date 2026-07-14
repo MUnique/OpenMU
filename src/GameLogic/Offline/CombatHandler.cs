@@ -47,6 +47,18 @@ public sealed class CombatHandler
     /// At the offline AI's attack pace this bounds a kill to roughly a minute or two.
     /// </summary>
     private const int MaxHitsToKill = 100;
+
+    /// <summary>
+    /// See <see cref="IsSafeTarget"/>: how much longer a mastered bot may take to kill a monster which
+    /// pays master experience. Master experience is only granted for monsters of at least
+    /// <c>GameConfiguration.MinimumMonsterLevelForMasterExperience</c>, and those hold 40.000+ health -
+    /// out of reach of the regular hit budget for a bot in the gear it collects from drops, which left
+    /// mastered bots hunting monsters that pay them nothing at all. Since a character at the maximum
+    /// level earns nothing else either, a long fight it survives beats a quick one worth zero: the
+    /// budget is stretched for those monsters only, while the survivability check below is NOT - a bot
+    /// still refuses a monster whose hits it cannot take.
+    /// </summary>
+    private const int MasterHitBudgetFactor = 3;
     private const int ComboFinisherDelayTicks = 3;
     private const int InterSkillDelayTicks = 1;
     private const int MinComboSkillCount = 3;
@@ -188,7 +200,23 @@ public sealed class CombatHandler
             return false;
         }
 
-        return (attackPower - monsterDefense) * MaxHitsToKill >= monsterHealth;
+        return (attackPower - monsterDefense) * GetHitBudget(player, monsterLevel) >= monsterHealth;
+    }
+
+    /// <summary>
+    /// The number of net hits the bot may take to kill the monster (see <see cref="MaxHitsToKill"/>),
+    /// stretched by <see cref="MasterHitBudgetFactor"/> for a mastered bot fighting a monster which
+    /// actually pays it master experience (see <see cref="MasterHitBudgetFactor"/>).
+    /// </summary>
+    private static int GetHitBudget(Player player, int monsterLevel)
+    {
+        var configuration = player.GameContext.Configuration;
+        var isMastered = player.SelectedCharacter?.CharacterClass?.IsMasterClass == true
+                         && (player.Attributes?[Stats.Level] ?? 0) >= configuration.MaximumLevel;
+
+        return isMastered && monsterLevel >= configuration.MinimumMonsterLevelForMasterExperience
+            ? MaxHitsToKill * MasterHitBudgetFactor
+            : MaxHitsToKill;
     }
 
     /// <summary>

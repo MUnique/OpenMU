@@ -1378,12 +1378,37 @@ internal sealed class BotNavigator : AsyncDisposable
     }
 
     /// <summary>
+    /// The lowest monster level which still earns this bot anything: a master-class character at the
+    /// game's maximum level gains master experience only from monsters of at least
+    /// <c>GameConfiguration.MinimumMonsterLevelForMasterExperience</c> (the experience path grants it
+    /// nothing at all below that) and no regular experience either, because it is at the maximum level
+    /// already. Hunting below that floor is therefore
+    /// not the safe choice for a mastered bot, it is a dead end - so the map and hunting ground choice
+    /// look above the floor first. 0 for every other bot, which hunts by safety alone.
+    /// </summary>
+    private int MasterExperienceFloor()
+    {
+        var configuration = this._player.GameContext.Configuration;
+        if (this._player.SelectedCharacter?.CharacterClass?.IsMasterClass != true
+            || (this._player.Attributes?[Stats.Level] ?? 0) < configuration.MaximumLevel)
+        {
+            return 0;
+        }
+
+        return configuration.MinimumMonsterLevelForMasterExperience;
+    }
+
+    /// <summary>
     /// The level of the strongest monster on the map which this bot can safely fight (judged by the
     /// monster's real damage against the bot's defense and health, see <see cref="CombatHandler.IsSafeTarget"/>);
     /// 0 if the map has none. The level of the safe monsters remains the measure of a map's experience
-    /// value when comparing maps - it just no longer decides what is SAFE.
+    /// value when comparing maps - it just no longer decides what is SAFE. Monsters below
+    /// <paramref name="minimumLevel"/> are not counted at all, which lets a mastered bot judge a map by
+    /// what it actually earns there (see <see cref="MasterExperienceFloor"/>).
     /// </summary>
-    private int BestSafeLevel(GameMapDefinition mapDefinition)
+    /// <param name="mapDefinition">The map to judge.</param>
+    /// <param name="minimumLevel">The lowest monster level worth counting.</param>
+    private int BestSafeLevel(GameMapDefinition mapDefinition, int minimumLevel = 0)
     {
         var best = 0;
         foreach (var area in mapDefinition.MonsterSpawns)
@@ -1394,7 +1419,7 @@ internal sealed class BotNavigator : AsyncDisposable
             }
 
             var level = GetMonsterLevel(area.MonsterDefinition!);
-            if (level > best && CombatHandler.IsSafeTarget(this._player, area.MonsterDefinition!))
+            if (level >= minimumLevel && level > best && CombatHandler.IsSafeTarget(this._player, area.MonsterDefinition!))
             {
                 best = level;
             }
@@ -1424,12 +1449,27 @@ internal sealed class BotNavigator : AsyncDisposable
     /// </summary>
     private bool TryPickBetterMap(bool escape, out ExitGate gate, out GameMapDefinition mapDefinition, out int monsterLevel)
     {
+        // A mastered bot earns nothing below the master-experience floor, so it first looks for a map
+        // which pays at all. Only when no map within its reach offers monsters above the floor that it
+        // can safely fight does it fall back to hunting by safety alone: standing on a map it cannot
+        // survive would not earn it master experience either, and its gear still improves meanwhile.
+        var floor = this.MasterExperienceFloor();
+        return (floor > 0 && this.TryPickBetterMapCore(escape, floor, out gate, out mapDefinition, out monsterLevel))
+               || this.TryPickBetterMapCore(escape, 0, out gate, out mapDefinition, out monsterLevel);
+    }
+
+    /// <summary>
+    /// Picks the best map (see <see cref="TryPickBetterMap"/>), counting only monsters of at least
+    /// <paramref name="minimumMonsterLevel"/>.
+    /// </summary>
+    private bool TryPickBetterMapCore(bool escape, int minimumMonsterLevel, out ExitGate gate, out GameMapDefinition mapDefinition, out int monsterLevel)
+    {
         gate = default!;
         mapDefinition = default!;
         monsterLevel = 0;
 
         var current = this._player.CurrentMap?.Definition;
-        var threshold = escape ? 1 : (current is null ? 0 : this.BestSafeLevel(current)) + WarpImprovementMargin;
+        var threshold = escape ? 1 : (current is null ? 0 : this.BestSafeLevel(current, minimumMonsterLevel)) + WarpImprovementMargin;
 
         foreach (var candidate in this._player.GameContext.Configuration.Maps)
         {
@@ -1438,7 +1478,7 @@ internal sealed class BotNavigator : AsyncDisposable
                 continue;
             }
 
-            var best = this.BestSafeLevel(candidate);
+            var best = this.BestSafeLevel(candidate, minimumMonsterLevel);
             if (best < threshold || candidate.TryGetRequirementError(this._player, out _))
             {
                 continue;
@@ -1480,8 +1520,21 @@ internal sealed class BotNavigator : AsyncDisposable
         // Prefer the strongest monsters the bot can safely handle (best experience); if none on this map
         // pass the safety check, fall back to the weakest available (the bot should warp away anyway).
         var safe = candidates.Where(x => CombatHandler.IsSafeTarget(this._player, x.Area.MonsterDefinition!)).ToList();
+
+        // A mastered bot only earns master experience above the floor (see MasterExperienceFloor), so as
+        // long as this map holds such monsters it hunts them - the weaker grounds would pay it nothing.
+        // Above the floor it then takes the WEAKEST monsters rather than the strongest: master experience
+        // hardly grows with the monster's level, so the cheapest kill above the floor is the best one.
+        var floor = this.MasterExperienceFloor();
+        var masterGrounds = floor > 0 ? safe.Where(x => x.Level >= floor).ToList() : [];
+
         List<(MonsterSpawnArea Area, int Level)> band;
-        if (safe.Count > 0)
+        if (masterGrounds.Count > 0)
+        {
+            var cheapest = masterGrounds.Min(x => x.Level);
+            band = masterGrounds.Where(x => x.Level <= cheapest + BandWidth).ToList();
+        }
+        else if (safe.Count > 0)
         {
             var top = safe.Max(x => x.Level);
             band = safe.Where(x => x.Level >= top - BandWidth).ToList();

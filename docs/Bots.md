@@ -114,6 +114,18 @@ is never bought. On a server with the reset feature, a bot only masters once its
 reset limit is exhausted — while resets remain, resetting is what players do, so
 the bots do it too.
 
+A mastered bot changes what it hunts. Master experience is only granted for
+monsters of at least `Minimum monster level for master experience` (95 in the
+default configuration), and a character at the maximum level earns nothing else
+- so below that line a kill pays a mastered bot nothing at all. It therefore
+looks for maps which hold such monsters, and takes the WEAKEST ones above the
+line rather than the strongest: master experience hardly grows with the
+monster's level, so the cheapest kill above it is the best one. Those monsters
+carry 40.000+ health, well beyond the hit budget a bot's usual gear affords, so
+the budget is stretched for them - a slow fight it survives beats a quick one
+worth nothing. What is not stretched is its survivability: a monster whose hits
+the bot cannot take is refused, mastered or not.
+
 ### Items and money
 
 Dropped gear is judged before it is picked up: a bot collects what it can wear
@@ -217,6 +229,11 @@ hash dominates); starting an existing one of 1100 bots takes some 15 seconds.
   Deliberate: they would be cast through the buff rotation, which would have the
   bot put itself to sleep. A cast-on-enemy path in the combat handler would be
   needed.
+- **Bots never buy equipment.** They wear what they find, so their gear lags
+  behind their level, and a bot at the maximum level is weaker than a player of
+  the same level would be. It is the reason a mastered bot needs a stretched hit
+  budget to reach the monsters which pay master experience at all. Letting bots
+  spend their money on gear would close the loop; they earn plenty of it.
 - **Bots do no quests and do not trade with players.** Deliberate scope. The
   quests which matter for progression (the class changes) are performed
   directly, and trading would be an abuse surface.
