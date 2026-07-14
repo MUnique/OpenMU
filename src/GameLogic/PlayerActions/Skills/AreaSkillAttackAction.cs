@@ -1,4 +1,4 @@
-﻿// <copyright file="AreaSkillAttackAction.cs" company="MUnique">
+// <copyright file="AreaSkillAttackAction.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -40,6 +40,19 @@ public class AreaSkillAttackAction
         if (skill is null || skill.SkillType == SkillType.PassiveBoost)
         {
             return;
+        }
+
+        if (skill.SkillType != SkillType.Buff && skill.SkillType != SkillType.Regeneration)
+        {
+            if (player.GameContext.PlugInManager.GetPlugInPoint<ISpeedHackCheatCheckPlugIn>() is { } speedCheck)
+            {
+                var eventArgs = new SpeedHackCheckEventArgs();
+                await speedCheck.AttackCheatCheckAsync(player, eventArgs).ConfigureAwait(false);
+                if (eventArgs.IsCheatDetected)
+                {
+                    return;
+                }
+            }
         }
 
         if (!await player.TryConsumeForSkillAsync(skill).ConfigureAwait(false))

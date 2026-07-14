@@ -1,4 +1,4 @@
-﻿// <copyright file="Player.cs" company="MUnique">
+// <copyright file="Player.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -586,7 +586,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 await duelRoom.CancelDuelAsync().ConfigureAwait(false);
                 if (this.GameContext.Configuration.DuelConfiguration?.Exit is { } exit)
                 {
-                    this.PlaceAtGate(exit);
+                    await this.PlaceAtGateAsync(exit).ConfigureAwait(false);
                 }
             }
 
@@ -829,6 +829,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             await (this.SkillCancelTokenSource?.CancelAsync() ?? Task.CompletedTask).ConfigureAwait(false);
 
             await this._walker.StopAsync().ConfigureAwait(false);
+
+            if (this.GameContext.PlugInManager.GetPlugInPoint<ISpeedHackCheatCheckPlugIn>() is { } speedCheck)
+            {
+                await speedCheck.ResetMovementStateAsync(this).ConfigureAwait(false);
+            }
 
             var previous = this.Position;
             this.Position = target;
@@ -1088,7 +1093,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return;
         }
 
-        this.PlaceAtGate(gate);
+        await this.PlaceAtGateAsync(gate).ConfigureAwait(false);
         this.CurrentMap = null; // Will be set again, when the client acknowledged the map change by F3 12 packet.
 
         if (!this.PlayerState.CurrentState.IsDisconnectedOrFinished())
@@ -1121,7 +1126,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         this.ThrowNotInitializedProperty(this.SelectedCharacter is null, nameof(this.SelectedCharacter));
         this.SelectedCharacter.ThrowNotInitializedProperty(this.SelectedCharacter.CurrentMap is null, nameof(this.SelectedCharacter.CurrentMap));
-        this.PlaceAtGate(gate);
+        await this.PlaceAtGateAsync(gate).ConfigureAwait(false);
         this._respawnAfterDeathCts?.Dispose();
         this._respawnAfterDeathCts = null;
 
@@ -1293,6 +1298,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     {
         this.Logger.LogDebug("MoveAsync: Player is moving to {0}", target);
         await this._walker.StopAsync().ConfigureAwait(false);
+        if (this.GameContext.PlugInManager.GetPlugInPoint<ISpeedHackCheatCheckPlugIn>() is { } speedCheck)
+        {
+            await speedCheck.ResetMovementStateAsync(this).ConfigureAwait(false);
+        }
+
         await this.CurrentMap!.MoveAsync(this, target, this._moveLock, MoveType.Instant).ConfigureAwait(false);
         this.Logger.LogDebug("MoveAsync: Observer Count: {0}", this.Observers.Count);
     }
@@ -1328,14 +1338,32 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         await this._walker.StopAsync().ConfigureAwait(false);
 
         var startPoint = steps.Span[0].From;
+
+        var config = this.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()?.Configuration;
+        int maxAllowedWalkStartOffset = config?.MaxAllowedWalkStartOffset ?? 5;
+
+        var speedCheck = this.GameContext.PlugInManager.GetPlugInPoint<ISpeedHackCheatCheckPlugIn>();
+        if (speedCheck is { })
+        {
+            var eventArgs = new SpeedHackCheckEventArgs();
+            await speedCheck.WalkCheatCheckAsync(this, steps, eventArgs).ConfigureAwait(false);
+            if (eventArgs.IsCheatDetected)
+            {
+                return;
+            }
+        }
+
         var currentPosition = this.Position;
         var startOffset = startPoint.EuclideanDistanceTo(currentPosition);
-        const int maxAllowedWalkStartOffset = 3;
         if (startOffset > maxAllowedWalkStartOffset)
         {
-            this.Logger.LogWarning("WalkToAsync: Player requested to walk from {0}, but it's currently at {1}", startPoint, currentPosition);
+            this.Logger.LogWarning("WalkToAsync: Player requested to walk from {0}, but it's currently at {1} (offset {2} > {3}). Resynchronizing client.", startPoint, currentPosition, startOffset, maxAllowedWalkStartOffset);
+            if (speedCheck is { })
+            {
+                await speedCheck.ResetMovementStateAsync(this).ConfigureAwait(false);
+            }
 
-            // Send current position back to the client, so that it can re-synchronize.
+            // Send current position back to the client, so that it can re-synchronize (rubberband).
             await this.InvokeViewPlugInAsync<IObjectMovedPlugIn>(p => p.ObjectMovedAsync(this, MoveType.Instant)).ConfigureAwait(false);
             return;
         }
@@ -2068,12 +2096,17 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         return true;
     }
 
-    private void PlaceAtGate(ExitGate gate)
+    private async ValueTask PlaceAtGateAsync(ExitGate gate)
     {
         this.SelectedCharacter!.PositionX = (byte)Rand.NextInt(gate.X1, gate.X2);
         this.SelectedCharacter.PositionY = (byte)Rand.NextInt(gate.Y1, gate.Y2);
         this.SelectedCharacter.CurrentMap = gate.Map;
         this.Rotation = gate.Direction;
+
+        if (this.GameContext.PlugInManager.GetPlugInPoint<ISpeedHackCheatCheckPlugIn>() is { } speedCheck)
+        {
+            await speedCheck.ResetMovementStateAsync(this).ConfigureAwait(false);
+        }
 
         if (this.Summon?.Item1 is { IsAlive: true } summon)
         {
