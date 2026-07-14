@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.Bots;
 
+using System.Threading;
 using MUnique.OpenMU.GameLogic.Offline;
 
 /// <summary>
@@ -13,7 +14,19 @@ using MUnique.OpenMU.GameLogic.Offline;
 /// </summary>
 public sealed class BotPlayer : OfflinePlayer
 {
+    /// <summary>
+    /// After this many AI ticks failing in a row, the bot is considered broken and gets restarted.
+    /// The engine's attribute system is not thread-safe, and a lost race can corrupt a character's
+    /// attribute graph for good: every following tick throws, the bot stops playing and floods the log
+    /// with the same exception until the server restarts. A fresh login rebuilds the graph and heals it,
+    /// which is exactly what a player would do. The threshold is high enough that a single failing tick
+    /// (a transient race, a monster which just died) is simply skipped, like before.
+    /// </summary>
+    private const int ConsecutiveFailuresUntilRestart = 20;
+
     private BotNavigator? _navigator;
+
+    private int _consecutiveTickFailures;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BotPlayer"/> class.
@@ -36,11 +49,41 @@ public sealed class BotPlayer : OfflinePlayer
     /// </summary>
     public bool AwaitsMasterRestart { get; set; }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether this bot's AI keeps failing and it has to be restarted
+    /// (see <see cref="ConsecutiveFailuresUntilRestart"/>). Acted upon by the maintenance pass, which is
+    /// the only place allowed to restart a bot.
+    /// </summary>
+    public bool AwaitsFaultRestart { get; set; }
+
     /// <inheritdoc />
     public override async ValueTask StopAsync()
     {
         await this.StopNavigatorAsync().ConfigureAwait(false);
         await base.StopAsync().ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    internal override void OnAiTickSucceeded()
+    {
+        if (this._consecutiveTickFailures > 0)
+        {
+            Interlocked.Exchange(ref this._consecutiveTickFailures, 0);
+        }
+    }
+
+    /// <inheritdoc />
+    internal override void OnAiTickFailed()
+    {
+        if (Interlocked.Increment(ref this._consecutiveTickFailures) == ConsecutiveFailuresUntilRestart)
+        {
+            // Only when the counter HITS the threshold, so the log gets one line, not one per tick.
+            this.Logger.LogWarning(
+                "Bot '{Name}' failed {Count} AI ticks in a row and gets restarted to heal it.",
+                this.Name,
+                ConsecutiveFailuresUntilRestart);
+            this.AwaitsFaultRestart = true;
+        }
     }
 
     /// <inheritdoc />

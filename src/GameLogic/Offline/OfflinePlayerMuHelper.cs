@@ -142,6 +142,7 @@ public sealed class OfflinePlayerMuHelper : AsyncDisposable
         try
         {
             await this.TickAsync(cancellationToken).ConfigureAwait(false);
+            this._player.OnAiTickSucceeded();
         }
         catch (OperationCanceledException)
         {
@@ -150,6 +151,7 @@ public sealed class OfflinePlayerMuHelper : AsyncDisposable
         catch (Exception ex)
         {
             this._player.Logger.LogError(ex, "Error in offline player helper tick for {AccountLoginName}.", this._player.AccountLoginName);
+            this._player.OnAiTickFailed();
         }
     }
 

@@ -251,6 +251,7 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
             }
 
             await this.RespawnPendingAsync(gameContext, state).ConfigureAwait(false);
+            await this.RestartFaultedBotsAsync(gameContext, state, logger).ConfigureAwait(false);
             await this.EvolveDueMastersAsync(gameContext, state, logger).ConfigureAwait(false);
 
             if (configuration.PresenceRotation)
@@ -271,6 +272,42 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
         finally
         {
             Interlocked.Exchange(ref state.MaintenanceRunning, 0);
+        }
+    }
+
+    /// <summary>
+    /// Restarts bots whose AI keeps throwing (see <see cref="BotPlayer.AwaitsFaultRestart"/>). The
+    /// engine's attribute system is not thread-safe, and a lost race can corrupt a character's attribute
+    /// graph for good: the bot stops playing and every following tick throws the same exception, up to a
+    /// flood of them per second. A fresh login rebuilds the graph and heals it - the same thing a player
+    /// would do, and the only cure available from outside the engine. Runs from the maintenance pass,
+    /// which is the only place allowed to restart a bot.
+    /// </summary>
+    private async ValueTask RestartFaultedBotsAsync(GameContext gameContext, ServerState state, ILogger logger)
+    {
+        foreach (var bot in state.Manager.Bots)
+        {
+            if (!bot.AwaitsFaultRestart)
+            {
+                continue;
+            }
+
+            var loginName = bot.Account?.LoginName;
+            var characterSlot = bot.SelectedCharacter?.CharacterSlot;
+            bot.AwaitsFaultRestart = false;
+            try
+            {
+                if (!await state.Manager.RestartBotAsync(gameContext, bot).ConfigureAwait(false)
+                    && loginName is not null
+                    && characterSlot is { } slot)
+                {
+                    state.PendingRespawns.Enqueue((loginName, slot));
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to restart the faulted bot '{Name}'.", bot.Name);
+            }
         }
     }
 

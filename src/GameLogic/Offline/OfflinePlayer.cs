@@ -372,6 +372,25 @@ public class OfflinePlayer : Player
         }
     }
 
+    /// <summary>
+    /// Called when an AI tick of this player finished without an exception. Does nothing here - a bot
+    /// uses it to forget earlier failures (see <see cref="Bots.BotPlayer"/>).
+    /// </summary>
+    internal virtual void OnAiTickSucceeded()
+    {
+        // Nothing to do for a plain offline player.
+    }
+
+    /// <summary>
+    /// Called when an AI tick of this player threw. Does nothing here, so the human offline mode keeps
+    /// behaving exactly as before; a bot counts the failures and asks for a restart when they don't stop
+    /// (see <see cref="Bots.BotPlayer"/>).
+    /// </summary>
+    internal virtual void OnAiTickFailed()
+    {
+        // Nothing to do for a plain offline player.
+    }
+
     /// <inheritdoc />
     protected override async ValueTask InternalDisconnectAsync()
     {

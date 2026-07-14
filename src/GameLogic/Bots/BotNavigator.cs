@@ -300,6 +300,7 @@ internal sealed class BotNavigator : AsyncDisposable
         try
         {
             await this.EvaluateAsync(cancellationToken).ConfigureAwait(false);
+            this._player.OnAiTickSucceeded();
         }
         catch (OperationCanceledException)
         {
@@ -308,6 +309,7 @@ internal sealed class BotNavigator : AsyncDisposable
         catch (Exception ex)
         {
             this._player.Logger.LogError(ex, "Bot navigator error for {Account}.", this._player.AccountLoginName);
+            this._player.OnAiTickFailed();
         }
         finally
         {
