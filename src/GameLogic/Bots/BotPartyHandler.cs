@@ -55,7 +55,7 @@ internal static class BotPartyHandler
     {
         if (receiver is not OfflinePlayer bot
             || bot.Account?.IsBot != true
-            || bot.Party is not null
+            || HasHumanCompanion(bot)
             || bot.PendingPartyInvite is not null)
         {
             return false;
@@ -139,11 +139,18 @@ internal static class BotPartyHandler
 
     private static async ValueTask AcceptInvitationAsync(OfflinePlayer bot, Player requester)
     {
-        // Re-validate: between the invitation and this answer, the bot may have grouped up (the hourly
-        // bot party formation) and the inviter may have died, left the game or joined another party.
-        if (bot.Party is not null || !IsRequesterEligible(bot, requester))
+        // Re-validate: between the invitation and this answer, the bot may have joined a human's party
+        // and the inviter may have died, left the game or joined another party.
+        if (HasHumanCompanion(bot) || !IsRequesterEligible(bot, requester))
         {
             bot.Logger.LogInformation("Bot '{Name}' dropped the party invitation of '{Requester}' - the situation changed.", bot.Name, requester.Name);
+            return;
+        }
+
+        await LeaveBotPartyAsync(bot).ConfigureAwait(false);
+        if (bot.Party is not null)
+        {
+            bot.Logger.LogInformation("Bot '{Name}' could not leave its bot party for '{Requester}'.", bot.Name, requester.Name);
             return;
         }
 
@@ -171,6 +178,35 @@ internal static class BotPartyHandler
         {
             bot.Logger.LogInformation("Bot '{Name}' joined the party of '{Requester}'.", bot.Name, requester.Name);
         }
+    }
+
+    /// <summary>
+    /// Lets the bot leave the bot-only party it hunts in, so it can join the player who invited it: a
+    /// living player takes precedence over the bot's own company. When the bot LEADS that party, the
+    /// group is broken up instead - the engine does not hand the mastership over to another member when
+    /// the master leaves (it only removes them from the member list), which would leave the remaining
+    /// bots following a leader who is not in their party anymore. Their next hourly re-formation groups
+    /// them again (see <see cref="BotManager"/>).
+    /// </summary>
+    private static async ValueTask LeaveBotPartyAsync(OfflinePlayer bot)
+    {
+        if (bot.Party is not { } party)
+        {
+            return;
+        }
+
+        if (Equals(party.PartyMaster, bot))
+        {
+            bot.Logger.LogInformation("Bot '{Name}' breaks up its bot party to join a player.", bot.Name);
+            foreach (var member in party.PartyList.ToList())
+            {
+                await party.KickMySelfAsync(member).ConfigureAwait(false);
+            }
+
+            return;
+        }
+
+        await party.KickMySelfAsync(bot).ConfigureAwait(false);
     }
 
     private static bool IsRequesterEligible(OfflinePlayer bot, Player requester)
