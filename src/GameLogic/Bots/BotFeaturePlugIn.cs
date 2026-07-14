@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.Bots;
 
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -41,53 +42,29 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
         0.50, 0.50, 0.55, 0.60, 0.70, 0.80, 0.90, 1.00, 1.00, 0.95, 0.80, 0.50,
     ];
 
-    private readonly BotManager _botManager = new();
-
     /// <summary>
-    /// Bots whose respawn after the master evolution failed (see <see cref="EvolveDueMastersAsync"/>),
-    /// retried on the following maintenance passes - without this, a transient spawn failure would
-    /// leave the character offline until a server restart when the presence rotation is disabled.
+    /// The state of the feature, per game server: the plugin instance is shared by all game servers of
+    /// the process, while <see cref="ExecuteTaskAsync"/> is called by each of them separately. One shared
+    /// state would mean the server whose timer fires first animates the whole population (which is how
+    /// the bots used to end up on a single server), and the other servers doing nothing at all.
     /// </summary>
-    private readonly System.Collections.Concurrent.ConcurrentQueue<(string Login, byte Slot)> _pendingRespawns = new();
-
-    private DateTime _nextRunUtc = DateTime.UtcNow + StartupDelay;
-    private DateTime _nextMaintenanceUtc = DateTime.UtcNow + StartupDelay + StartupDelay;
-    private DateTime _nextPartyReformUtc = DateTime.UtcNow + PartyReformInterval;
-
-    /// <summary>
-    /// 0 = startup not run yet, 1 = startup in progress, 2 = startup done (maintenance mode).
-    /// The periodic task timer fires every second WITHOUT awaiting the previous invocation, so
-    /// during the minutes-long generation/spawn further ticks arrive concurrently - they must
-    /// neither re-enter the startup nor run the maintenance (e.g. the presence rotation) against
-    /// a half-spawned population.
-    /// </summary>
-    private int _startupState;
-
-    /// <summary>
-    /// 1 while a maintenance pass runs, so the next timer tick doesn't start a second one in parallel
-    /// (see <see cref="RunMaintenanceAsync"/>).
-    /// </summary>
-    private int _maintenanceRunning;
+    private readonly ConcurrentDictionary<IGameContext, ServerState> _states = new();
 
     /// <inheritdoc />
     public BotConfiguration? Configuration { get; set; }
 
-    /// <summary>
-    /// Gets the bot manager.
-    /// </summary>
-    public BotManager BotManager => this._botManager;
-
     /// <inheritdoc />
     public async ValueTask ExecuteTaskAsync(GameContext gameContext)
     {
-        if (this._startupState == 2)
+        var state = this._states.GetOrAdd(gameContext, _ => new ServerState());
+        if (state.StartupState == 2)
         {
-            await this.RunMaintenanceAsync(gameContext).ConfigureAwait(false);
+            await this.RunMaintenanceAsync(gameContext, state).ConfigureAwait(false);
             return;
         }
 
-        if (DateTime.UtcNow < this._nextRunUtc
-            || Interlocked.CompareExchange(ref this._startupState, 1, 0) != 0)
+        if (DateTime.UtcNow < state.NextRunUtc
+            || Interlocked.CompareExchange(ref state.StartupState, 1, 0) != 0)
         {
             return;
         }
@@ -96,30 +73,31 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
         if (!configuration.Enabled)
         {
             // Not spawned - re-check on the following ticks, the feature may get enabled later.
-            Interlocked.Exchange(ref this._startupState, 0);
+            Interlocked.Exchange(ref state.StartupState, 0);
             return;
         }
 
         try
         {
-            await this.SpawnPopulationAsync(gameContext, configuration).ConfigureAwait(false);
+            await this.SpawnPopulationAsync(gameContext, state, configuration).ConfigureAwait(false);
         }
         finally
         {
             // Like before: the startup runs once, even when parts of it failed (the errors are
             // logged); the maintenance pass takes over from here.
-            Interlocked.Exchange(ref this._startupState, 2);
+            Interlocked.Exchange(ref state.StartupState, 2);
         }
     }
 
-    private async ValueTask SpawnPopulationAsync(GameContext gameContext, BotConfiguration configuration)
+    private async ValueTask SpawnPopulationAsync(GameContext gameContext, ServerState state, BotConfiguration configuration)
     {
         var logger = gameContext.LoggerFactory.CreateLogger(this.GetType().Name);
         using var scope = logger.BeginScope(gameContext);
 
         var generator = new BotGenerator(gameContext, logger);
+        var partition = state.Partition = await BotServerPartition.CreateAsync(gameContext, configuration, logger).ConfigureAwait(false);
 
-        if (configuration.ResetBots)
+        if (configuration.ResetBots && partition.IsGenerator)
         {
             try
             {
@@ -136,18 +114,23 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
             }
         }
 
-        try
+        if (partition.IsGenerator)
         {
-            // Generate the persistent bot population if it is not there yet (idempotent).
-            var created = await generator.EnsureBotsAsync(configuration.NumberOfAccounts, configuration.MaxCharactersPerAccount).ConfigureAwait(false);
-            if (created > 0)
+            try
             {
-                logger.LogInformation("Generated {Created} new bot account(s).", created);
+                // Generate the persistent bot population if it is not there yet (idempotent). Only this
+                // server does it - see BotServerPartition.IsGenerator; the others find the accounts once
+                // they exist and retry the spawns of their own share meanwhile.
+                var created = await generator.EnsureBotsAsync(configuration.NumberOfAccounts, configuration.MaxCharactersPerAccount).ConfigureAwait(false);
+                if (created > 0)
+                {
+                    logger.LogInformation("Generated {Created} new bot account(s).", created);
+                }
             }
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Failed to generate the bot population.");
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to generate the bot population.");
+            }
         }
 
         var charactersPerAccount = Math.Clamp(
@@ -157,7 +140,7 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
 
         var started = 0;
         var total = 0;
-        for (var i = 1; i <= configuration.NumberOfAccounts; i++)
+        for (var i = partition.FirstAccount; i < partition.FirstAccount + partition.AccountCount; i++)
         {
             var loginName = BotGenerator.GetLoginName(i);
             for (byte slot = 0; slot < charactersPerAccount; slot++)
@@ -165,9 +148,15 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
                 total++;
                 try
                 {
-                    if (await this._botManager.SpawnBotAsync(gameContext, loginName, slot).ConfigureAwait(false))
+                    if (await state.Manager.SpawnBotAsync(gameContext, loginName, slot).ConfigureAwait(false))
                     {
                         started++;
+                    }
+                    else
+                    {
+                        // The account may just not be generated yet (another server is generating the
+                        // population right now) - the maintenance pass retries it.
+                        state.PendingRespawns.Enqueue((loginName, slot));
                     }
                 }
                 catch (Exception ex)
@@ -177,19 +166,23 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
             }
         }
 
-        // The proof-of-concept accounts remain an optional extra hook to animate existing (non-bot) accounts.
-        foreach (var loginName in configuration.ParseProofOfConceptAccounts())
+        // The proof-of-concept accounts remain an optional extra hook to animate existing (non-bot)
+        // accounts. They are not part of the partitioned population, so only one server animates them.
+        if (partition.IsGenerator)
         {
-            try
+            foreach (var loginName in configuration.ParseProofOfConceptAccounts())
             {
-                if (await this._botManager.SpawnBotAsync(gameContext, loginName).ConfigureAwait(false))
+                try
                 {
-                    started++;
+                    if (await state.Manager.SpawnBotAsync(gameContext, loginName).ConfigureAwait(false))
+                    {
+                        started++;
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Failed to spawn proof-of-concept bot for account '{LoginName}'.", loginName);
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Failed to spawn proof-of-concept bot for account '{LoginName}'.", loginName);
+                }
             }
         }
 
@@ -197,7 +190,7 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
 
         try
         {
-            await this._botManager.FormPartiesAsync(gameContext).ConfigureAwait(false);
+            await state.Manager.FormPartiesAsync(gameContext).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -208,7 +201,10 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
     /// <inheritdoc />
     public void ForceStart()
     {
-        this._nextRunUtc = DateTime.UtcNow;
+        foreach (var state in this._states.Values)
+        {
+            state.NextRunUtc = DateTime.UtcNow;
+        }
     }
 
     /// <inheritdoc />
@@ -227,9 +223,9 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
     /// the population ebbs and flows smoothly over the day) and an hourly party re-formation which
     /// groups bots that lost or never had a party (e.g. after rotating back in).
     /// </summary>
-    private async ValueTask RunMaintenanceAsync(GameContext gameContext)
+    private async ValueTask RunMaintenanceAsync(GameContext gameContext, ServerState state)
     {
-        if (DateTime.UtcNow < this._nextMaintenanceUtc)
+        if (DateTime.UtcNow < state.NextMaintenanceUtc)
         {
             return;
         }
@@ -238,7 +234,7 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
         // which takes longer than its interval (spawning a bot loads a whole account from the database)
         // would otherwise overlap with itself: two passes restarting the same bot, rotating the presence
         // twice, forming parties in parallel. One pass at a time - like the startup below.
-        if (Interlocked.CompareExchange(ref this._maintenanceRunning, 1, 0) != 0)
+        if (Interlocked.CompareExchange(ref state.MaintenanceRunning, 1, 0) != 0)
         {
             return;
         }
@@ -246,7 +242,7 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
         var logger = gameContext.LoggerFactory.CreateLogger(this.GetType().Name);
         try
         {
-            this._nextMaintenanceUtc = DateTime.UtcNow + MaintenanceInterval;
+            state.NextMaintenanceUtc = DateTime.UtcNow + MaintenanceInterval;
 
             var configuration = this.Configuration;
             if (configuration?.Enabled != true)
@@ -254,18 +250,18 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
                 return;
             }
 
-            await this.RespawnPendingAsync(gameContext).ConfigureAwait(false);
-            await this.EvolveDueMastersAsync(gameContext, logger).ConfigureAwait(false);
+            await this.RespawnPendingAsync(gameContext, state).ConfigureAwait(false);
+            await this.EvolveDueMastersAsync(gameContext, state, logger).ConfigureAwait(false);
 
             if (configuration.PresenceRotation)
             {
-                await this.RotatePresenceAsync(gameContext, configuration, logger).ConfigureAwait(false);
+                await this.RotatePresenceAsync(gameContext, state, configuration, logger).ConfigureAwait(false);
             }
 
-            if (DateTime.UtcNow >= this._nextPartyReformUtc)
+            if (DateTime.UtcNow >= state.NextPartyReformUtc)
             {
-                this._nextPartyReformUtc = DateTime.UtcNow + PartyReformInterval;
-                await this._botManager.FormPartiesAsync(gameContext).ConfigureAwait(false);
+                state.NextPartyReformUtc = DateTime.UtcNow + PartyReformInterval;
+                await state.Manager.FormPartiesAsync(gameContext).ConfigureAwait(false);
             }
         }
         catch (Exception ex)
@@ -274,7 +270,7 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
         }
         finally
         {
-            Interlocked.Exchange(ref this._maintenanceRunning, 0);
+            Interlocked.Exchange(ref state.MaintenanceRunning, 0);
         }
     }
 
@@ -285,9 +281,9 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
     /// restarted right away (see <see cref="BotManager.RestartBotAsync"/>), which must not happen
     /// from within one of its own timer callbacks.
     /// </summary>
-    private async ValueTask EvolveDueMastersAsync(GameContext gameContext, ILogger logger)
+    private async ValueTask EvolveDueMastersAsync(GameContext gameContext, ServerState state, ILogger logger)
     {
-        foreach (var bot in this._botManager.Bots)
+        foreach (var bot in state.Manager.Bots)
         {
             // Not while it hunts with a human (the restart would desert the group), sits in an NPC
             // dialog or lies dead - like a due reset, the evolution simply happens on a later pass.
@@ -300,7 +296,7 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
 
             if (bot.AwaitsMasterRestart)
             {
-                await this.RestartEvolvedBotAsync(gameContext, bot, logger).ConfigureAwait(false);
+                await this.RestartEvolvedBotAsync(gameContext, state, bot, logger).ConfigureAwait(false);
                 continue;
             }
 
@@ -327,7 +323,7 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
     /// experience rate, master points per level) and the master level stat are only mounted when a
     /// character enters the world (see <see cref="BotManager.RestartBotAsync"/>).
     /// </summary>
-    private async ValueTask RestartEvolvedBotAsync(GameContext gameContext, BotPlayer bot, ILogger logger)
+    private async ValueTask RestartEvolvedBotAsync(GameContext gameContext, ServerState state, BotPlayer bot, ILogger logger)
     {
         // Captured before the restart - the disposed bot loses its account and character.
         var loginName = bot.Account?.LoginName;
@@ -335,7 +331,7 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
         bot.AwaitsMasterRestart = false;
         try
         {
-            if (!await this._botManager.RestartBotAsync(gameContext, bot).ConfigureAwait(false)
+            if (!await state.Manager.RestartBotAsync(gameContext, bot).ConfigureAwait(false)
                 && loginName is not null
                 && characterSlot is { } slot)
             {
@@ -343,7 +339,7 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
                 // drops the entry when the bot is (still or again) online, so a kept-alive old
                 // instance or a rotation comeback doesn't get doubled.
                 logger.LogWarning("Evolved bot '{Name}' could not be respawned right away; retrying on the next pass.", bot.Name);
-                this._pendingRespawns.Enqueue((loginName, slot));
+                state.PendingRespawns.Enqueue((loginName, slot));
             }
         }
         catch (Exception ex)
@@ -355,27 +351,36 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
     /// <summary>
     /// Retries bringing back bots whose respawn after the master evolution failed.
     /// </summary>
-    private async ValueTask RespawnPendingAsync(GameContext gameContext)
+    private async ValueTask RespawnPendingAsync(GameContext gameContext, ServerState state)
     {
-        var count = this._pendingRespawns.Count;
-        for (var i = 0; i < count && this._pendingRespawns.TryDequeue(out var entry); i++)
+        var count = state.PendingRespawns.Count;
+        for (var i = 0; i < count && state.PendingRespawns.TryDequeue(out var entry); i++)
         {
-            if (this._botManager.IsActive(entry.Login, entry.Slot))
+            if (state.Manager.IsActive(entry.Login, entry.Slot))
             {
                 continue;
             }
 
-            if (!await this._botManager.SpawnBotAsync(gameContext, entry.Login, entry.Slot).ConfigureAwait(false))
+            if (!await state.Manager.SpawnBotAsync(gameContext, entry.Login, entry.Slot).ConfigureAwait(false))
             {
-                this._pendingRespawns.Enqueue(entry);
+                state.PendingRespawns.Enqueue(entry);
             }
         }
     }
 
-    private async ValueTask RotatePresenceAsync(GameContext gameContext, BotConfiguration configuration, ILogger logger)
+    /// <summary>
+    /// Rotates the presence of the bots THIS server animates (see <see cref="BotServerPartition"/>):
+    /// each server keeps the daily curve within its own share of the population.
+    /// </summary>
+    private async ValueTask RotatePresenceAsync(GameContext gameContext, ServerState state, BotConfiguration configuration, ILogger logger)
     {
+        if (state.Partition is not { AccountCount: > 0 } partition)
+        {
+            return;
+        }
+
         var charactersPerAccount = configuration.GetEffectiveCharactersPerAccount();
-        var totalPopulation = configuration.NumberOfAccounts * charactersPerAccount;
+        var totalPopulation = partition.AccountCount * charactersPerAccount;
         if (totalPopulation <= 0)
         {
             return;
@@ -384,18 +389,18 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
         var minShare = Math.Clamp(configuration.MinOnlineSharePercent, 0, 100) / 100.0;
         var activity = ActivityByHour[DateTime.Now.Hour];
         var targetOnline = (int)Math.Round(totalPopulation * (minShare + ((1.0 - minShare) * activity)));
-        var online = this._botManager.Bots.Count;
+        var online = state.Manager.Bots.Count;
 
         if (online < targetOnline)
         {
             // Bring one bot online: pick a random character which is currently offline.
             var offline = new List<(string Login, byte Slot)>();
-            for (var i = 1; i <= configuration.NumberOfAccounts; i++)
+            for (var i = partition.FirstAccount; i < partition.FirstAccount + partition.AccountCount; i++)
             {
                 var loginName = BotGenerator.GetLoginName(i);
                 for (byte slot = 0; slot < charactersPerAccount; slot++)
                 {
-                    if (!this._botManager.IsActive(loginName, slot))
+                    if (!state.Manager.IsActive(loginName, slot))
                     {
                         offline.Add((loginName, slot));
                     }
@@ -403,14 +408,14 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
             }
 
             if (offline.SelectRandom() is { Login: not null } candidate
-                && await this._botManager.SpawnBotAsync(gameContext, candidate.Login, candidate.Slot).ConfigureAwait(false))
+                && await state.Manager.SpawnBotAsync(gameContext, candidate.Login, candidate.Slot).ConfigureAwait(false))
             {
                 logger.LogInformation("Bot presence rotation: +1 (online {Online}/{Target} of {Total}).", online + 1, targetOnline, totalPopulation);
             }
         }
         else if (online > targetOnline)
         {
-            var stopped = await this._botManager.StopRandomBotAsync().ConfigureAwait(false);
+            var stopped = await state.Manager.StopRandomBotAsync().ConfigureAwait(false);
             if (stopped is not null)
             {
                 logger.LogInformation("Bot presence rotation: -1 '{Name}' (online {Online}/{Target} of {Total}).", stopped, online - 1, targetOnline, totalPopulation);
@@ -418,6 +423,10 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
         }
     }
 
+    /// <summary>
+    /// The bot feature's state of ONE game server: its own population share, its own bots, and its own
+    /// startup and maintenance schedule (see <see cref="_states"/>).
+    /// </summary>
     /// <summary>
     /// Persists the current configuration back to its <see cref="PlugInConfiguration"/> row, so a
     /// programmatic change (e.g. clearing the reset flag) survives a restart.
@@ -445,5 +454,69 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
         {
             logger.LogError(ex, "Failed to persist the bot plugin configuration.");
         }
+    }
+
+    /// <summary>
+    /// The bot feature's state of ONE game server: its own share of the population, its own bots, and
+    /// its own startup and maintenance schedule (see <see cref="_states"/>).
+    /// </summary>
+    private sealed class ServerState
+    {
+        /// <summary>
+        /// 0 = startup not run yet, 1 = startup in progress, 2 = startup done (maintenance mode).
+        /// The periodic task timer fires every second WITHOUT awaiting the previous invocation, so
+        /// during the minutes-long generation/spawn further ticks arrive concurrently - they must
+        /// neither re-enter the startup nor run the maintenance (e.g. the presence rotation) against
+        /// a half-spawned population. Interlocked-updated, hence a field.
+        /// </summary>
+        private int _startupState;
+
+        /// <summary>
+        /// 1 while a maintenance pass runs, so the next timer tick doesn't start a second one in
+        /// parallel. Interlocked-updated, hence a field.
+        /// </summary>
+        private int _maintenanceRunning;
+
+        /// <summary>
+        /// Gets the bots this server animates.
+        /// </summary>
+        public BotManager Manager { get; } = new();
+
+        /// <summary>
+        /// Gets the bots whose spawn failed - the account may not be generated yet (another game server
+        /// is generating the population), or a respawn after the master evolution did not go through.
+        /// Retried on the following maintenance passes.
+        /// </summary>
+        public ConcurrentQueue<(string Login, byte Slot)> PendingRespawns { get; } = new();
+
+        /// <summary>
+        /// Gets or sets the share of the bot population which this server animates.
+        /// </summary>
+        public BotServerPartition? Partition { get; set; }
+
+        /// <summary>
+        /// Gets or sets the time of this server's (single) startup pass.
+        /// </summary>
+        public DateTime NextRunUtc { get; set; } = DateTime.UtcNow + StartupDelay;
+
+        /// <summary>
+        /// Gets or sets the time of this server's next maintenance pass.
+        /// </summary>
+        public DateTime NextMaintenanceUtc { get; set; } = DateTime.UtcNow + StartupDelay + StartupDelay;
+
+        /// <summary>
+        /// Gets or sets the time of this server's next bot party re-formation.
+        /// </summary>
+        public DateTime NextPartyReformUtc { get; set; } = DateTime.UtcNow + PartyReformInterval;
+
+        /// <summary>
+        /// Gets a reference to the startup state, for the interlocked transitions of the startup pass.
+        /// </summary>
+        public ref int StartupState => ref this._startupState;
+
+        /// <summary>
+        /// Gets a reference to the maintenance flag, for the interlocked guard of the maintenance pass.
+        /// </summary>
+        public ref int MaintenanceRunning => ref this._maintenanceRunning;
     }
 }

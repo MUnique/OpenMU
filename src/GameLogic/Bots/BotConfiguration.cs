@@ -65,6 +65,18 @@ public class BotConfiguration
     public int MaxCharactersPerAccount { get; set; } = MaxCharactersPerAccountLimit;
 
     /// <summary>
+    /// Gets or sets the share (in percent) of a game server's maximum player count which its bots may
+    /// occupy. Bots count towards that limit like players do, and a full server turns new clients away -
+    /// so the rest of the capacity stays reserved for real players, who must never be denied a slot by a
+    /// bot. The population is split over all configured game servers accordingly (see
+    /// <see cref="BotServerPartition"/>); accounts which do not fit stay offline until the servers offer
+    /// the room for them.
+    /// </summary>
+    [Display(Name = "Bot capacity %", Description = "Share of a game server's maximum player count which its bots may occupy; the rest stays reserved for real players.")]
+    [Range(1, 100)]
+    public int BotCapacityPercent { get; set; } = 60;
+
+    /// <summary>
     /// Gets or sets a value indicating whether bots pay the configured reset costs (zen, reset items)
     /// when they reset their character on a server with the reset feature enabled. Off by default:
     /// bots don't take part in the player economy the costs are balanced for, so charging them only
@@ -88,6 +100,14 @@ public class BotConfiguration
     /// <remarks>Deliberately a method: a get-only property would end up in the serialized plugin configuration JSON.</remarks>
     public int GetEffectiveCharactersPerAccount()
         => Math.Clamp(this.MaxCharactersPerAccount, 1, MaxCharactersPerAccountLimit);
+
+    /// <summary>
+    /// Gets the effective, clamped share of a server's player capacity which its bots may occupy.
+    /// </summary>
+    /// <returns>A value between 1 and 100.</returns>
+    /// <remarks>Deliberately a method, like <see cref="GetEffectiveCharactersPerAccount"/>.</remarks>
+    public int GetEffectiveBotCapacityPercent()
+        => Math.Clamp(this.BotCapacityPercent, 1, 100);
 
     /// <summary>
     /// Parses <see cref="ProofOfConceptAccounts"/> into the distinct, trimmed login names.
