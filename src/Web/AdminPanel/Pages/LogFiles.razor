@@ -226,6 +226,7 @@
 
         this._selectedFile = new FileInfo(this._selectedFile.FullName);
         this._logLines = this.ReadLastLines(this._selectedFile.FullName, 300);
+        this._shouldScrollToBottom = true;
     }
 
     private List<string> ReadLastLines(string path, int maxLines)
