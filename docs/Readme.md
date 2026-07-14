@@ -140,6 +140,9 @@ database (e.g. RavenDB).
 
 * [Master Skill System](MasterSystem.md): Description about the master skill system
 
+* [Server-side AI Bots](Bots.md): Description about the bots which populate
+the server
+
 * [GameMap](GameMap.md): Description about the GameMap implementation
 
 * [Progress](Progress.md): Information about  the feature implementation
