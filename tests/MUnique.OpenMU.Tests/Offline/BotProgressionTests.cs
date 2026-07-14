@@ -55,9 +55,9 @@ public class BotProgressionTests
         var weights = new[] { (Stats.BaseStrength, 60), (Stats.BaseAgility, 40) };
 
         // Every stat is capped at the same value, so which one is asked for does not matter.
-        long CapacityOf(AttributeDefinition _) => 25;
+        Func<AttributeDefinition, long> capacityOf = _ => 25;
 
-        var result = BotProgression.SplitPoints(1000, weights, CapacityOf).ToDictionary(r => r.Stat, r => r.Amount);
+        var result = BotProgression.SplitPoints(1000, weights, capacityOf).ToDictionary(r => r.Stat, r => r.Amount);
 
         Assert.That(result.Values.Sum(), Is.EqualTo(50));
         Assert.That(result.Values, Is.All.EqualTo(25));
