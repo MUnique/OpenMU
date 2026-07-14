@@ -250,17 +250,30 @@ internal static class BotMasterHandler
     /// A pick is "useful" when it demonstrably does something for this bot: a passive boosting a stat,
     /// or a strengthener/mastery of a skill the bot actually has in its list. A passive tied to a WEAPON
     /// type the bot does not fight with is not (a bow strengthener does nothing for a bot swinging a
-    /// sword) - those get filled last, after everything which actually helps.
+    /// sword), and neither is one which only applies against other PLAYERS: a bot spends its life
+    /// hunting monsters, and it may not even attack a player unless attacked first (see
+    /// <see cref="BotPvpRules"/>). Both get filled last, after everything which actually helps.
     /// </summary>
     private static bool IsUsefulPick(Player player, Skill skill, ISkillList skillList)
     {
         var definition = skill.MasterDefinition!;
         if (definition.TargetAttribute is { } target)
         {
-            return WeaponGroupOfBonus(target) is not { } weaponGroup || CarriesWeaponOfGroup(player, weaponGroup);
+            return !IsPvpOnlyBonus(target)
+                   && (WeaponGroupOfBonus(target) is not { } weaponGroup || CarriesWeaponOfGroup(player, weaponGroup));
         }
 
         return definition.ReplacedSkill is { } replaced && skillList.ContainsSkill((ushort)replaced.Number);
+    }
+
+    /// <summary>
+    /// Whether the master bonus only ever applies in a fight against another player, which is not what a
+    /// bot's points are for.
+    /// </summary>
+    /// <param name="attribute">The bonus attribute.</param>
+    private static bool IsPvpOnlyBonus(AttributeDefinition attribute)
+    {
+        return attribute == Stats.AttackRatePvp || attribute == Stats.DefenseRatePvp;
     }
 
     /// <summary>

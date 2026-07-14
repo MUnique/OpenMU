@@ -187,6 +187,26 @@ public class BotMasterHandlerTests
     }
 
     /// <summary>
+    /// A bonus which only applies against other players does nothing for a bot: it spends its life
+    /// hunting monsters. It is picked last, after a passive which helps it there.
+    /// </summary>
+    [Test]
+    public async ValueTask PrefersPvmBonusOverPvpBonusAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var characterClass = player.SelectedCharacter!.CharacterClass!;
+        var pvpSkill = this.CreateMasterSkill(1, rank: 1, characterClass);
+        pvpSkill.MasterDefinition!.TargetAttribute = Stats.DefenseRatePvp;
+        var pvmSkill = this.CreateMasterSkill(2, rank: 1, characterClass);
+        pvmSkill.MasterDefinition!.TargetAttribute = Stats.MaximumHealth;
+        player.GameContext.Configuration.Skills.Add(pvpSkill);
+        player.GameContext.Configuration.Skills.Add(pvmSkill);
+        player.SelectedCharacter.MasterLevelUpPoints = 1;
+
+        Assert.That(BotMasterHandler.PickNextMasterSkill(player), Is.SameAs(pvmSkill));
+    }
+
+    /// <summary>
     /// With everything learned at its maximum nothing is picked - the loop stops.
     /// </summary>
     [Test]
