@@ -116,15 +116,15 @@ the bots do it too.
 
 A mastered bot changes what it hunts. Master experience is only granted for
 monsters of at least `Minimum monster level for master experience` (95 in the
-default configuration), and a character at the maximum level earns nothing else
-- so below that line a kill pays a mastered bot nothing at all. It therefore
-looks for maps which hold such monsters, and takes the WEAKEST ones above the
-line rather than the strongest: master experience hardly grows with the
-monster's level, so the cheapest kill above it is the best one. Those monsters
-carry 40.000+ health, well beyond the hit budget a bot's usual gear affords, so
-the budget is stretched for them - a slow fight it survives beats a quick one
-worth nothing. What is not stretched is its survivability: a monster whose hits
-the bot cannot take is refused, mastered or not.
+default configuration), and a character at the maximum level earns nothing
+else — so below that line a kill pays a mastered bot nothing at all. It
+therefore looks for maps which hold such monsters, and takes the weakest ones
+above the line rather than the strongest: master experience hardly grows with
+the monster's level, so the cheapest kill above it is the best one. Those
+monsters carry 40.000+ health, well beyond the hit budget a bot's usual gear
+affords, so the budget is stretched for them — a slow fight it survives beats a
+quick one worth nothing. What is not stretched is its survivability: a monster
+whose hits the bot cannot take is refused, mastered or not.
 
 ### Items and money
 
