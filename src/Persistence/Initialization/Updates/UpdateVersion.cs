@@ -476,7 +476,12 @@ public enum UpdateVersion
     AddLorenMarketJuliaWarp = 93,
 
     /// <summary>
+    /// The version of the <see cref="AddIsQuestItemFlagPlugIn"/>.
+    /// </summary>
+    AddIsQuestItemFlag = 94,
+
+    /// <summary>
     /// The version of the <see cref="FinishDarkWizardMasterTreePlugIn"/>.
     /// </summary>
-    FinishDarkWizardMasterTree = 94,
+    FinishDarkWizardMasterTree = 95,
 }

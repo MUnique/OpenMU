@@ -592,6 +592,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This item doesn't belong to you..
+        /// </summary>
+        public static string ItemDoesNotBelongToYou {
+            get {
+                return ResourceManager.GetString("ItemDoesNotBelongToYou", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Effect for item not found..
         /// </summary>
         public static string ItemEffectNotFound {
@@ -1191,6 +1200,42 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string PkClearedResult {
             get {
                 return ResourceManager.GetString("PkClearedResult", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This command is only available to Game Masters..
+        /// </summary>
+        public static string PkClearCommandOnlyForGameMasters {
+            get {
+                return ResourceManager.GetString("PkClearCommandOnlyForGameMasters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You can only clear your own PK status..
+        /// </summary>
+        public static string PkClearOnlyClearOwnPk {
+            get {
+                return ResourceManager.GetString("PkClearOnlyClearOwnPk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} is not a Player Killer..
+        /// </summary>
+        public static string PkClearTargetNotPlayerKiller {
+            get {
+                return ResourceManager.GetString("PkClearTargetNotPlayerKiller", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You are not a Player Killer..
+        /// </summary>
+        public static string PkClearYouAreNotPlayerKiller {
+            get {
+                return ResourceManager.GetString("PkClearYouAreNotPlayerKiller", resourceCulture);
             }
         }
         
