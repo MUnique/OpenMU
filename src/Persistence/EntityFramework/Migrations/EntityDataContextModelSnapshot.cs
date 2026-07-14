@@ -1659,6 +1659,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<bool>("IsBoundToCharacter")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsQuestItem")
+                        .HasColumnType("boolean");
+
                     b.Property<Guid?>("ItemSlotId")
                         .HasColumnType("uuid");
 

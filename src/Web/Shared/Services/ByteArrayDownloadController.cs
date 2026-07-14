@@ -61,13 +61,11 @@ public class ByteArrayDownloadController : Controller
         }
 
         var array = (byte[]?)property.GetValue(obj);
-        this.Response.ContentType = "application/octet-stream";
         if (array is null || array.Length == 0)
         {
             return this.NoContent();
         }
 
-        await this.Response.Body.WriteAsync(array, 0, array.Length).ConfigureAwait(false);
-        return this.Ok();
+        return this.File(array, "application/octet-stream", $"{type.Name}_{id}_{propertyName}.bin");
     }
 }

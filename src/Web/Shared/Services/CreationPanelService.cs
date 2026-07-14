@@ -4,7 +4,7 @@
 
 namespace MUnique.OpenMU.Web.Shared.Services;
 
-using Blazored.Modal.Services;
+using MUnique.OpenMU.Web.Shared.Components.Modal;
 using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.Web.Shared.Properties;
 

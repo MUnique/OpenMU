@@ -6,7 +6,10 @@ namespace MUnique.OpenMU.Web.Shared.Components.MapEditor;
 
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
+using System.Text;
+using BlazorInputFile;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
@@ -23,8 +26,6 @@ using SixLabors.ImageSharp.PixelFormats;
 /// </summary>
 public partial class MapEditor : IAsyncDisposable
 {
-    private const int MaxObjectSelectSize = 20;
-
     private static readonly string JsModulePath =
         $"./_content/{typeof(MapEditor).Assembly.GetName().Name}/Components/MapEditor/{nameof(MapEditor)}.razor.js";
 
@@ -37,7 +38,10 @@ public partial class MapEditor : IAsyncDisposable
     private readonly MapObjectSelector _objectSelector = new();
     private readonly MapEditorHistory _history = new();
     private readonly List<object> _pendingDeletions = new();
+    private readonly MapExportImportService _exportImportService = new();
+    private readonly MapFilterService _filterService = new();
 
+    private MapCrudOperationsService? _crudService;
     private MapZoomManager? _zoomManager;
     private MapObjectFactory? _objectFactory;
     private Image<Rgba32>? _terrainImage;
@@ -55,9 +59,8 @@ public partial class MapEditor : IAsyncDisposable
     private bool _createMode;
     private bool _isRendering;
     private bool _showGrid;
-
-    private string _searchFilter = string.Empty;
-    private ObjectTypeFilter _activeFilter = ObjectTypeFilter.None;
+    private bool _isExporting;
+    private bool _isImporting;
 
     private int _mouseMapX;
     private int _mouseMapY;
@@ -109,6 +112,9 @@ public partial class MapEditor : IAsyncDisposable
     /// </summary>
     [Inject]
     private IChangeNotificationService NotificationService { get; set; } = null!;
+
+    [Inject]
+    private LoadingOverlayService LoadingOverlay { get; set; } = null!;
 
     /// <summary>
     /// Gets the current zoom level expressed as a rounded percentage.
@@ -177,7 +183,7 @@ public partial class MapEditor : IAsyncDisposable
         }
 
         var objectAtPosition = this._objectSelector.GetObjectAtPosition(
-            this.SelectedMap, x, y, this._activeFilter, this._searchFilter);
+            this.SelectedMap, x, y, this._filterService.ActiveFilter, this._filterService.SearchFilter);
 
         if (objectAtPosition is IMapArea mapArea)
         {
@@ -273,6 +279,23 @@ public partial class MapEditor : IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Called from JavaScript when the DELETE key is pressed.
+    /// Removes the currently focused object from the map.
+    /// </summary>
+    [JSInvokable]
+    public void OnDeleteKeyPressed()
+    {
+        if (this._focusedObject is null || this._createMode)
+        {
+            return;
+        }
+
+        this.RemoveFocusedObject();
+        _ = this.UpdateSelectValueAsync();
+        this.StateHasChanged();
+    }
+
     /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
@@ -300,6 +323,7 @@ public partial class MapEditor : IAsyncDisposable
             var zoomLevel = this._zoomManager?.ZoomLevel ?? MapZoomManager.DefaultZoom;
             this._zoomManager = new MapZoomManager(jsModule, this._mapHostRef);
             this._objectFactory = new MapObjectFactory(this.PersistenceContext);
+            this._crudService = new MapCrudOperationsService(this._objectFactory, this._history);
             this._dotNetRef = DotNetObjectReference.Create(this);
 
             await jsModule.InvokeVoidAsync(
@@ -386,9 +410,8 @@ public partial class MapEditor : IAsyncDisposable
 
     private void ToggleFilter(ObjectTypeFilter filter)
     {
-        this._activeFilter ^= filter;
-        if (this._focusedObject is not null &&
-            !MapObjectSelector.MatchesFilters(this._focusedObject, this._activeFilter, this._searchFilter))
+        this._filterService.ToggleFilter(filter);
+        if (this._focusedObject is not null && this._filterService.IsObjectFilteredOut(this._focusedObject))
         {
             this._focusedObject = null;
         }
@@ -396,46 +419,18 @@ public partial class MapEditor : IAsyncDisposable
 
     private void SetAllFilter()
     {
-        this._activeFilter = ObjectTypeFilter.None;
+        this._filterService.SetAllFilter();
         this._focusedObject = null;
     }
 
     private bool IsFilterActive(ObjectTypeFilter filter) =>
-        this._activeFilter.HasFlag(filter);
+        this._filterService.IsFilterActive(filter);
 
-    private int GetObjectListSize()
-    {
-        var count = 1
-            + this.SelectedMap.EnterGates
-                .Count(g => MapObjectSelector.MatchesFilters(g, this._activeFilter, this._searchFilter))
-            + this.SelectedMap.ExitGates
-                .Count(g => MapObjectSelector.MatchesFilters(g, this._activeFilter, this._searchFilter))
-            + this.SelectedMap.MonsterSpawns
-                .Count(s => MapObjectSelector.MatchesFilters(s, this._activeFilter, this._searchFilter));
+    private int GetObjectListSize() =>
+        this._filterService.GetObjectListSize(this.SelectedMap);
 
-        return Math.Min(count, MaxObjectSelectSize);
-    }
-
-    private IEnumerable<object> GetMapObjects()
-    {
-        var objects = Enumerable.Empty<object>();
-
-        if (this._activeFilter == ObjectTypeFilter.None || this._activeFilter.HasFlag(ObjectTypeFilter.Gates))
-        {
-            objects = objects.Concat(this.SelectedMap.EnterGates)
-                            .Concat(this.SelectedMap.ExitGates);
-        }
-
-        if (this._activeFilter == ObjectTypeFilter.None
-            || this._activeFilter.HasFlag(ObjectTypeFilter.Monsters)
-            || this._activeFilter.HasFlag(ObjectTypeFilter.Npcs)
-            || this._activeFilter.HasFlag(ObjectTypeFilter.Others))
-        {
-            objects = objects.Concat(this.SelectedMap.MonsterSpawns);
-        }
-
-        return objects.Where(o => MapObjectSelector.MatchesFilters(o, this._activeFilter, this._searchFilter));
-    }
+    private IEnumerable<object> GetMapObjects() =>
+        this._filterService.GetMapObjects(this.SelectedMap);
 
     private string? GetObjectSize(object obj) =>
         MapObjectSelector.GetObjectSize(obj, this._focusedObject);
@@ -497,7 +492,7 @@ public partial class MapEditor : IAsyncDisposable
                   ?? this.SelectedMap.MonsterSpawns
                       .FirstOrDefault(g => g.GetId() == selectedId);
 
-        if (obj is not null && !MapObjectSelector.MatchesFilters(obj, this._activeFilter, this._searchFilter))
+        if (obj is not null && !MapObjectSelector.MatchesFilters(obj, this._filterService.ActiveFilter, this._filterService.SearchFilter))
         {
             return;
         }
@@ -637,22 +632,19 @@ public partial class MapEditor : IAsyncDisposable
     private void CreateNewSpawnArea()
     {
         this._createMode = true;
-        this._focusedObject = this._objectFactory!.CreateSpawnArea(this.SelectedMap);
-        this._history.RecordCreation(this.SelectedMap, this._focusedObject);
+        this._focusedObject = this._crudService!.CreateSpawnArea(this.SelectedMap);
     }
 
     private void CreateNewEnterGate()
     {
         this._createMode = true;
-        this._focusedObject = this._objectFactory!.CreateEnterGate(this.SelectedMap);
-        this._history.RecordCreation(this.SelectedMap, this._focusedObject);
+        this._focusedObject = this._crudService!.CreateEnterGate(this.SelectedMap);
     }
 
     private void CreateNewExitGate()
     {
         this._createMode = true;
-        this._focusedObject = this._objectFactory!.CreateExitGate(this.SelectedMap);
-        this._history.RecordCreation(this.SelectedMap, this._focusedObject);
+        this._focusedObject = this._crudService!.CreateExitGate(this.SelectedMap);
     }
 
     private void CancelCreation()
@@ -673,27 +665,7 @@ public partial class MapEditor : IAsyncDisposable
             return;
         }
 
-        this._history.RecordDeletion(this.SelectedMap, this._focusedObject);
-
-        switch (this._focusedObject)
-        {
-            case MonsterSpawnArea spawnArea:
-                this.SelectedMap.MonsterSpawns.Remove(spawnArea);
-                this._pendingDeletions.Add(spawnArea);
-                break;
-            case EnterGate enterGate:
-                this.SelectedMap.EnterGates.Remove(enterGate);
-                this._pendingDeletions.Add(enterGate);
-                break;
-            case ExitGate exitGate:
-                this.SelectedMap.ExitGates.Remove(exitGate);
-                this._pendingDeletions.Add(exitGate);
-                break;
-            default:
-                // Not supported.
-                return;
-        }
-
+        this._crudService!.RemoveFromMap(this.SelectedMap, this._focusedObject, this._pendingDeletions);
         this._focusedObject = null;
     }
 
@@ -724,6 +696,7 @@ public partial class MapEditor : IAsyncDisposable
         this.SelectedMap = this.Maps.First(m => m.GetId() == mapId);
         this._focusedObject = null;
         this._isInitialized = false;
+        this._createMode = false;
         this._zoomManager = null;
         this._history.Clear();
         this._pendingDeletions.Clear();
@@ -736,10 +709,9 @@ public partial class MapEditor : IAsyncDisposable
             return;
         }
 
-        var duplicate = this._objectFactory!.Duplicate(this._focusedObject, this.SelectedMap);
+        var duplicate = this._crudService!.DuplicateObject(this._focusedObject, this.SelectedMap);
         if (duplicate is not null)
         {
-            this._history.RecordCreation(this.SelectedMap, duplicate);
             this._focusedObject = duplicate;
         }
     }
@@ -815,7 +787,7 @@ public partial class MapEditor : IAsyncDisposable
         }
 
         var objects = this._objectSelector.GetAllObjectsAtPosition(
-            map, x, y, this._activeFilter, this._searchFilter);
+            map, x, y, this._filterService.ActiveFilter, this._filterService.SearchFilter);
 
         if (objects.Count > 0)
         {
@@ -830,27 +802,81 @@ public partial class MapEditor : IAsyncDisposable
         this.StateHasChanged();
     }
 
-    /// <summary>
-    /// Represents the bounding client rectangle of an HTML element.
-    /// </summary>
-    public sealed class BoundingClientRect
+    private async Task ExportMapAsync()
     {
-        /// <summary>Gets or sets the left-edge position relative to the viewport.</summary>
-        public double Left { get; set; }
+        if (this._selectedMap is null)
+        {
+            return;
+        }
 
-        /// <summary>Gets or sets the top-edge position relative to the viewport.</summary>
-        public double Top { get; set; }
+        this._isExporting = true;
+        using var loading = this.LoadingOverlay.ShowLoadingIndicator();
+        try
+        {
+            await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
+
+            var json = this._exportImportService.BuildExport(this._selectedMap);
+            var bytes = Encoding.UTF8.GetBytes(json);
+            var base64 = Convert.ToBase64String(bytes);
+            var fileName = $"map-{this._selectedMap.Number}-spawns.json";
+
+            if (this._jsModule is not null)
+            {
+                await this._jsModule.InvokeVoidAsync("downloadFile", fileName, base64).ConfigureAwait(true);
+            }
+        }
+        finally
+        {
+            this._isExporting = false;
+            await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
+        }
     }
 
-    /// <summary>
-    /// Represents the scroll position of an HTML element.
-    /// </summary>
-    public sealed class ScrollInfo
+    private async Task TriggerFileImportAsync()
     {
-        /// <summary>Gets or sets the horizontal scroll offset in pixels.</summary>
-        public double ScrollLeft { get; set; }
-
-        /// <summary>Gets or sets the vertical scroll offset in pixels.</summary>
-        public double ScrollTop { get; set; }
+        if (this._jsModule is not null)
+        {
+            await this._jsModule.InvokeVoidAsync("triggerFileInput").ConfigureAwait(true);
+        }
     }
+
+    private async Task ImportFileSelected(IFileListEntry[] files)
+    {
+        if (this._selectedMap is null || this.PersistenceContext is null)
+        {
+            return;
+        }
+
+        var file = files.FirstOrDefault();
+        if (file is null)
+        {
+            return;
+        }
+
+        this._isImporting = true;
+        using var loading = this.LoadingOverlay.ShowLoadingIndicator();
+        try
+        {
+            await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
+
+            await using var memoryStream = new MemoryStream();
+            await file.Data.CopyToAsync(memoryStream).ConfigureAwait(true);
+            memoryStream.Position = 0;
+            using var reader = new StreamReader(memoryStream);
+            var json = await reader.ReadToEndAsync().ConfigureAwait(true);
+
+            await this._exportImportService.ApplyImportAsync(this._selectedMap, json, this.PersistenceContext).ConfigureAwait(true);
+
+            this._history.Clear();
+            this._pendingDeletions.Clear();
+            this._focusedObject = null;
+        }
+        finally
+        {
+            this._isImporting = false;
+            await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
+        }
+    }
+
+
 }

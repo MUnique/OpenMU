@@ -444,7 +444,7 @@ public enum UpdateVersion
     /// The version of the <see cref="AddMissingMerchantStoresPlugIn"/>.
     /// </summary>
     AddMissingMerchantStores = 87,
-    
+
     /// <summary>
     /// The version of the <see cref="FinishDarkKnightMasterTreePlugIn075"/>.
     /// </summary>
@@ -459,7 +459,7 @@ public enum UpdateVersion
     /// The version of the <see cref="FinishDarkKnightMasterTreePlugInSeason6"/>.
     /// </summary>
     FinishDarkKnightMasterTreeSeason6 = 90,
-    
+
     /// <summary>
     /// The version of the <see cref="AddWhiteWizardInvasionMobsUpdatePlugIn"/>.
     /// </summary>
@@ -474,4 +474,9 @@ public enum UpdateVersion
     /// The version of the <see cref="AddLorenMarketJuliaWarpPlugIn"/>.
     /// </summary>
     AddLorenMarketJuliaWarp = 93,
+
+    /// <summary>
+    /// The version of the <see cref="AddIsQuestItemFlagPlugIn"/>.
+    /// </summary>
+    AddIsQuestItemFlag = 94,
 }

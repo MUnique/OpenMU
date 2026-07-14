@@ -297,4 +297,19 @@
   <data name="MapEditorShortcutCycle" xml:space="preserve">
     <value>SHIFT + Click to cycle overlapping items</value>
   </data>
+  <data name="MapEditorShortcutDelete" xml:space="preserve">
+    <value>DELETE to remove selected object</value>
+  </data>
+  <data name="ExportMap" xml:space="preserve">
+    <value>Export Map</value>
+  </data>
+  <data name="ImportMap" xml:space="preserve">
+    <value>Import Map</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>No</value>
+  </data>
 </root>

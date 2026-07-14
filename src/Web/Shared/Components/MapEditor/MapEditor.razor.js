@@ -246,6 +246,23 @@ function _onDocumentMouseUp(e) {
     _hasMoved = false;
 }
 
+function _onDocumentKeyDown(e) {
+    if (e.key !== "Delete" && e.key !== "Del") {
+        return;
+    }
+
+    // Don't interfere with text editing in input/textarea/select elements.
+    const tag = e.target.tagName;
+    if (tag === "INPUT" || tag === "TEXTAREA") {
+        return;
+    }
+
+    e.preventDefault();
+    if (_dotNetRef) {
+        _dotNetRef.invokeMethodAsync("OnDeleteKeyPressed");
+    }
+}
+
 /**
  * Initializes the map editor for the given host element.
  * @param {HTMLElement} element - The map host element.
@@ -268,9 +285,11 @@ export function initialize(element, dotNetRef, initialZoom, baseScale) {
     document.removeEventListener("mousedown", _onDocumentMouseDown);
     document.removeEventListener("mousemove", _onDocumentMouseMove);
     document.removeEventListener("mouseup", _onDocumentMouseUp);
+    document.removeEventListener("keydown", _onDocumentKeyDown);
     document.addEventListener("mousedown", _onDocumentMouseDown);
     document.addEventListener("mousemove", _onDocumentMouseMove);
     document.addEventListener("mouseup", _onDocumentMouseUp);
+    document.addEventListener("keydown", _onDocumentKeyDown);
 }
 
 /**
@@ -453,6 +472,31 @@ export function setDragging(dragging) {
 }
 
 /**
+ * Triggers a click on the file input used for importing map spawn data.
+ */
+export function triggerFileInput() {
+    document.getElementById("import-file-input")?.click();
+}
+
+/**
+ * Downloads a base64-encoded byte array as a file via a temporary anchor element.
+ * @param {string} fileName - The suggested download file name.
+ * @param {string} base64 - The base64-encoded file content.
+ */
+export function downloadFile(fileName, base64) {
+    const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+    const blob = new Blob([bytes], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+/**
  * Cleans up the state associated with the map editor module.
  * Called when the Blazor component is disposed.
  */
@@ -460,6 +504,7 @@ export function dispose() {
     document.removeEventListener("mousedown", _onDocumentMouseDown);
     document.removeEventListener("mousemove", _onDocumentMouseMove);
     document.removeEventListener("mouseup", _onDocumentMouseUp);
+    document.removeEventListener("keydown", _onDocumentKeyDown);
     _element = null;
     _dotNetRef = null;
 }

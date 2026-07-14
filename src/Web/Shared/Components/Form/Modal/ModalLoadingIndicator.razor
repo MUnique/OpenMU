@@ -1,47 +1,24 @@
-﻿@using System.Threading
-@using Nito.AsyncEx.Synchronous
-@implements IAsyncDisposable
+﻿@using MUnique.OpenMU.Web.Shared.Services
+@inject LoadingOverlayService LoadingService
+@implements IDisposable
 
-<LoadingIndicator />
-@code
-{
-    private CancellationTokenRegistration _tokenRegistration;
+<LoadingOverlay Visible="@this.LoadingService.IsVisible" />
 
-    /// <summary>
-    /// The reference to the opened modal.
-    /// </summary>
-    [CascadingParameter]
-    BlazoredModalInstance Modal { get; set; } = null!;
-
-    /// <summary>
-    /// The cancellation token which closes this loading indicator.
-    /// </summary>
-    [Parameter]
-    public CancellationToken CancellationToken { get; set; }
-
+@code {
     /// <inheritdoc />
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override void OnInitialized()
     {
-        await base.OnAfterRenderAsync(firstRender);
+        this.LoadingService.StateChanged += this.OnStateChanged;
+    }
 
-        if (this.CancellationToken.IsCancellationRequested)
-        {
-            await this.InvokeAsync(this.Modal.CloseAsync).ConfigureAwait(false);
-            await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
-            return;
-        }
-
-        this._tokenRegistration = this.CancellationToken.Register(() =>
-        {
-            this.InvokeAsync(this.Modal.CloseAsync);
-            this.InvokeAsync(this.StateHasChanged).WaitWithoutException();
-        });
+    private void OnStateChanged()
+    {
+        this.InvokeAsync(this.StateHasChanged);
     }
 
     /// <inheritdoc />
-    public async ValueTask DisposeAsync()
+    public void Dispose()
     {
-        this._tokenRegistration.Unregister();
-        await this._tokenRegistration.DisposeAsync();
+        this.LoadingService.StateChanged -= this.OnStateChanged;
     }
 }

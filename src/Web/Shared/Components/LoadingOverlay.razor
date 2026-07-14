@@ -1,0 +1,15 @@
+@if (this.Visible)
+{
+    <div class="loading-overlay">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">@Resources.Loading</span>
+        </div>
+    </div>
+}
+
+@code {
+
+    [Parameter]
+    public bool Visible { get; set; }
+
+}

@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Items;
 
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.DataModel.Configuration.Quests;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.Interfaces;
@@ -61,6 +62,12 @@ public class PickupItemAction
         }
     }
 
+    private static async ValueTask<(bool Success, Item? StackTarget)> RejectAsync(Player player, string messageKey)
+    {
+        await player.ShowLocalizedBlueMessageAsync(messageKey).ConfigureAwait(false);
+        return (false, null);
+    }
+
     private static bool CanPickup(Player player, ILocateable droppedLocateable)
     {
         if (!player.IsAlive)
@@ -92,6 +99,21 @@ public class PickupItemAction
         return player.Inventory?.Items.Count(item => item.Definition == itemDefinition) >= itemDefinition.StorageLimitPerCharacter;
     }
 
+    private static bool PlayerHasActiveQuestForItem(Player player, Item item)
+    {
+        var questStates = player.SelectedCharacter?.QuestStates;
+        if (questStates is null)
+        {
+            return false;
+        }
+
+        return questStates
+            .Select(q => q.ActiveQuest)
+            .OfType<QuestDefinition>()
+            .SelectMany(q => q.RequiredItems)
+            .Any(r => r.Item == item.Definition && (r.DropItemGroup?.ItemLevel is null || r.DropItemGroup.ItemLevel == item.Level));
+    }
+
     private static async ValueTask<(bool Success, Item? StackTarget)> TryPickupItemAsync(Player player, DroppedItem droppedItem)
     {
         if (!CanPickup(player, droppedItem))
@@ -117,6 +139,23 @@ public class PickupItemAction
         if (slot < InventoryConstants.EquippableSlotsCount)
         {
             return (false, null);
+        }
+
+        if (droppedItem.Item.Definition?.IsQuestItem == true
+            && !PlayerHasActiveQuestForItem(player, droppedItem.Item))
+        {
+            return await RejectAsync(player, nameof(PlayerMessage.ItemDoesNotBelongToYou)).ConfigureAwait(false);
+        }
+
+        if (droppedItem.Item.Definition?.IsBoundToCharacter == true
+            && !droppedItem.IsPlayerAnOwner(player))
+        {
+            return await RejectAsync(player, nameof(PlayerMessage.ItemDoesNotBelongToYou)).ConfigureAwait(false);
+        }
+
+        if (!droppedItem.IsPlayerAnOwner(player) && droppedItem.IsOwnerPickupPriorityActive)
+        {
+            return await RejectAsync(player, nameof(PlayerMessage.ItemDoesNotBelongToYou)).ConfigureAwait(false);
         }
 
         var result = await droppedItem.TryPickUpByAsync(player).ConfigureAwait(false);

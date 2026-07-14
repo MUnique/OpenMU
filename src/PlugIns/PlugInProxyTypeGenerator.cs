@@ -1,4 +1,4 @@
-﻿// <copyright file="PlugInProxyTypeGenerator.cs" company="MUnique">
+// <copyright file="PlugInProxyTypeGenerator.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -65,12 +65,52 @@ internal class PlugInProxyTypeGenerator
     {
         return type.GetMethods()
             .SelectMany(method => method.GetParameters()
-                .Where(p => !string.IsNullOrWhiteSpace(p.ParameterType.Namespace))
-                .Select(p => p.ParameterType.Namespace!)).Distinct();
+                .SelectMany(p => this.GetNamespaces(p.ParameterType)))
+            .Distinct();
+    }
+
+    private IEnumerable<string> GetNamespaces(Type type)
+    {
+        if (type.IsArray)
+        {
+            foreach (var ns in this.GetNamespaces(type.GetElementType()!))
+            {
+                yield return ns;
+            }
+        }
+        else
+        {
+            if (!string.IsNullOrWhiteSpace(type.Namespace))
+            {
+                yield return type.Namespace;
+            }
+
+            if (type.IsGenericType)
+            {
+                foreach (var arg in type.GetGenericArguments())
+                {
+                    foreach (var ns in this.GetNamespaces(arg))
+                    {
+                        yield return ns;
+                    }
+                }
+            }
+        }
     }
 
     private string GetTypeName(Type type)
     {
+        if (type.IsGenericType)
+        {
+            var baseName = type.Name.Split('`')[0];
+            var genericArguments = string.Join(", ", type.GetGenericArguments().Select(this.GetTypeName));
+            if (type.DeclaringType != null)
+            {
+                return this.GetTypeName(type.DeclaringType) + "." + baseName + "<" + genericArguments + ">";
+            }
+            return baseName + "<" + genericArguments + ">";
+        }
+
         if (type.DeclaringType != null)
         {
             return this.GetTypeName(type.DeclaringType) + "." + type.Name;

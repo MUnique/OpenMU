@@ -11,7 +11,7 @@
     left: 0;
     width: 100%;
     max-height: min(68vh, 28rem);
-    z-index: 2200;
+    z-index: 1060;
     overflow-y: auto;
     margin: 0;
     padding: 0.25rem 0;
