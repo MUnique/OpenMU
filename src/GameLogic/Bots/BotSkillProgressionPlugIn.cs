@@ -28,6 +28,24 @@ public class BotSkillProgressionPlugIn : ICharacterLevelUpPlugIn
 {
     private static readonly IncreaseStatsAction IncreaseStatsAction = new();
 
+    private static readonly BotSkillProgressionPlugIn CatchUp = new();
+
+    /// <summary>
+    /// Applies the progression a bot is owed but has not spent, when it enters the world. Points are
+    /// otherwise only invested on a level-up, so a character which was given points while it was not
+    /// playing - a freshly generated one, or one whose level-up handler failed - would carry them around
+    /// unspent until its next level-up and fight with the strength of a much weaker character in the
+    /// meantime. Cheap: only a bot which actually holds points is progressed.
+    /// </summary>
+    /// <param name="player">The bot which entered the world.</param>
+    public static void CatchUpPendingProgress(Player player)
+    {
+        if (player.SelectedCharacter?.LevelUpPoints > 0)
+        {
+            CatchUp.CharacterLeveledUp(player);
+        }
+    }
+
     /// <inheritdoc />
     public void CharacterLeveledUp(Player player)
     {

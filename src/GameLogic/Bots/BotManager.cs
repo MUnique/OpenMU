@@ -79,6 +79,8 @@ public sealed class BotManager
                 return false;
             }
 
+            BotSkillProgressionPlugIn.CatchUpPendingProgress(bot);
+
             bot.Logger.LogInformation("Bot started for account '{LoginName}', character '{Character}'.", loginName, character.Name);
             return true;
         }
