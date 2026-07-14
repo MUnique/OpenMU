@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.Bots;
 
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Offline;
@@ -33,6 +34,21 @@ internal static class BotMasterHandler
     /// level, see <see cref="AddMasterPointAction"/>.
     /// </summary>
     private const int RankUnlockLevel = 10;
+
+    /// <summary>The item groups of the weapons a master bonus can be tied to (see <see cref="WeaponGroupOfBonus"/>).</summary>
+    private const byte SwordGroup = 0;
+
+    /// <summary>The item group of the maces - the scepters live here as well.</summary>
+    private const byte MaceGroup = 2;
+
+    /// <summary>The item group of the spears.</summary>
+    private const byte SpearGroup = 3;
+
+    /// <summary>The item group of the bows and crossbows.</summary>
+    private const byte BowGroup = 4;
+
+    /// <summary>The item group of the staffs - the sticks and books live here as well.</summary>
+    private const byte StaffGroup = 5;
 
     private static readonly AddMasterPointAction AddPointAction = new();
 
@@ -180,7 +196,7 @@ internal static class BotMasterHandler
                             && s.QualifiedCharacters.Contains(characterClass)
                             && character.LearnedSkills.All(l => l.Skill != s)
                             && CanLearn(player, s, character.MasterLevelUpPoints))
-                .OrderBy(s => IsUsefulPick(s, skillList) ? 0 : 1)
+                .OrderBy(s => IsUsefulPick(player, s, skillList) ? 0 : 1)
                 .ThenBy(s => s.MasterDefinition!.Rank)
                 .ThenBy(s => s.Number)
                 .FirstOrDefault() is { } newSkill)
@@ -190,7 +206,7 @@ internal static class BotMasterHandler
 
         return learned
             .Where(l => l.Level < l.Skill!.MasterDefinition!.MaximumLevel)
-            .OrderBy(l => IsUsefulPick(l.Skill!, skillList) ? 0 : 1)
+            .OrderBy(l => IsUsefulPick(player, l.Skill!, skillList) ? 0 : 1)
             .ThenBy(l => l.Skill!.MasterDefinition!.Rank)
             .ThenBy(l => l.Skill!.Number)
             .FirstOrDefault()?.Skill;
@@ -232,13 +248,91 @@ internal static class BotMasterHandler
 
     /// <summary>
     /// A pick is "useful" when it demonstrably does something for this bot: a passive boosting a stat,
-    /// or a strengthener/mastery of a skill the bot actually has in its list. The rest (e.g. weapon
-    /// strengtheners of weapon types the bot doesn't carry) still gets filled, just last.
+    /// or a strengthener/mastery of a skill the bot actually has in its list. A passive tied to a WEAPON
+    /// type the bot does not fight with is not (a bow strengthener does nothing for a bot swinging a
+    /// sword) - those get filled last, after everything which actually helps.
     /// </summary>
-    private static bool IsUsefulPick(Skill skill, ISkillList skillList)
+    private static bool IsUsefulPick(Player player, Skill skill, ISkillList skillList)
     {
         var definition = skill.MasterDefinition!;
-        return definition.TargetAttribute is not null
-               || (definition.ReplacedSkill is { } replaced && skillList.ContainsSkill((ushort)replaced.Number));
+        if (definition.TargetAttribute is { } target)
+        {
+            return WeaponGroupOfBonus(target) is not { } weaponGroup || CarriesWeaponOfGroup(player, weaponGroup);
+        }
+
+        return definition.ReplacedSkill is { } replaced && skillList.ContainsSkill((ushort)replaced.Number);
+    }
+
+    /// <summary>
+    /// The item group of the weapon a master bonus attribute belongs to, or <c>null</c> when the bonus
+    /// helps regardless of the weapon (health, defense, an attack rate, ...). The item groups come from
+    /// the item data: scepters live in the mace group, the Rage Fighter's gloves in the sword group, and
+    /// sticks and books next to the staffs.
+    /// </summary>
+    private static byte? WeaponGroupOfBonus(AttributeDefinition attribute)
+    {
+        if (attribute == Stats.OneHandedSwordBonusDamage
+            || attribute == Stats.TwoHandedSwordStrBonusDamage
+            || attribute == Stats.TwoHandedSwordMasteryBonusDamage
+            || attribute == Stats.GloveWeaponBonusDamage)
+        {
+            return SwordGroup;
+        }
+
+        if (attribute == Stats.MaceBonusDamage
+            || attribute == Stats.MaceMasteryStunChance
+            || attribute == Stats.ScepterStrBonusDamage
+            || attribute == Stats.ScepterMasteryBonusDamage
+            || attribute == Stats.ScepterPetBonusDamage
+            || attribute == Stats.BonusDamageWithScepterCmdDiv)
+        {
+            return MaceGroup;
+        }
+
+        if (attribute == Stats.SpearBonusDamage
+            || attribute == Stats.SpearMasteryDoubleDamageChance)
+        {
+            return SpearGroup;
+        }
+
+        if (attribute == Stats.BowStrBonusDamage
+            || attribute == Stats.CrossBowStrBonusDamage
+            || attribute == Stats.CrossBowMasteryBonusDamage)
+        {
+            return BowGroup;
+        }
+
+        if (attribute == Stats.OneHandedStaffBonusBaseDamage
+            || attribute == Stats.TwoHandedStaffBonusBaseDamage
+            || attribute == Stats.TwoHandedStaffMasteryBonusDamage
+            || attribute == Stats.StickBonusBaseDamage
+            || attribute == Stats.StickMasteryBonusDamage
+            || attribute == Stats.BookBonusBaseDamage)
+        {
+            return StaffGroup;
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Whether the bot fights with a weapon of this item group - what it carries right now, and what its
+    /// build makes it pick up in the future (see <see cref="BotProgression.IsPreferredWeaponGroup"/>), so
+    /// a bot which is momentarily unarmed does not start collecting bonuses for the wrong weapon.
+    /// </summary>
+    private static bool CarriesWeaponOfGroup(Player player, byte weaponGroup)
+    {
+        if (player.Inventory?.GetItem(InventoryConstants.LeftHandSlot)?.Definition is { } weapon
+            && weapon.Group == weaponGroup)
+        {
+            return true;
+        }
+
+        return player.SelectedCharacter is { CharacterClass: { } characterClass } character
+               && BotProgression.IsPreferredWeaponGroup(
+                   characterClass,
+                   character.Name,
+                   BotResetHandler.GetResetConfiguration(player.GameContext) is not null,
+                   weaponGroup);
     }
 }
