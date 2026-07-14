@@ -53,7 +53,9 @@ public class BotProgressionTests
     public void SplitPoints_AllCapped_LeavesPointsUnassigned()
     {
         var weights = new[] { (Stats.BaseStrength, 60), (Stats.BaseAgility, 40) };
-        long CapacityOf(AttributeDefinition stat) => 25;
+
+        // Every stat is capped at the same value, so which one is asked for does not matter.
+        long CapacityOf(AttributeDefinition _) => 25;
 
         var result = BotProgression.SplitPoints(1000, weights, CapacityOf).ToDictionary(r => r.Stat, r => r.Amount);
 

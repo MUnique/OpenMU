@@ -28,7 +28,9 @@ public class BotJewelHandlerTest
     public async ValueTask PrefersBlessOnWeakestUpgradeableItemAsync()
     {
         var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
-        var strongPiece = await AddEquippedItemAsync(player, InventoryConstants.LeftHandSlot, 4).ConfigureAwait(false);
+
+        // The stronger piece is the one the bot must NOT pick, so it only has to be there.
+        await AddEquippedItemAsync(player, InventoryConstants.LeftHandSlot, 4).ConfigureAwait(false);
         var weakPiece = await AddEquippedItemAsync(player, InventoryConstants.RightHandSlot, 2).ConfigureAwait(false);
         var bless = await AddJewelAsync(player, FirstBackpackSlot, ItemConstants.JewelOfBless).ConfigureAwait(false);
         await AddJewelAsync(player, FirstBackpackSlot + 1, ItemConstants.JewelOfSoul).ConfigureAwait(false);
