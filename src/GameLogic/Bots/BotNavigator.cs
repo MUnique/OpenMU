@@ -332,7 +332,7 @@ internal sealed class BotNavigator : AsyncDisposable
         // (shopping, revenge, warping, ground picking) must not run.
         if (this._player.CurrentMiniGame is not null)
         {
-            await this.EvaluateInsideMiniGameAsync(map).ConfigureAwait(false);
+            await this.EvaluateInsideMiniGameAsync(map, cancellationToken).ConfigureAwait(false);
             return;
         }
 
@@ -401,7 +401,7 @@ internal sealed class BotNavigator : AsyncDisposable
             // walker, and a new destination avoids re-stalling on the same blocked path.
             this._lastMoveUtc = DateTime.UtcNow;
             this._emptyGroundSince = null;
-            await this.PickGroundAndTravelAsync(map).ConfigureAwait(false);
+            await this.PickGroundAndTravelAsync(map, cancellationToken).ConfigureAwait(false);
             return;
         }
 
@@ -432,7 +432,7 @@ internal sealed class BotNavigator : AsyncDisposable
         // A shopping trip (selling junk loot, restocking potions with Zen) runs before everything else,
         // so it completes even for party members - the follow logic below would otherwise pull them
         // back to the leader mid-trade.
-        if (await this.TryShoppingAsync(map, inSafezone).ConfigureAwait(false))
+        if (await this.TryShoppingAsync(map, inSafezone, cancellationToken).ConfigureAwait(false))
         {
             return;
         }
@@ -442,7 +442,7 @@ internal sealed class BotNavigator : AsyncDisposable
         // the place of its death. A leader on a revenge march still drags its followers along - the
         // posse a wronged player would bring. Once the revenge is spent or times out, the bot falls
         // back into the routine (and a follower rejoins its group).
-        if (await this.TryRevengeMarchAsync(map).ConfigureAwait(false))
+        if (await this.TryRevengeMarchAsync(map, cancellationToken).ConfigureAwait(false))
         {
             return;
         }
@@ -455,7 +455,7 @@ internal sealed class BotNavigator : AsyncDisposable
         var leaderToFollow = this.GetPartyLeaderToFollow();
         if (leaderToFollow is not null)
         {
-            if (await this.TryFollowLeaderAsync(map, leaderToFollow).ConfigureAwait(false))
+            if (await this.TryFollowLeaderAsync(map, leaderToFollow, cancellationToken).ConfigureAwait(false))
             {
                 return;
             }
@@ -493,7 +493,7 @@ internal sealed class BotNavigator : AsyncDisposable
         {
             this._destination = monsterGround;
             this._hasDestination = true;
-            if (await this.TravelTowardAsync(map, monsterGround).ConfigureAwait(false))
+            if (await this.TravelTowardAsync(map, monsterGround, cancellationToken).ConfigureAwait(false))
             {
                 this._emptyGroundSince = null;
                 return;
@@ -509,7 +509,7 @@ internal sealed class BotNavigator : AsyncDisposable
         // ground in this same tick instead of standing still.
         if (this._hasDestination && this._player.GetDistanceTo(this._destination) > HuntingRange)
         {
-            if (!await this.TravelTowardAsync(map, this._destination).ConfigureAwait(false))
+            if (!await this.TravelTowardAsync(map, this._destination, cancellationToken).ConfigureAwait(false))
             {
                 // Impossible route: drop the destination and wait out the empty-ground grace before
                 // picking another one. Re-picking immediately turned a pocket of unreachable picks
@@ -541,7 +541,7 @@ internal sealed class BotNavigator : AsyncDisposable
             return;
         }
 
-        await this.PickGroundAndTravelAsync(map).ConfigureAwait(false);
+        await this.PickGroundAndTravelAsync(map, cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -550,13 +550,13 @@ internal sealed class BotNavigator : AsyncDisposable
     /// walks up to it and trades - selling junk loot and restocking potions with Zen.
     /// </summary>
     /// <returns>True, if the shopping trip consumed this tick.</returns>
-    private async ValueTask<bool> TryShoppingAsync(GameMap map, bool inSafezone)
+    private async ValueTask<bool> TryShoppingAsync(GameMap map, bool inSafezone, CancellationToken cancellationToken)
     {
         if (this._shoppingTarget is { } target)
         {
             if (this._player.GetDistanceTo(target) > MerchantTalkRange)
             {
-                if (!await this.TravelTowardAsync(map, target).ConfigureAwait(false))
+                if (!await this.TravelTowardAsync(map, target, cancellationToken).ConfigureAwait(false))
                 {
                     // No way to the merchant from here - give up this trip and don't retry every
                     // check interval (an unreachable merchant stays unreachable for a while; a bot
@@ -654,8 +654,9 @@ internal sealed class BotNavigator : AsyncDisposable
     /// next to the bot); a bot that stopped to farm would never arrive within the revenge time.
     /// </summary>
     /// <param name="map">The current map.</param>
+    /// <param name="cancellationToken">The token which aborts the travel wait on shutdown.</param>
     /// <returns>True, if the revenge march consumed this tick.</returns>
-    private async ValueTask<bool> TryRevengeMarchAsync(GameMap map)
+    private async ValueTask<bool> TryRevengeMarchAsync(GameMap map, CancellationToken cancellationToken)
     {
         if (!this._player.TryGetRevengeDestination(map.Definition, out var deathSite))
         {
@@ -682,7 +683,7 @@ internal sealed class BotNavigator : AsyncDisposable
 
         this._destination = deathSite;
         this._hasDestination = true;
-        if (!await this.TravelTowardAsync(map, deathSite).ConfigureAwait(false))
+        if (!await this.TravelTowardAsync(map, deathSite, cancellationToken).ConfigureAwait(false))
         {
             // No walkable route back (e.g. the respawn gate is across a river) - drop the attempt
             // instead of re-issuing an impossible walk every tick.
@@ -701,7 +702,7 @@ internal sealed class BotNavigator : AsyncDisposable
     /// safezone like a player (which removes it from the event), and the event warps the remaining
     /// participants out when it ends.
     /// </summary>
-    private async ValueTask EvaluateInsideMiniGameAsync(GameMap map)
+    private async ValueTask EvaluateInsideMiniGameAsync(GameMap map, CancellationToken cancellationToken)
     {
         // Keep the drinking supplies topped up - an event without potions ends quickly.
         this._player.PendingBotActions.Enqueue(() => this.EnsurePotionsAsync());
@@ -723,7 +724,7 @@ internal sealed class BotNavigator : AsyncDisposable
             && ReferenceEquals(leader.CurrentMap, map)
             && this._player.GetDistanceTo(leader.Position) > FollowDistance)
         {
-            await this.TravelTowardAsync(map, leader.Position).ConfigureAwait(false);
+            await this.TravelTowardAsync(map, leader.Position, cancellationToken).ConfigureAwait(false);
             return;
         }
 
@@ -732,7 +733,7 @@ internal sealed class BotNavigator : AsyncDisposable
         if (!map.GetAttackablesInRange(this._player.Position, TravelStopRange).Any(this.IsEventTarget)
             && this.TryFindNearestEventTargetGround(map, out var ground))
         {
-            await this.TravelTowardAsync(map, ground).ConfigureAwait(false);
+            await this.TravelTowardAsync(map, ground, cancellationToken).ConfigureAwait(false);
         }
     }
 
@@ -808,7 +809,7 @@ internal sealed class BotNavigator : AsyncDisposable
     /// and walks towards the leader when it moved out of the follow range.
     /// </summary>
     /// <returns>True, if following consumed this tick; false, if the bot is close enough and should hunt normally.</returns>
-    private async ValueTask<bool> TryFollowLeaderAsync(GameMap map, Player leader)
+    private async ValueTask<bool> TryFollowLeaderAsync(GameMap map, Player leader, CancellationToken cancellationToken)
     {
         if (!ReferenceEquals(leader.CurrentMap, map))
         {
@@ -869,7 +870,7 @@ internal sealed class BotNavigator : AsyncDisposable
         {
             this._destination = leader.Position;
             this._hasDestination = true;
-            await this.TravelTowardAsync(map, leader.Position).ConfigureAwait(false);
+            await this.TravelTowardAsync(map, leader.Position, cancellationToken).ConfigureAwait(false);
             return true;
         }
 
@@ -1020,7 +1021,7 @@ internal sealed class BotNavigator : AsyncDisposable
     /// issued; the remainder is recomputed from the new position on the next tick. The safe zone is allowed
     /// in the path so the bot can leave town.
     /// </summary>
-    private async ValueTask<bool> TravelTowardAsync(GameMap map, Point destination)
+    private async ValueTask<bool> TravelTowardAsync(GameMap map, Point destination, CancellationToken cancellationToken)
     {
         var position = this._player.Position;
 
@@ -1039,7 +1040,11 @@ internal sealed class BotNavigator : AsyncDisposable
         this._travelPath = null;
 
         IList<PathResultNode>? path;
-        await TravelPathFinderPool.WaitAsync().ConfigureAwait(false);
+
+        // Observe the navigator's shutdown token while queuing for a shared path finder: on dispose the
+        // wait is abandoned at once (the OperationCanceledException is expected and handled in
+        // SafeEvaluateAsync) instead of holding the tick until a finder frees up.
+        await TravelPathFinderPool.WaitAsync(cancellationToken).ConfigureAwait(false);
         PathFinder? finder = null;
         try
         {
@@ -1099,7 +1104,7 @@ internal sealed class BotNavigator : AsyncDisposable
     /// Picks a hunting ground and starts walking to it. If the chosen ground turns out to be unreachable the
     /// destination is dropped, so the next call (next tick) simply picks another one.
     /// </summary>
-    private async ValueTask PickGroundAndTravelAsync(GameMap map)
+    private async ValueTask PickGroundAndTravelAsync(GameMap map, CancellationToken cancellationToken)
     {
         if (!this.TryPickHuntingGround(map, out var ground, out var groundLevel))
         {
@@ -1117,7 +1122,7 @@ internal sealed class BotNavigator : AsyncDisposable
             ground,
             groundLevel);
 
-        if (!await this.TravelTowardAsync(map, ground).ConfigureAwait(false))
+        if (!await this.TravelTowardAsync(map, ground, cancellationToken).ConfigureAwait(false))
         {
             this._hasDestination = false;
         }
