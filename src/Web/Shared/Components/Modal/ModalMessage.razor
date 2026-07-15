@@ -3,6 +3,15 @@
 @code {
 
     /// <summary>
+    /// Gets or sets the modal instance. The <see cref="ModalContainer"/> passes this to
+    /// every modal content component, so it must be declared here even though a plain
+    /// message doesn't use it - otherwise Blazor throws "does not have a property
+    /// matching the name 'Modal'".
+    /// </summary>
+    [Parameter]
+    public ModalInstance Modal { get; set; } = null!;
+
+    /// <summary>
     /// Gets or sets the text.
     /// </summary>
     [Parameter]
