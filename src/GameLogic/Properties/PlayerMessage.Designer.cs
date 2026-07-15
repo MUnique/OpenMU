@@ -405,9 +405,9 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>
         ///   Looks up a localized string similar to You&apos;re strong enough on your own..
         /// </summary>
-        public static string ElfSoldierStrongEnoughMessage {
+        public static string CharacterTooStrongMessage {
             get {
-                return ResourceManager.GetString("ElfSoldierStrongEnoughMessage", resourceCulture);
+                return ResourceManager.GetString("CharacterTooStrongMessage", resourceCulture);
             }
         }
         
@@ -1812,6 +1812,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string StatsResetSuccessfully {
             get {
                 return ResourceManager.GetString("StatsResetSuccessfully", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You are not strong enough for this buff yet..
+        /// </summary>
+        public static string CharacterNotStrongEnoughMessage {
+            get {
+                return ResourceManager.GetString("CharacterNotStrongEnoughMessage", resourceCulture);
             }
         }
     }

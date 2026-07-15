@@ -423,6 +423,12 @@ public sealed class Party : AsyncDisposable
             if (!shouldDispose)
             {
                 this._partyMembers = this._partyMembers.Where(m => m != member).ToArray();
+
+                // If the party master is leaving, assign the new master to the first remaining member.
+                if (this.PartyMaster == member && this._partyMembers.Length > 0)
+                {
+                    this.PartyMaster = this._partyMembers[0];
+                }
             }
         }
 

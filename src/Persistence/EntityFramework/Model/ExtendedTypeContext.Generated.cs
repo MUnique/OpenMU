@@ -40,6 +40,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.SkillEntry>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.AreaSkillSettings>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.BattleZoneDefinition>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Buff>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.CharacterClass>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.ChatServerDefinition>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.ChatServerEndpoint>();
@@ -129,6 +130,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Entity<BattleZoneDefinition>().HasOne(entity => entity.RawGround).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<BattleZoneDefinition>().HasOne(entity => entity.RawLeftGoal).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<BattleZoneDefinition>().HasOne(entity => entity.RawRightGoal).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<Buff>().HasOne(entity => entity.RawMagicEffectDefinition).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<CharacterClass>().HasMany(entity => entity.RawStatAttributes).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<CharacterClass>().HasMany(entity => entity.RawAttributeCombinations).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<CharacterClass>().HasMany(entity => entity.RawBaseAttributeValues).WithOne().OnDelete(DeleteBehavior.Cascade);
@@ -179,6 +181,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Entity<MonsterDefinition>().HasMany(entity => entity.RawItemCraftings).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<MonsterDefinition>().HasMany(entity => entity.RawAttributes).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<MonsterDefinition>().HasMany(entity => entity.RawQuests).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<MonsterDefinition>().HasMany(entity => entity.RawBuffs).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Skill>().HasMany(entity => entity.RawRequirements).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Skill>().HasMany(entity => entity.RawConsumeRequirements).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Skill>().HasMany(entity => entity.RawAttributeRelationships).WithOne().OnDelete(DeleteBehavior.Cascade);
