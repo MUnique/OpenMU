@@ -203,6 +203,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <inheritdoc/>
     public ushort Id { get; set; }
 
+    /// <summary>
+    /// Gets or sets a custom login result to override the default when login fails.
+    /// </summary>
+    public Views.Login.LoginResult? LoginResultOverride { get; set; }
+
     /// <inheritdoc cref="IPartyMember" />
     public string Name => this.SelectedCharacter?.Name ?? string.Empty;
 

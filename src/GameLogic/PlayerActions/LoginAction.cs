@@ -189,7 +189,9 @@ public class LoginAction
 
     private async ValueTask HandleAlreadyConnectedAsync(Player player, string username)
     {
-        await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.AccountAlreadyConnected)).ConfigureAwait(false);
+        var result = player.LoginResultOverride ?? LoginResult.AccountAlreadyConnected;
+        player.LoginResultOverride = null;
+        await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(result)).ConfigureAwait(false);
         if (player.GameContext is IGameServerContext gameServerContext)
         {
             await gameServerContext.EventPublisher.PlayerAlreadyLoggedInAsync(gameServerContext.Id, username).ConfigureAwait(false);
