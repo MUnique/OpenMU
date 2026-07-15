@@ -36,6 +36,14 @@ public partial class AutoForm<T>
     public EventCallback OnValidSubmit { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the form is in a processing state,
+    /// e.g. while saving data. When <see langword="true" />, the save button is
+    /// disabled and shows a spinner.
+    /// </summary>
+    [Parameter]
+    public bool IsProcessing { get; set; }
+
+    /// <summary>
     /// Gets or sets the callback invoked when the cancel button is clicked.
     /// When <see langword="null"/>, the cancel button is not rendered.
     /// </summary>

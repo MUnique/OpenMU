@@ -19,7 +19,13 @@
         <AutoFields HideCollections="@this.HideCollections" SearchTerm="@this._currentSearchTerm" />
         <ValidationSummary />
         <div class="form-actions">
-            <button type="submit" class="btn btn-primary">Save</button>
+            <button type="submit" class="btn btn-primary" disabled="@this.IsProcessing">
+                @if (this.IsProcessing)
+                {
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                }
+                @Resources.Save
+            </button>
             @if (this.OnRefresh != null)
             {
                 <button type="button" class="btn btn-secondary" @onclick="this.OnRefresh.Value" >@Resources.Refresh</button>

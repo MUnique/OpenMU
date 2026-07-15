@@ -16,6 +16,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
+using MUnique.OpenMU.Web.Shared.Services;
 
 /// <summary>
 /// Razor page which shows objects of the specified type in a grid.
@@ -67,6 +68,12 @@ public partial class Merchants : ComponentBase, IAsyncDisposable
     /// </summary>
     [Inject]
     public ILogger<Merchants> Logger { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the loading overlay service.
+    /// </summary>
+    [Inject]
+    public LoadingOverlayService LoadingService { get; set; } = null!;
 
     private IQueryable<MerchantStorageViewModel>? ViewModels => this._viewModels?.AsQueryable();
 
@@ -134,6 +141,7 @@ public partial class Merchants : ComponentBase, IAsyncDisposable
 
     private async Task LoadDataAsync(CancellationToken cancellationToken)
     {
+        using var loading = this.LoadingService.ShowLoadingIndicator();
         try
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -192,8 +200,13 @@ public partial class Merchants : ComponentBase, IAsyncDisposable
     {
         if (this._persistenceContext?.HasChanges is true)
         {
+            var previousMerchantId = this._selectedMerchant?.Id;
             await this.DataSource.DiscardChangesAsync().ConfigureAwait(true);
             await this.LoadDataAsync(this._disposeCts?.Token ?? default).ConfigureAwait(true);
+            if (previousMerchantId is { } id && this._viewModels is not null)
+            {
+                this._selectedMerchant = this._viewModels.FirstOrDefault(vm => vm.Id == id);
+            }
         }
     }
 
