@@ -12,9 +12,6 @@ using MUnique.OpenMU.GameLogic.Attributes;
 /// <summary>
 /// Initializer which initializes the wizardry enhance effect.
 /// </summary>
-/// <remarks>
-/// It includes all attributes which are enhanced by the wizardry skill and its master skills.
-/// </remarks>
 public class WizardryEnhanceEffectInitializer : InitializerBase
 {
     /// <summary>
@@ -39,30 +36,18 @@ public class WizardryEnhanceEffectInitializer : InitializerBase
         magicEffect.SendDuration = false;
         magicEffect.StopByDeath = true;
         magicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
-        magicEffect.Duration.ConstantValue.Value = 1200f; // 20 minutes
+        magicEffect.Duration.ConstantValue.Value = 1800f; // 30 minutes
 
-        var powerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
-        magicEffect.PowerUpDefinitions.Add(powerUpDefinition);
-        powerUpDefinition.TargetAttribute = Stats.MinimumWizBaseDmg.GetPersistent(this.GameConfiguration);
+        var minWizDmgPowerUp = this.Context.CreateNew<PowerUpDefinition>();
+        magicEffect.PowerUpDefinitions.Add(minWizDmgPowerUp);
+        minWizDmgPowerUp.TargetAttribute = Stats.MinimumWizBaseDmg.GetPersistent(this.GameConfiguration);
+        minWizDmgPowerUp.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        minWizDmgPowerUp.Boost.MaximumValue = 100f; // 100 dmg
 
-        powerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-        powerUpDefinition.Boost.ConstantValue.Value = 1.2f;
-        powerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
-
-        var powerUpDefinition2 = this.Context.CreateNew<PowerUpDefinition>();
-        magicEffect.PowerUpDefinitions.Add(powerUpDefinition2);
-        powerUpDefinition2.TargetAttribute = Stats.MaximumWizBaseDmg.GetPersistent(this.GameConfiguration);
-
-        powerUpDefinition2.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-        powerUpDefinition2.Boost.ConstantValue.Value = 1f;
-        powerUpDefinition2.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
-
-        var powerUpDefinition3 = this.Context.CreateNew<PowerUpDefinition>();
-        magicEffect.PowerUpDefinitions.Add(powerUpDefinition3);
-        powerUpDefinition3.TargetAttribute = Stats.CriticalDamageChance.GetPersistent(this.GameConfiguration);
-
-        powerUpDefinition3.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-        powerUpDefinition3.Boost.ConstantValue.Value = 1f;
-        powerUpDefinition3.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
+        var minWizDmgPerEnergy = this.Context.CreateNew<AttributeRelationship>();
+        minWizDmgPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
+        minWizDmgPerEnergy.InputOperator = InputOperator.Multiply;
+        minWizDmgPerEnergy.InputOperand = 0.2f / 9; // 45 energy adds 1 min wiz damage
+        minWizDmgPowerUp.Boost.RelatedValues.Add(minWizDmgPerEnergy);
     }
 }

@@ -219,6 +219,12 @@
   <data name="HitHandlerPlugIn075_Description" xml:space="preserve">
     <value>Handler for hit packets.</value>
   </data>
+    <data name="MagicEffectCancelHandlerPlugIn_Name" xml:space="preserve">
+    <value>Magic Effect Cancel Handler</value>
+  </data>
+    <data name="MagicEffectCancelHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for magic effect cancel packets.</value>
+  </data>
   <data name="TalkNpcHandlerPlugIn_Name" xml:space="preserve">
     <value>Talk Npc Handler</value>
   </data>

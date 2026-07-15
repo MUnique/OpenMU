@@ -479,9 +479,14 @@ public enum UpdateVersion
     /// The version of the <see cref="AddIsQuestItemFlagPlugIn"/>.
     /// </summary>
     AddIsQuestItemFlag = 94,
-
+    
     /// <summary>
     /// The version of the <see cref="AddElfSoldierBuffPlugIn"/>.
     /// </summary>
     AddElfSoldierBuff = 95,
+    
+    /// <summary>
+    /// The version of the <see cref="FinishDarkWizardMasterTreePlugIn"/>.
+    /// </summary>
+    FinishDarkWizardMasterTree = 96,
 }
