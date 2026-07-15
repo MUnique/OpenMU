@@ -55,7 +55,7 @@ public class ShowSkillAnimationPlugIn : IShowSkillAnimationPlugIn
         }
 
         var playerId = attacker.GetId(this._player);
-        var targetId = target.GetId(this._player);
+        var targetId = target is { } t ? (effectApplied ? (ushort)(t.GetId(this._player) | 0x8000) : t.GetId(this._player)) : (ushort)0;
         var skillId = NumberConversionExtensions.ToUnsigned(skillNumber);
         await this._player.Connection.SendSkillAnimationAsync(skillId, playerId, targetId).ConfigureAwait(false);
     }

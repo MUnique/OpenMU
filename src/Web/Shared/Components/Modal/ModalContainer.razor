@@ -82,7 +82,15 @@
 
         if (this.ModalService.Current is { } current)
         {
-            result["Modal"] = current.Instance;
+            // Only supply the Modal instance to content components that actually declare
+            // a matching parameter (e.g. ModalQuestion). Passing it to a component that
+            // doesn't - like the plain ModalMessage - makes Blazor throw "does not have a
+            // property matching the name 'Modal'". This keeps simple modals boilerplate-free.
+            var modalProperty = current.ComponentType.GetProperty("Modal");
+            if (modalProperty is not null && modalProperty.PropertyType.IsAssignableFrom(typeof(ModalInstance)))
+            {
+                result["Modal"] = current.Instance;
+            }
         }
         return result;
     }

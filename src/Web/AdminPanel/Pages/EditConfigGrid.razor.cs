@@ -81,6 +81,12 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
     public ILogger<EditConfigGrid> Logger { get; set; } = null!;
 
     /// <summary>
+    /// Gets or sets the loading overlay service.
+    /// </summary>
+    [Inject]
+    public LoadingOverlayService LoadingService { get; set; } = null!;
+
+    /// <summary>
     /// Gets or sets the type.
     /// </summary>
     private Type? Type { get; set; }
@@ -145,6 +151,7 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
 
     private async Task LoadDataAsync(CancellationToken cancellationToken)
     {
+        using var loading = this.LoadingService.ShowLoadingIndicator();
         cancellationToken.ThrowIfCancellationRequested();
         if (this.Type is null)
         {

@@ -98,6 +98,44 @@ public class PartyTest
         Assert.That(party.PartyList, Does.Not.Contain(partyMaster));
         Assert.That(partyMember.Party, Is.SameAs(party));
         Assert.That(party.PartyList, Has.Count.EqualTo(2));
+
+        // A new party master should have been assigned.
+        Assert.That(party.PartyMaster, Is.Not.Null);
+        Assert.That(party.PartyMaster, Is.SameAs(partyMember));
+    }
+
+    /// <summary>
+    /// Tests if the party master role stays the same when a non-master is kicked.
+    /// </summary>
+    [Test]
+    public async ValueTask PartyMemberKickByMasterMasterRemainsMasterAsync()
+    {
+        var party = await this.CreatePartyWithMembersAsync(3).ConfigureAwait(false);
+        var partyMaster = party.PartyList[0];
+        var partyMember = party.PartyList[1];
+
+        await this._kickAction.KickPlayerAsync((Player)partyMaster, GetPartyMemberIndex(party, partyMember)).ConfigureAwait(false);
+        Assert.That(party.PartyMaster, Is.SameAs(partyMaster));
+        Assert.That(party.PartyList, Has.Count.EqualTo(2));
+    }
+
+    /// <summary>
+    /// Tests if the first remaining member becomes the new party master when the master leaves.
+    /// </summary>
+    [Test]
+    public async ValueTask PartyMasterLeavesAndFirstMemberBecomesNewMasterAsync()
+    {
+        var party = await this.CreatePartyWithMembersAsync(4).ConfigureAwait(false);
+        var partyMaster = party.PartyList[0];
+        var firstRemainingMember = party.PartyList[1];
+
+        await this._kickAction.KickPlayerAsync((Player)partyMaster, GetPartyMemberIndex(party, partyMaster)).ConfigureAwait(false);
+
+        Assert.That(partyMaster.Party, Is.Null);
+        Assert.That(party.PartyList, Does.Not.Contain(partyMaster));
+        Assert.That(party.PartyList, Has.Count.EqualTo(3));
+        Assert.That(party.PartyList[0], Is.SameAs(firstRemainingMember));
+        Assert.That(party.PartyMaster, Is.SameAs(firstRemainingMember));
     }
 
     /// <summary>

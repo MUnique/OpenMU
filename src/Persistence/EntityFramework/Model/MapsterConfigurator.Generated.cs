@@ -83,6 +83,9 @@ public static class MapsterConfigurator
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.BattleZoneDefinition, MUnique.OpenMU.DataModel.Configuration.BattleZoneDefinition>()
             .Include<BattleZoneDefinition, BasicModel.BattleZoneDefinition>();
 
+        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.Buff, MUnique.OpenMU.DataModel.Configuration.Buff>()
+            .Include<Buff, BasicModel.Buff>();
+
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.CharacterClass, MUnique.OpenMU.DataModel.Configuration.CharacterClass>()
             .Include<CharacterClass, BasicModel.CharacterClass>();
 
