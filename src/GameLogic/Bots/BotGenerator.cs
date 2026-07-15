@@ -28,6 +28,17 @@ using MUnique.OpenMU.Persistence;
 internal sealed class BotGenerator
 {
     private const string LoginPrefix = "bot";
+
+    /// <summary>
+    /// BCrypt work factor for a bot account's password. The password is a random <see cref="Guid"/>
+    /// which is discarded immediately and never used to log in - a bot is a connection-less
+    /// <c>OfflinePlayer</c>, so no client ever authenticates against it. A minimal factor is therefore
+    /// safe (a 128-bit random secret is infeasible to brute-force regardless of the factor) and keeps
+    /// generating a large population from becoming a multi-minute BCrypt bottleneck, while still storing
+    /// a valid BCrypt hash. The default factor is kept for real accounts.
+    /// </summary>
+    private const int BotPasswordWorkFactor = 4;
+
     private const int MinLevel = 10;
 
     /// <summary>
@@ -147,7 +158,7 @@ internal sealed class BotGenerator
 
             var account = context.CreateNew<Account>();
             account.LoginName = loginName;
-            account.PasswordHash = BCrypt.Net.BCrypt.HashPassword(Guid.NewGuid().ToString());
+            account.PasswordHash = BCrypt.Net.BCrypt.HashPassword(Guid.NewGuid().ToString(), BotPasswordWorkFactor);
             account.IsBot = true;
             account.Vault = context.CreateNew<ItemStorage>();
 
