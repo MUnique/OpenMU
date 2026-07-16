@@ -48,10 +48,8 @@ public class BotConfiguration
 
     /// <summary>
     /// Gets or sets the number of bot accounts. Together with <see cref="MaxCharactersPerAccount"/>
-    /// this defines the bot population, e.g. 10 accounts × 5 characters = 50 bot characters.
+    /// this defines the generated bot population, e.g. 10 accounts × 5 characters = 50 bot characters.
     /// </summary>
-    /// <remarks>Used by the generation step (next phase). The proof of concept animates the
-    /// accounts listed in <see cref="ProofOfConceptAccounts"/> instead.</remarks>
     [Display(Name = "Number of accounts", Description = "How many bot accounts to maintain.")]
     [Range(0, 1000)]
     public int NumberOfAccounts { get; set; } = 10;
@@ -87,10 +85,12 @@ public class BotConfiguration
 
     /// <summary>
     /// Gets or sets a comma separated list of login names of existing accounts to animate as bots.
-    /// This is the proof-of-concept entry point: every listed account gets a bot driving its
-    /// first character. A later phase replaces this with generated, persistent bot accounts.
+    /// This is an optional extra hook alongside the generated population (see
+    /// <see cref="NumberOfAccounts"/>): every listed account gets a bot driving its first character.
+    /// These accounts are animated as-is and are not part of the partitioned, capacity-limited
+    /// population, so leave it empty unless you specifically want to drive existing accounts.
     /// </summary>
-    [Display(Name = "Proof of concept accounts", Description = "Comma separated login names of existing accounts to animate as bots (PoC).")]
+    [Display(Name = "Extra accounts to animate", Description = "Comma separated login names of existing accounts to animate as bots, in addition to the generated population.")]
     public string ProofOfConceptAccounts { get; set; } = string.Empty;
 
     /// <summary>
