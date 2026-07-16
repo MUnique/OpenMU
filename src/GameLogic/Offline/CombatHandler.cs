@@ -77,9 +77,11 @@ public sealed class CombatHandler
 
     /// <summary>
     /// Cache of the combat-relevant stats of monster definitions (config data, immutable at runtime),
-    /// so the safety checks of hundreds of bots don't re-scan the attribute lists every tick.
+    /// so the safety checks of hundreds of bots don't re-scan the attribute lists every tick. Keyed by
+    /// the monster number rather than the definition instance, so a configuration reload (which builds
+    /// new <see cref="MonsterDefinition"/> instances) reuses the entries instead of orphaning them.
     /// </summary>
-    private static readonly ConcurrentDictionary<MonsterDefinition, (int Level, float AverageDamage, float Defense, float Health, float AttackRate)> MonsterStatsCache = new();
+    private static readonly ConcurrentDictionary<short, (int Level, float AverageDamage, float Defense, float Health, float AttackRate)> MonsterStatsCache = new();
 
     private readonly OfflinePlayer _player;
     private readonly IMuHelperSettings? _config;
@@ -328,15 +330,18 @@ public sealed class CombatHandler
 
     private static (int Level, float AverageDamage, float Defense, float Health, float AttackRate) GetMonsterCombatStats(MonsterDefinition monster)
     {
-        return MonsterStatsCache.GetOrAdd(monster, static m =>
-        {
-            float GetValue(AttributeDefinition attribute)
-                => m.Attributes.FirstOrDefault(a => a.AttributeDefinition == attribute)?.Value ?? 0f;
+        return MonsterStatsCache.GetOrAdd(
+            monster.Number,
+            static (_, m) =>
+            {
+                float GetValue(AttributeDefinition attribute)
+                    => m.Attributes.FirstOrDefault(a => a.AttributeDefinition == attribute)?.Value ?? 0f;
 
-            var level = (int)GetValue(Stats.Level);
-            var averageDamage = (GetValue(Stats.MinimumPhysBaseDmg) + GetValue(Stats.MaximumPhysBaseDmg)) / 2f;
-            return (level, averageDamage, GetValue(Stats.DefenseBase), GetValue(Stats.MaximumHealth), GetValue(Stats.AttackRatePvm));
-        });
+                var level = (int)GetValue(Stats.Level);
+                var averageDamage = (GetValue(Stats.MinimumPhysBaseDmg) + GetValue(Stats.MaximumPhysBaseDmg)) / 2f;
+                return (level, averageDamage, GetValue(Stats.DefenseBase), GetValue(Stats.MaximumHealth), GetValue(Stats.AttackRatePvm));
+            },
+            monster);
     }
 
     /// <summary>
