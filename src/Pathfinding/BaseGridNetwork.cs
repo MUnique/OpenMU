@@ -110,6 +110,7 @@ public abstract class BaseGridNetwork : INetwork
 
             if (newNode.Status == NodeStatus.Open && newNode.CostUntilNow <= newG)
             {
+                // The current node has less cost than the previous? then skip this node
                 continue;
             }
 

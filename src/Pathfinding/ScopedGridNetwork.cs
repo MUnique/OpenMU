@@ -82,10 +82,7 @@ public sealed class ScopedGridNetwork : BaseGridNetwork
         var maxX = offsetX + this._actualSegmentSideLength;
         var maxY = offsetY + this._actualSegmentSideLength;
 
-        // Note: x and y must be wider than byte. offsetX/offsetY can be clamped so that
-        // maxX/maxY equal 256 (grid width/height, since coordinates are bytes 0-255), and a
-        // byte loop counter would overflow back to 0 instead of terminating, eventually
-        // producing an out-of-range index below.
+        // Must use int; a byte loop counter wraps at 256 and would not terminate.
         for (int x = offsetX; x < maxX; ++x)
         {
             for (int y = offsetY; y < maxY; ++y)
