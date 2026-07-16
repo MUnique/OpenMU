@@ -15,7 +15,7 @@ using MUnique.OpenMU.Persistence.Initialization.Skills;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// This update completes the elf master tree and fixes some of its skill values.
+/// This update completes the elf master tree and fixes some of its skill values. It also adds the missing extra projectile (4th) on some higher level (cross)bows.
 /// </summary>
 [PlugIn]
 [Display(Name = PlugInName, Description = PlugInDescription)]
@@ -30,7 +30,7 @@ public class FinishElfMasterTreePlugIn : UpdatePlugInBase
     /// <summary>
     /// The plug in description.
     /// </summary>
-    internal const string PlugInDescription = "This update completes the elf master tree and fixes some of its skill values.";
+    internal const string PlugInDescription = "This update completes the elf master tree and fixes some of its skill values. It also adds the missing extra projectile (4th) on some higher level (cross)bows.";
 
     /// <inheritdoc />
     public override UpdateVersion Version => UpdateVersion.FinishElfMasterTree;
