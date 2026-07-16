@@ -77,7 +77,10 @@ public sealed class BotPlayer : OfflinePlayer
     {
         if (Interlocked.Increment(ref this._consecutiveTickFailures) == ConsecutiveFailuresUntilRestart)
         {
-            // Only when the counter HITS the threshold, so the log gets one line, not one per tick.
+            // Deliberately '==', not '>=': this arms the restart exactly once, at the tick that crosses
+            // the threshold, so the log gets one line and the flag is raised once. Further failures keep
+            // incrementing the counter (which stays above the threshold) but don't re-fire; the
+            // maintenance pass consumes AwaitsFaultRestart and the restart resets the counter to 0.
             this.Logger.LogWarning(
                 "Bot '{Name}' failed {Count} AI ticks in a row and gets restarted to heal it.",
                 this.Name,
