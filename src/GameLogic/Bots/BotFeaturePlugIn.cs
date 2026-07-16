@@ -50,6 +50,24 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
     /// </summary>
     private readonly ConcurrentDictionary<IGameContext, ServerState> _states = new();
 
+    /// <summary>
+    /// The phase of a game server's single startup pass. The periodic task timer fires every second
+    /// WITHOUT awaiting the previous invocation, so during the minutes-long generation/spawn further
+    /// ticks arrive concurrently - they must neither re-enter the startup nor run the maintenance
+    /// (e.g. the presence rotation) against a half-spawned population.
+    /// </summary>
+    private enum StartupPhase
+    {
+        /// <summary>The startup has not run yet.</summary>
+        NotStarted = 0,
+
+        /// <summary>The startup (generation and spawn) is in progress.</summary>
+        InProgress = 1,
+
+        /// <summary>The startup is done; the server is in maintenance mode.</summary>
+        Done = 2,
+    }
+
     /// <inheritdoc />
     public BotConfiguration? Configuration { get; set; }
 
@@ -57,14 +75,14 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
     public async ValueTask ExecuteTaskAsync(GameContext gameContext)
     {
         var state = this._states.GetOrAdd(gameContext, _ => new ServerState());
-        if (state.StartupState == 2)
+        if (state.StartupState == (int)StartupPhase.Done)
         {
             await this.RunMaintenanceAsync(gameContext, state).ConfigureAwait(false);
             return;
         }
 
         if (DateTime.UtcNow < state.NextRunUtc
-            || Interlocked.CompareExchange(ref state.StartupState, 1, 0) != 0)
+            || Interlocked.CompareExchange(ref state.StartupState, (int)StartupPhase.InProgress, (int)StartupPhase.NotStarted) != (int)StartupPhase.NotStarted)
         {
             return;
         }
@@ -73,7 +91,7 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
         if (!configuration.Enabled)
         {
             // Not spawned - re-check on the following ticks, the feature may get enabled later.
-            Interlocked.Exchange(ref state.StartupState, 0);
+            Interlocked.Exchange(ref state.StartupState, (int)StartupPhase.NotStarted);
             return;
         }
 
@@ -85,7 +103,7 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
         {
             // Like before: the startup runs once, even when parts of it failed (the errors are
             // logged); the maintenance pass takes over from here.
-            Interlocked.Exchange(ref state.StartupState, 2);
+            Interlocked.Exchange(ref state.StartupState, (int)StartupPhase.Done);
         }
     }
 
@@ -501,11 +519,9 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
     private sealed class ServerState
     {
         /// <summary>
-        /// 0 = startup not run yet, 1 = startup in progress, 2 = startup done (maintenance mode).
-        /// The periodic task timer fires every second WITHOUT awaiting the previous invocation, so
-        /// during the minutes-long generation/spawn further ticks arrive concurrently - they must
-        /// neither re-enter the startup nor run the maintenance (e.g. the presence rotation) against
-        /// a half-spawned population. Interlocked-updated, hence a field.
+        /// The <see cref="StartupPhase"/> of this server, as a raw <see cref="int"/>: it is transitioned
+        /// with <see cref="Interlocked"/>, which has no overload for arbitrary enum types, so the field
+        /// stays an <see cref="int"/> and the phase constants are cast at the call sites.
         /// </summary>
         private int _startupState;
 
