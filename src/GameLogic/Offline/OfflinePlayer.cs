@@ -55,8 +55,13 @@ public class OfflinePlayer : Player
 
     private OfflinePlayerMuHelper? _intelligence;
     private Task? _intelligenceDisposeTask;
-    private Player? _lastAggressor;
-    private DateTime _lastAggressionUtc;
+
+    /// <summary>
+    /// The player who most recently attacked this bot, with the time of that attack. Written from the
+    /// attack path and read from the AI tick; immutable and written atomically (a single reference
+    /// store), so the two can access it without a lock and without a torn <see cref="DateTime"/> read.
+    /// </summary>
+    private volatile Aggression? _aggression;
 
     /// <summary>
     /// The pending (not yet armed, <see cref="RevengeState.ExpiresAtUtc"/> is null) or armed revenge.
@@ -115,12 +120,12 @@ public class OfflinePlayer : Player
     {
         get
         {
-            if (this._lastAggressor is { } aggressor
-                && DateTime.UtcNow - this._lastAggressionUtc <= AggressionMemory
-                && aggressor.IsAlive
-                && !aggressor.IsAtSafezone())
+            if (this._aggression is { } aggression
+                && DateTime.UtcNow - aggression.AtUtc <= AggressionMemory
+                && aggression.Aggressor.IsAlive
+                && !aggression.Aggressor.IsAtSafezone())
             {
-                return aggressor;
+                return aggression.Aggressor;
             }
 
             return null;
@@ -219,8 +224,7 @@ public class OfflinePlayer : Player
     /// <param name="aggressor">The player who attacked this bot.</param>
     internal void RegisterAggressor(Player aggressor)
     {
-        this._lastAggressor = aggressor;
-        this._lastAggressionUtc = DateTime.UtcNow;
+        this._aggression = new Aggression(aggressor, DateTime.UtcNow);
     }
 
     /// <summary>
@@ -466,4 +470,9 @@ public class OfflinePlayer : Player
     /// A death site the bot avoids when picking hunting grounds, after repeated deaths there.
     /// </summary>
     private sealed record DeathSite(Point Position, GameMapDefinition Map, DateTime AvoidUntilUtc);
+
+    /// <summary>
+    /// The most recent aggression against this bot: who attacked and when.
+    /// </summary>
+    private sealed record Aggression(Player Aggressor, DateTime AtUtc);
 }
