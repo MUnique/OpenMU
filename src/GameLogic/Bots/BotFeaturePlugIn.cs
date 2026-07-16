@@ -466,10 +466,6 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
     }
 
     /// <summary>
-    /// The bot feature's state of ONE game server: its own population share, its own bots, and its own
-    /// startup and maintenance schedule (see <see cref="_states"/>).
-    /// </summary>
-    /// <summary>
     /// Persists the current configuration back to its <see cref="PlugInConfiguration"/> row, so a
     /// programmatic change (e.g. clearing the reset flag) survives a restart.
     /// </summary>
