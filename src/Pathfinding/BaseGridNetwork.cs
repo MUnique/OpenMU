@@ -90,13 +90,18 @@ public abstract class BaseGridNetwork : INetwork
             newX = (byte)(node.X + DirectionOffsets[i, 0]);
             newY = (byte)(node.Y + DirectionOffsets[i, 1]);
 
+            if (!this.IsWithinBounds(newX, newY))
+            {
+                continue;
+            }
+
             if (!this._includeSafezone && (grid[newX, newY] & SafezoneBitFlag) > 0)
             {
                 continue;
             }
 
             var costToNode = grid[newX, newY] & CostBitMask;
-            if (!this.IsWithinBounds(newX, newY) || costToNode == UnreachableGridNodeValue)
+            if (costToNode == UnreachableGridNodeValue)
             {
                 continue;
             }

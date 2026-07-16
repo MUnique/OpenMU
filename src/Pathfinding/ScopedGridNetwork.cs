@@ -82,16 +82,25 @@ public sealed class ScopedGridNetwork : BaseGridNetwork
         var maxX = offsetX + this._actualSegmentSideLength;
         var maxY = offsetY + this._actualSegmentSideLength;
 
-        for (byte x = offsetX; x < maxX; ++x)
+        // Note: x and y must be wider than byte. offsetX/offsetY can be clamped so that
+        // maxX/maxY equal 256 (grid width/height, since coordinates are bytes 0-255), and a
+        // byte loop counter would overflow back to 0 instead of terminating, eventually
+        // producing an out-of-range index below.
+        for (int x = offsetX; x < maxX; ++x)
         {
-            for (byte y = offsetY; y < maxY; ++y)
+            for (int y = offsetY; y < maxY; ++y)
             {
                 var i = this.GetIndexOfPoint(x, y);
+                if (i < 0 || i >= this._gridNodes.Length)
+                {
+                    continue;
+                }
+
                 var node = this._gridNodes[i];
                 if (node is not null)
                 {
                     node.Status = NodeStatus.Undefined;
-                    node.Position = new(x, y);
+                    node.Position = new((byte)x, (byte)y);
                 }
             }
         }
@@ -100,9 +109,9 @@ public sealed class ScopedGridNetwork : BaseGridNetwork
 
         byte GetOffset(byte avgValue, int gridSize)
         {
-            var offset = (byte)Math.Max(avgValue - (this._actualSegmentSideLength / 2), 0);
-            offset = (byte)Math.Min(offset, gridSize - this._actualSegmentSideLength);
-            return offset;
+            var offset = Math.Max(avgValue - (this._actualSegmentSideLength / 2), 0);
+            offset = Math.Min(offset, Math.Max(gridSize - this._actualSegmentSideLength, 0));
+            return (byte)offset;
         }
     }
 
