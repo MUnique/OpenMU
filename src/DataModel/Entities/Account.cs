@@ -131,6 +131,13 @@ public class Account
     public bool IsTemplate { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether this account is a server-side bot account.
+    /// Bot accounts are generated and maintained by the bot feature; this flag is the reliable
+    /// marker used to load them on startup (instead of regenerating) and to purge them.
+    /// </summary>
+    public bool IsBot { get; set; }
+
+    /// <summary>
     /// Gets or sets the characters.
     /// </summary>
     [MemberOfAggregate]

@@ -50,11 +50,17 @@ public class CombatHandlerTests
         await player.CurrentMap!.AddAsync(monster).ConfigureAwait(false);
 
         var config = new MuHelperSettings { HuntingRange = 10 };
-        var movementHandler = new MovementHandler(player, config, this._origin);
+        player.HuntingOrigin = this._origin;
+        var movementHandler = new MovementHandler(player, config);
 
-        var handler = new CombatHandler(player, config, movementHandler, this._origin);
+        var handler = new CombatHandler(player, config, movementHandler);
 
         // Act
+        // The first call only acquires the target and turns towards it: a fresh target gets a small
+        // randomized human-like reaction delay (up to 900 ms) before the bot engages, so we call
+        // again after the delay has certainly elapsed.
+        await handler.PerformAttackAsync().ConfigureAwait(false);
+        await Task.Delay(1000).ConfigureAwait(false);
         await handler.PerformAttackAsync().ConfigureAwait(false);
 
         // Assert
@@ -93,9 +99,10 @@ public class CombatHandlerTests
         };
         await player.SkillList!.AddLearnedSkillAsync(drainSkill).ConfigureAwait(false);
 
-        var movementHandler = new MovementHandler(player, config, this._origin);
+        player.HuntingOrigin = this._origin;
+        var movementHandler = new MovementHandler(player, config);
 
-        var handler = new CombatHandler(player, config, movementHandler, this._origin);
+        var handler = new CombatHandler(player, config, movementHandler);
 
         // Act
         await handler.PerformDrainLifeRecoveryAsync().ConfigureAwait(false);

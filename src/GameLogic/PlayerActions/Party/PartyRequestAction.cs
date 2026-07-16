@@ -28,7 +28,12 @@ public class PartyRequestAction
 
         if (toRequest.Party != null || toRequest.LastPartyRequester != null)
         {
-            if (toRequest.Party != null && Equals(toRequest.Party.PartyMaster, toRequest))
+            // A server-side bot is asked as well when it is a plain member of its (bot) party: a living
+            // player takes precedence over the bot's own company, so it leaves that party and joins the
+            // inviter (see BotPartyHandler). Everyone else keeps the original rule - only the master of a
+            // party can answer an invitation.
+            var isBot = toRequest.Account?.IsBot == true;
+            if (toRequest.Party != null && (isBot || Equals(toRequest.Party.PartyMaster, toRequest)))
             {
                 if (await PartyRequestHandler.TryAutoAcceptPartyRequestAsync(toRequest, player).ConfigureAwait(false))
                 {

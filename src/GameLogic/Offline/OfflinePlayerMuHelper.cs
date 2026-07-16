@@ -46,14 +46,13 @@ public sealed class OfflinePlayerMuHelper : AsyncDisposable
     public OfflinePlayerMuHelper(OfflinePlayer player)
     {
         this._player = player;
-        var originalPosition = player.Position;
         var config = player.MuHelperSettings;
 
         this._buffHandler = new BuffHandler(player, config);
         this._healingHandler = new HealingHandler(player, config);
         this._itemPickupHandler = new ItemPickupHandler(player, config);
-        this._movementHandler = new MovementHandler(player, config, originalPosition);
-        this._combatHandler = new CombatHandler(player, config, this._movementHandler, originalPosition);
+        this._movementHandler = new MovementHandler(player, config);
+        this._combatHandler = new CombatHandler(player, config, this._movementHandler);
         this._repairHandler = new RepairHandler(player, config);
         this._zenHandler = new ZenConsumptionHandler(player);
         this._petHandler = new PetHandler(player, config);
@@ -120,10 +119,17 @@ public sealed class OfflinePlayerMuHelper : AsyncDisposable
     {
         this._player.Logger.LogDebug("Offline player '{Name}' died. Killer: {KillerName}.", this._player.Name, e.KillerName);
         this._isDead = true;
+
+        // Do not cancel the loop here: a bot needs to keep ticking so it can resume after respawning.
+        // For a normal offline session the tick stops the session on respawn, which disposes (and cancels) this helper.
     }
 
     private async Task RunLoopAsync(CancellationToken cancellationToken)
     {
+        // Randomize the loop phase, so hundreds of concurrently started players don't all tick on the
+        // same 500ms boundary - smoother server load and less robotic synchrony between them.
+        await Task.Delay(Rand.NextInt(0, 500), cancellationToken).ConfigureAwait(false);
+
         while (await this._timer.WaitForNextTickAsync(cancellationToken).ConfigureAwait(false))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -136,6 +142,7 @@ public sealed class OfflinePlayerMuHelper : AsyncDisposable
         try
         {
             await this.TickAsync(cancellationToken).ConfigureAwait(false);
+            this._player.OnAiTickSucceeded();
         }
         catch (OperationCanceledException)
         {
@@ -144,11 +151,16 @@ public sealed class OfflinePlayerMuHelper : AsyncDisposable
         catch (Exception ex)
         {
             this._player.Logger.LogError(ex, "Error in offline player helper tick for {AccountLoginName}.", this._player.AccountLoginName);
+            this._player.OnAiTickFailed();
         }
     }
 
     private async ValueTask TickAsync(CancellationToken cancellationToken)
     {
+        // Actions queued from outside the tick (e.g. skill learning on level-up) run here, serialized
+        // with the combat handler - so nothing mutates the skill list while combat is enumerating it.
+        await this._player.DrainPendingBotActionsAsync().ConfigureAwait(false);
+
         if (await this.HandleDeathAsync().ConfigureAwait(false))
         {
             return;
@@ -213,6 +225,19 @@ public sealed class OfflinePlayerMuHelper : AsyncDisposable
             {
                 // Player hasn't respawned yet, skip the tick and check again on the next interval.
                 return true;
+            }
+
+            if (this._player.RespawnAndContinue)
+            {
+                // Bots keep playing: reset the death state and re-anchor the hunting origin to the respawn
+                // position so the navigator picks a fresh hunting ground from where the bot came back to life.
+                // A death by a player's hand may have left a pending revenge - arm it now (the navigator
+                // then marches the bot back to its death site instead of picking a hunting ground).
+                this._isDead = false;
+                this._player.HuntingOrigin = this._player.Position;
+                this._player.ArmRevengeAfterRespawn();
+                this._player.Logger.LogInformation("Bot '{Name}' respawned; resuming.", this._player.Name);
+                return false;
             }
 
             if (this._player.Account?.LoginName is { } loginName)
