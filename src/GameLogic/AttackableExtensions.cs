@@ -91,7 +91,7 @@ public static class AttackableExtensions
         else
         {
             var defenseAttribute = defender.GetDefenseAttribute(attacker);
-            defense = (int)(defender.Attributes[defenseAttribute] * defender.Attributes[Stats.DefenseDecrement]);
+            defense = (int)((defender.Attributes[defenseAttribute] + defender.Attributes[Stats.GreaterDefenseBonus]) * defender.Attributes[Stats.DefenseDecrement]);
             if (defense < 0)
             {
                 defense = 0;
@@ -378,7 +378,7 @@ public static class AttackableExtensions
             if (regeneration != null)
             {
                 var regenerationValue = player.Attributes.CreateElement(powerUpDefinition);
-                var value = skillEntry.Level == 0 ? regenerationValue.Value : regenerationValue.Value + skillEntry.CalculateValue();
+                var value = regenerationValue.Value + (skillEntry.Level == 0 ? 0 : regenerationValue.Value * skillEntry.CalculateValue() / 100);
                 target.Attributes[regeneration.CurrentAttribute] = Math.Min(
                     target.Attributes[regeneration.CurrentAttribute] + value,
                     target.Attributes[regeneration.MaximumAttribute]);
