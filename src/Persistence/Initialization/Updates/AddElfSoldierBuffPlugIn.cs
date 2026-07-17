@@ -94,7 +94,7 @@ public class AddElfSoldierBuffPlugIn : UpdatePlugInBase
             damagePowerUp.TargetAttribute = Stats.GreaterDamageBonus.GetPersistent(gameConfiguration);
             damagePowerUp.Boost = context.CreateNew<PowerUpDefinitionValue>();
             damagePowerUp.Boost.ConstantValue.Value = 45;
-            damagePowerUp.Boost.ConstantValue.AggregateType = AggregateType.AddFinal;
+            damagePowerUp.Boost.ConstantValue.AggregateType = AggregateType.AddRaw;
             var damagePerLevel = context.CreateNew<AttributeRelationship>();
             damagePerLevel.InputAttribute = Stats.Level.GetPersistent(gameConfiguration);
             damagePerLevel.InputOperand = 1f / 3;

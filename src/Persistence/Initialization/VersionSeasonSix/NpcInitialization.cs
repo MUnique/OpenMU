@@ -151,7 +151,7 @@ internal partial class NpcInitialization : Version095d.NpcInitialization
             damagePowerUp.TargetAttribute = Stats.GreaterDamageBonus.GetPersistent(this.GameConfiguration);
             damagePowerUp.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
             damagePowerUp.Boost.ConstantValue.Value = 45;
-            damagePowerUp.Boost.ConstantValue.AggregateType = AggregateType.AddFinal;
+            damagePowerUp.Boost.ConstantValue.AggregateType = AggregateType.AddRaw;
             var damagePerLevel = this.Context.CreateNew<AttributeRelationship>();
             damagePerLevel.InputAttribute = Stats.Level.GetPersistent(this.GameConfiguration);
             damagePerLevel.InputOperand = 1f / 3;
