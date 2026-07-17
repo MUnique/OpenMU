@@ -12,6 +12,7 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Persistence.Initialization.Items;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
+using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -36,7 +37,7 @@ public class FinishElfMasterTreePlugIn : UpdatePlugInBase
     public override UpdateVersion Version => UpdateVersion.FinishElfMasterTree;
 
     /// <inheritdoc />
-    public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
+    public override string DataInitializationKey => DataInitialization.Id;
 
     /// <inheritdoc />
     public override string Name => PlugInName;
@@ -48,7 +49,7 @@ public class FinishElfMasterTreePlugIn : UpdatePlugInBase
     public override bool IsMandatory => true;
 
     /// <inheritdoc />
-    public override DateTime CreatedAt => new(2026, 7, 16, 16, 0, 0, DateTimeKind.Utc);
+    public override DateTime CreatedAt => new(2026, 7, 17, 16, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
@@ -86,6 +87,15 @@ public class FinishElfMasterTreePlugIn : UpdatePlugInBase
         greaterDefensePowerUp2.Boost = context.CreateNew<PowerUpDefinitionValue>();
         greaterDefensePowerUp2.Boost.ConstantValue.Value = 1f;
         greaterDefensePowerUp2.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
+
+        // Update Infinity Arrow effect
+        var infinityArrowEffect = gameConfiguration.MagicEffects.First(e => e.Number == (short)MagicEffectNumber.InfiniteArrow);
+
+        if (infinityArrowEffect.PowerUpDefinitions.FirstOrDefault(pud => pud.TargetAttribute == Stats.AttackDamageIncrease) is PowerUpDefinition infinityArrowPowerUp)
+        {
+            infinityArrowPowerUp.Boost?.ConstantValue.Value = 1;
+            infinityArrowPowerUp.Boost?.ConstantValue.AggregateType = AggregateType.Multiplicate;
+        }
 
         // Update 4-arrow (cross)bows
         var affectedBows = new short[] { 18, 19, 22, 23, 24 };
@@ -128,6 +138,11 @@ public class FinishElfMasterTreePlugIn : UpdatePlugInBase
             defenseIncreaseMastery.TargetAttribute = greaterDefenseBonus;
             defenseIncreaseMastery.Aggregation = AggregateType.Multiplicate;
             defenseIncreaseMastery.ExtendsDuration = true;
+        }
+
+        if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.InfinityArrowStr)?.MasterDefinition is { } infinityArrowStr)
+        {
+            infinityArrowStr.ValueFormula = $"{SkillsInitializer.Formula120} / 100";
         }
     }
 
