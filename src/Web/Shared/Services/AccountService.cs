@@ -6,19 +6,23 @@ namespace MUnique.OpenMU.Web.Shared.Services;
 
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
-using MUnique.OpenMU.Web.Shared.Components.Modal;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Web.Shared.Components;
 using MUnique.OpenMU.Web.Shared.Components.Form.Modal;
+using MUnique.OpenMU.Web.Shared.Components.Modal;
 using MUnique.OpenMU.Web.Shared.Properties;
 
 /// <summary>
 /// Service for <see cref="Account"/>s.
 /// </summary>
-public class AccountService : IDataService<Account>, ISupportDataChangedNotification
+public class AccountService : IDataService<Account>, ISupportDataChangedNotification, IDisposable
 {
     private readonly IDataSource<Account> _dataSource;
     private readonly IModalService _modalService;
+    private readonly Debouncer _debouncer = new(300);
+
+    private string _searchFilter = string.Empty;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AccountService"/> class.
@@ -31,7 +35,8 @@ public class AccountService : IDataService<Account>, ISupportDataChangedNotifica
         this._modalService = modalService;
     }
 
-    private string _searchFilter = string.Empty;
+    /// <inheritdoc />
+    public event EventHandler? DataChanged;
 
     /// <summary>
     /// Gets or sets the search filter query.
@@ -45,13 +50,18 @@ public class AccountService : IDataService<Account>, ISupportDataChangedNotifica
             if (this._searchFilter != newValue)
             {
                 this._searchFilter = newValue;
-                this.RaiseDataChanged();
+                if (string.IsNullOrEmpty(newValue))
+                {
+                    this._debouncer.Cancel();
+                    this.DataChanged?.Invoke(this, EventArgs.Empty);
+                }
+                else
+                {
+                    _ = this._debouncer.DebounceAsync(this.RaiseDataChangedAsync);
+                }
             }
         }
     }
-
-    /// <inheritdoc />
-    public event EventHandler? DataChanged;
 
     /// <summary>
     /// Returns a slice of the account list, defined by an offset and a count.
@@ -138,11 +148,21 @@ public class AccountService : IDataService<Account>, ISupportDataChangedNotifica
             item.SecurityCode = accountParameters.SecurityCode;
             item.RegistrationDate = DateTime.UtcNow;
             await context.SaveChangesAsync().ConfigureAwait(false);
-            this.RaiseDataChanged();
+            this.DataChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 
-    private void RaiseDataChanged() => this.DataChanged?.Invoke(this, EventArgs.Empty);
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        this._debouncer.Dispose();
+    }
+
+    private Task RaiseDataChangedAsync()
+    {
+        this.DataChanged?.Invoke(this, EventArgs.Empty);
+        return Task.CompletedTask;
+    }
 
     /// <summary>
     /// Parameters for the account creation which is used for the user interface.
