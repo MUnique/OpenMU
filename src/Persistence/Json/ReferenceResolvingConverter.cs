@@ -47,10 +47,12 @@ public class ReferenceResolvingConverter<T> : JsonConverter<T>
                 else if (x.CollectionInterface != null && x.Property.Name.StartsWith("Raw"))
                 {
                     propertyType = x.CollectionInterface.GetGenericArguments()[0];
-                    var collectionExpr = Expression.Property(tParam, x.Property);
+
+                    var collectionExpr = Expression.Convert(Expression.Property(tParam, x.Property), x.CollectionInterface);
                     var itemExpr = Expression.Convert(objParam, propertyType);
                     var containsCall = Expression.Call(collectionExpr, x.CollectionInterface.GetMethod("Contains")!, itemExpr);
                     var addCall = Expression.Call(collectionExpr, x.CollectionInterface.GetMethod("Add")!, itemExpr);
+
                     adder = Expression.Lambda<Action<T, object>>(
                             Expression.IfThen(Expression.Not(containsCall), addCall),
                             tParam,
@@ -68,10 +70,12 @@ public class ReferenceResolvingConverter<T> : JsonConverter<T>
                     propertyType = propertyType.GetProperties().First(p => p.PropertyType.BaseType == baseType).PropertyType;
                     jsonPropertyName = basePropertyName;
 
-                    var collectionExpr = Expression.Property(tParam, baseCollectionProperty);
+                    var baseCollectionInterface = DetermineCollectionInterface(baseCollectionProperty)!;
+                    var collectionExpr = Expression.Convert(Expression.Property(tParam, baseCollectionProperty), baseCollectionInterface);
                     var itemExpr = Expression.Convert(objParam, propertyType);
-                    var containsCall = Expression.Call(collectionExpr, baseCollectionProperty.PropertyType.GetMethod("Contains")!, itemExpr);
-                    var addCall = Expression.Call(collectionExpr, baseCollectionProperty.PropertyType.GetMethod("Add")!, itemExpr);
+                    var containsCall = Expression.Call(collectionExpr, baseCollectionInterface.GetMethod("Contains")!, itemExpr);
+                    var addCall = Expression.Call(collectionExpr, baseCollectionInterface.GetMethod("Add")!, itemExpr);
+
                     adder = Expression.Lambda<Action<T, object>>(
                             Expression.IfThen(Expression.Not(containsCall), addCall),
                             tParam,
