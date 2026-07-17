@@ -1,4 +1,4 @@
-// <copyright file="Player.cs" company="MUnique">
+﻿// <copyright file="Player.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -1614,7 +1614,14 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                         var extendsDuration = masterSkillEntry.Skill?.MasterDefinition?.ExtendsDuration ?? false;
                         if (extendsDuration && !durationExtended)
                         {
-                            durationElement = new CombinedElement(durationElement, new ConstantElement(masterSkillEntry.CalculateValue()));
+                            var value = masterSkillEntry.CalculateValue();
+                            if (value < 1)
+                            {
+                                value *= 100;
+                            }
+
+                            durationElement = new CombinedElement(durationElement, new ConstantElement(value));
+                            durationElementPvp = new CombinedElement(durationElementPvp, new ConstantElement(value));
                         }
 
                         if (masterSkillEntry.Skill?.MasterDefinition?.TargetAttribute is not null)

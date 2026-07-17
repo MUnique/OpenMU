@@ -1,4 +1,4 @@
-// <copyright file="AreaSkillAttackAction.cs" company="MUnique">
+﻿// <copyright file="AreaSkillAttackAction.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -246,9 +246,11 @@ public class AreaSkillAttackAction
         {
             // Order targets by distance to process nearest targets first
             orderedTargets.Sort((a, b) => player.GetDistanceTo(a).CompareTo(player.GetDistanceTo(b)));
-            filter = FrustumFilters.GetOrAdd(areaSkillSettings, static s => new FrustumBasedTargetFilter(s.FrustumStartWidth, s.FrustumEndWidth, s.FrustumDistance, s.ProjectileCount));
             projectileCount = areaSkillSettings.ProjectileCount + (int)(player.Attributes?[Stats.ExtraProjectiles] ?? 0);
             attackRounds = 1; // One attack round per projectile
+            filter = FrustumFilters.GetOrAdd(areaSkillSettings, s => new FrustumBasedTargetFilter(s.FrustumStartWidth, s.FrustumEndWidth, s.FrustumDistance, projectileCount));
+            minAttacks = projectileCount;
+            maxAttacks = projectileCount;
 
             extraTarget = orderedTargets.FirstOrDefault(t => t.Id == extraTargetId);
             if (extraTarget is not null)
