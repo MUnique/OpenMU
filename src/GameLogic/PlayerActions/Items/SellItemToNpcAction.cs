@@ -63,6 +63,7 @@ public class SellItemToNpcAction
         {
             player.Logger.LogDebug("Sold Item {0} for price: {1}", item, sellingPrice);
             await player.Inventory!.RemoveItemAsync(item).ConfigureAwait(false);
+            await player.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
             await player.InvokeViewPlugInAsync<IItemSoldToNpcPlugIn>(p => p.ItemSoldToNpcAsync(true)).ConfigureAwait(false);
 
             player.GameContext.PlugInManager.GetPlugInPoint<IItemSoldToMerchantPlugIn>()?.ItemSold(player, item, player.OpenedNpc!);

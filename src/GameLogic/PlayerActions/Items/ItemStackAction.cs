@@ -52,6 +52,7 @@ public class ItemStackAction
             foreach (var jewel in jewels)
             {
                 await player.Inventory.RemoveItemAsync(jewel).ConfigureAwait(false);
+                await player.PersistenceContext.DeleteAsync(jewel).ConfigureAwait(false);
                 await player.InvokeViewPlugInAsync<IItemRemovedPlugIn>(p => p.RemoveItemAsync(jewel.ItemSlot)).ConfigureAwait(false);
             }
 
@@ -118,6 +119,7 @@ public class ItemStackAction
         }
 
         await player.Inventory.RemoveItemAsync(stacked).ConfigureAwait(false);
+        await player.PersistenceContext.DeleteAsync(stacked).ConfigureAwait(false);
         await player.InvokeViewPlugInAsync<IItemRemovedPlugIn>(p => p.RemoveItemAsync(slot)).ConfigureAwait(false);
         foreach (var freeSlot in freeSlots)
         {
