@@ -28,7 +28,8 @@ public class SellItemToNpcAction
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="slot">The slot.</param>
-    public async ValueTask SellItemAsync(Player player, byte slot)
+    /// <returns><c>True</c>, if the item was sold; otherwise, <c>false</c>.</returns>
+    public async ValueTask<bool> SellItemAsync(Player player, byte slot)
     {
         using var loggerScope = player.Logger.BeginScope(this.GetType());
         var item = player.Inventory?.GetItem(slot);
@@ -36,37 +37,45 @@ public class SellItemToNpcAction
         {
             player.Logger.LogWarning("Player {0} requested to sell item at slot {1}, but item wasn't found.", player, slot);
             await player.InvokeViewPlugInAsync<IItemSoldToNpcPlugIn>(p => p.ItemSoldToNpcAsync(false)).ConfigureAwait(false);
-            return;
+            return false;
         }
 
         if (player.OpenedNpc?.Definition.MerchantStore is null)
         {
             player.Logger.LogWarning("Player {0} requested to sell item at slot {1} to an npc, but no npc merchant store is currently opened.", player, slot);
             await player.InvokeViewPlugInAsync<IItemSoldToNpcPlugIn>(p => p.ItemSoldToNpcAsync(false)).ConfigureAwait(false);
-            return;
+            return false;
         }
 
         if (item.Definition is null || (item.Definition.IsBoundToCharacter && (item.Definition.Durability == 0 || item.Durability > 0)))
         {
             await player.InvokeViewPlugInAsync<IItemSoldToNpcPlugIn>(p => p.ItemSoldToNpcAsync(false)).ConfigureAwait(false);
-            return;
+            return false;
         }
 
-        await this.SellItemAsync(player, item).ConfigureAwait(false);
+        return await this.SellItemAsync(player, item).ConfigureAwait(false);
     }
 
-    private async ValueTask SellItemAsync(Player player, Item item)
+    private async ValueTask<bool> SellItemAsync(Player player, Item item)
     {
         var sellingPrice = (int)this._itemPriceCalculator.CalculateSellingPrice(item, item.Durability());
         player.Logger.LogDebug("Calculated selling price {0} for item {1}", sellingPrice, item);
-        if (player.TryAddMoney(sellingPrice))
+        if (!player.TryAddMoney(sellingPrice))
         {
-            player.Logger.LogDebug("Sold Item {0} for price: {1}", item, sellingPrice);
-            await player.Inventory!.RemoveItemAsync(item).ConfigureAwait(false);
-            await player.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
-            await player.InvokeViewPlugInAsync<IItemSoldToNpcPlugIn>(p => p.ItemSoldToNpcAsync(true)).ConfigureAwait(false);
-
-            player.GameContext.PlugInManager.GetPlugInPoint<IItemSoldToMerchantPlugIn>()?.ItemSold(player, item, player.OpenedNpc!);
+            // The money doesn't fit into the inventory anymore. Without the answer the request would
+            // stay unanswered - the client keeps waiting, and the player gets no hint why nothing
+            // happened. All other refusals above already report back this way.
+            player.Logger.LogDebug("Item {0} not sold, the money of player {1} is at its maximum.", item, player);
+            await player.InvokeViewPlugInAsync<IItemSoldToNpcPlugIn>(p => p.ItemSoldToNpcAsync(false)).ConfigureAwait(false);
+            return false;
         }
+
+        player.Logger.LogDebug("Sold Item {0} for price: {1}", item, sellingPrice);
+        await player.Inventory!.RemoveItemAsync(item).ConfigureAwait(false);
+        await player.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
+        await player.InvokeViewPlugInAsync<IItemSoldToNpcPlugIn>(p => p.ItemSoldToNpcAsync(true)).ConfigureAwait(false);
+
+        player.GameContext.PlugInManager.GetPlugInPoint<IItemSoldToMerchantPlugIn>()?.ItemSold(player, item, player.OpenedNpc!);
+        return true;
     }
 }
