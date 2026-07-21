@@ -807,6 +807,13 @@ public sealed class CombatHandler
         {
             DamageType.Wizardry => attributes?[Stats.MaximumWizBaseDmg] ?? 0,
             DamageType.Curse => attributes?[Stats.MaximumCurseBaseDmg] ?? 0,
+
+            // A Fenrir skill draws its damage from the pet, so without one there is nothing behind it but
+            // the skill's own flat bonus - which is how a bot came to fight with Plasma Storm while riding
+            // nothing. Nothing stops it server-side (the skill asks for character level 110 and no more),
+            // so this is where it is settled: with no Fenrir the score collapses and the bot picks a real
+            // skill; with one, it competes on the pet's damage like it should.
+            DamageType.Fenrir => attributes?[Stats.FenrirBaseDmg] ?? 0,
             _ => attributes?[Stats.MaximumPhysBaseDmg] ?? 0,
         };
 

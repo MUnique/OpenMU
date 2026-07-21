@@ -75,8 +75,13 @@ internal static class BotProgression
     /// Knight fought with Crescent Moon Slash, every elf with Starfall and every Rage Fighter with Charge.
     /// (44 Crescent Moon Slash, 45 Lance, 46 Starfall, 57 Spiral Slash, 73 Mana Rays, 74 Fire Blast,
     /// 269 Charge - the same set the client refuses outside a siege.)
+    /// The second group are the skills of the siege roles - the guild's battle masters and its master -
+    /// which are handed out for the siege and are not attacks at all: 67 Stun, 68 Cancel Stun,
+    /// 69 Swell Mana, 70 Invisibility, 71 Cancel Invisibility, 72 Abolish Magic. Stun in particular is
+    /// indistinguishable from a real attack skill by its data alone: like Twisting Slash and Power Slash
+    /// it is an area skill with no damage of its own and a single hit.
     /// </summary>
-    private static readonly short[] CastleSiegeOnlySkillNumbers = [44, 45, 46, 57, 73, 74, 269];
+    private static readonly short[] CastleSiegeOnlySkillNumbers = [44, 45, 46, 57, 67, 68, 69, 70, 71, 72, 73, 74, 269];
 
     /// <summary>
     /// Gets the class the character evolves into at <see cref="ClassEvolutionLevel"/>, or null when the

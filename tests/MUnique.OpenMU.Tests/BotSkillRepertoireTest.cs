@@ -35,6 +35,19 @@ public class BotSkillRepertoireTest
     }
 
     /// <summary>
+    /// Tests that the skills of the siege roles stay out as well. Stun is the one that matters: it is an
+    /// area skill with no damage and a single hit, which is exactly what Twisting Slash looks like, so
+    /// nothing but its number tells the two apart.
+    /// </summary>
+    [Test]
+    public void SiegeRoleSkillIsNotLearned()
+    {
+        var stun = CreateAttackSkill(67, attackDamage: 0, skillType: SkillType.AreaSkillAutomaticHits);
+
+        Assert.That(BotProgression.IsBotLearnableSkill(stun), Is.False);
+    }
+
+    /// <summary>
     /// Tests that a skill which carries no flat damage bonus but strikes several times is learned. The
     /// Rage Fighter's whole arsenal is built that way - its damage comes from the weapon - so judging by
     /// <see cref="Skill.AttackDamage"/> alone left the class with nothing to fight with.
