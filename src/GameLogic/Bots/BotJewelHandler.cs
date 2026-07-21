@@ -24,8 +24,34 @@ using MUnique.OpenMU.GameLogic.PlayerActions.Items;
 /// </summary>
 internal static class BotJewelHandler
 {
-    /// <summary>Upper bound of jewel consumptions per shopping trip - a player doesn't burn the whole hoard at once.</summary>
-    private const int MaxUsesPerTrip = 2;
+    /// <summary>
+    /// The jewels a bot has a use for: it upgrades its own gear with them (see the policy above).
+    /// Everything else - Chaos, Creation, Guardian, Gemstone, Harmony, the refine stones - is only
+    /// spendable by trading or crafting, which a bot does neither of.
+    /// </summary>
+    internal static readonly ItemIdentifier[] UsableJewels =
+    [
+        ItemConstants.JewelOfBless,
+        ItemConstants.JewelOfSoul,
+        ItemConstants.JewelOfLife,
+    ];
+
+    /// <summary>
+    /// Jewels of Bless per shopping trip. Each kind has its OWN budget on purpose: with one shared
+    /// budget the Bless rule - which has a target whenever any equipped piece is below +6, and a swapped
+    /// in piece arrives at the level it dropped with - consumed every use, every trip, and the Soul and
+    /// Life rules below were never reached at all.
+    /// </summary>
+    private const int MaxBlessPerTrip = 2;
+
+    /// <summary>Jewels of Soul per shopping trip.</summary>
+    private const int MaxSoulPerTrip = 1;
+
+    /// <summary>Jewels of Life per shopping trip.</summary>
+    private const int MaxLifePerTrip = 1;
+
+    /// <summary>Safety net for the planning loop; the per-kind budgets are the real limit.</summary>
+    private const int MaxUsesPerTrip = MaxBlessPerTrip + MaxSoulPerTrip + MaxLifePerTrip;
 
     /// <summary>The Jewel of Bless upgrades item levels 0..5 (see <c>BlessJewelConsumeHandlerPlugIn</c>).</summary>
     private const byte BlessMaxTargetLevel = 5;
@@ -56,6 +82,9 @@ internal static class BotJewelHandler
     /// <summary>Only risk a Life with at least this many in stock.</summary>
     private const int MinLifeStock = 2;
 
+    /// <summary>Fallback stock per kind when the bot feature has no configuration at hand.</summary>
+    private const int DefaultJewelStockPerKind = 10;
+
     private static readonly ItemConsumeAction ConsumeAction = new();
     private static readonly MoveItemAction MoveAction = new();
 
@@ -74,8 +103,10 @@ internal static class BotJewelHandler
         }
 
         var uses = 0;
-        var lifeUsed = false;
-        while (uses < MaxUsesPerTrip && PlanNextUse(player, lifeUsed) is { } plan)
+        var blessLeft = MaxBlessPerTrip;
+        var soulLeft = MaxSoulPerTrip;
+        var lifeLeft = MaxLifePerTrip;
+        while (uses < MaxUsesPerTrip && PlanNextUse(player, blessLeft, soulLeft, lifeLeft) is { } plan)
         {
             if (!await ApplyJewelAsync(player, plan.Jewel, plan.Target).ConfigureAwait(false))
             {
@@ -83,7 +114,18 @@ internal static class BotJewelHandler
             }
 
             uses++;
-            lifeUsed |= plan.IsLife;
+            if (IsJewel(plan.Jewel, ItemConstants.JewelOfBless))
+            {
+                blessLeft--;
+            }
+            else if (IsJewel(plan.Jewel, ItemConstants.JewelOfSoul))
+            {
+                soulLeft--;
+            }
+            else
+            {
+                lifeLeft--;
+            }
         }
 
         if (uses > 0)
@@ -106,8 +148,10 @@ internal static class BotJewelHandler
     /// <c>null</c> when nothing sensible is left to do. Pure decision logic - exposed for unit tests.
     /// </summary>
     /// <param name="player">The bot player.</param>
-    /// <param name="lifeUsed">Whether a Jewel of Life was already used this trip (at most one).</param>
-    internal static (Item Jewel, Item Target, bool IsLife)? PlanNextUse(Player player, bool lifeUsed)
+    /// <param name="blessLeft">How many Jewels of Bless may still be used this trip.</param>
+    /// <param name="soulLeft">How many Jewels of Soul may still be used this trip.</param>
+    /// <param name="lifeLeft">How many Jewels of Life may still be used this trip.</param>
+    internal static (Item Jewel, Item Target)? PlanNextUse(Player player, int blessLeft, int soulLeft, int lifeLeft)
     {
         if (player.Inventory is not { } inventory)
         {
@@ -125,17 +169,19 @@ internal static class BotJewelHandler
         var lifeStock = backpack.Where(i => IsJewel(i, ItemConstants.JewelOfLife)).ToList();
 
         // 1. Bless - free progress: push the weakest equipped piece towards +6.
-        if (blessStock.Count > 0
+        if (blessLeft > 0
+            && blessStock.Count > 0
             && equipped.Where(i => i.CanLevelBeUpgraded() && i.Level <= BlessMaxTargetLevel)
                 .OrderBy(i => i.Level)
                 .FirstOrDefault() is { } blessTarget)
         {
-            return (blessStock[0], blessTarget, false);
+            return (blessStock[0], blessTarget);
         }
 
         // 2. Soul - risky: only with a spare in stock, and only where the possible loss is bearable -
         // items without luck stop at +6 -> +7 (see SoulMaxTargetLevelPlain), lucky ones may go for +9.
-        if (soulStock.Count >= MinSoulStock
+        if (soulLeft > 0
+            && soulStock.Count >= MinSoulStock
             && equipped.Where(i => i.CanLevelBeUpgraded()
                                    && i.Level >= SoulMinTargetLevel
                                    && i.Level <= (HasLuck(i) ? SoulMaxTargetLevelLucky : SoulMaxTargetLevelPlain))
@@ -143,23 +189,60 @@ internal static class BotJewelHandler
                 .ThenBy(i => i.Level)
                 .FirstOrDefault() is { } soulTarget)
         {
-            return (soulStock[0], soulTarget, false);
+            return (soulStock[0], soulTarget);
         }
 
         // 3. Life - sparingly: at most one per trip, only on gear that is already +6 or better. Whether
         // the item can actually carry the option is the consume handler's call; a rejected consume
         // keeps the jewel.
-        if (!lifeUsed
+        if (lifeLeft > 0
             && lifeStock.Count >= MinLifeStock
             && equipped.Where(i => i.IsWearable() && i.Level >= LifeMinTargetLevel)
                 .OrderByDescending(i => i.Level)
                 .FirstOrDefault() is { } lifeTarget)
         {
-            return (lifeStock[0], lifeTarget, true);
+            return (lifeStock[0], lifeTarget);
         }
 
         return null;
     }
+
+    /// <summary>
+    /// Whether the bot still has room in its stock for this jewel - the pickup handler asks before
+    /// taking one from the ground, and the merchant trade asks to tell a working stock from surplus.
+    /// </summary>
+    /// <param name="player">The bot player.</param>
+    /// <param name="item">The jewel to judge.</param>
+    /// <returns><c>True</c>, if it is a usable jewel and the stock is not full yet.</returns>
+    internal static bool WantsMoreOf(Player player, Item item)
+    {
+        if (item.Definition is not { } definition)
+        {
+            return false;
+        }
+
+        var identifier = new ItemIdentifier(definition.Number, definition.Group);
+        return UsableJewels.Contains(identifier)
+               && CountInStock(player, identifier) < GetStockLimit(player);
+    }
+
+    /// <summary>
+    /// Gets the configured number of jewels a bot keeps of each usable kind.
+    /// </summary>
+    /// <param name="player">The bot player.</param>
+    /// <returns>The stock limit per kind.</returns>
+    internal static int GetStockLimit(Player player)
+        => BotFeaturePlugIn.GetConfiguration(player.GameContext)?.GetEffectiveJewelStockPerKind()
+           ?? DefaultJewelStockPerKind;
+
+    /// <summary>
+    /// Counts how many jewels of the given kind the bot carries.
+    /// </summary>
+    /// <param name="player">The bot player.</param>
+    /// <param name="identifier">The jewel kind.</param>
+    /// <returns>The number of jewels of that kind in the inventory.</returns>
+    internal static int CountInStock(Player player, ItemIdentifier identifier)
+        => player.Inventory?.Items.Count(i => IsJewel(i, identifier)) ?? 0;
 
     /// <summary>
     /// Applies one jewel to one equipped item the way a player does it: take the piece off into a free

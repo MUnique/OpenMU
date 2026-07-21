@@ -35,12 +35,11 @@ public class BotJewelHandlerTest
         var bless = await AddJewelAsync(player, FirstBackpackSlot, ItemConstants.JewelOfBless).ConfigureAwait(false);
         await AddJewelAsync(player, FirstBackpackSlot + 1, ItemConstants.JewelOfSoul).ConfigureAwait(false);
 
-        var plan = BotJewelHandler.PlanNextUse(player, false);
+        var plan = BotJewelHandler.PlanNextUse(player, 2, 1, 1);
 
         Assert.That(plan, Is.Not.Null);
         Assert.That(plan!.Value.Jewel, Is.SameAs(bless));
         Assert.That(plan.Value.Target, Is.SameAs(weakPiece));
-        Assert.That(plan.Value.IsLife, Is.False);
     }
 
     /// <summary>
@@ -59,7 +58,7 @@ public class BotJewelHandlerTest
             await AddJewelAsync(player, (byte)(FirstBackpackSlot + i), ItemConstants.JewelOfSoul).ConfigureAwait(false);
         }
 
-        var plan = BotJewelHandler.PlanNextUse(player, false);
+        var plan = BotJewelHandler.PlanNextUse(player, 2, 1, 1);
 
         Assert.That(plan.HasValue, Is.EqualTo(expectsUse));
     }
@@ -76,7 +75,7 @@ public class BotJewelHandlerTest
         await AddJewelAsync(player, FirstBackpackSlot, ItemConstants.JewelOfSoul).ConfigureAwait(false);
         await AddJewelAsync(player, FirstBackpackSlot + 1, ItemConstants.JewelOfSoul).ConfigureAwait(false);
 
-        var plan = BotJewelHandler.PlanNextUse(player, false);
+        var plan = BotJewelHandler.PlanNextUse(player, 2, 1, 1);
 
         Assert.That(plan, Is.Not.Null);
         Assert.That(plan!.Value.Target, Is.SameAs(luckyPiece));
@@ -100,7 +99,7 @@ public class BotJewelHandlerTest
         await AddJewelAsync(player, FirstBackpackSlot, ItemConstants.JewelOfSoul).ConfigureAwait(false);
         await AddJewelAsync(player, FirstBackpackSlot + 1, ItemConstants.JewelOfSoul).ConfigureAwait(false);
 
-        var plan = BotJewelHandler.PlanNextUse(player, false);
+        var plan = BotJewelHandler.PlanNextUse(player, 2, 1, 1);
 
         Assert.That(plan.HasValue, Is.EqualTo(expectsUse));
     }
@@ -116,17 +115,41 @@ public class BotJewelHandlerTest
     {
         var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var target = await AddEquippedItemAsync(player, InventoryConstants.LeftHandSlot, 9).ConfigureAwait(false);
-        await AddJewelAsync(player, FirstBackpackSlot, ItemConstants.JewelOfLife).ConfigureAwait(false);
+        var life = await AddJewelAsync(player, FirstBackpackSlot, ItemConstants.JewelOfLife).ConfigureAwait(false);
         await AddJewelAsync(player, FirstBackpackSlot + 1, ItemConstants.JewelOfLife).ConfigureAwait(false);
 
-        var plan = BotJewelHandler.PlanNextUse(player, lifeAlreadyUsed);
+        var plan = BotJewelHandler.PlanNextUse(player, 2, 1, lifeAlreadyUsed ? 0 : 1);
 
         Assert.That(plan.HasValue, Is.EqualTo(expectsUse));
         if (expectsUse)
         {
             Assert.That(plan!.Value.Target, Is.SameAs(target));
-            Assert.That(plan.Value.IsLife, Is.True);
+            Assert.That(plan.Value.Jewel, Is.SameAs(life));
         }
+    }
+
+    /// <summary>
+    /// Each jewel kind has its own budget: a spent Bless budget must not keep the Soul rule from
+    /// being reached. With one shared budget the Bless rule - which has a target whenever any equipped
+    /// piece is below +6 - consumed every use of every trip, and Souls and Lifes piled up unused.
+    /// </summary>
+    [Test]
+    public async ValueTask SpentBlessBudgetDoesNotStarveSoulAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+
+        // A Bless target (below +6) and a Soul target (+6) are available at the same time.
+        await AddEquippedItemAsync(player, InventoryConstants.RightHandSlot, 2).ConfigureAwait(false);
+        var soulTarget = await AddEquippedItemAsync(player, InventoryConstants.LeftHandSlot, 6).ConfigureAwait(false);
+        await AddJewelAsync(player, FirstBackpackSlot, ItemConstants.JewelOfBless).ConfigureAwait(false);
+        var soul = await AddJewelAsync(player, FirstBackpackSlot + 1, ItemConstants.JewelOfSoul).ConfigureAwait(false);
+        await AddJewelAsync(player, FirstBackpackSlot + 2, ItemConstants.JewelOfSoul).ConfigureAwait(false);
+
+        var plan = BotJewelHandler.PlanNextUse(player, 0, 1, 1);
+
+        Assert.That(plan, Is.Not.Null);
+        Assert.That(plan!.Value.Jewel, Is.SameAs(soul));
+        Assert.That(plan.Value.Target, Is.SameAs(soulTarget));
     }
 
     /// <summary>
@@ -138,7 +161,7 @@ public class BotJewelHandlerTest
         var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         await AddEquippedItemAsync(player, InventoryConstants.LeftHandSlot, 2).ConfigureAwait(false);
 
-        var plan = BotJewelHandler.PlanNextUse(player, false);
+        var plan = BotJewelHandler.PlanNextUse(player, 2, 1, 1);
 
         Assert.That(plan, Is.Null);
     }
