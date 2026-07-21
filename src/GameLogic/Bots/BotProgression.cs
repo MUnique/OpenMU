@@ -68,6 +68,17 @@ internal static class BotProgression
     private static readonly short[] ExcludedBuffSkillNumbers = [18, 219, 221, 222];
 
     /// <summary>
+    /// The skills which the game only activates on the castle siege map. Nothing in the skill data marks
+    /// them, but the client does not let a player cast them anywhere else, so a bot hunting with one is a
+    /// bot doing something no player can do. They are also the strongest numbers each class has - they are
+    /// meant to be - which is exactly why a "pick the strongest" rule walks straight into them: a Dark
+    /// Knight fought with Crescent Moon Slash, every elf with Starfall and every Rage Fighter with Charge.
+    /// (44 Crescent Moon Slash, 45 Lance, 46 Starfall, 57 Spiral Slash, 73 Mana Rays, 74 Fire Blast,
+    /// 269 Charge - the same set the client refuses outside a siege.)
+    /// </summary>
+    private static readonly short[] CastleSiegeOnlySkillNumbers = [44, 45, 46, 57, 73, 74, 269];
+
+    /// <summary>
     /// Gets the class the character evolves into at <see cref="ClassEvolutionLevel"/>, or null when the
     /// class has no (in-scope) evolution.
     /// </summary>
@@ -294,19 +305,54 @@ internal static class BotProgression
             return false;
         }
 
-        if (skill.AttackDamage > 0
-            && skill.SkillType is SkillType.DirectHit
-                or SkillType.AreaSkillAutomaticHits
-                or SkillType.AreaSkillExplicitHits
-                or SkillType.AreaSkillExplicitTarget)
+        if (CastleSiegeOnlySkillNumbers.Contains(skill.Number))
         {
-            return true;
+            return false;
+        }
+
+        if (IsAttackSkill(skill))
+        {
+            // Worth learning if it adds damage of its own, hits more than once, or hits more than one
+            // target. Judging by AttackDamage alone locked a Rage Fighter out of its entire arsenal:
+            // Killing Blow, Chain Drive, Dragon Roar and Phoenix Shot all carry a flat bonus of zero and
+            // four hits instead, because their damage comes from the weapon - which is also how the
+            // server pays them out.
+            return skill.AttackDamage > 0
+                   || skill.NumberOfHitsPerAttack > 1
+                   || IsAreaSkill(skill);
         }
 
         return skill.SkillType is SkillType.Buff or SkillType.Regeneration
                && skill.MagicEffectDef is not null
                && !ExcludedBuffSkillNumbers.Contains(skill.Number);
     }
+
+    /// <summary>
+    /// Determines whether the skill deals damage to a target, as opposed to buffing, summoning or the like.
+    /// </summary>
+    /// <param name="skill">The skill.</param>
+    public static bool IsAttackSkill(Skill skill)
+        => skill.SkillType is SkillType.DirectHit
+            or SkillType.AreaSkillAutomaticHits
+            or SkillType.AreaSkillExplicitHits
+            or SkillType.AreaSkillExplicitTarget;
+
+    /// <summary>
+    /// Determines whether the skill hits more than its primary target.
+    /// </summary>
+    /// <param name="skill">The skill.</param>
+    public static bool IsAreaSkill(Skill skill)
+        => skill.SkillType is SkillType.AreaSkillAutomaticHits
+            or SkillType.AreaSkillExplicitHits
+            or SkillType.AreaSkillExplicitTarget;
+
+    /// <summary>
+    /// Determines whether the skill is one the game only activates during a castle siege, which a bot
+    /// therefore never uses while hunting - not even when it already knows it, as a Dark Knight does:
+    /// Crescent Moon Slash is handed to every one of them when the character is created.
+    /// </summary>
+    /// <param name="skill">The skill.</param>
+    public static bool IsCastleSiegeOnly(Skill skill) => CastleSiegeOnlySkillNumbers.Contains(skill.Number);
 
     /// <summary>
     /// Determines whether the character meets the skill's learn requirements (the same ones the game
