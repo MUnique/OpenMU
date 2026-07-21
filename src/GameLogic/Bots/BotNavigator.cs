@@ -1208,8 +1208,10 @@ internal sealed class BotNavigator : AsyncDisposable
             return;
         }
 
-        // A stack holds as many charges as the item definition allows - no more (see EmergencyPotionCharges).
-        var stackSize = Math.Max((byte)1, definition.Durability);
+        // Only ever up to the emergency amount, never a full stack: a Large Healing Potion holds 255
+        // charges, four times what a bot stocks at a merchant, so handing out whole stacks here made the
+        // fallback the bot's normal potion supply and the shopping trip never had a reason to restock.
+        var stackSize = Math.Min(Math.Max((byte)1, definition.Durability), (byte)EmergencyPotionCharges);
         foreach (var potion in potions.Where(p => p.Durability < stackSize))
         {
             charges += (int)(stackSize - potion.Durability);
