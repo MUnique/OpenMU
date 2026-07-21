@@ -62,41 +62,46 @@ public class AddElfSoldierBuffPlugIn : UpdatePlugInBase
             return;
         }
 
-        var buffEffect = context.CreateNew<MagicEffectDefinition>();
-        gameConfiguration.MagicEffects.Add(buffEffect);
-        buffEffect.Number = (short)MagicEffectNumber.ElfSoldierBuff;
-        buffEffect.Name = "Elf Soldier Buff";
-        buffEffect.InformObservers = true;
-        buffEffect.StopByDeath = true;
+        var buffEffect = gameConfiguration.MagicEffects.FirstOrDefault(e => e.Number == (short)MagicEffectNumber.ElfSoldierBuff);
+        if (buffEffect is null)
+        {
+            buffEffect = context.CreateNew<MagicEffectDefinition>();
+            gameConfiguration.MagicEffects.Add(buffEffect);
+            buffEffect.Number = (short)MagicEffectNumber.ElfSoldierBuff;
+            buffEffect.Name = "Elf Soldier Buff";
+            buffEffect.InformObservers = true;
+            buffEffect.StopByDeath = true;
 
-        // Duration: 60 minutes
-        buffEffect.Duration = context.CreateNew<PowerUpDefinitionValue>();
-        buffEffect.Duration.ConstantValue.Value = 3600;
+            // Duration: 60 minutes
+            buffEffect.Duration = context.CreateNew<PowerUpDefinitionValue>();
+            buffEffect.Duration.ConstantValue.Value = 3600;
 
-        // Defense boost: 50 + (Level / 5)
-        var defensePowerUp = context.CreateNew<PowerUpDefinition>();
-        defensePowerUp.TargetAttribute = Stats.DefenseFinal.GetPersistent(gameConfiguration);
-        defensePowerUp.Boost = context.CreateNew<PowerUpDefinitionValue>();
-        defensePowerUp.Boost.ConstantValue.Value = 50;
-        defensePowerUp.Boost.ConstantValue.AggregateType = AggregateType.AddFinal;
-        var defensePerLevel = context.CreateNew<AttributeRelationship>();
-        defensePerLevel.InputAttribute = Stats.Level.GetPersistent(gameConfiguration);
-        defensePerLevel.InputOperand = 1f / 5;
-        defensePerLevel.InputOperator = InputOperator.Multiply;
-        defensePowerUp.Boost.RelatedValues.Add(defensePerLevel);
-        buffEffect.PowerUpDefinitions.Add(defensePowerUp);
+            // Defense boost: 50 + (Level / 5)
+            var defensePowerUp = context.CreateNew<PowerUpDefinition>();
+            defensePowerUp.TargetAttribute = Stats.DefenseFinal.GetPersistent(gameConfiguration);
+            defensePowerUp.Boost = context.CreateNew<PowerUpDefinitionValue>();
+            defensePowerUp.Boost.ConstantValue.Value = 50;
+            defensePowerUp.Boost.ConstantValue.AggregateType = AggregateType.AddFinal;
+            var defensePerLevel = context.CreateNew<AttributeRelationship>();
+            defensePerLevel.InputAttribute = Stats.Level.GetPersistent(gameConfiguration);
+            defensePerLevel.InputOperand = 1f / 5;
+            defensePerLevel.InputOperator = InputOperator.Multiply;
+            defensePowerUp.Boost.RelatedValues.Add(defensePerLevel);
+            buffEffect.PowerUpDefinitions.Add(defensePowerUp);
 
-        // Damage boost: 45 + (Level / 3)
-        var damagePowerUp = context.CreateNew<PowerUpDefinition>();
-        damagePowerUp.TargetAttribute = Stats.GreaterDamageBonus.GetPersistent(gameConfiguration);
-        damagePowerUp.Boost = context.CreateNew<PowerUpDefinitionValue>();
-        damagePowerUp.Boost.ConstantValue.Value = 45;
-        var damagePerLevel = context.CreateNew<AttributeRelationship>();
-        damagePerLevel.InputAttribute = Stats.Level.GetPersistent(gameConfiguration);
-        damagePerLevel.InputOperand = 1f / 3;
-        damagePerLevel.InputOperator = InputOperator.Multiply;
-        damagePowerUp.Boost.RelatedValues.Add(damagePerLevel);
-        buffEffect.PowerUpDefinitions.Add(damagePowerUp);
+            // Damage boost: 45 + (Level / 3)
+            var damagePowerUp = context.CreateNew<PowerUpDefinition>();
+            damagePowerUp.TargetAttribute = Stats.GreaterDamageBonus.GetPersistent(gameConfiguration);
+            damagePowerUp.Boost = context.CreateNew<PowerUpDefinitionValue>();
+            damagePowerUp.Boost.ConstantValue.Value = 45;
+            damagePowerUp.Boost.ConstantValue.AggregateType = AggregateType.AddRaw;
+            var damagePerLevel = context.CreateNew<AttributeRelationship>();
+            damagePerLevel.InputAttribute = Stats.Level.GetPersistent(gameConfiguration);
+            damagePerLevel.InputOperand = 1f / 3;
+            damagePerLevel.InputOperator = InputOperator.Multiply;
+            damagePowerUp.Boost.RelatedValues.Add(damagePerLevel);
+            buffEffect.PowerUpDefinitions.Add(damagePowerUp);
+        }
 
         var buff = context.CreateNew<Buff>();
         buff.MagicEffectDefinition = buffEffect;
