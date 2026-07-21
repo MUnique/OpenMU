@@ -37,6 +37,21 @@ internal static class BotJewelHandler
     ];
 
     /// <summary>
+    /// Jewels a bot may still be carrying from before but can never spend: it neither trades nor crafts.
+    /// They are not picked up anymore, so this is about clearing out what is already in the backpack.
+    /// </summary>
+    internal static readonly ItemIdentifier[] UnusableJewels =
+    [
+        ItemConstants.JewelOfChaos,
+        ItemConstants.JewelOfCreation,
+        ItemConstants.JewelOfGuardian,
+        ItemConstants.Gemstone,
+        ItemConstants.JewelOfHarmony,
+        ItemConstants.LowerRefineStone,
+        ItemConstants.HigherRefineStone,
+    ];
+
+    /// <summary>
     /// Jewels of Bless per shopping trip. Each kind has its OWN budget on purpose: with one shared
     /// budget the Bless rule - which has a target whenever any equipped piece is below +6, and a swapped
     /// in piece arrives at the level it dropped with - consumed every use, every trip, and the Soul and
@@ -206,6 +221,63 @@ internal static class BotJewelHandler
 
         return null;
     }
+
+    /// <summary>
+    /// Whether the bot carries jewels it should get rid of at a merchant: any it cannot use at all, or
+    /// more of a usable kind than its stock limit. Deliberately cheap - the trip planner asks this on
+    /// every check, so unlike the full junk scan it must not plan equipment swaps.
+    /// </summary>
+    /// <param name="player">The bot player.</param>
+    /// <returns><c>True</c>, if there is jewel surplus to sell.</returns>
+    internal static bool HasSurplus(Player player)
+    {
+        if (player.Inventory is not { } inventory)
+        {
+            return false;
+        }
+
+        var limit = GetStockLimit(player);
+        var counts = new Dictionary<ItemIdentifier, int>();
+        foreach (var item in inventory.Items)
+        {
+            if (item.ItemSlot < InventoryConstants.EquippableSlotsCount
+                || item.Definition is not { } definition)
+            {
+                continue;
+            }
+
+            var identifier = new ItemIdentifier(definition.Number, definition.Group);
+            if (UnusableJewels.Contains(identifier))
+            {
+                return true;
+            }
+
+            if (!UsableJewels.Contains(identifier))
+            {
+                continue;
+            }
+
+            var count = counts.GetValueOrDefault(identifier) + 1;
+            if (count > limit)
+            {
+                return true;
+            }
+
+            counts[identifier] = count;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Whether the bot has a jewel it could spend on its gear right now. Jewels are only used at the
+    /// end of a merchant trip - the rare, safe, player-like moment for it - so the trip planner asks
+    /// this to decide whether a visit is worth making at all.
+    /// </summary>
+    /// <param name="player">The bot player.</param>
+    /// <returns><c>True</c>, if an upgrade is pending.</returns>
+    internal static bool HasPendingUpgrade(Player player)
+        => PlanNextUse(player, MaxBlessPerTrip, MaxSoulPerTrip, MaxLifePerTrip) is not null;
 
     /// <summary>
     /// Whether the bot still has room in its stock for this jewel - the pickup handler asks before
