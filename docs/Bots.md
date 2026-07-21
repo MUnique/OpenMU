@@ -65,6 +65,14 @@ The *Bots* feature plugin, in the "Feature Plugins" section of the admin panel:
 - **`Bots pay reset costs`** — whether bots pay the configured zen and item
   costs for their resets. Off by default: they take no part in the economy those
   costs are balanced for.
+- **`Jewel stock per kind`** — how many Jewels of Bless, Soul and Life a bot
+  keeps of each kind. Above it, it stops picking them up and sells what it
+  already carries. Depends on the server's drop rates: on high rates a small
+  stock keeps the backpack free, on low rates a larger one is never reached
+  anyway.
+- **`Potion stock charges`** — how many charges of healing and of mana potions a
+  bot restocks to at a merchant. Depends on what the shops sell: a server whose
+  potions come in stacks of 255 fills the target in a single purchase.
 - **`Reset bots`** — purges and regenerates the whole population on the next
   start, then clears itself.
 
@@ -136,13 +144,27 @@ weapon. If the engine refuses the equip after all, the old gear goes straight
 back on. The replaced piece stays in the backpack and is sold on the next trip
 to town, rather than being dropped where the next bot would pick it up again.
 
-When the backpack fills up or the potions run low, the bot walks to a merchant,
-sells its junk, and buys refills from the proceeds while the shop dialog visibly
-occupies it — on a map without a merchant it warps home first, like a player
-would. Looted Jewels of Bless, Soul and Life are spent on its own equipment
-through the regular consume action, with the same success rates and failure
-penalties a player faces, and with the caution a player shows: a Soul is only
-risked where a failure cannot destroy the item's level.
+A merchant trip is the only moment a bot can turn loot into anything, so it goes
+whenever it has something to gain there: the backpack is filling with junk, the
+potions are running low, a jewel is waiting to be used, or a surplus is waiting
+to be sold. It picks the merchant which sells what it needs right now, and on a
+map whose merchants sell no potions while it needs some, it warps home to a real
+town instead. While the shop dialog visibly occupies it, the bot sells its junk,
+repairs its gear — which is what earns the NPC's discount — and buys potions and,
+where a shop offers them, jewels.
+
+Only Jewels of Bless, Soul and Life are collected, and only up to the configured
+stock: a bot cannot trade or craft, so any other kind would be a backpack slot it
+never gets back. They are spent on its own equipment through the regular consume
+action, with the same success rates and failure penalties a player faces, and
+with the caution a player shows: a Soul is only risked where a failure cannot
+destroy the item's level.
+
+A bot which reaches the server's maximum inventory money can no longer sell
+anything — the money simply does not fit. What it cannot sell it keeps, and
+destroys only what has no other way out: jewels beyond its stock, and, while the
+backpack is genuinely full, junk gear. The repair bill is what normally keeps it
+away from that limit in the first place.
 
 Wings do not drop, so bots earn them at the classic milestones instead — the
 first pair at level 180, the second at 280 and the third, master-only pair at
