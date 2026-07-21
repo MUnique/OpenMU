@@ -84,6 +84,26 @@ public class BotConfiguration
     public bool BotsPayResetCosts { get; set; }
 
     /// <summary>
+    /// Gets or sets how many Jewels of Bless, Soul and Life a bot keeps of each kind. Bots only pick up
+    /// the jewels they can actually spend on their own gear (see <c>BotJewelHandler</c>) and stop
+    /// collecting a kind once they hold this many; whatever they carry above it is sold on the next
+    /// merchant visit. The sensible value depends entirely on the server's drop rates - on a high rate
+    /// server a bot refills a big stock within hours, so a low limit keeps its backpack usable.
+    /// </summary>
+    [Display(Name = "Jewel stock per kind", Description = "How many Jewels of Bless/Soul/Life a bot keeps of each kind; above this it stops picking them up and sells the surplus.")]
+    [Range(0, 100)]
+    public int JewelStockPerKind { get; set; } = 10;
+
+    /// <summary>
+    /// Gets or sets the number of potion charges (per healing and per mana potions) a bot stocks up to
+    /// at a merchant. Merchants sell potions in stacks of different sizes, so this is the target the bot
+    /// buys towards, not a stack count.
+    /// </summary>
+    [Display(Name = "Potion stock (charges)", Description = "How many healing and mana potion charges a bot buys up to at a merchant.")]
+    [Range(10, 255)]
+    public int PotionStockCharges { get; set; } = 60;
+
+    /// <summary>
     /// Gets or sets a comma separated list of login names of existing accounts to animate as bots.
     /// This is an optional extra hook alongside the generated population (see
     /// <see cref="NumberOfAccounts"/>): every listed account gets a bot driving its first character.
@@ -108,6 +128,22 @@ public class BotConfiguration
     /// <remarks>Deliberately a method, like <see cref="GetEffectiveCharactersPerAccount"/>.</remarks>
     public int GetEffectiveBotCapacityPercent()
         => Math.Clamp(this.BotCapacityPercent, 1, 100);
+
+    /// <summary>
+    /// Gets the effective, clamped jewel stock a bot keeps of each usable kind.
+    /// </summary>
+    /// <returns>A value between 0 and 100.</returns>
+    /// <remarks>Deliberately a method, like <see cref="GetEffectiveCharactersPerAccount"/>.</remarks>
+    public int GetEffectiveJewelStockPerKind()
+        => Math.Clamp(this.JewelStockPerKind, 0, 100);
+
+    /// <summary>
+    /// Gets the effective, clamped potion charges a bot stocks up to.
+    /// </summary>
+    /// <returns>A value between 10 and 255.</returns>
+    /// <remarks>Deliberately a method, like <see cref="GetEffectiveCharactersPerAccount"/>.</remarks>
+    public int GetEffectivePotionStockCharges()
+        => Math.Clamp(this.PotionStockCharges, 10, 255);
 
     /// <summary>
     /// Parses <see cref="ProofOfConceptAccounts"/> into the distinct, trimmed login names.

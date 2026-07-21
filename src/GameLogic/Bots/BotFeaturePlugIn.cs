@@ -71,6 +71,16 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
     /// <inheritdoc />
     public BotConfiguration? Configuration { get; set; }
 
+    /// <summary>
+    /// Gets the bot configuration of the given game context, so the bot handlers can read their
+    /// admin-panel editable settings without being handed the plugin around (same shape as
+    /// <see cref="BotResetHandler.GetResetConfiguration"/>).
+    /// </summary>
+    /// <param name="gameContext">The game context.</param>
+    /// <returns>The configuration, or <c>null</c> when the bot feature is not configured.</returns>
+    public static BotConfiguration? GetConfiguration(IGameContext gameContext)
+        => gameContext.FeaturePlugIns.GetPlugIn<BotFeaturePlugIn>()?.Configuration;
+
     /// <inheritdoc />
     public async ValueTask ExecuteTaskAsync(GameContext gameContext)
     {
