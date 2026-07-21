@@ -25,6 +25,8 @@ public sealed class BuffHandler
     private int _nextSlotIndex;
     private bool _buffTimerTriggered;
     private DateTime? _nextPeriodicBuffTime;
+    private IList<int>? _cachedAutoBuffIds;
+    private int _cachedAutoBuffSkillCount = -1;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BuffHandler"/> class.
@@ -38,7 +40,9 @@ public sealed class BuffHandler
     }
 
     /// <summary>
-    /// Gets the configured buff skill IDs from the settings.
+    /// Gets the configured buff skill IDs from the settings. With <see cref="IMuHelperSettings.AutoSelectBuffs"/>
+    /// enabled (server-side bots), the character's learned buff skills are used instead of the explicitly
+    /// configured slots, so each class keeps its own buffs up without any per-character configuration.
     /// </summary>
     public IList<int> ConfiguredBuffIds
     {
@@ -47,6 +51,34 @@ public sealed class BuffHandler
             if (this._config is null)
             {
                 return [];
+            }
+
+            if (this._config.AutoSelectBuffs && this._player.SkillList is { } skillList)
+            {
+                // The learned buffs only change when a new skill is learned, so the list is cached and
+                // only rebuilt when the skill count changes - building it fresh with LINQ on every
+                // 500ms tick of hundreds of bots was measurable CPU for no benefit.
+                var skillCount = skillList.Skills.Count();
+                if (this._cachedAutoBuffIds is null || skillCount != this._cachedAutoBuffSkillCount)
+                {
+                    var learnedBuffs = skillList.Skills
+                        .Where(s => s.Skill is { SkillType: SkillType.Buff, MagicEffectDef: not null })
+                        .Select(s => (int)s.Skill!.Number)
+                        .OrderBy(n => n)
+                        .Take(BuffSlotCount)
+                        .ToList();
+
+                    // Pad to the fixed slot count - the caller indexes all three slots; 0 means "slot empty".
+                    while (learnedBuffs.Count < BuffSlotCount)
+                    {
+                        learnedBuffs.Add(0);
+                    }
+
+                    this._cachedAutoBuffIds = learnedBuffs;
+                    this._cachedAutoBuffSkillCount = skillCount;
+                }
+
+                return this._cachedAutoBuffIds;
             }
 
             return [this._config.BuffSkill0Id, this._config.BuffSkill1Id, this._config.BuffSkill2Id];
@@ -246,8 +278,21 @@ public sealed class BuffHandler
             return false;
         }
 
-        return target.MagicEffectList.ActiveEffects.Values
-            .Any(e => e.Definition == effectDef);
+        try
+        {
+            // Eager snapshot, like the other readers of ActiveEffects (see MagicEffectsList): the
+            // list is mutated by the effect expiry timers, and a lazy enumeration from this
+            // (unsynchronized) helper tick raced them regularly at scale. A list shrinking in the
+            // middle of the copy can still leave null holes in the snapshot (hence the tolerant
+            // predicate) or throw out of the copy itself (hence the catch-all around this pure
+            // read) - any torn read simply counts as "active", and the next tick retries.
+            var activeEffects = target.MagicEffectList.ActiveEffects.Values.ToArray();
+            return activeEffects.Any(e => e?.Definition == effectDef);
+        }
+        catch (Exception)
+        {
+            return true;
+        }
     }
 
     private void UpdatePeriodicBuffTimer()

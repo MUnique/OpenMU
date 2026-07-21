@@ -16,7 +16,6 @@ public sealed class MovementHandler
 
     private readonly OfflinePlayer _player;
     private readonly IMuHelperSettings? _config;
-    private readonly Point _originPosition;
 
     private DateTime? _outOfRangeSince;
 
@@ -25,13 +24,16 @@ public sealed class MovementHandler
     /// </summary>
     /// <param name="player">The offline player.</param>
     /// <param name="config">The MU Helper configuration.</param>
-    /// <param name="originPosition">The original spawn position.</param>
-    public MovementHandler(OfflinePlayer player, IMuHelperSettings? config, Point originPosition)
+    public MovementHandler(OfflinePlayer player, IMuHelperSettings? config)
     {
         this._player = player;
         this._config = config;
-        this._originPosition = originPosition;
     }
+
+    /// <summary>
+    /// Gets the position to hunt around. Dynamic so bots can roam between hunting grounds.
+    /// </summary>
+    private Point OriginPosition => this._player.HuntingOrigin;
 
     /// <summary>
     /// Gets the hunting range in tiles.
@@ -51,7 +53,7 @@ public sealed class MovementHandler
 
         if (this.ShouldRegroup(out var distance))
         {
-            await this.WalkToAsync(this._originPosition).ConfigureAwait(false);
+            await this.WalkToAsync(this.OriginPosition).ConfigureAwait(false);
             this._outOfRangeSince = null;
             return false;
         }
@@ -69,13 +71,43 @@ public sealed class MovementHandler
     /// </summary>
     /// <param name="target">The target to move closer to.</param>
     /// <param name="range">The range to stop within.</param>
-    public async ValueTask MoveCloserToTargetAsync(IAttackable target, byte range)
+    /// <returns>True, if a walk towards the target was started; false, if no path exists or walking is not possible.</returns>
+    public async ValueTask<bool> MoveCloserToTargetAsync(IAttackable target, byte range)
     {
-        if (this._player.CurrentMap is { } map && target.IsInRange(this._originPosition, this.HuntingRange))
+        if (this._player.CurrentMap is { } map && target.IsInRange(this.OriginPosition, this.HuntingRange))
         {
-            var walkTarget = map.Terrain.GetRandomCoordinate(target.Position, range);
-            await this.WalkToAsync(walkTarget).ConfigureAwait(false);
+            var walkTarget = GetApproachPoint(map, this._player.Position, target.Position, range);
+            return await this.WalkToAsync(walkTarget).ConfigureAwait(false);
         }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Picks the point to walk to when closing in on a target: straight along the line towards it,
+    /// stopping at attack range. The previous behavior re-randomized a point around the target every
+    /// tick, which made the character zig-zag visibly towards its prey and re-path constantly.
+    /// Falls back to a random point near the target when the straight-line point is not walkable.
+    /// </summary>
+    private static Point GetApproachPoint(GameMap map, Point from, Point to, byte stopRange)
+    {
+        var dx = to.X - from.X;
+        var dy = to.Y - from.Y;
+        var distance = Math.Max(Math.Abs(dx), Math.Abs(dy));
+        if (distance <= stopRange)
+        {
+            return from;
+        }
+
+        var factor = (double)(distance - stopRange) / distance;
+        var x = (byte)Math.Clamp(from.X + (int)Math.Round(dx * factor), 0, 255);
+        var y = (byte)Math.Clamp(from.Y + (int)Math.Round(dy * factor), 0, 255);
+        if (map.Terrain.WalkMap[x, y] && !map.Terrain.SafezoneMap[x, y])
+        {
+            return new Point(x, y);
+        }
+
+        return map.Terrain.GetRandomCoordinate(to, stopRange);
     }
 
     /// <summary>
@@ -120,7 +152,7 @@ public sealed class MovementHandler
 
     private bool ShouldRegroup(out double distance)
     {
-        distance = this._player.GetDistanceTo(this._originPosition);
+        distance = this._player.GetDistanceTo(this.OriginPosition);
         if (distance <= RegroupDistanceThreshold)
         {
             return false;

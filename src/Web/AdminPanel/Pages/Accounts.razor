@@ -22,13 +22,12 @@
             <th class="col-2">@Resources.Action</th>
         </TableHeader>
         <FilterHeader>
-            <th colspan="3">
+            <th colspan="4">
                 <div class="input-group">
                     <span class="input-group-text"><span class="oi oi-magnifying-glass" aria-hidden="true"></span></span>
-                    <input type="search" class="form-control" placeholder="Search by Account or Character Name..." @bind="@this._accountService.SearchFilter"/>
+                    <input class="form-control small" type="search" autofocus @bind="@this._accountService.SearchFilter" @bind:event="oninput" placeholder="@Resources.Search ..."/>
                 </div>
             </th>
-            <th></th>
         </FilterHeader>
         <ItemTemplate Context="item">
             <td>@item.LoginName</td>

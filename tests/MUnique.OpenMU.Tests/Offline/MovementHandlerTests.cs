@@ -44,7 +44,8 @@ public class MovementHandlerTests
             HuntingRange = 5,
         };
 
-        var handler = new MovementHandler(player, config, origin);
+        player.HuntingOrigin = origin;
+        var handler = new MovementHandler(player, config);
 
         // Act
         var result = await handler.RegroupAsync().ConfigureAwait(false);
