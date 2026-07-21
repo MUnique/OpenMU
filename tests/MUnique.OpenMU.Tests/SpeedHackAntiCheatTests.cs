@@ -16,6 +16,7 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.Offline;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Pathfinding;
@@ -387,6 +388,70 @@ public class SpeedHackAntiCheatTests
         // The account should still be normal (no autoban) and not disconnected
         Assert.That(player.Account?.State, Is.EqualTo(AccountState.Normal));
         Assert.That(player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()!.GetWarningCount(player), Is.GreaterThan(5));
+    }
+
+    /// <summary>
+    /// Tests that an offline player - whose walks are issued by the server itself - is not checked at all.
+    /// </summary>
+    [Test]
+    public async Task TestOfflinePlayerIsNotCheckedOnWalkAsync()
+    {
+        var player = await CreatePlayerWithSpeedAttributesAsync().ConfigureAwait(false);
+        var offlinePlayer = await CreateOfflinePlayerAsync(player).ConfigureAwait(false);
+        var plugin = player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()!;
+
+        // The same walk pattern which bans a regular player in TestWalkSpeedHackDetectionBansAccountAsync.
+        for (int i = 0; i < 12; i++)
+        {
+            var nextFrom = new Point((byte)(StartPoint.X + (i * 2)), StartPoint.Y);
+            var nextTo = new Point((byte)(StartPoint.X + (i * 2) + 2), StartPoint.Y);
+
+            offlinePlayer.Position = nextFrom;
+            plugin.SetLastAlertTime(offlinePlayer, DateTime.MinValue);
+
+            WalkingStep[] steps = [new() { From = nextFrom, To = nextTo, Direction = Direction.East }];
+
+            await offlinePlayer.WalkToAsync(nextTo, steps).ConfigureAwait(false);
+        }
+
+        Assert.That(plugin.GetWarningCount(offlinePlayer), Is.EqualTo(0));
+        Assert.That(offlinePlayer.Account?.State, Is.EqualTo(AccountState.Normal));
+    }
+
+    /// <summary>
+    /// Tests that an offline player is not checked on attacks. Its MU Helper tick performs the same work
+    /// cycle as the original client helper (recover, then attack), which draws more than one token from a
+    /// single tick and would eventually empty the bucket.
+    /// </summary>
+    [Test]
+    public async Task TestOfflinePlayerIsNotCheckedOnAttackAsync()
+    {
+        var player = await CreatePlayerWithSpeedAttributesAsync().ConfigureAwait(false);
+        var offlinePlayer = await CreateOfflinePlayerAsync(player).ConfigureAwait(false);
+        offlinePlayer.Attributes![Stats.AttackSpeed] = 20;
+
+        var speedCheck = player.GameContext.PlugInManager.GetPlugInPoint<ISpeedHackCheatCheckPlugIn>()!;
+
+        // The same burst which is detected for a regular player in TestAttackSpeedHackDetectionAsync.
+        for (int i = 0; i < 20; i++)
+        {
+            var args = new SpeedHackCheckEventArgs();
+            await speedCheck.AttackCheatCheckAsync(offlinePlayer, args).ConfigureAwait(false);
+            Assert.That(args.IsCheatDetected, Is.False);
+        }
+
+        Assert.That(player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()!.GetWarningCount(offlinePlayer), Is.EqualTo(0));
+        Assert.That(offlinePlayer.Account?.State, Is.EqualTo(AccountState.Normal));
+    }
+
+    private static async ValueTask<OfflinePlayer> CreateOfflinePlayerAsync(Player regularPlayer)
+    {
+        var offlinePlayer = new OfflinePlayer(regularPlayer.GameContext) { Account = regularPlayer.Account };
+        await offlinePlayer.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
+        await offlinePlayer.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
+        await offlinePlayer.PlayerState.TryAdvanceToAsync(PlayerState.CharacterSelection).ConfigureAwait(false);
+        await offlinePlayer.SetSelectedCharacterAsync(regularPlayer.SelectedCharacter!).ConfigureAwait(false);
+        return offlinePlayer;
     }
 
     private static async ValueTask<Player> CreatePlayerWithSpeedAttributesAsync(List<Item>? inventoryItems = null)
