@@ -78,8 +78,9 @@ public record FrustumBasedTargetFilter
     /// <param name="target">The target.</param>
     /// <param name="rotation">The rotation.</param>
     /// <param name="projectileIndex">The zero-based index of the projectile (0 to ProjectileCount-1).</param>
+    /// <param name="extraProjectiles">The number of extra projectiles, if any.</param>
     /// <returns><c>true</c> if the target is within hit bounds for the specified projectile; otherwise, <c>false</c>.</returns>
-    public bool IsTargetWithinBounds(ILocateable attacker, ILocateable target, byte rotation, int projectileIndex)
+    public bool IsTargetWithinBounds(ILocateable attacker, ILocateable target, byte rotation, int projectileIndex, int extraProjectiles = 0)
     {
         if (this.ProjectileCount <= 1)
         {
@@ -87,7 +88,8 @@ public record FrustumBasedTargetFilter
             return this.IsTargetWithinBounds(attacker, target, rotation);
         }
 
-        if (projectileIndex < 0 || projectileIndex >= this.ProjectileCount)
+        var totalProjectiles = this.ProjectileCount + extraProjectiles;
+        if (projectileIndex < 0 || projectileIndex >= totalProjectiles)
         {
             return false;
         }
@@ -103,19 +105,19 @@ public record FrustumBasedTargetFilter
 
         // Divide the frustum into sections (-1 to 1 range)
         // For 3 projectiles: left (-1 to -0.33), center (-0.33 to 0.33), right (0.33 to 1)
-        var sectionWidth = 2.0 / this.ProjectileCount;
+        var sectionWidth = 2.0 / totalProjectiles;
         var sectionStart = -1.0 + (projectileIndex * sectionWidth);
         var sectionEnd = sectionStart + sectionWidth;
 
         // Add overlap so targets near boundaries can be hit by adjacent projectiles
-        var overlap = this.GetOverlap(attacker.Position, target.Position);
+        var overlap = this.GetOverlap(attacker.Position, target.Position, extraProjectiles);
         sectionStart -= overlap;
         sectionEnd += overlap;
 
         return relativePosition >= sectionStart && relativePosition <= sectionEnd;
     }
 
-    private double GetOverlap(Point attackerPos, Point targetPos)
+    private double GetOverlap(Point attackerPos, Point targetPos, int extraProjectiles = 0)
     {
         var distance = attackerPos.EuclideanDistanceTo(targetPos);
         if (distance == 0)
@@ -124,7 +126,7 @@ public record FrustumBasedTargetFilter
         }
 
         // The overlap decreases over higher distance
-        var overlap = (1.0 / Math.Floor(distance)) / this.ProjectileCount;
+        var overlap = (1.0 / Math.Floor(distance)) / (this.ProjectileCount + extraProjectiles);
         overlap += 0.001; // Adding a small epsilon to make it slightly more tolerant in the comparisons
         return overlap;
     }

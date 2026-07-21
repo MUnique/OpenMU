@@ -134,6 +134,7 @@ public class AreaSkillAttackAction
                     .GetAttackablesInRange(targetAreaCenter, range)
                     .Where(a => a != player)
                     .Where(a => !a.IsAtSafezone())
+                    .Where(a => a.IsActive())
             ?? [];
 
         if (skill.AreaSkillSettings is { UseFrustumFilter: true } areaSkillSettings)
@@ -239,6 +240,7 @@ public class AreaSkillAttackAction
 
         var orderedTargets = targets.ToList();
         FrustumBasedTargetFilter? filter = null;
+        var extraProjectiles = 0;
         var projectileCount = 1;
         var attackRounds = areaSkillSettings.MaximumNumberOfHitsPerTarget;
 
@@ -246,11 +248,12 @@ public class AreaSkillAttackAction
         {
             // Order targets by distance to process nearest targets first
             orderedTargets.Sort((a, b) => player.GetDistanceTo(a).CompareTo(player.GetDistanceTo(b)));
-            projectileCount = areaSkillSettings.ProjectileCount + (int)(player.Attributes?[Stats.ExtraProjectiles] ?? 0);
+            filter = FrustumFilters.GetOrAdd(areaSkillSettings, static s => new FrustumBasedTargetFilter(s.FrustumStartWidth, s.FrustumEndWidth, s.FrustumDistance, s.ProjectileCount));
+            extraProjectiles += (int)player.Attributes![Stats.ExtraProjectiles];
+            projectileCount = areaSkillSettings.ProjectileCount + extraProjectiles;
             attackRounds = 1; // One attack round per projectile
-            filter = FrustumFilters.GetOrAdd(areaSkillSettings, s => new FrustumBasedTargetFilter(s.FrustumStartWidth, s.FrustumEndWidth, s.FrustumDistance, projectileCount));
-            minAttacks = projectileCount;
             maxAttacks = projectileCount;
+            minAttacks = projectileCount;
 
             extraTarget = orderedTargets.FirstOrDefault(t => t.Id == extraTargetId);
             if (extraTarget is not null)
@@ -296,7 +299,7 @@ public class AreaSkillAttackAction
                     }
 
                     // For multiple projectiles, check if this specific projectile can hit the target
-                    if (filter != null && !filter.IsTargetWithinBounds(player, target, rotation, projectileIndex))
+                    if (filter != null && !filter.IsTargetWithinBounds(player, target, rotation, projectileIndex, extraProjectiles))
                     {
                         continue; // This projectile cannot hit this target
                     }
@@ -344,6 +347,11 @@ public class AreaSkillAttackAction
                                 await this.ApplySkillAsync(player, skillEntry, target, targetAreaCenter, isCombo).ConfigureAwait(false);
                             }
                         });
+                    }
+
+                    if (filter != null)
+                    {
+                        break;  // This projectile has hit, so we move on to the next projectile
                     }
                 }
 
