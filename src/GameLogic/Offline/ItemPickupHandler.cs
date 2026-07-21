@@ -117,7 +117,11 @@ public sealed class ItemPickupHandler
 
         if (this._config.PickJewel && IsJewel(item))
         {
-            return true;
+            // A human's helper takes every jewel - its owner trades, crafts or hoards them later. A bot
+            // has no later: it can only spend Bless, Soul and Life on its own gear, so a Jewel of Chaos
+            // or a stock-exceeding Soul is a backpack slot it never gets back.
+            return this._player.Account?.IsBot != true
+                   || Bots.BotJewelHandler.WantsMoreOf(this._player, item);
         }
 
         var isAncient = item.ItemSetGroups.Any(s => s.AncientSetDiscriminator != 0);
