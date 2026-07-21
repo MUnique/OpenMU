@@ -36,7 +36,7 @@ public class SpeedHackDetectPlugIn : IFeaturePlugIn, ISupportCustomConfiguration
     /// <inheritdoc/>
     public async ValueTask WalkCheatCheckAsync(Player player, Memory<WalkingStep> steps, SpeedHackCheckEventArgs eventArgs)
     {
-        if (steps.IsEmpty)
+        if (steps.IsEmpty || IsServerControlled(player))
         {
             return;
         }
@@ -139,7 +139,7 @@ public class SpeedHackDetectPlugIn : IFeaturePlugIn, ISupportCustomConfiguration
     /// <inheritdoc/>
     public async ValueTask AttackCheatCheckAsync(Player player, SpeedHackCheckEventArgs eventArgs)
     {
-        if (player.Attributes is not { } attributes)
+        if (player.Attributes is not { } attributes || IsServerControlled(player))
         {
             return;
         }
@@ -228,6 +228,19 @@ public class SpeedHackDetectPlugIn : IFeaturePlugIn, ISupportCustomConfiguration
             state.LastAlertTime = time;
         }
     }
+
+    /// <summary>
+    /// Determines whether the player's actions originate on the server instead of a game client.
+    /// These checks validate what a client claims about its own timing, so there is nothing to
+    /// validate for an offline player: the server itself paces its walks and attacks. Its MU Helper
+    /// tick performs the same work cycle as the original client helper (recover, then attack), which
+    /// draws two attack tokens from one 500 ms tick and eventually empties the bucket - so leaving
+    /// these players in would only ever produce false positives, and with the default configuration
+    /// those are answered with a persisted account ban.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <returns><c>true</c> if the player is controlled by the server; otherwise, <c>false</c>.</returns>
+    private static bool IsServerControlled(Player player) => player is Offline.OfflinePlayer;
 
     private SpeedHackState GetState(Player player)
     {
