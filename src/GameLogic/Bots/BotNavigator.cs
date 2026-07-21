@@ -595,7 +595,7 @@ internal sealed class BotNavigator : AsyncDisposable
             return false;
         }
 
-        if (BotShoppingHandler.FindMerchantPosition(map) is not { } merchantPosition)
+        if (BotShoppingHandler.FindMerchantPosition(this._player, map) is not { } merchantPosition)
         {
             // No merchant lives on this map at all (the Dungeon has no town). Shopping here would
             // starve the bot's logistics for as long as it stays - no potion restock, no selling, a
