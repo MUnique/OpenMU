@@ -22,6 +22,8 @@ internal sealed class RepairHandler
     private readonly IMuHelperSettings? _config;
     private readonly ItemRepairAction _repairAction = new();
 
+    private bool _loggedDisabled;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="RepairHandler"/> class.
     /// </summary>
@@ -41,7 +43,13 @@ internal sealed class RepairHandler
     {
         if (this._config is not { RepairItem: true })
         {
-            this._player.Logger.LogDebug("Auto-repair is disabled by MU Helper configuration for character {CharacterName}.", this._player.Name);
+            // Once per session: this states a configuration, not an event, and the tick runs twice a second.
+            if (!this._loggedDisabled)
+            {
+                this._loggedDisabled = true;
+                this._player.Logger.LogDebug("Auto-repair is disabled by MU Helper configuration for character {CharacterName}.", this._player.Name);
+            }
+
             return;
         }
 
