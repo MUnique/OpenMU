@@ -108,18 +108,28 @@ public class FinishElfMasterTreePlugIn : UpdatePlugInBase
         // Update master skills
         if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.DefenseIncreaseStr)?.MasterDefinition is { } defenseIncreaseStr)
         {
+            defenseIncreaseStr.ValueFormula = $"{SkillsInitializer.Formula502} / 100";
             defenseIncreaseStr.TargetAttribute = greaterDefenseBonus;
             defenseIncreaseStr.Aggregation = AggregateType.Multiplicate;
         }
 
-        if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.TripleShotStrengthener)?.MasterDefinition is { } tripleShotStrengthener)
+        if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.TripleShotMastery)?.MasterDefinition is { } tripleShotMastery)
         {
-            tripleShotStrengthener.TargetAttribute = extraProjectiles;
-            tripleShotStrengthener.Aggregation = AggregateType.AddRaw;
+            tripleShotMastery.ReplacedSkill = gameConfiguration.Skills.First(s => s.Number == (short)SkillNumber.TripleShotStrengthener);
+            tripleShotMastery.TargetAttribute = extraProjectiles;
+            tripleShotMastery.Aggregation = AggregateType.AddRaw;
+        }
+
+        if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.SummonedMonsterStr2)?.MasterDefinition is { } summonedMonsterStr2)
+        {
+            summonedMonsterStr2.ValueFormula = SkillsInitializer.Formula6020Value;
+            summonedMonsterStr2.Root = gameConfiguration.MasterSkillRoots.First(s => s.Name == "Middle Root");
+            summonedMonsterStr2.Rank = 3;
         }
 
         if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.AttackIncreaseStr)?.MasterDefinition is { } attackIncreaseStr)
         {
+            attackIncreaseStr.ValueFormula = $"{SkillsInitializer.Formula502} / 100";
             attackIncreaseStr.TargetAttribute = greaterDamageBonus;
             attackIncreaseStr.Aggregation = AggregateType.Multiplicate;
         }
@@ -127,6 +137,7 @@ public class FinishElfMasterTreePlugIn : UpdatePlugInBase
         if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.AttackIncreaseMastery)?.MasterDefinition is { } attackIncreaseMastery)
         {
             attackIncreaseMastery.ReplacedSkill = gameConfiguration.Skills.First(s => s.Number == (short)SkillNumber.AttackIncreaseStr);
+            attackIncreaseMastery.ValueFormula = $"{SkillsInitializer.Formula502} / 100";
             attackIncreaseMastery.TargetAttribute = greaterDamageBonus;
             attackIncreaseMastery.Aggregation = AggregateType.Multiplicate;
             attackIncreaseMastery.ExtendsDuration = true;
@@ -135,6 +146,7 @@ public class FinishElfMasterTreePlugIn : UpdatePlugInBase
         if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.DefenseIncreaseMastery)?.MasterDefinition is { } defenseIncreaseMastery)
         {
             defenseIncreaseMastery.ReplacedSkill = gameConfiguration.Skills.First(s => s.Number == (short)SkillNumber.DefenseIncreaseStr);
+            defenseIncreaseMastery.ValueFormula = $"{SkillsInitializer.Formula502} / 100";
             defenseIncreaseMastery.TargetAttribute = greaterDefenseBonus;
             defenseIncreaseMastery.Aggregation = AggregateType.Multiplicate;
             defenseIncreaseMastery.ExtendsDuration = true;
