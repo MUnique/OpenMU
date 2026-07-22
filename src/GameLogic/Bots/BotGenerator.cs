@@ -184,14 +184,17 @@ internal sealed class BotGenerator
     }
 
     /// <summary>
-    /// Deletes all bot accounts (and, by cascade, their characters and owned data).
+    /// Deletes all bot accounts with their characters, item storages and items.
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The number of deleted bot accounts.</returns>
     public async ValueTask<int> DeleteAllBotsAsync(CancellationToken cancellationToken = default)
     {
         using var context = this._gameContext.PersistenceContextProvider.CreateNewPlayerContext(this._gameContext.Configuration);
-        var deleted = 0;
+
+        // Collect first, delete afterwards: the paging query orders by login name, so deleting while
+        // paging would shift the accounts which are not visited yet into the pages already passed.
+        var loginNames = new List<string>();
         const int pageSize = 100;
         var skip = 0;
         while (true)
@@ -203,31 +206,51 @@ internal sealed class BotGenerator
                 break;
             }
 
-            var bots = page.Where(a => a.IsBot).ToList();
-            var removed = 0;
-            foreach (var bot in bots)
+            loginNames.AddRange(page.Where(account => account.IsBot).Select(account => account.LoginName));
+            skip += page.Count;
+        }
+
+        var deleted = 0;
+        foreach (var loginName in loginNames)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            // Load the account again, this time with its whole graph: the paging query returns the
+            // accounts untracked and without their characters, and deleting such a shallow account
+            // leaves its item storages behind. A character's inventory is referenced BY the character,
+            // so no delete cascade ever reaches it - those storages, and every item lying in them, would
+            // stay in the database forever as unreachable rows.
+            var account = await context.GetAccountByLoginNameAsync(loginName, cancellationToken).ConfigureAwait(false);
+            if (account is null)
             {
-                if (await context.DeleteAsync(bot).ConfigureAwait(false))
+                continue;
+            }
+
+            foreach (var character in account.Characters)
+            {
+                if (character.Inventory is { } inventory)
                 {
-                    deleted++;
-                    removed++;
-                }
-                else
-                {
-                    // Not silent: a bot account which survives the reset is spawned again right after
-                    // it, and the paging below would never look at it a second time.
-                    this._logger.LogWarning("Bot account '{LoginName}' could not be deleted for the bot reset.", bot.LoginName);
+                    await context.DeleteAsync(inventory).ConfigureAwait(false);
                 }
             }
 
-            // Commit this page's deletions before paging on, so the ordering used by the next query
-            // reflects the removals: what is left of this page now occupies [skip, skip + kept).
-            if (removed > 0)
+            if (account.Vault is { } vault)
             {
-                await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+                await context.DeleteAsync(vault).ConfigureAwait(false);
             }
 
-            skip += page.Count - removed;
+            if (await context.DeleteAsync(account).ConfigureAwait(false))
+            {
+                deleted++;
+            }
+            else
+            {
+                // Not silent: a bot account which survives the purge is spawned again right after it.
+                this._logger.LogWarning("Bot account '{LoginName}' could not be deleted.", loginName);
+            }
+
+            // Save per account, so a single failure does not roll back the accounts already deleted.
+            await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
 
         return deleted;
