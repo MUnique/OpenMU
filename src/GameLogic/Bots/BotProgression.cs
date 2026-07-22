@@ -360,6 +360,18 @@ internal static class BotProgression
     public static bool IsCastleSiegeOnly(Skill skill) => CastleSiegeOnlySkillNumbers.Contains(skill.Number);
 
     /// <summary>
+    /// Determines whether the skill belongs to a PET rather than to the character, and may therefore
+    /// only be used while that pet is actually equipped. Plasma Storm is the Fenrir's, and nothing in
+    /// the skill's own numbers gives the missing pet away: the attribute behind its damage
+    /// (<see cref="Attributes.Stats.FenrirBaseDmg"/>) is derived from the character's own strength,
+    /// agility, vitality and energy, so it is large for any high level character - with or without the
+    /// pet. Scoring it by that attribute alone handed Plasma Storm, the longest ranged skill most
+    /// classes own, to a whole population riding nothing.
+    /// </summary>
+    /// <param name="skill">The skill.</param>
+    public static bool RequiresPet(Skill skill) => skill.DamageType == DamageType.Fenrir;
+
+    /// <summary>
     /// Determines whether the character meets the skill's learn requirements (the same ones the game
     /// enforces when casting, e.g. total energy for wizard spells or character level for knight skills).
     /// <paramref name="getAttributeValue"/> resolves an attribute's current value; returning null means

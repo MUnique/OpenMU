@@ -95,7 +95,23 @@ public class BotSkillRepertoireTest
         Assert.That(BotProgression.IsBotLearnableSkill(evilSpirit), Is.True);
     }
 
-    private static Skill CreateAttackSkill(short number, int attackDamage, byte hits = 1, SkillType skillType = SkillType.DirectHit)
+    /// <summary>
+    /// Tests that a pet's skill is recognized as one. Plasma Storm belongs to the Fenrir, but its damage
+    /// attribute is derived from the character's own stats, so it looks strong on a character riding
+    /// nothing - and being the longest ranged skill most classes own, it won the tie-break for the whole
+    /// population until the pet was checked for.
+    /// </summary>
+    [Test]
+    public void PetSkillIsRecognizedAsOne()
+    {
+        var plasmaStorm = CreateAttackSkill(76, attackDamage: 60, damageType: DamageType.Fenrir);
+        var strikeOfDestruction = CreateAttackSkill(232, attackDamage: 110);
+
+        Assert.That(BotProgression.RequiresPet(plasmaStorm), Is.True);
+        Assert.That(BotProgression.RequiresPet(strikeOfDestruction), Is.False);
+    }
+
+    private static Skill CreateAttackSkill(short number, int attackDamage, byte hits = 1, SkillType skillType = SkillType.DirectHit, DamageType damageType = DamageType.Physical)
     {
         return new Skill
         {
@@ -103,6 +119,7 @@ public class BotSkillRepertoireTest
             AttackDamage = attackDamage,
             NumberOfHitsPerAttack = hits,
             SkillType = skillType,
+            DamageType = damageType,
             Range = 6,
         };
     }

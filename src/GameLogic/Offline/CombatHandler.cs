@@ -23,6 +23,12 @@ public sealed class CombatHandler
     private const byte DefaultRange = 1;
     private const byte BowRange = 6;
 
+    /// <summary>Item group of the Horn of Fenrir, the pet behind <see cref="DamageType.Fenrir"/>.</summary>
+    private const byte FenrirItemGroup = 13;
+
+    /// <summary>Item number of the Horn of Fenrir within <see cref="FenrirItemGroup"/>.</summary>
+    private const short FenrirItemNumber = 37;
+
     /// <summary>
     /// See <see cref="IsSafeTarget"/>: the largest share of the bot's maximum health a single average
     /// monster hit may take for the monster to count as safe. Sized so the bot survives several hits
@@ -115,6 +121,9 @@ public sealed class CombatHandler
     private DateTime _unreachableTargetUntilUtc = DateTime.MinValue;
     private SkillEntry? _tickBestSkill;
     private bool _tickBestSkillComputed;
+
+    /// <summary>The skill number last logged as the chosen one, so the choice is logged only when it changes.</summary>
+    private short _lastSelectedSkillNumber = -1;
     private DateTime _engageAtUtc = DateTime.MinValue;
 
     /// <summary>
@@ -757,12 +766,14 @@ public sealed class CombatHandler
             return null;
         }
 
+        var ridesFenrir = this.RidesFenrir();
         var candidates = new List<(SkillEntry Entry, float Score)>();
         foreach (var entry in skillList.Skills)
         {
             if (entry.Skill is not { } skill
                 || !BotProgression.IsAttackSkill(skill)
                 || BotProgression.IsCastleSiegeOnly(skill)
+                || (BotProgression.RequiresPet(skill) && !ridesFenrir)
                 || skill.Range == 0
                 || !this.HasEnoughResources(entry))
             {
@@ -784,13 +795,24 @@ public sealed class CombatHandler
         // whether the character is level 20 or 400. This is what stopped every wizard from fighting at
         // arm's length with Hellfire.
         var bestScore = candidates.Max(c => c.Score);
-        return this._tickBestSkill = candidates
+        this._tickBestSkill = candidates
             .Where(c => c.Score >= bestScore * EquivalentSkillScoreShare)
             .OrderByDescending(c => c.Entry.Skill!.Range)
             .ThenByDescending(c => c.Entry.Skill!.MasterDefinition is not null)
             .ThenByDescending(c => c.Score)
             .First()
             .Entry;
+
+        // Logged when the choice CHANGES, not every tick: what a character fights with is the one thing
+        // about an automatically fighting character which cannot be seen from the outside, and it is
+        // asked often enough ("why is my knight casting that?") to be worth a debug line.
+        if (this._tickBestSkill.Skill is { } chosen && chosen.Number != this._lastSelectedSkillNumber)
+        {
+            this._lastSelectedSkillNumber = chosen.Number;
+            this._player.Logger.LogDebug("'{Name}' now fights with '{Skill}'.", this._player.Name, chosen.Name);
+        }
+
+        return this._tickBestSkill;
     }
 
     /// <summary>
@@ -808,11 +830,9 @@ public sealed class CombatHandler
             DamageType.Wizardry => attributes?[Stats.MaximumWizBaseDmg] ?? 0,
             DamageType.Curse => attributes?[Stats.MaximumCurseBaseDmg] ?? 0,
 
-            // A Fenrir skill draws its damage from the pet, so without one there is nothing behind it but
-            // the skill's own flat bonus - which is how a bot came to fight with Plasma Storm while riding
-            // nothing. Nothing stops it server-side (the skill asks for character level 110 and no more),
-            // so this is where it is settled: with no Fenrir the score collapses and the bot picks a real
-            // skill; with one, it competes on the pet's damage like it should.
+            // Only reached when the character actually rides a Fenrir - the skill is filtered out
+            // otherwise, because this attribute is derived from the character's own stats and says
+            // nothing about whether the pet is there (see RidesFenrir).
             DamageType.Fenrir => attributes?[Stats.FenrirBaseDmg] ?? 0,
             _ => attributes?[Stats.MaximumPhysBaseDmg] ?? 0,
         };
@@ -825,6 +845,17 @@ public sealed class CombatHandler
 
         return perHit * hits * targets;
     }
+
+    /// <summary>
+    /// Determines whether the character actually rides a Fenrir, which the skills reported by
+    /// <see cref="BotProgression.RequiresPet"/> need in order to be worth anything.
+    /// </summary>
+    private bool RidesFenrir()
+        => this._player.Inventory?.GetItem(InventoryConstants.PetSlot) is
+        {
+            Durability: > 0.0,
+            Definition: { Group: FenrirItemGroup, Number: FenrirItemNumber },
+        };
 
     /// <summary>
     /// Evaluates whether the skill in the given slot should fire this tick.
