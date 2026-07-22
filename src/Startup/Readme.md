@@ -14,6 +14,30 @@ only actions of certain players, for example.
 In the future, it might be possible to change logging settings over the admin
 panel, too.
 
+## Externally-provisioned database
+
+By default, when no database exists yet, the server drops and (re-)creates it
+before building the schema. This requires the connecting database role to be
+allowed to create and drop databases (upstream the connection strings use the
+`postgres` superuser, optionally overridden via `DB_ADMIN_USER`/`DB_ADMIN_PW`).
+
+In managed environments — a Kubernetes operator, infrastructure-as-code, or a
+managed cloud database — the database is often provisioned ahead of time and the
+connecting role is intentionally *not* permitted to create or drop databases
+(least privilege; it only owns its own database). In that case, set:
+
+```json
+"Database": {
+  "AssumeExternallyProvisioned": true
+}
+```
+
+or, equivalently, the environment variable
+`Database__AssumeExternallyProvisioned=true`. The server then keeps the existing
+(empty) database and only builds its schema via migrations, instead of dropping
+and recreating it. The default (`false`) preserves the original behaviour. An
+explicit `-reinit` always drops and recreates, regardless of this setting.
+
 ## Parameters
 
 **Please note, that the most of these parameters (except ```-demo``` and ```-adminpanel```)
@@ -62,6 +86,7 @@ They may be helpful when running the server in a container or under linux.
 | DB_HOST | Host name/address of the postgres database |
 | DB_ADMIN_USER | User name of the admin user of the postgres database |
 | DB_ADMIN_PW   | Password of the admin user of the postgres database |
+| Database__AssumeExternallyProvisioned | When `true`, keep an already-provisioned (empty) database and only build its schema via migrations, instead of dropping and recreating it. Useful when the connecting role may not create/drop databases. Default: `false`. See *Externally-provisioned database* above. |
 
 ## Settings priority
 

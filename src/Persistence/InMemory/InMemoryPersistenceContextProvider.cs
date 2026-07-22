@@ -127,7 +127,7 @@ public class InMemoryPersistenceContextProvider : IMigratableDatabaseContextProv
     }
 
     /// <inheritdoc />
-    public Task<IDisposable> ReCreateDatabaseAsync()
+    public Task<IDisposable> ReCreateDatabaseAsync(bool dropExistingDatabase = true)
     {
         this._repositoryProvider = new();
         return Task.FromResult<IDisposable>(new Disposable(() => { }));
