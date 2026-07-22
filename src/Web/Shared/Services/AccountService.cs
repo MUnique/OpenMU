@@ -80,18 +80,14 @@ public class AccountService : IDataService<Account>, ISupportDataChangedNotifica
                 return (await playerContext.GetAccountsOrderedByLoginNameAsync(offset, count).ConfigureAwait(false)).ToList();
             }
 
-            var allAccounts = await playerContext.GetAsync<Account>().ConfigureAwait(false);
-            var results = allAccounts.Where(account =>
-                (account.LoginName != null && account.LoginName.Contains(filter, StringComparison.InvariantCultureIgnoreCase))
-                || account.Characters.Any(c => c.Name != null && c.Name.Contains(filter, StringComparison.InvariantCultureIgnoreCase))
-            ).ToList();
-
-            if (offset >= results.Count)
+            var results = (await playerContext.SearchAccountsAsync(filter, offset, count).ConfigureAwait(false)).ToList();
+            if (results.Count == 0 && offset > 0)
             {
-                return results.Take(count).ToList();
+                // The filter narrowed the result set down to less entries than the current page offset - show the first page instead.
+                results = (await playerContext.SearchAccountsAsync(filter, 0, count).ConfigureAwait(false)).ToList();
             }
 
-            return results.Skip(offset).Take(count).ToList();
+            return results;
         }
         catch
         {
