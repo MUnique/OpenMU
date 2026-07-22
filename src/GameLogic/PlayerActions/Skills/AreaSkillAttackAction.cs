@@ -261,7 +261,7 @@ public class AreaSkillAttackAction
                 // In this case we just calculate the angle on server side, so that lags
                 // or desynced positions may not have such a big impact
                 var angle = (float)player.Position.GetAngleDegreeTo(extraTarget.Position);
-                rotation = (byte)(angle / 360.0f * 256.0f);
+                rotation = (byte)((angle / 360.0f) * 256.0f);
             }
         }
 
