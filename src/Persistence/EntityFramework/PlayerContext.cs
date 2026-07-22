@@ -101,6 +101,26 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
     }
 
     /// <inheritdoc />
+    public async ValueTask<IEnumerable<DataModel.Entities.Account>> SearchAccountsAsync(string searchTerm, int skip, int count, CancellationToken cancellationToken = default)
+    {
+        using (this.RepositoryProvider.ContextStack.UseContext(this))
+        {
+            // Invariant: this one runs in .NET, so it must not depend on the server's locale - in a
+            // Turkish one, "I".ToLower() is a dotless "ı" and the term would match nothing. The
+            // ToLower() calls inside the query below are a different matter: they are translated to
+            // the database's own lower(), which is why they cannot take a culture.
+            var term = searchTerm.ToLowerInvariant();
+            return await this.Context.Set<Account>().AsNoTracking()
+                .Where(a => a.LoginName.ToLower().Contains(term)
+                            || a.RawCharacters.Any(c => c.Name.ToLower().Contains(term)))
+                .OrderBy(a => a.LoginName)
+                .Skip(skip)
+                .Take(count)
+                .ToListAsync(cancellationToken).ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc />
     public async ValueTask<DataModel.Entities.Account?> GetAccountByCharacterNameAsync(string characterName, CancellationToken cancellationToken = default)
     {
         using (this.RepositoryProvider.ContextStack.UseContext(this))
