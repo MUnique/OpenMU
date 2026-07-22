@@ -774,6 +774,12 @@ public sealed class CombatHandler
                 || BotProgression.IsCastleSiegeOnly(skill)
                 || (BotProgression.RequiresPet(skill) && !ridesFenrir)
                 || skill.Range == 0
+
+                // Same trap as the buffs: a character keeps its skills across a reset but not the level
+                // which unlocked them, and the cast is refused deep inside, silently. A single-target
+                // skill picked here would simply not go off - the basic attack only steps in when NO
+                // skill was selected, not when the selected one fails.
+                || !BotProgression.MeetsRequirements(skill, attribute => this._player.Attributes?[attribute])
                 || !this.HasEnoughResources(entry))
             {
                 continue;
