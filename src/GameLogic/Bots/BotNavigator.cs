@@ -44,6 +44,18 @@ internal sealed class BotNavigator : AsyncDisposable
     private const int HuntingRange = 6;
 
     /// <summary>
+    /// Distance (tiles) at which a hunting ground counts as half as attractive as one the bot is standing on.
+    /// See <see cref="GroundWeight"/>.
+    /// </summary>
+    private const int ProximityFalloff = 64;
+
+    /// <summary>
+    /// Width (tiles) of the box a hunting ground point is sampled from when the spawn area itself is smaller.
+    /// See <see cref="TryPickWalkablePoint"/>.
+    /// </summary>
+    private const int GroundScatterSpan = 2 * HuntingRange;
+
+    /// <summary>
     /// How far the bot looks for an actual live monster to home in on. MU spawn areas span most of the map
     /// (e.g. Lorencia's are ~86x233 / ~105x68 tiles) with only a few dozen monsters each, so their monsters
     /// sit ~20 tiles apart. Walking to a random tile inside such an area almost never lands within the 6-tile
@@ -198,6 +210,7 @@ internal sealed class BotNavigator : AsyncDisposable
     private int _travelPathIndex;
     private Point _travelPathTarget;
     private Point? _shoppingTarget;
+
     private DateTime _nextShoppingCheckUtc = DateTime.MinValue;
     private DateTime? _resetDueAtUtc;
     private short _leaderMapNumber;
@@ -228,6 +241,24 @@ internal sealed class BotNavigator : AsyncDisposable
             null,
             TimeSpan.FromMilliseconds(2000 + Rand.NextInt(0, 1500)),
             EvaluationInterval);
+    }
+
+    /// <summary>
+    /// Rates a spawn area as a hunting ground for a bot standing at the given point.
+    /// </summary>
+    /// <param name="area">The spawn area.</param>
+    /// <param name="from">The point the bot measures from.</param>
+    /// <returns>The relative weight of the area.</returns>
+    internal static int GroundWeight(MonsterSpawnArea area, Point from)
+    {
+        // Manhattan distances on a 256x256 map reach ~460, so a linear "300 - distance" term rated a
+        // ground next to the entrance up to 299 while everything past the halfway point clamped to 1.
+        // Bots enter a map through the same gate and therefore all measure from the same spot, so that
+        // ratio made them queue up on the handful of spawns nearest to it. A hyperbolic falloff keeps
+        // the preference for close grounds - travel is still time not spent hunting - without writing
+        // off the rest of the map.
+        var proximity = (ProximityFalloff * ProximityFalloff) / (ProximityFalloff + GroundDistance(area, from));
+        return Math.Max(1, (int)area.Quantity) * Math.Max(1, proximity);
     }
 
     /// <inheritdoc />
@@ -273,12 +304,6 @@ internal sealed class BotNavigator : AsyncDisposable
 
     private static int GetMonsterLevel(MonsterDefinition definition)
         => (int)(definition.Attributes.FirstOrDefault(a => a.AttributeDefinition == Stats.Level)?.Value ?? 0f);
-
-    private static int GroundWeight(MonsterSpawnArea area, Point from)
-    {
-        var proximity = Math.Max(1, 300 - GroundDistance(area, from));
-        return Math.Max(1, (int)area.Quantity) * proximity;
-    }
 
     /// <summary>Manhattan distance between the center of the spawn area and the given point.</summary>
     private static int GroundDistance(MonsterSpawnArea area, Point from)
@@ -1582,15 +1607,27 @@ internal sealed class BotNavigator : AsyncDisposable
 
     private bool TryPickWalkablePoint(GameMap map, MonsterSpawnArea area, Point? avoidCenter, out Point point)
     {
-        var minX = Math.Min(area.X1, area.X2);
-        var maxX = Math.Max(area.X1, area.X2);
-        var minY = Math.Min(area.Y1, area.Y2);
-        var maxY = Math.Max(area.Y1, area.Y2);
+        int minX = Math.Min(area.X1, area.X2);
+        int maxX = Math.Max(area.X1, area.X2);
+        int minY = Math.Min(area.Y1, area.Y2);
+        int maxY = Math.Max(area.Y1, area.Y2);
+
+        // Not every map states its spawns as rectangles: LaCleon, for one, lists every spawn as a single
+        // tile, and so do 44 of the 55 maps which hold more than ten of them. Sampling "inside" such an
+        // area can only ever return that one tile, so every bot which picks it walks onto the very same
+        // spot. Scatter around it instead - the bot still arrives within combat range of the monster.
+        var isSingleSpot = (maxX - minX) < GroundScatterSpan && (maxY - minY) < GroundScatterSpan;
+        var center = new Point((byte)((minX + maxX) / 2), (byte)((minY + maxY) / 2));
 
         for (var attempt = 0; attempt < MaxPointPickAttempts; attempt++)
         {
-            var x = Rand.NextInt(minX, maxX + 1);
-            var y = Rand.NextInt(minY, maxY + 1);
+            // GetRandomCoordinate already keeps to the map, retries unwalkable picks and falls back to the
+            // point itself when the surroundings offer nothing - so a spawn on a ledge stays usable.
+            var candidate = isSingleSpot
+                ? map.Terrain.GetRandomCoordinate(center, HuntingRange)
+                : new Point((byte)Rand.NextInt(minX, maxX + 1), (byte)Rand.NextInt(minY, maxY + 1));
+            int x = candidate.X;
+            int y = candidate.Y;
             if (!map.Terrain.WalkMap[x, y] || map.Terrain.SafezoneMap[x, y])
             {
                 continue;
