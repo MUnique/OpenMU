@@ -158,6 +158,15 @@ public class OfflinePlayer : Player
     internal bool HasRevengeIntent => this._revenge is not null;
 
     /// <summary>
+    /// Gets or sets the time the character last struck something. It is the only honest answer to
+    /// "is this map paying off": whatever keeps a bot from fighting - monsters it may not engage,
+    /// grounds another bot empties first, a map its level opened but its body cannot handle - the
+    /// symptom is the same, and so is the remedy (see <see cref="Bots.BotNavigator"/>: move to easier
+    /// ground rather than walk between hunting grounds forever).
+    /// </summary>
+    internal DateTime LastAttackUtc { get; set; } = DateTime.UtcNow;
+
+    /// <summary>
     /// Initializes the offline player by loading the account fresh from the database.
     /// </summary>
     /// <param name="loginName">The account login name.</param>

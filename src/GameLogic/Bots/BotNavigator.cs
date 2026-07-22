@@ -152,6 +152,13 @@ internal sealed class BotNavigator : AsyncDisposable
     /// <summary>Minimum time between two cross-map warps, so a bot does not bounce between maps (a real player does not hop maps every minute either).</summary>
     private static readonly TimeSpan WarpCooldown = TimeSpan.FromMinutes(3);
 
+    /// <summary>
+    /// How long a bot may go without landing a single hit before it treats its map as barren and steps
+    /// down (see <see cref="TryPickEasierMap"/>). Long enough that a walk across a map, a merchant trip
+    /// or a quiet stretch between spawns does not count as one.
+    /// </summary>
+    private static readonly TimeSpan BarrenMapDuration = TimeSpan.FromMinutes(3);
+
     /// <summary>Cooldown for following the party leader to another map (shorter, so the group regroups quickly).</summary>
     private static readonly TimeSpan FollowWarpCooldown = TimeSpan.FromSeconds(20);
 
@@ -1034,7 +1041,13 @@ internal sealed class BotNavigator : AsyncDisposable
                            && currentMap.Number != this._player.SelectedCharacter?.CharacterClass?.HomeMap?.Number;
         var mustEscape = mapIsHostile || mapIsIllegal;
 
-        if ((plainLevel < MinWarpLevel && !mustEscape)
+        // A map can pass every check above and still pay the bot nothing: the safe monsters are a rare
+        // kind among ones it must refuse, or stronger bots empty the grounds before it arrives. The bot
+        // notices the way a player would - it has not landed a hit in minutes - and steps DOWN to easier
+        // ground to earn its way back up, instead of walking between hunting grounds forever.
+        var mapIsBarren = DateTime.UtcNow - this._player.LastAttackUtc > BarrenMapDuration;
+
+        if ((plainLevel < MinWarpLevel && !mustEscape && !mapIsBarren)
             || DateTime.UtcNow - this._lastWarpUtc < WarpCooldown)
         {
             return false;
@@ -1043,12 +1056,16 @@ internal sealed class BotNavigator : AsyncDisposable
         // When escaping, any legal map with something safe to hunt beats staying - and with no legal
         // warp target at all (a freshly reset veteran may be below every warp requirement), the bot
         // retreats to its class home town, like a player using a town scroll.
-        if (!this.TryPickBetterMap(mustEscape, out var targetGate, out var targetMap, out var targetLevel)
+        if (!(mapIsBarren && this.TryPickEasierMap(out var targetGate, out var targetMap, out var targetLevel))
+            && !this.TryPickBetterMap(mustEscape, out targetGate, out targetMap, out targetLevel)
             && !(mustEscape && this.TryGetHomeEscapeGate(out targetGate, out targetMap, out targetLevel)))
         {
             return false;
         }
 
+        // The barren timer restarts with the move: the new map deserves the same chance to prove itself
+        // before it is judged, and without this every following tick would warp again.
+        this._player.LastAttackUtc = DateTime.UtcNow;
         this._lastWarpUtc = DateTime.UtcNow;
         this._hasDestination = false;
         this._travelPath = null;
@@ -1494,6 +1511,57 @@ internal sealed class BotNavigator : AsyncDisposable
     private bool IsPermanentMonsterSpawn(MonsterSpawnArea area)
     {
         return area is { Quantity: > 0, SpawnTrigger: SpawnTrigger.Automatic, MonsterDefinition.ObjectKind: NpcObjectKind.Monster };
+    }
+
+    /// <summary>
+    /// Picks the legally warpable map with the strongest monsters the bot can safely fight among those
+    /// EASIER than where it stands now - one step down, not a retreat to the starter map. Used when the
+    /// current map pays nothing (see <see cref="BarrenMapDuration"/>): the bot keeps stepping down every
+    /// barren stretch until it finds ground it can actually farm, and the regular map choice carries it
+    /// back up as its gear and level recover.
+    /// </summary>
+    /// <param name="gate">The warp gate of the chosen map.</param>
+    /// <param name="mapDefinition">The chosen map.</param>
+    /// <param name="monsterLevel">The level of the strongest safe monster there.</param>
+    private bool TryPickEasierMap(out ExitGate gate, out GameMapDefinition mapDefinition, out int monsterLevel)
+    {
+        gate = default!;
+        mapDefinition = default!;
+        monsterLevel = 0;
+
+        var current = this._player.CurrentMap?.Definition;
+
+        // With nothing safe here at all, every huntable map is a step down - the comparison must not
+        // rule them all out.
+        var currentLevel = current is null ? int.MaxValue : this.BestSafeLevel(current);
+        if (currentLevel <= 0)
+        {
+            currentLevel = int.MaxValue;
+        }
+
+        foreach (var candidate in this._player.GameContext.Configuration.Maps)
+        {
+            if (ReferenceEquals(candidate, current))
+            {
+                continue;
+            }
+
+            var best = this.BestSafeLevel(candidate);
+            if (best <= 0 || best >= currentLevel || best <= monsterLevel)
+            {
+                continue;
+            }
+
+            if (!candidate.TryGetRequirementError(this._player, out _)
+                && this.TryGetLegalWarpGate(candidate, out var warpGate))
+            {
+                gate = warpGate;
+                mapDefinition = candidate;
+                monsterLevel = best;
+            }
+        }
+
+        return mapDefinition is not null;
     }
 
     /// <summary>

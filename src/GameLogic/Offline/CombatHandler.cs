@@ -122,8 +122,6 @@ public sealed class CombatHandler
     private SkillEntry? _tickBestSkill;
     private bool _tickBestSkillComputed;
 
-    /// <summary>The skill number last logged as the chosen one, so the choice is logged only when it changes.</summary>
-    private short _lastSelectedSkillNumber = -1;
     private DateTime _engageAtUtc = DateTime.MinValue;
 
     /// <summary>
@@ -460,6 +458,7 @@ public sealed class CombatHandler
         }
 
         this._player.Rotation = this._player.GetDirectionTo(target);
+        this._player.LastAttackUtc = DateTime.UtcNow;
 
         if (skillEntry?.Skill is not { } skill)
         {
@@ -795,24 +794,13 @@ public sealed class CombatHandler
         // whether the character is level 20 or 400. This is what stopped every wizard from fighting at
         // arm's length with Hellfire.
         var bestScore = candidates.Max(c => c.Score);
-        this._tickBestSkill = candidates
+        return this._tickBestSkill = candidates
             .Where(c => c.Score >= bestScore * EquivalentSkillScoreShare)
             .OrderByDescending(c => c.Entry.Skill!.Range)
             .ThenByDescending(c => c.Entry.Skill!.MasterDefinition is not null)
             .ThenByDescending(c => c.Score)
             .First()
             .Entry;
-
-        // Logged when the choice CHANGES, not every tick: what a character fights with is the one thing
-        // about an automatically fighting character which cannot be seen from the outside, and it is
-        // asked often enough ("why is my knight casting that?") to be worth a debug line.
-        if (this._tickBestSkill.Skill is { } chosen && chosen.Number != this._lastSelectedSkillNumber)
-        {
-            this._lastSelectedSkillNumber = chosen.Number;
-            this._player.Logger.LogDebug("'{Name}' now fights with '{Skill}'.", this._player.Name, chosen.Name);
-        }
-
-        return this._tickBestSkill;
     }
 
     /// <summary>

@@ -38,6 +38,12 @@ internal static class BotShoppingHandler
     private const int MinZenReserve = 10000;
 
     /// <summary>
+    /// Zen below which a trip for potions alone is pointless - the cheapest healing item a stock
+    /// merchant sells still costs more than this, so the bot would walk there and buy nothing.
+    /// </summary>
+    private const int MinPotionMoney = 1000;
+
+    /// <summary>
     /// Zen a bot keeps back before it spends anything on jewels. Jewels are a luxury next to potions and
     /// repairs, which keep the bot alive and fighting, so it only buys them out of real surplus.
     /// </summary>
@@ -67,10 +73,13 @@ internal static class BotShoppingHandler
             return true;
         }
 
-        // Deliberately not gated on a minimum amount of Zen. A poor bot is exactly the one that must
-        // get to a merchant - it is the only place it can restock and repair - and gating the trip on
-        // money it no longer has is how a bot gets stuck: broke, with broken gear, unable to earn.
-        if (GetLowPotionKinds(player).Any())
+        // A potion trip needs something to pay with: Zen, or loot to turn into Zen once it is there.
+        // A broke bot buys nothing, so the trigger still stands when it gets back - and it sets off
+        // again, and again, and never hunts, which is the only way it could have earned the money.
+        // The emergency refill (see BotNavigator) keeps it alive meanwhile, at a stock deliberately
+        // below this target - which is exactly what made the loop permanent rather than occasional.
+        if (GetLowPotionKinds(player).Any()
+            && (player.Money >= MinPotionMoney || GetSellableJunk(player, inventory).Count > 0))
         {
             return true;
         }
