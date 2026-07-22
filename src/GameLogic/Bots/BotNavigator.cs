@@ -159,6 +159,16 @@ internal sealed class BotNavigator : AsyncDisposable
     /// </summary>
     private static readonly TimeSpan BarrenMapDuration = TimeSpan.FromMinutes(3);
 
+    /// <summary>
+    /// Share of the picks the best ranked map takes when the bot chooses where to hunt (see
+    /// <see cref="PickByRank"/>); the runners-up split what is left, on the same terms. Below a half on
+    /// purpose: at a half the fourth map of a level band and everything behind it share a few percent
+    /// between them, which left Karutan, Icarus and Kanturu with three or four bots each while the top
+    /// map held a hundred. The bot still prefers the best ground - every candidate it draws from is
+    /// already a step up from where it stands - it just does not treat the runner-up as worthless.
+    /// </summary>
+    private const double BestCandidateShare = 0.35;
+
     /// <summary>Cooldown for following the party leader to another map (shorter, so the group regroups quickly).</summary>
     private static readonly TimeSpan FollowWarpCooldown = TimeSpan.FromSeconds(20);
 
@@ -1594,6 +1604,7 @@ internal sealed class BotNavigator : AsyncDisposable
         var current = this._player.CurrentMap?.Definition;
         var threshold = escape ? 1 : (current is null ? 0 : this.BestSafeLevel(current, minimumMonsterLevel)) + WarpImprovementMargin;
 
+        var candidates = new List<(ExitGate Gate, GameMapDefinition Map, int Level)>();
         foreach (var candidate in this._player.GameContext.Configuration.Maps)
         {
             if (ReferenceEquals(candidate, current))
@@ -1609,14 +1620,46 @@ internal sealed class BotNavigator : AsyncDisposable
 
             if (this.TryGetLegalWarpGate(candidate, out var warpGate))
             {
-                gate = warpGate;
-                mapDefinition = candidate;
-                monsterLevel = best;
-                threshold = best + 1; // keep only a strictly-stronger map after this one
+                candidates.Add((warpGate, candidate, best));
             }
         }
 
-        return mapDefinition is not null;
+        if (candidates.Count == 0)
+        {
+            return false;
+        }
+
+        // Always taking the single strongest map emptied the world: the maps of a level band differ by a
+        // few monster levels, so one of them is every bot's answer and the rest stand deserted - hundreds
+        // of bots on Vulcanus while Tarkan, Karutan and Kanturu, which their level opens, see nobody. The
+        // strongest map still wins most of the picks (see BestCandidateShare); the runners-up share the
+        // rest, so the population spreads over the maps a player of that band would choose between.
+        var ranked = candidates.OrderByDescending(c => c.Level).ToList();
+        var picked = ranked[PickByRank(ranked.Count)];
+        gate = picked.Gate;
+        mapDefinition = picked.Map;
+        monsterLevel = picked.Level;
+        return true;
+    }
+
+    /// <summary>
+    /// Picks an index into a list ranked best-first, each rank taking
+    /// <see cref="BestCandidateShare"/> of what the ranks before it left over. Deliberately not a
+    /// uniform draw - a bot should prefer the best ground it can hunt, just not to the exclusion of
+    /// everything else.
+    /// </summary>
+    /// <param name="count">The number of ranked candidates.</param>
+    private static int PickByRank(int count)
+    {
+        for (var rank = 0; rank < count - 1; rank++)
+        {
+            if (Rand.NextDouble() < BestCandidateShare)
+            {
+                return rank;
+            }
+        }
+
+        return count - 1;
     }
 
     /// <summary>
