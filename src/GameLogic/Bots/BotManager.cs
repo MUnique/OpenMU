@@ -30,6 +30,12 @@ public sealed class BotManager
     public IReadOnlyCollection<BotPlayer> Bots => this._bots.Values.ToList();
 
     /// <summary>
+    /// Gets the number of currently active bots, without taking a snapshot of them - the periodic task
+    /// asks every second whether there is anything to stop.
+    /// </summary>
+    public int BotCount => this._bots.Count;
+
+    /// <summary>
     /// Spawns a bot which drives a specific character of the given account.
     /// </summary>
     /// <param name="gameContext">The game context.</param>

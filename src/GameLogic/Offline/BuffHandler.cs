@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.Offline;
 
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.GameLogic.Bots;
 using MUnique.OpenMU.GameLogic.MuHelper;
 using MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 using MUnique.OpenMU.GameLogic.PlugIns;
@@ -114,7 +115,8 @@ public sealed class BuffHandler
             }
 
             var skillEntry = this._player.SkillList?.GetSkill((ushort)buffId);
-            if (skillEntry?.Skill?.MagicEffectDef is null)
+            if (skillEntry?.Skill?.MagicEffectDef is null
+                || !this.CanCast(skillEntry.Skill))
             {
                 continue;
             }
@@ -131,6 +133,22 @@ public sealed class BuffHandler
         this._buffTimerTriggered = false;
         return true;
     }
+
+    /// <summary>
+    /// Whether the character currently meets the skill's own requirements, and can therefore cast it
+    /// at all. A character keeps its skills across a reset but not the level which unlocked them, so a
+    /// veteran back at level 12 still owns Swell Life, which asks for level 120.
+    /// <para>
+    /// Skipping it here is what keeps the whole helper running. A buff which targets the party goes
+    /// through the skill plugin, which refuses an unmet requirement deep inside and silently - and this
+    /// handler reports it as applied regardless. The buff step then ends every tick believing it had
+    /// just buffed, so the steps behind it, picking up loot and attacking, never ran at all: the
+    /// character stood in the world doing nothing, for good.
+    /// </para>
+    /// </summary>
+    /// <param name="skill">The skill to cast.</param>
+    private bool CanCast(Skill skill)
+        => BotProgression.MeetsRequirements(skill, attribute => this._player.Attributes?[attribute]);
 
     /// <summary>
     /// Attempts to apply the buff to self and, if applicable, to party members.

@@ -23,6 +23,12 @@ public sealed class CombatHandler
     private const byte DefaultRange = 1;
     private const byte BowRange = 6;
 
+    /// <summary>Item group of the Horn of Fenrir, the pet behind <see cref="DamageType.Fenrir"/>.</summary>
+    private const byte FenrirItemGroup = 13;
+
+    /// <summary>Item number of the Horn of Fenrir within <see cref="FenrirItemGroup"/>.</summary>
+    private const short FenrirItemNumber = 37;
+
     /// <summary>
     /// See <see cref="IsSafeTarget"/>: the largest share of the bot's maximum health a single average
     /// monster hit may take for the monster to count as safe. Sized so the bot survives several hits
@@ -66,6 +72,23 @@ public sealed class CombatHandler
     /// <summary>After this many consecutive failed approaches the target counts as unreachable.</summary>
     private const int MaxApproachFailures = 3;
 
+    /// <summary>
+    /// A skill scoring at least this share of the best score counts as equally good, and reach decides
+    /// between them. Deliberately narrow: it is meant to level out the flat bonus of comparable spells,
+    /// not to trade away a skill which is genuinely stronger.
+    /// </summary>
+    private const float EquivalentSkillScoreShare = 0.9f;
+
+    /// <summary>
+    /// How many monsters an area skill is credited with at most. A pack does make one worth more than a
+    /// single-target skill, but not without bound - the extra targets are usually spread over the area,
+    /// and not all of them are actually caught.
+    /// </summary>
+    private const int MaxScoredAreaTargets = 5;
+
+    /// <summary>The distance around the current target within which monsters count as one pack.</summary>
+    private const int AreaSkillClusterRange = 3;
+
     private const short DrainLifeBaseSkillId = 214;
     private const short DrainLifeStrengthenerSkillId = 458;
     private const short DrainLifeMasterySkillId = 462;
@@ -90,6 +113,7 @@ public sealed class CombatHandler
 
     private IAttackable? _currentTarget;
     private int _nearbyMonsterCount;
+    private int _targetsAroundCurrent = 1;
     private int _currentComboStep;
     private int _skillCooldownTicks;
     private int _approachFailures;
@@ -97,6 +121,7 @@ public sealed class CombatHandler
     private DateTime _unreachableTargetUntilUtc = DateTime.MinValue;
     private SkillEntry? _tickBestSkill;
     private bool _tickBestSkillComputed;
+
     private DateTime _engageAtUtc = DateTime.MinValue;
 
     /// <summary>
@@ -370,6 +395,21 @@ public sealed class CombatHandler
     /// for casters, curse for summoners) plus the strongest attack skill it has learned - enough to tell
     /// apart "kills this monster at a reasonable pace" from "barely scratches it".
     /// </summary>
+    /// <summary>
+    /// Counts the monsters standing close enough to the target to be caught by an area skill aimed at it.
+    /// This is what decides whether the bot swings around itself or picks its single-target skill - the
+    /// hunting range is far too wide an area to answer that: it holds every monster of the ground.
+    /// </summary>
+    private static int CountPackAround(IAttackable? target, List<IAttackable> targets)
+    {
+        if (target is null)
+        {
+            return 1;
+        }
+
+        return targets.Count(m => m.GetDistanceTo(target) <= AreaSkillClusterRange);
+    }
+
     private static float GetAttackPower(Player player)
     {
         if (player.Attributes is not { } attributes)
@@ -418,6 +458,7 @@ public sealed class CombatHandler
         }
 
         this._player.Rotation = this._player.GetDirectionTo(target);
+        this._player.LastAttackUtc = DateTime.UtcNow;
 
         if (skillEntry?.Skill is not { } skill)
         {
@@ -478,10 +519,13 @@ public sealed class CombatHandler
             // character's hunting efficiency, not a crowd to camouflage.
             this._currentTarget = candidates.SelectRandom();
             this._nearbyMonsterCount = targets.Count;
+            this._targetsAroundCurrent = CountPackAround(this._currentTarget, targets);
         }
         else
         {
-            this._nearbyMonsterCount = this.GetAttackableTargetsInHuntingRange().Count();
+            var targets = this.GetAttackableTargetsInHuntingRange().ToList();
+            this._nearbyMonsterCount = targets.Count;
+            this._targetsAroundCurrent = CountPackAround(this._currentTarget, targets);
         }
     }
 
@@ -721,33 +765,91 @@ public sealed class CombatHandler
             return null;
         }
 
-        SkillEntry? best = null;
-        var bestDamage = 0;
+        var ridesFenrir = this.RidesFenrir();
+        var candidates = new List<(SkillEntry Entry, float Score)>();
         foreach (var entry in skillList.Skills)
         {
-            if (entry.Skill is not { } skill || skill.AttackDamage <= 0)
+            if (entry.Skill is not { } skill
+                || !BotProgression.IsAttackSkill(skill)
+                || BotProgression.IsCastleSiegeOnly(skill)
+                || (BotProgression.RequiresPet(skill) && !ridesFenrir)
+                || skill.Range == 0
+
+                // Same trap as the buffs: a character keeps its skills across a reset but not the level
+                // which unlocked them, and the cast is refused deep inside, silently. A single-target
+                // skill picked here would simply not go off - the basic attack only steps in when NO
+                // skill was selected, not when the selected one fails.
+                || !BotProgression.MeetsRequirements(skill, attribute => this._player.Attributes?[attribute])
+                || !this.HasEnoughResources(entry))
             {
                 continue;
             }
 
-            if (skill.SkillType is not (SkillType.DirectHit
-                or SkillType.AreaSkillAutomaticHits
-                or SkillType.AreaSkillExplicitHits
-                or SkillType.AreaSkillExplicitTarget))
-            {
-                continue;
-            }
-
-            if (skill.AttackDamage > bestDamage && this.HasEnoughResources(entry))
-            {
-                best = entry;
-                bestDamage = skill.AttackDamage;
-            }
+            candidates.Add((entry, this.ScoreSkill(skill)));
         }
 
-        this._tickBestSkill = best;
-        return best;
+        if (candidates.Count == 0)
+        {
+            this._tickBestSkill = null;
+            return null;
+        }
+
+        // Among skills which are worth about the same, reach decides. The flat bonus of a skill is added
+        // to the character's own damage, so at a few thousand base damage the gap between the strongest
+        // spell and the second strongest is a rounding error - while three tiles of range are three tiles
+        // whether the character is level 20 or 400. This is what stopped every wizard from fighting at
+        // arm's length with Hellfire.
+        var bestScore = candidates.Max(c => c.Score);
+        return this._tickBestSkill = candidates
+            .Where(c => c.Score >= bestScore * EquivalentSkillScoreShare)
+            .OrderByDescending(c => c.Entry.Skill!.Range)
+            .ThenByDescending(c => c.Entry.Skill!.MasterDefinition is not null)
+            .ThenByDescending(c => c.Score)
+            .First()
+            .Entry;
     }
+
+    /// <summary>
+    /// Estimates what one cast of the skill is worth right now: the damage of a single hit, times the
+    /// number of hits the skill performs, times the number of monsters an area skill would catch.
+    /// <see cref="Skill.AttackDamage"/> alone does not say it - it is a flat bonus added to the
+    /// character's base damage, so a skill can carry none at all and still be the strongest thing the
+    /// class owns, which is exactly the case for a Rage Fighter's four-hit skills.
+    /// </summary>
+    private float ScoreSkill(Skill skill)
+    {
+        var attributes = this._player.Attributes;
+        var baseDamage = skill.DamageType switch
+        {
+            DamageType.Wizardry => attributes?[Stats.MaximumWizBaseDmg] ?? 0,
+            DamageType.Curse => attributes?[Stats.MaximumCurseBaseDmg] ?? 0,
+
+            // Only reached when the character actually rides a Fenrir - the skill is filtered out
+            // otherwise, because this attribute is derived from the character's own stats and says
+            // nothing about whether the pet is there (see RidesFenrir).
+            DamageType.Fenrir => attributes?[Stats.FenrirBaseDmg] ?? 0,
+            _ => attributes?[Stats.MaximumPhysBaseDmg] ?? 0,
+        };
+
+        var perHit = baseDamage + skill.AttackDamage;
+        var hits = Math.Max((int)skill.NumberOfHitsPerAttack, 1);
+        var targets = BotProgression.IsAreaSkill(skill)
+            ? Math.Clamp(this._targetsAroundCurrent, 1, MaxScoredAreaTargets)
+            : 1;
+
+        return perHit * hits * targets;
+    }
+
+    /// <summary>
+    /// Determines whether the character actually rides a Fenrir, which the skills reported by
+    /// <see cref="BotProgression.RequiresPet"/> need in order to be worth anything.
+    /// </summary>
+    private bool RidesFenrir()
+        => this._player.Inventory?.GetItem(InventoryConstants.PetSlot) is
+        {
+            Durability: > 0.0,
+            Definition: { Group: FenrirItemGroup, Number: FenrirItemNumber },
+        };
 
     /// <summary>
     /// Evaluates whether the skill in the given slot should fire this tick.

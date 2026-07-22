@@ -88,6 +88,38 @@ public class BotServerPartitionTest
     }
 
     /// <summary>
+    /// A deployment which is configured to hold NO bots still has a server which generates - and, above
+    /// all, purges - the population. Deciding the role by the number of accounts instead would mean that
+    /// "delete all bots" does nothing at all on exactly the setting which asks for no bots.
+    /// </summary>
+    [Test]
+    public void TheFirstServerActsEvenWithoutAnyAccounts()
+    {
+        List<(byte ServerId, int Capacity)> capacities = [(0, 50), (1, 50)];
+
+        var (first, assigned) = BotServerPartition.Split(capacities, 0, 0);
+        var (second, _) = BotServerPartition.Split(capacities, 1, 0);
+
+        Assert.That(assigned, Is.EqualTo(0));
+        Assert.That(first.AccountCount, Is.EqualTo(0));
+        Assert.That(first.IsGenerator, Is.True);
+        Assert.That(second.IsGenerator, Is.False);
+    }
+
+    /// <summary>
+    /// The role is held by one server even when the deployment has no bot capacity left at all, so a
+    /// purge still finds someone to carry it out.
+    /// </summary>
+    [Test]
+    public void TheFirstServerActsWithoutAnyCapacity()
+    {
+        List<(byte ServerId, int Capacity)> capacities = [(0, 0), (1, 0)];
+
+        Assert.That(BotServerPartition.Split(capacities, 0, 100).Partition.IsGenerator, Is.True);
+        Assert.That(BotServerPartition.Split(capacities, 1, 100).Partition.IsGenerator, Is.False);
+    }
+
+    /// <summary>
     /// The servers may have different player limits; the shares follow their capacity.
     /// </summary>
     [Test]

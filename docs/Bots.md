@@ -65,8 +65,21 @@ The *Bots* feature plugin, in the "Feature Plugins" section of the admin panel:
 - **`Bots pay reset costs`** — whether bots pay the configured zen and item
   costs for their resets. Off by default: they take no part in the economy those
   costs are balanced for.
-- **`Reset bots`** — purges and regenerates the whole population on the next
-  start, then clears itself.
+- **`Jewel stock per kind`** — how many Jewels of Bless, Soul and Life a bot
+  keeps of each kind. Above it, it stops picking them up and sells what it
+  already carries. Depends on the server's drop rates: on high rates a small
+  stock keeps the backpack free, on low rates a larger one is never reached
+  anyway.
+- **`Potion stock charges`** — how many charges of healing and of mana potions a
+  bot restocks to at a merchant. Depends on what the shops sell: a server whose
+  potions come in stacks of 255 fills the target in a single purchase.
+- **`Reset bots`** — deletes the whole population and generates it again, then
+  clears itself. With the number of accounts set to zero it deletes without
+  generating anything.
+- **`Purge bots`** — deletes the whole population WITHOUT generating a new one,
+  and switches the feature off. It works with the feature enabled or disabled;
+  the switch-off is what makes it a purge, since the same pass would otherwise
+  create the population again right after deleting it. Clears itself afterwards.
 
 ## What a bot does
 
@@ -83,18 +96,51 @@ chance to be hit — a monster's nominal level says little about its punch on th
 high-end maps. An agility build's dodge therefore counts as the defense it
 really is, and better gear opens tougher maps, exactly like for a player.
 
-Map access follows the game's warp list: a bot enters a map only if its level
-may legally warp there, and a bot which finds itself on a map it may not be on
-(after a reset, for instance) leaves for the best map it may use. The map it
-reached is persisted, so a restarted bot wakes up where it stopped.
+Map access follows the game's warp list, and a bot travels on a player's terms:
+it enters a map only if its level may legally warp there, it meets the map's own
+requirements, and it pays the warp's fare out of its own Zen. A bot which finds
+itself on a map it may not be on (after a reset, for instance) leaves for the
+best map it may use. The map it reached is persisted, so a restarted bot wakes up
+where it stopped.
+
+Which map it goes to is drawn rather than maximized. The maps of a level band
+differ by a few monster levels, so always taking the strongest one made it every
+bot's answer and left the rest of the band deserted. The best map still wins
+about a third of the picks and the runners-up split the rest, so the population
+spreads over the maps a player of that band would choose between. Every map in
+the draw is one the bot may legally reach, can afford, and which is better than
+where it stands - the draw only decides between improvements.
+
+A map can pass every check and still pay nothing: the monsters the bot may fight
+are a rare kind among ones it must refuse, or other hunters empty the grounds
+first. The bot notices the way a player would, by having landed no hit in
+minutes, and steps down to easier ground one notch at a time until it finds
+something it can farm; the regular map choice carries it back up as its level and
+gear recover. A bot which cannot afford any trip at all walks home to its class
+town for free, so it is never stranded on ground it cannot earn on.
 
 ### Fighting and progressing
 
 A bot fights with the strongest skill of its class it has learned and can pay
-for; casters keep their distance and drink mana. Skills are learned against the
+for; casters keep their distance and drink mana. Between skills worth about the
+same it takes the one with the longer reach - the flat bonus of a spell is a
+rounding error next to a high-level character's own damage, while three tiles of
+range are three tiles at any level. Skills the game only activates during a
+castle siege are left out, and so are a pet's skills unless the pet is actually
+equipped: Plasma Storm draws its damage from the Fenrir, but the attribute behind
+it is derived from the character's own stats, so nothing but the pet slot tells a
+mounted character from one riding nothing. Skills are learned against the
 game's own requirements — total energy, leadership, character level — at
 generation and again on every level-up, and the class buffs are kept up on their
 own.
+
+A skill the character cannot currently cast is passed over, in the attack
+rotation and in the buffs alike. That is not the same as not having learned it: a
+reset keeps every skill but takes back the level which unlocked it, so a veteran
+back at level 12 still owns Swell Life, which asks for level 120. The game
+refuses such a cast silently, so a character which kept trying would simply stand
+there — buffing something that never takes effect, and never getting as far as
+attacking.
 
 Level-up points follow a per-class build modelled on what players actually play:
 an agility/shield meta on reset servers, guide-style builds on classic ones,
@@ -136,13 +182,30 @@ weapon. If the engine refuses the equip after all, the old gear goes straight
 back on. The replaced piece stays in the backpack and is sold on the next trip
 to town, rather than being dropped where the next bot would pick it up again.
 
-When the backpack fills up or the potions run low, the bot walks to a merchant,
-sells its junk, and buys refills from the proceeds while the shop dialog visibly
-occupies it — on a map without a merchant it warps home first, like a player
-would. Looted Jewels of Bless, Soul and Life are spent on its own equipment
-through the regular consume action, with the same success rates and failure
-penalties a player faces, and with the caution a player shows: a Soul is only
-risked where a failure cannot destroy the item's level.
+A merchant trip is the only moment a bot can turn loot into anything, so it goes
+whenever it has something to gain there: the backpack is filling with junk, the
+potions are running low, a jewel is waiting to be used, or a surplus is waiting
+to be sold. Restocking needs the means to pay for it, though - Zen, or loot to
+sell once it is there. A broke bot buys nothing, so the trip would leave it just
+as short as it set out, and it would set out again instead of hunting, which is
+the only way it could have earned the money. It picks the merchant which sells what it needs right now, and on a
+map whose merchants sell no potions while it needs some, it warps home to a real
+town instead. While the shop dialog visibly occupies it, the bot sells its junk,
+repairs its gear — which is what earns the NPC's discount — and buys potions and,
+where a shop offers them, jewels.
+
+Only Jewels of Bless, Soul and Life are collected, and only up to the configured
+stock: a bot cannot trade or craft, so any other kind would be a backpack slot it
+never gets back. They are spent on its own equipment through the regular consume
+action, with the same success rates and failure penalties a player faces, and
+with the caution a player shows: a Soul is only risked where a failure cannot
+destroy the item's level.
+
+A bot which reaches the server's maximum inventory money can no longer sell
+anything — the money simply does not fit. What it cannot sell it keeps, and
+destroys only what has no other way out: jewels beyond its stock, and, while the
+backpack is genuinely full, junk gear. The repair bill is what normally keeps it
+away from that limit in the first place.
 
 Wings do not drop, so bots earn them at the classic milestones instead — the
 first pair at level 180, the second at 280 and the third, master-only pair at
@@ -253,5 +316,10 @@ hash dominates); starting an existing one of 1100 bots takes some 15 seconds.
    game server, over which the population then spreads by itself.
 3. Restart the server. The population is generated on the first start and
    reloaded afterwards.
-4. To build a fresh population, set `Reset bots`: it purges the old one,
+4. To build a fresh population, set `Reset bots`: it deletes the old one,
    generates a new one, and clears the flag again.
+5. To stop the bots without losing them, uncheck `Enabled`: they log out within
+   a few seconds and nothing is deleted, so checking it again brings the same
+   characters back. To get rid of them for good, set `Purge bots` — it deletes
+   every bot account with its characters, items and storages, and leaves the
+   feature switched off.

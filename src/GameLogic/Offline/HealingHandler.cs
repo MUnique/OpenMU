@@ -18,12 +18,12 @@ using MUnique.OpenMU.Interfaces;
 /// </summary>
 public sealed class HealingHandler
 {
-    /// <summary>Drink a mana potion once mana falls below this share, so casters can keep casting.</summary>
-    private const int ManaThresholdPercent = 30;
-
-    private static readonly ItemConsumeAction ConsumeAction = new();
-
-    private static readonly ItemIdentifier[] HealthPotionPriority =
+    /// <summary>
+    /// The health potions the offline player drinks, best first. Also the shopping list a bot restocks
+    /// from (see <c>BotShoppingHandler</c>): buying what it does not drink, or not buying what it does,
+    /// is how a bot ends up starving next to a full merchant.
+    /// </summary>
+    internal static readonly ItemIdentifier[] HealthPotionPriority =
     [
         ItemConstants.LargeHealingPotion,
         ItemConstants.MediumHealingPotion,
@@ -31,12 +31,20 @@ public sealed class HealingHandler
         ItemConstants.Apple,
     ];
 
-    private static readonly ItemIdentifier[] ManaPotionPriority =
+    /// <summary>
+    /// The mana potions the offline player drinks, best first. <see cref="HealthPotionPriority"/>.
+    /// </summary>
+    internal static readonly ItemIdentifier[] ManaPotionPriority =
     [
         ItemConstants.LargeManaPotion,
         ItemConstants.MediumManaPotion,
         ItemConstants.SmallManaPotion,
     ];
+
+    /// <summary>Drink a mana potion once mana falls below this share, so casters can keep casting.</summary>
+    private const int ManaThresholdPercent = 30;
+
+    private static readonly ItemConsumeAction ConsumeAction = new();
 
     private readonly OfflinePlayer _player;
     private readonly IMuHelperSettings? _config;

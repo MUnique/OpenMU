@@ -71,10 +71,37 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
     /// <inheritdoc />
     public BotConfiguration? Configuration { get; set; }
 
+    /// <summary>
+    /// Gets the bot configuration of the given game context, so the bot handlers can read their
+    /// admin-panel editable settings without being handed the plugin around (same shape as
+    /// <see cref="BotResetHandler.GetResetConfiguration"/>).
+    /// </summary>
+    /// <param name="gameContext">The game context.</param>
+    /// <returns>The configuration, or <c>null</c> when the bot feature is not configured.</returns>
+    public static BotConfiguration? GetConfiguration(IGameContext gameContext)
+        => gameContext.FeaturePlugIns.GetPlugIn<BotFeaturePlugIn>()?.Configuration;
+
     /// <inheritdoc />
     public async ValueTask ExecuteTaskAsync(GameContext gameContext)
     {
         var state = this._states.GetOrAdd(gameContext, _ => new ServerState());
+        var configuration = this.Configuration ??= CreateDefaultConfiguration();
+
+        if (configuration.PurgeBots)
+        {
+            await this.PurgeAsync(gameContext, state, configuration).ConfigureAwait(false);
+            return;
+        }
+
+        if (!configuration.Enabled)
+        {
+            // Switching the feature off takes effect right away instead of at the next restart: the
+            // bots log out, and nothing is deleted. Re-checked on the following ticks, the feature may
+            // get enabled again later - then the population is spawned from scratch.
+            await this.StopBotsAsync(gameContext, state, "the bot feature was switched off").ConfigureAwait(false);
+            return;
+        }
+
         if (state.StartupState == (int)StartupPhase.Done)
         {
             await this.RunMaintenanceAsync(gameContext, state).ConfigureAwait(false);
@@ -84,14 +111,6 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
         if (DateTime.UtcNow < state.NextRunUtc
             || Interlocked.CompareExchange(ref state.StartupState, (int)StartupPhase.InProgress, (int)StartupPhase.NotStarted) != (int)StartupPhase.NotStarted)
         {
-            return;
-        }
-
-        var configuration = this.Configuration ??= CreateDefaultConfiguration();
-        if (!configuration.Enabled)
-        {
-            // Not spawned - re-check on the following ticks, the feature may get enabled later.
-            Interlocked.Exchange(ref state.StartupState, (int)StartupPhase.NotStarted);
             return;
         }
 
@@ -107,6 +126,114 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
         }
     }
 
+    /// <summary>
+    /// Stops every bot this server animates and puts it back to the state before the startup pass, so
+    /// the population is spawned from scratch if the feature is switched on again. Nothing is deleted.
+    /// </summary>
+    /// <param name="gameContext">The game context.</param>
+    /// <param name="state">The state of this server.</param>
+    /// <param name="reason">The reason to log, if there was anything to stop.</param>
+    private async ValueTask StopBotsAsync(GameContext gameContext, ServerState state, string reason)
+    {
+        if (state.Manager.BotCount == 0 && state.StartupState == (int)StartupPhase.NotStarted)
+        {
+            // The usual case of a server without bots - this runs on every tick, so it stays cheap.
+            return;
+        }
+
+        // Take over the startup state machine, so the bots are not stopped while a startup pass is
+        // still spawning them (it would spawn into the emptied manager afterwards).
+        if (Interlocked.CompareExchange(ref state.StartupState, (int)StartupPhase.InProgress, (int)StartupPhase.Done) != (int)StartupPhase.Done
+            && Interlocked.CompareExchange(ref state.StartupState, (int)StartupPhase.InProgress, (int)StartupPhase.NotStarted) != (int)StartupPhase.NotStarted)
+        {
+            // A startup pass is running; retried on one of the next ticks.
+            return;
+        }
+
+        var logger = gameContext.LoggerFactory.CreateLogger(this.GetType().Name);
+        using var scope = logger.BeginScope(gameContext);
+        try
+        {
+            var stopped = state.Manager.BotCount;
+            await state.Manager.StopAllAsync().ConfigureAwait(false);
+            state.PendingRespawns.Clear();
+            if (stopped > 0)
+            {
+                logger.LogInformation("Stopped {Stopped} bot(s): {Reason}.", stopped, reason);
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to stop the bots.");
+        }
+        finally
+        {
+            Interlocked.Exchange(ref state.StartupState, (int)StartupPhase.NotStarted);
+        }
+    }
+
+    /// <summary>
+    /// Carries out a requested purge: every bot account is deleted and the feature switches itself off,
+    /// so the population is NOT generated again - the difference to <see cref="BotConfiguration.ResetBots"/>.
+    /// Works with the feature enabled or disabled, and whatever number of accounts is configured.
+    /// </summary>
+    /// <param name="gameContext">The game context.</param>
+    /// <param name="state">The state of this server.</param>
+    /// <param name="configuration">The bot configuration.</param>
+    private async ValueTask PurgeAsync(GameContext gameContext, ServerState state, BotConfiguration configuration)
+    {
+        if (DateTime.UtcNow < state.NextRunUtc)
+        {
+            // The same head start the startup pass gets - and where a failed purge backs off to.
+            return;
+        }
+
+        // The bots have to be gone before their accounts are: one which is still online would go on
+        // saving a character whose row is about to be deleted.
+        await this.StopBotsAsync(gameContext, state, "the bot population is being purged").ConfigureAwait(false);
+        if (state.Manager.BotCount > 0
+            || Interlocked.CompareExchange(ref state.StartupState, (int)StartupPhase.InProgress, (int)StartupPhase.NotStarted) != (int)StartupPhase.NotStarted)
+        {
+            // A startup pass still holds the state machine; retried on one of the next ticks.
+            return;
+        }
+
+        var logger = gameContext.LoggerFactory.CreateLogger(this.GetType().Name);
+        using var scope = logger.BeginScope(gameContext);
+        try
+        {
+            var partition = await BotServerPartition.CreateAsync(gameContext, configuration, logger).ConfigureAwait(false);
+            if (!partition.IsGenerator)
+            {
+                // Another server deletes the accounts and clears the flags. This one only had to stop
+                // its own bots; the switched-off feature keeps it from starting them again.
+                return;
+            }
+
+            var generator = new BotGenerator(gameContext, logger);
+            var deleted = await generator.DeleteAllBotsAsync().ConfigureAwait(false);
+
+            // Switching the feature off is what makes this a purge instead of a reset: the generation
+            // below would otherwise create the whole population again, right after it was deleted.
+            configuration.Enabled = false;
+            configuration.PurgeBots = false;
+            configuration.ResetBots = false;
+            await this.PersistConfigurationAsync(gameContext, configuration, logger).ConfigureAwait(false);
+
+            logger.LogInformation("Purge requested: deleted {Deleted} bot account(s) and switched the bot feature off.", deleted);
+        }
+        catch (Exception ex)
+        {
+            // The flag stays set, so the purge is retried - backed off, to not repeat it every second.
+            state.NextRunUtc = DateTime.UtcNow + MaintenanceInterval;
+            logger.LogError(ex, "Failed to purge the bot population.");
+        }
+        finally
+        {
+            Interlocked.Exchange(ref state.StartupState, (int)StartupPhase.NotStarted);
+        }
+    }
+
     private async ValueTask SpawnPopulationAsync(GameContext gameContext, ServerState state, BotConfiguration configuration)
     {
         var logger = gameContext.LoggerFactory.CreateLogger(this.GetType().Name);
@@ -115,12 +242,18 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
         var generator = new BotGenerator(gameContext, logger);
         var partition = state.Partition = await BotServerPartition.CreateAsync(gameContext, configuration, logger).ConfigureAwait(false);
 
+        if (configuration.ResetBots && !partition.IsGenerator)
+        {
+            // Not silent: the flag is set, but this server is not the one which acts on it.
+            logger.LogInformation("Reset requested: another game server of the deployment carries it out.");
+        }
+
         if (configuration.ResetBots && partition.IsGenerator)
         {
             try
             {
                 var deleted = await generator.DeleteAllBotsAsync().ConfigureAwait(false);
-                logger.LogInformation("Reset requested: purged {Deleted} bot account(s).", deleted);
+                logger.LogInformation("Reset requested: deleted {Deleted} bot account(s); {Requested} account(s) are generated again.", deleted, Math.Max(configuration.NumberOfAccounts, 0));
 
                 // Clear the flag (in memory and persisted) so the next restart does not purge again.
                 configuration.ResetBots = false;
