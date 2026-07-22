@@ -51,6 +51,7 @@ internal sealed class Program : IDisposable
     private readonly IDictionary<int, IGameServer> _gameServers = new Dictionary<int, IGameServer>();
     private readonly IList<IManageableServer> _servers = new List<IManageableServer>();
     private readonly Serilog.ILogger _logger;
+    private readonly IConfiguration _configuration;
 
     private IHost? _serverHost;
 
@@ -65,8 +66,10 @@ internal sealed class Program : IDisposable
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json", false, true)
             .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", true, true)
+            .AddEnvironmentVariables()
             .Build();
 
+        this._configuration = configuration;
         this._logger = new LoggerConfiguration()
             .ReadFrom.Configuration(configuration)
             .CreateLogger();
@@ -475,8 +478,19 @@ internal sealed class Program : IDisposable
         var contextProvider = new PersistenceContextProvider(loggerFactory, changeListener);
         if (reinit || !await contextProvider.DatabaseExistsAsync().ConfigureAwait(false))
         {
-            this._logger.Information("The database is getting (re-)initialized...");
-            using var update = await contextProvider.ReCreateDatabaseAsync().ConfigureAwait(false);
+            // The database can be provisioned externally (e.g. by a Kubernetes operator,
+            // infrastructure-as-code, or a managed cloud database), where the connecting role is
+            // typically not permitted to create or drop databases. Enabling
+            // Database:AssumeExternallyProvisioned keeps the existing database and only builds its
+            // schema via migrations, instead of dropping and recreating it. The default (false)
+            // preserves the original drop-and-recreate behaviour; an explicit -reinit always recreates.
+            var assumeExternallyProvisioned = !reinit
+                && this._configuration.GetValue<bool>("Database:AssumeExternallyProvisioned");
+
+            this._logger.Information(assumeExternallyProvisioned
+                ? "Building the schema on the externally-provisioned database (no drop/create)..."
+                : "The database is getting (re-)initialized...");
+            using var update = await contextProvider.ReCreateDatabaseAsync(dropExistingDatabase: !assumeExternallyProvisioned).ConfigureAwait(false);
             await this.InitializeDataAsync(version, loggerFactory, contextProvider).ConfigureAwait(false);
             this._logger.Information("...initialization finished.");
         }

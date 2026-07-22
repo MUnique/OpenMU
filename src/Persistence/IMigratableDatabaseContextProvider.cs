@@ -63,8 +63,15 @@ public interface IMigratableDatabaseContextProvider : IPersistenceContextProvide
     /// <summary>
     /// Recreates the database by deleting and creating it again.
     /// </summary>
+    /// <param name="dropExistingDatabase">
+    /// If <see langword="true"/> (the default), the database is dropped and created again from scratch.
+    /// If <see langword="false"/>, the existing database is kept and only its schema is built via
+    /// migrations. Set this to <see langword="false"/> when the database is provisioned externally
+    /// (e.g. by a Kubernetes operator, infrastructure-as-code, or a managed cloud database) and the
+    /// connecting role is not permitted to create or drop databases.
+    /// </param>
     /// <returns>The disposable which should be disposed when the data creation process is finished.</returns>
-    Task<IDisposable> ReCreateDatabaseAsync();
+    Task<IDisposable> ReCreateDatabaseAsync(bool dropExistingDatabase = true);
 
     /// <summary>
     /// Resets the cache of this instance.

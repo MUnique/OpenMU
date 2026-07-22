@@ -152,21 +152,30 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
     /// <summary>
     /// Recreates the database by deleting and creating it again.
     /// </summary>
+    /// <param name="dropExistingDatabase">
+    /// If <see langword="true"/> (the default), the database is dropped and created again from scratch.
+    /// If <see langword="false"/>, the existing database is kept and only its schema is built via
+    /// migrations — required when the database is provisioned externally and the connecting role is
+    /// not permitted to create or drop databases.
+    /// </param>
     /// <returns>The disposable that should be disposed of when the data creation process is finished.</returns>
-    public async Task<IDisposable> ReCreateDatabaseAsync()
+    public async Task<IDisposable> ReCreateDatabaseAsync(bool dropExistingDatabase = true)
     {
         var changePublisher = this._changeListener;
         this._changeListener = null;
         try
         {
-            try
+            if (dropExistingDatabase)
             {
-                await using var installationContext = new EntityDataContext();
-                await installationContext.Database.EnsureDeletedAsync().ConfigureAwait(false);
-            }
-            catch (NpgsqlException)
-            {
-                // That's expected for a fresh database
+                try
+                {
+                    await using var installationContext = new EntityDataContext();
+                    await installationContext.Database.EnsureDeletedAsync().ConfigureAwait(false);
+                }
+                catch (NpgsqlException)
+                {
+                    // That's expected for a fresh database
+                }
             }
 
             await this.ApplyAllPendingUpdatesAsync().ConfigureAwait(false);
