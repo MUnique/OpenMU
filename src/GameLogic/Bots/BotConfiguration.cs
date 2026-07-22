@@ -32,6 +32,15 @@ public class BotConfiguration
     public bool ResetBots { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether all bot accounts and characters should be deleted
+    /// WITHOUT being regenerated. Unlike <see cref="ResetBots"/> this also turns <see cref="Enabled"/>
+    /// off - otherwise the very same pass would generate the population again - so it is the single
+    /// switch for "I do not want bots on this server anymore". Clears itself afterwards.
+    /// </summary>
+    [Display(Name = "Purge bots", Description = "Deletes all bot accounts and characters and turns the bot feature off, without generating new ones. Clears itself afterwards.")]
+    public bool PurgeBots { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether the bot population rotates its presence over the day:
     /// fewer bots are online at night, most in the evening, with bots smoothly logging in and out -
     /// like a real player base, instead of the same characters being online 24/7.

@@ -46,10 +46,11 @@ internal sealed class BotServerPartition
     public int AccountCount { get; }
 
     /// <summary>
-    /// Gets a value indicating whether this server generates the bot population. Exactly one server
-    /// does it (the one which animates the first account), so the generation of the accounts - and of
-    /// their unique character names - never runs twice at the same time. The other servers simply find
-    /// their accounts once they exist; until then, their spawns are retried by the maintenance pass.
+    /// Gets a value indicating whether this server generates the bot population - and, likewise, carries
+    /// out the requested reset and purge. Exactly one server does it (the first of the deployment), so
+    /// the generation of the accounts - and of their unique character names - never runs twice at the
+    /// same time. The other servers simply find their accounts once they exist; until then, their spawns
+    /// are retried by the maintenance pass.
     /// </summary>
     public bool IsGenerator { get; }
 
@@ -120,18 +121,27 @@ internal sealed class BotServerPartition
         byte serverId,
         int requestedAccounts)
     {
-        var servers = capacities.Where(c => c.Capacity > 0).ToList();
+        var allServers = capacities.ToList();
+        var servers = allServers.Where(c => c.Capacity > 0).ToList();
         var totalCapacity = servers.Sum(server => (long)server.Capacity);
+
+        // Who generates - and purges - the population is decided by the SET of servers alone, never by
+        // how many accounts are configured: a deployment which currently wants zero bots still needs an
+        // owner for the destructive operations, otherwise "delete all bots" would silently do nothing on
+        // every server. The first server (they all walk the list in the same order) takes the role.
+        var owner = servers.Count > 0 ? servers[0].ServerId : allServers.Select(server => (byte?)server.ServerId).FirstOrDefault();
+        var isGenerator = owner == serverId;
+
         if (totalCapacity == 0 || requestedAccounts <= 0)
         {
-            return (new BotServerPartition(1, 0, false), 0);
+            return (new BotServerPartition(1, 0, isGenerator), 0);
         }
 
         // What does not fit into the servers' share stays offline; those accounts wake up as soon as the
         // deployment offers the room (another game server, a higher player limit or bot capacity share).
         var assignedAccounts = (int)Math.Min(requestedAccounts, totalCapacity);
 
-        var partition = new BotServerPartition(1, 0, false);
+        var partition = new BotServerPartition(1, 0, isGenerator);
         long capacitySoFar = 0;
         var accountsSoFar = 0;
         foreach (var (currentServer, capacity) in servers)
@@ -144,8 +154,7 @@ internal sealed class BotServerPartition
             var share = accountsUpToHere - accountsSoFar;
             if (currentServer == serverId && share > 0)
             {
-                // The server which owns the first account generates the population.
-                partition = new BotServerPartition(accountsSoFar + 1, share, accountsSoFar == 0);
+                partition = new BotServerPartition(accountsSoFar + 1, share, isGenerator);
             }
 
             accountsSoFar = accountsUpToHere;

@@ -73,8 +73,13 @@ The *Bots* feature plugin, in the "Feature Plugins" section of the admin panel:
 - **`Potion stock charges`** — how many charges of healing and of mana potions a
   bot restocks to at a merchant. Depends on what the shops sell: a server whose
   potions come in stacks of 255 fills the target in a single purchase.
-- **`Reset bots`** — purges and regenerates the whole population on the next
-  start, then clears itself.
+- **`Reset bots`** — deletes the whole population and generates it again, then
+  clears itself. With the number of accounts set to zero it deletes without
+  generating anything.
+- **`Purge bots`** — deletes the whole population WITHOUT generating a new one,
+  and switches the feature off. It works with the feature enabled or disabled;
+  the switch-off is what makes it a purge, since the same pass would otherwise
+  create the population again right after deleting it. Clears itself afterwards.
 
 ## What a bot does
 
@@ -275,5 +280,10 @@ hash dominates); starting an existing one of 1100 bots takes some 15 seconds.
    game server, over which the population then spreads by itself.
 3. Restart the server. The population is generated on the first start and
    reloaded afterwards.
-4. To build a fresh population, set `Reset bots`: it purges the old one,
+4. To build a fresh population, set `Reset bots`: it deletes the old one,
    generates a new one, and clears the flag again.
+5. To stop the bots without losing them, uncheck `Enabled`: they log out within
+   a few seconds and nothing is deleted, so checking it again brings the same
+   characters back. To get rid of them for good, set `Purge bots` — it deletes
+   every bot account with its characters, items and storages, and leaves the
+   feature switched off.
