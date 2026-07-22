@@ -137,6 +137,9 @@ internal sealed class BotNavigator : AsyncDisposable
     /// </summary>
     private const int DeathSiteAvoidanceRange = 30;
 
+    /// <summary>The game's own warp action, so a bot travels on exactly a player's terms - fare included.</summary>
+    private static readonly WarpAction WarpAction = new();
+
     private static readonly TimeSpan EvaluationInterval = TimeSpan.FromSeconds(1);
     private static readonly TimeSpan EmptyGroundGrace = TimeSpan.FromSeconds(8);
 
@@ -880,8 +883,9 @@ internal sealed class BotNavigator : AsyncDisposable
         {
             ExitGate? warpListGate = null;
             if (leader.CurrentMap is { } targetMap
-                && !this.TryGetLegalWarpGate(targetMap.Definition, out warpListGate)
-                && targetMap.Definition.Number != this._player.SelectedCharacter?.CharacterClass?.HomeMap?.Number)
+                && (this.TryGetLegalWarp(targetMap.Definition, out var leaderWarp)
+                    ? (warpListGate = leaderWarp.Gate) is null
+                    : targetMap.Definition.Number != this._player.SelectedCharacter?.CharacterClass?.HomeMap?.Number))
             {
                 // The leader moved to a map the bot's plain character level cannot legally enter
                 // (level gates map access, the same rule as everywhere else). Rather than trail
@@ -1047,7 +1051,7 @@ internal sealed class BotNavigator : AsyncDisposable
         var currentMap = this._player.CurrentMap?.Definition;
         var mapIsHostile = currentMap is not null && this.BestSafeLevel(currentMap) == 0;
         var mapIsIllegal = currentMap is not null
-                           && !this.TryGetLegalWarpGate(currentMap, out _)
+                           && !this.TryGetLegalWarp(currentMap, out _)
                            && currentMap.Number != this._player.SelectedCharacter?.CharacterClass?.HomeMap?.Number;
         var mustEscape = mapIsHostile || mapIsIllegal;
 
@@ -1063,12 +1067,27 @@ internal sealed class BotNavigator : AsyncDisposable
             return false;
         }
 
-        // When escaping, any legal map with something safe to hunt beats staying - and with no legal
-        // warp target at all (a freshly reset veteran may be below every warp requirement), the bot
-        // retreats to its class home town, like a player using a town scroll.
-        if (!(mapIsBarren && this.TryPickEasierMap(out var targetGate, out var targetMap, out var targetLevel))
-            && !this.TryPickBetterMap(mustEscape, out targetGate, out targetMap, out targetLevel)
-            && !(mustEscape && this.TryGetHomeEscapeGate(out targetGate, out targetMap, out targetLevel)))
+        // When escaping, any legal map with something safe to hunt beats staying. The home retreat is
+        // the last resort AND the safety valve: a bot which cannot afford a single warp - or is below
+        // every warp requirement, as a freshly reset veteran is - would otherwise be stranded on ground
+        // that pays it nothing, unable to earn the fare out of it. Walking home is free, like a player
+        // taking the long way back, and its home map is starter ground it can always hunt.
+        WarpInfo? fare = null;
+        ExitGate targetGate;
+        GameMapDefinition? targetMap;
+        int targetLevel;
+        if ((mapIsBarren && this.TryPickEasierMap(out var easierWarp, out targetMap, out targetLevel))
+            || this.TryPickBetterMap(mustEscape, out easierWarp, out targetMap, out targetLevel))
+        {
+            fare = easierWarp;
+            targetGate = easierWarp.Gate!;
+        }
+        else if ((mustEscape || mapIsBarren)
+                 && this.TryGetHomeEscapeGate(out var homeGate, out targetMap, out targetLevel))
+        {
+            targetGate = homeGate;
+        }
+        else
         {
             return false;
         }
@@ -1080,13 +1099,28 @@ internal sealed class BotNavigator : AsyncDisposable
         this._hasDestination = false;
         this._travelPath = null;
         this._player.Logger.LogInformation(
-            "Bot {Character} (level {Level}) warping to map {Map} (monsters ~{MonsterLevel}).",
+            "Bot {Character} (level {Level}) warping to map {Map} (monsters ~{MonsterLevel}, fare {Fare} zen).",
             this._player.Name,
             botLevel,
-            targetMap.Name,
-            targetLevel);
-        await this._player.WarpToAsync(targetGate).ConfigureAwait(false);
-        await this.TryPersistCurrentMapAsync(targetMap).ConfigureAwait(false);
+            targetMap!.Name,
+            targetLevel,
+            fare?.Costs ?? 0);
+
+        if (fare is not null)
+        {
+            // Through the player action, so the bot pays the fare and passes every check the game makes
+            // of a player warping there - including any this navigator does not know about.
+            await WarpAction.WarpToAsync(this._player, fare).ConfigureAwait(false);
+        }
+        else
+        {
+            await this._player.WarpToAsync(targetGate).ConfigureAwait(false);
+        }
+
+        // Where the character ACTUALLY ended up, not where it was sent: the warp action re-checks what
+        // the candidate filter checked and may refuse, and remembering a refused trip as a move would
+        // reload the bot onto a map it never reached.
+        await this.TryPersistCurrentMapAsync(this._player.CurrentMap?.Definition ?? targetMap).ConfigureAwait(false);
         return true;
     }
 
@@ -1399,7 +1433,7 @@ internal sealed class BotNavigator : AsyncDisposable
     /// <summary>
     /// The bot's reset-aware effective level (see <see cref="BotResetHandler.GetEffectiveLevel"/>),
     /// used for hunting decisions (which monsters pay off). Map ACCESS is deliberately not decided
-    /// by this - the game gates warps by the plain character level (see <see cref="TryGetLegalWarpGate"/>),
+    /// by this - the game gates warps by the plain character level (see <see cref="TryGetLegalWarp"/>),
     /// and the bots must obey the same rule.
     /// </summary>
     private int GetBotLevel() => BotResetHandler.GetEffectiveLevel(this._player);
@@ -1414,22 +1448,29 @@ internal sealed class BotNavigator : AsyncDisposable
     /// <param name="mapDefinition">The target map.</param>
     /// <param name="gate">The warp target gate, if a legal entry exists.</param>
     /// <returns>True, if the bot may warp to the map.</returns>
-    private bool TryGetLegalWarpGate(GameMapDefinition mapDefinition, [MaybeNullWhen(false)] out ExitGate gate)
+    private bool TryGetLegalWarp(GameMapDefinition mapDefinition, [MaybeNullWhen(false)] out WarpInfo warp)
     {
-        gate = null;
+        warp = null;
         if (this._player.SelectedCharacter is not { } character)
         {
             return false;
         }
 
         var plainLevel = (int)(this._player.Attributes?[Stats.Level] ?? 1);
-        gate = this._player.GameContext.Configuration.WarpList
+        warp = this._player.GameContext.Configuration.WarpList
             .Where(w => w.Gate?.Map?.Number == mapDefinition.Number
                         && character.GetEffectiveMoveLevelRequirement(w.LevelRequirement) <= plainLevel)
-            .Select(w => w.Gate!)
             .FirstOrDefault();
-        return gate is not null;
+        return warp is not null;
     }
+
+    /// <summary>
+    /// Whether the bot can pay the warp's fare. A bot travels on the same terms as a player - it pays
+    /// what the warp costs - so a map it cannot afford is not offered to it in the first place, rather
+    /// than chosen and then refused by <see cref="WarpAction"/>.
+    /// </summary>
+    /// <param name="warp">The warp to pay for.</param>
+    private bool CanAffordWarp(WarpInfo warp) => this._player.Money >= warp.Costs;
 
     /// <summary>
     /// Gets the escape gate to the bot's class home town, for when it must leave its current map but is
@@ -1533,9 +1574,9 @@ internal sealed class BotNavigator : AsyncDisposable
     /// <param name="gate">The warp gate of the chosen map.</param>
     /// <param name="mapDefinition">The chosen map.</param>
     /// <param name="monsterLevel">The level of the strongest safe monster there.</param>
-    private bool TryPickEasierMap(out ExitGate gate, out GameMapDefinition mapDefinition, out int monsterLevel)
+    private bool TryPickEasierMap(out WarpInfo warp, out GameMapDefinition mapDefinition, out int monsterLevel)
     {
-        gate = default!;
+        warp = default!;
         mapDefinition = default!;
         monsterLevel = 0;
 
@@ -1563,9 +1604,10 @@ internal sealed class BotNavigator : AsyncDisposable
             }
 
             if (!candidate.TryGetRequirementError(this._player, out _)
-                && this.TryGetLegalWarpGate(candidate, out var warpGate))
+                && this.TryGetLegalWarp(candidate, out var candidateWarp)
+                && this.CanAffordWarp(candidateWarp))
             {
-                gate = warpGate;
+                warp = candidateWarp;
                 mapDefinition = candidate;
                 monsterLevel = best;
             }
@@ -1580,31 +1622,31 @@ internal sealed class BotNavigator : AsyncDisposable
     /// In escape mode (fleeing a hostile or illegal map) any legal map with something safe to hunt counts,
     /// no matter how it compares to the current one.
     /// </summary>
-    private bool TryPickBetterMap(bool escape, out ExitGate gate, out GameMapDefinition mapDefinition, out int monsterLevel)
+    private bool TryPickBetterMap(bool escape, out WarpInfo warp, out GameMapDefinition mapDefinition, out int monsterLevel)
     {
         // A mastered bot earns nothing below the master-experience floor, so it first looks for a map
         // which pays at all. Only when no map within its reach offers monsters above the floor that it
         // can safely fight does it fall back to hunting by safety alone: standing on a map it cannot
         // survive would not earn it master experience either, and its gear still improves meanwhile.
         var floor = this.MasterExperienceFloor();
-        return (floor > 0 && this.TryPickBetterMapCore(escape, floor, out gate, out mapDefinition, out monsterLevel))
-               || this.TryPickBetterMapCore(escape, 0, out gate, out mapDefinition, out monsterLevel);
+        return (floor > 0 && this.TryPickBetterMapCore(escape, floor, out warp, out mapDefinition, out monsterLevel))
+               || this.TryPickBetterMapCore(escape, 0, out warp, out mapDefinition, out monsterLevel);
     }
 
     /// <summary>
     /// Picks the best map (see <see cref="TryPickBetterMap"/>), counting only monsters of at least
     /// <paramref name="minimumMonsterLevel"/>.
     /// </summary>
-    private bool TryPickBetterMapCore(bool escape, int minimumMonsterLevel, out ExitGate gate, out GameMapDefinition mapDefinition, out int monsterLevel)
+    private bool TryPickBetterMapCore(bool escape, int minimumMonsterLevel, out WarpInfo warp, out GameMapDefinition mapDefinition, out int monsterLevel)
     {
-        gate = default!;
+        warp = default!;
         mapDefinition = default!;
         monsterLevel = 0;
 
         var current = this._player.CurrentMap?.Definition;
         var threshold = escape ? 1 : (current is null ? 0 : this.BestSafeLevel(current, minimumMonsterLevel)) + WarpImprovementMargin;
 
-        var candidates = new List<(ExitGate Gate, GameMapDefinition Map, int Level)>();
+        var candidates = new List<(WarpInfo Warp, GameMapDefinition Map, int Level)>();
         foreach (var candidate in this._player.GameContext.Configuration.Maps)
         {
             if (ReferenceEquals(candidate, current))
@@ -1618,9 +1660,9 @@ internal sealed class BotNavigator : AsyncDisposable
                 continue;
             }
 
-            if (this.TryGetLegalWarpGate(candidate, out var warpGate))
+            if (this.TryGetLegalWarp(candidate, out var candidateWarp) && this.CanAffordWarp(candidateWarp))
             {
-                candidates.Add((warpGate, candidate, best));
+                candidates.Add((candidateWarp, candidate, best));
             }
         }
 
@@ -1636,7 +1678,7 @@ internal sealed class BotNavigator : AsyncDisposable
         // rest, so the population spreads over the maps a player of that band would choose between.
         var ranked = candidates.OrderByDescending(c => c.Level).ToList();
         var picked = ranked[PickByRank(ranked.Count)];
-        gate = picked.Gate;
+        warp = picked.Warp;
         mapDefinition = picked.Map;
         monsterLevel = picked.Level;
         return true;
