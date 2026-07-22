@@ -56,6 +56,12 @@ internal sealed class BotNavigator : AsyncDisposable
     private const int GroundScatterSpan = 2 * HuntingRange;
 
     /// <summary>
+    /// Share of the shopping cooldown the next trip is spread over, so that bots which shopped together
+    /// don't come back together. See <see cref="NextShoppingCheckUtc"/>.
+    /// </summary>
+    private const double ShoppingSpread = 0.4;
+
+    /// <summary>
     /// How far the bot looks for an actual live monster to home in on. MU spawn areas span most of the map
     /// (e.g. Lorencia's are ~86x233 / ~105x68 tiles) with only a few dozen monsters each, so their monsters
     /// sit ~20 tiles apart. Walking to a random tile inside such an area almost never lands within the 6-tile
@@ -211,7 +217,13 @@ internal sealed class BotNavigator : AsyncDisposable
     private Point _travelPathTarget;
     private Point? _shoppingTarget;
 
-    private DateTime _nextShoppingCheckUtc = DateTime.MinValue;
+    /// <summary>
+    /// When this bot looks at its supplies again. Bots come up with the server, so starting them all at
+    /// "now" sent the whole population to the same merchant in the same minute - and since the cooldown
+    /// was the same for everyone, nothing ever broke that herd apart again. The first check is therefore
+    /// spread over the cooldown, and every following one is spread around it.
+    /// </summary>
+    private DateTime _nextShoppingCheckUtc = DateTime.UtcNow + (ShoppingCooldown * Rand.NextDouble());
     private DateTime? _resetDueAtUtc;
     private short _leaderMapNumber;
     private DateTime _leaderOnMapSinceUtc = DateTime.MinValue;
@@ -306,6 +318,17 @@ internal sealed class BotNavigator : AsyncDisposable
         => (int)(definition.Attributes.FirstOrDefault(a => a.AttributeDefinition == Stats.Level)?.Value ?? 0f);
 
     /// <summary>Manhattan distance between the center of the spawn area and the given point.</summary>
+    /// <summary>
+    /// Returns the time of the next supply check, spread around <see cref="ShoppingCooldown"/> so that bots
+    /// which just shopped together don't queue up at the merchant together again.
+    /// </summary>
+    /// <returns>The time of the next supply check.</returns>
+    private static DateTime NextShoppingCheckUtc()
+    {
+        var spread = 1 + (((Rand.NextDouble() * 2) - 1) * ShoppingSpread);
+        return DateTime.UtcNow + (ShoppingCooldown * spread);
+    }
+
     private static int GroundDistance(MonsterSpawnArea area, Point from)
     {
         var centerX = (area.X1 + area.X2) / 2;
@@ -589,7 +612,7 @@ internal sealed class BotNavigator : AsyncDisposable
                     this._player.Logger.LogInformation("Bot '{Name}' gives up its shopping trip: no route to the merchant at {Target}.", this._player.Name, target);
                     this._shoppingTarget = null;
                     this._player.IsOnShoppingTrip = false;
-                    this._nextShoppingCheckUtc = DateTime.UtcNow + ShoppingCooldown;
+                    this._nextShoppingCheckUtc = NextShoppingCheckUtc();
                 }
 
                 return true;
@@ -604,7 +627,7 @@ internal sealed class BotNavigator : AsyncDisposable
 
             this._shoppingTarget = null;
             this._player.IsOnShoppingTrip = false;
-            this._nextShoppingCheckUtc = DateTime.UtcNow + ShoppingCooldown;
+            this._nextShoppingCheckUtc = NextShoppingCheckUtc();
             this._lastMoveUtc = DateTime.UtcNow; // standing at the shop is not "stuck"
             return true;
         }
