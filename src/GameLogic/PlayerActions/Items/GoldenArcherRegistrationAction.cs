@@ -30,11 +30,9 @@ public class GoldenArcherRegistrationAction
             return;
         }
 
-        // Find the first matching item (Rena, Event Chip, or Stone) in the entire inventory
+        // Find the first matching item (Rena) in the entire inventory
         var item = player.Inventory?.Items.FirstOrDefault(i =>
-            (i.Definition?.Group == 14 && i.Definition?.Number == 21) || // Rena
-            (i.Definition?.Group == 14 && i.Definition?.Number == 30) || // Event Chip
-            (i.Definition?.Group == 14 && i.Definition?.Number == 31)    // Stone
+            i.Definition?.Group == 14 && i.Definition?.Number == 21 // Rena
         );
 
         if (item == null)
