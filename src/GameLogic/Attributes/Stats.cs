@@ -1,4 +1,4 @@
-// <copyright file="Stats.cs" company="MUnique">
+﻿// <copyright file="Stats.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -525,6 +525,12 @@ public class Stats
     public static AttributeDefinition CrossBowMasteryBonusDamage { get; } = new(new Guid("B3AF7F51-6D6B-42FB-B8FF-689D03890F3E"), "Cross Bow Mastery PvP Bonus Damage (MST)", string.Empty);
 
     /// <summary>
+    /// Gets the extra projectiles attribute definition.
+    /// </summary>
+    /// <remarks>Can be increased by equipping certain (cross)bows and/or unlocking triple shot mastery.</remarks>
+    public static AttributeDefinition ExtraProjectiles { get; } = new(new Guid("B9E4F3C2-A1D5-4B8E-7F2C-6D3A9E1F5C8B"), "Extra Projectiles", "The number of extra projectiles shot with triple shot skill.");
+
+    /// <summary>
     /// Gets elf's melee attack mode attribute definition.
     /// </summary>
     public static AttributeDefinition MeleeAttackMode { get; } = new(new Guid("2121E586-B511-4D27-9E1A-67BFCACD7F41"), "Melee Attack Mode", "The elf's melee attack mode switch.");
@@ -553,6 +559,11 @@ public class Stats
     /// Gets elf's archery maximum damage attribute definition.
     /// </summary>
     public static AttributeDefinition ArcheryMaxDmg { get; } = new(new Guid("EC807B7C-4004-4D13-BED2-326E13F8EFEB"), "Archery Maximum Damage", "The elf's maximum archery damage, which is added to projectile weapon attacks.");
+
+    /// <summary>
+    /// Gets the elf's greater defense buff bonus defense attribute definition.
+    /// </summary>
+    public static AttributeDefinition GreaterDefenseBonus { get; } = new(new Guid("5A7C3E9B-D1F4-4B82-8A6D-2F3E1C9B7A4D"), "Greater Defense Bonus", string.Empty);
 
     /// <summary>
     /// Gets the elf's greater damage buff bonus damage attribute definition.
@@ -729,7 +740,7 @@ public class Stats
     public static AttributeDefinition SummonedMonsterHealthIncrease { get; } = new(new Guid("7B0625C8-DA1A-4A5D-BCA5-26AACDA0BDC6"), "Summoned Monster Health Increase %", string.Empty);
 
     /// <summary>
-    /// Gets the summoned monster defense increase, absolute.
+    /// Gets the summoned monster defense increase, percentage.
     /// </summary>
     public static AttributeDefinition SummonedMonsterDefenseIncrease { get; } = new(new Guid("0D55CFCA-751F-4E66-B327-635576A9A0B3"), "Summoned Monster Defense Increase", string.Empty);
 
@@ -775,7 +786,7 @@ public class Stats
     /// <see cref="AggregateType.Multiplicate"/> values include:
     ///     <see cref="DefenseIncreaseWithEquippedShield"/>.
     /// <see cref="AggregateType.AddFinal"/> values include:
-    ///     Greater defense buff; MST bonus defense with shield (shield strengthener); MST dark horse strengthener; Jack O'Lantern Cry bonus (halved); Berserker defense reduction.
+    ///     MST bonus defense with shield (shield strengthener); MST dark horse strengthener; Jack O'Lantern Cry bonus (halved); Berserker defense reduction.
     /// </remarks>
     public static AttributeDefinition DefenseFinal { get; } = new(new Guid("0888AD48-0CC8-47CA-B6A3-99F3771AA5FC"), "Final Defense", string.Empty);
 

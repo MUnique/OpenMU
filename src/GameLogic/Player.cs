@@ -1,4 +1,4 @@
-// <copyright file="Player.cs" company="MUnique">
+﻿// <copyright file="Player.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -1606,35 +1606,32 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             var durationExtended = false;
             foreach (var powerUpDef in powerUps)
             {
-                IElement powerUp;
+                IElement powerUp = this.Attributes!.CreateElement(powerUpDef);
                 if (skillEntry.Level > 0)
                 {
-                    powerUp = this.Attributes!.CreateElement(powerUpDef);
-
                     foreach (var masterSkillEntry in GetMasterSkillEntries(skillEntry))
                     {
                         var extendsDuration = masterSkillEntry.Skill?.MasterDefinition?.ExtendsDuration ?? false;
                         if (extendsDuration && !durationExtended)
                         {
-                            durationElement = new CombinedElement(durationElement, new ConstantElement(masterSkillEntry.CalculateValue()));
+                            var value = masterSkillEntry.CalculateValue();
+                            if (value < 1)
+                            {
+                                value *= 100;
+                            }
+
+                            durationElement = new CombinedElement(durationElement, new ConstantElement(value));
+                            durationElementPvp = new CombinedElement(durationElementPvp, new ConstantElement(value));
                         }
-                        else if (extendsDuration)
+
+                        if (masterSkillEntry.Skill?.MasterDefinition?.TargetAttribute is not null)
                         {
-                            continue;
-                        }
-                        else
-                        {
-                            // Apply either for all, or just for the specified TargetAttribute of the master skill
                             powerUp = AppedMasterSkillPowerUp(masterSkillEntry, powerUpDef, powerUp);
                         }
                     }
 
                     // After the first iteration all possible duration extensions have been applied
                     durationExtended = true;
-                }
-                else
-                {
-                    powerUp = this.Attributes!.CreateElement(powerUpDef);
                 }
 
                 result[i] = (powerUpDef.TargetAttribute!, powerUp);
@@ -1654,15 +1651,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         IElement AppedMasterSkillPowerUp(SkillEntry masterSkillEntry, PowerUpDefinition powerUpDef, IElement powerUp)
         {
-            if (masterSkillEntry.Skill?.MasterDefinition is not { } masterSkillDefinition)
-            {
-                return powerUp;
-            }
+            var masterSkillDefinition = masterSkillEntry.Skill!.MasterDefinition!;
 
-            if (masterSkillDefinition.TargetAttribute is { } masterSkillTargetAttribute
-                && masterSkillTargetAttribute == powerUpDef.TargetAttribute)
+            if (masterSkillDefinition.TargetAttribute == powerUpDef.TargetAttribute
+                && masterSkillDefinition.Aggregation == powerUp.AggregateType)
             {
-                var additionalValue = new SimpleElement(masterSkillEntry.CalculateValue(), masterSkillEntry.Skill.MasterDefinition?.Aggregation ?? powerUp.AggregateType);
+                var additionalValue = new SimpleElement(masterSkillEntry.CalculateValue(), masterSkillDefinition.Aggregation);
                 powerUp = new CombinedElement(powerUp, additionalValue);
             }
 
@@ -1730,7 +1724,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         area.MaximumHealthOverride = (int)monster.Attributes[Stats.MaximumHealth];
         area.MaximumHealthOverride += (int)(monster.Attributes[Stats.MaximumHealth] * this.Attributes?[Stats.SummonedMonsterHealthIncrease] ?? 0);
 
-        // todo: Stats.SummonedMonsterDefenseIncrease
         this.Summon = (monster, intelligence);
         monster.Initialize();
         await gameMap.AddAsync(monster).ConfigureAwait(false);

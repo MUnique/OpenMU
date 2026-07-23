@@ -86,6 +86,8 @@ public class SoulBarrierStrengSkillAction : TargetedSkillDefaultPlugin
                     new ConstantElement(strengSkillLevel!.Level * 0.001f), // extra 0.1% per streng skill level
                     InputOperator.Multiply))
             ];
+
+            skillEntry.PowerUpsPvp = skillEntry.PowerUps;
         }
 
         await AttackableExtensions.ApplyMagicEffectAsync(target, player, skillEntry).ConfigureAwait(false);
