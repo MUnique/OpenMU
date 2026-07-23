@@ -1,4 +1,4 @@
-// <copyright file=""AddGoldenArcherConfigurationPlugIn.cs"" company=""MUnique"">
+// <copyright file="AddGoldenArcherConfigurationPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -15,18 +15,18 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [PlugIn]
 [Display(Name = PlugInName, Description = PlugInDescription)]
-[Guid(""182FC652-3277-4CDB-8BA8-DE70311E67C9"")]
+[Guid("182FC652-3277-4CDB-8BA8-DE70311E67C9")]
 public class AddGoldenArcherConfigurationPlugIn : UpdatePlugInBase
 {
     /// <summary>
     /// The plug in name.
     /// </summary>
-    internal const string PlugInName = ""Add golden archer configuration"";
+    internal const string PlugInName = "Add golden archer configuration";
 
     /// <summary>
     /// The plug in description.
     /// </summary>
-    internal const string PlugInDescription = ""This update adds data for the golden archer configuration"";
+    internal const string PlugInDescription = "This update adds data for the golden archer configuration";
 
     /// <inheritdoc />
     public override string Name => PlugInName;
@@ -58,7 +58,6 @@ public class AddGoldenArcherConfigurationPlugIn : UpdatePlugInBase
         config.RequiredRenas = 1;
         config.RewardZen = 5000000;
         config.ItemDropChance = 100.0;
-
         gameConfiguration.GoldenArcherConfiguration = config;
     }
 }
