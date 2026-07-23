@@ -16,6 +16,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="BlazingModal" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="Serilog" />
     <PackageReference Include="Serilog.Extensions.Hosting" />
     <PackageReference Include="Serilog.Settings.Configuration" />
@@ -63,7 +68,7 @@
       <!-- Remove any duplicate StaticWebAsset and StaticWebAssetEndpoint items -->
       <_StaticWebAsset Include="@(StaticWebAsset)" />
       <StaticWebAsset Remove="@(StaticWebAsset)" />
-      <StaticWebAsset Include="@(_StaticWebAsset->Distinct())" />
+      <StaticWebAsset Include="@(_StaticWebAsset-&gt;Distinct())" />
     </ItemGroup>
   </Target>
 </Project>

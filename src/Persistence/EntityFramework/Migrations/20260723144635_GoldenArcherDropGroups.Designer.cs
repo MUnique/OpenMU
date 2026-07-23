@@ -3,6 +3,7 @@ using System;
 using MUnique.OpenMU.Persistence.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,13 +12,15 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 {
     [DbContext(typeof(EntityDataContext))]
-    partial class EntityDataContextModelSnapshot : ModelSnapshot
+    [Migration("20260723144635_GoldenArcherDropGroups")]
+    partial class GoldenArcherDropGroups
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.10")
+                .HasAnnotation("ProductVersion", "10.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -458,9 +461,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<string>("StoreName")
                         .HasColumnType("text");
 
-                    b.Property<int>("TotalRegisteredRenas")
-                        .HasColumnType("integer");
-
                     b.Property<int>("UsedFruitPoints")
                         .HasColumnType("integer");
 
@@ -822,6 +822,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid?>("GameConfigurationId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("GameConfigurationId1")
+                        .HasColumnType("uuid");
+
                     b.Property<byte?>("ItemLevel")
                         .HasColumnType("smallint");
 
@@ -840,6 +843,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("GameConfigurationId");
+
+                    b.HasIndex("GameConfigurationId1");
 
                     b.HasIndex("MonsterId");
 
@@ -1088,8 +1093,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<float>("ExperienceRate")
                         .HasColumnType("real");
 
-                    b.Property<Guid?>("GoldenArcherConfigurationId")
-                        .HasColumnType("uuid");
+                    b.Property<int>("GoldenArcherRenaRewardZen")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("GoldenArcherRequiredRenas")
+                        .HasColumnType("integer");
 
                     b.Property<double>("HitsPerOneItemDurability")
                         .HasColumnType("double precision");
@@ -1155,9 +1163,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("DuelConfigurationId")
-                        .IsUnique();
-
-                    b.HasIndex("GoldenArcherConfigurationId")
                         .IsUnique();
 
                     b.ToTable("GameConfiguration", "config");
@@ -1311,41 +1316,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasIndex("GameServerDefinitionId");
 
                     b.ToTable("GameServerEndpoint", "config");
-                });
-
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GoldenArcherConfiguration", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<double>("ItemDropChance")
-                        .HasColumnType("double precision");
-
-                    b.Property<int>("RequiredRenas")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("RewardZen")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("GoldenArcherConfiguration", "config");
-                });
-
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GoldenArcherConfigurationItemDefinition", b =>
-                {
-                    b.Property<Guid>("GoldenArcherConfigurationId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ItemDefinitionId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("GoldenArcherConfigurationId", "ItemDefinitionId");
-
-                    b.HasIndex("ItemDefinitionId");
-
-                    b.ToTable("GoldenArcherConfigurationItemDefinition", "config");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.Guild", b =>
@@ -3847,6 +3817,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasForeignKey("GameConfigurationId")
                         .OnDelete(DeleteBehavior.Cascade);
 
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration", null)
+                        .WithMany("RawGoldenArcherRenaRewardDropGroups")
+                        .HasForeignKey("GameConfigurationId1");
+
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.MonsterDefinition", "RawMonster")
                         .WithMany()
                         .HasForeignKey("MonsterId");
@@ -3939,14 +3913,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasForeignKey("MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration", "DuelConfigurationId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GoldenArcherConfiguration", "RawGoldenArcherConfiguration")
-                        .WithOne()
-                        .HasForeignKey("MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration", "GoldenArcherConfigurationId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.Navigation("RawDuelConfiguration");
-
-                    b.Navigation("RawGoldenArcherConfiguration");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GameMapDefinition", b =>
@@ -4035,25 +4002,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("RawClient");
-                });
-
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GoldenArcherConfigurationItemDefinition", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GoldenArcherConfiguration", "GoldenArcherConfiguration")
-                        .WithMany("JoinedRewardItems")
-                        .HasForeignKey("GoldenArcherConfigurationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition", "ItemDefinition")
-                        .WithMany()
-                        .HasForeignKey("ItemDefinitionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("GoldenArcherConfiguration");
-
-                    b.Navigation("ItemDefinition");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.Guild", b =>
@@ -5148,6 +5096,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Navigation("RawGlobalBaseAttributeValues");
 
+                    b.Navigation("RawGoldenArcherRenaRewardDropGroups");
+
                     b.Navigation("RawItemLevelBonusTables");
 
                     b.Navigation("RawItemOptionCombinationBonuses");
@@ -5204,11 +5154,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GameServerDefinition", b =>
                 {
                     b.Navigation("RawEndpoints");
-                });
-
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GoldenArcherConfiguration", b =>
-                {
-                    b.Navigation("JoinedRewardItems");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.Guild", b =>

@@ -140,6 +140,9 @@ public static class MapsterConfigurator
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.Gate, MUnique.OpenMU.DataModel.Configuration.Gate>()
             .Include<Gate, BasicModel.Gate>();
 
+        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.GoldenArcherConfiguration, MUnique.OpenMU.DataModel.Configuration.GoldenArcherConfiguration>()
+            .Include<GoldenArcherConfiguration, BasicModel.GoldenArcherConfiguration>();
+
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.ItemDropItemGroup, MUnique.OpenMU.DataModel.Configuration.ItemDropItemGroup>()
             .Include<ItemDropItemGroup, BasicModel.ItemDropItemGroup>();
 
