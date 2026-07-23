@@ -62,7 +62,10 @@ public class GoldenArcherRegistrationAction
         }
 
         int requiredRenas = config.RequiredRenas;
-        if (requiredRenas <= 0) requiredRenas = 1; // Protection against division by zero or negative values
+        if (requiredRenas <= 0)
+        {
+            requiredRenas = 1;
+        }
 
         // Check if the required amount is reached
         if (player.SelectedCharacter!.RegisteredRenas >= requiredRenas)
@@ -85,7 +88,7 @@ public class GoldenArcherRegistrationAction
                 var dropGroup = new RewardDropItemGroup(config.RewardItems);
 
                 var dropGenerator = player.GameContext.DropGenerator;
-                var (droppedItem, money, effect) = dropGenerator.GenerateItemDrop(new[] { dropGroup });
+                var (droppedItem, money, _) = dropGenerator.GenerateItemDrop(new[] { dropGroup });
 
                 if (droppedItem != null)
                 {
