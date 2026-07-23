@@ -1,1 +1,0 @@
-using System; using System.Reflection; using MUnique.OpenMU.DataModel.Composition; namespace Test { class Program { static void Main() { var p = typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration).GetProperty("GoldenArcherConfiguration"); Console.WriteLine(p.GetCustomAttribute<MemberOfAggregateAttribute>() != null); } } }
