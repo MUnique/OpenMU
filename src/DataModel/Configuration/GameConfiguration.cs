@@ -79,7 +79,7 @@ public partial class GameConfiguration
     /// Gets or sets the Golden Archer configuration.
     /// </summary>
     [MemberOfAggregate]
-    public virtual GoldenArcherConfiguration? GoldenArcherConfiguration { get; set; } = new GoldenArcherConfiguration();
+    public virtual GoldenArcherConfiguration? GoldenArcherConfiguration { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether money pickup should be clamped to the maximum inventory money limit instead of failing when the limit would be exceeded.
