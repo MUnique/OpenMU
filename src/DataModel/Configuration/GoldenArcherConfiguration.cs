@@ -24,9 +24,10 @@ public partial class GoldenArcherConfiguration
     public int RewardZen { get; set; } = 5000000;
 
     /// <summary>
-    /// Gets or sets the chance of dropping an item from the <see cref="RewardItems"/> list. A value between 0.0 and 1.0 (e.g. 0.5 for 50%).
+    /// Gets or sets the chance of dropping an item from the <see cref="RewardItems"/> list. A value between 0.0 and 100.0 (e.g. 50 for 50%).
     /// </summary>
-    public double ItemDropChance { get; set; } = 1.0;
+    [System.ComponentModel.DataAnnotations.Display(Name = "Item Drop Chance (%)")]
+    public double ItemDropChance { get; set; } = 100.0;
 
     /// <summary>
     /// Gets or sets the possible items that can drop. If an item drops, one is picked randomly from this list.

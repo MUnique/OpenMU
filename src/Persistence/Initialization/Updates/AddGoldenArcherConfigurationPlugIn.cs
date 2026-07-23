@@ -1,4 +1,4 @@
-﻿// <copyright file=""AddGoldenArcherConfigurationPlugIn.cs"" company=""MUnique"">
+// <copyright file=""AddGoldenArcherConfigurationPlugIn.cs"" company=""MUnique"">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -57,7 +57,7 @@ public class AddGoldenArcherConfigurationPlugIn : UpdatePlugInBase
         var config = context.CreateNew<GoldenArcherConfiguration>();
         config.RequiredRenas = 1;
         config.RewardZen = 5000000;
-        config.ItemDropChance = 1.0;
+        config.ItemDropChance = 100.0;
 
         gameConfiguration.GoldenArcherConfiguration = config;
     }

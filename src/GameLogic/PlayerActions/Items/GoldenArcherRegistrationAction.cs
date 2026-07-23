@@ -80,7 +80,7 @@ public class GoldenArcherRegistrationAction
             }
 
             // Reward: Drop an item from the configured Reward Items list
-            if (config.RewardItems != null && config.RewardItems.Any() && Rand.NextRandomBool(config.ItemDropChance))
+            if (config.RewardItems != null && config.RewardItems.Any() && Rand.NextRandomBool(config.ItemDropChance / 100.0))
             {
                 var dropGroup = new RewardDropItemGroup(config.RewardItems);
 
