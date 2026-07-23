@@ -218,6 +218,32 @@ internal partial class GameConfiguration : MUnique.OpenMU.DataModel.Configuratio
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.MiniGameDefinition> MiniGameDefinitions => base.MiniGameDefinitions ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.MiniGameDefinition, MiniGameDefinition>(this.RawMiniGameDefinitions);
 
     /// <summary>
+    /// Gets or sets the identifier of <see cref="GoldenArcherConfiguration"/>.
+    /// </summary>
+    public Guid? GoldenArcherConfigurationId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="GoldenArcherConfiguration" />.
+    /// </summary>
+    [ForeignKey(nameof(GoldenArcherConfigurationId))]
+    public GoldenArcherConfiguration RawGoldenArcherConfiguration
+    {
+        get => base.GoldenArcherConfiguration as GoldenArcherConfiguration;
+        set => base.GoldenArcherConfiguration = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Configuration.GoldenArcherConfiguration GoldenArcherConfiguration
+    {
+        get => base.GoldenArcherConfiguration;set
+        {
+            base.GoldenArcherConfiguration = value;
+            this.GoldenArcherConfigurationId = this.RawGoldenArcherConfiguration?.Id;
+        }
+    }
+
+    /// <summary>
     /// Gets or sets the identifier of <see cref="DuelConfiguration"/>.
     /// </summary>
     public Guid? DuelConfigurationId { get; set; }

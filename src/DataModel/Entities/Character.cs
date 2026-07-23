@@ -1,4 +1,4 @@
-﻿// <copyright file="Character.cs" company="MUnique">
+// <copyright file="Character.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -223,6 +223,16 @@ public class Character
     /// Gets or sets a value indicating whether this character has it's store opened.
     /// </summary>
     public bool IsStoreOpened { get; set; }
+
+    /// <summary>
+    /// Gets or sets the number of registered renas for the Golden Archer (progress towards next reward).
+    /// </summary>
+    public int RegisteredRenas { get; set; }
+
+    /// <summary>
+    /// Gets or sets the total number of registered renas for the Golden Archer (all-time counter for rankings).
+    /// </summary>
+    public int TotalRegisteredRenas { get; set; }
 
     /// <summary>
     /// Gets or sets the stat attributes.

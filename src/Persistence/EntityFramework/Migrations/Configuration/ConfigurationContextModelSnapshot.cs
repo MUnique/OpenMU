@@ -8,10 +8,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
+namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations.Configuration
 {
-    [DbContext(typeof(EntityDataContext))]
-    partial class EntityDataContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(ConfigurationContext))]
+    partial class ConfigurationContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {

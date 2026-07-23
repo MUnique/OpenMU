@@ -467,6 +467,24 @@ public partial class GameConfiguration : MUnique.OpenMU.DataModel.Configuration.
     }
 
     /// <summary>
+    /// Gets the raw object of <see cref="GoldenArcherConfiguration" />.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonPropertyName("goldenArcherConfiguration")]
+    public GoldenArcherConfiguration RawGoldenArcherConfiguration
+    {
+        get => base.GoldenArcherConfiguration as GoldenArcherConfiguration;
+        set => base.GoldenArcherConfiguration = value;
+    }
+
+    /// <inheritdoc/>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Configuration.GoldenArcherConfiguration GoldenArcherConfiguration
+    {
+        get => base.GoldenArcherConfiguration;
+        set => base.GoldenArcherConfiguration = value;
+    }
+
+    /// <summary>
     /// Gets the raw object of <see cref="DuelConfiguration" />.
     /// </summary>
     [System.Text.Json.Serialization.JsonPropertyName("duelConfiguration")]

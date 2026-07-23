@@ -1,4 +1,4 @@
-﻿// <copyright file="Misc.cs" company="MUnique">
+// <copyright file="Misc.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -29,6 +29,9 @@ public class Misc : InitializerBase
         this.CreateGoldenCherryBlossomBranch();
         this.CreateLostMap();
         this.CreateSymbolOfKundun();
+        this.CreateRena();
+        this.CreateEventChip();
+        this.CreateStone();
     }
 
     private void CreateLostMap()
@@ -42,6 +45,51 @@ public class Misc : InitializerBase
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
         itemDefinition.MaximumItemLevel = 7;
+        itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
+        this.GameConfiguration.Items.Add(itemDefinition);
+    }
+
+    private void CreateRena()
+    {
+        var itemDefinition = this.Context.CreateNew<ItemDefinition>();
+        itemDefinition.Name = "Rena";
+        itemDefinition.Number = 21;
+        itemDefinition.Group = 14;
+        itemDefinition.DropLevel = 10;
+        itemDefinition.DropsFromMonsters = true;
+        itemDefinition.Durability = 1;
+        itemDefinition.Width = 1;
+        itemDefinition.Height = 1;
+        itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
+        this.GameConfiguration.Items.Add(itemDefinition);
+    }
+
+    private void CreateEventChip()
+    {
+        var itemDefinition = this.Context.CreateNew<ItemDefinition>();
+        itemDefinition.Name = "Event Chip";
+        itemDefinition.Number = 30; // 14 28 is Lost Map
+        itemDefinition.Group = 14;
+        itemDefinition.DropLevel = 10;
+        itemDefinition.DropsFromMonsters = true;
+        itemDefinition.Durability = 1;
+        itemDefinition.Width = 1;
+        itemDefinition.Height = 1;
+        itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
+        this.GameConfiguration.Items.Add(itemDefinition);
+    }
+
+    private void CreateStone()
+    {
+        var itemDefinition = this.Context.CreateNew<ItemDefinition>();
+        itemDefinition.Name = "Stone";
+        itemDefinition.Number = 31;
+        itemDefinition.Group = 14;
+        itemDefinition.DropLevel = 10;
+        itemDefinition.DropsFromMonsters = true;
+        itemDefinition.Durability = 1;
+        itemDefinition.Width = 1;
+        itemDefinition.Height = 1;
         itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
         this.GameConfiguration.Items.Add(itemDefinition);
     }

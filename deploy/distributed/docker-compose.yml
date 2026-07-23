@@ -102,7 +102,7 @@ services:
       POSTGRES_DB: openmu
       POSTGRES_USER: postgres
     ports:
-      - "5432"
+      - "5432:5432"
     volumes:
       - dbdata:/var/lib/postgresql
 

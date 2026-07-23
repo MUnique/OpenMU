@@ -59,6 +59,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.GameServerDefinition>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.GameServerEndpoint>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Gate>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.GoldenArcherConfiguration>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.ItemDropItemGroup>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.JewelMix>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.LevelDependentDamage>();
@@ -137,6 +138,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Entity<CharacterClass>().HasOne(entity => entity.RawComboDefinition).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<ChatServerDefinition>().HasMany(entity => entity.RawEndpoints).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<DuelConfiguration>().HasMany(entity => entity.RawDuelAreas).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<GameConfiguration>().HasOne(entity => entity.RawGoldenArcherConfiguration).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameConfiguration>().HasOne(entity => entity.RawDuelConfiguration).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameConfiguration>().HasMany(entity => entity.RawJewelMixes).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameConfiguration>().HasMany(entity => entity.RawWarpList).WithOne().OnDelete(DeleteBehavior.Cascade);
@@ -232,6 +234,8 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Entity<GameMapDefinitionDropItemGroup>().HasKey(join => new { join.GameMapDefinitionId, join.DropItemGroupId });
         modelBuilder.Entity<GameServerConfiguration>().HasMany(entity => entity.JoinedMaps).WithOne(join => join.GameServerConfiguration);
         modelBuilder.Entity<GameServerConfigurationGameMapDefinition>().HasKey(join => new { join.GameServerConfigurationId, join.GameMapDefinitionId });
+        modelBuilder.Entity<GoldenArcherConfiguration>().HasMany(entity => entity.JoinedRewardItems).WithOne(join => join.GoldenArcherConfiguration);
+        modelBuilder.Entity<GoldenArcherConfigurationItemDefinition>().HasKey(join => new { join.GoldenArcherConfigurationId, join.ItemDefinitionId });
         modelBuilder.Entity<ItemDropItemGroup>().HasMany(entity => entity.JoinedPossibleItems).WithOne(join => join.ItemDropItemGroup);
         modelBuilder.Entity<ItemDropItemGroupItemDefinition>().HasKey(join => new { join.ItemDropItemGroupId, join.ItemDefinitionId });
         modelBuilder.Entity<MasterSkillDefinition>().HasMany(entity => entity.JoinedRequiredMasterSkills).WithOne(join => join.MasterSkillDefinition);

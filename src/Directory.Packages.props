@@ -5,6 +5,7 @@
   <ItemGroup>
     <PackageVersion Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageVersion Include="BenchmarkDotNet" Version="0.15.8" />
+    <PackageVersion Include="BlazingModal" Version="1.0.8" />
     <PackageVersion Include="BlazorInputFile" Version="0.2.0" />
     <PackageVersion Include="Blazored.Toast" Version="4.2.1" />
     <PackageVersion Include="BuildWebCompiler2022" Version="1.14.15" />
@@ -19,6 +20,10 @@
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.2" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.10">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageVersion>
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.2" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.2" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.FileExtensions" Version="10.0.2" />
