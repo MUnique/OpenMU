@@ -489,4 +489,9 @@ public enum UpdateVersion
     /// The version of the <see cref="FinishDarkWizardMasterTreePlugIn"/>.
     /// </summary>
     FinishDarkWizardMasterTree = 96,
+
+    /// <summary>
+    /// The version of the <see cref="AddGoldenArcherConfigurationPlugIn"/>.
+    /// </summary>
+    AddGoldenArcherConfiguration = 97,
 }
