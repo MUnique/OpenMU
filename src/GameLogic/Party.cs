@@ -388,19 +388,20 @@ public sealed class Party : AsyncDisposable
             return exp;
         }
 
+        var normalExperience = (int)(perLevel
+                                     * attributes[Stats.Level]
+                                     * player.GameContext.ExperienceRate
+                                     * (attributes[Stats.ExperienceRate] + attributes[Stats.BonusExperienceRate]));
+
         if (!isAtMaxLevel)
         {
-            var exp = (int)(perLevel
-                            * attributes[Stats.Level]
-                            * player.GameContext.ExperienceRate
-                            * (attributes[Stats.ExperienceRate] + attributes[Stats.BonusExperienceRate]));
-
-            await player.AddExperienceAsync(exp, killed).ConfigureAwait(false);
-            return exp;
+            await player.AddExperienceAsync(normalExperience, killed).ConfigureAwait(false);
         }
 
-        // Player is at max level but has not completed master quest. No experience awarded.
-        return 0;
+        // At the maximum level without the master quest no experience is awarded, but the amount is
+        // still returned: the money drop is derived from it, and a solo kill returns it as well
+        // (see Player.AddExpAfterKillAsync), so such a member must not end up without any money.
+        return normalExperience;
     }
 
     private async ValueTask ExitPartyAsync(IPartyMember member, byte index)
