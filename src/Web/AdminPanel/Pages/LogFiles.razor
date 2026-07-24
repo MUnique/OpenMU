@@ -15,7 +15,7 @@
             <div class="card-header bg-light py-2 px-3">
                 <div class="d-flex justify-content-between align-items-center">
                     <strong class="m-0">Log Files</strong>
-                    <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" @onclick="RefreshFileList" title="Reload File List">
+                    <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" @onclick="this.RefreshFileList" title="Reload File List">
                         <span class="oi oi-reload" style="font-size: 11px;"></span>
                     </button>
                 </div>
@@ -39,7 +39,7 @@
                         var isSelected = this._selectedFile?.FullName == entry.FullName;
                         <tr class="@(isSelected ? "table-info" : "")">
                             <td>
-                                <button type="button" class="btn btn-link p-0 text-start font-monospace text-decoration-none fw-bold text-truncate" style="max-width: @(this._selectedFile != null ? "140px" : "100%");" @onclick="() => SelectFile(entry)" title="@entry.Name">
+                                <button type="button" class="btn btn-link p-0 text-start font-monospace text-decoration-none fw-bold text-truncate" style="max-width: @(this._selectedFile != null ? "140px" : "100%");" @onclick="() => this.SelectFile(entry)" title="@entry.Name">
                                     <span class="oi oi-terminal me-1 @(isSelected ? "text-primary" : "text-muted")"></span>@entry.Name
                                 </button>
                                 @if (this._selectedFile != null)
@@ -78,13 +78,13 @@
                     </div>
                     <div class="d-flex align-items-center gap-2 gap-sm-3 flex-shrink-0">
                         <div class="form-check form-switch m-0 d-flex align-items-center gap-2">
-                            <input class="form-check-input cursor-pointer" type="checkbox" id="liveUpdateSwitch" @onchange="ToggleLiveUpdate" checked="@this._liveUpdate">
+                            <input class="form-check-input cursor-pointer" type="checkbox" id="liveUpdateSwitch" @onchange="this.ToggleLiveUpdate" checked="@this._liveUpdate">
                             <label class="form-check-label text-light select-none cursor-pointer" for="liveUpdateSwitch" style="font-size: 13px;">Live</label>
                         </div>
-                        <button class="btn btn-sm btn-outline-info d-flex align-items-center gap-1 py-1" @onclick="RefreshLogLines">
+                        <button class="btn btn-sm btn-outline-info d-flex align-items-center gap-1 py-1" @onclick="this.RefreshLogLines">
                             <span class="oi oi-reload" style="font-size: 11px;"></span> Refresh
                         </button>
-                        <button class="btn btn-sm btn-outline-danger d-flex align-items-center gap-1 py-1" @onclick="CloseViewer">
+                        <button class="btn btn-sm btn-outline-danger d-flex align-items-center gap-1 py-1" @onclick="this.CloseViewer">
                             <span class="oi oi-x" style="font-size: 11px;"></span> Close
                         </button>
                     </div>
@@ -97,7 +97,7 @@
                                 <input type="text" class="form-control bg-secondary text-white border-0" placeholder="Filter log entries..." @bind="this._searchText" @bind:event="oninput" style="background-color: #2b2b30 !important; color: #fff !important;" />
                                 @if (!string.IsNullOrEmpty(this._searchText))
                                 {
-                                    <button class="btn btn-secondary border-0" @onclick="ClearSearch"><span class="oi oi-x" aria-hidden="true"></span></button>
+                                    <button class="btn btn-secondary border-0" @onclick="this.ClearSearch"><span class="oi oi-x" aria-hidden="true"></span></button>
                                 }
                             </div>
                         </div>
@@ -110,7 +110,7 @@
                         }
                         else
                         {
-                            var filteredLines = GetFilteredLines();
+                            var filteredLines = this.GetFilteredLines();
                             @if (filteredLines.Count == 0)
                             {
                                 <div class="text-muted text-center py-5">No log entries match your filter.</div>
@@ -127,9 +127,9 @@
                     
                     <div class="d-flex justify-content-between align-items-center mt-2 text-muted" style="font-size: 12px;">
                         <div>
-                            Showing @GetFilteredLines().Count of @this._logLines.Count lines (Last 300 lines loaded).
+                            Showing @this.GetFilteredLines().Count of @this._logLines.Count lines (Last 300 lines loaded).
                         </div>
-                        <button class="btn btn-sm btn-outline-secondary py-1 px-2" style="font-size: 12px; color: #a0a0a8;" @onclick="ScrollToBottom">
+                        <button class="btn btn-sm btn-outline-secondary py-1 px-2" style="font-size: 12px; color: #a0a0a8;" @onclick="this.ScrollToBottomAsync">
                             <span class="oi oi-arrow-bottom" aria-hidden="true"></span> Scroll to Bottom
                         </button>
                     </div>
@@ -140,18 +140,105 @@
 </div>
 
 @code {
-    private readonly List<FileInfo> _files = new ();
+    private readonly List<FileInfo> _files = new();
     private FileInfo? _selectedFile;
-    private List<string> _logLines = new ();
+    private List<string> _logLines = new();
     private string _searchText = string.Empty;
-    private bool _liveUpdate = false;
+    private bool _liveUpdate;
     private System.Threading.Timer? _timer;
-    private bool _shouldScrollToBottom = false;
+    private bool _shouldScrollToBottom;
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        this._timer?.Dispose();
+    }
 
     /// <inheritdoc />
     protected override void OnInitialized()
     {
         this.RefreshFileList();
+    }
+
+    /// <inheritdoc />
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (this._shouldScrollToBottom)
+        {
+            this._shouldScrollToBottom = false;
+            await this.ScrollToBottomAsync().ConfigureAwait(false);
+        }
+    }
+
+    private static string FormatFileSize(long size)
+    {
+        return size switch
+        {
+            < 1024 => $"{size} bytes",
+            < 1024 * 1024 => $"{Math.Round(size / 1024D, 2)} KiB",
+            < 1024L * 1024 * 1024 => $"{Math.Round(size / (1024D * 1024D), 2)} MiB",
+            _ => $"{Math.Round(size / (1024D * 1024D * 1024D), 2)} GiB",
+        };
+    }
+
+    private static List<string> ReadLastLines(string path, int maxLines)
+    {
+        var lines = new List<string>();
+        try
+        {
+            using var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            long offset = Math.Max(0, fs.Length - 102400); // Read last 100 KB
+            fs.Seek(offset, SeekOrigin.Begin);
+            using var reader = new StreamReader(fs, System.Text.Encoding.UTF8);
+
+            if (offset > 0)
+            {
+                // Discard partial line
+                reader.ReadLine();
+            }
+
+            string? line;
+            while ((line = reader.ReadLine()) != null)
+            {
+                lines.Add(line);
+            }
+
+            if (lines.Count > maxLines)
+            {
+                lines = lines.Skip(lines.Count - maxLines).ToList();
+            }
+        }
+        catch (Exception ex)
+        {
+            lines.Add($"Error reading log file: {ex.Message}");
+        }
+
+        return lines;
+    }
+
+    private static string GetLineColorStyle(string line)
+    {
+        if (line.Contains("[Error]", StringComparison.OrdinalIgnoreCase) || line.Contains("[Critical]", StringComparison.OrdinalIgnoreCase))
+        {
+            return "color: #ff6b6b; font-weight: bold;";
+        }
+
+        if (line.Contains("[Warning]", StringComparison.OrdinalIgnoreCase))
+        {
+            return "color: #feca57;";
+        }
+
+        if (line.Contains("[Debug]", StringComparison.OrdinalIgnoreCase))
+        {
+            return "color: #8a8d93; font-style: italic;";
+        }
+
+        if (line.Contains("[Information]", StringComparison.OrdinalIgnoreCase))
+        {
+            return "color: #1dd1a1;";
+        }
+
+        return "color: #d1d2d6;";
     }
 
     private void RefreshFileList()
@@ -203,7 +290,7 @@
         {
             this._timer ??= new System.Threading.Timer(_ =>
             {
-                InvokeAsync(() =>
+                this.InvokeAsync(() =>
                 {
                     this.RefreshLogLines();
                     this.StateHasChanged();
@@ -225,43 +312,8 @@
         }
 
         this._selectedFile = new FileInfo(this._selectedFile.FullName);
-        this._logLines = this.ReadLastLines(this._selectedFile.FullName, 300);
+        this._logLines = ReadLastLines(this._selectedFile.FullName, 300);
         this._shouldScrollToBottom = true;
-    }
-
-    private List<string> ReadLastLines(string path, int maxLines)
-    {
-        var lines = new List<string>();
-        try
-        {
-            using var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            long offset = Math.Max(0, fs.Length - 102400); // Read last 100 KB
-            fs.Seek(offset, SeekOrigin.Begin);
-            using var reader = new StreamReader(fs, System.Text.Encoding.UTF8);
-            
-            if (offset > 0)
-            {
-                // Discard partial line
-                reader.ReadLine();
-            }
-
-            string? line;
-            while ((line = reader.ReadLine()) != null)
-            {
-                lines.Add(line);
-            }
-
-            if (lines.Count > maxLines)
-            {
-                lines = lines.Skip(lines.Count - maxLines).ToList();
-            }
-        }
-        catch (Exception ex)
-        {
-            lines.Add($"Error reading log file: {ex.Message}");
-        }
-
-        return lines;
     }
 
     private List<string> GetFilteredLines()
@@ -276,67 +328,15 @@
             .ToList();
     }
 
-    private string GetLineColorStyle(string line)
-    {
-        if (line.Contains("[Error]", StringComparison.OrdinalIgnoreCase) || line.Contains("[Critical]", StringComparison.OrdinalIgnoreCase))
-        {
-            return "color: #ff6b6b; font-weight: bold;";
-        }
-
-        if (line.Contains("[Warning]", StringComparison.OrdinalIgnoreCase))
-        {
-            return "color: #feca57;";
-        }
-
-        if (line.Contains("[Debug]", StringComparison.OrdinalIgnoreCase))
-        {
-            return "color: #8a8d93; font-style: italic;";
-        }
-
-        if (line.Contains("[Information]", StringComparison.OrdinalIgnoreCase))
-        {
-            return "color: #1dd1a1;";
-        }
-
-        return "color: #d1d2d6;";
-    }
-
-    private async Task ScrollToBottom()
+    private async Task ScrollToBottomAsync()
     {
         try
         {
-            await JSRuntime.InvokeVoidAsync("eval", "var el = document.getElementById('log-terminal'); if (el) { el.scrollTop = el.scrollHeight; }");
+            await this.JSRuntime.InvokeVoidAsync("eval", "var el = document.getElementById('log-terminal'); if (el) { el.scrollTop = el.scrollHeight; }").ConfigureAwait(false);
         }
         catch
         {
             // Ignore error
         }
-    }
-
-    /// <inheritdoc />
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (this._shouldScrollToBottom)
-        {
-            this._shouldScrollToBottom = false;
-            await this.ScrollToBottom();
-        }
-    }
-
-    /// <inheritdoc />
-    public void Dispose()
-    {
-        this._timer?.Dispose();
-    }
-
-    private string FormatFileSize(long size)
-    {
-        return size switch
-        {
-            (< 1024 << 10) => $"{Math.Round(size / 1024D, 2)} KiB",
-            (< 1024 << 20) => $"{Math.Round(size * 1D / (1024 << 10), 2)} MiB",
-            (< 1024L << 30) => $"{Math.Round(size * 1D / (1024L << 20), 2)} GiB",
-            _ => $"{size} bytes"
-        };
     }
 }
