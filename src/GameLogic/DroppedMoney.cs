@@ -148,7 +148,12 @@ public sealed class DroppedMoney : AsyncDisposable, ILocateable
             return true;
         }
 
-        var shares = this._shares.Count > 0
+        // Money has no owner - it can always be picked up, by strangers too. The recorded shares
+        // only apply when the party which picks it up is the one which earned it; then the money
+        // follows the experience. For anyone else there is no experience to follow, so it is split
+        // equally between the picking party, just like money without any shares (e.g. an item box).
+        var earnedByThisParty = this._shares.Any(share => party.IsEligibleForMoney(share.Player, player));
+        var shares = earnedByThisParty
             ? this._shares
             : MoneyDistribution.CreateEqualShares(this.Amount, party.PartyList.OfType<Player>().ToList());
 
