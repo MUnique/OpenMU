@@ -1,4 +1,4 @@
-// <copyright file="WebApplicationExtensions.cs" company="MUnique">
+﻿// <copyright file="WebApplicationExtensions.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -82,6 +82,8 @@ public static class WebApplicationExtensions
         services.AddScoped<IDataService<Account>>(serviceProvider => serviceProvider.GetService<AccountService>()!);
         services.AddScoped<PlugInController>();
         services.AddScoped<IDataService<PlugInConfigurationViewItem>>(serviceProvider => serviceProvider.GetService<PlugInController>()!);
+        services.AddScoped<ChatCommandController>();
+        services.AddScoped<IDataService<ChatCommandViewItem>>(serviceProvider => serviceProvider.GetService<ChatCommandController>()!);
         services.AddScoped<IUserService, NginxHtpasswdFileUserService>();
         services.AddScoped<IChangeNotificationService, ChangeNotificationService>();
         services.AddScoped<NavigationHistory>();

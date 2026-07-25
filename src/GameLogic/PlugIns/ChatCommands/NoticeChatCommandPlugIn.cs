@@ -14,6 +14,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("2BFC9464-4B76-4D76-8CE1-69B712B65E6C")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.NoticeChatCommandPlugIn_Name), Description = nameof(PlugInResources.NoticeChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
+[ChatCommandHelp(CommandKey, CharacterStatus.GameMaster)]
 public class NoticeChatCommandPlugIn : IChatCommandPlugIn
 {
     private const string CommandKey = "/goldnotice";

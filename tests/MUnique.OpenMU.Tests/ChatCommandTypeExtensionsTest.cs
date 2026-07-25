@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Tests;
 
 using System.Globalization;
+using System.Reflection;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
@@ -111,6 +112,32 @@ public class ChatCommandTypeExtensionsTest
         Assert.That(info.Name, Does.Not.Contain("ResetInfoChatCommandPlugIn_"));
         Assert.That(info.Description, Is.Not.Empty);
         Assert.That(info.Description, Does.Not.Contain("ResetInfoChatCommandPlugIn_"));
+    }
+
+    /// <summary>
+    /// Tests that every chat command plugin can be described, so that none of them is
+    /// missing from the command list, the help command or the admin panel.
+    /// </summary>
+    [Test]
+    public void EveryChatCommandCanBeDescribed()
+    {
+        var commandTypes = typeof(ListCommand).Assembly.GetTypes()
+            .Where(type => type.GetCustomAttribute<PlugInAttribute>() is { })
+            .Where(type => typeof(IChatCommandPlugIn).IsAssignableFrom(type))
+            .ToList();
+
+        Assert.That(commandTypes, Is.Not.Empty);
+
+        Assert.Multiple(() =>
+        {
+            foreach (var commandType in commandTypes)
+            {
+                var info = ChatCommandTypeExtensions.TryCreateChatCommandInfo(commandType, CultureInfo.InvariantCulture);
+                Assert.That(info, Is.Not.Null, $"{commandType.Name} has no {nameof(ChatCommandHelpAttribute)}, so it's not listed anywhere.");
+                Assert.That(info?.Name, Is.Not.Empty, $"{commandType.Name} has no name.");
+                Assert.That(info?.Description, Is.Not.Empty, $"{commandType.Name} has no description.");
+            }
+        });
     }
 
     /// <summary>
