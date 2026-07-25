@@ -121,10 +121,7 @@ public class ChatCommandTypeExtensionsTest
     [Test]
     public void EveryChatCommandCanBeDescribed()
     {
-        var commandTypes = typeof(ListCommand).Assembly.GetTypes()
-            .Where(type => type.GetCustomAttribute<PlugInAttribute>() is { })
-            .Where(type => typeof(IChatCommandPlugIn).IsAssignableFrom(type))
-            .ToList();
+        var commandTypes = GetChatCommandTypes();
 
         Assert.That(commandTypes, Is.Not.Empty);
 
@@ -136,6 +133,33 @@ public class ChatCommandTypeExtensionsTest
                 Assert.That(info, Is.Not.Null, $"{commandType.Name} has no {nameof(ChatCommandHelpAttribute)}, so it's not listed anywhere.");
                 Assert.That(info?.Name, Is.Not.Empty, $"{commandType.Name} has no name.");
                 Assert.That(info?.Description, Is.Not.Empty, $"{commandType.Name} has no description.");
+            }
+        });
+    }
+
+    /// <summary>
+    /// Tests that the command and the required character status of the help attribute are
+    /// the ones the plugin actually uses. If they differ, a command is offered to players
+    /// who can't execute it, or hidden from players who can.
+    /// </summary>
+    [Test]
+    public void DescriptionMatchesWhatThePlugInRequires()
+    {
+        Assert.Multiple(() =>
+        {
+            foreach (var commandType in GetChatCommandTypes())
+            {
+                if (commandType.GetCustomAttribute<ChatCommandHelpAttribute>() is not { } help)
+                {
+                    continue;
+                }
+
+                var plugIn = (IChatCommandPlugIn)Activator.CreateInstance(commandType)!;
+                Assert.That(help.Command, Is.EqualTo(plugIn.Key), $"{commandType.Name} is documented as '{help.Command}', but listens to '{plugIn.Key}'.");
+                Assert.That(
+                    help.MinimumCharacterStatus,
+                    Is.EqualTo(plugIn.MinCharacterStatusRequirement),
+                    $"{commandType.Name} is documented for {help.MinimumCharacterStatus}, but requires {plugIn.MinCharacterStatusRequirement}.");
             }
         });
     }
@@ -163,6 +187,14 @@ public class ChatCommandTypeExtensionsTest
 
         Assert.That(describedCommands, Is.EquivalentTo(commands));
         Assert.That(describedCommands, Has.No.Member("/list"));
+    }
+
+    private static List<Type> GetChatCommandTypes()
+    {
+        return typeof(ListCommand).Assembly.GetTypes()
+            .Where(type => type.GetCustomAttribute<PlugInAttribute>() is { })
+            .Where(type => typeof(IChatCommandPlugIn).IsAssignableFrom(type))
+            .ToList();
     }
 
     private static async ValueTask<List<string>> GetAvailableCommandsAsync(bool listCommandActive)
