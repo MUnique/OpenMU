@@ -30679,27 +30679,6 @@ public readonly struct MapEventState
 /// </summary>
 public readonly struct ChatCommandInfo
 {
-    /// <summary>
-    /// The kind of value which a chat command parameter expects.
-    /// </summary>
-    public enum ChatCommandParameterType
-    {
-        /// <summary>
-        /// The parameter expects a text.
-        /// </summary>
-            Text = 0,
-
-        /// <summary>
-        /// The parameter expects a number.
-        /// </summary>
-            Number = 1,
-
-        /// <summary>
-        /// The parameter expects a 0 or a 1.
-        /// </summary>
-            Boolean = 2,
-    }
-
     private readonly Memory<byte> _data;
 
     /// <summary>
@@ -31471,5 +31450,26 @@ public readonly struct ChatCommandParameter
         /// White color.
         /// </summary>
             White = 7,
+    }
+
+    /// <summary>
+    /// The kind of value which a chat command parameter expects.
+    /// </summary>
+    public enum ChatCommandParameterType
+    {
+        /// <summary>
+        /// The parameter expects a text.
+        /// </summary>
+            Text = 0,
+
+        /// <summary>
+        /// The parameter expects a number.
+        /// </summary>
+            Number = 1,
+
+        /// <summary>
+        /// The parameter expects a 0 or a 1.
+        /// </summary>
+            Boolean = 2,
     }
 

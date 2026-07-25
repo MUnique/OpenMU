@@ -37,18 +37,18 @@ public class ChatCommandPacketTest
         group.Name = "Group";
         group.ShortName = "group";
         group.IsRequired = true;
-        group.Type = ChatCommandInfo.ChatCommandParameterType.Number;
+        group.Type = ChatCommandParameterType.Number;
 
         var ancient = written[1];
         ancient.Name = "Ancient";
         ancient.ShortName = "anc";
         ancient.ValidValues = "0|1|2";
-        ancient.Type = ChatCommandInfo.ChatCommandParameterType.Number;
+        ancient.Type = ChatCommandParameterType.Number;
 
         var skill = written[2];
         skill.Name = "Skill";
         skill.ShortName = "sk";
-        skill.Type = ChatCommandInfo.ChatCommandParameterType.Boolean;
+        skill.Type = ChatCommandParameterType.Boolean;
 
         var read = new ChatCommandInfoRef(data);
 
@@ -73,7 +73,7 @@ public class ChatCommandPacketTest
         Assert.That(read[1].IsRequired, Is.False);
 
         Assert.That(read[2].Name, Is.EqualTo("Skill"));
-        Assert.That(read[2].Type, Is.EqualTo(ChatCommandInfo.ChatCommandParameterType.Boolean));
+        Assert.That(read[2].Type, Is.EqualTo(ChatCommandParameterType.Boolean));
     }
 
     /// <summary>

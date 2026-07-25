@@ -11172,29 +11172,6 @@
           </Fields>
         </Structure>
       </Structures>
-      <Enums>
-        <Enum>
-          <Name>ChatCommandParameterType</Name>
-          <Description>The kind of value which a chat command parameter expects.</Description>
-          <Values>
-            <EnumValue>
-              <Name>Text</Name>
-              <Description>The parameter expects a text.</Description>
-              <Value>0</Value>
-            </EnumValue>
-            <EnumValue>
-              <Name>Number</Name>
-              <Description>The parameter expects a number.</Description>
-              <Value>1</Value>
-            </EnumValue>
-            <EnumValue>
-              <Name>Boolean</Name>
-              <Description>The parameter expects a 0 or a 1.</Description>
-              <Value>2</Value>
-            </EnumValue>
-          </Values>
-        </Enum>
-      </Enums>
     </Packet>
   </Packets>
   <Enums>
@@ -11762,6 +11739,27 @@
           <Name>White</Name>
           <Description>White color.</Description>
           <Value>7</Value>
+        </EnumValue>
+      </Values>
+    </Enum>
+    <Enum>
+      <Name>ChatCommandParameterType</Name>
+      <Description>The kind of value which a chat command parameter expects.</Description>
+      <Values>
+        <EnumValue>
+          <Name>Text</Name>
+          <Description>The parameter expects a text.</Description>
+          <Value>0</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Number</Name>
+          <Description>The parameter expects a number.</Description>
+          <Value>1</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Boolean</Name>
+          <Description>The parameter expects a 0 or a 1.</Description>
+          <Value>2</Value>
         </EnumValue>
       </Values>
     </Enum>

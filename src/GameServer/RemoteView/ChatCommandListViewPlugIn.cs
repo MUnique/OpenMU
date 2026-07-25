@@ -85,16 +85,16 @@ public class ChatCommandListViewPlugIn : IChatCommandListViewPlugIn
         return connection.SendAsync(Write);
     }
 
-    private static ChatCommandInfo.ChatCommandParameterType GetParameterType(string typeName)
+    private static ChatCommandParameterType GetParameterType(string typeName)
     {
         return typeName switch
         {
-            nameof(Boolean) => ChatCommandInfo.ChatCommandParameterType.Boolean,
+            nameof(Boolean) => ChatCommandParameterType.Boolean,
             nameof(Byte) or nameof(SByte)
                 or nameof(Int16) or nameof(UInt16)
                 or nameof(Int32) or nameof(UInt32)
-                or nameof(Int64) or nameof(UInt64) => ChatCommandInfo.ChatCommandParameterType.Number,
-            _ => ChatCommandInfo.ChatCommandParameterType.Text,
+                or nameof(Int64) or nameof(UInt64) => ChatCommandParameterType.Number,
+            _ => ChatCommandParameterType.Text,
         };
     }
 }
