@@ -1538,5 +1538,113 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("YesCreateTestAccounts", resourceCulture);
             }
         }
+        /// <summary>
+        ///   Looks up a localized string similar to Chat commands.
+        /// </summary>
+        public static string ChatCommands {
+            get {
+                return ResourceManager.GetString("ChatCommands", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Command.
+        /// </summary>
+        public static string CommandColumn {
+            get {
+                return ResourceManager.GetString("CommandColumn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Description.
+        /// </summary>
+        public static string CommandDescription {
+            get {
+                return ResourceManager.GetString("CommandDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Usage.
+        /// </summary>
+        public static string CommandUsage {
+            get {
+                return ResourceManager.GetString("CommandUsage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Required status.
+        /// </summary>
+        public static string MinimumCharacterStatus {
+            get {
+                return ResourceManager.GetString("MinimumCharacterStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This command has no parameters..
+        /// </summary>
+        public static string NoParameters {
+            get {
+                return ResourceManager.GetString("NoParameters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        public static string ParameterName {
+            get {
+                return ResourceManager.GetString("ParameterName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Short name.
+        /// </summary>
+        public static string ParameterShortName {
+            get {
+                return ResourceManager.GetString("ParameterShortName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Type.
+        /// </summary>
+        public static string ParameterType {
+            get {
+                return ResourceManager.GetString("ParameterType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Valid values.
+        /// </summary>
+        public static string ParameterValidValues {
+            get {
+                return ResourceManager.GetString("ParameterValidValues", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Parameters of {0}.
+        /// </summary>
+        public static string ParametersOf {
+            get {
+                return ResourceManager.GetString("ParametersOf", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Required.
+        /// </summary>
+        public static string Required {
+            get {
+                return ResourceManager.GetString("Required", resourceCulture);
+            }
+        }
+        
     }
 }

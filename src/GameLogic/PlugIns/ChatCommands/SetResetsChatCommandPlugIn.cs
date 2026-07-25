@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("47A8644C-B6C5-439E-BAB0-C1A7AE72691C")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.SetResetsChatCommandPlugIn_Name), Description = nameof(PlugInResources.SetResetsChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
-[ChatCommandHelp(Command, "Sets resets of a player. Usage: /setresets (resets) (optional:character)", null)]
+[ChatCommandHelp(Command, typeof(Arguments), MinimumStatus)]
 public class SetResetsChatCommandPlugIn : ChatCommandPlugInBase<SetResetsChatCommandPlugIn.Arguments>, IDisabledByDefault
 {
     private const string Command = "/setresets";

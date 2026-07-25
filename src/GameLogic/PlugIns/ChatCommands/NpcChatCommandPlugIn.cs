@@ -19,7 +19,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("D8AC2F15-AB30-4432-A042-A41ACA1B274D")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.NpcChatCommandPlugIn_Name), Description = nameof(PlugInResources.NpcChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
-[ChatCommandHelp(Command, "Opens the NPC store.", null)]
+[ChatCommandHelp(Command, "Opens the NPC store.", typeof(Arguments))]
 public class NpcChatCommandPlugIn : ChatCommandPlugInBase<NpcChatCommandPlugIn.Arguments>, ISupportCustomConfiguration<NpcChatCommandPlugIn.NpcChatCommandConfiguration>, ISupportDefaultCustomConfiguration, IDisabledByDefault
 {
     private const string Command = "/npc";
