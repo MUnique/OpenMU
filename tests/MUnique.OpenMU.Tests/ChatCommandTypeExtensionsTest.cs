@@ -4,8 +4,12 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using System.Globalization;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
+using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.Arguments;
+using MUnique.OpenMU.GameLogic.Resets;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -44,7 +48,104 @@ public class ChatCommandTypeExtensionsTest
         Assert.That(commands, Has.Member("/help"));
     }
 
+    /// <summary>
+    /// Tests that the parameters of a command are described with their short names,
+    /// their requirement and their accepted values.
+    /// </summary>
+    [Test]
+    public void CommandInfoDescribesParameters()
+    {
+        var info = ChatCommandTypeExtensions.TryCreateChatCommandInfo(typeof(ItemChatCommandPlugIn), CultureInfo.InvariantCulture);
+
+        Assert.That(info, Is.Not.Null);
+        Assert.That(info!.Command, Is.EqualTo("/item"));
+        Assert.That(info.MinimumCharacterStatus, Is.EqualTo(CharacterStatus.GameMaster));
+
+        var group = info.Parameters.FirstOrDefault(parameter => parameter.Name == nameof(ItemChatCommandArgs.Group));
+        Assert.That(group, Is.Not.Null);
+        Assert.That(group!.ShortName, Is.EqualTo("group"));
+        Assert.That(group.IsRequired, Is.True);
+
+        var level = info.Parameters.FirstOrDefault(parameter => parameter.Name == nameof(ItemChatCommandArgs.Level));
+        Assert.That(level, Is.Not.Null);
+        Assert.That(level!.ShortName, Is.EqualTo("lvl"));
+        Assert.That(level.IsRequired, Is.False);
+
+        var ancient = info.Parameters.FirstOrDefault(parameter => parameter.Name == nameof(ItemChatCommandArgs.Ancient));
+        Assert.That(ancient, Is.Not.Null);
+        Assert.That(ancient!.ValidValues, Is.EquivalentTo(new[] { "0", "1", "2" }));
+
+        var skill = info.Parameters.FirstOrDefault(parameter => parameter.Name == nameof(ItemChatCommandArgs.Skill));
+        Assert.That(skill, Is.Not.Null);
+        Assert.That(skill!.ValidValues, Is.EquivalentTo(new[] { "0", "1" }));
+    }
+
+    /// <summary>
+    /// Tests that name and description are resolved to their text, and not to the
+    /// resource key which is defined by the display attribute.
+    /// </summary>
+    [Test]
+    public void CommandInfoResolvesTextOfRequestedLanguage()
+    {
+        var info = ChatCommandTypeExtensions.TryCreateChatCommandInfo(typeof(ItemChatCommandPlugIn), CultureInfo.InvariantCulture);
+
+        Assert.That(info, Is.Not.Null);
+        Assert.That(info!.Name, Is.Not.Empty);
+        Assert.That(info.Name, Does.Not.Contain("ItemChatCommandPlugIn_"));
+        Assert.That(info.Description, Is.Not.Empty);
+        Assert.That(info.Description, Does.Not.Contain("ItemChatCommandPlugIn_"));
+    }
+
+    /// <summary>
+    /// Tests that the reset info command, whose texts were hard coded in English before,
+    /// is described by its translatable resources.
+    /// </summary>
+    [Test]
+    public void ResetInfoCommandIsDescribedByResources()
+    {
+        var info = ChatCommandTypeExtensions.TryCreateChatCommandInfo(typeof(ResetInfoChatCommandPlugIn), CultureInfo.InvariantCulture);
+
+        Assert.That(info, Is.Not.Null);
+        Assert.That(info!.Command, Is.EqualTo("/resetinfo"));
+        Assert.That(info.Name, Is.Not.Empty);
+        Assert.That(info.Name, Does.Not.Contain("ResetInfoChatCommandPlugIn_"));
+        Assert.That(info.Description, Is.Not.Empty);
+        Assert.That(info.Description, Does.Not.Contain("ResetInfoChatCommandPlugIn_"));
+    }
+
+    /// <summary>
+    /// Tests that a type which is no chat command plugin isn't described as one.
+    /// </summary>
+    [Test]
+    public void NonCommandTypeIsNotDescribed()
+    {
+        Assert.That(ChatCommandTypeExtensions.TryCreateChatCommandInfo(typeof(ChatCommandTypeExtensionsTest)), Is.Null);
+    }
+
+    /// <summary>
+    /// Tests that the described commands of a player are the same as its available
+    /// commands, so that the two ways to get them can't drift apart.
+    /// </summary>
+    [Test]
+    public async ValueTask CommandInfosMatchAvailableCommandsAsync()
+    {
+        var player = await CreateGameMasterAsync(listCommandActive: false).ConfigureAwait(false);
+
+        var commands = player.GetAvailableChatCommands().Select(command => command.Command).ToList();
+        var describedCommands = player.GetAvailableChatCommandInfos().Select(info => info.Command).ToList();
+
+        Assert.That(describedCommands, Is.EquivalentTo(commands));
+        Assert.That(describedCommands, Has.No.Member("/list"));
+    }
+
     private static async ValueTask<List<string>> GetAvailableCommandsAsync(bool listCommandActive)
+    {
+        var player = await CreateGameMasterAsync(listCommandActive).ConfigureAwait(false);
+
+        return player.GetAvailableChatCommands().Select(command => command.Command).ToList();
+    }
+
+    private static async ValueTask<Player> CreateGameMasterAsync(bool listCommandActive)
     {
         var gameContext = GameContextTestHelper.CreateGameContext(
         [
@@ -55,6 +156,6 @@ public class ChatCommandTypeExtensionsTest
         var player = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
         player.SelectedCharacter!.CharacterStatus = CharacterStatus.GameMaster;
 
-        return player.GetAvailableChatCommands().Select(command => command.Command).ToList();
+        return player;
     }
 }
