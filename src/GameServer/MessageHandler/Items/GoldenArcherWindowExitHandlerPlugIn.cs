@@ -28,7 +28,7 @@ internal class GoldenArcherWindowExitHandlerPlugIn : IPacketHandlerPlugIn
     public bool IsEncryptionExpected => false;
 
     /// <inheritdoc/>
-    public byte Key => GoldenArcherExitDialog.Code;
+    public byte Key => EventChipExitDialog.Code;
 
     /// <inheritdoc/>
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)

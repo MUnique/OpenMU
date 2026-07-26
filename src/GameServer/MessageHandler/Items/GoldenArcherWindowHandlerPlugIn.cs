@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlayerActions.Items.ItemRegistration;
+using MUnique.OpenMU.GameLogic.Views.NPC;
 using MUnique.OpenMU.Network.Packets.ClientToServer;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.PlugIns;
@@ -25,17 +26,17 @@ internal class GoldenArcherWindowHandlerPlugIn : IPacketHandlerPlugIn
     public bool IsEncryptionExpected => false;
 
     /// <inheritdoc/>
-    public byte Key => GoldenArcherRegistrationRequest.Code;
+    public byte Key => EventChipRegistrationRequest.Code;
 
     /// <inheritdoc/>
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         var action = new ItemRegistrationAction();
         var success = await action.RegisterAsync(player).ConfigureAwait(false);
-        if (!success)
+        if (!success && player.OpenedNpc is { } npc)
         {
-            await player.InvokeViewPlugInAsync<MUnique.OpenMU.GameLogic.Views.NPC.IGoldenArcherRegistrationResultPlugIn>(
-                p => p.RegistrationResultAsync()).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IItemRegistrationResultPlugIn>(
+                p => p.RegistrationResultAsync(npc.Definition.Number, IItemRegistrationResultPlugIn.ItemRegistrationOperation.MissingItem)).ConfigureAwait(false);
         }
     }
 }

@@ -30,21 +30,21 @@ public class GoldenArcherRegistrationStrategy : BaseItemRegistrationStrategy
     /// <inheritdoc />
     public override async ValueTask OpenDialogAsync(Player player)
     {
-        await player.InvokeViewPlugInAsync<MUnique.OpenMU.GameLogic.Views.NPC.IGoldenArcherRegistrationResultPlugIn>(
-            p => p.RegistrationResultAsync()).ConfigureAwait(false);
+        await player.InvokeViewPlugInAsync<IItemRegistrationResultPlugIn>(
+            p => p.RegistrationResultAsync(this.NpcNumber, IItemRegistrationResultPlugIn.ItemRegistrationOperation.OpenRegistrationDialog)).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
     protected override async ValueTask OnMissingItemAsync(Player player)
     {
-        await player.InvokeViewPlugInAsync<IGoldenArcherRegistrationResultPlugIn>(
-            p => p.RegistrationResultAsync()).ConfigureAwait(false);
+        await player.InvokeViewPlugInAsync<IItemRegistrationResultPlugIn>(
+            p => p.RegistrationResultAsync(this.NpcNumber, IItemRegistrationResultPlugIn.ItemRegistrationOperation.MissingItem)).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
     protected override async ValueTask OnRegistrationCompletedAsync(Player player)
     {
-        await player.InvokeViewPlugInAsync<IGoldenArcherRegistrationResultPlugIn>(
-            p => p.RegistrationResultAsync()).ConfigureAwait(false);
+        await player.InvokeViewPlugInAsync<IItemRegistrationResultPlugIn>(
+            p => p.RegistrationResultAsync(this.NpcNumber, IItemRegistrationResultPlugIn.ItemRegistrationOperation.RegistrationCompleted)).ConfigureAwait(false);
     }
 }
