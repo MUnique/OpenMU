@@ -233,6 +233,43 @@ public class ItemRegistrationTest
     }
 
     /// <summary>
+    /// Tests that registration does nothing when the ItemRegistrationFeaturePlugIn is active but its
+    /// Configuration is null, instead of silently falling back to a default (Golden Archer) configuration.
+    /// </summary>
+    [Test]
+    public async Task RegisterAsync_FeatureConfigurationIsNull_DoesNothingAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        player.GameContext.FeaturePlugIns.AddPlugIn(
+            new ItemRegistrationFeaturePlugIn { Configuration = null }, true);
+        player.GameContext.PlugInManager.RegisterPlugIn<IItemRegistrationStrategy, GoldenArcherRegistrationStrategy>();
+
+        var npcMock = new Mock<NonPlayerCharacter>(new MonsterSpawnArea(), new MonsterDefinition { Number = 236 }, player.CurrentMap!);
+        player.OpenedNpc = npcMock.Object;
+
+        var renaDefinition = new ItemDefinition
+        {
+            Group = 14,
+            Number = 21,
+            Width = 1,
+            Height = 1,
+        };
+
+        var renaItem = new Item
+        {
+            Definition = renaDefinition,
+            ItemSlot = 25,
+        };
+
+        await player.Inventory!.AddItemAsync(25, renaItem).ConfigureAwait(false);
+
+        var success = await this._action.RegisterAsync(player).ConfigureAwait(false);
+
+        Assert.That(success, Is.False, "Registration should not succeed when the feature's configuration is null.");
+        Assert.That(player.Inventory.ItemStorage.Items, Does.Contain(renaItem), "Item should not be consumed when the feature's configuration is null.");
+    }
+
+    /// <summary>
     /// Creates a player with the ItemRegistrationFeaturePlugIn already registered.
     /// </summary>
     private static async Task<Player> CreatePlayerWithPlugInAsync(

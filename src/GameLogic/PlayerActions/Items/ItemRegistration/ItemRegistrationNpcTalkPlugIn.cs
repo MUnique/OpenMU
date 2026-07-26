@@ -23,11 +23,11 @@ public class ItemRegistrationNpcTalkPlugIn : IPlayerTalkToNpcPlugIn
     public async ValueTask PlayerTalksToNpcAsync(Player player, NonPlayerCharacter npc, NpcTalkEventArgs eventArgs)
     {
         var feature = player.GameContext.FeaturePlugIns.GetPlugIn<GameLogic.PlugIns.ItemRegistration.ItemRegistrationFeaturePlugIn>();
-        if (feature == null)
+        if (feature?.Configuration is not { } config)
         {
             return;
         }
-        var config = feature?.Configuration ?? new GameLogic.PlugIns.ItemRegistration.ItemRegistrationConfiguration();
+
         var rule = config.Rules.FirstOrDefault(r => r.NpcNumber == npc.Definition.Number);
 
         if (rule == null)

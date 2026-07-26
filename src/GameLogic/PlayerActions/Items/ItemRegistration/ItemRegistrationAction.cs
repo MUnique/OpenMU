@@ -5,9 +5,6 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Items.ItemRegistration;
 
 using System.Linq;
-using System.Threading.Tasks;
-using MUnique.OpenMU.GameLogic.Views.NPC;
-
 
 /// <summary>
 /// Action to register an item at a registration NPC using strategies.
@@ -35,11 +32,11 @@ public class ItemRegistrationAction
         }
 
         var feature = player.GameContext.FeaturePlugIns.GetPlugIn<PlugIns.ItemRegistration.ItemRegistrationFeaturePlugIn>();
-        if (feature == null)
+        if (feature?.Configuration is not { } config)
         {
             return false;
         }
-        var config = feature?.Configuration ?? new PlugIns.ItemRegistration.ItemRegistrationConfiguration();
+
         var rule = config.Rules.FirstOrDefault(r => r.NpcNumber == npcNumber);
 
         if (rule == null)
