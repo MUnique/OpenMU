@@ -178,6 +178,195 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The barrier opens — the tower awaits!.
+        /// </summary>
+        public static string KanturuBarrierOpening {
+            get {
+                return ResourceManager.GetString("KanturuBarrierOpening", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Both hands of Maya have appeared! Defeat them both!.
+        /// </summary>
+        public static string KanturuBothMayaHandsAppeared {
+            get {
+                return ResourceManager.GetString("KanturuBothMayaHandsAppeared", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Maya (Left Hand) has appeared! Destroy her!.
+        /// </summary>
+        public static string KanturuMayaLeftHandAppeared {
+            get {
+                return ResourceManager.GetString("KanturuMayaLeftHandAppeared", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Maya's hands have fallen! Collect your loot — the Nightmare awakens in 10 seconds....
+        /// </summary>
+        public static string KanturuMayaHandsFallen {
+            get {
+                return ResourceManager.GetString("KanturuMayaHandsFallen", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Maya rises from the depths of the Refinery Tower!.
+        /// </summary>
+        public static string KanturuMayaRises {
+            get {
+                return ResourceManager.GetString("KanturuMayaRises", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Maya (Right Hand) has appeared! Destroy her!.
+        /// </summary>
+        public static string KanturuMayaRightHandAppeared {
+            get {
+                return ResourceManager.GetString("KanturuMayaRightHandAppeared", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to NIGHTMARE has appeared! Defeat him to claim victory!.
+        /// </summary>
+        public static string KanturuNightmareAppeared {
+            get {
+                return ResourceManager.GetString("KanturuNightmareAppeared", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Nightmare's guardians have appeared! NIGHTMARE awakens in 3 seconds!.
+        /// </summary>
+        public static string KanturuNightmareGuardiansAppeared {
+            get {
+                return ResourceManager.GetString("KanturuNightmareGuardiansAppeared", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Nightmare has teleported! He recovers his full strength!.
+        /// </summary>
+        public static string KanturuNightmareTeleport2 {
+            get {
+                return ResourceManager.GetString("KanturuNightmareTeleport2", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Nightmare teleports again! He is more powerful than ever!.
+        /// </summary>
+        public static string KanturuNightmareTeleport3 {
+            get {
+                return ResourceManager.GetString("KanturuNightmareTeleport3", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Nightmare is at his last stand! Finish him!.
+        /// </summary>
+        public static string KanturuNightmareTeleport4 {
+            get {
+                return ResourceManager.GetString("KanturuNightmareTeleport4", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Phase 1 cleared! Phase 2 begins in 2 minutes....
+        /// </summary>
+        public static string KanturuPhase1Cleared {
+            get {
+                return ResourceManager.GetString("KanturuPhase1Cleared", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Phase 1: Defeat the monsters to unseal Maya's power!.
+        /// </summary>
+        public static string KanturuPhase1Start {
+            get {
+                return ResourceManager.GetString("KanturuPhase1Start", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Phase 2 cleared! Phase 3 begins in 2 minutes....
+        /// </summary>
+        public static string KanturuPhase2Cleared {
+            get {
+                return ResourceManager.GetString("KanturuPhase2Cleared", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Phase 2: More of Maya's minions have arrived!.
+        /// </summary>
+        public static string KanturuPhase2Start {
+            get {
+                return ResourceManager.GetString("KanturuPhase2Start", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Phase 3: The final wave approaches!.
+        /// </summary>
+        public static string KanturuPhase3Start {
+            get {
+                return ResourceManager.GetString("KanturuPhase3Start", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The Kanturu Tower has closed..
+        /// </summary>
+        public static string KanturuTowerClosed {
+            get {
+                return ResourceManager.GetString("KanturuTowerClosed", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The Kanturu Event has ended. Better luck next time!.
+        /// </summary>
+        public static string KanturuDefeat {
+            get {
+                return ResourceManager.GetString("KanturuDefeat", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The Kanturu Tower closes in 5 minutes!.
+        /// </summary>
+        public static string KanturuTowerClosingWarning {
+            get {
+                return ResourceManager.GetString("KanturuTowerClosingWarning", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The Kanturu Refinery Tower is conquered! The tower is now open..
+        /// </summary>
+        public static string KanturuTowerConquered {
+            get {
+                return ResourceManager.GetString("KanturuTowerConquered", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Nightmare has been defeated! The Kanturu Refinery Tower is yours!.
+        /// </summary>
+        public static string KanturuVictory {
+            get {
+                return ResourceManager.GetString("KanturuVictory", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Can&apos;t delete a guild member. Remove the character from guild first..
         /// </summary>
         public static string CantDeleteGuildMember {

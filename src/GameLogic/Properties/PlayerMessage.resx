@@ -405,6 +405,69 @@
   <data name="UnbanAccountOfCharacterResult" xml:space="preserve">
     <value>[{0}] Account of {1} has been unbanned.</value>
   </data>
+  <data name="KanturuMayaRises" xml:space="preserve">
+    <value>Maya rises from the depths of the Refinery Tower!</value>
+  </data>
+  <data name="KanturuPhase1Start" xml:space="preserve">
+    <value>Phase 1: Defeat the monsters to unseal Maya's power!</value>
+  </data>
+  <data name="KanturuMayaLeftHandAppeared" xml:space="preserve">
+    <value>Maya (Left Hand) has appeared! Destroy her!</value>
+  </data>
+  <data name="KanturuPhase1Cleared" xml:space="preserve">
+    <value>Phase 1 cleared! Phase 2 begins in 2 minutes...</value>
+  </data>
+  <data name="KanturuPhase2Start" xml:space="preserve">
+    <value>Phase 2: More of Maya's minions have arrived!</value>
+  </data>
+  <data name="KanturuMayaRightHandAppeared" xml:space="preserve">
+    <value>Maya (Right Hand) has appeared! Destroy her!</value>
+  </data>
+  <data name="KanturuPhase2Cleared" xml:space="preserve">
+    <value>Phase 2 cleared! Phase 3 begins in 2 minutes...</value>
+  </data>
+  <data name="KanturuPhase3Start" xml:space="preserve">
+    <value>Phase 3: The final wave approaches!</value>
+  </data>
+  <data name="KanturuBothMayaHandsAppeared" xml:space="preserve">
+    <value>Both hands of Maya have appeared! Defeat them both!</value>
+  </data>
+  <data name="KanturuMayaHandsFallen" xml:space="preserve">
+    <value>Maya's hands have fallen! Collect your loot — the Nightmare awakens in 10 seconds...</value>
+  </data>
+  <data name="KanturuNightmareGuardiansAppeared" xml:space="preserve">
+    <value>Nightmare's guardians have appeared! NIGHTMARE awakens in 3 seconds!</value>
+  </data>
+  <data name="KanturuNightmareAppeared" xml:space="preserve">
+    <value>NIGHTMARE has appeared! Defeat him to claim victory!</value>
+  </data>
+  <data name="KanturuNightmareTeleport2" xml:space="preserve">
+    <value>Nightmare has teleported! He recovers his full strength!</value>
+  </data>
+  <data name="KanturuNightmareTeleport3" xml:space="preserve">
+    <value>Nightmare teleports again! He is more powerful than ever!</value>
+  </data>
+  <data name="KanturuNightmareTeleport4" xml:space="preserve">
+    <value>Nightmare is at his last stand! Finish him!</value>
+  </data>
+  <data name="KanturuVictory" xml:space="preserve">
+    <value>Nightmare has been defeated! The Kanturu Refinery Tower is yours!</value>
+  </data>
+  <data name="KanturuBarrierOpening" xml:space="preserve">
+    <value>The barrier opens — the tower awaits!</value>
+  </data>
+  <data name="KanturuTowerConquered" xml:space="preserve">
+    <value>The Kanturu Refinery Tower is conquered! The tower is now open.</value>
+  </data>
+  <data name="KanturuTowerClosingWarning" xml:space="preserve">
+    <value>The Kanturu Tower closes in 5 minutes!</value>
+  </data>
+  <data name="KanturuTowerClosed" xml:space="preserve">
+    <value>The Kanturu Tower has closed.</value>
+  </data>
+  <data name="KanturuDefeat" xml:space="preserve">
+    <value>The Kanturu Event has ended. Better luck next time!</value>
+  </data>
   <data name="BloodCastleArchangelAquiredMessageFormat" xml:space="preserve">
     <value>{0} has acquired the {1}</value>
   </data>
