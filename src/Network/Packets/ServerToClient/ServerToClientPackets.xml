@@ -11176,7 +11176,7 @@
     <Packet>
       <HeaderType>C1Header</HeaderType>
       <Code>94</Code>
-      <Name>GoldenArcherRegistrationResult</Name>
+      <Name>EventChipRegistrationResult</Name>
       <Length>10</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>The player receives the result of registering Rena or Event Chips at the Golden Archer NPC.</SentWhen>

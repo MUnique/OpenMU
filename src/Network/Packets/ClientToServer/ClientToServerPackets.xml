@@ -3973,7 +3973,7 @@
     <Packet>
       <HeaderType>C1Header</HeaderType>
       <Code>95</Code>
-      <Name>GoldenArcherRegistrationRequest</Name>
+      <Name>EventChipRegistrationRequest</Name>
       <Length>5</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The player registers an event item at an NPC, usually the golden archer.</SentWhen>
@@ -4005,7 +4005,7 @@
     <Packet>
       <HeaderType>C1Header</HeaderType>
       <Code>97</Code>
-      <Name>GoldenArcherExitDialog</Name>
+      <Name>EventChipExitDialog</Name>
       <Length>3</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The player requests to close the event chip dialog.</SentWhen>

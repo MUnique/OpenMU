@@ -1,4 +1,4 @@
-# C1 94 - GoldenArcherRegistrationResult (by server)
+# C1 94 - EventChipRegistrationResult (by server)
 
 ## Is sent when
 

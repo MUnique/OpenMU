@@ -1,4 +1,4 @@
-# C1 97 - GoldenArcherExitDialog (by client)
+# C1 97 - EventChipExitDialog (by client)
 
 ## Is sent when
 

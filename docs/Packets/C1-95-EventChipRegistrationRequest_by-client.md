@@ -1,4 +1,4 @@
-# C1 95 - GoldenArcherRegistrationRequest (by client)
+# C1 95 - EventChipRegistrationRequest (by client)
 
 ## Is sent when
 

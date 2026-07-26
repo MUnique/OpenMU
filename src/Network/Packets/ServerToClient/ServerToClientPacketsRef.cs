@@ -29255,25 +29255,25 @@ public readonly ref struct ChatCommandParameterRef
 /// Is sent by the server when: The player receives the result of registering Rena or Event Chips at the Golden Archer NPC.
 /// Causes reaction on client side: The client updates the Golden Archer interface with total registered count and remaining count in inventory.
 /// </summary>
-public readonly ref struct GoldenArcherRegistrationResultRef
+public readonly ref struct EventChipRegistrationResultRef
 {
     private readonly Span<byte> _data;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="GoldenArcherRegistrationResultRef"/> struct.
+    /// Initializes a new instance of the <see cref="EventChipRegistrationResultRef"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public GoldenArcherRegistrationResultRef(Span<byte> data)
+    public EventChipRegistrationResultRef(Span<byte> data)
         : this(data, true)
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="GoldenArcherRegistrationResultRef"/> struct.
+    /// Initializes a new instance of the <see cref="EventChipRegistrationResultRef"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private GoldenArcherRegistrationResultRef(Span<byte> data, bool initialize)
+    private EventChipRegistrationResultRef(Span<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -29333,16 +29333,16 @@ public readonly ref struct GoldenArcherRegistrationResultRef
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="GoldenArcherRegistrationResult"/>.
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="EventChipRegistrationResult"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator GoldenArcherRegistrationResultRef(Span<byte> packet) => new (packet, false);
+    public static implicit operator EventChipRegistrationResultRef(Span<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="GoldenArcherRegistrationResult"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="EventChipRegistrationResult"/> to a Span of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(GoldenArcherRegistrationResultRef packet) => packet._data; 
+    public static implicit operator Span<byte>(EventChipRegistrationResultRef packet) => packet._data; 
 }
