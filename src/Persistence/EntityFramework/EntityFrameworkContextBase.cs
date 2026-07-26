@@ -69,6 +69,53 @@ internal class EntityFrameworkContextBase : IContext
     /// <inheritdoc/>
     public async ValueTask<bool> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
+        // A player's entities can be mutated by game logic on a flow that is not serialized against
+        // this save (for example item destruction on an attacker's thread during combat). Such a
+        // concurrent mutation makes change detection throw while it enumerates a tracked collection.
+        // The mutation is a single, quick operation, so a bounded retry lands on a stable moment
+        // instead of failing the whole save - which would otherwise leave the session unpersisted and
+        // roll the player back on relog.
+        const int maxAttempts = 3;
+        for (var attempt = 1; ; attempt++)
+        {
+            try
+            {
+                return await this.SaveChangesCoreAsync(cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception ex) when (attempt < maxAttempts && IsTransientConcurrencyConflict(ex))
+            {
+                this._logger.LogWarning(ex, "Transient concurrency conflict while saving (attempt {Attempt}/{MaxAttempts}); retrying.", attempt, maxAttempts);
+                await Task.Delay(attempt * 10, cancellationToken).ConfigureAwait(false);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Determines whether the exception is a transient conflict caused by a concurrent entity mutation
+    /// racing this save, and is therefore worth retrying.
+    /// </summary>
+    /// <param name="exception">The exception thrown by the save.</param>
+    /// <returns><c>true</c> if the save should be retried.</returns>
+    private static bool IsTransientConcurrencyConflict(Exception exception)
+    {
+        // A concurrent entity mutation racing this save corrupts the change tracker mid-enumeration.
+        // Depending on exactly where change detection was, it surfaces as one of several types - a
+        // modified collection (InvalidOperationException), a transiently-null internal key
+        // (ArgumentNullException/NullReferenceException), or an out-of-range index. All are transient:
+        // the racing mutation is a single quick operation, so a bounded retry lands on a stable moment.
+        // A genuinely persistent error of the same type is not masked - it rethrows once the retries
+        // are exhausted. The deterministic serialization (per-player persistence lock) is the primary
+        // guard; this retry only needs to absorb the rare, bursty sources that lock isn't held for.
+        return exception is DbUpdateConcurrencyException
+            or InvalidOperationException
+            or ArgumentNullException
+            or NullReferenceException
+            or IndexOutOfRangeException
+            or KeyNotFoundException;
+    }
+
+    private async ValueTask<bool> SaveChangesCoreAsync(CancellationToken cancellationToken)
+    {
         using var l = await this._lock.LockAsync();
 
         // when we have a change publisher attached, we want to get the changed entries before accepting them.
