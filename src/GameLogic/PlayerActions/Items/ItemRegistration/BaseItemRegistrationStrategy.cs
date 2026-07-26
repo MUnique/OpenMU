@@ -57,7 +57,7 @@ public abstract class BaseItemRegistrationStrategy : IItemRegistrationStrategy
             ?? player.Attributes?[this.TargetStat] ?? 0) + 1;
         bool willCompleteRegistration = this.TargetStat is null || peekRegistered >= requiredItemsCount;
 
-        if (willCompleteRegistration && rule.RewardZen > 0 && player.Money + rule.RewardZen > player.GameContext.Configuration.MaximumInventoryMoney)
+        if (willCompleteRegistration && rule.RewardZen > 0 && (long)player.Money + rule.RewardZen > player.GameContext.Configuration.MaximumInventoryMoney)
         {
             await player.ShowBlueMessageAsync("You have reached the maximum inventory money limit.").ConfigureAwait(false);
             return;
