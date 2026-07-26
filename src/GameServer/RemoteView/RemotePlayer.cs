@@ -151,7 +151,7 @@ public class RemotePlayer : Player, IClientVersionProvider, IHasIpAddress
                     this.Logger.LogDebug("[C->S] {0}", buffer.ToArray().AsString());
                 }
 
-                await this.MainPacketHandler.HandlePacketAsync(this, buffer).ConfigureAwait(false);
+                await this.RunPersistenceExclusiveAsync(() => this.MainPacketHandler.HandlePacketAsync(this, buffer)).ConfigureAwait(false);
             }
             finally
             {
