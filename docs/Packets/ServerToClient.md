@@ -230,6 +230,7 @@
   * [C1 F3 51 - MasterCharacterLevelUpdateExtended (by server)](C1-F3-51-MasterCharacterLevelUpdateExtended_by-server.md)
   * [C1 F3 52 - MasterSkillLevelUpdate (by server)](C1-F3-52-MasterSkillLevelUpdate_by-server.md)
   * [C2 F3 53 - MasterSkillList (by server)](C2-F3-53-MasterSkillList_by-server.md)
+  * [C2 F5 01 - AvailableChatCommand (by server)](C2-F5-01-AvailableChatCommand_by-server.md)
   * [C1 F6 03 - QuestEventResponse (by server)](C1-F6-03-QuestEventResponse_by-server.md)
   * [C1 F6 0A - AvailableQuests (by server)](C1-F6-0A-AvailableQuests_by-server.md)
   * [C1 F6 0B - QuestStepInfo (by server)](C1-F6-0B-QuestStepInfo_by-server.md)
