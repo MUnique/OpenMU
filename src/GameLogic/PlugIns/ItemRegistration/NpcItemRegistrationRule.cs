@@ -15,32 +15,43 @@ public class NpcItemRegistrationRule
     /// <summary>
     /// Gets or sets the NPC definition number.
     /// </summary>
+    /// <remarks>
+    /// Defaults to 0 (an invalid, unassigned NPC number) rather than an existing NPC's number.
+    /// Otherwise, a freshly-added rule would look like a valid duplicate of that NPC's rule
+    /// until an admin edits it, and <c>Rules.FirstOrDefault(r => r.NpcNumber == npcNumber)</c>
+    /// lookups could silently pick the wrong one of the two.
+    /// </remarks>
     [Display(Name = "NPC Number", Description = "The NPC definition number (e.g. 236 for Golden Archer).")]
-    public short NpcNumber { get; set; } = 236;
+    [Range(1, short.MaxValue, ErrorMessage = "Please set a valid NPC number.")]
+    public short NpcNumber { get; set; }
 
     /// <summary>
-    /// Gets or sets the item group of the accepted item. Default is 14.
+    /// Gets or sets the item group of the accepted item.
     /// </summary>
     [Display(Name = "Accepted Item Group", Description = "Group of the accepted item (e.g. 14 for event items).")]
-    public byte AcceptedItemGroup { get; set; } = 14;
+    [Range(0, 15, ErrorMessage = "Please set a valid item group.")]
+    public byte AcceptedItemGroup { get; set; }
 
     /// <summary>
-    /// Gets or sets the item number of the accepted item. Default is 21 (Rena).
+    /// Gets or sets the item number of the accepted item.
     /// </summary>
     [Display(Name = "Accepted Item Number", Description = "Number of the accepted item (e.g. 21 for Rena).")]
-    public short AcceptedItemNumber { get; set; } = 21;
+    [Range(0, short.MaxValue, ErrorMessage = "Please set a valid item number.")]
+    public short AcceptedItemNumber { get; set; }
 
     /// <summary>
     /// Gets or sets the number of items required to register to receive a reward. Default is 1.
     /// </summary>
     [Display(Name = "Required Items Count", Description = "Number of items required to receive a reward.")]
+    [Range(1, int.MaxValue, ErrorMessage = "At least 1 item must be required.")]
     public int RequiredItemsCount { get; set; } = 1;
 
     /// <summary>
-    /// Gets or sets the Zen reward amount when the required count is reached. Default is 5,000,000.
+    /// Gets or sets the Zen reward amount when the required count is reached.
     /// </summary>
     [Display(Name = "Reward Zen", Description = "Zen awarded upon reaching the required item count.")]
-    public int RewardZen { get; set; } = 5000000;
+    [Range(0, int.MaxValue, ErrorMessage = "Reward Zen can't be negative.")]
+    public int RewardZen { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="DropItemGroup"/> used to generate the item reward drop.
