@@ -60,17 +60,11 @@ public abstract class BaseItemRegistrationStrategy : IItemRegistrationStrategy
         if (willCompleteRegistration && rule.RewardZen > 0 && (long)player.Money + rule.RewardZen > player.GameContext.Configuration.MaximumInventoryMoney)
         {
             await player.ShowBlueMessageAsync("You have reached the maximum inventory money limit.").ConfigureAwait(false);
+            await this.OnRegistrationCompletedAsync(player).ConfigureAwait(false);
             return;
         }
 
-        await player.Inventory!.RemoveItemAsync(item).ConfigureAwait(false);
-        await player.InvokeViewPlugInAsync<Views.Inventory.IItemRemovedPlugIn>(
-            p => p.RemoveItemAsync(item.ItemSlot)).ConfigureAwait(false);
-
-        if (player.PersistenceContext != null)
-        {
-            await player.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
-        }
+        await player.DestroyInventoryItemAsync(item).ConfigureAwait(false);
 
         int currentRegistered = 1;
         int totalRegistered = 1;
