@@ -54,22 +54,26 @@ public class AddRenaItemUpdatePlugIn : UpdatePlugInBase
         const byte group = 14;
         const short number = 21;
 
-        if (gameConfiguration.Items.Any(i => i.Group == group && i.Number == number))
+        var itemDefinition = gameConfiguration.Items.FirstOrDefault(i => i.Group == group && i.Number == number);
+        if (itemDefinition is null)
+        {
+            itemDefinition = context.CreateNew<ItemDefinition>();
+            itemDefinition.Name = "Rena";
+            itemDefinition.Number = number;
+            itemDefinition.Group = group;
+            itemDefinition.DropLevel = 10;
+            itemDefinition.DropsFromMonsters = false;
+            itemDefinition.Durability = 1;
+            itemDefinition.Width = 1;
+            itemDefinition.Height = 1;
+            itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
+            gameConfiguration.Items.Add(itemDefinition);
+        }
+
+        if (gameConfiguration.DropItemGroups.Any(g => g.PossibleItems.Contains(itemDefinition)))
         {
             return;
         }
-
-        var itemDefinition = context.CreateNew<ItemDefinition>();
-        itemDefinition.Name = "Rena";
-        itemDefinition.Number = number;
-        itemDefinition.Group = group;
-        itemDefinition.DropLevel = 10;
-        itemDefinition.DropsFromMonsters = false;
-        itemDefinition.Durability = 1;
-        itemDefinition.Width = 1;
-        itemDefinition.Height = 1;
-        itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
-        gameConfiguration.Items.Add(itemDefinition);
 
         var dropItemGroup = context.CreateNew<DropItemGroup>();
         dropItemGroup.SetGuid(itemDefinition.Group, itemDefinition.Number);

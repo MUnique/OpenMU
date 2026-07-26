@@ -164,7 +164,7 @@ public class ItemRegistrationTest
     [Test]
     public async Task RegisterAsync_MoneyLimitWouldBeExceeded_DoesNotConsumeItemOrLoseRewardAsync()
     {
-        var player = await CreatePlayerWithPlugInAsync(requiredItemsCount: 1, rewardZen: 1000).ConfigureAwait(false);
+        var player = await CreatePlayerWithPlugInAsync(rewardZen: 1000).ConfigureAwait(false);
         var npcMock = new Mock<NonPlayerCharacter>(new MonsterSpawnArea(), new MonsterDefinition { Number = 236 }, player.CurrentMap!);
         player.OpenedNpc = npcMock.Object;
 

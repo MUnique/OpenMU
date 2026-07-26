@@ -65,11 +65,8 @@ public class ItemRegistrationResultPlugIn : IItemRegistrationResultPlugIn
         var registeredStat = this._player.SelectedCharacter?.Attributes.FirstOrDefault(a => a.Definition == targetStat);
         int registered = (int)(registeredStat?.Value ?? this._player.Attributes?[targetStat] ?? 0);
 
-        byte result = operation switch
-        {
-            IItemRegistrationResultPlugIn.ItemRegistrationOperation.MissingItem => 1,
-            _ => 0, // OpenRegistrationDialog and RegistrationCompleted - matches the known-working value from commit 91efa714b
-        };
+        // OpenRegistrationDialog and RegistrationCompleted use 0, matching the known-working value from commit 91efa714b.
+        byte result = operation == IItemRegistrationResultPlugIn.ItemRegistrationOperation.MissingItem ? (byte)1 : (byte)0;
 
         await connection.SendEventChipRegistrationResultAsync(result, (uint)registered, (ushort)invItem).ConfigureAwait(false);
     }
