@@ -89,7 +89,6 @@ public class GameConfigurationInitializer : GameConfigurationInitializerBase
         new DevilSquareInitializer(this.Context, this.GameConfiguration).Initialize();
         new BloodCastleInitializer(this.Context, this.GameConfiguration).Initialize();
         new ChaosCastleInitializer(this.Context, this.GameConfiguration).Initialize();
-
     }
 
     /// <summary>
@@ -99,18 +98,13 @@ public class GameConfigurationInitializer : GameConfigurationInitializerBase
     private void WireRenaDropToEventMaps()
     {
         var renaDropGroup = this.GameConfiguration.DropItemGroups
-            .FirstOrDefault(g => g.PossibleItems.Any(i => i.Group == 14 && i.Number == 21));
+            .FirstOrDefault(g => g.PossibleItems.Any(i => i.Group == RenaDropSupport.Group && i.Number == RenaDropSupport.Number));
         if (renaDropGroup is null)
         {
             return;
         }
 
-        var eventMaps = this.GameConfiguration.Maps
-            .Where(m => m.Name.Value?.StartsWith("Blood Castle") is true || m.Name.Value is "Devil Square 5" or "Devil Square 6" or "Devil Square 7");
-        foreach (var map in eventMaps)
-        {
-            map.DropItemGroups.Add(renaDropGroup);
-        }
+        RenaDropSupport.WireToEventMaps(this.GameConfiguration, renaDropGroup);
     }
 
     private void CreateJewelMixes()

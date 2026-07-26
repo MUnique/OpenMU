@@ -5,11 +5,9 @@
 namespace MUnique.OpenMU.Persistence.Initialization.Updates;
 
 using System;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using MUnique.OpenMU.DataModel.Configuration;
-using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -51,45 +49,11 @@ public class AddRenaItemUpdatePlugIn : UpdatePlugInBase
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
-        const byte group = 14;
-        const short number = 21;
+        var itemDefinition = VersionSeasonSix.RenaDropSupport.GetOrCreateItem(context, gameConfiguration);
+        var dropItemGroup = VersionSeasonSix.RenaDropSupport.GetOrCreateDropItemGroup(context, gameConfiguration, itemDefinition);
 
-        var itemDefinition = gameConfiguration.Items.FirstOrDefault(i => i.Group == group && i.Number == number);
-        if (itemDefinition is null)
-        {
-            itemDefinition = context.CreateNew<ItemDefinition>();
-            itemDefinition.Name = "Rena";
-            itemDefinition.Number = number;
-            itemDefinition.Group = group;
-            itemDefinition.DropLevel = 10;
-            itemDefinition.DropsFromMonsters = false;
-            itemDefinition.Durability = 1;
-            itemDefinition.Width = 1;
-            itemDefinition.Height = 1;
-            itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
-            gameConfiguration.Items.Add(itemDefinition);
-        }
-
-        if (gameConfiguration.DropItemGroups.Any(g => g.PossibleItems.Contains(itemDefinition)))
-        {
-            return;
-        }
-
-        var dropItemGroup = context.CreateNew<DropItemGroup>();
-        dropItemGroup.SetGuid(itemDefinition.Group, itemDefinition.Number);
-        dropItemGroup.PossibleItems.Add(itemDefinition);
-        dropItemGroup.Chance = 0.01; // 1 Percent
-        dropItemGroup.Description = "The drop item group for Rena";
-        dropItemGroup.MinimumMonsterLevel = 30;
-        dropItemGroup.MaximumMonsterLevel = 255;
-
-        gameConfiguration.DropItemGroups.Add(dropItemGroup);
-
-        var eventMaps = gameConfiguration.Maps
-            .Where(m => m.Name.Value?.StartsWith("Blood Castle") is true || m.Name.Value is "Devil Square 5" or "Devil Square 6" or "Devil Square 7");
-        foreach (var map in eventMaps)
-        {
-            map.DropItemGroups.Add(dropItemGroup);
-        }
+        // Always (re-)wire, even if the item/group already existed - a previous, incomplete run
+        // must not be able to skip this step.
+        VersionSeasonSix.RenaDropSupport.WireToEventMaps(gameConfiguration, dropItemGroup);
     }
 }
