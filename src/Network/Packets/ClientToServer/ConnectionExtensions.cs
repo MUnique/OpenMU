@@ -5124,7 +5124,7 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
-    /// Sends a <see cref="EventChipRegistrationRequest" /> to this connection.
+    /// Sends a <see cref="GoldenArcherRegistrationRequest" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
     /// <param name="type">The type.</param>
@@ -5133,7 +5133,7 @@ public static class ConnectionExtensions
     /// Is sent by the client when: The player registers an event item at an NPC, usually the golden archer.
     /// Causes reaction on server side: A response is sent back to the client with the current event chip count.
     /// </remarks>
-    public static async ValueTask SendEventChipRegistrationRequestAsync(this IConnection? connection, byte @type, byte @itemIndex)
+    public static async ValueTask SendGoldenArcherRegistrationRequestAsync(this IConnection? connection, byte @type, byte @itemIndex)
     {
         if (connection is null)
         {
@@ -5142,8 +5142,8 @@ public static class ConnectionExtensions
 
         int WritePacket()
         {
-            var length = EventChipRegistrationRequestRef.Length;
-            var packet = new EventChipRegistrationRequestRef(connection.Output.GetSpan(length)[..length]);
+            var length = GoldenArcherRegistrationRequestRef.Length;
+            var packet = new GoldenArcherRegistrationRequestRef(connection.Output.GetSpan(length)[..length]);
             packet.Type = @type;
             packet.ItemIndex = @itemIndex;
 
@@ -5179,14 +5179,14 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
-    /// Sends a <see cref="EventChipExitDialog" /> to this connection.
+    /// Sends a <see cref="GoldenArcherExitDialog" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
     /// <remarks>
     /// Is sent by the client when: The player requests to close the event chip dialog.
     /// Causes reaction on server side: The event chip dialog will be closed.
     /// </remarks>
-    public static async ValueTask SendEventChipExitDialogAsync(this IConnection? connection)
+    public static async ValueTask SendGoldenArcherExitDialogAsync(this IConnection? connection)
     {
         if (connection is null)
         {
@@ -5195,8 +5195,8 @@ public static class ConnectionExtensions
 
         int WritePacket()
         {
-            var length = EventChipExitDialogRef.Length;
-            var packet = new EventChipExitDialogRef(connection.Output.GetSpan(length)[..length]);
+            var length = GoldenArcherExitDialogRef.Length;
+            var packet = new GoldenArcherExitDialogRef(connection.Output.GetSpan(length)[..length]);
             return packet.Header.Length;
         }
 

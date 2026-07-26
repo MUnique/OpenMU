@@ -1,4 +1,4 @@
-﻿// <copyright file="GameConfigurationInitializer.cs" company="MUnique">
+// <copyright file="GameConfigurationInitializer.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -88,6 +88,7 @@ public class GameConfigurationInitializer : GameConfigurationInitializerBase
         new DevilSquareInitializer(this.Context, this.GameConfiguration).Initialize();
         new BloodCastleInitializer(this.Context, this.GameConfiguration).Initialize();
         new ChaosCastleInitializer(this.Context, this.GameConfiguration).Initialize();
+
     }
 
     private void CreateJewelMixes()

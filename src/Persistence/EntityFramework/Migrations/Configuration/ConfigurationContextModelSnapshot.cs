@@ -8,10 +8,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
+namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations.Configuration
 {
-    [DbContext(typeof(EntityDataContext))]
-    partial class EntityDataContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(ConfigurationContext))]
+    partial class ConfigurationContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -4700,13 +4700,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 {
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Character", "RawCharacter")
                         .WithMany()
-                        .HasForeignKey("CharacterId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("CharacterId");
 
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.MiniGameDefinition", "RawMiniGame")
                         .WithMany()
-                        .HasForeignKey("MiniGameId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("MiniGameId");
 
                     b.Navigation("RawCharacter");
 

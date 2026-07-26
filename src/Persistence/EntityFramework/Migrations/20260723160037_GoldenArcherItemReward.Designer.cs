@@ -3,6 +3,7 @@ using System;
 using MUnique.OpenMU.Persistence.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 {
     [DbContext(typeof(EntityDataContext))]
-    partial class EntityDataContextModelSnapshot : ModelSnapshot
+    [Migration("20260723160037_GoldenArcherItemReward")]
+    partial class GoldenArcherItemReward
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -4700,13 +4703,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 {
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Character", "RawCharacter")
                         .WithMany()
-                        .HasForeignKey("CharacterId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("CharacterId");
 
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.MiniGameDefinition", "RawMiniGame")
                         .WithMany()
-                        .HasForeignKey("MiniGameId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("MiniGameId");
 
                     b.Navigation("RawCharacter");
 

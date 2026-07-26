@@ -6288,4 +6288,36 @@ public static class ConnectionExtensions
         }
 
         await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="GoldenArcherRegistrationResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="registeredCount">The registered count.</param>
+    /// <param name="remainingInventoryCount">The remaining inventory count.</param>
+    /// <remarks>
+    /// Is sent by the server when: The player receives the result of registering Rena or Event Chips at the Golden Archer NPC.
+    /// Causes reaction on client side: The client updates the Golden Archer interface with total registered count and remaining count in inventory.
+    /// </remarks>
+    public static async ValueTask SendGoldenArcherRegistrationResultAsync(this IConnection? connection, byte @result, uint @registeredCount, ushort @remainingInventoryCount)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = GoldenArcherRegistrationResultRef.Length;
+            var packet = new GoldenArcherRegistrationResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.RegisteredCount = @registeredCount;
+            packet.RemainingInventoryCount = @remainingInventoryCount;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
     }}

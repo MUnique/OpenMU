@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <PacketDefinitions xmlns="http://www.munique.net/OpenMU/PacketDefinitions">
   <Description>This file contains all packet definitions for packets which are sent from game client to the game server.</Description>
   <Structures>
@@ -3973,7 +3973,7 @@
     <Packet>
       <HeaderType>C1Header</HeaderType>
       <Code>95</Code>
-      <Name>EventChipRegistrationRequest</Name>
+      <Name>GoldenArcherRegistrationRequest</Name>
       <Length>5</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The player registers an event item at an NPC, usually the golden archer.</SentWhen>
@@ -4005,7 +4005,7 @@
     <Packet>
       <HeaderType>C1Header</HeaderType>
       <Code>97</Code>
-      <Name>EventChipExitDialog</Name>
+      <Name>GoldenArcherExitDialog</Name>
       <Length>3</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The player requests to close the event chip dialog.</SentWhen>

@@ -16245,25 +16245,25 @@ public readonly struct MiniGameOpeningStateRequest
 /// Is sent by the client when: The player registers an event item at an NPC, usually the golden archer.
 /// Causes reaction on server side: A response is sent back to the client with the current event chip count.
 /// </summary>
-public readonly struct EventChipRegistrationRequest
+public readonly struct GoldenArcherRegistrationRequest
 {
     private readonly Memory<byte> _data;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="EventChipRegistrationRequest"/> struct.
+    /// Initializes a new instance of the <see cref="GoldenArcherRegistrationRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public EventChipRegistrationRequest(Memory<byte> data)
+    public GoldenArcherRegistrationRequest(Memory<byte> data)
         : this(data, true)
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="EventChipRegistrationRequest"/> struct.
+    /// Initializes a new instance of the <see cref="GoldenArcherRegistrationRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private EventChipRegistrationRequest(Memory<byte> data, bool initialize)
+    private GoldenArcherRegistrationRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -16314,18 +16314,18 @@ public readonly struct EventChipRegistrationRequest
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Memory of bytes to a <see cref="EventChipRegistrationRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="GoldenArcherRegistrationRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator EventChipRegistrationRequest(Memory<byte> packet) => new (packet, false);
+    public static implicit operator GoldenArcherRegistrationRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="EventChipRegistrationRequest"/> to a Memory of bytes.
+    /// Performs an implicit conversion from <see cref="GoldenArcherRegistrationRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(EventChipRegistrationRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(GoldenArcherRegistrationRequest packet) => packet._data; 
 }
 
 
@@ -16403,25 +16403,25 @@ public readonly struct MutoNumberRequest
 /// Is sent by the client when: The player requests to close the event chip dialog.
 /// Causes reaction on server side: The event chip dialog will be closed.
 /// </summary>
-public readonly struct EventChipExitDialog
+public readonly struct GoldenArcherExitDialog
 {
     private readonly Memory<byte> _data;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="EventChipExitDialog"/> struct.
+    /// Initializes a new instance of the <see cref="GoldenArcherExitDialog"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public EventChipExitDialog(Memory<byte> data)
+    public GoldenArcherExitDialog(Memory<byte> data)
         : this(data, true)
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="EventChipExitDialog"/> struct.
+    /// Initializes a new instance of the <see cref="GoldenArcherExitDialog"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private EventChipExitDialog(Memory<byte> data, bool initialize)
+    private GoldenArcherExitDialog(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -16454,18 +16454,18 @@ public readonly struct EventChipExitDialog
     public C1Header Header => new (this._data);
 
     /// <summary>
-    /// Performs an implicit conversion from a Memory of bytes to a <see cref="EventChipExitDialog"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="GoldenArcherExitDialog"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator EventChipExitDialog(Memory<byte> packet) => new (packet, false);
+    public static implicit operator GoldenArcherExitDialog(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="EventChipExitDialog"/> to a Memory of bytes.
+    /// Performs an implicit conversion from <see cref="GoldenArcherExitDialog"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(EventChipExitDialog packet) => packet._data; 
+    public static implicit operator Memory<byte>(GoldenArcherExitDialog packet) => packet._data; 
 }
 
 

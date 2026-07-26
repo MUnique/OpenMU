@@ -3617,14 +3617,14 @@ public class PacketStructureTests
     }
 
     /// <summary>
-    /// Tests the packet size calculation for EventChipRegistrationRequest.
+    /// Tests the packet size calculation for GoldenArcherRegistrationRequest.
     /// </summary>
     [Test]
-    public void EventChipRegistrationRequest_PacketSizeValidation()
+    public void GoldenArcherRegistrationRequest_PacketSizeValidation()
     {
         // Fixed-length packet validation
         const int expectedLength = 5;
-        var actualLength = EventChipRegistrationRequestRef.Length;
+        var actualLength = GoldenArcherRegistrationRequestRef.Length;
         
         Assert.That(actualLength, Is.EqualTo(expectedLength), 
             "Packet length mismatch: declared length does not match calculated size");
@@ -3653,14 +3653,14 @@ public class PacketStructureTests
     }
 
     /// <summary>
-    /// Tests the packet size calculation for EventChipExitDialog.
+    /// Tests the packet size calculation for GoldenArcherExitDialog.
     /// </summary>
     [Test]
-    public void EventChipExitDialog_PacketSizeValidation()
+    public void GoldenArcherExitDialog_PacketSizeValidation()
     {
         // Fixed-length packet validation
         const int expectedLength = 3;
-        var actualLength = EventChipExitDialogRef.Length;
+        var actualLength = GoldenArcherExitDialogRef.Length;
         
         Assert.That(actualLength, Is.EqualTo(expectedLength), 
             "Packet length mismatch: declared length does not match calculated size");
