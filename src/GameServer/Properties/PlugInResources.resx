@@ -2169,4 +2169,22 @@
   <data name="MuHelperSettingsInitializationPlugIn_Description" xml:space="preserve">
     <value>Initializes the MU Helper settings when the player enters the world.</value>
   </data>
+  <data name="ChatCommandListViewPlugIn_Name" xml:space="preserve">
+    <value>Chat command list view</value>
+  </data>
+  <data name="ChatCommandListViewPlugIn_Description" xml:space="preserve">
+    <value>Sends the chat commands which are available to the player, so that the client can offer them in a user interface.</value>
+  </data>
+  <data name="ChatCommandGroupHandlerPlugIn_Name" xml:space="preserve">
+    <value>Chat command packet group handler</value>
+  </data>
+  <data name="ChatCommandGroupHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the packets about chat commands (0xF5).</value>
+  </data>
+  <data name="ChatCommandListRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Chat command list request handler</value>
+  </data>
+  <data name="ChatCommandListRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the request for the list of chat commands which are available to the player.</value>
+  </data>
 </root>
