@@ -55,9 +55,9 @@ public class ChatCommandListViewPlugIn : IChatCommandListViewPlugIn
 
         int Write()
         {
-            var size = ChatCommandInfoRef.GetRequiredSize(parameters.Count);
+            var size = AvailableChatCommandRef.GetRequiredSize(parameters.Count);
             var span = connection.Output.GetSpan(size)[..size];
-            var packet = new ChatCommandInfoRef(span)
+            var packet = new AvailableChatCommandRef(span)
             {
                 Index = index,
                 Count = count,

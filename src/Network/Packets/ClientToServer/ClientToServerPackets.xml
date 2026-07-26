@@ -4260,7 +4260,7 @@
       <Length>4</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A client which supports a user interface for chat commands requests the list of commands which are available to the player. It's usually sent after the character entered the game world.</SentWhen>
-      <CausedReaction>The server sends a ChatCommandInfo for each available chat command.</CausedReaction>
+      <CausedReaction>The server sends an AvailableChatCommand message for each available chat command.</CausedReaction>
       <Fields />
     </Packet>
   </Packets>

@@ -30677,25 +30677,25 @@ public readonly struct MapEventState
 /// Is sent by the server when: After the client requested the list of available chat commands. One message is sent for each command which is available to the player.
 /// Causes reaction on client side: The client adds the command to its list of known commands, so that it can offer them to the player without requiring him to know or type them.
 /// </summary>
-public readonly struct ChatCommandInfo
+public readonly struct AvailableChatCommand
 {
     private readonly Memory<byte> _data;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ChatCommandInfo"/> struct.
+    /// Initializes a new instance of the <see cref="AvailableChatCommand"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public ChatCommandInfo(Memory<byte> data)
+    public AvailableChatCommand(Memory<byte> data)
         : this(data, true)
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ChatCommandInfo"/> struct.
+    /// Initializes a new instance of the <see cref="AvailableChatCommand"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private ChatCommandInfo(Memory<byte> data, bool initialize)
+    private AvailableChatCommand(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -30798,18 +30798,18 @@ public readonly struct ChatCommandInfo
         public ChatCommandParameter this[int index] => new (this._data.Slice(345 + index * ChatCommandParameter.Length));
 
     /// <summary>
-    /// Performs an implicit conversion from a Memory of bytes to a <see cref="ChatCommandInfo"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="AvailableChatCommand"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator ChatCommandInfo(Memory<byte> packet) => new (packet, false);
+    public static implicit operator AvailableChatCommand(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="ChatCommandInfo"/> to a Memory of bytes.
+    /// Performs an implicit conversion from <see cref="AvailableChatCommand"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(ChatCommandInfo packet) => packet._data; 
+    public static implicit operator Memory<byte>(AvailableChatCommand packet) => packet._data; 
 
     /// <summary>
     /// Calculates the size of the packet for the specified count of <see cref="ChatCommandParameter"/>.

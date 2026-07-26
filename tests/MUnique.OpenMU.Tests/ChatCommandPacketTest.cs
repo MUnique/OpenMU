@@ -17,12 +17,12 @@ public class ChatCommandPacketTest
     /// none of the fields overlaps another one.
     /// </summary>
     [Test]
-    public void ChatCommandInfoKeepsItsValues()
+    public void AvailableChatCommandKeepsItsValues()
     {
         const int parameterCount = 3;
-        var data = new byte[ChatCommandInfoRef.GetRequiredSize(parameterCount)];
+        var data = new byte[AvailableChatCommandRef.GetRequiredSize(parameterCount)];
 
-        var written = new ChatCommandInfoRef(data)
+        var written = new AvailableChatCommandRef(data)
         {
             Index = 7,
             Count = 42,
@@ -50,7 +50,7 @@ public class ChatCommandPacketTest
         skill.ShortName = "sk";
         skill.Type = ChatCommandParameterType.Boolean;
 
-        var read = new ChatCommandInfoRef(data);
+        var read = new AvailableChatCommandRef(data);
 
         Assert.That(read.Header.Code, Is.EqualTo(0xF5));
         Assert.That(read.Header.SubCode, Is.EqualTo(0x01));
@@ -81,11 +81,11 @@ public class ChatCommandPacketTest
     /// don't overlap the fields before them.
     /// </summary>
     [Test]
-    public void ChatCommandInfoSizeDependsOnParameterCount()
+    public void AvailableChatCommandSizeDependsOnParameterCount()
     {
-        var withoutParameters = ChatCommandInfoRef.GetRequiredSize(0);
-        var withOneParameter = ChatCommandInfoRef.GetRequiredSize(1);
+        var withoutParameters = AvailableChatCommandRef.GetRequiredSize(0);
+        var withOneParameter = AvailableChatCommandRef.GetRequiredSize(1);
 
-        Assert.That(withOneParameter - withoutParameters, Is.EqualTo(ChatCommandInfo.ChatCommandParameter.Length));
+        Assert.That(withOneParameter - withoutParameters, Is.EqualTo(AvailableChatCommand.ChatCommandParameter.Length));
     }
 }

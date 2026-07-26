@@ -29040,25 +29040,25 @@ public readonly ref struct MapEventStateRef
 /// Is sent by the server when: After the client requested the list of available chat commands. One message is sent for each command which is available to the player.
 /// Causes reaction on client side: The client adds the command to its list of known commands, so that it can offer them to the player without requiring him to know or type them.
 /// </summary>
-public readonly ref struct ChatCommandInfoRef
+public readonly ref struct AvailableChatCommandRef
 {
     private readonly Span<byte> _data;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ChatCommandInfoRef"/> struct.
+    /// Initializes a new instance of the <see cref="AvailableChatCommandRef"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public ChatCommandInfoRef(Span<byte> data)
+    public AvailableChatCommandRef(Span<byte> data)
         : this(data, true)
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ChatCommandInfoRef"/> struct.
+    /// Initializes a new instance of the <see cref="AvailableChatCommandRef"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private ChatCommandInfoRef(Span<byte> data, bool initialize)
+    private AvailableChatCommandRef(Span<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -29161,18 +29161,18 @@ public readonly ref struct ChatCommandInfoRef
         public ChatCommandParameterRef this[int index] => new (this._data[(345 + index * ChatCommandParameterRef.Length)..]);
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="ChatCommandInfo"/>.
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="AvailableChatCommand"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator ChatCommandInfoRef(Span<byte> packet) => new (packet, false);
+    public static implicit operator AvailableChatCommandRef(Span<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="ChatCommandInfo"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="AvailableChatCommand"/> to a Span of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(ChatCommandInfoRef packet) => packet._data; 
+    public static implicit operator Span<byte>(AvailableChatCommandRef packet) => packet._data; 
 
     /// <summary>
     /// Calculates the size of the packet for the specified count of <see cref="ChatCommandParameterRef"/>.

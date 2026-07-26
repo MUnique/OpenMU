@@ -11071,7 +11071,7 @@
       <HeaderType>C2HeaderWithSubCode</HeaderType>
       <Code>F5</Code>
       <SubCode>01</SubCode>
-      <Name>ChatCommandInfo</Name>
+      <Name>AvailableChatCommand</Name>
       <Direction>ServerToClient</Direction>
       <SentWhen>After the client requested the list of available chat commands. One message is sent for each command which is available to the player.</SentWhen>
       <CausedReaction>The client adds the command to its list of known commands, so that it can offer them to the player without requiring him to know or type them.</CausedReaction>

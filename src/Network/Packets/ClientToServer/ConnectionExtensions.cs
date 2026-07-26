@@ -5555,7 +5555,7 @@ public static class ConnectionExtensions
     /// <param name="connection">The connection.</param>
     /// <remarks>
     /// Is sent by the client when: A client which supports a user interface for chat commands requests the list of commands which are available to the player. It's usually sent after the character entered the game world.
-    /// Causes reaction on server side: The server sends a ChatCommandInfo for each available chat command.
+    /// Causes reaction on server side: The server sends an AvailableChatCommand message for each available chat command.
     /// </remarks>
     public static async ValueTask SendChatCommandListRequestAsync(this IConnection? connection)
     {
