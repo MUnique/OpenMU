@@ -34,15 +34,14 @@ public interface ITraderBobResultPlugIn : IViewPlugIn
 /// <summary>
 /// A custom strategy to test the generic implementation.
 /// </summary>
-[PlugIn]
 [Guid("98765432-1234-1234-1234-123456789012")]
 public class TraderBobRegistrationStrategy : BaseItemRegistrationStrategy
 {
     public override short NpcNumber => 500;
 
     // No specific stats needed for Trader Bob
-    public override AttributeDefinition TargetStat => null!;
-    public override AttributeDefinition TargetTotalStat => null!;
+    public override AttributeDefinition? TargetStat => null;
+    public override AttributeDefinition? TargetTotalStat => null;
 
     public override ValueTask OpenDialogAsync(Player player) => ValueTask.CompletedTask;
 
