@@ -28,7 +28,8 @@ public class ItemRegistrationConfiguration
             AcceptedItemNumber = 21, // Rena
             RequiredItemsCount = 1,
             RewardZen = 5000000,
-            RewardDropItemGroupDescription = "Golden Archer",
+
+            // No RewardDropItemGroup by default - select the DropItemGroup for Rena in the admin panel to enable item drops.
         },
     };
 }

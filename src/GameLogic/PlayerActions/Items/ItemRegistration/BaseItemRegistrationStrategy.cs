@@ -47,8 +47,24 @@ public abstract class BaseItemRegistrationStrategy : IItemRegistrationStrategy
             return;
         }
 
+        int requiredItemsCount = rule.RequiredItemsCount;
+        if (requiredItemsCount <= 0)
+        {
+            requiredItemsCount = 1;
+        }
+
+        int peekRegistered = (int)(player.SelectedCharacter?.Attributes.FirstOrDefault(a => a.Definition == this.TargetStat)?.Value
+            ?? player.Attributes?[this.TargetStat] ?? 0) + 1;
+        bool willCompleteRegistration = this.TargetStat is null || peekRegistered >= requiredItemsCount;
+
+        if (willCompleteRegistration && rule.RewardZen > 0 && player.Money + rule.RewardZen > player.GameContext.Configuration.MaximumInventoryMoney)
+        {
+            await player.ShowBlueMessageAsync("You have reached the maximum inventory money limit.").ConfigureAwait(false);
+            return;
+        }
+
         await player.Inventory!.RemoveItemAsync(item).ConfigureAwait(false);
-        await player.InvokeViewPlugInAsync<MUnique.OpenMU.GameLogic.Views.Inventory.IItemRemovedPlugIn>(
+        await player.InvokeViewPlugInAsync<Views.Inventory.IItemRemovedPlugIn>(
             p => p.RemoveItemAsync(item.ItemSlot)).ConfigureAwait(false);
 
         if (player.PersistenceContext != null)
@@ -64,7 +80,7 @@ public abstract class BaseItemRegistrationStrategy : IItemRegistrationStrategy
         {
             registeredStat = this.EnsureStatExists(player, this.TargetStat);
             currentRegistered = (int)(registeredStat?.Value ?? player.Attributes?[this.TargetStat] ?? 0) + 1;
-            
+
             if (registeredStat != null)
             {
                 registeredStat.Value = currentRegistered;
@@ -76,7 +92,7 @@ public abstract class BaseItemRegistrationStrategy : IItemRegistrationStrategy
         {
             totalStat = this.EnsureStatExists(player, this.TargetTotalStat);
             totalRegistered = (int)(totalStat?.Value ?? player.Attributes?[this.TargetTotalStat] ?? 0) + 1;
-            
+
             if (totalStat != null)
             {
                 totalStat.Value = totalRegistered;
@@ -89,17 +105,11 @@ public abstract class BaseItemRegistrationStrategy : IItemRegistrationStrategy
             {
                 player.Attributes[this.TargetStat] = currentRegistered;
             }
-            
+
             if (this.TargetTotalStat != null)
             {
                 player.Attributes[this.TargetTotalStat] = totalRegistered;
             }
-        }
-
-        int requiredItemsCount = rule.RequiredItemsCount;
-        if (requiredItemsCount <= 0)
-        {
-            requiredItemsCount = 1;
         }
 
         if (currentRegistered >= requiredItemsCount)
@@ -119,24 +129,18 @@ public abstract class BaseItemRegistrationStrategy : IItemRegistrationStrategy
             if (zenReward > 0)
             {
                 player.TryAddMoney(zenReward);
-                await player.InvokeViewPlugInAsync<MUnique.OpenMU.GameLogic.Views.Inventory.IUpdateMoneyPlugIn>(
+                await player.InvokeViewPlugInAsync<Views.Inventory.IUpdateMoneyPlugIn>(
                     p => p.UpdateMoneyAsync()).ConfigureAwait(false);
             }
 
-            if (!string.IsNullOrEmpty(rule.RewardDropItemGroupDescription))
+            if (rule.RewardDropItemGroup is { } dropGroup && Rand.NextRandomBool(dropGroup.Chance))
             {
-                var dropGroup = player.GameContext.Configuration.DropItemGroups
-                    .FirstOrDefault(g => string.Equals(g.Description, rule.RewardDropItemGroupDescription, StringComparison.OrdinalIgnoreCase));
-
-                if (dropGroup != null && Rand.NextRandomBool(dropGroup.Chance))
+                var droppedItem = player.GameContext.DropGenerator.GenerateItemDrop(dropGroup);
+                if (droppedItem != null)
                 {
-                    var droppedItem = player.GameContext.DropGenerator.GenerateItemDrop(dropGroup);
-                    if (droppedItem != null)
-                    {
-                        var dropCoordinates = player.CurrentMap!.Terrain.GetRandomCoordinate(player.Position, 2);
-                        var dropped = new DroppedItem(droppedItem, dropCoordinates, player.CurrentMap, player);
-                        await player.CurrentMap.AddAsync(dropped).ConfigureAwait(false);
-                    }
+                    var dropCoordinates = player.CurrentMap!.Terrain.GetRandomCoordinate(player.Position, 2);
+                    var dropped = new DroppedItem(droppedItem, dropCoordinates, player.CurrentMap, player);
+                    await player.CurrentMap.AddAsync(dropped).ConfigureAwait(false);
                 }
             }
 
@@ -180,7 +184,7 @@ public abstract class BaseItemRegistrationStrategy : IItemRegistrationStrategy
 
         var trackedDefinition = player.GameContext.Configuration.Attributes?.FirstOrDefault(a => a.Id == statDefinition.Id) ?? statDefinition;
         var stat = player.SelectedCharacter.Attributes.FirstOrDefault(a => a.Definition == trackedDefinition || (a.Definition != null && a.Definition.Id == statDefinition.Id));
-        
+
         if (stat == null)
         {
             stat = player.PersistenceContext.CreateNew<StatAttribute>(trackedDefinition, 0);

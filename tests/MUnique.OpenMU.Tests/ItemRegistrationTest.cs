@@ -158,6 +158,81 @@ public class ItemRegistrationTest
     }
 
     /// <summary>
+    /// Tests that when the Zen reward would exceed the maximum inventory money, the item is not
+    /// consumed and the registered counter is not incremented (instead of silently losing both).
+    /// </summary>
+    [Test]
+    public async Task RegisterAsync_MoneyLimitWouldBeExceeded_DoesNotConsumeItemOrLoseRewardAsync()
+    {
+        var player = await CreatePlayerWithPlugInAsync(requiredItemsCount: 1, rewardZen: 1000).ConfigureAwait(false);
+        var npcMock = new Mock<NonPlayerCharacter>(new MonsterSpawnArea(), new MonsterDefinition { Number = 236 }, player.CurrentMap!);
+        player.OpenedNpc = npcMock.Object;
+
+        player.GameContext.Configuration.MaximumInventoryMoney = 1000;
+        player.Money = 500;
+
+        var renaDefinition = new ItemDefinition
+        {
+            Group = 14,
+            Number = 21,
+            Width = 1,
+            Height = 1,
+        };
+
+        var renaItem = new Item
+        {
+            Definition = renaDefinition,
+            ItemSlot = 20,
+        };
+
+        await player.Inventory!.AddItemAsync(20, renaItem).ConfigureAwait(false);
+
+        await this._action.RegisterAsync(player).ConfigureAwait(false);
+
+        var registeredStat = player.SelectedCharacter!.Attributes
+            .FirstOrDefault(a => a.Definition == GameLogic.Attributes.Stats.RegisteredRenas);
+
+        Assert.That(registeredStat?.Value ?? 0, Is.EqualTo(0), "Counter should not be incremented when the reward can't fit.");
+        Assert.That(player.Inventory.ItemStorage.Items, Does.Contain(renaItem), "Item should not be consumed when the reward can't fit.");
+        Assert.That(player.Money, Is.EqualTo(500), "Money should stay unchanged.");
+    }
+
+    /// <summary>
+    /// Tests that registration does nothing when the ItemRegistrationFeaturePlugIn is not active,
+    /// instead of silently falling back to a default configuration.
+    /// </summary>
+    [Test]
+    public async Task RegisterAsync_FeatureNotActive_DoesNothingAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        player.GameContext.PlugInManager.RegisterPlugIn<IItemRegistrationStrategy, GoldenArcherRegistrationStrategy>();
+
+        var npcMock = new Mock<NonPlayerCharacter>(new MonsterSpawnArea(), new MonsterDefinition { Number = 236 }, player.CurrentMap!);
+        player.OpenedNpc = npcMock.Object;
+
+        var renaDefinition = new ItemDefinition
+        {
+            Group = 14,
+            Number = 21,
+            Width = 1,
+            Height = 1,
+        };
+
+        var renaItem = new Item
+        {
+            Definition = renaDefinition,
+            ItemSlot = 25,
+        };
+
+        await player.Inventory!.AddItemAsync(25, renaItem).ConfigureAwait(false);
+
+        var success = await this._action.RegisterAsync(player).ConfigureAwait(false);
+
+        Assert.That(success, Is.False, "Registration should not succeed when the feature plug-in is not active.");
+        Assert.That(player.Inventory.ItemStorage.Items, Does.Contain(renaItem), "Item should not be consumed when the feature plug-in is not active.");
+    }
+
+    /// <summary>
     /// Creates a player with the ItemRegistrationFeaturePlugIn already registered.
     /// </summary>
     private static async Task<Player> CreatePlayerWithPlugInAsync(
@@ -166,7 +241,7 @@ public class ItemRegistrationTest
         short acceptedItemNumber = 21,
         int requiredItemsCount = 1,
         int rewardZen = 5000000,
-        string? rewardDropItemGroupDescription = null)
+        DropItemGroup? rewardDropItemGroup = null)
     {
         var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
 
@@ -181,7 +256,7 @@ public class ItemRegistrationTest
                     AcceptedItemNumber = acceptedItemNumber,
                     RequiredItemsCount = requiredItemsCount,
                     RewardZen = rewardZen,
-                    RewardDropItemGroupDescription = rewardDropItemGroupDescription,
+                    RewardDropItemGroup = rewardDropItemGroup,
                 },
             },
         };

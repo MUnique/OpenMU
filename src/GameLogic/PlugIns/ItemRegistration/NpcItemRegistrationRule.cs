@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlugIns.ItemRegistration;
 
 using System.ComponentModel.DataAnnotations;
+using MUnique.OpenMU.DataModel.Configuration;
 
 /// <summary>
 /// Rule defining item registration settings for a specific NPC.
@@ -42,8 +43,8 @@ public class NpcItemRegistrationRule
     public int RewardZen { get; set; } = 5000000;
 
     /// <summary>
-    /// Gets or sets the description of the <see cref="MUnique.OpenMU.DataModel.Configuration.DropItemGroup"/> used to generate the item reward drop.
+    /// Gets or sets the <see cref="DropItemGroup"/> used to generate the item reward drop.
     /// </summary>
-    [Display(Name = "Reward Drop Item Group Description", Description = "Description of the DropItemGroup (e.g. Golden Archer Reward). The DropItemGroup determines drop chances and items. If empty, no item drops (Zen reward only).")]
-    public string? RewardDropItemGroupDescription { get; set; }
+    [Display(Name = "Reward Drop Item Group", Description = "The DropItemGroup used to generate the item reward drop. If empty, no item drops (Zen reward only).")]
+    public virtual DropItemGroup? RewardDropItemGroup { get; set; }
 }

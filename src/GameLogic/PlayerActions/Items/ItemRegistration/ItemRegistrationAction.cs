@@ -35,6 +35,10 @@ public class ItemRegistrationAction
         }
 
         var feature = player.GameContext.FeaturePlugIns.GetPlugIn<PlugIns.ItemRegistration.ItemRegistrationFeaturePlugIn>();
+        if (feature == null)
+        {
+            return false;
+        }
         var config = feature?.Configuration ?? new PlugIns.ItemRegistration.ItemRegistrationConfiguration();
         var rule = config.Rules.FirstOrDefault(r => r.NpcNumber == npcNumber);
 

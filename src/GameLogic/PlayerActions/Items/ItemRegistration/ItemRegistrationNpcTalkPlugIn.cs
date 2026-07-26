@@ -2,13 +2,12 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.PlayerActions.Items;
+namespace MUnique.OpenMU.GameLogic.PlayerActions.Items.ItemRegistration;
 
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using MUnique.OpenMU.GameLogic.NPC;
-using MUnique.OpenMU.GameLogic.PlayerActions.Items.ItemRegistration;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.NPC;
 using MUnique.OpenMU.PlugIns;
@@ -24,6 +23,10 @@ public class ItemRegistrationNpcTalkPlugIn : IPlayerTalkToNpcPlugIn
     public async ValueTask PlayerTalksToNpcAsync(Player player, NonPlayerCharacter npc, NpcTalkEventArgs eventArgs)
     {
         var feature = player.GameContext.FeaturePlugIns.GetPlugIn<GameLogic.PlugIns.ItemRegistration.ItemRegistrationFeaturePlugIn>();
+        if (feature == null)
+        {
+            return;
+        }
         var config = feature?.Configuration ?? new GameLogic.PlugIns.ItemRegistration.ItemRegistrationConfiguration();
         var rule = config.Rules.FirstOrDefault(r => r.NpcNumber == npc.Definition.Number);
 
