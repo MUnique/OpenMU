@@ -31,20 +31,20 @@ public class GoldenArcherRegistrationStrategy : BaseItemRegistrationStrategy
     public override async ValueTask OpenDialogAsync(Player player)
     {
         await player.InvokeViewPlugInAsync<IItemRegistrationResultPlugIn>(
-            p => p.RegistrationResultAsync(this.NpcNumber, IItemRegistrationResultPlugIn.ItemRegistrationOperation.OpenRegistrationDialog)).ConfigureAwait(false);
+            p => p.RegistrationResultAsync(this.NpcNumber, ItemRegistrationOperation.OpenRegistrationDialog)).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
     protected override async ValueTask OnMissingItemAsync(Player player)
     {
         await player.InvokeViewPlugInAsync<IItemRegistrationResultPlugIn>(
-            p => p.RegistrationResultAsync(this.NpcNumber, IItemRegistrationResultPlugIn.ItemRegistrationOperation.MissingItem)).ConfigureAwait(false);
+            p => p.RegistrationResultAsync(this.NpcNumber, ItemRegistrationOperation.MissingItem)).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
     protected override async ValueTask OnRegistrationCompletedAsync(Player player)
     {
         await player.InvokeViewPlugInAsync<IItemRegistrationResultPlugIn>(
-            p => p.RegistrationResultAsync(this.NpcNumber, IItemRegistrationResultPlugIn.ItemRegistrationOperation.RegistrationCompleted)).ConfigureAwait(false);
+            p => p.RegistrationResultAsync(this.NpcNumber, ItemRegistrationOperation.RegistrationCompleted)).ConfigureAwait(false);
     }
 }

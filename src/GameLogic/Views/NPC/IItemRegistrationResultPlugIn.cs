@@ -7,21 +7,33 @@ namespace MUnique.OpenMU.GameLogic.Views.NPC;
 using System.Threading.Tasks;
 
 /// <summary>
+/// The possible outcomes of an item registration attempt, reported back to the view plug-in.
+/// </summary>
+public enum ItemRegistrationOperation
+{
+    /// <summary>
+    /// The registration dialog was opened.
+    /// </summary>
+    OpenRegistrationDialog,
+
+    /// <summary>
+    /// The required item was missing from the player's inventory.
+    /// </summary>
+    MissingItem,
+
+    /// <summary>
+    /// The registration was completed.
+    /// </summary>
+    RegistrationCompleted,
+}
+
+/// <summary>
 /// A view plugin which provides the result of registering an item at the Golden Archer.
 /// </summary>
 public interface IItemRegistrationResultPlugIn : IViewPlugIn
 {
     /// <summary>
-    /// Registration Operations
-    /// </summary>
-    enum ItemRegistrationOperation
-    {
-        OpenRegistrationDialog,
-        MissingItem,
-        RegistrationCompleted
-    }
-    /// <summary>
     /// Sends the registration result to the client.
     /// </summary>
-    ValueTask RegistrationResultAsync(int npcNumber, ItemRegistrationOperation operation);
+    ValueTask RegistrationResultAsync(short npcNumber, ItemRegistrationOperation operation);
 }

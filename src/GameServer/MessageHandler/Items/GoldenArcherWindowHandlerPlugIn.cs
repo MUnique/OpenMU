@@ -36,7 +36,7 @@ internal class GoldenArcherWindowHandlerPlugIn : IPacketHandlerPlugIn
         if (!success && player.OpenedNpc is { } npc)
         {
             await player.InvokeViewPlugInAsync<IItemRegistrationResultPlugIn>(
-                p => p.RegistrationResultAsync(npc.Definition.Number, IItemRegistrationResultPlugIn.ItemRegistrationOperation.MissingItem)).ConfigureAwait(false);
+                p => p.RegistrationResultAsync(npc.Definition.Number, ItemRegistrationOperation.MissingItem)).ConfigureAwait(false);
         }
     }
 }
