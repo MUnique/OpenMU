@@ -1,8 +1,8 @@
-@page "/logfiles"
+﻿@page "/logfiles"
 
 @using System.IO
 @using MUnique.OpenMU.Web.AdminPanel.Properties
-@implements IDisposable
+@implements IAsyncDisposable
 @inject IJSRuntime JSRuntime
 
 <PageTitle>OpenMU: @Resources.LogFiles</PageTitle>
@@ -14,8 +14,8 @@
         <div class="card shadow-sm border-0 mb-4">
             <div class="card-header bg-light py-2 px-3">
                 <div class="d-flex justify-content-between align-items-center">
-                    <strong class="m-0">Log Files</strong>
-                    <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" @onclick="this.RefreshFileList" title="Reload File List">
+                    <strong class="m-0">@Resources.LogFiles</strong>
+                    <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" @onclick="this.RefreshFileList" title="@Resources.ReloadFileList">
                         <span class="oi oi-reload" style="font-size: 11px;"></span>
                     </button>
                 </div>
@@ -30,7 +30,7 @@
                             <th>@Resources.LastUpdate</th>
                             <th>@Resources.Size</th>
                         }
-                        <th class="text-end px-3">Actions</th>
+                        <th class="text-end px-3">@Resources.Actions</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -53,7 +53,7 @@
                                 <td>@FormatFileSize(entry.Length)</td>
                             }
                             <td class="text-end px-3">
-                                <a href="logs/@entry.Name" download class="btn btn-sm btn-outline-secondary py-0 px-2" title="Download File">
+                                <a href="logs/@entry.Name" download class="btn btn-sm btn-outline-secondary py-0 px-2" title="@Resources.DownloadFile">
                                     <span class="oi oi-data-transfer-download" aria-hidden="true"></span>
                                 </a>
                             </td>
@@ -73,19 +73,19 @@
                 <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center py-2 px-3">
                     <div class="d-flex align-items-center text-truncate me-2">
                         <span class="oi oi-terminal text-info me-2" aria-hidden="true"></span>
-                        <span class="me-2 d-none d-sm-inline">Log Viewer:</span>
+                        <span class="me-2 d-none d-sm-inline">@Resources.LogViewer:</span>
                         <span class="badge bg-secondary font-monospace text-truncate" style="max-width: 250px;">@this._selectedFile.Name</span>
                     </div>
                     <div class="d-flex align-items-center gap-2 gap-sm-3 flex-shrink-0">
                         <div class="form-check form-switch m-0 d-flex align-items-center gap-2">
                             <input class="form-check-input cursor-pointer" type="checkbox" id="liveUpdateSwitch" @onchange="this.ToggleLiveUpdate" checked="@this._liveUpdate">
-                            <label class="form-check-label text-light select-none cursor-pointer" for="liveUpdateSwitch" style="font-size: 13px;">Live</label>
+                            <label class="form-check-label text-light select-none cursor-pointer" for="liveUpdateSwitch" style="font-size: 13px;">@Resources.Live</label>
                         </div>
                         <button class="btn btn-sm btn-outline-info d-flex align-items-center gap-1 py-1" @onclick="this.RefreshLogLines">
-                            <span class="oi oi-reload" style="font-size: 11px;"></span> Refresh
+                            <span class="oi oi-reload" style="font-size: 11px;"></span> @Resources.Refresh
                         </button>
                         <button class="btn btn-sm btn-outline-danger d-flex align-items-center gap-1 py-1" @onclick="this.CloseViewer">
-                            <span class="oi oi-x" style="font-size: 11px;"></span> Close
+                            <span class="oi oi-x" style="font-size: 11px;"></span> @Resources.Close
                         </button>
                     </div>
                 </div>
@@ -94,7 +94,7 @@
                         <div class="col">
                             <div class="input-group">
                                 <span class="input-group-text bg-secondary text-white border-0"><span class="oi oi-magnifying-glass" aria-hidden="true"></span></span>
-                                <input type="text" class="form-control bg-secondary text-white border-0" placeholder="Filter log entries..." @bind="this._searchText" @bind:event="oninput" style="background-color: #2b2b30 !important; color: #fff !important;" />
+                                <input type="text" class="form-control bg-secondary text-white border-0" placeholder="@Resources.FilterLogEntries" value="@this._searchText" @oninput="this.OnSearchInput" style="background-color: #2b2b30 !important; color: #fff !important;" />
                                 @if (!string.IsNullOrEmpty(this._searchText))
                                 {
                                     <button class="btn btn-secondary border-0" @onclick="this.ClearSearch"><span class="oi oi-x" aria-hidden="true"></span></button>
@@ -106,31 +106,27 @@
                     <div id="log-terminal" class="p-3 rounded" style="height: 480px; overflow-y: auto; font-family: 'Consolas', 'Liberation Mono', Menlo, Courier, monospace; font-size: 13px; line-height: 1.5; white-space: pre-wrap; background-color: #0c0c0d !important; border: 1px solid #2d2d30;">
                         @if (this._logLines.Count == 0)
                         {
-                            <div class="text-muted text-center py-5">No log entries found.</div>
+                            <div class="text-muted text-center py-5">@Resources.NoLogEntriesFound</div>
+                        }
+                        else if (this._filteredLines.Count == 0)
+                        {
+                            <div class="text-muted text-center py-5">@Resources.NoLogEntriesMatchFilter</div>
                         }
                         else
                         {
-                            var filteredLines = this.GetFilteredLines();
-                            @if (filteredLines.Count == 0)
+                            @foreach (var line in this._filteredLines)
                             {
-                                <div class="text-muted text-center py-5">No log entries match your filter.</div>
-                            }
-                            else
-                            {
-                                @foreach (var line in filteredLines)
-                                {
-                                    <div style="@GetLineColorStyle(line)">@line</div>
-                                }
+                                <div style="@GetLineColorStyle(line)">@line</div>
                             }
                         }
                     </div>
                     
                     <div class="d-flex justify-content-between align-items-center mt-2 text-muted" style="font-size: 12px;">
                         <div>
-                            Showing @this.GetFilteredLines().Count of @this._logLines.Count lines (Last 300 lines loaded).
+                            @string.Format(Resources.ShowingXOfYLines, this._filteredLines.Count, this._logLines.Count, MaxLogLinesToRead)
                         </div>
                         <button class="btn btn-sm btn-outline-secondary py-1 px-2" style="font-size: 12px; color: #a0a0a8;" @onclick="this.ScrollToBottomAsync">
-                            <span class="oi oi-arrow-bottom" aria-hidden="true"></span> Scroll to Bottom
+                            <span class="oi oi-arrow-bottom" aria-hidden="true"></span> @Resources.ScrollToBottom
                         </button>
                     </div>
                 </div>
@@ -140,18 +136,39 @@
 </div>
 
 @code {
+    private const int MaxLogLinesToRead = 300;
+    private const long LogReadBufferSizeBytes = 102400; // 100 KB
+    private const int LiveUpdateIntervalMs = 2000;
+
     private readonly List<FileInfo> _files = new();
     private FileInfo? _selectedFile;
+    private long _lastFileLength;
+    private DateTime _lastFileWriteTime;
     private List<string> _logLines = new();
+    private List<string> _filteredLines = new();
     private string _searchText = string.Empty;
     private bool _liveUpdate;
     private System.Threading.Timer? _timer;
     private bool _shouldScrollToBottom;
+    private bool _disposed;
+    private IJSObjectReference? _jsModule;
 
     /// <inheritdoc />
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
+        this._disposed = true;
         this._timer?.Dispose();
+        if (this._jsModule != null)
+        {
+            try
+            {
+                await this._jsModule.DisposeAsync();
+            }
+            catch
+            {
+                // Ignore JS module disposal errors
+            }
+        }
     }
 
     /// <inheritdoc />
@@ -163,10 +180,22 @@
     /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (firstRender)
+        {
+            try
+            {
+                this._jsModule = await this.JSRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/MUnique.OpenMU.Web.AdminPanel/Pages/LogFiles.razor.js");
+            }
+            catch
+            {
+                // Fallback gracefully if JS module import fails
+            }
+        }
+
         if (this._shouldScrollToBottom)
         {
             this._shouldScrollToBottom = false;
-            await this.ScrollToBottomAsync().ConfigureAwait(false);
+            await this.ScrollToBottomAsync();
         }
     }
 
@@ -187,7 +216,7 @@
         try
         {
             using var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            long offset = Math.Max(0, fs.Length - 102400); // Read last 100 KB
+            long offset = Math.Max(0, fs.Length - LogReadBufferSizeBytes);
             fs.Seek(offset, SeekOrigin.Begin);
             using var reader = new StreamReader(fs, System.Text.Encoding.UTF8);
 
@@ -259,6 +288,7 @@
     {
         this._selectedFile = file;
         this._searchText = string.Empty;
+        this._lastFileLength = -1;
         this.RefreshLogLines();
         this._shouldScrollToBottom = true;
         this.SetupTimer();
@@ -269,6 +299,7 @@
         this._selectedFile = null;
         this._searchText = string.Empty;
         this._logLines.Clear();
+        this._filteredLines.Clear();
         this._liveUpdate = false;
         this.SetupTimer();
     }
@@ -276,6 +307,13 @@
     private void ClearSearch()
     {
         this._searchText = string.Empty;
+        this.UpdateFilteredLines();
+    }
+
+    private void OnSearchInput(ChangeEventArgs e)
+    {
+        this._searchText = e.Value?.ToString() ?? string.Empty;
+        this.UpdateFilteredLines();
     }
 
     private void ToggleLiveUpdate(ChangeEventArgs e)
@@ -290,12 +328,26 @@
         {
             this._timer ??= new System.Threading.Timer(_ =>
             {
+                if (this._disposed)
+                {
+                    return;
+                }
+
                 this.InvokeAsync(() =>
                 {
-                    this.RefreshLogLines();
-                    this.StateHasChanged();
+                    if (this._disposed || this._selectedFile == null)
+                    {
+                        return;
+                    }
+
+                    var updatedInfo = new FileInfo(this._selectedFile.FullName);
+                    if (updatedInfo.Length != this._lastFileLength || updatedInfo.LastWriteTimeUtc != this._lastFileWriteTime)
+                    {
+                        this.RefreshLogLines();
+                        this.StateHasChanged();
+                    }
                 });
-            }, null, 0, 2000);
+            }, null, 0, LiveUpdateIntervalMs);
         }
         else
         {
@@ -311,32 +363,40 @@
             return;
         }
 
-        this._selectedFile = new FileInfo(this._selectedFile.FullName);
-        this._logLines = ReadLastLines(this._selectedFile.FullName, 300);
-        this._shouldScrollToBottom = true;
+        var fileInfo = new FileInfo(this._selectedFile.FullName);
+        this._selectedFile = fileInfo;
+        this._lastFileLength = fileInfo.Length;
+        this._lastFileWriteTime = fileInfo.LastWriteTimeUtc;
+        this._logLines = ReadLastLines(fileInfo.FullName, MaxLogLinesToRead);
+        this.UpdateFilteredLines();
     }
 
-    private List<string> GetFilteredLines()
+    private void UpdateFilteredLines()
     {
         if (string.IsNullOrWhiteSpace(this._searchText))
         {
-            return this._logLines;
+            this._filteredLines = this._logLines;
         }
-
-        return this._logLines
-            .Where(line => line.Contains(this._searchText, StringComparison.OrdinalIgnoreCase))
-            .ToList();
+        else
+        {
+            this._filteredLines = this._logLines
+                .Where(line => line.Contains(this._searchText, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
     }
 
     private async Task ScrollToBottomAsync()
     {
-        try
+        if (this._jsModule != null)
         {
-            await this.JSRuntime.InvokeVoidAsync("eval", "var el = document.getElementById('log-terminal'); if (el) { el.scrollTop = el.scrollHeight; }").ConfigureAwait(false);
-        }
-        catch
-        {
-            // Ignore error
+            try
+            {
+                await this._jsModule.InvokeVoidAsync("scrollToBottom", "log-terminal");
+            }
+            catch
+            {
+                // Ignore JS call errors
+            }
         }
     }
 }
