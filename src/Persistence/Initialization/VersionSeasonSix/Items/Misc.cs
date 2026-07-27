@@ -67,7 +67,7 @@ public class Misc : InitializerBase
         var dropItemGroup = this.Context.CreateNew<DropItemGroup>();
         dropItemGroup.SetGuid(itemDefinition.Group, itemDefinition.Number);
         dropItemGroup.PossibleItems.Add(itemDefinition);
-        dropItemGroup.Chance = 0.1; // 10 Percent
+        dropItemGroup.Chance = 0.01; // 1 Percent
         dropItemGroup.Description = "The drop item group for Rena";
         dropItemGroup.MinimumMonsterLevel = 30;
         dropItemGroup.MaximumMonsterLevel = 255;
