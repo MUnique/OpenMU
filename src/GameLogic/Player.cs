@@ -1877,6 +1877,14 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// save fails too, so the whole session is lost on relog. Serializing the packet handler funnel
     /// and the save against each other closes that window. The lock is re-entrant per asynchronous
     /// flow, so an inline save inside an already-serialized handler does not deadlock.
+    /// <para>
+    /// Invariant: never acquire another player's persistence lock (via their
+    /// <see cref="SaveProgressAsync"/> or <see cref="RunPersistenceExclusiveAsync{T}"/>) from inside a
+    /// packet handler, which already holds this player's lock, unless a global lock order is enforced.
+    /// Today only the trade accept does a cross-player save, and it cannot form a cycle because a trade
+    /// has a single accepting side (so the A-then-B acquisition order has no concurrent B-then-A
+    /// counterpart). A second cross-player caller with the opposite order could deadlock.
+    /// </para>
     /// </remarks>
     /// <typeparam name="T">The result type of the operation.</typeparam>
     /// <param name="operation">The operation to run exclusively.</param>
