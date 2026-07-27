@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <PacketDefinitions xmlns="http://www.munique.net/OpenMU/PacketDefinitions">
   <Description>This file contains all packet definitions for packets which are sent from game server to client.</Description>
   <Structures>
@@ -11172,6 +11172,32 @@
           </Fields>
         </Structure>
       </Structures>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>94</Code>
+      <Name>EventChipRegistrationResult</Name>
+      <Length>10</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player receives the result of registering Rena or Event Chips at the Golden Archer NPC.</SentWhen>
+      <CausedReaction>The client updates the Golden Archer interface with total registered count and remaining count in inventory.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>RegisteredCount</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>RemainingInventoryCount</Name>
+        </Field>
+      </Fields>
     </Packet>
   </Packets>
   <Enums>

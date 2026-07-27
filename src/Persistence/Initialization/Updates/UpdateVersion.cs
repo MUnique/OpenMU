@@ -494,4 +494,14 @@ public enum UpdateVersion
     /// The version of the <see cref="FinishElfMasterTreePlugIn"/>.
     /// </summary>
     FinishElfMasterTree = 97,
+
+    /// <summary>
+    /// The version of the <see cref="AddItemRegistrationAttributesUpdatePlugIn"/>.
+    /// </summary>
+    AddItemRegistrationAttributes = 98,
+
+    /// <summary>
+    /// The version of the <see cref="AddRenaItemUpdatePlugIn"/>.
+    /// </summary>
+    AddRenaItem = 99,
 }

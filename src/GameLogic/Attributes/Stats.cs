@@ -148,6 +148,16 @@ public class Stats
     public static AttributeDefinition Resets { get; } = new(new Guid("89A891A7-F9F9-4AB5-AF36-12056E53A5F7"), "Resets", "Reset quantity of current character");
 
     /// <summary>
+    /// Gets the registered renas / items attribute definition.
+    /// </summary>
+    public static AttributeDefinition RegisteredRenas { get; } = new(new Guid("45B1C2A3-3E4F-5A6B-7C8D-9E0F1A2B3C4D"), "Registered Renas", "Progress towards next item registration reward");
+
+    /// <summary>
+    /// Gets the total registered renas / items attribute definition.
+    /// </summary>
+    public static AttributeDefinition TotalRegisteredRenas { get; } = new(new Guid("56C2D3B4-4F5A-6B7C-8D9E-0F1A2B3C4D5E"), "Total Registered Renas", "Total registered items (all-time counter)");
+
+    /// <summary>
     /// Gets the zen amount rate attribute definition.
     /// </summary>
     public static AttributeDefinition MoneyAmountRate { get; } = new(new Guid("D84D1A5C-3A56-4CB9-8DD4-158AFD4D1EDB"), "Money Drop Amount Rate", "Defines a multiplier for the amount of a money drop.");
