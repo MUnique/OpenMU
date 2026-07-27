@@ -660,6 +660,7 @@ internal class SkillsInitializer : SkillsInitializerBase
 
         // Other
         this.AddAttributeRelationship(SkillNumber.RagefulBlowMastery, Stats.RagefulBlowMasteryDurabilityDecChance, 1, Stats.RagefulBlowMasteryDurabilityDecChance);
+        this.AddAttributeRelationship(SkillNumber.SleepStrengthener, Stats.SleepStrBonusChance, 1, Stats.SleepStrBonusChance);
     }
 
     private void AddAttributeRelationship(SkillNumber skillNumber, AttributeDefinition targetAttribute, float multiplier, AttributeDefinition sourceAttribute, InputOperator inputOperator = InputOperator.Multiply, AggregateType aggregateType = AggregateType.AddRaw)
@@ -850,11 +851,11 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.AddPassiveMasterSkillDefinition(SkillNumber.FireTomeMastery, Stats.BleedingDamageMultiplier, AggregateType.AddRaw, $"{Formula181} / 100", 3, 2, SkillNumber.FireTomeStrengthener);
         this.AddPassiveMasterSkillDefinition(SkillNumber.WindTomeMastery, Stats.MasteryStunChance, AggregateType.AddRaw, $"{Formula120} / 100", 3, 2, SkillNumber.WindTomeStrengthener);
         this.AddPassiveMasterSkillDefinition(SkillNumber.LightningTomeMastery, Stats.MasteryMoveTargetChance, AggregateType.AddRaw, $"{Formula181} / 100", 3, 2, SkillNumber.LightningTomeStren);
-        this.AddMasterSkillDefinition(SkillNumber.SleepStrengthener, SkillNumber.Sleep, SkillNumber.Undefined, 2, 3, SkillNumber.Sleep, 20, Formula120);
+        this.AddMasterSkillDefinition(SkillNumber.SleepStrengthener, SkillNumber.Sleep, SkillNumber.Undefined, 2, 3, SkillNumber.Sleep, 20, Formula120Value, Formula120, Stats.SleepStrBonusChance, AggregateType.AddRaw);
         this.AddMasterSkillDefinition(SkillNumber.ChainLightningStr, SkillNumber.ChainLightning, SkillNumber.Undefined, 2, 4, SkillNumber.ChainLightning, 20, Formula502);
         this.AddMasterSkillDefinition(SkillNumber.LightningShockStr, SkillNumber.LightningShock, SkillNumber.Undefined, 2, 4, SkillNumber.LightningShock, 20, Formula502);
         this.AddPassiveMasterSkillDefinition(SkillNumber.MagicMasterySummoner, Stats.WizardryAndCurseBaseDmgBonus, AggregateType.AddRaw, Formula502, 5, 2);
-        this.AddMasterSkillDefinition(SkillNumber.DrainLifeStrengthener, SkillNumber.DrainLife, SkillNumber.Undefined, 2, 5, SkillNumber.DrainLife, 20, Formula502);
+        this.AddMasterSkillDefinition(SkillNumber.DrainLifeStrengthener, SkillNumber.DrainLife, SkillNumber.Undefined, 2, 5, SkillNumber.DrainLife, 20, Formula502, Formula502, Stats.DrainLifeStrBonusHealing, AggregateType.AddRaw);
         this.AddPassiveMasterSkillDefinition(SkillNumber.StickStrengthener, Stats.StickBonusBaseDamage, AggregateType.AddRaw, Formula502, 2, 3);
         this.AddPassiveMasterSkillDefinition(SkillNumber.OtherWorldTomeStreng, Stats.BookBonusBaseDamage, AggregateType.AddRaw, Formula632, 2, 3);
         this.AddPassiveMasterSkillDefinition(SkillNumber.StickMastery, Stats.StickMasteryBonusDamage, AggregateType.AddRaw, Formula1154, 3, 3, SkillNumber.StickStrengthener);

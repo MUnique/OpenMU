@@ -19,7 +19,7 @@ using MUnique.OpenMU.PlugIns;
 public class DrainLifeSkillPlugIn : IAreaSkillPlugIn
 {
     /// <inheritdoc/>
-    public short Key => 214;
+    public virtual short Key => 214;
 
     /// <inheritdoc/>
     public async ValueTask AfterTargetGotAttackedAsync(IAttacker attacker, IAttackable target, SkillEntry skillEntry, Point targetAreaCenter, HitInfo? hitInfo)
@@ -31,6 +31,19 @@ public class DrainLifeSkillPlugIn : IAreaSkillPlugIn
             return;
         }
 
-        playerAttributes[Stats.CurrentHealth] = (uint)Math.Min(playerAttributes[Stats.MaximumHealth], playerAttributes[Stats.CurrentHealth] + hitInfo.Value.HealthDamage);
+        var restoreHealth = playerAttributes[Stats.DrainLifeStrBonusHealing];
+
+        if (target is Player)
+        {
+            restoreHealth += (attackerPlayer.Attributes[Stats.TotalEnergy] / 23) + (hitInfo.Value.HealthDamage * 0.1f);
+        }
+        else
+        {
+            restoreHealth += (attackerPlayer.Attributes[Stats.TotalEnergy] / 15) + (target.Attributes[Stats.Level] / 2.5f);
+        }
+
+        playerAttributes[Stats.CurrentHealth] = (uint)Math.Min(
+            playerAttributes[Stats.MaximumHealth],
+            playerAttributes[Stats.CurrentHealth] + restoreHealth);
     }
 }

@@ -494,4 +494,9 @@ public enum UpdateVersion
     /// The version of the <see cref="FinishElfMasterTreePlugIn"/>.
     /// </summary>
     FinishElfMasterTree = 97,
+
+    /// <summary>
+    /// The version of the <see cref="FinishSummonerMasterTreePlugIn"/>.
+    /// </summary>
+    FinishSummonerMasterTree = 98,
 }
