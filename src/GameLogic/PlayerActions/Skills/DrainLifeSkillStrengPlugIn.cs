@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// Handles the drain life skill of the summoner class. Additionally to the attacked target, it regains life for damage dealt.
+/// Handles the drain life strengthener skill of the summoner class. Additionally to the attacked target, it regains life for damage dealt.
 /// </summary>
 [PlugIn]
 [Display(Name = nameof(PlugInResources.DrainLifeSkillStrengPlugIn_Name), Description = nameof(PlugInResources.DrainLifeSkillStrengPlugIn_Description), ResourceType = typeof(PlugInResources))]

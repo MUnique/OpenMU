@@ -47,7 +47,7 @@ public class FinishSummonerMasterTreePlugIn : UpdatePlugInBase
     public override bool IsMandatory => true;
 
     /// <inheritdoc />
-    public override DateTime CreatedAt => new(2026, 7, 28, 16, 0, 0, DateTimeKind.Utc);
+    public override DateTime CreatedAt => new(2026, 7, 27, 20, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
