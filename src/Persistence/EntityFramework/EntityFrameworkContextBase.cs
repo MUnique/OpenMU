@@ -76,8 +76,10 @@ internal class EntityFrameworkContextBase : IContext
         // instead of failing the whole save - which would otherwise leave the session unpersisted and
         // roll the player back on relog.
         const int maxAttempts = 3;
-        for (var attempt = 1; ; attempt++)
+        var attempt = 0;
+        while (true)
         {
+            attempt++;
             try
             {
                 return await this.SaveChangesCoreAsync(cancellationToken).ConfigureAwait(false);
