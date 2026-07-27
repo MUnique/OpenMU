@@ -71,7 +71,8 @@ public class PartyBenchmarks
     [Benchmark]
     public async ValueTask DistributeMoneyAfterKillAsync()
     {
-        await _party.DistributeMoneyAfterKillAsync(_killedObject, _killer, 10000);
+        var shares = _players.Select(p => new MoneyShare(p, 10000 / (uint)_players.Count)).ToList();
+        await _party.DistributeMoneyAfterKillAsync(_killedObject, _killer, shares);
     }
 
     /// <summary>

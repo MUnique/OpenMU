@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.GameLogic;
 
 using System.Diagnostics;
 using System.Threading;
-using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Pathfinding;
 using Nito.AsyncEx;
 
@@ -20,6 +19,8 @@ public sealed class DroppedMoney : AsyncDisposable, ILocateable
     /// </summary>
     private readonly AsyncLock _pickupLock;
 
+    private readonly IReadOnlyList<MoneyShare> _shares;
+
     private Timer? _removeTimer;
 
     private bool _availableToPick = true;
@@ -30,9 +31,14 @@ public sealed class DroppedMoney : AsyncDisposable, ILocateable
     /// <param name="amount">The amount.</param>
     /// <param name="position">The position where the item was dropped on the map.</param>
     /// <param name="map">The map.</param>
-    public DroppedMoney(uint amount, Point position, GameMap map)
+    /// <param name="shares">
+    /// The part of the money which is reserved for each player, matching the experience they gained from the kill.
+    /// When it's empty - for example for money from an item box - the money is split equally instead.
+    /// </param>
+    public DroppedMoney(uint amount, Point position, GameMap map, IReadOnlyList<MoneyShare>? shares = null)
     {
         this.Amount = amount;
+        this._shares = shares ?? [];
         this._pickupLock = new();
         this.Position = position;
         this.CurrentMap = map;
@@ -131,54 +137,33 @@ public sealed class DroppedMoney : AsyncDisposable, ILocateable
     /// <returns><c>True</c>, if at least one player received money; Otherwise, <c>false</c>.</returns>
     private bool TryGiveMoneyTo(Player player)
     {
-        if (player.Party is { } party)
+        if (player.Party is not { } party)
         {
-            var partyMembers = party.PartyList
-                .OfType<Player>()
-                .Where(p => p.CurrentMap == player.CurrentMap && !p.IsAtSafezone() && p.Attributes is { })
-                .ToList();
-
-            if (partyMembers.Count == 0)
+            if (!MoneyDistribution.TryPay(player, this.Amount))
             {
-                player.Logger.LogDebug("No party member could receive the money, Player {0}, Money {1}", player, this);
+                player.Logger.LogDebug("Money could not be added to the inventory, Player {0}, Money {1}", player, this);
                 return false;
             }
 
-            var share = (int)(this.Amount / partyMembers.Count);
-            var received = false;
-            foreach (var member in partyMembers)
-            {
-                received |= member.TryAddMoney((int)(share * member.Attributes![Stats.MoneyAmountRate]));
-            }
-
-            if (!received)
-            {
-                player.Logger.LogDebug("No party member could take the money, Player {0}, Money {1}", player, this);
-            }
-
-            return received;
+            return true;
         }
 
-        var amountToAdd = (int)this.Amount;
-        if (player.GameContext?.Configuration?.ClampMoneyOnPickup ?? false)
+        // Money has no owner - it can always be picked up, by strangers too. The recorded shares
+        // only apply when the party which picks it up is the one which earned it; then the money
+        // follows the experience. For anyone else there is no experience to follow, so it is split
+        // equally between the picking party, just like money without any shares (e.g. an item box).
+        var earnedByThisParty = this._shares.Any(share => party.IsEligibleForMoney(share.Player, player));
+        var shares = earnedByThisParty
+            ? this._shares
+            : MoneyDistribution.CreateEqualShares(this.Amount, party.PartyList.OfType<Player>().ToList());
+
+        var received = MoneyDistribution.TryPayShares(shares, member => party.IsEligibleForMoney(member, player));
+        if (!received)
         {
-            var maxMoney = player.GameContext?.Configuration?.MaximumInventoryMoney ?? int.MaxValue;
-            amountToAdd = (int)Math.Min(this.Amount, (uint)Math.Max(0, maxMoney - player.Money));
-
-            if (amountToAdd <= 0)
-            {
-                player.Logger.LogDebug("Player is at maximum money limit, Player {0}, Money {1}", player, this);
-                return false;
-            }
+            player.Logger.LogDebug("No party member could take the money, Player {0}, Money {1}", player, this);
         }
 
-        if (!player.TryAddMoney(amountToAdd))
-        {
-            player.Logger.LogDebug("Money could not be added to the inventory, Player {0}, Money {1}", player, this);
-            return false;
-        }
-
-        return true;
+        return received;
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]

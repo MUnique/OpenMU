@@ -195,6 +195,12 @@
   <data name="ResetChatCommandPlugIn_Description" xml:space="preserve">
     <value>Handles the chat command '/reset'.</value>
   </data>
+  <data name="ResetInfoChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Reset info chat command</value>
+  </data>
+  <data name="ResetInfoChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/resetinfo'. Shows the required costs and the granted points for the next reset.</value>
+  </data>
   <data name="ResetFeaturePlugIn_Name" xml:space="preserve">
     <value>Reset Feature</value>
   </data>

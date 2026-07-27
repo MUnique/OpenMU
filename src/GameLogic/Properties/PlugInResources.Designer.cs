@@ -2286,6 +2286,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handles the chat command &apos;/resetinfo&apos;. Shows the required costs and the granted points for the next reset..
+        /// </summary>
+        public static string ResetInfoChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ResetInfoChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset info chat command.
+        /// </summary>
+        public static string ResetInfoChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ResetInfoChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Reset Feature.
         /// </summary>
         public static string ResetFeaturePlugIn_Name {

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <PacketDefinitions xmlns="http://www.munique.net/OpenMU/PacketDefinitions">
   <Description>This file contains all packet definitions for packets which are sent from game client to the game server.</Description>
   <Structures>
@@ -4250,6 +4250,18 @@
       <CausedReaction>The server will remove the player as spectator.</CausedReaction>
       <Fields>
       </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F5</Code>
+      <SubCode>00</SubCode>
+      <Name>ChatCommandListRequest</Name>
+      <Caption>Request chat command list</Caption>
+      <Length>4</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A client which supports a user interface for chat commands requests the list of commands which are available to the player. It's usually sent after the character entered the game world.</SentWhen>
+      <CausedReaction>The server sends an AvailableChatCommand message for each available chat command.</CausedReaction>
+      <Fields />
     </Packet>
   </Packets>
   <Enums>
