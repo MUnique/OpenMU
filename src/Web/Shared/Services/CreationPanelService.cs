@@ -4,13 +4,13 @@
 
 namespace MUnique.OpenMU.Web.Shared.Services;
 
-using MUnique.OpenMU.Web.Shared.Components.Modal;
 using MUnique.OpenMU.DataModel;
+using MUnique.OpenMU.Web.Shared.Components.Modal;
 using MUnique.OpenMU.Web.Shared.Properties;
 
 /// <summary>
-/// A circuit-scoped service which holds the currently active <see cref="CreationSession"/>.
-/// The creation panel (rendered in the layout) subscribes to it and renders the form, so that
+/// A circuit-scoped service that holds the currently active <see cref="CreationSession"/>.
+/// The creation panel (rendered in the layout) subscribes to it and renders the form so that
 /// the form survives page navigation and can be collapsed while the user looks up other data.
 /// Only one creation can be active at a time; starting another one asks the user to discard the current one.
 /// </summary>

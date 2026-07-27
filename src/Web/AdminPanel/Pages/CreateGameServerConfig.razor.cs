@@ -143,7 +143,7 @@ public partial class CreateGameServerConfig : ComponentBase, IAsyncDisposable
         result.Description = this._viewModel.Description;
         result.PvpEnabled = this._viewModel.PvpEnabled;
         result.ExperienceRate = this._viewModel.ExperienceRate;
-        result.GameConfiguration = await this.DataSource.GetOwnerAsync();
+        result.GameConfiguration = await this.DataSource.GetOwnerAsync().ConfigureAwait(false);
         result.ServerConfiguration = this._viewModel.ServerConfiguration!;
 
         var endpoint = context.CreateNew<GameServerEndpoint>();

@@ -496,7 +496,7 @@ internal sealed class Program : IDisposable
         }
         else if (!await contextProvider.IsDatabaseUpToDateAsync().ConfigureAwait(false))
         {
-            if (_systemConfiguration?.AutoUpdateSchema is true || await contextProvider.ShouldDoAutoSchemaUpdateAsync())
+            if (_systemConfiguration?.AutoUpdateSchema is true || await contextProvider.ShouldDoAutoSchemaUpdateAsync().ConfigureAwait(false))
             {
                 Console.WriteLine("The database schema needs to be updated before the server can be started. Updating...");
                 await contextProvider.ApplyAllPendingUpdatesAsync().ConfigureAwait(false);
