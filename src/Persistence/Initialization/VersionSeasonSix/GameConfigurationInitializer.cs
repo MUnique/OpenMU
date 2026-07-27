@@ -98,13 +98,21 @@ public class GameConfigurationInitializer : GameConfigurationInitializerBase
     private void WireRenaDropToEventMaps()
     {
         var renaDropGroup = this.GameConfiguration.DropItemGroups
-            .FirstOrDefault(g => g.PossibleItems.Any(i => i.Group == RenaDropSupport.Group && i.Number == RenaDropSupport.Number));
+            .FirstOrDefault(g => g.PossibleItems.Any(i => i.Group == 14 && i.Number == 21));
         if (renaDropGroup is null)
         {
             return;
         }
 
-        RenaDropSupport.WireToEventMaps(this.GameConfiguration, renaDropGroup);
+        var eventMaps = this.GameConfiguration.Maps
+            .Where(m => m.Name.Value?.StartsWith("Blood Castle") is true || m.Name.Value is "Devil Square 5" or "Devil Square 6" or "Devil Square 7");
+        foreach (var map in eventMaps)
+        {
+            if (!map.DropItemGroups.Contains(renaDropGroup))
+            {
+                map.DropItemGroups.Add(renaDropGroup);
+            }
+        }
     }
 
     private void CreateJewelMixes()

@@ -49,7 +49,7 @@ public class ItemRegistrationResultPlugIn : IItemRegistrationResultPlugIn
             return;
         }
 
-        var strategy = this._player.GameContext.PlugInManager.GetStrategy<short, IItemRegistrationStrategy>((short)npcNumber);
+        var strategy = this._player.GameContext.PlugInManager.GetStrategy<short, IItemRegistrationStrategy>(npcNumber);
         if (strategy is null)
         {
             return;

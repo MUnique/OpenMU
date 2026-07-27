@@ -8,6 +8,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -28,6 +29,16 @@ public class AddRenaItemUpdatePlugIn : UpdatePlugInBase
     /// </summary>
     internal const string PlugInDescription = "This update adds the missing Rena item, which is required for the item registration feature.";
 
+    /// <summary>
+    /// The item group of Rena.
+    /// </summary>
+    private const byte ItemGroup = 14;
+
+    /// <summary>
+    /// The item number of Rena.
+    /// </summary>
+    private const short ItemNumber = 21;
+
     /// <inheritdoc />
     public override string Name => PlugInName;
 
@@ -47,13 +58,49 @@ public class AddRenaItemUpdatePlugIn : UpdatePlugInBase
     public override DateTime CreatedAt => new(2026, 07, 26, 18, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
+#pragma warning disable CS1998
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
+#pragma warning restore CS1998
     {
-        var itemDefinition = VersionSeasonSix.RenaDropSupport.GetOrCreateItem(context, gameConfiguration);
-        var dropItemGroup = VersionSeasonSix.RenaDropSupport.GetOrCreateDropItemGroup(context, gameConfiguration, itemDefinition);
+        var itemDefinition = gameConfiguration.Items.FirstOrDefault(item => item.Group == ItemGroup && item.Number == ItemNumber);
+        if (itemDefinition is null)
+        {
+            itemDefinition = context.CreateNew<ItemDefinition>();
+            itemDefinition.Name = "Rena";
+            itemDefinition.Number = ItemNumber;
+            itemDefinition.Group = ItemGroup;
+            itemDefinition.DropLevel = 0;
+            itemDefinition.DropsFromMonsters = false;
+            itemDefinition.Durability = 1;
+            itemDefinition.Width = 1;
+            itemDefinition.Height = 1;
+            itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
+            gameConfiguration.Items.Add(itemDefinition);
+        }
+
+        var dropItemGroup = gameConfiguration.DropItemGroups.FirstOrDefault(group => group.PossibleItems.Contains(itemDefinition));
+        if (dropItemGroup is null)
+        {
+            dropItemGroup = context.CreateNew<DropItemGroup>();
+            dropItemGroup.SetGuid(ItemGroup, ItemNumber);
+            dropItemGroup.PossibleItems.Add(itemDefinition);
+            dropItemGroup.Chance = 0.01; // 1 Percent
+            dropItemGroup.Description = "The drop item group for Rena";
+            dropItemGroup.MinimumMonsterLevel = 30;
+            dropItemGroup.MaximumMonsterLevel = 255;
+            gameConfiguration.DropItemGroups.Add(dropItemGroup);
+        }
 
         // Always (re-)wire, even if the item/group already existed - a previous, incomplete run
         // must not be able to skip this step.
-        VersionSeasonSix.RenaDropSupport.WireToEventMaps(gameConfiguration, dropItemGroup);
+        var eventMaps = gameConfiguration.Maps
+            .Where(m => m.Name.Value?.StartsWith("Blood Castle") is true || m.Name.Value is "Devil Square 5" or "Devil Square 6" or "Devil Square 7");
+        foreach (var map in eventMaps)
+        {
+            if (!map.DropItemGroups.Contains(dropItemGroup))
+            {
+                map.DropItemGroups.Add(dropItemGroup);
+            }
+        }
     }
 }

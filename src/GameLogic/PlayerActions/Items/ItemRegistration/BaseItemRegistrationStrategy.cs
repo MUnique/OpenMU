@@ -36,11 +36,8 @@ public abstract class BaseItemRegistrationStrategy : IItemRegistrationStrategy
     /// <inheritdoc />
     public virtual async ValueTask RegisterAsync(Player player, PlugIns.ItemRegistration.NpcItemRegistrationRule rule)
     {
-        var item = player.Inventory?.Items.FirstOrDefault(i =>
-            i.Definition?.Group == rule.AcceptedItemGroup && i.Definition?.Number == rule.AcceptedItemNumber
-        );
-
-        if (item == null)
+        var item = player.Inventory?.Items.FirstOrDefault(i => i.Definition?.Group == rule.AcceptedItemGroup && i.Definition?.Number == rule.AcceptedItemNumber);
+        if (item is null)
         {
             await player.ShowBlueMessageAsync("You don't have the required item in your inventory.").ConfigureAwait(false);
             await this.OnMissingItemAsync(player).ConfigureAwait(false);
@@ -48,7 +45,7 @@ public abstract class BaseItemRegistrationStrategy : IItemRegistrationStrategy
         }
 
         int requiredItemsCount = rule.RequiredItemsCount;
-        if (requiredItemsCount <= 0)
+        if (requiredItemsCount <= 0 || this.TargetStat is null)
         {
             requiredItemsCount = 1;
         }
