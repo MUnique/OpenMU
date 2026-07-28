@@ -556,24 +556,6 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Handles the drain life strengthener skill of the summoner class. Additionally to the attacked target, it regains life for damage dealt..
-        /// </summary>
-        public static string DrainLifeSkillStrengPlugIn_Description {
-            get {
-                return ResourceManager.GetString("DrainLifeSkillStrengPlugIn_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Drain Life Strengthener Skill.
-        /// </summary>
-        public static string DrainLifeSkillStrengPlugIn_Name {
-            get {
-                return ResourceManager.GetString("DrainLifeSkillStrengPlugIn_Name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Handles the earth shake skill of the dark horse. Pushes the targets away from the attacker..
         /// </summary>
         public static string EarthShakeSkillPlugIn_Description {

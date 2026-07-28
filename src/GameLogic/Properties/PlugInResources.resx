@@ -387,12 +387,6 @@
   <data name="DrainLifeSkillPlugIn_Description" xml:space="preserve">
     <value>Handles the drain life skill of the summoner class. Additionally to the attacked target, it regains life for damage dealt.</value>
   </data>
-  <data name="DrainLifeSkillStrengPlugIn_Name" xml:space="preserve">
-    <value>Drain Life Strengthener Skill</value>
-  </data>
-  <data name="DrainLifeSkillStrengPlugIn_Description" xml:space="preserve">
-    <value>Handles the drain life strengthener skill of the summoner class. Additionally to the attacked target, it regains life for damage dealt.</value>
-  </data>
   <data name="EarthShakeSkillPlugIn_Name" xml:space="preserve">
     <value>Earth shake skill</value>
   </data>
