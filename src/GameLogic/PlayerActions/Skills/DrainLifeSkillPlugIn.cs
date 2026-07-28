@@ -19,7 +19,7 @@ using MUnique.OpenMU.PlugIns;
 public class DrainLifeSkillPlugIn : IAreaSkillPlugIn
 {
     /// <inheritdoc/>
-    public virtual short Key => 214;
+    public short Key => 214;
 
     /// <inheritdoc/>
     public async ValueTask AfterTargetGotAttackedAsync(IAttacker attacker, IAttackable target, SkillEntry skillEntry, Point targetAreaCenter, HitInfo? hitInfo)
