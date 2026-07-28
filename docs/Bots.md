@@ -238,8 +238,10 @@ hunt the leader's maps. The elf heals, the buffs are shared, the party
 experience bonus applies. Parties re-form every hour.
 
 A player may invite a bot into their own party: it accepts after a human-like
-pause of a few seconds, provided the level gap is sane and it is not in the
-middle of an errand. A living player takes precedence over the bot's own company
+pause of a few seconds, as long as it is not in the middle of an errand. There is
+no level gate — just like OpenMU's own party action, a bot accepts an inviter of
+any level, since it is the player who invites and the bot leaves once it gets
+bored. A living player takes precedence over the bot's own company
 — a bot hunting with other bots leaves them for the inviter, and breaks that bot
 party up if it was leading it, so a player never has to guess which bot happens
 to be free. In a party the bot follows its leader, defers a due reset, and
