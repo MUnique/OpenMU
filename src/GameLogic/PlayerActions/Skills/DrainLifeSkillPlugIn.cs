@@ -25,7 +25,8 @@ public class DrainLifeSkillPlugIn : IAreaSkillPlugIn
     public async ValueTask AfterTargetGotAttackedAsync(IAttacker attacker, IAttackable target, SkillEntry skillEntry, Point targetAreaCenter, HitInfo? hitInfo)
     {
         if (attacker is not Player attackerPlayer
-            || hitInfo is not { HealthDamage: > 0 }
+            || hitInfo is not { } hit
+            || hit is { HealthDamage: 0, ShieldDamage: 0 } // It's a miss
             || attackerPlayer.Attributes is not { } playerAttributes)
         {
             return;
@@ -35,7 +36,7 @@ public class DrainLifeSkillPlugIn : IAreaSkillPlugIn
 
         if (target is Player)
         {
-            restoreHealth += (attackerPlayer.Attributes[Stats.TotalEnergy] / 23) + (hitInfo.Value.HealthDamage * 0.1f);
+            restoreHealth += (attackerPlayer.Attributes[Stats.TotalEnergy] / 23) + ((hit.HealthDamage + hit.ShieldDamage) * 0.1f);
         }
         else
         {
