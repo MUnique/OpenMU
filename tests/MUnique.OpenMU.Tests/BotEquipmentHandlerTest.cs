@@ -16,7 +16,7 @@ using MUnique.OpenMU.GameLogic.Bots;
 /// <summary>
 /// Tests which gear a bot considers an upgrade (<see cref="BotEquipmentHandler.IsUpgradeFor"/>, also
 /// the pickup filter of the offline <see cref="MUnique.OpenMU.GameLogic.Offline.ItemPickupHandler"/>)
-/// and the hand rule it shares with the engine (<see cref="ItemExtensions.ConflictsWithEquippedHands"/>).
+/// and the hand rule it shares with the engine (<see cref="MUnique.OpenMU.GameLogic.ItemExtensions.ConflictsWithEquippedHands(ItemDefinition, IStorage, byte)"/>).
 /// </summary>
 [TestFixture]
 public class BotEquipmentHandlerTest

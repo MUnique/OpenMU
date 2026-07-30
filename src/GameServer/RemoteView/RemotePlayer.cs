@@ -14,15 +14,15 @@ using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// A player which is playing through a remote connection.
+/// A player that is playing through a remote connection.
 /// </summary>
 public class RemotePlayer : Player, IClientVersionProvider, IHasIpAddress
 {
     private readonly byte[] _packetBuffer = new byte[0xFF];
 
-    private ClientVersion _clientVersion;
-
     private readonly string? _ipAddress;
+
+    private ClientVersion _clientVersion;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RemotePlayer"/> class.

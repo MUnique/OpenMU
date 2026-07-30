@@ -82,7 +82,7 @@ internal sealed class BotNavigator : AsyncDisposable
 
     /// <summary>
     /// How many charges an emergency refill stocks up (the potion item's Durability holds the remaining
-    /// count; one is spent per heal). Spread over as many item stacks as the definition's stack size
+    /// count; one is spent per healing). Spread over as many item stacks as the definition's stack size
     /// needs: a Large Healing Potion holds three charges per stack, so a bot handed a single 255-charge
     /// "potion" carried an item the game cannot produce - its stack never looked low again (the shopping
     /// loop for that potion kind went dead), and stacking it with a bought one underflowed the count.
@@ -92,7 +92,7 @@ internal sealed class BotNavigator : AsyncDisposable
     /// <summary>
     /// Emergency refill threshold: normally the bot restocks potions by BUYING them at a merchant (see
     /// <see cref="BotShoppingHandler"/>, triggered well above this level); only when a stack still runs
-    /// this low (e.g. no Zen, merchant unreachable) is it topped up out of thin air as a last resort,
+    /// this low (e.g. no Zen, merchant unreachable), is it topped up out of thin air as a last resort,
     /// so the bot never dies over an empty bottle.
     /// </summary>
     private const int HealPotionRefillBelow = 10;
@@ -103,7 +103,7 @@ internal sealed class BotNavigator : AsyncDisposable
     /// <summary>
     /// How far the travel destination may drift (e.g. a roaming monster the bot homes in on) before the
     /// cached route is re-planned. Re-planning a whole-map A* every tick just to consume three steps
-    /// starved the path finder pool once dozens of bots travelled at the same time.
+    /// starved the pathfinder pool once dozens of bots traveled at the same time.
     /// </summary>
     private const int PathReuseTolerance = 4;
 
@@ -111,7 +111,7 @@ internal sealed class BotNavigator : AsyncDisposable
     private const int MerchantTalkRange = 3;
 
     /// <summary>
-    /// If a monster is within this range the bot stops travelling and lets the combat handler engage.
+    /// If a monster is within this range the bot stops traveling and lets the combat handler engage.
     /// MUST equal the combat hunting range: the combat handler only ever targets monsters within
     /// <see cref="CombatHandler.HuntingRange"/> of the bot, so stopping for anything further away would
     /// hand control to the combat handler for a monster it never fights - the bot would freeze in place
@@ -119,10 +119,10 @@ internal sealed class BotNavigator : AsyncDisposable
     /// </summary>
     private const int TravelStopRange = HuntingRange;
 
-    /// <summary>Search limit for the travel path finder, generous enough for a full cross-map route.</summary>
+    /// <summary>Search limit for the travel pathfinder, generous enough for a full cross-map route.</summary>
     private const int TravelSearchLimit = 20000;
 
-    /// <summary>Heuristic weight while travelling: high enough to make the A* search greedy and cheap over long routes.</summary>
+    /// <summary>Heuristic weight while traveling: high enough to make the A* search greedy and cheap over long routes.</summary>
     private const int TravelHeuristicWeight = 12;
 
     private const int MaxPointPickAttempts = 25;
@@ -131,16 +131,27 @@ internal sealed class BotNavigator : AsyncDisposable
     private const int FollowDistance = 10;
 
     /// <summary>
-    /// Hunting grounds closer than this (tiles) to a recent death site are avoided after the same
+    /// Hunting grounds closer than this (tiles) to a recent death site is avoided after the same
     /// player killed the bot repeatedly (see <see cref="OfflinePlayer.TryGetDeathSiteToAvoid"/>),
     /// so the bot farms somewhere else instead of walking back into the same lost fight.
     /// </summary>
     private const int DeathSiteAvoidanceRange = 30;
 
+    /// <summary>
+    /// Share of the picks the best ranked map takes when the bot chooses where to hunt (see
+    /// <see cref="PickByRank"/>); the runners-up split what is left, on the same terms. Below a half on
+    /// purpose: at a half the fourth map of a level band and everything behind it share a few percent
+    /// between them, which left Karutan, Icarus and Kanturu with three or four bots each while the top
+    /// map held a hundred. The bot still prefers the best ground - every candidate it draws from is
+    /// already a step up from where it stands - it just does not treat the runner-up as worthless.
+    /// </summary>
+    private const double BestCandidateShare = 0.35;
+
     /// <summary>The game's own warp action, so a bot travels on exactly a player's terms - fare included.</summary>
     private static readonly WarpAction WarpAction = new();
 
     private static readonly TimeSpan EvaluationInterval = TimeSpan.FromSeconds(1);
+
     private static readonly TimeSpan EmptyGroundGrace = TimeSpan.FromSeconds(8);
 
     /// <summary>How often the bot checks its backpack for equippable upgrades.</summary>
@@ -161,16 +172,6 @@ internal sealed class BotNavigator : AsyncDisposable
     /// or a quiet stretch between spawns does not count as one.
     /// </summary>
     private static readonly TimeSpan BarrenMapDuration = TimeSpan.FromMinutes(3);
-
-    /// <summary>
-    /// Share of the picks the best ranked map takes when the bot chooses where to hunt (see
-    /// <see cref="PickByRank"/>); the runners-up split what is left, on the same terms. Below a half on
-    /// purpose: at a half the fourth map of a level band and everything behind it share a few percent
-    /// between them, which left Karutan, Icarus and Kanturu with three or four bots each while the top
-    /// map held a hundred. The bot still prefers the best ground - every candidate it draws from is
-    /// already a step up from where it stands - it just does not treat the runner-up as worthless.
-    /// </summary>
-    private const double BestCandidateShare = 0.35;
 
     /// <summary>Cooldown for following the party leader to another map (shorter, so the group regroups quickly).</summary>
     private static readonly TimeSpan FollowWarpCooldown = TimeSpan.FromSeconds(20);
@@ -194,8 +195,8 @@ internal sealed class BotNavigator : AsyncDisposable
     private static readonly TimeSpan MaxResetDelay = TimeSpan.FromMinutes(10);
 
     /// <summary>
-    /// If the bot's position has not changed for this long it is considered stuck (a wedged walk, or a
-    /// monster it can't reach). The navigator then forces a fresh destination so the bot gets going again.
+    /// If the bot's position has not changed for this long, it is considered stuck (a wedged walk, or a
+    /// monster it can't reach). The navigator then forces a fresh destination, so the bot gets going again.
     /// </summary>
     private static readonly TimeSpan StuckTimeout = TimeSpan.FromSeconds(8);
 
@@ -207,9 +208,9 @@ internal sealed class BotNavigator : AsyncDisposable
     private static readonly TimeSpan StuckWithMonstersTimeout = TimeSpan.FromSeconds(30);
 
     /// <summary>
-    /// A pool of full-map path finders for long-distance travel. The pooled (scoped) path finder rejects
+    /// A pool of full-map pathfinders for long-distance travel. The pooled (scoped) pathfinder rejects
     /// start/end further apart than ~16 tiles, so travel uses a <see cref="FullGridNetwork"/> which resolves
-    /// routes across the whole map. A path finder is not safe for concurrent use, so we keep a small pool and
+    /// routes across the whole map. A pathfinder is not safe for concurrent use, so we keep a small pool and
     /// hand one out per call: several bots can plan routes in parallel (a single shared instance serialized
     /// every bot and starved navigation once the population reached the hundreds), while the pool size caps
     /// how many CPU cores whole-map searches may occupy at once.
@@ -356,6 +357,26 @@ internal sealed class BotNavigator : AsyncDisposable
         return Math.Abs(from.X - centerX) + Math.Abs(from.Y - centerY);
     }
 
+    /// <summary>
+    /// Picks an index into a list ranked best-first, each rank taking
+    /// <see cref="BestCandidateShare"/> of what the ranks before it left over. Deliberately not a
+    /// uniform draw - a bot should prefer the best ground it can hunt, just not to the exclusion of
+    /// everything else.
+    /// </summary>
+    /// <param name="count">The number of ranked candidates.</param>
+    private static int PickByRank(int count)
+    {
+        for (var rank = 0; rank < count - 1; rank++)
+        {
+            if (Rand.NextDouble() < BestCandidateShare)
+            {
+                return rank;
+            }
+        }
+
+        return count - 1;
+    }
+
     private async Task SafeEvaluateAsync(CancellationToken cancellationToken)
     {
         // The timer fires on a fixed interval regardless of whether the previous evaluation finished;
@@ -395,8 +416,8 @@ internal sealed class BotNavigator : AsyncDisposable
             return;
         }
 
-        // Inside a mini game event the whole normal routine below is suspended - the event
-        // dictates the pace, and every branch which could move the bot off the event map
+        // Inside a mini-game event the whole normal routine below is suspended - the event
+        // dictates the pace, and every branch that could move the bot off the event map
         // (shopping, revenge, warping, ground picking) must not run.
         if (this._player.CurrentMiniGame is not null)
         {
@@ -408,7 +429,7 @@ internal sealed class BotNavigator : AsyncDisposable
         // passed, and leave a party with a human again when the bot got bored (see BotPartyHandler).
         await BotPartyHandler.ProcessAsync(this._player).ConfigureAwait(false);
 
-        // Make sure the bot always carries healing and mana potions. Without them the offline handlers
+        // Make sure the bot always carries healing and mana potions. Without them, the offline handlers
         // have nothing to drink: the bot dies to sustained damage, and casters degrade to weak melee
         // once their mana runs dry. This also tops up already-generated bots at runtime.
         // Queued into the MuHelper tick: an ammunition refill lands in an equipped hand slot, which
@@ -427,7 +448,7 @@ internal sealed class BotNavigator : AsyncDisposable
 
             // Wings don't drop, so the loot-driven equipment progression above never provides them;
             // they are earned at the classic level milestones instead (see BotWingHandler). Queued
-            // for the same reason: equipping mounts item power-ups.
+            // for the same reason: equipping mount item power-ups.
             this._player.PendingBotActions.Enqueue(() => BotWingHandler.TryAdvanceWingsAsync(this._player));
         }
 
@@ -491,7 +512,7 @@ internal sealed class BotNavigator : AsyncDisposable
         // A master bot invests freshly earned master points (one per master level). Queued into the
         // MuHelper tick like the level-up progression - learning a skill mutates the skill list, which
         // must never happen while the combat handler enumerates it (see PendingBotActions). The master
-        // evolution itself is handled by the feature plugin's maintenance pass, because it restarts the bot.
+        // evolution itself is handled by the feature plugin's maintenance pass because it restarts the bot.
         if (BotMasterHandler.HasMasterPointsToSpend(this._player))
         {
             this._player.PendingBotActions.Enqueue(() => BotMasterHandler.TrySpendMasterPointsAsync(this._player));
@@ -505,7 +526,7 @@ internal sealed class BotNavigator : AsyncDisposable
             return;
         }
 
-        // An armed revenge (a player killed this bot; it respawned on the same map) overrides the
+        // Armed revenge (a player killed this bot; it respawned on the same map) overrides the
         // whole normal routine below, including following the party leader: the bot marches back to
         // the place of its death. A leader on a revenge march still drags its followers along - the
         // posse a wronged player would bring. Once the revenge is spent or times out, the bot falls
@@ -552,7 +573,7 @@ internal sealed class BotNavigator : AsyncDisposable
         // Home in on a nearby live monster instead of walking to a random tile in a map-sized spawn area
         // (where the bot would almost never arrive within combat range of an actual monster). This is what
         // makes the bot converge on real monsters and actually fight. The bot walks toward the monster;
-        // once within the combat range the branch above takes over and the combat handler engages. This
+        // once within the combat range, the branch above takes over and the combat handler engages. This
         // also runs inside the safezone, so a bot in town heads straight for the monsters just outside the
         // gate instead of a random far-away spawn point. Only when nothing is loaded within the seek radius
         // (deep in town, or all nearby monsters too strong) does it fall back to the coarse spawn-area /
@@ -573,14 +594,14 @@ internal sealed class BotNavigator : AsyncDisposable
         }
 
         // Nothing to fight here. If we still have a destination to reach, keep walking towards it. If the
-        // route turned out to be impossible (e.g. across a river), drop it and fall through to pick another
+        // route turns out to be impossible (e.g. across a river), drop it and fall through to pick another
         // ground in this same tick instead of standing still.
         if (this._hasDestination && this._player.GetDistanceTo(this._destination) > HuntingRange)
         {
             if (!await this.TravelTowardAsync(map, this._destination, cancellationToken).ConfigureAwait(false))
             {
                 // Impossible route: drop the destination and wait out the empty-ground grace before
-                // picking another one. Re-picking immediately turned a pocket of unreachable picks
+                // picking another one. Re picking immediately turned a pocket of unreachable picks
                 // into a full-tick churn - a new far-away ground every second, hammering the path
                 // finder without the bot ever moving.
                 this._hasDestination = false;
@@ -591,7 +612,7 @@ internal sealed class BotNavigator : AsyncDisposable
         }
 
         // Arrived (or no destination) and the area is empty: wait out a short grace, then pick a new ground.
-        // In the safezone we skip the grace so a freshly-spawned bot heads out of town straight away.
+        // In the safezone we skip the grace so a freshly spawned bot heads out of town straight away.
         this._hasDestination = false;
         if (!inSafezone)
         {
@@ -641,7 +662,7 @@ internal sealed class BotNavigator : AsyncDisposable
             // The trade itself runs in the MU Helper tick, not here: selling and buying mutate the
             // inventory and the Zen of a character whose combat tick may be running at this very moment
             // (the open NPC dialog only holds off the NEXT tick) - and both write through the same,
-            // not-thread-safe persistence context. Same rule as for every other bot-initiated mutation,
+            // not-thread-safe persistence context. The same rule as for every other bot-initiated mutation,
             // see PendingBotActions. The jewels are spent right after the trade, in the same tick.
             this._player.PendingBotActions.Enqueue(() => this.TradeAndUpgradeAsync(map, target));
 
@@ -668,7 +689,7 @@ internal sealed class BotNavigator : AsyncDisposable
             // No merchant lives on this map at all (the Dungeon has no town). Shopping here would
             // starve the bot's logistics for as long as it stays - no potion restock, no selling, a
             // slowly silting backpack. Like a player pulling a town scroll, it warps to its class
-            // home town and shops there; the better-map logic takes it back hunting afterwards.
+            // hometown and shops there; the better-map logic takes it back hunting afterward.
             if (this.TryGetHomeEscapeGate(out var homeGate, out var homeMap, out _))
             {
                 this._travelPath = null;
@@ -713,7 +734,7 @@ internal sealed class BotNavigator : AsyncDisposable
     }
 
     /// <summary>
-    /// Marches the bot back to the place of its death while a revenge is armed (see
+    /// Marches the bot back to the place of its death while revenge is armed (see
     /// <see cref="OfflinePlayer.TryGetRevengeDestination"/>). The single attempt is spent as soon as
     /// the bot arrives or runs into its killer on the way - no extra combat logic is needed here,
     /// because the re-armed aggressor memory already keeps the combat handler prioritizing the
@@ -763,7 +784,7 @@ internal sealed class BotNavigator : AsyncDisposable
     }
 
     /// <summary>
-    /// The bot's routine while it takes part in a mini game event (Blood Castle, Devil Square,
+    /// The bot's routine while it takes part in a mini-game event (Blood Castle, Devil Square,
     /// Chaos Castle): fight whatever the event throws at it, keep up with the party leader on the
     /// way through the course, and close in on the action when it moved away - nothing else. Death
     /// and the event's end need no handling here: the engine respawns a dead bot at the map's
@@ -806,8 +827,8 @@ internal sealed class BotNavigator : AsyncDisposable
     }
 
     /// <summary>
-    /// Whether the object is something this bot would fight inside a mini game event. Unlike in the
-    /// open world there is no safe-level filtering - the event's level bracket already matched the
+    /// Whether the object is something this bot would fight inside a mini-game event. Unlike in the
+    /// open world, there is no safe-level filtering - the event's level bracket already matched the
     /// bot, and the event dictates the opposition. Players count as targets only where the event
     /// allows player killing (Chaos Castle, see <see cref="BotPvpRules"/>).
     /// </summary>
@@ -829,7 +850,7 @@ internal sealed class BotNavigator : AsyncDisposable
     }
 
     /// <summary>
-    /// Finds the spot of a nearby opponent inside a mini game event, mirroring
+    /// Finds the spot of a nearby opponent inside a mini-game event, mirroring
     /// <see cref="TryFindNearestMonsterGround"/> (random among the two nearest, so many bots
     /// don't dogpile the same target).
     /// </summary>
@@ -853,7 +874,7 @@ internal sealed class BotNavigator : AsyncDisposable
 
     /// <summary>
     /// Gets the party leader this bot should follow, or null if the bot is solo, is the leader itself,
-    /// or the leader is currently not followable (dead, no map, or inside another mini game instance -
+    /// or the leader is currently not followable (dead, no map, or inside another mini-game instance -
     /// following into an event goes through the regular entry of <see cref="BotMiniGameHandler"/>,
     /// never through a warp).
     /// </summary>
@@ -876,7 +897,7 @@ internal sealed class BotNavigator : AsyncDisposable
     /// Keeps a party member with its leader: warps to the leader's map when the leader warped away,
     /// and walks towards the leader when it moved out of the follow range.
     /// </summary>
-    /// <returns>True, if following consumed this tick; false, if the bot is close enough and should hunt normally.</returns>
+    /// <returns>True, if the following consumed this tick; false, if the bot is close enough and should hunt normally.</returns>
     private async ValueTask<bool> TryFollowLeaderAsync(GameMap map, Player leader, CancellationToken cancellationToken)
     {
         if (!ReferenceEquals(leader.CurrentMap, map))
@@ -970,7 +991,7 @@ internal sealed class BotNavigator : AsyncDisposable
     /// Performs the bot's character reset once it is due (reset feature enabled, required level
     /// reached, reset limit not exhausted). The reset is not executed the moment the bot becomes
     /// eligible: a random grace delay (<see cref="MinResetDelay"/>..<see cref="MaxResetDelay"/>) is
-    /// rolled first, during which the bot hunts on normally. After the reset the navigation state is
+    /// rolled first, during which the bot hunts on normally. After the reset, the navigation state is
     /// cleared, so the bot starts its next cycle fresh - re-investing its points (queued by the reset
     /// handler) and heading for a hunting ground that suits it again.
     /// </summary>
@@ -1071,7 +1092,7 @@ internal sealed class BotNavigator : AsyncDisposable
         // the last resort AND the safety valve: a bot which cannot afford a single warp - or is below
         // every warp requirement, as a freshly reset veteran is - would otherwise be stranded on ground
         // that pays it nothing, unable to earn the fare out of it. Walking home is free, like a player
-        // taking the long way back, and its home map is starter ground it can always hunt.
+        // taking the long way back, and its home map is a starter ground it can always hunt.
         WarpInfo? fare = null;
         ExitGate targetGate;
         GameMapDefinition? targetMap;
@@ -1136,7 +1157,7 @@ internal sealed class BotNavigator : AsyncDisposable
 
         // Follow the cached route as long as it still leads to (roughly) the same destination and the
         // bot is still on it. Re-planning a whole-map A* every tick just to consume three steps wasted
-        // CPU and starved the shared path finder pool once dozens of bots travelled at the same time.
+        // CPU and starved the shared pathfinder pool once dozens of bots traveled at the same time.
         if (this._travelPath is { } cached
             && this._travelPathIndex < cached.Count
             && destination.EuclideanDistanceTo(this._travelPathTarget) <= PathReuseTolerance
@@ -1150,7 +1171,7 @@ internal sealed class BotNavigator : AsyncDisposable
 
         IList<PathResultNode>? path;
 
-        // Observe the navigator's shutdown token while queuing for a shared path finder: on dispose the
+        // Observe the navigator's shutdown token while queuing for a shared pathfinder: on disposal the
         // wait is abandoned at once (the OperationCanceledException is expected and handled in
         // SafeEvaluateAsync) instead of holding the tick until a finder frees up.
         await TravelPathFinderPool.WaitAsync(cancellationToken).ConfigureAwait(false);
@@ -1210,7 +1231,7 @@ internal sealed class BotNavigator : AsyncDisposable
     }
 
     /// <summary>
-    /// Picks a hunting ground and starts walking to it. If the chosen ground turns out to be unreachable the
+    /// Picks a hunting ground and starts walking to it. If the chosen ground turns out to be unreachable, the
     /// destination is dropped, so the next call (next tick) simply picks another one.
     /// </summary>
     private async ValueTask PickGroundAndTravelAsync(GameMap map, CancellationToken cancellationToken)
@@ -1384,7 +1405,7 @@ internal sealed class BotNavigator : AsyncDisposable
 
         // Head for one of the few nearest monsters, chosen randomly, instead of strictly the nearest:
         // with many bots on one ground, deterministic nearest-first would send them all to the same
-        // monster and they would roam the map as one pack - a very bot-like look.
+        // monster, and they would roam the map as one pack - a very bot-like look.
         var chosen = candidates
             .OrderBy(c => c.Distance)
             .Take(3)
@@ -1446,7 +1467,7 @@ internal sealed class BotNavigator : AsyncDisposable
     /// no role here - a freshly reset veteran cannot warp to high maps either, no matter its strength.
     /// </summary>
     /// <param name="mapDefinition">The target map.</param>
-    /// <param name="gate">The warp target gate, if a legal entry exists.</param>
+    /// <param name="warp">The warp info, if a legal entry exists.</param>
     /// <returns>True, if the bot may warp to the map.</returns>
     private bool TryGetLegalWarp(GameMapDefinition mapDefinition, [MaybeNullWhen(false)] out WarpInfo warp)
     {
@@ -1473,13 +1494,13 @@ internal sealed class BotNavigator : AsyncDisposable
     private bool CanAffordWarp(WarpInfo warp) => this._player.Money >= warp.Costs;
 
     /// <summary>
-    /// Gets the escape gate to the bot's class home town, for when it must leave its current map but is
+    /// Gets the escape gate to the bot's class hometown, for when it must leave its current map but is
     /// below every warp requirement (e.g. a freshly reset veteran) - the equivalent of a town scroll.
     /// </summary>
     /// <param name="gate">The home map safezone gate.</param>
     /// <param name="mapDefinition">The home map.</param>
     /// <param name="monsterLevel">The level of the strongest safe monster there (informational).</param>
-    /// <returns>True, if the bot has a home map it is not already on.</returns>
+    /// <returns>True, if the bot has a home map, it is not yet on.</returns>
     private bool TryGetHomeEscapeGate([MaybeNullWhen(false)] out ExitGate gate, [MaybeNullWhen(false)] out GameMapDefinition mapDefinition, out int monsterLevel)
     {
         gate = null;
@@ -1501,7 +1522,7 @@ internal sealed class BotNavigator : AsyncDisposable
     }
 
     /// <summary>
-    /// The lowest monster level which still earns this bot anything: a master-class character at the
+    /// The lowest monster level that still earns this bot anything: a master-class character at the
     /// game's maximum level gains master experience only from monsters of at least
     /// <c>GameConfiguration.MinimumMonsterLevelForMasterExperience</c> (the experience path grants it
     /// nothing at all below that) and no regular experience either, because it is at the maximum level
@@ -1571,7 +1592,7 @@ internal sealed class BotNavigator : AsyncDisposable
     /// barren stretch until it finds ground it can actually farm, and the regular map choice carries it
     /// back up as its gear and level recover.
     /// </summary>
-    /// <param name="gate">The warp gate of the chosen map.</param>
+    /// <param name="warp">The warp info of the chosen map.</param>
     /// <param name="mapDefinition">The chosen map.</param>
     /// <param name="monsterLevel">The level of the strongest safe monster there.</param>
     private bool TryPickEasierMap(out WarpInfo warp, out GameMapDefinition mapDefinition, out int monsterLevel)
@@ -1618,14 +1639,14 @@ internal sealed class BotNavigator : AsyncDisposable
 
     /// <summary>
     /// Picks the legally warpable map (other than the current one) that offers the strongest monsters the
-    /// bot can still safely handle, if it is meaningfully better than the current map, with its warp gate.
+    /// bot can still safely handle if it is meaningfully better than the current map, with its warp gate.
     /// In escape mode (fleeing a hostile or illegal map) any legal map with something safe to hunt counts,
     /// no matter how it compares to the current one.
     /// </summary>
     private bool TryPickBetterMap(bool escape, out WarpInfo warp, out GameMapDefinition mapDefinition, out int monsterLevel)
     {
         // A mastered bot earns nothing below the master-experience floor, so it first looks for a map
-        // which pays at all. Only when no map within its reach offers monsters above the floor that it
+        // which pays completely. Only when no map within its reach offers monsters above the floor that it
         // can safely fight does it fall back to hunting by safety alone: standing on a map it cannot
         // survive would not earn it master experience either, and its gear still improves meanwhile.
         var floor = this.MasterExperienceFloor();
@@ -1672,7 +1693,7 @@ internal sealed class BotNavigator : AsyncDisposable
         }
 
         // Always taking the single strongest map emptied the world: the maps of a level band differ by a
-        // few monster levels, so one of them is every bot's answer and the rest stand deserted - hundreds
+        // few monster levels, so one of them is every bot's answer, and the rest stand deserted - hundreds
         // of bots on Vulcanus while Tarkan, Karutan and Kanturu, which their level opens, see nobody. The
         // strongest map still wins most of the picks (see BestCandidateShare); the runners-up share the
         // rest, so the population spreads over the maps a player of that band would choose between.
@@ -1682,26 +1703,6 @@ internal sealed class BotNavigator : AsyncDisposable
         mapDefinition = picked.Map;
         monsterLevel = picked.Level;
         return true;
-    }
-
-    /// <summary>
-    /// Picks an index into a list ranked best-first, each rank taking
-    /// <see cref="BestCandidateShare"/> of what the ranks before it left over. Deliberately not a
-    /// uniform draw - a bot should prefer the best ground it can hunt, just not to the exclusion of
-    /// everything else.
-    /// </summary>
-    /// <param name="count">The number of ranked candidates.</param>
-    private static int PickByRank(int count)
-    {
-        for (var rank = 0; rank < count - 1; rank++)
-        {
-            if (Rand.NextDouble() < BestCandidateShare)
-            {
-                return rank;
-            }
-        }
-
-        return count - 1;
     }
 
     /// <summary>
@@ -1730,7 +1731,7 @@ internal sealed class BotNavigator : AsyncDisposable
         var safe = candidates.Where(x => CombatHandler.IsSafeTarget(this._player, x.Area.MonsterDefinition!)).ToList();
 
         // A mastered bot only earns master experience above the floor (see MasterExperienceFloor), so as
-        // long as this map holds such monsters it hunts them - the weaker grounds would pay it nothing.
+        // long as this map holds such monsters, it hunts them - the weaker grounds would pay it nothing.
         // Above the floor it then takes the WEAKEST monsters rather than the strongest: master experience
         // hardly grows with the monster's level, so the cheapest kill above the floor is the best one.
         var floor = this.MasterExperienceFloor();
@@ -1756,7 +1757,7 @@ internal sealed class BotNavigator : AsyncDisposable
         // After repeated deaths against the same player, the area around the death site is off the
         // menu for a while (see OfflinePlayer.TryGetDeathSiteToAvoid): drop grounds close to it, so
         // the bot farms somewhere else instead of walking back into the same lost fight. Only if
-        // EVERY candidate lies near the death site are they all kept - relocating within the band is
+        // EVERY candidate lies near the death site, are they all kept - relocating within the band is
         // still better than not picking any ground at all (the point pick below still steers away).
         Point? siteToAvoid = this._player.TryGetDeathSiteToAvoid(map.Definition, out var avoidPoint) ? avoidPoint : null;
         if (siteToAvoid is { } avoid)
@@ -1790,7 +1791,7 @@ internal sealed class BotNavigator : AsyncDisposable
 
         // Not every map states its spawns as rectangles: LaCleon, for one, lists every spawn as a single
         // tile, and so do 44 of the 55 maps which hold more than ten of them. Sampling "inside" such an
-        // area can only ever return that one tile, so every bot which picks it walks onto the very same
+        // area can only ever return that one tile, so every bot that picks it walks onto the very same
         // spot. Scatter around it instead - the bot still arrives within combat range of the monster.
         var isSingleSpot = (maxX - minX) < GroundScatterSpan && (maxY - minY) < GroundScatterSpan;
         var center = new Point((byte)((minX + maxX) / 2), (byte)((minY + maxY) / 2));
@@ -1798,7 +1799,7 @@ internal sealed class BotNavigator : AsyncDisposable
         for (var attempt = 0; attempt < MaxPointPickAttempts; attempt++)
         {
             // GetRandomCoordinate already keeps to the map, retries unwalkable picks and falls back to the
-            // point itself when the surroundings offer nothing - so a spawn on a ledge stays usable.
+            // point itself when the surroundings offer nothing - so spawn on a ledge stays usable.
             var candidate = isSingleSpot
                 ? map.Terrain.GetRandomCoordinate(center, HuntingRange)
                 : new Point((byte)Rand.NextInt(minX, maxX + 1), (byte)Rand.NextInt(minY, maxY + 1));
@@ -1811,8 +1812,8 @@ internal sealed class BotNavigator : AsyncDisposable
 
             // MU spawn areas can span most of the map, so a random point of an otherwise "far" area
             // may still land right at the death site to avoid - re-roll such points. If the area
-            // offers nothing else, the attempts run out and the pick fails like for any other
-            // unusable area (the caller then simply retries next tick).
+            // offers nothing else, the attempts run out, and the pick fails like for any other
+            // unusable area (the caller then simply retries the next tick).
             if (avoidCenter is { } avoid
                 && Math.Abs(x - avoid.X) + Math.Abs(y - avoid.Y) <= DeathSiteAvoidanceRange)
             {
@@ -1828,7 +1829,7 @@ internal sealed class BotNavigator : AsyncDisposable
     }
 
     /// <summary>
-    /// A Manhattan distance heuristic (the path finder applies its own estimate multiplier), used to turn the
+    /// A Manhattan distance heuristic (the pathfinder applies its own estimate multiplier), used to turn the
     /// otherwise unguided search into A* for long-distance bot travel.
     /// </summary>
     private sealed class ManhattanTravelHeuristic : IHeuristic

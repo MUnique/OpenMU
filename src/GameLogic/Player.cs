@@ -358,7 +358,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <summary>
     /// Gets or sets the player who sent a pending alliance request to this player.
     /// </summary>
-    public (Player?, GuildRelationshipType, GuildRelationshipRequestType) PendingAllianceRequest { get; set; }
+    public (Player? Player, GuildRelationshipType RelationshipType, GuildRelationshipRequestType RequestType) PendingAllianceRequest { get; set; }
 
     /// <summary>
     /// Gets or sets the guild war context.
@@ -2549,7 +2549,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         if (this.GameContext.PlugInManager.GetPlugInPoint<IAttackableGotKilledPlugIn>() is { } plugInPoint)
         {
-            await plugInPoint.AttackableGotKilledAsync(this, killer);
+            await plugInPoint.AttackableGotKilledAsync(this, killer).ConfigureAwait(false);
         }
 
         if (this.LastDeath is { } deathInformation)

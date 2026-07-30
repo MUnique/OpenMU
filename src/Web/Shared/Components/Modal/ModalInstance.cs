@@ -12,6 +12,11 @@ public class ModalInstance
     private readonly ModalReference _reference;
     private readonly Action _onClose;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ModalInstance"/> class.
+    /// </summary>
+    /// <param name="reference">The modal reference.</param>
+    /// <param name="onClose">The close action.</param>
     internal ModalInstance(ModalReference reference, Action onClose)
     {
         this._reference = reference;

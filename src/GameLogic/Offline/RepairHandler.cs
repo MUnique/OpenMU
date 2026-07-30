@@ -90,7 +90,7 @@ internal sealed class RepairHandler
             return false;
         }
 
-        var durabilityHealthPercent = ((int)item.Durability * 100 + max - 1) / max;
+        var durabilityHealthPercent = (((int)item.Durability * 100) + max - 1) / max;
         return durabilityHealthPercent <= DurabilityRepairThresholdPercent;
     }
 }

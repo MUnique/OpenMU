@@ -99,9 +99,10 @@ public abstract class FinishDarkKnightMasterTreePlugInBase : UpdatePlugInBase
             charClass.BaseAttributeValues.Add(context.CreateNew<ConstValueAttribute>(0.1f, durabilityReductionFactor));
 
             // Update/add double wield attribute combinations
-            if (charClass.Number == 4 || charClass.Number == 6 || charClass.Number == 7 // DK classes
-                || charClass.Number == 12 || charClass.Number == 13 // MG classes
-                || charClass.Number == 24 || charClass.Number == 25) // RF classes
+            // DK classes: 4, 6, 7; MG classes: 12, 13; RF classes: 24, 25
+            if (charClass.Number == 4 || charClass.Number == 6 || charClass.Number == 7
+                || charClass.Number == 12 || charClass.Number == 13
+                || charClass.Number == 24 || charClass.Number == 25)
             {
                 if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.InputOperand == -0.45f) is { } hasDoubleWieldToTempDoubleWieldMultiplier)
                 {

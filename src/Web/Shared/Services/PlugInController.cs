@@ -6,11 +6,11 @@ namespace MUnique.OpenMU.Web.Shared.Services;
 
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
-using MUnique.OpenMU.Web.Shared.Components.Modal;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
 using MUnique.OpenMU.Web.Shared.Components.Form.Modal;
+using MUnique.OpenMU.Web.Shared.Components.Modal;
 using MUnique.OpenMU.Web.Shared.Models;
 
 /// <summary>
@@ -184,7 +184,7 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
     }
 
     /// <summary>
-    /// Shows the custom plug in configuration in a modal dialog.
+    /// Shows the custom plugin configuration in a modal dialog.
     /// </summary>
     /// <param name="item">The item.</param>
     public async Task ShowPlugInConfigAsync(PlugInConfigurationViewItem item)

@@ -458,7 +458,8 @@ internal class Weapons : InitializerBase
             item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.AmmunitionConsumptionRate, 1, AggregateType.AddRaw));
             item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(slot == 0 ? Stats.IsCrossBowEquipped : Stats.IsBowEquipped, 1, AggregateType.AddRaw));
 
-            if (number == 18 || number == 19 || number == 22 || number == 23 || number == 24) // Divine Crossbow of Archangel, Great Reign Crossbow, Albatross Bow, Stinger Bow, Air Lyn Bow
+            // Divine Crossbow of Archangel, Great Reign Crossbow, Albatross Bow, Stinger Bow, Air Lyn Bow
+            if (number == 18 || number == 19 || number == 22 || number == 23 || number == 24)
             {
                 item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.ExtraProjectiles, 1, AggregateType.AddRaw));
             }

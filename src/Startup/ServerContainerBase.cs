@@ -86,7 +86,7 @@ public abstract class ServerContainerBase : IHostedService
     {
         try
         {
-            await this.RestartAllAsync(true);
+            await this.RestartAllAsync(true).ConfigureAwait(false);
         }
         catch (Exception exception)
         {

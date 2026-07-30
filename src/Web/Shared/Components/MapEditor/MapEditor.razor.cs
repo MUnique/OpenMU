@@ -840,7 +840,7 @@ public partial class MapEditor : IAsyncDisposable
         }
     }
 
-    private async Task ImportFileSelected(IFileListEntry[] files)
+    private async Task ImportFileSelectedAsync(IFileListEntry[] files)
     {
         if (this._selectedMap is null || this.PersistenceContext is null)
         {
@@ -877,6 +877,4 @@ public partial class MapEditor : IAsyncDisposable
             await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
         }
     }
-
-
 }

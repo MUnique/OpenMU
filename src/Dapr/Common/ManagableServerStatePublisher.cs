@@ -71,7 +71,7 @@ public sealed class ManagableServerStatePublisher : IHostedLifecycleService, IDi
     {
         this._heartbeatCancellationTokenSource = new CancellationTokenSource();
 
-        async Task RunHeartbeatTask()
+        async Task RunHeartbeatTaskAsync()
         {
             try
             {
@@ -83,7 +83,7 @@ public sealed class ManagableServerStatePublisher : IHostedLifecycleService, IDi
             }
         }
 
-        this._heartbeatTask = RunHeartbeatTask();
+        this._heartbeatTask = RunHeartbeatTaskAsync();
         return Task.CompletedTask;
     }
 

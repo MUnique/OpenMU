@@ -32,7 +32,7 @@ namespace MUnique.OpenMU.Web.API
         /// <param name="id">The server id.</param>
         /// <param name="msg">The message.</param>
         [Route("send/{id=0}")]
-        public async Task<IActionResult> SendGlobalMessage(int id, [FromQuery(Name = "msg")] string msg)
+        public async Task<IActionResult> SendGlobalMessageAsync(int id, [FromQuery(Name = "msg")] string msg)
         {
             var server = (GameServer)this._gameServers.Values.ElementAt(id);
             if (server is not null)

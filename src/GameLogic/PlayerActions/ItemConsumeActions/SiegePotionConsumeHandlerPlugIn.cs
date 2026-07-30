@@ -28,13 +28,13 @@ public class SiegePotionConsumeHandlerPlugIn : ApplyMagicEffectConsumeHandlerPlu
         if (item.Level == 0
             && player.GameContext.Configuration.MagicEffects.FirstOrDefault(e => e.Number == 10) is { } blessEffectDefinition)
         {
-            return await base.ConsumeItemAsyncCore(player, item, targetItem, fruitUsage, blessEffectDefinition).ConfigureAwait(false);
+            return await base.ConsumeItemCoreAsync(player, item, targetItem, fruitUsage, blessEffectDefinition).ConfigureAwait(false);
         }
 
         if (item.Level == 1
             && player.GameContext.Configuration.MagicEffects.FirstOrDefault(e => e.Number == 11) is { } effectDefinition)
         {
-            if (await base.ConsumeItemAsyncCore(player, item, targetItem, fruitUsage, effectDefinition).ConfigureAwait(false))
+            if (await base.ConsumeItemCoreAsync(player, item, targetItem, fruitUsage, effectDefinition).ConfigureAwait(false))
             {
                 await player.InvokeViewPlugInAsync<IConsumeSpecialItemPlugIn>(p => p.ConsumeSpecialItemAsync(item, (ushort)(effectDefinition.Duration?.ConstantValue.Value ?? 0))).ConfigureAwait(false);
                 return true;

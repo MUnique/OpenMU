@@ -223,26 +223,12 @@ public sealed class Party : AsyncDisposable
     /// <param name="shares">The part of the money which is reserved for each party member.</param>
     public ValueTask DistributeMoneyAfterKillAsync(IAttackable killed, IPartyMember killer, IReadOnlyList<MoneyShare> shares)
     {
-        // No lock is taken here: unlike the experience distribution this no longer touches the shared
+        // No lock is taken here: unlike the experience distribution, this no longer touches the shared
         // _distributionList, and paying out the pre-computed shares is consistent with the lock-free
         // pick up path in DroppedMoney.
         this._logger.LogDebug("Distributing money after killing {name}", killed.GetName());
         _ = MoneyDistribution.TryPayShares(shares, player => this.IsEligibleForMoney(player, killer));
         return ValueTask.CompletedTask;
-    }
-
-    /// <summary>
-    /// Determines whether the player may receive a part of a money drop of the party.
-    /// </summary>
-    /// <param name="player">The player.</param>
-    /// <param name="killer">The killer who is a party member.</param>
-    /// <returns><c>True</c>, if the player may receive money; Otherwise, <c>false</c>.</returns>
-    internal bool IsEligibleForMoney(Player player, IPartyMember killer)
-    {
-        return this._partyMembers.Contains(player)
-               && player.CurrentMap == killer.CurrentMap
-               && !player.IsAtSafezone()
-               && player.Attributes is { };
     }
 
     /// <summary>
@@ -280,6 +266,20 @@ public sealed class Party : AsyncDisposable
         {
             this._distributionList.Clear();
         }
+    }
+
+    /// <summary>
+    /// Determines whether the player may receive a part of a money drop of the party.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="killer">The killer who is a party member.</param>
+    /// <returns><c>True</c>, if the player may receive money; Otherwise, <c>false</c>.</returns>
+    internal bool IsEligibleForMoney(Player player, IPartyMember killer)
+    {
+        return this._partyMembers.Contains(player)
+               && player.CurrentMap == killer.CurrentMap
+               && !player.IsAtSafezone()
+               && player.Attributes is { };
     }
 
     /// <inheritdoc/>
