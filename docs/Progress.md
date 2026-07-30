@@ -56,9 +56,9 @@ complexity and effort). Complexity 0 means we wont implement it.
 | *WarpCommand*                 | 0x8E              | 100%     | 5          |                                               |
 | DevilSquareEnter            | 0x90              | 100%       | 2          |                                               |
 | DevilSquareRemainingTime    | 0x91              | 100%       | 1          |                                               |
-| RegEventChip                | 0x95              | 0%       | 1          |                                               |
+| RegEventChip                | 0x95              | 100%     | 1          | Golden Archer item registration               |
 | GetMutoNum                  | 0x96              | 0%       | 1          |                                               |
-| UseEndEventChip             | 0x97              | 0%       | 1          |                                               |
+| UseEndEventChip             | 0x97              | 100%     | 1          | Golden Archer dialog close                    |
 | UseRenaExchangeZen          | 0x98              | 0%       | 1          |                                               |
 | RequestChangeServer         | 0x99              | 0%       | 0          |                                               |
 | RequestEnterBC              | 0x9A              | 100%     | 3          |                                               |

@@ -647,5 +647,40 @@
   </data>
   <data name="DownloadFile" xml:space="preserve">
     <value>Download File</value>
+  <data name="ChatCommands" xml:space="preserve">
+    <value>Chat commands</value>
+  </data>
+  <data name="CommandColumn" xml:space="preserve">
+    <value>Command</value>
+  </data>
+  <data name="CommandDescription" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="CommandUsage" xml:space="preserve">
+    <value>Usage</value>
+  </data>
+  <data name="MinimumCharacterStatus" xml:space="preserve">
+    <value>Required status</value>
+  </data>
+  <data name="NoParameters" xml:space="preserve">
+    <value>This command has no parameters.</value>
+  </data>
+  <data name="ParameterName" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="ParameterShortName" xml:space="preserve">
+    <value>Short name</value>
+  </data>
+  <data name="ParameterType" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="ParameterValidValues" xml:space="preserve">
+    <value>Valid values</value>
+  </data>
+  <data name="ParametersOf" xml:space="preserve">
+    <value>Parameters of {0}</value>
+  </data>
+  <data name="Required" xml:space="preserve">
+    <value>Required</value>
   </data>
 </root>

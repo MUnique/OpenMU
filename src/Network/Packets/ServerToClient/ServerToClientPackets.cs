@@ -30671,6 +30671,318 @@ public readonly struct MapEventState
     /// <returns>The packet as byte span.</returns>
     public static implicit operator Memory<byte>(MapEventState packet) => packet._data; 
 }
+
+
+/// <summary>
+/// Is sent by the server when: After the client requested the list of available chat commands. One message is sent for each command which is available to the player.
+/// Causes reaction on client side: The client adds the command to its list of known commands, so that it can offer them to the player without requiring him to know or type them.
+/// </summary>
+public readonly struct AvailableChatCommand
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AvailableChatCommand"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public AvailableChatCommand(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AvailableChatCommand"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private AvailableChatCommand(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xF5;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x01;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the index of this command within the list, starting at 0.
+    /// </summary>
+    public byte Index
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the total number of commands which are available to the player, so that the client knows when it received all of them.
+    /// </summary>
+    public byte Count
+    {
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the character status which is required to execute the command.
+    /// </summary>
+    public CharacterStatus MinimumCharacterStatus
+    {
+        get => (CharacterStatus)this._data.Span[7];
+        set => this._data.Span[7] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the parameter count.
+    /// </summary>
+    public byte ParameterCount
+    {
+        get => this._data.Span[8];
+        set => this._data.Span[8] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the command including its slash, e.g. '/item'.
+    /// </summary>
+    public string Command
+    {
+        get => this._data.Span.ExtractString(9, 32, System.Text.Encoding.UTF8);
+        set => this._data.Slice(9, 32).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the name of the command, in the language of the player.
+    /// </summary>
+    public string Name
+    {
+        get => this._data.Span.ExtractString(41, 48, System.Text.Encoding.UTF8);
+        set => this._data.Slice(41, 48).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the description of the command, in the language of the player.
+    /// </summary>
+    public string Description
+    {
+        get => this._data.Span.ExtractString(89, 256, System.Text.Encoding.UTF8);
+        set => this._data.Slice(89, 256).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets the <see cref="ChatCommandParameter"/> of the specified index.
+    /// </summary>
+        public ChatCommandParameter this[int index] => new (this._data.Slice(345 + index * ChatCommandParameter.Length));
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="AvailableChatCommand"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator AvailableChatCommand(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="AvailableChatCommand"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(AvailableChatCommand packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="ChatCommandParameter"/>.
+    /// </summary>
+    /// <param name="parametersCount">The count of <see cref="ChatCommandParameter"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int parametersCount) => parametersCount * ChatCommandParameter.Length + 345;
+
+
+/// <summary>
+/// Describes one parameter of a chat command, so that a user interface can offer an input for it..
+/// </summary>
+public readonly struct ChatCommandParameter
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ChatCommandParameter"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public ChatCommandParameter(Memory<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 102;
+
+    /// <summary>
+    /// Gets or sets defines if the parameter has to be specified to execute the command.
+    /// </summary>
+    public bool IsRequired
+    {
+        get => this._data.Span.GetBoolean();
+        set => this._data.Span.SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the kind of value which is expected, so that a fitting input can be shown.
+    /// </summary>
+    public ChatCommandParameterType Type
+    {
+        get => (ChatCommandParameterType)this._data.Span[1];
+        set => this._data.Span[1] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the name.
+    /// </summary>
+    public string Name
+    {
+        get => this._data.Span.ExtractString(2, 32, System.Text.Encoding.UTF8);
+        set => this._data.Slice(2, 32).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the short name which is used in the 'shortName=value' notation. It's empty when the parameter can only be passed by its position.
+    /// </summary>
+    public string ShortName
+    {
+        get => this._data.Span.ExtractString(34, 20, System.Text.Encoding.UTF8);
+        set => this._data.Slice(34, 20).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the accepted values, separated by a pipe. It's empty when the parameter isn't limited to a set of values.
+    /// </summary>
+    public string ValidValues
+    {
+        get => this._data.Span.ExtractString(54, 48, System.Text.Encoding.UTF8);
+        set => this._data.Slice(54, 48).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+}
+}
+
+
+/// <summary>
+/// Is sent by the server when: The player receives the result of registering Rena or Event Chips at the Golden Archer NPC.
+/// Causes reaction on client side: The client updates the Golden Archer interface with total registered count and remaining count in inventory.
+/// </summary>
+public readonly struct EventChipRegistrationResult
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EventChipRegistrationResult"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public EventChipRegistrationResult(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EventChipRegistrationResult"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private EventChipRegistrationResult(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0x94;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 10;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1Header Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public byte Result
+    {
+        get => this._data.Span[3];
+        set => this._data.Span[3] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the registered count.
+    /// </summary>
+    public uint RegisteredCount
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[4..]);
+        set => WriteUInt32LittleEndian(this._data.Span[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the remaining inventory count.
+    /// </summary>
+    public ushort RemainingInventoryCount
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[8..]);
+        set => WriteUInt16LittleEndian(this._data.Span[8..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="EventChipRegistrationResult"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator EventChipRegistrationResult(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="EventChipRegistrationResult"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(EventChipRegistrationResult packet) => packet._data; 
+}
     /// <summary>
     /// Defines the role of a guild member.
     /// </summary>
@@ -31235,5 +31547,26 @@ public readonly struct MapEventState
         /// White color.
         /// </summary>
             White = 7,
+    }
+
+    /// <summary>
+    /// The kind of value which a chat command parameter expects.
+    /// </summary>
+    public enum ChatCommandParameterType
+    {
+        /// <summary>
+        /// The parameter expects a text.
+        /// </summary>
+            Text = 0,
+
+        /// <summary>
+        /// The parameter expects a number.
+        /// </summary>
+            Number = 1,
+
+        /// <summary>
+        /// The parameter expects a 0 or a 1.
+        /// </summary>
+            Boolean = 2,
     }
 

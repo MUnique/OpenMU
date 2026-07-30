@@ -2,7 +2,7 @@
 
 ## Is sent when
 
-A player cancels a specific magic effect of a skill, usually 'Infinity Arrow' and 'Wizardy Enhance'.
+A player cancels a specific magic effect of a skill, usually 'Infinity Arrow' and 'Wizardry Enhance'.
 
 ## Causes the following actions on the server side
 

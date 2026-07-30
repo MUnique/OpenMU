@@ -1,4 +1,4 @@
-﻿// <copyright file="Misc.cs" company="MUnique">
+// <copyright file="Misc.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -29,6 +29,7 @@ public class Misc : InitializerBase
         this.CreateGoldenCherryBlossomBranch();
         this.CreateLostMap();
         this.CreateSymbolOfKundun();
+        this.CreateRena();
     }
 
     private void CreateLostMap()
@@ -44,6 +45,33 @@ public class Misc : InitializerBase
         itemDefinition.MaximumItemLevel = 7;
         itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
         this.GameConfiguration.Items.Add(itemDefinition);
+    }
+
+    private void CreateRena()
+    {
+        var itemDefinition = this.Context.CreateNew<ItemDefinition>();
+        itemDefinition.Name = "Rena";
+        itemDefinition.Number = 21;
+        itemDefinition.Group = 14;
+        itemDefinition.DropLevel = 0;
+        itemDefinition.DropsFromMonsters = false;
+        itemDefinition.Durability = 1;
+        itemDefinition.Width = 1;
+        itemDefinition.Height = 1;
+        itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
+        this.GameConfiguration.Items.Add(itemDefinition);
+
+        // Not registered as a default (global) drop item group - it's wired to specific event maps
+        // (Blood Castle, Devil Square 5-7) in GameConfigurationInitializer.WireRenaDropToEventMaps(),
+        // which runs after the maps have been created.
+        var dropItemGroup = this.Context.CreateNew<DropItemGroup>();
+        dropItemGroup.SetGuid(itemDefinition.Group, itemDefinition.Number);
+        dropItemGroup.PossibleItems.Add(itemDefinition);
+        dropItemGroup.Chance = 0.01; // 1 Percent
+        dropItemGroup.Description = "The drop item group for Rena";
+        dropItemGroup.MinimumMonsterLevel = 30;
+        dropItemGroup.MaximumMonsterLevel = 255;
+        this.GameConfiguration.DropItemGroups.Add(dropItemGroup);
     }
 
     private void CreateSymbolOfKundun()

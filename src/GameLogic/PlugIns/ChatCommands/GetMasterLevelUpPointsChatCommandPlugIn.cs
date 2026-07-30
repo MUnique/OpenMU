@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("8ACCF267-F5F3-4003-B4C3-536ACCB5181D")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.GetMasterLevelUpPointsChatCommandPlugIn_Name), Description = nameof(PlugInResources.GetMasterLevelUpPointsChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
-[ChatCommandHelp(Command, "Gets master level up points of a player. Usage: /getmasterleveluppoints (optional:character)", null)]
+[ChatCommandHelp(Command, typeof(Arguments), MinimumStatus)]
 public class GetMasterLevelUpPointsChatCommandPlugIn : ChatCommandPlugInBase<GetMasterLevelUpPointsChatCommandPlugIn.Arguments>, IDisabledByDefault
 {
     private const string Command = "/getmasterleveluppoints";
