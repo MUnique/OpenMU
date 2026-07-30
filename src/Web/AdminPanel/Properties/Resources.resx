@@ -612,17 +612,11 @@
   <data name="Target" xml:space="preserve">
     <value>Target</value>
   </data>
-  <data name="Actions" xml:space="preserve">
-    <value>Actions</value>
-  </data>
   <data name="LogViewer" xml:space="preserve">
     <value>Log Viewer</value>
   </data>
   <data name="Live" xml:space="preserve">
     <value>Live</value>
-  </data>
-  <data name="Refresh" xml:space="preserve">
-    <value>Refresh</value>
   </data>
   <data name="Close" xml:space="preserve">
     <value>Close</value>
@@ -647,6 +641,7 @@
   </data>
   <data name="DownloadFile" xml:space="preserve">
     <value>Download File</value>
+  </data>
   <data name="ChatCommands" xml:space="preserve">
     <value>Chat commands</value>
   </data>
