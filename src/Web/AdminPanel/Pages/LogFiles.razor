@@ -1,9 +1,11 @@
 ﻿@page "/logfiles"
 
 @using System.IO
+@using Microsoft.Extensions.Logging
 @using MUnique.OpenMU.Web.AdminPanel.Properties
 @implements IAsyncDisposable
 @inject IJSRuntime JSRuntime
+@inject ILogger<LogFiles> Logger
 
 <PageTitle>OpenMU: @Resources.LogFiles</PageTitle>
 <Breadcrumb IsFirstFromRoot="true" Caption="@Resources.LogFiles"/>
@@ -103,7 +105,7 @@
                         </div>
                     </div>
                     
-                    <div id="log-terminal" class="p-3 rounded" style="height: 480px; overflow-y: auto; font-family: 'Consolas', 'Liberation Mono', Menlo, Courier, monospace; font-size: 13px; line-height: 1.5; white-space: pre-wrap; background-color: #0c0c0d !important; border: 1px solid #2d2d30;">
+                    <div id="@TerminalElementId" class="p-3 rounded" style="height: 480px; overflow-y: auto; font-family: 'Consolas', 'Liberation Mono', Menlo, Courier, monospace; font-size: 13px; line-height: 1.5; white-space: pre-wrap; background-color: #0c0c0d !important; border: 1px solid #2d2d30;">
                         @if (this._logLines.Count == 0)
                         {
                             <div class="text-muted text-center py-5">@Resources.NoLogEntriesFound</div>
@@ -139,6 +141,7 @@
     private const int MaxLogLinesToRead = 300;
     private const long LogReadBufferSizeBytes = 102400; // 100 KB
     private const int LiveUpdateIntervalMs = 2000;
+    private const string TerminalElementId = "log-terminal";
 
     private readonly List<FileInfo> _files = new();
     private FileInfo? _selectedFile;
@@ -164,9 +167,9 @@
             {
                 await this._jsModule.DisposeAsync();
             }
-            catch
+            catch (JSDisconnectedException)
             {
-                // Ignore JS module disposal errors
+                // The circuit is already gone, so the module is disposed anyway.
             }
         }
     }
@@ -184,11 +187,16 @@
         {
             try
             {
-                this._jsModule = await this.JSRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/MUnique.OpenMU.Web.AdminPanel/Pages/LogFiles.razor.js");
+                this._jsModule = await this.JSRuntime.InvokeAsync<IJSObjectReference>("import", "./Pages/LogFiles.razor.js");
             }
-            catch
+            catch (JSException ex)
             {
-                // Fallback gracefully if JS module import fails
+                // Without the module, the viewer still works - only the automatic scrolling is unavailable.
+                this.Logger.LogWarning(ex, "Could not load the log viewer javascript module.");
+            }
+            catch (JSDisconnectedException)
+            {
+                // The circuit is gone; nothing to do.
             }
         }
 
@@ -333,7 +341,7 @@
                     return;
                 }
 
-                this.InvokeAsync(() =>
+                this.InvokeAsync(async () =>
                 {
                     if (this._disposed || this._selectedFile == null)
                     {
@@ -341,11 +349,16 @@
                     }
 
                     var updatedInfo = new FileInfo(this._selectedFile.FullName);
-                    if (updatedInfo.Length != this._lastFileLength || updatedInfo.LastWriteTimeUtc != this._lastFileWriteTime)
+                    if (updatedInfo.Length == this._lastFileLength && updatedInfo.LastWriteTimeUtc == this._lastFileWriteTime)
                     {
-                        this.RefreshLogLines();
-                        this.StateHasChanged();
+                        return;
                     }
+
+                    // Only follow the new entries when the user didn't scroll up to read the history.
+                    var isFollowing = await this.IsScrolledToBottomAsync();
+                    this.RefreshLogLines();
+                    this._shouldScrollToBottom = isFollowing;
+                    this.StateHasChanged();
                 });
             }, null, 0, LiveUpdateIntervalMs);
         }
@@ -387,16 +400,35 @@
 
     private async Task ScrollToBottomAsync()
     {
-        if (this._jsModule != null)
+        if (this._jsModule is null)
         {
-            try
-            {
-                await this._jsModule.InvokeVoidAsync("scrollToBottom", "log-terminal");
-            }
-            catch
-            {
-                // Ignore JS call errors
-            }
+            return;
+        }
+
+        try
+        {
+            await this._jsModule.InvokeVoidAsync("scrollToBottom", TerminalElementId);
+        }
+        catch (JSDisconnectedException)
+        {
+            // The circuit is gone; nothing to do.
+        }
+    }
+
+    private async ValueTask<bool> IsScrolledToBottomAsync()
+    {
+        if (this._jsModule is null)
+        {
+            return true;
+        }
+
+        try
+        {
+            return await this._jsModule.InvokeAsync<bool>("isScrolledToBottom", TerminalElementId);
+        }
+        catch (JSDisconnectedException)
+        {
+            return false;
         }
     }
 }
