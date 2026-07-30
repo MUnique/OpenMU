@@ -61,7 +61,8 @@ public class FixRageFighterMultipleHitSkillsPlugIn : UpdatePlugInBase
         gameConfiguration.CharacterClasses.ForEach(charClass =>
         {
             // Update summoner berserker defense reduction attributes
-            if (charClass.Number == 20 || charClass.Number == 22 || charClass.Number == 23) // Summoner classes
+            // Summoner classes.
+            if (charClass.Number == 20 || charClass.Number == 22 || charClass.Number == 23)
             {
                 if (charClass.AttributeCombinations.FirstOrDefault(attr => attr.TargetAttribute == Stats.DefensePvm && attr.AggregateType == AggregateType.AddFinal) is { } finalBerserkerHealthDecrementToDefensePvm)
                 {

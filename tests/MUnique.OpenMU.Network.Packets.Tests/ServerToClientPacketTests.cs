@@ -3423,7 +3423,7 @@ public class PacketStructureTests
     public void CharacterInformationExtended_PacketSizeValidation()
     {
         // Fixed-length packet validation
-        const int expectedLength = 96;
+        const int expectedLength = 92;
         var actualLength = CharacterInformationExtendedRef.Length;
         
         Assert.That(actualLength, Is.EqualTo(expectedLength), 
@@ -3548,6 +3548,10 @@ public class PacketStructureTests
         // Validate field 'InventoryExtensions' boundary
         Assert.That(88 + 1, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'InventoryExtensions' exceeds packet boundary");
+        
+        // Validate field 'Resets' boundary
+        Assert.That(90 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Resets' exceeds packet boundary");
     }
 
     /// <summary>
@@ -6408,5 +6412,69 @@ public class PacketStructureTests
         // Validate field 'Event' boundary
         Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'Event' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for ChatCommandInfo.
+    /// </summary>
+    [Test]
+    public void ChatCommandInfo_PacketSizeValidation()
+    {
+        // Basic packet validation
+        // Validate header type and field boundaries
+
+        // Field 'Index' starts at index 5 with size 1
+        Assert.That(5, Is.GreaterThanOrEqualTo(0),
+            "Field 'Index' has invalid negative index");
+
+        // Field 'Count' starts at index 6 with size 1
+        Assert.That(6, Is.GreaterThanOrEqualTo(0),
+            "Field 'Count' has invalid negative index");
+
+        // Field 'MinimumCharacterStatus' starts at index 7 with size 1
+        Assert.That(7, Is.GreaterThanOrEqualTo(0),
+            "Field 'MinimumCharacterStatus' has invalid negative index");
+
+        // Field 'ParameterCount' starts at index 8 with size 1
+        Assert.That(8, Is.GreaterThanOrEqualTo(0),
+            "Field 'ParameterCount' has invalid negative index");
+
+        // Field 'Command' starts at index 9 with size 32
+        Assert.That(9, Is.GreaterThanOrEqualTo(0),
+            "Field 'Command' has invalid negative index");
+
+        // Field 'Name' starts at index 41 with size 48
+        Assert.That(41, Is.GreaterThanOrEqualTo(0),
+            "Field 'Name' has invalid negative index");
+
+        // Field 'Description' starts at index 89 with size 256
+        Assert.That(89, Is.GreaterThanOrEqualTo(0),
+            "Field 'Description' has invalid negative index");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for EventChipRegistrationResult.
+    /// </summary>
+    [Test]
+    public void EventChipRegistrationResult_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 10;
+        var actualLength = EventChipRegistrationResultRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Result' boundary
+        Assert.That(3 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Result' exceeds packet boundary");
+        
+        // Validate field 'RegisteredCount' boundary
+        Assert.That(4 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'RegisteredCount' exceeds packet boundary");
+        
+        // Validate field 'RemainingInventoryCount' boundary
+        Assert.That(8 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'RemainingInventoryCount' exceeds packet boundary");
     }
 }

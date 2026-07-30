@@ -15,6 +15,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
     [Migration("20221008183306_PetLevels")]
     partial class PetLevels
     {
+        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618

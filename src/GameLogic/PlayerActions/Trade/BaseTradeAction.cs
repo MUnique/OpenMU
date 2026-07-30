@@ -52,7 +52,25 @@ public class BaseTradeAction
                 trader.BackupInventory.RestoreItemStates();
                 foreach (var item in trader.BackupInventory.Items)
                 {
-                    await trader.Inventory.AddItemAsync(item.ItemSlot, item).ConfigureAwait(false);
+                    try
+                    {
+                        if (!await trader.Inventory.AddItemAsync(item.ItemSlot, item).ConfigureAwait(false)
+                            && !await trader.Inventory.AddItemAsync(item).ConfigureAwait(false))
+                        {
+                            trader.Logger.LogError(
+                                "Failed to restore item {item} during trade cancellation for {trader}.",
+                                item,
+                                trader.Name);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        trader.Logger.LogError(
+                            ex,
+                            "Error restoring item {item} during trade cancellation for {trader}.",
+                            item,
+                            trader.Name);
+                    }
                 }
 
                 trader.Inventory.ItemStorage.Money = trader.BackupInventory.Money;

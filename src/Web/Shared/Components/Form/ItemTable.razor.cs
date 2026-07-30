@@ -7,19 +7,23 @@ namespace MUnique.OpenMU.Web.Shared.Components.Form;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
-using Blazored.Modal;
+using MUnique.OpenMU.Web.Shared.Components.Modal;
 using Microsoft.AspNetCore.Components;
+using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Composition;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.Shared;
+using MUnique.OpenMU.Web.Shared.Components.Form.Modal;
 
 /// <summary>
-/// A component which shows a collection of <typeparamref name="TItem"/> in a table.
+/// A component that shows a collection of <typeparamref name="TItem"/> in a table.
 /// </summary>
 /// <typeparam name="TItem">The type of the item.</typeparam>
 public partial class ItemTable<TItem>
     where TItem : class
 {
+    private readonly int _searchThreshold = 10;
+
     private bool _isEditable;
 
     private bool _isInlineEditable;
@@ -31,6 +35,10 @@ public partial class ItemTable<TItem>
     private bool _isStartingCollapsed;
 
     private bool _isCollapsed;
+
+    private string? _searchTerm;
+
+    private bool _showSearch;
 
     /// <summary>
     /// Gets or sets the label.
@@ -44,6 +52,23 @@ public partial class ItemTable<TItem>
     [CascadingParameter]
     public IContext PersistenceContext { get; set; } = null!;
 
+    /// <summary>
+    /// Gets the filtered list of items based on the current search term.
+    /// </summary>
+    private IEnumerable<TItem> FilteredItems
+    {
+        get
+        {
+            var items = this.Value ?? Enumerable.Empty<TItem>();
+            if (string.IsNullOrWhiteSpace(this._searchTerm))
+            {
+                return items;
+            }
+
+            return items.Where(i => (i.GetName()?.Contains(this._searchTerm, StringComparison.OrdinalIgnoreCase) ?? false));
+        }
+    }
+
     /// <inheritdoc />
     protected override void OnInitialized()
     {
@@ -55,8 +80,15 @@ public partial class ItemTable<TItem>
         this._isInlineEditable = this._isEditable && isMemberOfAggregate && this.ValueExpression!.ScaffoldColumn();
         this._isAddingSupported = !isMemberOfAggregate;
         this._isCreatingSupported = isMemberOfAggregate;
-        this._isStartingCollapsed = this.Value is not null && this.Value.Count > 10;
+        this._isStartingCollapsed = this.Value is not null && this.Value.Count > this._searchThreshold;
         this._isCollapsed = this._isStartingCollapsed;
+    }
+
+    /// <inheritdoc />
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        this._showSearch = this.Value is not null && this.Value.Count > this._searchThreshold;
     }
 
     /// <inheritdoc />
@@ -74,14 +106,21 @@ public partial class ItemTable<TItem>
     {
         var parameters = new ModalParameters();
         parameters.Add(nameof(ModalCreateNew<TItem>.PersistenceContext), this.PersistenceContext);
-        var modal = this._modal.Show<ModalObjectSelection<TItem>>($"Select {typeof(TItem).Name}", parameters);
+
+        var modal = this._modal.Show<ModalObjectMultiSelection<TItem>>($"Select {typeof(TItem).Name}", parameters);
         var result = await modal.Result.ConfigureAwait(false);
-        if (!result.Cancelled && result.Data is TItem item)
+        if (result.Cancelled || result.Data is not IList<TItem> items)
         {
-            this.Value ??= new List<TItem>();
-            this.Value.Add(item);
-            await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
+            return;
         }
+
+        this.Value ??= new List<TItem>();
+        foreach (var item in items)
+        {
+            this.Value.Add(item);
+        }
+
+        await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
     }
 
     private async Task OnCreateClickAsync()
@@ -111,7 +150,7 @@ public partial class ItemTable<TItem>
             DisableBackgroundCancel = true,
         };
 
-        var modal = this._modal.Show<ModalCreateNew<TItem>>($"Create {typeof(TItem).Name}", parameters, options);
+        var modal = this._modal.Show<ModalCreateNew<TItem>>($"Create {typeof(TItem).GetTypeCaption()}", parameters, options);
         var result = await modal.Result.ConfigureAwait(false);
         if (result.Cancelled)
         {

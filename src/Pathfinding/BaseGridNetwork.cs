@@ -24,17 +24,8 @@ public abstract class BaseGridNetwork : INetwork
     /// </summary>
     private const byte CostBitMask = 0b0111_1111;
 
-    private static readonly sbyte[,] DirectionOffsets =
-    {
-        { 0, -1 },
-        { 1, 0 },
-        { 0, 1 },
-        { -1, 0 },
-        { 1, -1 },
-        { 1, 1 },
-        { -1, 1 },
-        { -1, -1 },
-    };
+    private static readonly sbyte[] DirectionOffsetsX = { 0, 1, 0, -1, 1, 1, -1, -1 };
+    private static readonly sbyte[] DirectionOffsetsY = { -1, 0, 1, 0, -1, 1, 1, -1 };
 
     private readonly int _numberOfDirections;
     private ushort _gridWidth;
@@ -79,24 +70,31 @@ public abstract class BaseGridNetwork : INetwork
     {
         var grid = this._grid ?? throw new InvalidOperationException("Call Prepare before");
 
-        // ReSharper disable once TooWideLocalVariableScope performance improvement
-        byte newX;
-
-        // ReSharper disable once TooWideLocalVariableScope performance improvement
-        byte newY;
-
         for (int i = 0; i < this._numberOfDirections; i++)
         {
-            newX = (byte)(node.X + DirectionOffsets[i, 0]);
-            newY = (byte)(node.Y + DirectionOffsets[i, 1]);
-
-            if (!this._includeSafezone && (grid[newX, newY] & SafezoneBitFlag) > 0)
+            var calculatedX = node.X + DirectionOffsetsX[i];
+            var calculatedY = node.Y + DirectionOffsetsY[i];
+            if ((uint)calculatedX > byte.MaxValue || (uint)calculatedY > byte.MaxValue)
             {
                 continue;
             }
 
-            var costToNode = grid[newX, newY] & CostBitMask;
-            if (!this.IsWithinBounds(newX, newY) || costToNode == UnreachableGridNodeValue)
+            var newX = (byte)calculatedX;
+            var newY = (byte)calculatedY;
+
+            if (!this.IsWithinBounds(newX, newY))
+            {
+                continue;
+            }
+
+            var gridValue = grid[newX, newY];
+            if (!this._includeSafezone && (gridValue & SafezoneBitFlag) > 0)
+            {
+                continue;
+            }
+
+            var costToNode = gridValue & CostBitMask;
+            if (costToNode == UnreachableGridNodeValue)
             {
                 continue;
             }
@@ -108,7 +106,7 @@ public abstract class BaseGridNetwork : INetwork
                 continue;
             }
 
-            var newG = node.CostUntilNow + this._grid[newNode.X, newNode.Y];
+            var newG = node.CostUntilNow + costToNode;
 
             if (newNode.Status == NodeStatus.Open && newNode.CostUntilNow <= newG)
             {

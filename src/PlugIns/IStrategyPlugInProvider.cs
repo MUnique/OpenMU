@@ -15,6 +15,11 @@ public interface IStrategyPlugInProvider<in TKey, out TStrategy>
     where TStrategy : class, IStrategyPlugIn<TKey>
 {
     /// <summary>
+    /// Gets the available <typeparamref name="TStrategy"/>s.
+    /// </summary>
+    IEnumerable<TStrategy> AvailableStrategies { get; }
+
+    /// <summary>
     /// Gets the <typeparamref name="TStrategy"/> with the specified key.
     /// </summary>
     /// <value>
@@ -23,9 +28,4 @@ public interface IStrategyPlugInProvider<in TKey, out TStrategy>
     /// <param name="key">The key.</param>
     /// <returns>The <typeparamref name="TStrategy"/> with the specified key, if available; Otherwise, <c>null</c>.</returns>
     TStrategy? this[TKey key] { get; }
-
-    /// <summary>
-    /// Gets the available <typeparamref name="TStrategy"/>s.
-    /// </summary>
-    IEnumerable<TStrategy> AvailableStrategies { get; }
 }

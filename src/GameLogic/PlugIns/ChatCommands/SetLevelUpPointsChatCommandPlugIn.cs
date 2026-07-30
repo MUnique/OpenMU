@@ -16,7 +16,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("50EF670A-DF7A-4FEE-8E42-7C7A18A68941")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.SetLevelUpPointsChatCommandPlugIn_Name), Description = nameof(PlugInResources.SetLevelUpPointsChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
-[ChatCommandHelp(Command, "Sets level up points of a player. Usage: /setleveluppoints (points) (optional:character)", null)]
+[ChatCommandHelp(Command, typeof(Arguments), MinimumStatus)]
 public class SetLevelUpPointsChatCommandPlugIn : ChatCommandPlugInBase<SetLevelUpPointsChatCommandPlugIn.Arguments>, IDisabledByDefault
 {
     private const string Command = "/setleveluppoints";

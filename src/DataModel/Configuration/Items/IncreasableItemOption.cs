@@ -1,9 +1,10 @@
-﻿// <copyright file="IncreasableItemOption.cs" company="MUnique">
+// <copyright file="IncreasableItemOption.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
 namespace MUnique.OpenMU.DataModel.Configuration.Items;
 
+using System.Linq;
 using MUnique.OpenMU.Annotations;
 
 /// <summary>
@@ -54,4 +55,21 @@ public partial class IncreasableItemOption : ItemOption
     /// </summary>
     [MemberOfAggregate]
     public virtual ICollection<ItemOptionOfLevel> LevelDependentOptions { get; protected set; } = null!;
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        if (this.PowerUpDefinition != null)
+        {
+            return base.ToString();
+        }
+
+        var firstLevelOption = this.LevelDependentOptions?.OrderBy(l => l.Level).FirstOrDefault();
+        if (firstLevelOption?.PowerUpDefinition != null)
+        {
+            return $"{this.OptionType}: {firstLevelOption.PowerUpDefinition} ({this.Number})";
+        }
+
+        return base.ToString();
+    }
 }

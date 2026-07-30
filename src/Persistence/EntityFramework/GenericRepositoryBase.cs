@@ -191,7 +191,6 @@ internal abstract class GenericRepositoryBase<T> : IRepository<T>, ILoadByProper
     /// <param name="loadedObjects">The loaded objects.</param>
     /// <param name="currentContext">The current context with which the objects got loaded. It is necessary to retrieve the foreign key ids.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns></returns>
     protected virtual async ValueTask LoadDependentDataAsync(IEnumerable loadedObjects, DbContext currentContext, CancellationToken cancellationToken)
     {
         foreach (var obj in loadedObjects)

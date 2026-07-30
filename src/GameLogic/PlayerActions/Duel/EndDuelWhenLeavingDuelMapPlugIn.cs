@@ -44,7 +44,7 @@ public class EndDuelWhenLeavingDuelMapPlugIn : IObjectRemovedFromMapPlugIn
             && player.IsAlive)
         {
             await duelRoom.CancelDuelAsync().ConfigureAwait(false);
-            
+
             return;
         }
 

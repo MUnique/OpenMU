@@ -12,5 +12,6 @@ public interface IShowDuelRequestPlugIn : IViewPlugIn
     /// <summary>
     /// A player has started a duel request which should be answered.
     /// </summary>
+    /// <param name="requester">The requesting player.</param>
     ValueTask ShowDuelRequestAsync(Player requester);
 }

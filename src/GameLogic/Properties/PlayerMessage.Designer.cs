@@ -405,9 +405,9 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>
         ///   Looks up a localized string similar to You&apos;re strong enough on your own..
         /// </summary>
-        public static string ElfSoldierStrongEnoughMessage {
+        public static string CharacterTooStrongMessage {
             get {
-                return ResourceManager.GetString("ElfSoldierStrongEnoughMessage", resourceCulture);
+                return ResourceManager.GetString("CharacterTooStrongMessage", resourceCulture);
             }
         }
         
@@ -574,6 +574,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} has defeated the {1} {2}!.
+        /// </summary>
+        public static string InvasionMonsterDefeated {
+            get {
+                return ResourceManager.GetString("InvasionMonsterDefeated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to [{0}] {1} created.
         /// </summary>
         public static string ItemCreatedResult {
@@ -582,6 +591,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
             }
         }
         
+        /// <summary>
+        ///   Looks up a localized string similar to This item doesn't belong to you..
+        /// </summary>
+        public static string ItemDoesNotBelongToYou {
+            get {
+                return ResourceManager.GetString("ItemDoesNotBelongToYou", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Effect for item not found..
         /// </summary>
@@ -1186,6 +1204,42 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This command is only available to Game Masters..
+        /// </summary>
+        public static string PkClearCommandOnlyForGameMasters {
+            get {
+                return ResourceManager.GetString("PkClearCommandOnlyForGameMasters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You can only clear your own PK status..
+        /// </summary>
+        public static string PkClearOnlyClearOwnPk {
+            get {
+                return ResourceManager.GetString("PkClearOnlyClearOwnPk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} is not a Player Killer..
+        /// </summary>
+        public static string PkClearTargetNotPlayerKiller {
+            get {
+                return ResourceManager.GetString("PkClearTargetNotPlayerKiller", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You are not a Player Killer..
+        /// </summary>
+        public static string PkClearYouAreNotPlayerKiller {
+            get {
+                return ResourceManager.GetString("PkClearYouAreNotPlayerKiller", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Your player kills have been cleaned by the game master..
         /// </summary>
         public static string PkStatusClearedByGameMaster {
@@ -1677,6 +1731,96 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string OfflineLevelingMuHelperNotRunning {
             get {
                 return ResourceManager.GetString("OfflineLevelingMuHelperNotRunning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stat reset is not enabled..
+        /// </summary>
+        public static string StatResetNotEnabled {
+            get {
+                return ResourceManager.GetString("StatResetNotEnabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stat reset is not configured..
+        /// </summary>
+        public static string StatResetNotConfigured {
+            get {
+                return ResourceManager.GetString("StatResetNotConfigured", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Required level for stat reset is {0}..
+        /// </summary>
+        public static string RequiredLevelForStatReset {
+            get {
+                return ResourceManager.GetString("RequiredLevelForStatReset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You don&apos;t have enough money for stat reset, required zen is {0}..
+        /// </summary>
+        public static string NotEnoughMoneyForStatReset {
+            get {
+                return ResourceManager.GetString("NotEnoughMoneyForStatReset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You don&apos;t have enough required items for stat reset, required {0} x {1}..
+        /// </summary>
+        public static string NotEnoughItemsForStatReset {
+            get {
+                return ResourceManager.GetString("NotEnoughItemsForStatReset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stat reset is only possible in a safezone..
+        /// </summary>
+        public static string CantResetStatsNotInSafezone {
+            get {
+                return ResourceManager.GetString("CantResetStatsNotInSafezone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot reset stats with any windows opened..
+        /// </summary>
+        public static string CantResetStatsWithOpenedWindows {
+            get {
+                return ResourceManager.GetString("CantResetStatsWithOpenedWindows", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The /resetstats command is disabled..
+        /// </summary>
+        public static string StatResetChatCommandDisabled {
+            get {
+                return ResourceManager.GetString("StatResetChatCommandDisabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your stats have been reset. You have {0} level-up points available..
+        /// </summary>
+        public static string StatsResetSuccessfully {
+            get {
+                return ResourceManager.GetString("StatsResetSuccessfully", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You are not strong enough for this buff yet..
+        /// </summary>
+        public static string CharacterNotStrongEnoughMessage {
+            get {
+                return ResourceManager.GetString("CharacterNotStrongEnoughMessage", resourceCulture);
             }
         }
     }

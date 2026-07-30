@@ -174,7 +174,17 @@ public sealed class DroppedItem : AsyncDisposable, ILocateable
         }
     }
 
-    private bool IsPlayerAnOwner(Player player)
+    /// <summary>
+    /// Gets a value indicating whether the owner-pickup priority period is still active.
+    /// </summary>
+    public bool IsOwnerPickupPriorityActive => DateTime.UtcNow < this._dropTimestamp.Add(TimeUntilDropIsFree);
+
+    /// <summary>
+    /// Determines whether the specified player is an owner of this dropped item.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <returns><c>true</c> if the player is an owner; otherwise, <c>false</c>.</returns>
+    public bool IsPlayerAnOwner(Player player)
     {
         return this._owners?.Contains(player) ?? true;
     }

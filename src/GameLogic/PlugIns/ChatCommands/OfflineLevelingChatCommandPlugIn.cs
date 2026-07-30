@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.MuHelper;
-using MUnique.OpenMU.GameLogic.OfflineLeveling;
+using MUnique.OpenMU.GameLogic.Offline;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -69,7 +69,7 @@ public sealed class OfflineLevelingChatCommandPlugIn : IChatCommandPlugIn
             return;
         }
 
-        var manager = player.GameContext.OfflineLevelingManager;
+        var manager = player.GameContext.OfflinePlayerManager;
 
         if (manager.IsActive(loginName))
         {

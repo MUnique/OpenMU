@@ -2,9 +2,9 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.Interfaces;
-
 namespace MUnique.OpenMU.AdminPanel.Host;
+
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// An implementation of <see cref="IConnectServerInstanceManager"/>.
@@ -14,7 +14,7 @@ public class DockerConnectServerInstanceManager : IConnectServerInstanceManager
     private readonly IServerProvider _serverProvider;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="DockerGameServerInstanceManager"/> class.
+    /// Initializes a new instance of the <see cref="DockerConnectServerInstanceManager"/> class.
     /// </summary>
     /// <param name="serverProvider">The server provider.</param>
     public DockerConnectServerInstanceManager(IServerProvider serverProvider)
@@ -26,7 +26,6 @@ public class DockerConnectServerInstanceManager : IConnectServerInstanceManager
     public async ValueTask InitializeConnectServerAsync(Guid connectServerDefinitionId)
     {
         // TODO: Implement this... by starting a new docker container
-
     }
 
     /// <inheritdoc />
@@ -38,6 +37,7 @@ public class DockerConnectServerInstanceManager : IConnectServerInstanceManager
         if (connectServers is not null)
         {
             await connectServers.ShutdownAsync().ConfigureAwait(false);
+
             // TODO: Remove the docker container
         }
     }

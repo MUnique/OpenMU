@@ -85,7 +85,6 @@ public class EnterMiniGameAction
         }
 
         // TODO: Check Duel state when duels are implemented
-
         if (miniGameDefinition.MapCreationPolicy == MiniGameMapCreationPolicy.Shared)
         {
             var miniGameStrategy = player.GameContext.PlugInManager.GetStrategy<MiniGameType, IPeriodicMiniGameStartPlugIn>(miniGameDefinition.Type);
@@ -99,6 +98,10 @@ public class EnterMiniGameAction
 
         var entrance = miniGameDefinition.Entrance ?? throw new InvalidOperationException("mini game entrance not defined");
         var miniGame = await player.GameContext.GetMiniGameAsync(miniGameDefinition, player).ConfigureAwait(false);
+
+        // Snapshot before entering: an event which disallows parties (Chaos Castle) kicks the
+        // entering player out of its party below, losing the knowledge of who was going to follow.
+        var partyBots = Bots.BotMiniGameHandler.SnapshotPartyBots(player);
 
         var enterResult = await miniGame.TryEnterAsync(player).ConfigureAwait(false);
         if (enterResult == EnterResult.Success)
@@ -126,6 +129,10 @@ public class EnterMiniGameAction
             await player.RemoveSummonAsync().ConfigureAwait(false);
             await player.MagicEffectList.ClearEffectsAfterDeathAsync().ConfigureAwait(false);
             await player.WarpToAsync(entrance).ConfigureAwait(false);
+
+            // The bots of the entering party leader follow them in (each checked against the same
+            // entry restrictions, no ticket needed - the leader's own ticket legitimizes the visit).
+            Bots.BotMiniGameHandler.BringPartyBotsAlong(player, partyBots, miniGameDefinition, miniGame);
         }
         else
         {

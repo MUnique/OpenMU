@@ -1,11 +1,10 @@
-// <copyright file="Startup.cs" company="MUnique">
+﻿// <copyright file="Startup.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
 namespace MUnique.OpenMU.Web.AdminPanel;
 
 using System.IO;
-using Blazored.Modal;
 using Blazored.Toast;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -15,7 +14,9 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Web.AdminPanel.Components;
+using MUnique.OpenMU.Web.AdminPanel.Services;
 using MUnique.OpenMU.Web.Shared;
+using MUnique.OpenMU.Web.Shared.Components.Modal;
 using MUnique.OpenMU.Web.Shared.Models;
 using MUnique.OpenMU.Web.Shared.Services;
 
@@ -60,15 +61,21 @@ public class Startup
             .ConfigureApplicationPartManager(setup =>
                 setup.FeatureProviders.Add(new GenericControllerFeatureProvider()));
 
-        services.AddBlazoredModal();
         services.AddBlazoredToast();
+        services.AddScoped<ModalService>();
+        services.AddScoped<IModalService>(sp => sp.GetRequiredService<ModalService>());
+
+        services.AddSingleton<ILookupController, PersistentObjectsLookupController>();
+        services.AddSingleton<ConfigurationSearchIndexCache>();
+
         services.AddScoped<AccountService>();
         services.AddScoped<IDataService<Account>>(serviceProvider => serviceProvider.GetService<AccountService>()!);
 
         services.AddScoped<PlugInController>();
         services.AddScoped<IDataService<PlugInConfigurationViewItem>>(serviceProvider => serviceProvider.GetService<PlugInController>()!);
-
-        services.AddSingleton<ILookupController, PersistentObjectsLookupController>();
+        services.AddScoped<ChatCommandController>();
+        services.AddScoped<IDataService<ChatCommandViewItem>>(serviceProvider => serviceProvider.GetService<ChatCommandController>()!);
+        services.AddScoped<CreationPanelService>();
 
         services.AddScoped<IChangeNotificationService, ChangeNotificationService>();
     }

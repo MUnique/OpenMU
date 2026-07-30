@@ -2,13 +2,12 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.AttributeSystem;
-using MUnique.OpenMU.GameLogic.Attributes;
-using MUnique.OpenMU.Persistence.Initialization.Skills;
-
 namespace MUnique.OpenMU.Persistence.Initialization.Version095d.Maps;
 
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Persistence.Initialization.Skills;
 using MUnique.OpenMU.Persistence.Initialization.Version095d.Events;
 
 /// <summary>
@@ -16,7 +15,6 @@ using MUnique.OpenMU.Persistence.Initialization.Version095d.Events;
 /// </summary>
 internal class DevilSquare3 : BaseMapInitializer
 {
-
     /// <summary>
     /// The default number of the map.
     /// </summary>

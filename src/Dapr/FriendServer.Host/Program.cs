@@ -20,6 +20,7 @@ services.AddSingleton<IFriendServer, FriendServer>()
     .AddPeristenceProvider();
 
 var metricsRegistry = new MetricsRegistry();
+
 // todo: add some meaningful metrics
 builder.AddOpenTelemetryMetrics(metricsRegistry);
 

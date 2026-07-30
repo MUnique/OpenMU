@@ -9425,7 +9425,7 @@ public readonly struct TargetedSkill095
 
 
 /// <summary>
-/// Is sent by the client when: A player cancels a specific magic effect of a skill, usually 'Infinity Arrow' and 'Wizardy Enhance'.
+/// Is sent by the client when: A player cancels a specific magic effect of a skill, usually 'Infinity Arrow' and 'Wizardry Enhance'.
 /// Causes reaction on server side: The effect is cancelled and an update is sent to the player and all surrounding players.
 /// </summary>
 public readonly struct MagicEffectCancelRequest
@@ -17525,6 +17525,83 @@ public readonly struct DuelChannelQuitRequest
     /// <returns>The packet as byte span.</returns>
     public static implicit operator Memory<byte>(DuelChannelQuitRequest packet) => packet._data; 
 }
+
+
+/// <summary>
+/// Is sent by the client when: A client which supports a user interface for chat commands requests the list of commands which are available to the player. It's usually sent after the character entered the game world.
+/// Causes reaction on server side: The server sends an AvailableChatCommand message for each available chat command.
+/// </summary>
+public readonly struct ChatCommandListRequest
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ChatCommandListRequest"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public ChatCommandListRequest(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ChatCommandListRequest"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private ChatCommandListRequest(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xF5;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x00;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 4;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="ChatCommandListRequest"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator ChatCommandListRequest(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="ChatCommandListRequest"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(ChatCommandListRequest packet) => packet._data; 
+}
     /// <summary>
     /// The state of the trade button.
     /// </summary>
@@ -17580,6 +17657,11 @@ public readonly struct DuelChannelQuitRequest
         /// The shop storage of another player.
         /// </summary>
             PersonalShop = 5,
+
+        /// <summary>
+        /// The shop storage of an NPC (merchant).
+        /// </summary>
+            NpcShop = 6,
 
         /// <summary>
         /// The inventory slot of the pet. That's used when a pet leveled up.

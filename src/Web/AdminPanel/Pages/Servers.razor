@@ -1,6 +1,8 @@
 ﻿@page "/servers"
 
 @using System.ComponentModel
+@using Microsoft.Extensions.DependencyInjection
+@using Blazored.Toast.Services
 @using MUnique.OpenMU.Interfaces
 @using MUnique.OpenMU.Web.AdminPanel.Properties
 
@@ -16,8 +18,37 @@
 }
 else
 {
+@if (_gameServers is not null)
+{
+<div class="card mb-3">
+    <div class="card-body">
+        <div class="row g-2 align-items-end">
+            <div class="col-md-5">
+                <label for="global-message" class="form-label mb-1">@Resources.GlobalMessage</label>
+                <input id="global-message" type="text" class="form-control" placeholder="@Resources.MessagePlaceholder" @bind="_message" @bind:event="oninput" />
+            </div>
+            <div class="col-md-4">
+                <label for="server-select" class="form-label mb-1">@Resources.Target</label>
+                <select id="server-select" class="form-select" @bind="_selectedServerId">
+                    <option value="-1">@Resources.AllGameServers</option>
+                    @foreach (var server in _servers.Where(s => s.Type == ServerType.GameServer && s.ServerState == ServerState.Started))
+                    {
+                        <option value="@server.Id">@server.Description (@(string.Format(Resources.OnlineCount, server.CurrentConnections)))</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button class="btn btn-primary w-100" @onclick="SendMessageAsync" disabled="@string.IsNullOrWhiteSpace(_message)">
+                    @Resources.Send
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+}
+
 <div>
-  <table>
+  <table class="table table-striped table-hover">
     <thead>
     <tr>
       <th></th>
@@ -39,7 +70,7 @@ else
     <tr>
       <td></td>
       <td>
-        <NavLink class="btn btn-primary" href="create-game-server">
+        <NavLink class="btn btn-primary me-1" href="create-game-server">
           <span class="oi oi-plus"></span> @Resources.GameServer
         </NavLink>
         <NavLink class="btn btn-primary" href="create-connect-server">
@@ -53,14 +84,14 @@ else
         {
           @if (this._isRestarting)
           {
-            <button type="button" class="btn-warning" disabled="disabled">
+            <button type="button" class="btn btn-warning btn-sm" disabled="disabled">
               <div class="spinner-border text-secondary" role="status">
               </div>
             </button>
           }
           else
           {
-            <button type="button" class="btn-warning" @onclick="this.OnReloadAndRestartClickAsync">
+            <button type="button" class="btn btn-warning btn-sm" @onclick="this.OnReloadAndRestartClickAsync">
               <span class="oi oi-reload"></span>
               @Resources.ReloadConfigurationAndRestartAllGameServers
             </button>
@@ -78,6 +109,10 @@ else
 
     private bool _isRestarting;
 
+    private string _message = string.Empty;
+
+    private int _selectedServerId = -1;
+
     /// <summary>
     /// Gets or sets the <see cref="IServerProvider"/>.
     /// </summary>
@@ -90,6 +125,25 @@ else
     [Inject]
     public IGameServerInstanceManager? ServerInstanceManager { get; set; }
 
+    /// <summary>
+    /// Gets or sets the service provider, used to optionally resolve the game server dictionary.
+    /// </summary>
+    [Inject]
+    public IServiceProvider ServiceProvider { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the toast service.
+    /// </summary>
+    [Inject]
+    public IToastService ToastService { get; set; } = null!;
+
+    /// <summary>
+    /// The game servers, resolved optionally: the dictionary is only registered in the
+    /// single-process host, so it is null on the distributed (Dapr) admin panel host. When
+    /// null, the global message card is not rendered (graceful degradation).
+    /// </summary>
+    private IDictionary<int, IGameServer>? _gameServers;
+
     /// <inheritdoc />
     public void Dispose()
     {
@@ -101,6 +155,7 @@ else
     {
         base.OnInitialized();
         this._servers = this.ServerProvider.Servers;
+        this._gameServers = this.ServiceProvider.GetService<IDictionary<int, IGameServer>>();
         this.ServerProvider.PropertyChanged += this.OnServersChanged;
     }
 
@@ -124,5 +179,58 @@ else
       {
         this._isRestarting = false;
       }
+    }
+
+    private async Task SendMessageAsync()
+    {
+        var message = _message;
+        if (string.IsNullOrWhiteSpace(message) || this._gameServers is not { } gameServers)
+        {
+            return;
+        }
+
+        // Clear the input immediately (on the sync context) so the Send button gets disabled,
+        // preventing double-submission and preserving any text the user types while sending.
+        _message = string.Empty;
+
+        var targets = _selectedServerId == -1
+            ? gameServers.Values.Where(s => s.ServerState == ServerState.Started).ToList()
+            : gameServers.TryGetValue(_selectedServerId, out var selected) && selected.ServerState == ServerState.Started
+                ? new List<IGameServer> { selected }
+                : new List<IGameServer>();
+
+        if (targets.Count == 0)
+        {
+            // No running target (e.g. the selected server stopped meanwhile). Restore the text so
+            // the admin can pick another target and retry without retyping.
+            _message = message;
+            this.ToastService.ShowInfo(Resources.GlobalMessageNoTarget);
+            return;
+        }
+
+        var sent = 0;
+        foreach (var server in targets)
+        {
+            try
+            {
+                await server.SendGlobalMessageAsync(message, MessageType.GoldenCenter);
+                sent++;
+            }
+            catch (Exception ex)
+            {
+                // Per-server catch so one failing server does not abort the broadcast to the rest.
+                this.ToastService.ShowError(string.Format(Resources.GlobalMessageSendFailed, server.Description, ex.Message));
+            }
+        }
+
+        if (sent == targets.Count)
+        {
+            this.ToastService.ShowSuccess(Resources.GlobalMessageSent);
+        }
+        else if (sent == 0)
+        {
+            // Nothing got through: restore the text so the whole broadcast can be retried.
+            _message = message;
+        }
     }
 }

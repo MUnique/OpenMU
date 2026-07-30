@@ -11,9 +11,9 @@
         @this._actualLabel
         @if (!string.IsNullOrWhiteSpace(this._description))
         {
-            <details>
+            <details class="info-popup ms-2" @onclick:stopPropagation>
                 <summary></summary>
-                <div><span class="oi oi-info" aria-hidden="true"></span> @this._description</div>
+                <div class="alert alert-secondary shadow me-3"><span class="oi oi-info" aria-hidden="true"></span> @this._description</div>
             </details>
         }
     </label>

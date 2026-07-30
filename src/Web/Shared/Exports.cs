@@ -1,4 +1,4 @@
-﻿// <copyright file="Exports.cs" company="MUnique">
+// <copyright file="Exports.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.Web.Shared;
 using System.Collections.Immutable;
 
 /// <summary>
-/// Class which holds the script exports of this project.
+/// Class that holds the script exports of this project.
 /// </summary>
 /// <remarks>
 /// TODO: Instead of a static class, create an interface, so we can inject an instance into the layout.
@@ -15,11 +15,6 @@ using System.Collections.Immutable;
 /// </remarks>
 public static class Exports
 {
-    /// <summary>
-    /// Gets the url prefix to the scripts of this project.
-    /// </summary>
-    private static string Prefix { get; } = $"_content/{typeof(Exports).Namespace}";
-
     /// <summary>
     /// Gets the scripts.
     /// </summary>
@@ -39,7 +34,6 @@ public static class Exports
     {
         get
         {
-            yield return "_content/Blazored.Typeahead/blazored-typeahead.js";
             yield return "_content/BlazorInputFile/inputfile.js";
         }
     }
@@ -48,8 +42,12 @@ public static class Exports
     {
         get
         {
-            yield return "_content/Blazored.Typeahead/blazored-typeahead.css";
-            yield return $"{Prefix}/css/shared.css";
+            yield return $"{GetPrefix()}/css/shared.css";
         }
     }
+
+    /// <summary>
+    /// Gets the url prefix to the scripts of this project.
+    /// </summary>
+    private static string GetPrefix() => $"_content/{typeof(Exports).Namespace}";
 }

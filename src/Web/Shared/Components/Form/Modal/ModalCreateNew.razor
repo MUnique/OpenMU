@@ -1,0 +1,50 @@
+@* <copyright file="ModalCreateNew.razor" company="MUnique">
+   Licensed under the MIT License. See LICENSE file in the project root for full license information.
+   </copyright> *@
+
+@using MUnique.OpenMU.Persistence
+@using MUnique.OpenMU.Web.Shared.Components.Form
+@using MUnique.OpenMU.Web.Shared.Components.Modal
+
+@typeparam TItem
+
+<ItemCreationForm Item="@(this.Item!)"
+                  PersistenceContext="@this.PersistenceContext"
+                  Owner="@this.Owner"
+                  OnValidSubmit="@this.SubmitAsync"
+                  OnCancel="@this.CancelAsync" />
+
+@code {
+
+    [Parameter]
+    public ModalInstance Modal { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the item which should be created.
+    /// </summary>
+    [Parameter]
+    public TItem Item { get; set; } = default!;
+
+    /// <summary>
+    /// Gets or sets the persistence context which should be used. It's required for lookups.
+    /// </summary>
+    [Parameter]
+    public IContext PersistenceContext { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the owner object of the collection containing this item.
+    /// Used to provide context for creation (e.g., filtering skills by character class).
+    /// </summary>
+    [Parameter]
+    public object? Owner { get; set; }
+
+    private Task SubmitAsync()
+    {
+        return this.Modal.CloseAsync(ModalResult.Ok(this.Item));
+    }
+
+    private Task CancelAsync()
+    {
+        return this.Modal.CancelAsync();
+    }
+}

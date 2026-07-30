@@ -34,9 +34,9 @@ internal class GuildServerContext : CachingEntityFrameworkContext, IGuildServerC
     public async ValueTask<IReadOnlyDictionary<Guid, string>> GetMemberNamesAsync(Guid guildId)
     {
         return await (from member in this.Context.Set<GuildMember>()
-            join character in this.Context.Set<CharacterName>() on member.Id equals character.Id
-            where member.GuildId == guildId
-            select new { character.Id, character.Name })
+                      join character in this.Context.Set<CharacterName>() on member.Id equals character.Id
+                      where member.GuildId == guildId
+                      select new { character.Id, character.Name })
             .ToDictionaryAsync(member => member.Id, member => member.Name).ConfigureAwait(false);
     }
 

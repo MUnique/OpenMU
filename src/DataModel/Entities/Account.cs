@@ -2,10 +2,9 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using System.ComponentModel;
-
 namespace MUnique.OpenMU.DataModel.Entities;
 
+using System.ComponentModel;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 
@@ -130,6 +129,13 @@ public class Account
     /// and therefore read-only within the game server.
     /// </summary>
     public bool IsTemplate { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether this account is a server-side bot account.
+    /// Bot accounts are generated and maintained by the bot feature; this flag is the reliable
+    /// marker used to load them on startup (instead of regenerating) and to purge them.
+    /// </summary>
+    public bool IsBot { get; set; }
 
     /// <summary>
     /// Gets or sets the characters.

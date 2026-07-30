@@ -32,7 +32,7 @@ public static class GameMapTerrainExtensions
                 }
                 else if (terrain.WalkMap[y, x])
                 {
-                    color = Color.SpringGreen;
+                    color = Color.FromRgb(80, 200, 80);
                 }
                 else
                 {

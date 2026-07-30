@@ -13,16 +13,15 @@ using MUnique.OpenMU.Interfaces;
 internal class LocalizedStringConverter : ValueConverter<LocalizedString, string>
 {
     /// <summary>
-    /// Gets the singleton instance of the <see cref="LocalizedStringConverter"/>.
-    /// </summary>
-    public static LocalizedStringConverter Instance { get; } = new();
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="LocalizedStringConverter" /> class.
     /// </summary>
     private LocalizedStringConverter()
-
         : base(value => value.Value ?? string.Empty, value => new LocalizedString(value))
     {
     }
+
+    /// <summary>
+    /// Gets the singleton instance of the <see cref="LocalizedStringConverter"/>.
+    /// </summary>
+    public static LocalizedStringConverter Instance { get; } = new();
 }

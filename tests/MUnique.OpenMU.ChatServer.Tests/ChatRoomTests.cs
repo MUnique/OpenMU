@@ -65,7 +65,7 @@ public class ChatRoomTests
         var clientId = room.GetNextClientIndex();
         var authenticationInfo = new ChatServerAuthenticationInfo(clientId, roomId, "Bob", ChatServerHost, "123456789");
         room.RegisterClient(authenticationInfo);
-        Assert.ThrowsAsync<ArgumentNullException>(() => room.TryJoinAsync(null!).AsTask());
+        Assert.That(async () => await room.TryJoinAsync(null!), Throws.TypeOf<ArgumentNullException>());
     }
 
     /// <summary>

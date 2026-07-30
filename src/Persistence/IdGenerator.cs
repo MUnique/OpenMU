@@ -18,7 +18,7 @@ using System.Threading;
 public class IdGenerator
 {
     private readonly int _maxValue;
-    private readonly ConcurrentQueue<int> _givenBack = new ();
+    private readonly ConcurrentQueue<int> _givenBack = new();
     private int _currentValue;
 
     /// <summary>

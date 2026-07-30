@@ -3903,4 +3903,18 @@ public class PacketStructureTests
         Assert.That(actualLength, Is.EqualTo(expectedLength), 
             "Packet length mismatch: declared length does not match calculated size");
     }
+
+    /// <summary>
+    /// Tests the packet size calculation for ChatCommandListRequest.
+    /// </summary>
+    [Test]
+    public void ChatCommandListRequest_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 4;
+        var actualLength = ChatCommandListRequestRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+    }
 }

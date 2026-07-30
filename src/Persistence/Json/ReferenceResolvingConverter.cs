@@ -47,11 +47,14 @@ public class ReferenceResolvingConverter<T> : JsonConverter<T>
                 else if (x.CollectionInterface != null && x.Property.Name.StartsWith("Raw"))
                 {
                     propertyType = x.CollectionInterface.GetGenericArguments()[0];
+
+                    var collectionExpr = Expression.Convert(Expression.Property(tParam, x.Property), x.CollectionInterface);
+                    var itemExpr = Expression.Convert(objParam, propertyType);
+                    var containsCall = Expression.Call(collectionExpr, x.CollectionInterface.GetMethod("Contains")!, itemExpr);
+                    var addCall = Expression.Call(collectionExpr, x.CollectionInterface.GetMethod("Add")!, itemExpr);
+
                     adder = Expression.Lambda<Action<T, object>>(
-                            Expression.Call(
-                                Expression.Property(tParam, x.Property),
-                                x.CollectionInterface.GetMethod("Add")!,
-                                Expression.Convert(objParam, propertyType)),
+                            Expression.IfThen(Expression.Not(containsCall), addCall),
                             tParam,
                             objParam)
                         .Compile();
@@ -66,11 +69,15 @@ public class ReferenceResolvingConverter<T> : JsonConverter<T>
 
                     propertyType = propertyType.GetProperties().First(p => p.PropertyType.BaseType == baseType).PropertyType;
                     jsonPropertyName = basePropertyName;
+
+                    var baseCollectionInterface = DetermineCollectionInterface(baseCollectionProperty)!;
+                    var collectionExpr = Expression.Convert(Expression.Property(tParam, baseCollectionProperty), baseCollectionInterface);
+                    var itemExpr = Expression.Convert(objParam, propertyType);
+                    var containsCall = Expression.Call(collectionExpr, baseCollectionInterface.GetMethod("Contains")!, itemExpr);
+                    var addCall = Expression.Call(collectionExpr, baseCollectionInterface.GetMethod("Add")!, itemExpr);
+
                     adder = Expression.Lambda<Action<T, object>>(
-                            Expression.Call(
-                                Expression.Property(tParam, baseCollectionProperty),
-                                baseCollectionProperty.PropertyType.GetMethod("Add")!,
-                                Expression.Convert(objParam, propertyType)),
+                            Expression.IfThen(Expression.Not(containsCall), addCall),
                             tParam,
                             objParam)
                         .Compile();

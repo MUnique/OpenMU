@@ -30,7 +30,6 @@ public class GameServerController : ControllerBase
     /// <summary>
     /// Shuts down the server gracefully.
     /// </summary>
-    /// <returns></returns>
     [HttpPost(nameof(IGameServer.ShutdownAsync))]
     public async ValueTask ShutdownAsync()
     {

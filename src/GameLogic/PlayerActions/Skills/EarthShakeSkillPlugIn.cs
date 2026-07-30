@@ -39,8 +39,7 @@ public class EarthShakeSkillPlugIn : IAreaSkillPlugIn
             direction = (Direction)Rand.NextInt(1, 9);
         }
 
-        var currentDistance = startingPoint.EuclideanDistanceTo(currentTarget);
-        while (currentDistance < skillEntry.Skill.Range)
+        for (int i = 0; i < 3; i++)
         {
             var nextTarget = currentTarget.CalculateTargetPoint(direction);
             if (!currentMap.Terrain.WalkMap[nextTarget.X, nextTarget.Y]
@@ -51,7 +50,6 @@ public class EarthShakeSkillPlugIn : IAreaSkillPlugIn
             }
 
             currentTarget = nextTarget;
-            currentDistance = startingPoint.EuclideanDistanceTo(currentTarget);
         }
 
         await movableTarget.MoveAsync(currentTarget).ConfigureAwait(false);

@@ -20,6 +20,7 @@ using MUnique.OpenMU.Pathfinding;
 public static class AttackableExtensions
 {
     private const short ExplosionMagicEffectNumber = 75;   // 0x4B
+    private const short StunnedMagicEffectNumber = 61;     // 0x3D
 
     private static readonly IDictionary<AttributeDefinition, AttributeDefinition> ReductionModifiers =
         new Dictionary<AttributeDefinition, AttributeDefinition>
@@ -37,11 +38,28 @@ public static class AttackableExtensions
     }
 
     /// <summary>
-    /// Calculates the damage, using a skill.
+    /// Determines whether an attack is blocked because the target or the player attacker is in a safezone.
     /// </summary>
-    /// <param name="attacker">The object which is attacking.</param>
-    /// <param name="defender">The object which is defending.</param>
-    /// <param name="skill">The skill which is used.</param>
+    /// <param name="target">The attack target.</param>
+    /// <param name="attacker">The attacker.</param>
+    /// <returns><c>true</c>, if the attack is blocked; otherwise, <c>false</c>.</returns>
+    public static bool IsAttackBlockedBySafezone(this IAttackable target, IAttacker attacker)
+    {
+        if (target.IsAtSafezone())
+        {
+            return true;
+        }
+
+        var attackerPlayer = attacker as Player ?? (attacker as IPlayerSurrogate)?.Owner;
+        return attackerPlayer?.IsAtSafezone() is true;
+    }
+
+    /// <summary>
+    /// Calculates the damage using a skill.
+    /// </summary>
+    /// <param name="attacker">The object that is attacking.</param>
+    /// <param name="defender">The object that is defending.</param>
+    /// <param name="skill">The skill that is used.</param>
     /// <param name="isCombo">If set to <c>true</c>, the damage gets increased by a combo bonus.</param>
     /// <param name="damageFactor">The damage factor.</param>
     /// <returns>
@@ -73,7 +91,7 @@ public static class AttackableExtensions
         else
         {
             var defenseAttribute = defender.GetDefenseAttribute(attacker);
-            defense = (int)(defender.Attributes[defenseAttribute] * defender.Attributes[Stats.DefenseDecrement]);
+            defense = (int)((defender.Attributes[defenseAttribute] + defender.Attributes[Stats.GreaterDefenseBonus]) * defender.Attributes[Stats.DefenseDecrement]);
             if (defense < 0)
             {
                 defense = 0;
@@ -112,7 +130,7 @@ public static class AttackableExtensions
 
             if (attacker.Attributes[Stats.HasDoubleWield] > 0)
             {
-                // double wield => 110% dmg (55% + 55%)
+                // Double wield => 110% dmg (55% + 55%).
                 dmg += dmg;
             }
 
@@ -136,7 +154,7 @@ public static class AttackableExtensions
         }
         else
         {
-            // Wizardry, Curse, and Fenrir
+            // Wizardry, Curse, and Fenrir.
             if (isExcellentHit)
             {
                 dmg = (int)((baseMaxDamage * duelDmgDec) - defense);
@@ -218,7 +236,8 @@ public static class AttackableExtensions
                 {
                     multiplier = skillMultiplier;
 
-                    if (skill.Skill!.Number == 265 && !isPvp) // DragonSlasher
+                    // DragonSlasher.
+                    if (skill.Skill!.Number == 265 && !isPvp)
                     {
                         multiplier *= 3;
                     }
@@ -327,7 +346,7 @@ public static class AttackableExtensions
         }
 
         float chance = target is Player ? skillEntry.PowerUpChancePvp!.Value : skillEntry.PowerUpChance!.Value;
-        if (!Rand.NextRandomBool(Convert.ToDouble(chance)))
+        if (!Rand.NextRandomBool(chance))
         {
             return;
         }
@@ -359,7 +378,7 @@ public static class AttackableExtensions
             if (regeneration != null)
             {
                 var regenerationValue = player.Attributes.CreateElement(powerUpDefinition);
-                var value = skillEntry.Level == 0 ? regenerationValue.Value : regenerationValue.Value + skillEntry.CalculateValue();
+                var value = regenerationValue.Value + (skillEntry.Level == 0 ? 0 : regenerationValue.Value * skillEntry.CalculateValue() / 100);
                 target.Attributes[regeneration.CurrentAttribute] = Math.Min(
                     target.Attributes[regeneration.CurrentAttribute] + value,
                     target.Attributes[regeneration.MaximumAttribute]);
@@ -425,12 +444,11 @@ public static class AttackableExtensions
     /// <param name="target">The target.</param>
     /// <param name="attacker">The attacker.</param>
     /// <param name="skill">The skill.</param>
-    /// <param name="powerUp">The power up.</param>
+    /// <param name="powerUps">The power ups.</param>
     /// <param name="duration">The duration.</param>
-    /// <param name="targetAttribute">The target attribute.</param>
     /// <param name="hitInfo">The hit information.</param>
     /// <returns>The success of the appliance.</returns>
-    public static async ValueTask<bool> TryApplyElementalEffectsAsync(this IAttackable target, IAttacker attacker, Skill skill, IElement? powerUp, IElement? duration, AttributeDefinition? targetAttribute, HitInfo? hitInfo)
+    public static async ValueTask<bool> TryApplyElementalEffectsAsync(this IAttackable target, IAttacker attacker, Skill skill, IReadOnlyCollection<(AttributeDefinition Target, IElement Boost)> powerUps, IElement? duration, HitInfo? hitInfo)
     {
         if (!target.IsAlive)
         {
@@ -453,12 +471,11 @@ public static class AttackableExtensions
 
         if (skill.MagicEffectDef is { } effectDefinition
             && !target.MagicEffectList.ActiveEffects.ContainsKey(effectDefinition.Number)
-            && powerUp is not null
             && duration is not null
-            && targetAttribute is not null)
+            && powerUps.Count > 0)
         {
             // power-up is the wrong term here... it's more like a power-down ;-)
-            await target.ApplyMagicEffectAsync(attacker, effectDefinition, duration, hitInfo, (targetAttribute, powerUp)).ConfigureAwait(false);
+            await target.ApplyMagicEffectAsync(attacker, effectDefinition, duration, hitInfo, [.. powerUps]).ConfigureAwait(false);
             applied = true;
         }
 
@@ -595,6 +612,20 @@ public static class AttackableExtensions
         }
 
         return Math.Max(tempExperience, 0) * 1.25;
+    }
+
+    /// <summary>
+    /// Applies the mace mastery stun effect to the specified attackable.
+    /// </summary>
+    /// <param name="attacker">The attacker.</param>
+    /// <param name="attackable">The attackable.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    public static async ValueTask ApplyMaceMasteryStunEffectAsync(this Player attacker, IAttackable attackable)
+    {
+        var stunEffectDefinition = attacker.GameContext.Configuration.MagicEffects.First(m => m.Number == StunnedMagicEffectNumber);
+        var powerUp = attackable.Attributes.CreateElement(stunEffectDefinition.PowerUpDefinitions.First(pu => pu.TargetAttribute == Stats.IsStunned));
+        var magicEffect = new MagicEffect(TimeSpan.FromSeconds(2), stunEffectDefinition, [new MagicEffect.ElementWithTarget(powerUp, Stats.IsStunned)]);
+        await attackable.MagicEffectList.AddEffectAsync(magicEffect).ConfigureAwait(false);
     }
 
     private static bool IsAttackSuccessfulTo(this IAttacker attacker, IAttackable defender)
@@ -806,7 +837,7 @@ public static class AttackableExtensions
                 maximumBaseDamage = (int)attackerStats[Stats.FenrirBaseDmg] + skillMaximumDamage;
                 break;
             default:
-                // the skill has some other damage type defined which is not applicable to this calculation
+                // The skill has some other damage type defined that is not applicable to this calculation.
                 break;
         }
 
@@ -861,9 +892,27 @@ public static class AttackableExtensions
             var damage = (hit.HealthDamage + hit.ShieldDamage) * multiplier;
             magicEffect = new BleedingMagicEffect(powerUps[0].Boost, magicEffectDefinition, durationSpan, attacker, target, damage);
         }
+        else if (magicEffectDefinition.PowerUpDefinitions.Any(e => e.TargetAttribute == Stats.IsStunned))
+        {
+            var stunChancePowerUp = powerUps.FirstOrDefault(p => p.Target == Stats.MasteryStunChance);
+            if (stunChancePowerUp.Boost is null || !Rand.NextRandomBool(stunChancePowerUp.Boost.Value))
+            {
+                return;
+            }
+
+            magicEffect = new MagicEffect(durationSpan, magicEffectDefinition, [.. powerUps.Where(p => p != stunChancePowerUp).Select(p => new MagicEffect.ElementWithTarget(p.Boost, p.Target))]);
+        }
         else
         {
-            magicEffect = new MagicEffect(durationSpan, magicEffectDefinition, powerUps.Select(p => new MagicEffect.ElementWithTarget(p.Boost, p.Target)).ToArray());
+            magicEffect = new MagicEffect(durationSpan, magicEffectDefinition, [.. powerUps.Select(p => new MagicEffect.ElementWithTarget(p.Boost, p.Target))]);
+        }
+
+        if (magicEffect.Definition.SubType > 0
+            && await target.MagicEffectList.TryGetActiveEffectOfSubTypeAsync(magicEffect.Definition.SubType).ConfigureAwait(false) is { } existingEffect
+            && existingEffect.Id != magicEffect.Id)
+        {
+            // The new effect replaces an existing effect with a different number
+            await existingEffect.DisposeAsync().ConfigureAwait(false);
         }
 
         await target.MagicEffectList.AddEffectAsync(magicEffect).ConfigureAwait(false);
@@ -907,15 +956,20 @@ public static class AttackableExtensions
         {
             int bonusDamage = 0;
 
-            if (attacker.Attributes[Stats.IsSpearEquipped] > 0) // always two-handed
+            // Always two-handed.
+            if (attacker.Attributes[Stats.IsSpearEquipped] > 0)
             {
                 bonusDamage = (int)attacker.Attributes[Stats.SpearBonusDamage];
             }
-            else if (attacker.Attributes[Stats.IsScepterEquipped] > 0) // impossible to double wield
+
+            // Impossible to double wield.
+            else if (attacker.Attributes[Stats.IsScepterEquipped] > 0)
             {
                 bonusDamage = (int)attacker.Attributes[Stats.ScepterStrBonusDamage];
             }
-            else if (attacker.Attributes[Stats.IsGloveWeaponEquipped] > 0) // impossible to double wield
+
+            // Impossible to double wield.
+            else if (attacker.Attributes[Stats.IsGloveWeaponEquipped] > 0)
             {
                 bonusDamage = (int)attacker.Attributes[Stats.GloveWeaponBonusDamage];
             }
@@ -928,7 +982,7 @@ public static class AttackableExtensions
 
                 if (attacker.Attributes[Stats.IsMaceEquipped] > 0)
                 {
-                    // In case of a double wield with different possible bonuses, take the average
+                    // In case of a double wielding with different possible bonuses, take the average.
                     bonusDamage = (int)(bonusDamage == 0
                         ? attacker.Attributes[Stats.MaceBonusDamage]
                         : (bonusDamage + attacker.Attributes[Stats.MaceBonusDamage]) / 2);

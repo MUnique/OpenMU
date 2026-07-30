@@ -2,21 +2,20 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using Nito.AsyncEx;
-
 namespace MUnique.OpenMU.Network;
 
+using System.Buffers;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
-using System.Buffers;
 using System.IO.Pipelines;
 using System.Net;
 using System.Threading;
 using Microsoft.Extensions.Logging;
-using Pipelines.Sockets.Unofficial;
-using Nito.AsyncEx.Synchronous;
 using MUnique.OpenMU.Network.SimpleModulus;
 using MUnique.OpenMU.PlugIns;
+using Nito.AsyncEx;
+using Nito.AsyncEx.Synchronous;
+using Pipelines.Sockets.Unofficial;
 
 /// <summary>
 /// A connection which works on <see cref="IDuplexPipe"/>.
@@ -25,7 +24,7 @@ using MUnique.OpenMU.PlugIns;
 public sealed class Connection : PacketPipeReaderBase, IConnection
 {
     private static readonly ActivitySource ActivitySource = new(typeof(Connection).FullName ?? nameof(Connection));
-    private static readonly Meter ConnectionMeter = new (MeterName);
+    private static readonly Meter ConnectionMeter = new(MeterName);
     private static readonly Counter<long> IncomingBytesCounter = ConnectionMeter.CreateCounter<long>("IncomingBytes", "bytes");
     private static readonly Counter<long> OutgoingBytesCounter = ConnectionMeter.CreateCounter<long>("OutgoingBytes", "bytes");
     private static readonly Counter<long> InvalidBlocksCounter = ConnectionMeter.CreateCounter<long>("InvalidBlocks");

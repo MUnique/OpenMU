@@ -15,8 +15,8 @@ using MUnique.OpenMU.Pathfinding;
 [TestFixture]
 public class CharacterMoveTest
 {
-    private static readonly Point StartPoint = new (147, 120);
-    private static readonly Point EndPoint = new (151, 122);
+    private static readonly Point StartPoint = new(147, 120);
+    private static readonly Point EndPoint = new(151, 122);
 
     /// <summary>
     /// Tests if handling a walk packet results in the correct target coordinates.

@@ -1,4 +1,4 @@
-﻿// <copyright file="ValueWrapper.cs" company="MUnique">
+// <copyright file="ValueWrapper.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -9,7 +9,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Runtime.CompilerServices;
 
 /// <summary>
-/// A wrapper for <see cref="TValue"/> which allows to be bound to edit components.
+/// A wrapper for <typeparamref name="TValue"/> which allows to be bound to edit components.
 /// </summary>
 /// <typeparam name="TValue">The type of the value.</typeparam>
 public sealed class ValueWrapper<TValue> : INotifyPropertyChanged

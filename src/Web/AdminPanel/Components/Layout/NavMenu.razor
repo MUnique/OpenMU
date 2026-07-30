@@ -1,51 +1,51 @@
 ﻿@using MUnique.OpenMU.Web.AdminPanel.Properties
 
-<nav>
-    <div>
-        <NavLink @onclick="() => NavigationHistory.Clear()">OpenMU</NavLink>
-        <button @onclick="ToggleNavMenu">
-            <span></span>
+<nav class="rounded-bottom shadow-lg">
+    <div class="top-row ps-4 navbar navbar-dark">
+        <NavLink class="navbar-brand" @onclick="() => NavigationHistory.Clear()">OpenMU</NavLink>
+        <button class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
         </button>
     </div>
 
     <!-- Hiding it programmatically is not a good idea here, because we want to hide it based on the width of the device/window. -->
     <div class="@NavMenuCssClass">
-        <ul>
+        <ul class="nav flex-column">
             @if (this._isLoadingConfig)
             {
-                <li>
-                    <NavLink href="" Match="NavLinkMatch.All" @onclick="() => NavigationHistory.Clear()">
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="" Match="NavLinkMatch.All" @onclick="() => NavigationHistory.Clear()">
                         <span class="oi oi-clock" aria-hidden="true"></span> @Resources.Loading
                     </NavLink>
                 </li>
             }
             else if (this._onlyShowSetup)
             {
-                <li>
-                    <NavLink href="setup" @onclick="() => NavigationHistory.Clear()">
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="setup" @onclick="() => NavigationHistory.Clear()">
                         <span class="oi oi-cog" aria-hidden="true"></span> @Resources.Setup
                     </NavLink>
                 </li>
             }
             else
             {
-                <li>
-                    <NavLink href="" Match="NavLinkMatch.All" @onclick="() => NavigationHistory.Clear()">
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="" Match="NavLinkMatch.All" @onclick="() => NavigationHistory.Clear()">
                         <span class="oi oi-home" aria-hidden="true"></span> @Resources.Home
                     </NavLink>
                 </li>
-                <li>
-                    <NavLink href="servers" @onclick="() => NavigationHistory.Clear()">
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="servers" @onclick="() => NavigationHistory.Clear()">
                         <span class="oi oi-project" aria-hidden="true"></span> @Resources.Servers
                     </NavLink>
                 </li>
-                <li>
-                  <NavLink href="accounts" @onclick="() => NavigationHistory.Clear()">
+                <li class="nav-item px-3">
+                  <NavLink class="nav-link" href="accounts" @onclick="() => NavigationHistory.Clear()">
                     <span class="oi oi-list" aria-hidden="true"></span> @Resources.Accounts
                   </NavLink>
                 </li>
-                <li>
-                  <NavLink href="logged-in" @onclick="() => NavigationHistory.Clear()">
+                <li class="nav-item px-3">
+                  <NavLink class="nav-link" href="logged-in" @onclick="() => NavigationHistory.Clear()">
                     <span class="oi oi-people" aria-hidden="true" /> @Resources.OnlineAccounts
                   </NavLink>
                 </li>
@@ -53,60 +53,60 @@
                 {
                     <ConfigNavMenu GameConfigurationId="@gameConfigurationId" />
                 }
-                <li>
-                    <NavLink href="setup" @onclick="() => NavigationHistory.Clear()">
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="setup" @onclick="() => NavigationHistory.Clear()">
                         <span class="oi oi-cog" aria-hidden="true"></span> @Resources.Setup
                     </NavLink>
                 </li>
-                <li>
-                    <NavLink href="config-updates" @onclick="() => NavigationHistory.Clear()">
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="config-updates" @onclick="() => NavigationHistory.Clear()">
                         <span class="oi oi-medical-cross" aria-hidden="true"></span> @Resources.Updates
                         @if (this._availableConfigUpdates > 0)
                         {
-                            <span class="badge badge-light ml-2">@this._availableConfigUpdates</span>
-                            <span class="sr-only">available updates</span>
+                            <span class="badge text-bg-light ms-2">@this._availableConfigUpdates</span>
+                            <span class="visually-hidden">available updates</span>
                         }
                     </NavLink>
                 </li>
             }
             @if (UserService.IsAvailable)
             {
-                <li>
-                    <NavLink href="users" @onclick="() => NavigationHistory.Clear()">
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="users" @onclick="() => NavigationHistory.Clear()">
                         <span class="oi oi-key" aria-hidden="true"></span> @Resources.Users
                     </NavLink>
                 </li>
             }
             @if (AdminPanelEnvironment.IsHostingEmbedded)
             {
-                <li>
-                    <NavLink href="logfiles" @onclick="() => NavigationHistory.Clear()">
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="logfiles" @onclick="() => NavigationHistory.Clear()">
                         <span class="oi oi-list" aria-hidden="true"></span> @Resources.LogFiles
                     </NavLink>
                 </li>
             }
             else
             {
-                <li>
-                    <a href="/grafana/explore?orgId=1&left=%7B%22datasource%22:%22Loki%22,%22queries%22:%5B%7B%22refId%22:%22A%22%7D%5D,%22range%22:%7B%22from%22:%22now-1h%22,%22to%22:%22now%22%7D%7D"
+                <li class="nav-item px-3">
+                    <a class="nav-link" href="/grafana/explore?orgId=1&left=%7B%22datasource%22:%22Loki%22,%22queries%22:%5B%7B%22refId%22:%22A%22%7D%5D,%22range%22:%7B%22from%22:%22now-1h%22,%22to%22:%22now%22%7D%7D"
                        target="_blank">
                         <span class="oi oi-list" aria-hidden="true"></span> @Resources.Logs
                     </a>
                 </li>
-                <li>
-                    <a href="/grafana/dashboards"
+                <li class="nav-item px-3">
+                    <a class="nav-link" href="/grafana/dashboards"
                        target="_blank">
                         <span class="oi oi-bar-chart" aria-hidden="true"></span> @Resources.Metrics
                     </a>
                 </li>
-                <li>
-                    <a href="/zipkin/"
+                <li class="nav-item px-3">
+                    <a class="nav-link" href="/zipkin/"
                        target="_blank">
                         <span class="oi oi-fork" aria-hidden="true"></span> @Resources.Tracing
                     </a>
                 </li>
             }
-            <li>
+            <li class="nav-item px-3">
               <CultureSelector />
             </li>
         </ul>

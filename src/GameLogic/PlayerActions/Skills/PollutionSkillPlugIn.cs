@@ -16,7 +16,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [PlugIn]
 [Display(Name = nameof(PlugInResources.PollutionSkillPlugIn_Name), Description = nameof(PlugInResources.PollutionSkillPlugIn_Description), ResourceType = typeof(PlugInResources))]
-[Guid("9F4B2C1D-E7A6-4B3C-8D9E-0FAB12C3D4E5")]
+[Guid("97BE0BFD-C55C-4E68-9B2D-12156825481A")]
 public class PollutionSkillPlugIn : IAreaSkillPlugIn
 {
     /// <inheritdoc />
@@ -28,7 +28,7 @@ public class PollutionSkillPlugIn : IAreaSkillPlugIn
         if (!target.IsAlive
             || target is not IMovable movableTarget
             || target.CurrentMap is not { } currentMap
-            || !Rand.NextRandomBool(Convert.ToDouble(attacker.Attributes[Stats.PollutionMoveTargetChance])))
+            || !Rand.NextRandomBool(attacker.Attributes[Stats.MasteryMoveTargetChance]))
         {
             return;
         }

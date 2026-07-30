@@ -9,12 +9,15 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Pathfinding;
+using MUnique.OpenMU.Web.Map.Map;
 
 /// <summary>
 /// Implementation of <see cref="IObjectMovedPlugIn"/> which uses the javascript map app.
 /// </summary>
 public class ObjectMovedPlugIn : JsViewPlugInBase, IObjectMovedPlugIn
 {
+    private readonly string _worldAccessor;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ObjectMovedPlugIn"/> class.
     /// </summary>
@@ -25,6 +28,7 @@ public class ObjectMovedPlugIn : JsViewPlugInBase, IObjectMovedPlugIn
     public ObjectMovedPlugIn(IJSRuntime jsRuntime, ILoggerFactory loggerFactory, string worldAccessor, CancellationToken cancellationToken)
         : base(jsRuntime, loggerFactory, $"{worldAccessor}.objectMoved", cancellationToken)
     {
+        this._worldAccessor = worldAccessor;
     }
 
     /// <inheritdoc />
@@ -46,6 +50,15 @@ public class ObjectMovedPlugIn : JsViewPlugInBase, IObjectMovedPlugIn
 
     private async Task ObjectMovedAsyncInnerAsync(ILocateable movedObject, MoveType moveType)
     {
+        if (moveType == MoveType.Teleport && movedObject is Player player)
+        {
+            await this.JsRuntime.InvokeVoidAsync(
+                $"{this._worldAccessor}.addOrUpdatePlayer",
+                this.CancellationToken,
+                player.CreateMapObject()).ConfigureAwait(false);
+            return;
+        }
+
         Point targetPoint = movedObject.Position;
         object? steps = null;
         int walkDelay = 0;

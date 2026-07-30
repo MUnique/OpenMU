@@ -2,12 +2,11 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using System.Threading;
-
 namespace MUnique.OpenMU.Persistence.EntityFramework.Json;
 
 using System.Data;
 using System.Text.Json.Serialization;
+using System.Threading;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -40,6 +39,7 @@ public class JsonObjectLoader
     /// </summary>
     /// <typeparam name="T">The type of the <see cref="IIdentifiable"/> object.</typeparam>
     /// <param name="context">The context.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>All objects of <typeparamref name="T"/>.</returns>
     public async ValueTask<IEnumerable<T>> LoadAllObjectsAsync<T>(DbContext context, CancellationToken cancellationToken = default)
         where T : class, IIdentifiable

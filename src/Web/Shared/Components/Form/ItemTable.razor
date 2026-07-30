@@ -7,27 +7,40 @@
 @inject IModalService _modal
 @inject NavigationManager _navigationManager
 
-    <div class="card">
+    <div class="card mb-3">
         <h5 class="card-header">
             <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
             @if (this._isStartingCollapsed)
         {
             @if (this._isCollapsed)
             {
-                <button type="button" class="btn-outline-info ml-3" @onclick="@this.OnToggleCollapseClick">Expand (@(this.Value?.Count) Items)</button>
+                <button type="button" class="btn btn-outline-info ms-3" @onclick="@this.OnToggleCollapseClick">Expand (@(this.Value?.Count) Items)</button>
             }
             else
             {
-                <button type="button" class="btn-outline-info ml-3" @onclick="@this.OnToggleCollapseClick">Collapse</button>
+                <button type="button" class="btn btn-outline-info ms-3" @onclick="@this.OnToggleCollapseClick">Collapse</button>
             }
         }
         </h5>
         @if (!this._isCollapsed)
         {
             <div class="card-body card-text">
-                <table>
+                @if (this._showSearch)
+                {
+                    <div class="auto-form-container">
+                        <div class="mb-3 auto-form-search-group">
+                        <input type="text"
+                               class="form-control"
+                                   placeholder="@($"{Resources.Search}...")"
+                                   @bind="this._searchTerm"
+                                   @bind:event="oninput" />
+                            <span class="oi oi-magnifying-glass search-icon"></span>
+                        </div>
+                    </div>
+                }
+                <table class="table table-striped table-hover">
                     <tbody>
-                    @foreach (var item in (this.Value ?? Enumerable.Empty<TItem>())
+                    @foreach (var item in this.FilteredItems
                         .Select(i => (Name : i.GetName(), Id : i.GetId(), Item : i))
                         .OrderBy(i => i.Name))
                     {
@@ -64,34 +77,34 @@
                                   urlPrefix = "edit-account";
                                 }
 
-                                <a href="@($"{urlPrefix}/{typeof(TItem).FullName}/{item.Id}")" class="btn btn-info">Edit</a>
+                                <a href="@($"{urlPrefix}/{typeof(TItem).FullName}/{item.Id}")" class="btn btn-primary"><span class="oi oi-pencil" aria-hidden="true"></span> Edit</a>
                               }
                             </td>
                         }
                             <td>
                                 @if (this._isEditable)
                                 {
-                                    <button type="button" class="btn-danger" @onclick="@(() => OnRemoveClickAsync(item.Item))">Remove</button>
+                                    <button type="button" class="btn btn-danger" @onclick="@(() => OnRemoveClickAsync(item.Item))"><span class="oi oi-trash" aria-hidden="true"></span> Remove</button>
                                 }
                             </td>
                         </tr>
                     }
                     </tbody>
-                    <tfooter>
+                    <tfoot>
                         <tr>
-                            <td colspan="3">
+                            <td colspan="3" class="border-bottom-0">
                                 @if (this._isAddingSupported)
                                 {
-                                    <button type="button" class="btn-primary" @onclick="@OnAddClickAsync">Add</button>
+                                    <button type="button" class="btn btn-primary" @onclick="@OnAddClickAsync">Add</button>
                                 }
 
                                 @if (this._isCreatingSupported)
                                 {
-                                    <button type="button" class="btn-primary" @onclick="@OnCreateClickAsync">Create</button>
+                                    <button type="button" class="btn btn-primary" @onclick="@OnCreateClickAsync">Create</button>
                                 }
                             </td>
                         </tr>
-                    </tfooter>
+                    </tfoot>
                 </table>
             </div>
         }

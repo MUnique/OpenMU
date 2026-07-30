@@ -1,4 +1,4 @@
-﻿// <copyright file="GameConfigurationInitializerBase.cs" company="MUnique">
+// <copyright file="GameConfigurationInitializerBase.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -10,8 +10,8 @@ using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
-using MUnique.OpenMU.Persistence.Initialization.Version075.Items;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
+using MUnique.OpenMU.Persistence.Initialization.Version075.Items;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 
 /// <summary>
@@ -79,6 +79,34 @@ public abstract class GameConfigurationInitializerBase : InitializerBase
         this.GameConfiguration.ItemOptions.Add(this.CreateOptionDefinition(Stats.DefenseRatePvm, ItemOptionDefinitionNumbers.DefenseRateOption, 5));
     }
 
+    /// <summary>
+    /// Calculates the necessary experience for the specified character level.
+    /// </summary>
+    /// <param name="level">The character level.</param>
+    /// <returns>The calculated necessary experience.</returns>
+    internal static long CalculateNeededExperience(long level)
+    {
+        if (level == 0)
+        {
+            return 0;
+        }
+
+        if (level < 256)
+        {
+            return 10 * (level + 8) * (level - 1) * (level - 1);
+        }
+
+        return (10 * (level + 8) * (level - 1) * (level - 1)) +
+               (1000 * (level - 247) * (level - 256) * (level - 256));
+    }
+
+    /// <summary>
+    /// Creates an item option definition for the specified attribute definition.
+    /// </summary>
+    /// <param name="attributeDefinition">The attribute definition.</param>
+    /// <param name="number">The amount of the item option definition.</param>
+    /// <param name="baseValue">The base value for the item option.</param>
+    /// <returns>The created item option definition.</returns>
     protected ItemOptionDefinition CreateOptionDefinition(AttributeDefinition attributeDefinition, short number, byte baseValue = 4)
     {
         var definition = this.Context.CreateNew<ItemOptionDefinition>();
@@ -115,24 +143,32 @@ public abstract class GameConfigurationInitializerBase : InitializerBase
     }
 
     /// <summary>
-    /// Calculates the needed experience for the specified character level.
+    /// Assigns the character class home maps.
+    /// Needs to be called after the character classes and maps have been initialized.
     /// </summary>
-    /// <param name="level">The character level.</param>
-    /// <returns>The calculated needed experience.</returns>
-    internal static long CalculateNeededExperience(long level)
+    protected void AssignCharacterClassHomeMaps()
     {
-        if (level == 0)
+        foreach (var characterClass in this.GameConfiguration.CharacterClasses)
         {
-            return 0;
-        }
+            byte mapNumber;
+            switch ((CharacterClassNumber)characterClass.Number)
+            {
+                case CharacterClassNumber.FairyElf:
+                case CharacterClassNumber.HighElf:
+                case CharacterClassNumber.MuseElf:
+                    mapNumber = Noria.Number;
+                    break;
+                case CharacterClassNumber.BloodySummoner:
+                case CharacterClassNumber.Summoner:
+                    mapNumber = Elvenland.Number;
+                    break;
+                default:
+                    mapNumber = Lorencia.Number;
+                    break;
+            }
 
-        if (level < 256)
-        {
-            return 10 * (level + 8) * (level - 1) * (level - 1);
+            characterClass.HomeMap = this.GameConfiguration.Maps.First(map => map.Number == mapNumber);
         }
-
-        return (10 * (level + 8) * (level - 1) * (level - 1)) +
-               (1000 * (level - 247) * (level - 256) * (level - 256));
     }
 
     private void AddItemDropGroups()
@@ -238,40 +274,13 @@ public abstract class GameConfigurationInitializerBase : InitializerBase
     {
         var moneyAmountRate = this.Context.CreateNew<ConstValueAttribute>(1f, Stats.MoneyAmountRate.GetPersistent(this.GameConfiguration));
         this.GameConfiguration.GlobalBaseAttributeValues.Add(moneyAmountRate);
-    }
 
-    private long CalcNeededMasterExp(long lvl)
-    {
-        // f(x) = 505 * x^3 + 35278500 * x + 228045 * x^2
-        return (505 * lvl * lvl * lvl) + (35278500 * lvl) + (228045 * lvl * lvl);
-    }
+        var randomExperienceMinMultiplier = this.Context.CreateNew<ConstValueAttribute>(0.8f, Stats.RandomExperienceMinMultiplier.GetPersistent(this.GameConfiguration));
+        this.GameConfiguration.GlobalBaseAttributeValues.Add(randomExperienceMinMultiplier);
 
-    /// <summary>
-    /// Assigns the character class home maps.
-    /// Needs to be called after the character classes and maps have been initialized.
-    /// </summary>
-    protected void AssignCharacterClassHomeMaps()
-    {
-        foreach (var characterClass in this.GameConfiguration.CharacterClasses)
-        {
-            byte mapNumber;
-            switch ((CharacterClassNumber)characterClass.Number)
-            {
-                case CharacterClassNumber.FairyElf:
-                case CharacterClassNumber.HighElf:
-                case CharacterClassNumber.MuseElf:
-                    mapNumber = Noria.Number;
-                    break;
-                case CharacterClassNumber.BloodySummoner:
-                case CharacterClassNumber.Summoner:
-                    mapNumber = Elvenland.Number;
-                    break;
-                default:
-                    mapNumber = Lorencia.Number;
-                    break;
-            }
+        var randomExperienceMaxMultiplier = this.Context.CreateNew<ConstValueAttribute>(1.2f, Stats.RandomExperienceMaxMultiplier.GetPersistent(this.GameConfiguration));
+        this.GameConfiguration.GlobalBaseAttributeValues.Add(randomExperienceMaxMultiplier);
 
-            characterClass.HomeMap = this.GameConfiguration.Maps.First(map => map.Number == mapNumber);
-        }
+        this.GameConfiguration.GlobalBaseAttributeValues.Add(this.Context.CreateNew<ConstValueAttribute>(1f, Stats.MovementSpeedFactor.GetPersistent(this.GameConfiguration)));
     }
 }

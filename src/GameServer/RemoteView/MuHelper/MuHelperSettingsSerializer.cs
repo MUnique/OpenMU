@@ -34,7 +34,8 @@ using MUnique.OpenMU.GameLogic.MuHelper;
 ///  27     [Skill2Delay:1][Skill2Con:1][Skill2PreCon:1][Skill2SubCon:2]
 ///         [RepairItem:1][PickAllNearItems:1][PickSelectedItems:1]
 ///  28     PetAttack (BYTE: 0=cease, 1=auto, 2=together)
-///  29-64  _UnusedPadding[36]
+///  29     [UseSelfDefense:1][AutoAcceptFriend:1][AutoAcceptGuild:1][FallbackBasicAttack:1][Unused:4]
+///  30-64  _UnusedPadding[35]
 ///  65-244 ExtraItems[12][15]  (null-terminated ASCII item name filters)
 ///  245-256 (trailing padding, ignored)
 /// </code>
@@ -61,10 +62,16 @@ public static class MuHelperSettingsSerializer
     private const int Skill1FlagsOffset = 26;
     private const int Skill2FlagsOffset = 27;
     private const int PetAttackOffset = 28;
+    private const int HelperFlagsOffset = 29;
     private const int ExtraItemsOffset = 65;
     private const int ExtraItemsEndOffset = 245;
     private const int ExtraItemSlotCount = 12;
     private const int ExtraItemSlotLength = 15;
+
+    private const int UseSelfDefenseFlag = 1 << 0;
+    private const int AutoAcceptFriendFlag = 1 << 1;
+    private const int AutoAcceptGuildFlag = 1 << 2;
+    private const int FallbackBasicAttackFlag = 1 << 3;
 
     private const int PickJewelFlag = 1 << 3;
     private const int PickSetItemFlag = 1 << 4;
@@ -180,6 +187,12 @@ public static class MuHelperSettingsSerializer
 
         int petAttack = blob[PetAttackOffset];
 
+        byte helperFlags = blob[HelperFlagsOffset];
+        bool useSelfDefense = (helperFlags & UseSelfDefenseFlag) != 0;
+        bool autoAcceptFriend = (helperFlags & AutoAcceptFriendFlag) != 0;
+        bool autoAcceptGuild = (helperFlags & AutoAcceptGuildFlag) != 0;
+        bool fallbackBasicAttack = (helperFlags & FallbackBasicAttackFlag) != 0;
+
         var extraNames = new List<string>();
         if (blob.Length >= ExtraItemsEndOffset)
         {
@@ -245,6 +258,10 @@ public static class MuHelperSettingsSerializer
             PickExtraItems = extraItem,
             ExtraItemNames = extraNames,
             RepairItem = repairItem,
+            UseSelfDefense = useSelfDefense,
+            AutoAcceptFriend = autoAcceptFriend,
+            AutoAcceptGuild = autoAcceptGuild,
+            FallbackBasicAttack = fallbackBasicAttack,
         };
     }
 

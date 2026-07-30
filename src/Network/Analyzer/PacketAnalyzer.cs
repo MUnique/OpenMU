@@ -1,4 +1,4 @@
-﻿// <copyright file="PacketAnalyzer.cs" company="MUnique">
+// <copyright file="PacketAnalyzer.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -12,7 +12,7 @@ using MUnique.OpenMU.Network.PlugIns;
 using static System.Buffers.Binary.BinaryPrimitives;
 
 /// <summary>
-/// Analyzer which analyzes data packets by considering the configuration files.
+/// Analyzer that analyzes data packets by considering the configuration files.
 /// </summary>
 public sealed class PacketAnalyzer : IDisposable
 {
@@ -20,7 +20,7 @@ public sealed class PacketAnalyzer : IDisposable
     private const string ServerToClientPacketsFile = "ServerToClientPackets.xml";
     private const string CommonFile = "CommonEnums.xml";
     private const int DefaultVersionValue = 100;
-    private const int ExtendedVersionValue = 106 * 100 + 3;
+    private const int ExtendedVersionValue = (106 * 100) + 3;
 
     private readonly IList<IDisposable> _watchers = new List<IDisposable>();
     private PacketDefinitions? _clientPacketDefinitions;
@@ -49,7 +49,7 @@ public sealed class PacketAnalyzer : IDisposable
         set
         {
             this._clientVersion = value;
-            this._clientVersionValue = value.Season * 100 + value.Episode;
+            this._clientVersionValue = (value.Season * 100) + value.Episode;
         }
     }
 
@@ -352,7 +352,7 @@ public sealed class PacketAnalyzer : IDisposable
         }
 
         var typeLength = elementType.Length > 0 ? elementType.Length : this.DetermineFixedStructLength(data, arrayField, elementType, count);
-        var fixedLengthByCount = CalcFixStructLengthBySizeAndCount(data, arrayField, elementType, count);
+        var fixedLengthByCount = this.CalcFixStructLengthBySizeAndCount(data, arrayField, elementType, count);
         var stringBuilder = new StringBuilder();
         var restData = data[arrayField.Index..];
 
@@ -397,6 +397,7 @@ public sealed class PacketAnalyzer : IDisposable
         {
             return type.Length;
         }
+
         return null;
     }
 
@@ -428,23 +429,22 @@ public sealed class PacketAnalyzer : IDisposable
         if (packetType.Structures is not null
             && type.Fields.FirstOrDefault(f => f.Type == FieldType.StructureArray) is { } nestedStructField)
         {
-
             var countField = type.Fields.First(f => f.Name == nestedStructField.ItemCountField);
             var count = restData[countField.Index];
             var nestedStructType = packetType.Structures.First(s => s.Name == nestedStructField.TypeName);
             return nestedStructField.Index + (count * nestedStructType.Length);
-
         }
+
         if (this._clientVersionValue == ExtendedVersionValue
             && type.Fields.FirstOrDefault(f => f.Type == FieldType.Binary) is { } binaryField
             && binaryField.Name?.EndsWith("ItemData") is true)
         {
-            return binaryField.Index + DetermineItemSize(restData, binaryField);
+            return binaryField.Index + this.DetermineItemSize(restData, binaryField);
         }
 
-        if (type.Fields.MaxBy(f => f.Index) is { Type: not (FieldType.Binary or FieldType.StructureArray)} lastField)
+        if (type.Fields.MaxBy(f => f.Index) is { Type: not (FieldType.Binary or FieldType.StructureArray) } lastField)
         {
-            return lastField.Index + FieldSize(lastField.Type);
+            return lastField.Index + this.FieldSize(lastField.Type);
         }
 
         return null;
@@ -455,27 +455,33 @@ public sealed class PacketAnalyzer : IDisposable
         var itemData = restData.Slice(binaryField.Index);
         var size = 5;
         var options = itemData[4];
-        if ((options & 1) == 1) // Option
+
+        // Option
+        if ((options & 1) == 1)
         {
             size++;
         }
 
-        if ((options & 8) == 8) // Excellent
+        // Excellent
+        if ((options & 8) == 8)
         {
             size++;
         }
 
-        if ((options & 0x10) == 0x10) // Ancient
+        // Ancient
+        if ((options & 0x10) == 0x10)
         {
             size++;
         }
 
-        if ((options & 0x20) == 0x20) // Harmony
+        // Harmony
+        if ((options & 0x20) == 0x20)
         {
             size++;
         }
 
-        if ((options & 0x80) == 0x80) // Sockets
+        // Sockets
+        if ((options & 0x80) == 0x80)
         {
             size++;
             var socketCount = itemData[size] & 0xF;

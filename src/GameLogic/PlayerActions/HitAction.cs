@@ -1,10 +1,11 @@
-﻿// <copyright file="HitAction.cs" company="MUnique">
+// <copyright file="HitAction.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions;
 
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.World;
 
 /// <summary>
@@ -42,6 +43,16 @@ public class HitAction
         {
             player.Logger.LogWarning("Probably Hacker - player {Player} is attacking from safezone", player);
             return;
+        }
+
+        if (player.GameContext.PlugInManager.GetPlugInPoint<ISpeedHackCheatCheckPlugIn>() is { } speedCheck)
+        {
+            var eventArgs = new SpeedHackCheckEventArgs();
+            await speedCheck.AttackCheatCheckAsync(player, eventArgs).ConfigureAwait(false);
+            if (eventArgs.IsCheatDetected)
+            {
+                return;
+            }
         }
 
         if (target.IsAtSafezone())

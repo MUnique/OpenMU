@@ -29,6 +29,7 @@ public class AttributeRelationshipElement : SimpleElement
         }
 
         inputOperand.ValueChanged += this.ElementChanged;
+
         // TODO: Is Dispose required?
     }
 

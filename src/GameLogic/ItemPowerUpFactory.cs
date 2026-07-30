@@ -253,7 +253,9 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
             var level = option.LevelType == LevelType.ItemLevel ? item.Level : optionLink.Level;
 
             var optionOfLevel = option.LevelDependentOptions?.FirstOrDefault(l => l.Level == level);
-            if (optionOfLevel is null && level > 1 && item.Definition!.Skill?.Number != 49) // Dinorant options are an exception
+
+            // Dinorant options are an exception.
+            if (optionOfLevel is null && level > 1 && item.Definition!.Skill?.Number != 49)
             {
                 this._logger.LogWarning("Item {item} (id {itemId}) has IncreasableItemOption ({option}, id {optionId}) with level {level}, but no definition in LevelDependentOptions.", item, item.GetId(), option, option.GetId(), level);
                 continue;
@@ -273,7 +275,28 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
                 continue;
             }
 
-            foreach (var wrapper in PowerUpWrapper.CreateByPowerUpDefinition(powerUp, attributeHolder))
+            AggregateType? aggregateType = null;
+            if (option.OptionType == ItemOptionTypes.Excellent)
+            {
+                if (item.ItemSlot == InventoryConstants.PendantSlot
+                    && option.PowerUpDefinition?.TargetAttribute == Stats.PhysicalBaseDmg)
+                {
+                    // Pendant options are not subject to double wield averaging
+                    aggregateType = AggregateType.AddFinal;
+                }
+                else if (option.PowerUpDefinition?.TargetAttribute == Stats.PhysicalBaseDmgIncrease
+                    && item.Definition!.BasePowerUpAttributes.Any(pu => pu.TargetAttribute == Stats.DoubleWieldWeaponCount))
+                {
+                    // This needs special treatment, since this option is averaged when double wielding
+                    aggregateType = AggregateType.AddRaw;
+                }
+                else
+                {
+                    // the normal aggregate type should be used
+                }
+            }
+
+            foreach (var wrapper in PowerUpWrapper.CreateByPowerUpDefinition(powerUp, attributeHolder, aggregateType))
             {
                 yield return wrapper;
             }
@@ -343,6 +366,13 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
                 var ancientBonus = 5 + (ancientDropLevel / 40);
                 yield return new PowerUpWrapper(new SimpleElement(ancientBonus, AggregateType.AddRaw), minDmgAttribute, attributeHolder);
                 yield return new PowerUpWrapper(new SimpleElement(ancientBonus, AggregateType.AddRaw), maxDmgAttribute, attributeHolder);
+            }
+
+            if (itemIsExcellent
+                && item.ItemOptions.Any(io => io.ItemOption?.PowerUpDefinition?.TargetAttribute == Stats.PhysicalBaseDmgIncrease)
+                && item.Definition!.BasePowerUpAttributes.Any(pu => pu.TargetAttribute == Stats.DoubleWieldWeaponCount))
+            {
+                yield return new PowerUpWrapper(new SimpleElement(-1, AggregateType.AddRaw), Stats.PhysicalBaseDmgIncrease, attributeHolder);
             }
         }
 

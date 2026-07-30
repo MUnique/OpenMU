@@ -19,6 +19,8 @@ public sealed class DroppedMoney : AsyncDisposable, ILocateable
     /// </summary>
     private readonly AsyncLock _pickupLock;
 
+    private readonly IReadOnlyList<MoneyShare> _shares;
+
     private Timer? _removeTimer;
 
     private bool _availableToPick = true;
@@ -29,9 +31,14 @@ public sealed class DroppedMoney : AsyncDisposable, ILocateable
     /// <param name="amount">The amount.</param>
     /// <param name="position">The position where the item was dropped on the map.</param>
     /// <param name="map">The map.</param>
-    public DroppedMoney(uint amount, Point position, GameMap map)
+    /// <param name="shares">
+    /// The part of the money which is reserved for each player, matching the experience they gained from the kill.
+    /// When it's empty - for example for money from an item box - the money is split equally instead.
+    /// </param>
+    public DroppedMoney(uint amount, Point position, GameMap map, IReadOnlyList<MoneyShare>? shares = null)
     {
         this.Amount = amount;
+        this._shares = shares ?? [];
         this._pickupLock = new();
         this.Position = position;
         this.CurrentMap = map;
@@ -67,8 +74,7 @@ public sealed class DroppedMoney : AsyncDisposable, ILocateable
     public async ValueTask<bool> TryPickUpByAsync(Player player)
     {
         player.Logger.LogDebug("Player {0} tries to pick up {1}", player, this);
-        int amountToAdd = 0;
-        var clampMoneyOnPickup = player.GameContext?.Configuration?.ClampMoneyOnPickup ?? false;
+
         using (await this._pickupLock.LockAsync())
         {
             if (!this._availableToPick)
@@ -77,48 +83,19 @@ public sealed class DroppedMoney : AsyncDisposable, ILocateable
                 return false;
             }
 
-            if (clampMoneyOnPickup)
-            {
-                // Calculate how much can actually be added (clamp to max)
-                var maxMoney = player.GameContext?.Configuration?.MaximumInventoryMoney ?? int.MaxValue;
-                var currentMoney = player.Money;
-                amountToAdd = (int)Math.Min(this.Amount, (uint)Math.Max(0, maxMoney - currentMoney));
-
-                if (amountToAdd <= 0)
-                {
-                    player.Logger.LogDebug("Player is at maximum money limit, Player {0}, Money {1}", player, this);
-                    return false;
-                }
-
-                // Add the clamped amount
-                if (!player.TryAddMoney(amountToAdd))
-                {
-                    player.Logger.LogDebug("Money could not be added to the inventory, Player {0}, Money {1}", player, this);
-                    return false;
-                }
-            }
-            else
-            {
-                // Original behavior: fail if it would exceed the maximum
-                if (!player.TryAddMoney((int)this.Amount))
-                {
-                    player.Logger.LogDebug("Money could not be added to the inventory, Player {0}, Money {1}", player, this);
-                    return false;
-                }
-
-                amountToAdd = (int)this.Amount;
-            }
-
             this._availableToPick = false;
         }
 
-        if (clampMoneyOnPickup && amountToAdd < this.Amount)
+        if (!this.TryGiveMoneyTo(player))
         {
-            player.Logger.LogDebug("Money '{0}' was partially picked up by player '{1}' - added {2} out of {3} (player at max limit).", this, player, amountToAdd, this.Amount);
-        }
-        else
-        {
-            player.Logger.LogDebug("Money '{0}' was picked up by player '{1}' and added to his inventory.", this, player);
+            // Nobody got the money, so the drop is released again. Keeping it claimed would leave it
+            // lying on the map, unpickable for everyone until it expires - and then lost.
+            using (await this._pickupLock.LockAsync())
+            {
+                this._availableToPick = true;
+            }
+
+            return false;
         }
 
         await this.DisposeAsync().ConfigureAwait(false);
@@ -150,6 +127,43 @@ public sealed class DroppedMoney : AsyncDisposable, ILocateable
         }
 
         await base.DisposeAsyncCore().ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Tries to hand the money over to the player, or to its party. Returns <c>false</c> if it could not be
+    /// given to anyone, e.g. because the receiver is already at the maximum inventory money.
+    /// </summary>
+    /// <param name="player">The player which picks the money up.</param>
+    /// <returns><c>True</c>, if at least one player received money; Otherwise, <c>false</c>.</returns>
+    private bool TryGiveMoneyTo(Player player)
+    {
+        if (player.Party is not { } party)
+        {
+            if (!MoneyDistribution.TryPay(player, this.Amount))
+            {
+                player.Logger.LogDebug("Money could not be added to the inventory, Player {0}, Money {1}", player, this);
+                return false;
+            }
+
+            return true;
+        }
+
+        // Money has no owner - it can always be picked up, by strangers too. The recorded shares
+        // only apply when the party which picks it up is the one which earned it; then the money
+        // follows the experience. For anyone else there is no experience to follow, so it is split
+        // equally between the picking party, just like money without any shares (e.g. an item box).
+        var earnedByThisParty = this._shares.Any(share => party.IsEligibleForMoney(share.Player, player));
+        var shares = earnedByThisParty
+            ? this._shares
+            : MoneyDistribution.CreateEqualShares(this.Amount, party.PartyList.OfType<Player>().ToList());
+
+        var received = MoneyDistribution.TryPayShares(shares, member => party.IsEligibleForMoney(member, player));
+        if (!received)
+        {
+            player.Logger.LogDebug("No party member could take the money, Player {0}, Money {1}", player, this);
+        }
+
+        return received;
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]

@@ -40,4 +40,5 @@ Describes the type of storage.
 | 3 | TradeOther | The trading storage of the other player. |
 | 4 | Crafting | The crafting storage of the player. |
 | 5 | PersonalShop | The shop storage of another player. |
+| 6 | NpcShop | The shop storage of an NPC (merchant). |
 | 254 | InventoryPetSlot | The inventory slot of the pet. That's used when a pet leveled up. |

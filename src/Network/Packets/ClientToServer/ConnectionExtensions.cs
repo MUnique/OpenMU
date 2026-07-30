@@ -3037,7 +3037,7 @@ public static class ConnectionExtensions
     /// <param name="skillId">The skill id.</param>
     /// <param name="playerId">The player id.</param>
     /// <remarks>
-    /// Is sent by the client when: A player cancels a specific magic effect of a skill, usually 'Infinity Arrow' and 'Wizardy Enhance'.
+    /// Is sent by the client when: A player cancels a specific magic effect of a skill, usually 'Infinity Arrow' and 'Wizardry Enhance'.
     /// Causes reaction on server side: The effect is cancelled and an update is sent to the player and all surrounding players.
     /// </remarks>
     public static async ValueTask SendMagicEffectCancelRequestAsync(this IConnection? connection, ushort @skillId, ushort @playerId)
@@ -5543,6 +5543,31 @@ public static class ConnectionExtensions
         {
             var length = DuelChannelQuitRequestRef.Length;
             var packet = new DuelChannelQuitRequestRef(connection.Output.GetSpan(length)[..length]);
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ChatCommandListRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A client which supports a user interface for chat commands requests the list of commands which are available to the player. It's usually sent after the character entered the game world.
+    /// Causes reaction on server side: The server sends an AvailableChatCommand message for each available chat command.
+    /// </remarks>
+    public static async ValueTask SendChatCommandListRequestAsync(this IConnection? connection)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ChatCommandListRequestRef.Length;
+            var packet = new ChatCommandListRequestRef(connection.Output.GetSpan(length)[..length]);
             return packet.Header.Length;
         }
 

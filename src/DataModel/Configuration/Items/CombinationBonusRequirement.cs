@@ -30,6 +30,6 @@ public partial class CombinationBonusRequirement
     /// <inheritdoc />
     public override string ToString()
     {
-        return $"{OptionType}: SubOption Type {this.SubOptionType}, Min. Count {this.MinimumCount}";
+        return $"{this.OptionType}: SubOption Type {this.SubOptionType}, Min. Count {this.MinimumCount}";
     }
 }

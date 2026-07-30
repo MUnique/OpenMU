@@ -51,9 +51,9 @@
 
         @if (this._viewModel.AncientBonus is { } ancientBonus)
         {
-            <div>
+            <div class="mb-3">
                 <label for="ancientBonusLevel">@MUnique.OpenMU.Web.Shared.Properties.Resources.AncientOptionLevel: </label>
-                <InputNumber id="ancientBonusLevel" min="1" max="2" @bind-Value="@ancientBonus.Level" />
+                <InputNumber id="ancientBonusLevel" class="form-control" min="1" max="2" @bind-Value="@ancientBonus.Level" />
                 <span>@MUnique.OpenMU.Web.Shared.Properties.Resources.Bonus: @ancientBonus</span>
             </div>
         }
@@ -92,7 +92,7 @@
         @if (this._viewModel.NormalOptionLink is { } optionLink
             && optionLink.ItemOption?.LevelDependentOptions.Max(o => o.Level) is { } maxLevel and > 1)
         {
-            <select class="mb-3" @bind="@optionLink.Level">
+            <select class="form-select mb-3" @bind="@optionLink.Level">
                 @for (int level = 1; level < maxLevel + 1; level++)
                 {
                     @if ((optionLink.ItemOption.LevelDependentOptions.FirstOrDefault(ldo => ldo.Level == level)?.PowerUpDefinition
@@ -125,7 +125,7 @@
              && optionLink.ItemOption?.LevelDependentOptions.Max(o => o.Level) is { } maxLevel and > 1
              && optionLink.ItemOption?.LevelDependentOptions.Min(o => o.Level) is { } minLevel and >= 0)
         {
-            <select class="mb-3" @bind="@optionLink.Level">
+            <select class="form-select mb-3" @bind="@optionLink.Level">
                 @for (int level = minLevel; level < maxLevel + 1; level++)
                 {
                     @if ((optionLink.ItemOption.LevelDependentOptions.FirstOrDefault(ldo => ldo.Level == level)?.PowerUpDefinition
@@ -198,15 +198,15 @@
     }
 
     <ValidationSummary />
-    <div>
+    <div class="form-actions">
         @if (this.OnValidSubmit.HasDelegate)
         {
-            <button type="submit" class="primary-button">Save</button>
+            <button type="submit" class="btn btn-primary">@Resources.Save</button>
         }
 
         @if (this.OnCancel.HasDelegate)
         {
-            <button type="button" class="cancel-button" @onclick=@this.OnCancel>Cancel</button>
+            <button type="button" class="btn btn-secondary" @onclick=@this.OnCancel>Cancel</button>
         }
     </div>
 </EditForm>

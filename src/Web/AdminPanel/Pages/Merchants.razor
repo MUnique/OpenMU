@@ -13,8 +13,6 @@
 
 @if (this.ViewModels is null)
 {
-    <span class="spinner-border" role="status" aria-hidden="true"></span>
-    <span class="sr-only">@Resources.Loading</span>
     return;
 }
 
@@ -25,8 +23,8 @@
             <PropertyColumn Title="Name" Property="@(c => c.Name)" Sortable="true">
             </PropertyColumn>
 
-            <TemplateColumn Align="Align.Center">
-                <button type="button" class="btn-info" @onclick="@(() => this.OnMerchantEditClickAsync(context))">@Resources.Edit</button>
+            <TemplateColumn Align="Align.Start">
+                <button type="button" class="btn btn-primary" @onclick="@(() => this.OnMerchantEditClickAsync(context))"><span class="oi oi-pencil" aria-hidden="true"></span> @Resources.Edit</button>
             </TemplateColumn>
         </QuickGrid>
     </div>
@@ -35,7 +33,7 @@
 else
 {
     <div class="d-flex flex-row">
-        <button type="button" class="btn-lg btn-outline-dark mr-3" @onclick="this.OnBackButtonClickAsync">&lt; @Resources.Back</button>
+        <button type="button" class="btn btn-secondary me-3" @onclick="this.OnBackButtonClickAsync">&lt; @Resources.Back</button>
         <h2>@((LocalizedString?)this._selectedMerchant.Merchant.Designation)</h2>
     </div>
     <hr/>
@@ -43,8 +41,8 @@ else
         <EditForm Model="this._selectedMerchant.Merchant" OnValidSubmit="this.OnSaveButtonClickAsync">
             <ItemStorageField @bind-Value="this._selectedMerchant.Merchant.MerchantStore" HideLabel="true"/>
             <hr />
-            <button type="submit" class="primary-button">@Resources.SaveChanges</button>
-            <button type="button" class="cancel-button" @onclick="this.OnCancelButtonClickAsync">@Resources.DiscardChanges</button>
+            <button type="submit" class="btn btn-primary me-1">@Resources.SaveChanges</button>
+            <button type="button" class="btn btn-secondary" @onclick="this.OnCancelButtonClickAsync">@Resources.DiscardChanges</button>
         </EditForm>
     </CascadingValue>
 }

@@ -997,6 +997,60 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handles the packets about chat commands (0xF5)..
+        /// </summary>
+        public static string ChatCommandGroupHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ChatCommandGroupHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chat command packet group handler.
+        /// </summary>
+        public static string ChatCommandGroupHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ChatCommandGroupHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the request for the list of chat commands which are available to the player..
+        /// </summary>
+        public static string ChatCommandListRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ChatCommandListRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chat command list request handler.
+        /// </summary>
+        public static string ChatCommandListRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ChatCommandListRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends the chat commands which are available to the player, so that the client can offer them in a user interface..
+        /// </summary>
+        public static string ChatCommandListViewPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ChatCommandListViewPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chat command list view.
+        /// </summary>
+        public static string ChatCommandListViewPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ChatCommandListViewPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Packet handler for chat messages..
         /// </summary>
         public static string ChatMessageHandlerPlugIn_Description {
@@ -2577,6 +2631,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         public static string LogoutPlugIn_Name {
             get {
                 return ResourceManager.GetString("LogoutPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handler for magic effect cancel packets..
+        /// </summary>
+        public static string MagicEffectCancelHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("MagicEffectCancelHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Magic Effect Cancel Handler.
+        /// </summary>
+        public static string MagicEffectCancelHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("MagicEffectCancelHandlerPlugIn_Name", resourceCulture);
             }
         }
         

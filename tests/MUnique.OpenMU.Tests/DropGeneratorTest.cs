@@ -43,11 +43,38 @@ public class DropGeneratorTest
         var generator = new DefaultDropGenerator(config, this.GetRandomizer2(0, 0.5));
         var (items, _) = await generator.GenerateItemDropsAsync(monster, 1, await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false));
         var item = items.FirstOrDefault();
-        
+
         Assert.That(item, Is.Not.Null);
 
         // ReSharper disable once PossibleNullReferenceException
         Assert.That(item!.Definition, Is.EqualTo(monster.DropItemGroups.Last().PossibleItems.First()));
+    }
+
+    /// <summary>
+    /// Tests that items with a maximum drop level are filtered from generic monster drops.
+    /// </summary>
+    [Test]
+    public async ValueTask TestMaximumDropLevelAsync()
+    {
+        var config = this.GetGameConfig();
+        var cappedItem = this.CreateItemDefinition(12, 15, 12, 66);
+        var uncappedItem = this.CreateItemDefinition(14, 13, 25);
+
+        var dropGroup = new Mock<DropItemGroup>();
+        dropGroup.SetupAllProperties();
+        dropGroup.Object.Chance = 1.0;
+        dropGroup.Object.ItemType = SpecialItemType.Jewel;
+        dropGroup.Setup(g => g.PossibleItems).Returns(new List<ItemDefinition> { cappedItem, uncappedItem });
+
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        player.CurrentMap!.Definition.DropItemGroups.Add(dropGroup.Object);
+
+        var generator = new DefaultDropGenerator(config, this.GetRandomizer(0));
+        var (items, _) = await generator.GenerateItemDropsAsync(this.GetMonster(1, 67), 1, player).ConfigureAwait(false);
+        var item = items.FirstOrDefault();
+
+        Assert.That(item, Is.Not.Null);
+        Assert.That(item!.Definition, Is.EqualTo(uncappedItem));
     }
 
     /// <summary>
@@ -117,5 +144,18 @@ public class DropGeneratorTest
         var gameConfiguration = new Mock<GameConfiguration>();
         gameConfiguration.Setup(c => c.Items).Returns(new List<ItemDefinition>());
         return gameConfiguration.Object;
+    }
+
+    private ItemDefinition CreateItemDefinition(byte group, short number, byte dropLevel, byte? maximumDropLevel = null)
+    {
+        var itemDefinition = new Mock<ItemDefinition>();
+        itemDefinition.SetupAllProperties();
+        itemDefinition.Object.Group = group;
+        itemDefinition.Object.Number = number;
+        itemDefinition.Object.DropLevel = dropLevel;
+        itemDefinition.Object.MaximumDropLevel = maximumDropLevel;
+        itemDefinition.Object.Durability = 1;
+        itemDefinition.Setup(d => d.PossibleItemOptions).Returns(new List<ItemOptionDefinition>());
+        return itemDefinition.Object;
     }
 }

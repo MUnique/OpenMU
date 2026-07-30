@@ -44,4 +44,38 @@ public class OpenStoreAction
         player.Logger.LogDebug("OpenStore: Player: [{0}], StoreName: [{1}]", character.Name, character.StoreName);
         await player.ForEachWorldObserverAsync<IPlayerShopOpenedPlugIn>(p => p.PlayerShopOpenedAsync(player), true).ConfigureAwait(false);
     }
+
+    /// <summary>
+    /// Restores the store's open state after the player entered the game.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="isStoreOpeningAfterEnterSupported">
+    /// Whether re-opening the store to other players after entering the game is supported by the player's client.
+    /// </param>
+    /// <remarks>
+    /// If the store was left open before logging out, its name is set, and the client supports it,
+    /// the store is properly re-opened and announced to nearby players (and the owner) via
+    /// <see cref="OpenStoreAsync"/>. Otherwise, the store is (re-)marked as closed for everyone,
+    /// including the owner - it must never appear open only to the owner while staying closed to
+    /// everyone else.
+    /// </remarks>
+    public async ValueTask RestoreAfterEnterWorldAsync(Player player, bool isStoreOpeningAfterEnterSupported)
+    {
+        if (player.SelectedCharacter is not { } character)
+        {
+            return;
+        }
+
+        if (character.IsStoreOpened
+            && !string.IsNullOrWhiteSpace(character.StoreName)
+            && isStoreOpeningAfterEnterSupported)
+        {
+            character.IsStoreOpened = false;
+            await this.OpenStoreAsync(player, character.StoreName).ConfigureAwait(false);
+        }
+        else
+        {
+            character.IsStoreOpened = false;
+        }
+    }
 }

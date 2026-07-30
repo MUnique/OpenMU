@@ -8,7 +8,7 @@ using System;
 using Microsoft.AspNetCore.Components;
 
 /// <summary>
-/// A service which keeps track of the navigation history to support breadcrumb navigation.
+/// A service that keeps track of the navigation history to support breadcrumb navigation.
 /// </summary>
 public sealed class NavigationHistory
 {
@@ -27,14 +27,14 @@ public sealed class NavigationHistory
     }
 
     /// <summary>
+    /// Event that is fired whenever the history changed.
+    /// </summary>
+    public event EventHandler? HistoryChanged;
+
+    /// <summary>
     /// Gets the navigation manager.
     /// </summary>
     public NavigationManager NavigationManager { get; }
-
-    /// <summary>
-    /// Event which is fired whenever the history changed.
-    /// </summary>
-    public event EventHandler? HistoryChanged;
 
     /// <summary>
     /// Gets the previous page entries.
@@ -217,7 +217,7 @@ public sealed class NavigationHistory
         }
         else
         {
-            // should never happen :)
+            // Should never happen.
             return;
         }
 

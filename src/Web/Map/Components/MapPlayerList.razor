@@ -1,7 +1,7 @@
 ﻿@using MUnique.OpenMU.DataModel.Entities
 @using MUnique.OpenMU.Web.Map.Properties
 
-<table>
+<table class="table table-striped table-hover">
     <thead>
     <tr>
         <td>@(Resources.PlayerName)</td>
@@ -15,9 +15,17 @@
         <tr>
             <td>@player.Name</td>
             <td>@player.Id</td>
-            <td>
-                <button type="button" class="oi oi-account-logout" @onclick=@(async () => await player.DisconnectAsync()) title="@(Resources.Disconnect)"></button>
-                <button type="button" class="oi oi-ban" @onclick=@(async () => { if (player.Account is not null) { player.Account.State = AccountState.TemporarilyBanned; } await player.DisconnectAsync(); }) title="@(Resources.TemporarilyBan)"></button>
+            <td class="d-flex gap-1">
+                <button type="button" class="btn btn-secondary btn-sm" @onclick=@(async () => await player.DisconnectAsync()) title="@(Resources.Disconnect)"><i class="oi oi-account-logout"></i></button>
+                <button type="button" class="btn btn-secondary btn-sm" @onclick=@(async () => { if (player.Account is not null) { player.Account.State = AccountState.TemporarilyBanned; } await player.DisconnectAsync(); }) title="@(Resources.TemporarilyBan)"><i class="oi oi-ban"></i></button>
+                @if (this.FollowedPlayerName is not null && this.FollowedPlayerName == player.SelectedCharacter?.Name)
+                {
+                    <button type="button" class="btn btn-info btn-sm" @onclick="() => this.OnFollowPlayer.InvokeAsync(null)" title="@(Resources.Following)"><i class="oi oi-eye"></i></button>
+                }
+                else
+                {
+                    <button type="button" class="btn btn-secondary btn-sm" @onclick="() => this.OnFollowPlayer.InvokeAsync(player.SelectedCharacter?.Name)" title="@(Resources.Follow)"><i class="oi oi-eye"></i></button>
+                }
             </td>
         </tr>
     }
@@ -31,6 +39,18 @@
     /// </summary>
     [Parameter]
     public IMapController MapController { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the followed player name.
+    /// </summary>
+    [Parameter]
+    public string? FollowedPlayerName { get; set; }
+
+    /// <summary>
+    /// Gets or sets the callback invoked when the follow button is clicked.
+    /// </summary>
+    [Parameter]
+    public EventCallback<string?> OnFollowPlayer { get; set; }
 
     /// <inheritdoc />
     protected override void OnParametersSet()

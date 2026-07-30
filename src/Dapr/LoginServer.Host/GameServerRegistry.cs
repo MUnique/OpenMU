@@ -6,8 +6,8 @@ namespace MUnique.OpenMU.LoginServer.Host;
 
 using System.Threading;
 using Microsoft.Extensions.Logging;
-using Nito.AsyncEx;
 using MUnique.OpenMU.PlugIns;
+using Nito.AsyncEx;
 
 /// <summary>
 /// The registry for game servers.

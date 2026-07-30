@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <PacketDefinitions xmlns="http://www.munique.net/OpenMU/PacketDefinitions">
   <Description>This file contains all packet definitions for packets which are sent from game client to the game server.</Description>
   <Structures>
@@ -2317,7 +2317,7 @@
       <Name>MagicEffectCancelRequest</Name>
       <Length>7</Length>
       <Direction>ClientToServer</Direction>
-      <SentWhen>A player cancels a specific magic effect of a skill, usually 'Infinity Arrow' and 'Wizardy Enhance'.</SentWhen>
+      <SentWhen>A player cancels a specific magic effect of a skill, usually 'Infinity Arrow' and 'Wizardry Enhance'.</SentWhen>
       <CausedReaction>The effect is cancelled and an update is sent to the player and all surrounding players.</CausedReaction>
       <Fields>
         <Field>
@@ -4251,6 +4251,18 @@
       <Fields>
       </Fields>
     </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F5</Code>
+      <SubCode>00</SubCode>
+      <Name>ChatCommandListRequest</Name>
+      <Caption>Request chat command list</Caption>
+      <Length>4</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A client which supports a user interface for chat commands requests the list of commands which are available to the player. It's usually sent after the character entered the game world.</SentWhen>
+      <CausedReaction>The server sends an AvailableChatCommand message for each available chat command.</CausedReaction>
+      <Fields />
+    </Packet>
   </Packets>
   <Enums>
     <Enum>
@@ -4307,6 +4319,11 @@
           <Name>PersonalShop</Name>
           <Description>The shop storage of another player.</Description>
           <Value>5</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>NpcShop</Name>
+          <Description>The shop storage of an NPC (merchant).</Description>
+          <Value>6</Value>
         </EnumValue>
         <EnumValue>
           <Name>InventoryPetSlot</Name>

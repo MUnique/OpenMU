@@ -14,7 +14,7 @@ public class ItemEventArgs : EventArgs
     /// Initializes a new instance of the <see cref="ItemEventArgs"/> class.
     /// </summary>
     /// <param name="item">The item.</param>
-    /// <param name="isEquipped">Whether equipped or not</param>
+    /// <param name="isEquipped">Whether equipped or not.</param>
     public ItemEventArgs(Item item, bool isEquipped)
     {
         this.Item = item;

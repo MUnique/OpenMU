@@ -50,5 +50,7 @@ public class InfiniteArrowEffectInitializer : InitializerBase
         magicEffect.PowerUpDefinitions.Add(damageIncreaseByMasterSkill);
         damageIncreaseByMasterSkill.TargetAttribute = Stats.AttackDamageIncrease.GetPersistent(this.GameConfiguration);
         damageIncreaseByMasterSkill.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        damageIncreaseByMasterSkill.Boost.ConstantValue.Value = 1f;
+        damageIncreaseByMasterSkill.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
     }
 }

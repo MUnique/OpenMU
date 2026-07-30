@@ -43,6 +43,32 @@ public class CreateCharacterAction
         await player.InvokeViewPlugInAsync<IShowCharacterCreationFailedPlugIn>(p => p.ShowCharacterCreationFailedAsync()).ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// Creates the default key configuration for a newly created character.
+    /// </summary>
+    /// <returns>The default key configuration.</returns>
+    /// <remarks>
+    /// The key configuration is an opaque blob which is interpreted by the game client. Within it,
+    /// the potion quick-slots Q, W, E and R are stored as offsets into the potion item group, at
+    /// byte indices 21 (Q), 22 (W), 23 (E) and 25 (R). We bind Q to the healing potion and W to the
+    /// mana potion; E and R stay unbound. An all-zero configuration would otherwise make the client
+    /// bind offset 0 (the apple, which it treats as a healing item) to all four slots, so each one
+    /// would act as a health potion.
+    /// </remarks>
+    private static byte[] CreateDefaultKeyConfiguration()
+    {
+        const byte healingPotion = 1;
+        const byte manaPotion = 4;
+        const byte unbound = 0xFF;
+
+        var keyConfiguration = new byte[30];
+        keyConfiguration[21] = healingPotion; // Q
+        keyConfiguration[22] = manaPotion; // W
+        keyConfiguration[23] = unbound; // E
+        keyConfiguration[25] = unbound; // R
+        return keyConfiguration;
+    }
+
     private async ValueTask<DataModel.Entities.Character?> CreateCharacterAsync(Player player, string name, CharacterClass characterClass)
     {
         var account = player.Account;
@@ -76,7 +102,7 @@ public class CreateCharacterAction
         character.Name = name;
         character.CharacterSlot = freeSlot.Value;
         character.CreateDate = DateTime.UtcNow;
-        character.KeyConfiguration = new byte[30];
+        character.KeyConfiguration = CreateDefaultKeyConfiguration();
         var attributes = character.CharacterClass.StatAttributes.Select(a => player.PersistenceContext.CreateNew<StatAttribute>(a.Attribute, a.BaseValue)).ToList();
         attributes.ForEach(character.Attributes.Add);
         character.CurrentMap = characterClass.HomeMap;

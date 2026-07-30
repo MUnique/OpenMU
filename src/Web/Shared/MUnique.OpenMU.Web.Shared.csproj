@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -52,9 +52,7 @@
 
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" />
-    <PackageReference Include="Blazored.Modal" />
     <PackageReference Include="Blazored.Toast" />
-    <PackageReference Include="Blazored.Typeahead" />
     <PackageReference Include="BlazorInputFile" />
     <PackageReference Include="Mapster" />
     <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" />
@@ -94,7 +92,8 @@
       <Output TaskParameter="ExitCode" PropertyName="SassExists"/>
     </Exec>
     <Error Condition="'$(SassExists)'!='0'" Text="Dart Sass not installed. Install with: npm install -g sass."/>
-    <Exec Command="sass Styles/Site.scss:wwwroot/css/shared.css --style=expanded --no-source-map" />
+    <Exec Command="sass --quiet --style=expanded --no-source-map Styles/Site.scss wwwroot/css/shared.css" />
+    <Exec Command="sass --quiet --style=compressed --no-source-map Styles/Site.scss wwwroot/css/shared.min.css" />
   </Target>
 
 </Project>

@@ -4,11 +4,11 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
+using System.Threading;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Persistence.EntityFramework.Json;
 using MUnique.OpenMU.Persistence.EntityFramework.Model;
-using System.Threading;
 
 /// <summary>
 /// The game configuration repository, which loads the configuration by using the
@@ -45,7 +45,7 @@ internal class GameConfigurationRepository : GenericRepository<GameConfiguration
         {
             if (await this._objectLoader.LoadObjectAsync<GameConfiguration>(id, currentContext.Context, cancellationToken).ConfigureAwait(false) is { } config)
             {
-                currentContext.Attach(config);
+                currentContext.Context.Attach(config);
                 return config;
             }
 
@@ -71,7 +71,7 @@ internal class GameConfigurationRepository : GenericRepository<GameConfiguration
         try
         {
             var configs = (await this._objectLoader.LoadAllObjectsAsync<GameConfiguration>(currentContext.Context, cancellationToken).ConfigureAwait(false)).ToList();
-            configs.ForEach(currentContext.Attach);
+            configs.ForEach(c => currentContext.Context.Attach(c));
             return configs;
         }
         finally

@@ -18,8 +18,10 @@
         <NumberField @bind-Value="SkillEntry.Level" />
         <ValidationSummary />
     </CascadingValue>
-    <button type="submit" @onclick="@OnSubmit" class="primary-button">Submit</button>
-    <button type="button" @onclick="@OnCancel" class="cancel-button">Cancel</button>
+    <div class="form-actions">
+        <button type="submit" @onclick="@OnSubmit" class="btn btn-primary">@Resources.Submit</button>
+        <button type="button" @onclick="@OnCancel" class="btn btn-secondary">@Resources.Cancel</button>
+    </div>
 </EditForm>
 
 @code {

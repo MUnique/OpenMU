@@ -155,10 +155,7 @@ public class InventoryStorage : Storage, IInventoryStorage
             }
         }
 
-        if (item.Definition!.PossibleItemSetGroups.Count > 0)
-        {
-            this.UpdateSetPowerUps();
-        }
+        this.UpdateSetPowerUps();
 
         var itemAdded = this.EquippedItems.Contains(item);
         if (itemAdded)

@@ -68,17 +68,9 @@ public class ComposableAttribute : BaseAttribute, IComposableAttribute
         var maxValues = this.Elements.Where(e => e.AggregateType == AggregateType.Maximum).MaxBy(e => e.Value)?.Value ?? 0;
         rawValues += maxValues;
 
-        if (multiValues == 0 && this.Elements.All(e => e.AggregateType != AggregateType.Multiplicate))
-        {
-            multiValues = 1;
-        }
-        else if (rawValues == 0 && multiValues != 0 && this.Elements.All(e => e.AggregateType != AggregateType.AddRaw))
+        if (this.Elements.All(e => e.AggregateType == AggregateType.Multiplicate))
         {
             rawValues = 1;
-        }
-        else
-        {
-            // nothing to do
         }
 
         var newValue = (rawValues * multiValues) + finalValues;

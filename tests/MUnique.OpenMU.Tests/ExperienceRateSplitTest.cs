@@ -113,6 +113,42 @@ public class ExperienceRateSplitTest
         Assert.That(masterGained, Is.GreaterThan(normalGained * 3));
     }
 
+    /// <summary>
+    /// Verifies that a party member at the maximum level without the master quest still gets a
+    /// money basis. It gains no experience, but the money drop is derived from that value, and a
+    /// solo kill returns it too - so returning zero would leave it without any zen in a party.
+    /// </summary>
+    [Test]
+    public async ValueTask MaxLevelMemberWithoutMasterQuestStillHasMoneyBasisAsync()
+    {
+        var context = this.CreateGameServerContext(
+            normalExperienceRate: 1.0f,
+            globalMasterExperienceRate: 1.0f,
+            maximumLevel: 3,
+            maximumMasterLevel: 200);
+
+        var maxedPlayer = await this.CreatePlayerAsync(context, level: 3, totalLevel: 3, isMasterClass: false).ConfigureAwait(false);
+        var levelingPlayer = await this.CreatePlayerAsync(context, level: 2, totalLevel: 2, isMasterClass: false).ConfigureAwait(false);
+
+        var party = new Party(new PartyManager(5, new NullLogger<Party>()), 5, new NullLogger<Party>());
+        await party.AddAsync(maxedPlayer).ConfigureAwait(false);
+        await party.AddAsync(levelingPlayer).ConfigureAwait(false);
+        await maxedPlayer.AddObserverAsync(levelingPlayer).ConfigureAwait(false);
+
+        var killedObject = CreateKilledObject(level: 5);
+        var shares = await party.DistributeExperienceAfterKillAsync(killedObject.Object, maxedPlayer).ConfigureAwait(false);
+
+        var maxedShare = shares.First(s => s.Player == maxedPlayer);
+        Assert.That(maxedShare.Experience, Is.GreaterThan(0));
+
+        // It still must not actually gain any experience.
+        Assert.That(maxedPlayer.SelectedCharacter!.Experience, Is.EqualTo(0));
+        Assert.That(maxedPlayer.SelectedCharacter.MasterExperience, Is.EqualTo(0));
+    }
+
+    /// <summary>
+    /// Verifies that concurrent normal experience gains cannot exceed the maximum level.
+    /// </summary>
     [Test]
     public async ValueTask ConcurrentNormalExperienceCantExceedMaximumLevelAsync()
     {
@@ -136,6 +172,9 @@ public class ExperienceRateSplitTest
         Assert.That(player.SelectedCharacter.LevelUpPoints, Is.EqualTo(initialLevelUpPoints + pointsPerLevelUp));
     }
 
+    /// <summary>
+    /// Verifies that concurrent master experience stays within configured maximum bounds.
+    /// </summary>
     [Test]
     public async ValueTask ConcurrentMasterExperienceStaysWithinConfiguredMaximumBoundsAsync()
     {
@@ -158,6 +197,9 @@ public class ExperienceRateSplitTest
         Assert.That(player.SelectedCharacter.MasterExperience, Is.LessThanOrEqualTo(maxMasterExperience));
     }
 
+    /// <summary>
+    /// Verifies that experience overflow is applied below max when not prevented.
+    /// </summary>
     [Test]
     public async ValueTask OverflowIsAppliedBelowMaxWhenNotPreventedAsync()
     {
@@ -176,6 +218,9 @@ public class ExperienceRateSplitTest
         Assert.That(player.SelectedCharacter.Experience, Is.EqualTo(context.ExperienceTable[2] + 10));
     }
 
+    /// <summary>
+    /// Verifies that experience overflow is discarded below max when prevented.
+    /// </summary>
     [Test]
     public async ValueTask OverflowIsDiscardedBelowMaxWhenPreventedAsync()
     {
@@ -195,6 +240,10 @@ public class ExperienceRateSplitTest
         Assert.That(player.SelectedCharacter.Experience, Is.EqualTo(context.ExperienceTable[2]));
     }
 
+    /// <summary>
+    /// Verifies that experience always stops at the maximum level regardless of the overflow setting.
+    /// </summary>
+    /// <param name="preventExperienceOverflow">Whether to prevent experience overflow.</param>
     [TestCase(false)]
     [TestCase(true)]
     public async ValueTask ExperienceAlwaysStopsAtMaximumLevelRegardlessOfOverflowSettingAsync(bool preventExperienceOverflow)

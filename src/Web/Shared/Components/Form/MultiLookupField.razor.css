@@ -1,0 +1,129 @@
+.multi-lookup-field {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.multi-lookup-field__container {
+    position: relative;
+    display: inline-block;
+}
+
+.multi-lookup-field__selected-items {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem;
+    border: var(--bs-border-width) solid var(--omu-border);
+    border-radius: 0.25rem;
+    background: var(--omu-surface-2);
+    min-height: 2.4em;
+    cursor: text;
+    position: relative;
+}
+
+.multi-lookup-field__tag {
+    display: inline-flex;
+    align-items: center;
+    background-color: var(--omu-surface-hover);
+    border: var(--bs-border-width) solid var(--omu-border);
+    border-radius: 0.2rem;
+    padding: 0.1rem 0.4rem;
+    font-size: 1rem;
+    line-height: 1.4;
+    white-space: nowrap;
+}
+
+.multi-lookup-field__tag-remove {
+    background: none;
+    border: none;
+    color: var(--omu-text-muted);
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+    margin-left: 0.25rem;
+    padding: 0;
+}
+
+.multi-lookup-field__tag-remove:hover {
+    color: var(--bs-danger);
+}
+
+.multi-lookup-field__search-input {
+    flex: 1 1 auto;
+    min-width: 8rem;
+    border: none;
+    outline: none;
+    padding: 0.15rem;
+    font-size: 1rem;
+    background: transparent !important;
+    margin: 0.5rem 0.25rem;
+    color: inherit;
+}
+
+.multi-lookup-field__search-input::placeholder {
+    color: var(--omu-text-muted);
+}
+
+.multi-lookup-field__search-input:focus {
+    background: transparent !important;
+    color: inherit;
+}
+
+.multi-lookup-field__dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1050;
+    width: 100%;
+    max-height: 300px;
+    overflow-y: auto;
+    background: var(--omu-surface);
+    border: var(--bs-border-width) solid var(--omu-border);
+    border-top: none;
+    border-radius: 0 0 0.25rem 0.25rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    margin-top: -1px;
+}
+
+.multi-lookup-field__dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.6rem;
+    cursor: pointer;
+    font-size: 1rem;
+    user-select: none;
+}
+
+.multi-lookup-field__dropdown-item:hover {
+    background-color: var(--omu-surface-hover);
+}
+
+.multi-lookup-field__dropdown-item--selected {
+    background-color: var(--omu-surface-hover);
+}
+
+.multi-lookup-field__dropdown-item--selected:hover {
+    background-color: var(--omu-surface-hover);
+}
+
+.multi-lookup-field__dropdown-item--loading,
+.multi-lookup-field__dropdown-item--empty {
+    color: var(--omu-text-muted);
+    cursor: default;
+    font-style: italic;
+}
+
+.multi-lookup-field__dropdown-item--loading:hover,
+.multi-lookup-field__dropdown-item--empty:hover {
+    background-color: transparent;
+}
+
+.multi-lookup-field__dropdown-item input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    pointer-events: none;
+    cursor: pointer;
+}

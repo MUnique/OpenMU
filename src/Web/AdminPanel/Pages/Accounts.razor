@@ -1,4 +1,4 @@
-﻿@page "/accounts"
+@page "/accounts"
 @using MUnique.OpenMU.DataModel
 @using MUnique.OpenMU.DataModel.Entities;
 @using MUnique.OpenMU.Persistence;
@@ -21,16 +21,24 @@
             <th class="col-2">@typeof(Account).GetPropertyCaption(nameof(Account.EMail))</th>
             <th class="col-2">@Resources.Action</th>
         </TableHeader>
+        <FilterHeader>
+            <th colspan="4">
+                <div class="input-group">
+                    <span class="input-group-text"><span class="oi oi-magnifying-glass" aria-hidden="true"></span></span>
+                    <input class="form-control small" type="search" autofocus @bind="@this._accountService.SearchFilter" @bind:event="oninput" placeholder="@Resources.Search ..."/>
+                </div>
+            </th>
+        </FilterHeader>
         <ItemTemplate Context="item">
             <td>@item.LoginName</td>
             <td>@item.State.GetEnumCaption()</td>
             <td>@item.EMail</td>
             <td>
-                <NavLink href="@($"edit-account/{item.GetId()}/{typeof(Account).FullName}/{item.GetId()}")">Edit</NavLink>
+                <NavLink href="@($"edit-account/{item.GetId()}/{typeof(Account).FullName}/{item.GetId()}")" class="btn btn-primary"><span class="oi oi-pencil" aria-hidden="true"></span> Edit</NavLink>
             </td>
         </ItemTemplate>
         <TableFooter>
-            <td><button type="button" class="btn btn-sm btn-success" @onclick="@this._accountService.CreateNewInModalDialogAsync">@Resources.Create</button></td>
+            <td><button type="button" class="btn btn-primary" @onclick="@this._accountService.CreateNewInModalDialogAsync">@Resources.Create</button></td>
             <td></td>
             <td></td>
             <td></td>

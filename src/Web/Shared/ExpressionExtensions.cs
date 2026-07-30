@@ -2,10 +2,9 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using System.ComponentModel.DataAnnotations;
-
 namespace MUnique.OpenMU.Web.Shared;
 
+using System.ComponentModel.DataAnnotations;
 using System.Linq.Expressions;
 using System.Reflection;
 using MUnique.OpenMU.DataModel.Composition;

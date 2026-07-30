@@ -1,0 +1,119 @@
+@using MUnique.OpenMU.Web.Shared.Services
+@inject ModalService ModalService
+@implements IDisposable
+
+@ChildContent
+
+@if (this.ModalService.Current is { } state)
+{
+    var sizeClass = state.Options?.Size switch
+    {
+        ModalSize.Small => "modal-sm",
+        ModalSize.Large => "modal-lg",
+        ModalSize.ExtraLarge => "modal-xl",
+        _ => string.Empty,
+    };
+
+    @* backdrop before modal so modal stacks on top by default *@
+    <div class="modal-backdrop fade show" @onclick="HandleBackdropClickAsync"></div>
+    <div class="modal fade d-block show" tabindex="-1" role="dialog" @ref="_modalRef">
+        <div class="modal-dialog @sizeClass" role="document">
+            <div class="modal-content">
+                @if (state.Options?.HideHeader != true)
+                {
+                    <div class="modal-header">
+                        <h5 class="modal-title">@state.Title</h5>
+                        @if (state.Options?.HideCloseButton != true)
+                        {
+                            <button type="button" class="btn-close" @onclick="DismissAsync"></button>
+                        }
+                    </div>
+                }
+                <div class="modal-body">
+                    <DynamicComponent Type="state.ComponentType" Parameters="@GetParameters(state.Parameters)" />
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private ElementReference _modalRef;
+    private bool _wasModalVisible;
+
+    /// <summary>
+    /// Gets or sets the child content.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        this.ModalService.StateChanged += this.OnStateChanged;
+    }
+
+    private void OnStateChanged()
+    {
+        this.InvokeAsync(this.StateHasChanged);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var isVisible = this.ModalService.Current is not null;
+        if (isVisible && !this._wasModalVisible)
+        {
+            await this._modalRef.FocusAsync();
+        }
+
+        this._wasModalVisible = isVisible;
+    }
+
+    private Dictionary<string, object?> GetParameters(ModalParameters? parameters)
+    {
+        var result = new Dictionary<string, object?>();
+        if (parameters is not null)
+        {
+            foreach (var kvp in parameters)
+            {
+                result[kvp.Key] = kvp.Value;
+            }
+        }
+
+        if (this.ModalService.Current is { } current)
+        {
+            // Only supply the Modal instance to content components that actually declare
+            // a matching parameter (e.g. ModalQuestion). Passing it to a component that
+            // doesn't - like the plain ModalMessage - makes Blazor throw "does not have a
+            // property matching the name 'Modal'". This keeps simple modals boilerplate-free.
+            var modalProperty = current.ComponentType.GetProperty("Modal");
+            if (modalProperty is not null && modalProperty.PropertyType.IsAssignableFrom(typeof(ModalInstance)))
+            {
+                result["Modal"] = current.Instance;
+            }
+        }
+        return result;
+    }
+
+    private Task HandleBackdropClickAsync()
+    {
+        if (this.ModalService.Current?.Options?.DisableBackgroundCancel != true)
+        {
+            return this.DismissAsync();
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private Task DismissAsync()
+    {
+        this.ModalService.Dismiss();
+        return Task.CompletedTask;
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        this.ModalService.StateChanged -= this.OnStateChanged;
+    }
+}

@@ -1,0 +1,104 @@
+@page "/chat-commands"
+@using MUnique.OpenMU.DataModel.Entities
+@using MUnique.OpenMU.Web.AdminPanel.Properties
+@using MUnique.OpenMU.Web.Shared.Models
+
+<PageTitle>@Resources.ChatCommands</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="@Resources.ChatCommands"/>
+<h1>@Resources.ChatCommands</h1>
+
+<div>
+    <DataTable TItem=@ChatCommandViewItem>
+        <TableHeader>
+            <th class="col-1">@Resources.CommandColumn</th>
+            <th class="col-3">@Resources.CommandDescription</th>
+            <th class="col-3">@Resources.CommandUsage</th>
+            <th class="col-1">@Resources.MinimumCharacterStatus</th>
+            <th class="col-2">@Resources.Action</th>
+        </TableHeader>
+        <FilterHeader>
+            <th colspan="3">
+                <div class="input-group">
+                    <span class="input-group-text"><span class="oi oi-magnifying-glass" aria-hidden="true"></span></span>
+                    <input type="search" class="form-control" placeholder="@Resources.Search" @bind="@this.ChatCommandController.CommandFilter" @bind:event="oninput"/>
+                </div>
+            </th>
+            <th>
+                <select class="form-select" @onchange="@this.OnStatusSelected">
+                    <option value="" selected="@(this.ChatCommandController.StatusFilter is null)">@Resources.All</option>
+                    @foreach (var status in new[] { CharacterStatus.Normal, CharacterStatus.GameMaster })
+                    {
+                        <option value="@status" selected="@(this.ChatCommandController.StatusFilter == status)">@status</option>
+                    }
+                </select>
+            </th>
+            <th></th>
+        </FilterHeader>
+        <ItemTemplate Context="item">
+            <td class="text-nowrap"><code>@item.Info.Command</code></td>
+            <td title="@item.PlugIn.TypeName">
+                <strong>@item.Info.Name</strong><br/>
+                @item.Info.Description
+            </td>
+            <td>
+                <code>@item.Info.Usage</code>
+                @if (item.Info.Parameters.Count > 0)
+                {
+                    <details>
+                        <summary>@string.Format(Resources.ParametersOf, item.Info.Command)</summary>
+                        <table class="table table-sm mb-0">
+                            <thead>
+                                <tr>
+                                    <th>@Resources.ParameterName</th>
+                                    <th>@Resources.ParameterShortName</th>
+                                    <th>@Resources.ParameterType</th>
+                                    <th>@Resources.Required</th>
+                                    <th>@Resources.ParameterValidValues</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var parameter in item.Info.Parameters)
+                                {
+                                    <tr>
+                                        <td>@parameter.Name</td>
+                                        <td>@parameter.ShortName</td>
+                                        <td>@parameter.TypeName</td>
+                                        <td>@(parameter.IsRequired ? Resources.Yes : Resources.No)</td>
+                                        <td>@string.Join(" | ", parameter.ValidValues)</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </details>
+                }
+                else
+                {
+                    <div class="text-muted">@Resources.NoParameters</div>
+                }
+            </td>
+            <td>@item.Info.MinimumCharacterStatus</td>
+            <td class="text-nowrap">
+                @if (item.IsActive)
+                {
+                    <button class="btn btn-warning me-1" @onclick="async () => await this.ChatCommandController.SetActiveAsync(item, false)">@Resources.Deactivate</button>
+                }
+                else
+                {
+                    <button class="btn btn-success me-1" @onclick="async () => await this.ChatCommandController.SetActiveAsync(item, true)">@Resources.Activate</button>
+                }
+
+                @if (item.PlugIn.ConfigurationType is { })
+                {
+                    <button class="btn btn-secondary" @onclick="async () => await this.ChatCommandController.ShowConfigurationAsync(item)"><span class="oi oi-cog" aria-hidden="true"></span></button>
+                }
+            </td>
+        </ItemTemplate>
+        <TableFooter>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </TableFooter>
+    </DataTable>
+</div>

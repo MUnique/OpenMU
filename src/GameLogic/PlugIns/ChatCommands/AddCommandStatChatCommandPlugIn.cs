@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.Arguments;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -15,7 +16,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("EFE421FB-BE79-4656-AF39-D22A105D1455")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.AddCommandStatChatCommandPlugIn_Name), Description = nameof(PlugInResources.AddCommandStatChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
-[ChatCommandHelp(Command, null, MinimumStatus)]
+[ChatCommandHelp(Command, typeof(AddSingleStatChatCommandArgs), MinimumStatus)]
 public class AddCommandStatChatCommandPlugIn : AddStatChatCommandPlugIn, IDisabledByDefault
 {
     private const string Command = "/addcmd";

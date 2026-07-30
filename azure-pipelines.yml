@@ -27,3 +27,10 @@ steps:
 - script: dotnet build --configuration $(buildConfiguration) -p:ci=true
   workingDirectory: src
   displayName: 'dotnet build $(buildConfiguration)'
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet test'
+  inputs:
+    command: test
+    projects: 'tests/*Tests/*.csproj'
+    arguments: '--configuration $(buildConfiguration) --no-build'

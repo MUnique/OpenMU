@@ -114,26 +114,45 @@ public static class CommandExtensions
     /// <returns>A list of parameters with name, type, and valid values.</returns>
     public static IEnumerable<(string Name, string Type, string ValidValues)> GetParameters(Type argumentsType)
     {
+        return GetParameterInfos(argumentsType)
+            .Select(parameter => (Name: parameter.Name, Type: parameter.TypeName, ValidValues: string.Join('|', parameter.ValidValues)));
+    }
+
+    /// <summary>
+    /// Gets the description of the parameters of an argument class.
+    /// </summary>
+    /// <param name="argumentsType">Type of the arguments.</param>
+    /// <returns>The described parameters, in the order in which they are expected when they are passed without their short names.</returns>
+    public static IEnumerable<ChatCommandParameterInfo> GetParameterInfos(Type argumentsType)
+    {
         var properties = argumentsType.GetProperties().Where(p => p.CanWrite);
         foreach (var property in properties)
         {
-            string validValues = string.Empty;
+            IReadOnlyList<string> validValues = [];
 
             if (property.GetCustomAttribute<ValidValuesAttribute>() is { } validValuesAttribute)
             {
-                validValues = string.Join('|', validValuesAttribute.ValidValues);
+                validValues = validValuesAttribute.ValidValues.ToList();
             }
             else if (property.PropertyType == typeof(bool))
             {
-                validValues = "0|1";
+                validValues = ["0", "1"];
             }
             else if (property.PropertyType == typeof(byte) || property.PropertyType == typeof(ushort) || property.PropertyType == typeof(uint))
             {
                 // todo: ranges in ParameterAttribute
-                // validValues = "";
             }
 
-            yield return (property.Name, property.PropertyType.Name, validValues);
+            // A parameter without an ArgumentAttribute can't be required - the parser
+            // only counts the required arguments of the attributed properties.
+            var argumentAttribute = property.GetCustomAttribute<ArgumentAttribute>(inherit: true);
+
+            yield return new ChatCommandParameterInfo(
+                property.Name,
+                argumentAttribute?.ShortName,
+                property.PropertyType.Name,
+                argumentAttribute?.IsRequired ?? false,
+                validValues);
         }
     }
 

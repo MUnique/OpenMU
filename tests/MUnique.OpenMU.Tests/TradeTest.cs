@@ -181,6 +181,45 @@ public class TradeTest
         Assert.That(trader1.Inventory!.ItemStorage.Items.Last(), Is.SameAs(item2));
     }
 
+    /// <summary>
+    /// Tests that a trade cancellation does not abort restoring all valid items when one backup item is invalid.
+    /// </summary>
+    [Test]
+    public async ValueTask TradeCancelIgnoresInvalidBackupItemsAsync()
+    {
+        var trader1 = this.CreateTrader(PlayerState.TradeOpened);
+        var trader2 = this.CreateTrader(PlayerState.TradeOpened);
+        Mock.Get(trader1).Setup(t => t.Logger).Returns(NullLogger.Instance);
+        Mock.Get(trader2).Setup(t => t.Logger).Returns(NullLogger.Instance);
+        trader1.TradingPartner = trader2;
+        trader2.TradingPartner = trader1;
+
+        var brokenItem = new Mock<Item>();
+        brokenItem.SetupAllProperties();
+        brokenItem.Object.ItemSlot = 20;
+
+        var validItem = new Mock<Item>();
+        validItem.SetupAllProperties();
+        validItem.Object.ItemSlot = 21;
+
+        trader1.BackupInventory = new BackupItemStorage(trader1.Inventory!.ItemStorage)
+        {
+            Items = new List<Item> { brokenItem.Object, validItem.Object },
+        };
+
+        var inventoryMock = Mock.Get(trader1.Inventory!);
+        inventoryMock.Setup(i => i.AddItemAsync(20, brokenItem.Object)).Throws(new InvalidOperationException("broken test item"));
+        inventoryMock.Setup(i => i.AddItemAsync(21, validItem.Object)).Returns(new ValueTask<bool>(true));
+
+        var cancelAction = new TradeCancelAction();
+        await cancelAction.CancelTradeAsync(trader1).ConfigureAwait(false);
+
+        Assert.That(trader1.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
+        Assert.That(trader2.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
+        inventoryMock.Verify(i => i.AddItemAsync(21, validItem.Object), Times.Once);
+        Assert.That(trader1.BackupInventory, Is.Null);
+    }
+
     private Item GetItem()
     {
         var item = new Mock<Item>();

@@ -8,10 +8,10 @@ using System.Buffers;
 using System.Net;
 using System.Threading;
 using Microsoft.Extensions.Logging;
-using Nito.AsyncEx.Synchronous;
 using MUnique.OpenMU.ConnectServer.PacketHandler;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets.ConnectServer;
+using Nito.AsyncEx.Synchronous;
 
 /// <summary>
 /// The client which connected to the connect server.

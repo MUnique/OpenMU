@@ -2419,6 +2419,12 @@
   <data name="ItemDefinition_DropLevel_Description" xml:space="preserve">
     <value></value>
   </data>
+  <data name="ItemDefinition_MaximumDropLevel_Caption" xml:space="preserve">
+    <value>Maximum Drop Level</value>
+  </data>
+  <data name="ItemDefinition_MaximumDropLevel_Description" xml:space="preserve">
+    <value></value>
+  </data>
   <data name="ItemDefinition_MaximumItemLevel_Caption" xml:space="preserve">
     <value>Maximum Item Level</value>
   </data>
@@ -4040,7 +4046,7 @@
     <value></value>
   </data>
   <data name="MonsterDefinition_TypeCaption" xml:space="preserve">
-    <value>Monsters</value>
+    <value>Monster</value>
   </data>
   <data name="MonsterDefinition_TypeCaptionPlural" xml:space="preserve">
     <value>Monsters</value>

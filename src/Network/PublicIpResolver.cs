@@ -14,7 +14,7 @@ using Microsoft.Extensions.Logging;
 public class PublicIpResolver : IIpAddressResolver
 {
     private readonly ILogger<PublicIpResolver> _logger;
-    private readonly TimeSpan _maximumCachedAddressLifetime = new (0, 5, 0);
+    private readonly TimeSpan _maximumCachedAddressLifetime = new(0, 5, 0);
     private IPAddress? _publicIPv4;
     private DateTime _lastRequest = DateTime.MinValue;
 

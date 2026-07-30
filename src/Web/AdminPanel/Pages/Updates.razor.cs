@@ -10,10 +10,18 @@ using MUnique.OpenMU.Persistence.Initialization.Updates;
 using MUnique.OpenMU.Web.AdminPanel.Services;
 
 /// <summary>
-/// The set up page.
+/// The set-up page.
 /// </summary>
 public partial class Updates
 {
+    private bool _isDataInitialized;
+
+    private Exception? _exception;
+
+    private UpdateState _overallState;
+
+    private List<UpdateViewModel> _availableUpdates = new();
+
     private enum UpdateState
     {
         NotStarted,
@@ -24,14 +32,6 @@ public partial class Updates
 
         Failed,
     }
-
-    private bool _isDataInitialized;
-
-    private Exception? _exception;
-
-    private UpdateState _overallState;
-
-    private List<UpdateViewModel> _availableUpdates = new();
 
     /// <summary>
     /// Gets or sets the setup service.
@@ -46,7 +46,7 @@ public partial class Updates
     public DataUpdateService UpdateService { get; set; } = null!;
 
     /// <summary>
-    /// Gets or sets the javascript runtime.
+    /// Gets or sets the JavaScript runtime.
     /// </summary>
     [Inject]
     public IJSRuntime JsRuntime { get; set; } = null!;
@@ -122,7 +122,7 @@ public partial class Updates
         /// <summary>
         /// Initializes a new instance of the <see cref="UpdateViewModel"/> class.
         /// </summary>
-        /// <param name="updatePlugIn">The update plug in.</param>
+        /// <param name="updatePlugIn">The update plugin.</param>
         public UpdateViewModel(IConfigurationUpdatePlugIn updatePlugIn)
         {
             this._updatePlugIn = updatePlugIn;

@@ -82,16 +82,22 @@ public sealed class ScopedGridNetwork : BaseGridNetwork
         var maxX = offsetX + this._actualSegmentSideLength;
         var maxY = offsetY + this._actualSegmentSideLength;
 
-        for (byte x = offsetX; x < maxX; ++x)
+        // Must use int; a byte loop counter wraps at 256 and would not terminate.
+        for (int x = offsetX; x < maxX; ++x)
         {
-            for (byte y = offsetY; y < maxY; ++y)
+            for (int y = offsetY; y < maxY; ++y)
             {
                 var i = this.GetIndexOfPoint(x, y);
+                if (i < 0 || i >= this._gridNodes.Length)
+                {
+                    continue;
+                }
+
                 var node = this._gridNodes[i];
                 if (node is not null)
                 {
                     node.Status = NodeStatus.Undefined;
-                    node.Position = new(x, y);
+                    node.Position = new((byte)x, (byte)y);
                 }
             }
         }
@@ -100,9 +106,9 @@ public sealed class ScopedGridNetwork : BaseGridNetwork
 
         byte GetOffset(byte avgValue, int gridSize)
         {
-            var offset = (byte)Math.Max(avgValue - (this._actualSegmentSideLength / 2), 0);
-            offset = (byte)Math.Min(offset, gridSize - this._actualSegmentSideLength);
-            return offset;
+            var offset = Math.Max(avgValue - (this._actualSegmentSideLength / 2), 0);
+            offset = Math.Min(offset, Math.Max(gridSize - this._actualSegmentSideLength, 0));
+            return (byte)offset;
         }
     }
 

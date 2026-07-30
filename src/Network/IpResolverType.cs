@@ -1,4 +1,8 @@
-﻿namespace MUnique.OpenMU.Network;
+﻿// <copyright file="IpResolverType.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.Network;
 
 using System.ComponentModel.DataAnnotations;
 
