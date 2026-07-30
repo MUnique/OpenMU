@@ -140,6 +140,12 @@ internal sealed class BotNavigator : AsyncDisposable
     /// <summary>The game's own warp action, so a bot travels on exactly a player's terms - fare included.</summary>
     private static readonly WarpAction WarpAction = new();
 
+    /// <summary>
+    /// Cache of which maps' safezone spawn gates have a walkable tile, so a bot may safely warp there.
+    /// Terrain is static configuration, so the answer never changes and is shared by every bot.
+    /// </summary>
+    private static readonly ConcurrentDictionary<int, bool> WalkableSpawnGateCache = new();
+
     private static readonly TimeSpan EvaluationInterval = TimeSpan.FromSeconds(1);
     private static readonly TimeSpan EmptyGroundGrace = TimeSpan.FromSeconds(8);
 
@@ -1473,6 +1479,48 @@ internal sealed class BotNavigator : AsyncDisposable
     private bool CanAffordWarp(WarpInfo warp) => this._player.Money >= warp.Costs;
 
     /// <summary>
+    /// Whether the map's safezone spawn gate has at least one walkable tile, so a bot may safely warp
+    /// there. A bot (a connection-less <see cref="OfflinePlayer"/>) whose warp lands it on a blocked
+    /// tile is recovered by <see cref="Player.WarpToSafezoneAsync"/>; for a bot the map change is a
+    /// synchronous call back into <see cref="Player.ClientReadyAfterMapChangeAsync"/> (see
+    /// <see cref="OfflineMapChangePlugIn"/>), so when that spawn gate is itself blocked the recovery
+    /// recurses until the stack overflows. We therefore never offer a bot a map it cannot stand in:
+    /// the candidate filter drops such maps at selection time, so the bot moves on to a legal map
+    /// instead of looping on the broken one.
+    /// </summary>
+    /// <remarks>
+    /// ponytail: cached statically - parsed once per map for the life of the process. This only
+    /// excludes maps whose spawn gate has zero walkable tiles (the deterministic crash). A spawn
+    /// gate with a few walkable tiles can still, under PlaceAtGateAsync's single random roll, miss
+    /// and recover to town - a quality glitch, not a crash, accepted by design.
+    /// </remarks>
+    private bool HasWalkableSpawnGate(GameMapDefinition map)
+    {
+        return WalkableSpawnGateCache.GetOrAdd((int)map.Number, _ =>
+        {
+            var terrain = new GameMapTerrain(map);
+            var spawnGate = map.GetSafezoneGate(terrain);
+            if (spawnGate is null)
+            {
+                return false;
+            }
+
+            for (var x = (int)spawnGate.X1; x <= spawnGate.X2; x++)
+            {
+                for (var y = (int)spawnGate.Y1; y <= spawnGate.Y2; y++)
+                {
+                    if (terrain.WalkMap[x, y])
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        });
+    }
+
+    /// <summary>
     /// Gets the escape gate to the bot's class home town, for when it must leave its current map but is
     /// below every warp requirement (e.g. a freshly reset veteran) - the equivalent of a town scroll.
     /// </summary>
@@ -1605,7 +1653,8 @@ internal sealed class BotNavigator : AsyncDisposable
 
             if (!candidate.TryGetRequirementError(this._player, out _)
                 && this.TryGetLegalWarp(candidate, out var candidateWarp)
-                && this.CanAffordWarp(candidateWarp))
+                && this.CanAffordWarp(candidateWarp)
+                && this.HasWalkableSpawnGate(candidate))
             {
                 warp = candidateWarp;
                 mapDefinition = candidate;
@@ -1660,7 +1709,9 @@ internal sealed class BotNavigator : AsyncDisposable
                 continue;
             }
 
-            if (this.TryGetLegalWarp(candidate, out var candidateWarp) && this.CanAffordWarp(candidateWarp))
+            if (this.TryGetLegalWarp(candidate, out var candidateWarp)
+                && this.CanAffordWarp(candidateWarp)
+                && this.HasWalkableSpawnGate(candidate))
             {
                 candidates.Add((candidateWarp, candidate, best));
             }
