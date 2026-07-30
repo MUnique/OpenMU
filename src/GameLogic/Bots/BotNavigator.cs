@@ -82,7 +82,7 @@ internal sealed class BotNavigator : AsyncDisposable
 
     /// <summary>
     /// How many charges an emergency refill stocks up (the potion item's Durability holds the remaining
-    /// count; one is spent per healing). Spread over as many item stacks as the definition's stack size
+    /// count; one is spent per heal). Spread over as many item stacks as the definition's stack size
     /// needs: a Large Healing Potion holds three charges per stack, so a bot handed a single 255-charge
     /// "potion" carried an item the game cannot produce - its stack never looked low again (the shopping
     /// loop for that potion kind went dead), and stacking it with a bought one underflowed the count.
@@ -92,7 +92,7 @@ internal sealed class BotNavigator : AsyncDisposable
     /// <summary>
     /// Emergency refill threshold: normally the bot restocks potions by BUYING them at a merchant (see
     /// <see cref="BotShoppingHandler"/>, triggered well above this level); only when a stack still runs
-    /// this low (e.g. no Zen, merchant unreachable), is it topped up out of thin air as a last resort,
+    /// this low (e.g. no Zen, merchant unreachable) is it topped up out of thin air as a last resort,
     /// so the bot never dies over an empty bottle.
     /// </summary>
     private const int HealPotionRefillBelow = 10;
@@ -131,7 +131,7 @@ internal sealed class BotNavigator : AsyncDisposable
     private const int FollowDistance = 10;
 
     /// <summary>
-    /// Hunting grounds closer than this (tiles) to a recent death site is avoided after the same
+    /// Hunting grounds closer than this (tiles) to a recent death site are avoided after the same
     /// player killed the bot repeatedly (see <see cref="OfflinePlayer.TryGetDeathSiteToAvoid"/>),
     /// so the bot farms somewhere else instead of walking back into the same lost fight.
     /// </summary>
@@ -601,7 +601,7 @@ internal sealed class BotNavigator : AsyncDisposable
             if (!await this.TravelTowardAsync(map, this._destination, cancellationToken).ConfigureAwait(false))
             {
                 // Impossible route: drop the destination and wait out the empty-ground grace before
-                // picking another one. Re picking immediately turned a pocket of unreachable picks
+                // picking another one. Re-picking immediately turned a pocket of unreachable picks
                 // into a full-tick churn - a new far-away ground every second, hammering the path
                 // finder without the bot ever moving.
                 this._hasDestination = false;
@@ -897,7 +897,7 @@ internal sealed class BotNavigator : AsyncDisposable
     /// Keeps a party member with its leader: warps to the leader's map when the leader warped away,
     /// and walks towards the leader when it moved out of the follow range.
     /// </summary>
-    /// <returns>True, if the following consumed this tick; false, if the bot is close enough and should hunt normally.</returns>
+    /// <returns>True, if following consumed this tick; false, if the bot is close enough and should hunt normally.</returns>
     private async ValueTask<bool> TryFollowLeaderAsync(GameMap map, Player leader, CancellationToken cancellationToken)
     {
         if (!ReferenceEquals(leader.CurrentMap, map))
@@ -1500,7 +1500,7 @@ internal sealed class BotNavigator : AsyncDisposable
     /// <param name="gate">The home map safezone gate.</param>
     /// <param name="mapDefinition">The home map.</param>
     /// <param name="monsterLevel">The level of the strongest safe monster there (informational).</param>
-    /// <returns>True, if the bot has a home map, it is not yet on.</returns>
+    /// <returns>True, if the bot has a home map it is not already on.</returns>
     private bool TryGetHomeEscapeGate([MaybeNullWhen(false)] out ExitGate gate, [MaybeNullWhen(false)] out GameMapDefinition mapDefinition, out int monsterLevel)
     {
         gate = null;
@@ -1646,7 +1646,7 @@ internal sealed class BotNavigator : AsyncDisposable
     private bool TryPickBetterMap(bool escape, out WarpInfo warp, out GameMapDefinition mapDefinition, out int monsterLevel)
     {
         // A mastered bot earns nothing below the master-experience floor, so it first looks for a map
-        // which pays completely. Only when no map within its reach offers monsters above the floor that it
+        // which pays at all. Only when no map within its reach offers monsters above the floor that it
         // can safely fight does it fall back to hunting by safety alone: standing on a map it cannot
         // survive would not earn it master experience either, and its gear still improves meanwhile.
         var floor = this.MasterExperienceFloor();
@@ -1799,7 +1799,7 @@ internal sealed class BotNavigator : AsyncDisposable
         for (var attempt = 0; attempt < MaxPointPickAttempts; attempt++)
         {
             // GetRandomCoordinate already keeps to the map, retries unwalkable picks and falls back to the
-            // point itself when the surroundings offer nothing - so spawn on a ledge stays usable.
+            // point itself when the surroundings offer nothing - so a spawn on a ledge stays usable.
             var candidate = isSingleSpot
                 ? map.Terrain.GetRandomCoordinate(center, HuntingRange)
                 : new Point((byte)Rand.NextInt(minX, maxX + 1), (byte)Rand.NextInt(minY, maxY + 1));
