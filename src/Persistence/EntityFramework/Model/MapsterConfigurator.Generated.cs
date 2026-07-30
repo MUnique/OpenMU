@@ -44,6 +44,15 @@ public static class MapsterConfigurator
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Entities.AppearanceData, MUnique.OpenMU.DataModel.Entities.AppearanceData>()
             .Include<AppearanceData, BasicModel.AppearanceData>();
 
+        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Entities.CastleSiegeData, MUnique.OpenMU.DataModel.Entities.CastleSiegeData>()
+            .Include<CastleSiegeData, BasicModel.CastleSiegeData>();
+
+        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Entities.CastleSiegeGuildRegistration, MUnique.OpenMU.DataModel.Entities.CastleSiegeGuildRegistration>()
+            .Include<CastleSiegeGuildRegistration, BasicModel.CastleSiegeGuildRegistration>();
+
+        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Entities.CastleSiegeNpcState, MUnique.OpenMU.DataModel.Entities.CastleSiegeNpcState>()
+            .Include<CastleSiegeNpcState, BasicModel.CastleSiegeNpcState>();
+
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Entities.Character, MUnique.OpenMU.DataModel.Entities.Character>()
             .Include<Character, BasicModel.Character>();
 
@@ -85,6 +94,21 @@ public static class MapsterConfigurator
 
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.Buff, MUnique.OpenMU.DataModel.Configuration.Buff>()
             .Include<Buff, BasicModel.Buff>();
+
+        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.CastleSiegeConfiguration, MUnique.OpenMU.DataModel.Configuration.CastleSiegeConfiguration>()
+            .Include<CastleSiegeConfiguration, BasicModel.CastleSiegeConfiguration>();
+
+        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.CastleSiegeNpcDefinition, MUnique.OpenMU.DataModel.Configuration.CastleSiegeNpcDefinition>()
+            .Include<CastleSiegeNpcDefinition, BasicModel.CastleSiegeNpcDefinition>();
+
+        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.CastleSiegeStateScheduleEntry, MUnique.OpenMU.DataModel.Configuration.CastleSiegeStateScheduleEntry>()
+            .Include<CastleSiegeStateScheduleEntry, BasicModel.CastleSiegeStateScheduleEntry>();
+
+        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.CastleSiegeUpgradeDefinition, MUnique.OpenMU.DataModel.Configuration.CastleSiegeUpgradeDefinition>()
+            .Include<CastleSiegeUpgradeDefinition, BasicModel.CastleSiegeUpgradeDefinition>();
+
+        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.CastleSiegeZoneDefinition, MUnique.OpenMU.DataModel.Configuration.CastleSiegeZoneDefinition>()
+            .Include<CastleSiegeZoneDefinition, BasicModel.CastleSiegeZoneDefinition>();
 
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.CharacterClass, MUnique.OpenMU.DataModel.Configuration.CharacterClass>()
             .Include<CharacterClass, BasicModel.CharacterClass>();

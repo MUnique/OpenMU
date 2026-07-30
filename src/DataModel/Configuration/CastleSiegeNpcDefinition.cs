@@ -35,12 +35,12 @@ public partial class CastleSiegeNpcDefinition
     /// <summary>
     /// Gets or sets the X coordinate of the NPC's spawn position.
     /// </summary>
-    public short SpawnX { get; set; }
+    public byte SpawnX { get; set; }
 
     /// <summary>
     /// Gets or sets the Y coordinate of the NPC's spawn position.
     /// </summary>
-    public short SpawnY { get; set; }
+    public byte SpawnY { get; set; }
 
     /// <summary>
     /// Gets or sets the facing direction of the NPC at spawn.
