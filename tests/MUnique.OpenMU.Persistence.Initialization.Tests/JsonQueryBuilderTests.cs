@@ -24,7 +24,10 @@ internal class JsonQueryBuilderTests
     [OneTimeSetUp]
     public void Setup()
     {
-        ConnectionConfigurator.Initialize(new ConfigFileDatabaseConnectionStringProvider());
+        if (!ConnectionConfigurator.IsInitialized)
+        {
+            ConnectionConfigurator.Initialize(new ConfigFileDatabaseConnectionStringProvider());
+        }
     }
 
     /// <summary>
