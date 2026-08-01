@@ -10,6 +10,11 @@ namespace MUnique.OpenMU.DataModel.Configuration;
 public enum CastleSiegeUpgradeType : byte
 {
     /// <summary>
+    /// No upgrade type assigned.
+    /// </summary>
+    Undefined = 0,
+
+    /// <summary>
     /// Increases the defense stat of the NPC.
     /// </summary>
     Defense = 1,
