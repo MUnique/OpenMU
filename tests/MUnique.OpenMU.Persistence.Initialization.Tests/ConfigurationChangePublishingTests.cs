@@ -16,19 +16,19 @@ internal class ConfigurationChangePublishingTests
     /// <summary>
     /// Verifies that only configuration entities are published to the configuration change listener.
     /// </summary>
-    [Test]
-    public void OnlyConfigurationEntitiesArePublished()
+    /// <param name="entityType">The entity type.</param>
+    /// <param name="shouldPublish">Whether changes of this entity type should be published.</param>
+    [TestCase(typeof(CastleSiegeConfiguration), true)]
+    [TestCase(typeof(CastleSiegeNpcState), false)]
+    [TestCase(typeof(Account), false)]
+    [TestCase(typeof(Guild), false)]
+    [TestCase(typeof(Friend), false)]
+    public void OnlyConfigurationEntitiesArePublished(Type entityType, bool shouldPublish)
     {
         using var context = new EntityDataContext();
-        var configurationType = context.Model.FindEntityType(typeof(CastleSiegeConfiguration));
-        var dataType = context.Model.FindEntityType(typeof(CastleSiegeNpcState));
+        var modelType = context.Model.FindEntityType(entityType);
 
-        Assert.Multiple(() =>
-        {
-            Assert.That(configurationType, Is.Not.Null);
-            Assert.That(dataType, Is.Not.Null);
-            Assert.That(EntityFrameworkContextBase.PublishesConfigurationChanges(configurationType!), Is.True);
-            Assert.That(EntityFrameworkContextBase.PublishesConfigurationChanges(dataType!), Is.False);
-        });
+        Assert.That(modelType, Is.Not.Null);
+        Assert.That(EntityFrameworkContextBase.PublishesConfigurationChanges(modelType!), Is.EqualTo(shouldPublish));
     }
 }

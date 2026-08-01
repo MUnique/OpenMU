@@ -274,7 +274,7 @@ internal class TestInitializationWithEfCore
         this.AssertUpgrades(configuration.StatueRegenUpgrades, [(0, 0, 0, 0), (1, 3, 5_000_000, 1), (2, 5, 5_000_000, 2), (3, 7, 5_000_000, 3)]);
 
         this.AssertZones(configuration.AttackMachineZones, [(62, 103, 72, 112), (88, 104, 124, 111), (116, 105, 124, 112), (73, 86, 105, 103)]);
-        this.AssertZones(configuration.DefenseMachineZones, [(61, 88, 93, 108), (92, 89, 127, 111), (84, 52, 102, 66), (84, 52, 102, 66)]);
+        this.AssertZones(configuration.DefenseMachineZones, [(61, 88, 93, 108), (92, 89, 127, 111), (84, 52, 102, 66)]);
         this.AssertZone(configuration.DefenseRespawnArea!, (74, 144, 115, 154));
         this.AssertZone(configuration.AttackRespawnArea!, (35, 11, 144, 48));
 

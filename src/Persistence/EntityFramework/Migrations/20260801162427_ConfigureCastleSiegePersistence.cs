@@ -40,13 +40,23 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 table: "CastleSiegeNpcDefinition");
 
+            migrationBuilder.Sql(
+                """
+                DO $$
+                BEGIN
+                    IF EXISTS (SELECT 1 FROM config."CastleSiegeNpcDefinition" WHERE "MonsterDefinitionId" IS NULL) THEN
+                        RAISE EXCEPTION 'CastleSiegeNpcDefinition contains rows without a MonsterDefinitionId. Repair or remove these rows before applying this migration.';
+                    END IF;
+                END
+                $$;
+                """);
+
             migrationBuilder.AlterColumn<Guid>(
                 name: "MonsterDefinitionId",
                 schema: "config",
                 table: "CastleSiegeNpcDefinition",
                 type: "uuid",
                 nullable: false,
-                defaultValue: Guid.Empty,
                 oldClrType: typeof(Guid),
                 oldType: "uuid",
                 oldNullable: true);

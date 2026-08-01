@@ -95,7 +95,12 @@ internal sealed class CastleSiegeInitializer : InitializerBase
             npcState.DefenseLevel = 0;
             npcState.RegenLevel = 0;
             npcState.LifeLevel = 0;
-            npcState.CurrentHp = npcState.MonsterNumber == GateMonsterNumber ? gateHitPoints : statueHitPoints;
+            npcState.CurrentHp = npcState.MonsterNumber switch
+            {
+                GateMonsterNumber => gateHitPoints,
+                StatueMonsterNumber => statueHitPoints,
+                _ => throw new InvalidOperationException($"The persisted Castle Siege NPC monster number {npcState.MonsterNumber} is unsupported."),
+            };
             data.NpcStates.Add(npcState);
         }
 
@@ -184,7 +189,6 @@ internal sealed class CastleSiegeInitializer : InitializerBase
 
         configuration.DefenseMachineZones.Add(this.CreateZone(61, 88, 93, 108));
         configuration.DefenseMachineZones.Add(this.CreateZone(92, 89, 127, 111));
-        configuration.DefenseMachineZones.Add(this.CreateZone(84, 52, 102, 66));
         configuration.DefenseMachineZones.Add(this.CreateZone(84, 52, 102, 66));
     }
 
