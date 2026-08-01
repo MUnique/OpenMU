@@ -302,6 +302,14 @@ internal class EntityFrameworkContextBase : IContext
     }
 
     /// <summary>
+    /// Determines whether changes of an entity type are published as configuration changes.
+    /// </summary>
+    /// <param name="entityType">The entity type.</param>
+    /// <returns><see langword="true"/> when the entity belongs to the configuration schema.</returns>
+    internal static bool PublishesConfigurationChanges(IReadOnlyEntityType entityType)
+        => entityType.GetSchema() == SchemaNames.Configuration;
+
+    /// <summary>
     /// Releases unmanaged and - optionally - managed resources.
     /// </summary>
     /// <param name="dispose"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
@@ -392,7 +400,9 @@ internal class EntityFrameworkContextBase : IContext
             }
 
             var changedEntries = this.Context.ChangeTracker.Entries()
-                .Where(entity => entity.State != EntityState.Unchanged).ToList();
+                .Where(entity => entity.State != EntityState.Unchanged
+                                 && PublishesConfigurationChanges(entity.Metadata))
+                .ToList();
             foreach (var entry in changedEntries)
             {
                 var (parent, parentCollectionNavigation) = this.GetParentInformation(entry);
