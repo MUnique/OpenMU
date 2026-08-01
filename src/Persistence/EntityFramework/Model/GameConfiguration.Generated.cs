@@ -243,6 +243,32 @@ internal partial class GameConfiguration : MUnique.OpenMU.DataModel.Configuratio
         }
     }
 
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="CastleSiegeConfiguration"/>.
+    /// </summary>
+    public Guid? CastleSiegeConfigurationId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="CastleSiegeConfiguration" />.
+    /// </summary>
+    [ForeignKey(nameof(CastleSiegeConfigurationId))]
+    public CastleSiegeConfiguration RawCastleSiegeConfiguration
+    {
+        get => base.CastleSiegeConfiguration as CastleSiegeConfiguration;
+        set => base.CastleSiegeConfiguration = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Configuration.CastleSiegeConfiguration CastleSiegeConfiguration
+    {
+        get => base.CastleSiegeConfiguration;set
+        {
+            base.CastleSiegeConfiguration = value;
+            this.CastleSiegeConfigurationId = this.RawCastleSiegeConfiguration?.Id;
+        }
+    }
+
     /// <inheritdoc />
     public override MUnique.OpenMU.DataModel.Configuration.GameConfiguration Clone(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
     {
