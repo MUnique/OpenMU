@@ -141,7 +141,11 @@ public sealed class OfflinePlayerMuHelper : AsyncDisposable
     {
         try
         {
-            await this.TickAsync(cancellationToken).ConfigureAwait(false);
+            // Run the whole tick under the player's persistence lock so its structural mutations
+            // (loot pickup, combat ammo/pet destruction, queued equip/jewel actions) never overlap
+            // this bot's periodic progress save, which runs on a separate timer. The tick has no
+            // internal delays, so the lock is held only for its brief duration.
+            await this._player.RunPersistenceExclusiveAsync(() => this.TickAsync(cancellationToken)).ConfigureAwait(false);
             this._player.OnAiTickSucceeded();
         }
         catch (OperationCanceledException)

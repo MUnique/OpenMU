@@ -30,7 +30,7 @@ public sealed class GameServerRegistry : IDisposable
     {
         this._logger = logger;
 
-        async Task RunCleanupLoop()
+        async Task RunCleanupLoopAsync()
         {
             try
             {
@@ -42,7 +42,7 @@ public sealed class GameServerRegistry : IDisposable
             }
         }
 
-        _ = RunCleanupLoop();
+        _ = RunCleanupLoopAsync();
     }
 
     /// <summary>

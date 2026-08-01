@@ -35,5 +35,7 @@ public interface IItemRegistrationResultPlugIn : IViewPlugIn
     /// <summary>
     /// Sends the registration result to the client.
     /// </summary>
+    /// <param name="npcNumber">The NPC number.</param>
+    /// <param name="operation">The registration operation.</param>
     ValueTask RegistrationResultAsync(short npcNumber, ItemRegistrationOperation operation);
 }

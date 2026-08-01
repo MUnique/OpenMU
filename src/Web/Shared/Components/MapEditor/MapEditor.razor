@@ -30,7 +30,7 @@
         <button type="button" class="btn btn-secondary text-nowrap" disabled="@this._isImporting" @onclick="@this.TriggerFileImportAsync" title="@Resources.ImportMap">
             <span class="oi oi-data-transfer-upload"></span> @Resources.ImportMap
         </button>
-        <BlazorInputFile.InputFile OnChange="@ImportFileSelected" accept=".json" style="display:none" id="import-file-input" />
+        <BlazorInputFile.InputFile OnChange="@ImportFileSelectedAsync" accept=".json" style="display:none" id="import-file-input" />
     </div>
 </div>
 

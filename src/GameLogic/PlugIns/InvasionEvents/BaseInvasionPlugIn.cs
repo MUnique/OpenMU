@@ -314,6 +314,37 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
         return string.Join(", ", names);
     }
 
+    private static async Task BroadcastMonsterDeathAsync(Monster monster, GameMapDefinition? mapDefinition, DeathInformation e, IGameContext gameContext)
+    {
+        if (mapDefinition is null)
+        {
+            return;
+        }
+
+        try
+        {
+            var mapName = mapDefinition.Name;
+            await gameContext.ForEachPlayerAsync(async player =>
+            {
+                var translatedMapName = mapName.GetTranslation(player.Culture);
+                var monsterName = monster.Definition.Designation.GetTranslation(player.Culture);
+
+                try
+                {
+                    await player.ShowLocalizedGoldenMessageAsync(nameof(PlayerMessage.InvasionMonsterDefeated), e.KillerName, translatedMapName, monsterName).ConfigureAwait(false);
+                }
+                catch
+                {
+                    // Ignore view invocation errors
+                }
+            }).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            gameContext.LoggerFactory.CreateLogger(typeof(BaseInvasionPlugIn<TConfiguration>)).LogError(ex, "Error during invasion monster death broadcast.");
+        }
+    }
+
     /// <summary>
     /// Selects a single map from the first mob's configuration and registers all mobs on it.
     /// Used when <see cref="PeriodicInvasionConfiguration.ForceSingleMap"/> is <c>true</c>.
@@ -490,36 +521,5 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
         }
 
         monster.Died += Handler;
-    }
-
-    private static async Task BroadcastMonsterDeathAsync(Monster monster, GameMapDefinition? mapDefinition, DeathInformation e, IGameContext gameContext)
-    {
-        if (mapDefinition is null)
-        {
-            return;
-        }
-
-        try
-        {
-            var mapName = mapDefinition.Name;
-            await gameContext.ForEachPlayerAsync(async player =>
-            {
-                var translatedMapName = mapName.GetTranslation(player.Culture);
-                var monsterName = monster.Definition.Designation.GetTranslation(player.Culture);
-
-                try
-                {
-                    await player.ShowLocalizedGoldenMessageAsync(nameof(PlayerMessage.InvasionMonsterDefeated), e.KillerName, translatedMapName, monsterName).ConfigureAwait(false);
-                }
-                catch
-                {
-                    // Ignore view invocation errors
-                }
-            }).ConfigureAwait(false);
-        }
-        catch (Exception ex)
-        {
-            gameContext.LoggerFactory.CreateLogger(typeof(BaseInvasionPlugIn<TConfiguration>)).LogError(ex, "Error during invasion monster death broadcast.");
-        }
     }
 }

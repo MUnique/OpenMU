@@ -505,8 +505,12 @@ public enum UpdateVersion
     /// </summary>
     AddRenaItem = 99,
 
+    /// The version of the <see cref="AddCastleSiegeDataUpdatePlugIn"/>.
+    /// </summary>
+    AddCastleSiegeData = 100,
+
     /// <summary>
     /// The version of the <see cref="FinishSummonerMasterTreePlugIn"/>.
     /// </summary>
-    FinishSummonerMasterTree = 100,
+    FinishSummonerMasterTree = 101,
 }

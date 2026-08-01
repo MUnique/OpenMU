@@ -231,22 +231,6 @@ public sealed class CombatHandler
     }
 
     /// <summary>
-    /// The number of net hits the bot may take to kill the monster (see <see cref="MaxHitsToKill"/>),
-    /// stretched by <see cref="MasterHitBudgetFactor"/> for a mastered bot fighting a monster which
-    /// actually pays it master experience (see <see cref="MasterHitBudgetFactor"/>).
-    /// </summary>
-    private static int GetHitBudget(Player player, int monsterLevel)
-    {
-        var configuration = player.GameContext.Configuration;
-        var isMastered = player.SelectedCharacter?.CharacterClass?.IsMasterClass == true
-                         && (player.Attributes?[Stats.Level] ?? 0) >= configuration.MaximumLevel;
-
-        return isMastered && monsterLevel >= configuration.MinimumMonsterLevelForMasterExperience
-            ? MaxHitsToKill * MasterHitBudgetFactor
-            : MaxHitsToKill;
-    }
-
-    /// <summary>
     /// Decrements the skill cooldown counter by one tick.
     /// </summary>
     public void DecrementCooldown()
@@ -435,6 +419,22 @@ public sealed class CombatHandler
         }
 
         return Math.Max(physical, Math.Max(wizardry, curse)) + skillDamage;
+    }
+
+    /// <summary>
+    /// The number of net hits the bot may take to kill the monster (see <see cref="MaxHitsToKill"/>),
+    /// stretched by <see cref="MasterHitBudgetFactor"/> for a mastered bot fighting a monster which
+    /// actually pays it master experience (see <see cref="MasterHitBudgetFactor"/>).
+    /// </summary>
+    private static int GetHitBudget(Player player, int monsterLevel)
+    {
+        var configuration = player.GameContext.Configuration;
+        var isMastered = player.SelectedCharacter?.CharacterClass?.IsMasterClass == true
+                         && (player.Attributes?[Stats.Level] ?? 0) >= configuration.MaximumLevel;
+
+        return isMastered && monsterLevel >= configuration.MinimumMonsterLevelForMasterExperience
+            ? MaxHitsToKill * MasterHitBudgetFactor
+            : MaxHitsToKill;
     }
 
     private async ValueTask ExecuteAttackAsync(IAttackable target)

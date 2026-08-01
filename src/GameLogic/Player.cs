@@ -54,6 +54,21 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     private readonly AsyncLock _moveLock = new();
     private readonly AsyncLock _experienceLock = new();
 
+    /// <summary>
+    /// Serializes context mutations done by this player's action handlers against the periodic and
+    /// disconnect progress saves, which run on an independent timer flow. See
+    /// <see cref="RunPersistenceExclusiveAsync{T}"/>.
+    /// </summary>
+    private readonly AsyncLock _persistenceLock = new();
+
+    /// <summary>
+    /// Tracks, per asynchronous flow, whether <see cref="_persistenceLock"/> is already held, so the
+    /// lock can be re-entered (Nito's <see cref="AsyncLock"/> is not reentrant). It is an instance
+    /// field on purpose: reentrancy must be tracked per player, so a flow holding player A's lock
+    /// still acquires player B's lock (e.g. during a trade) instead of wrongly skipping it.
+    /// </summary>
+    private readonly AsyncLocal<bool> _persistenceLockHeld = new();
+
     private readonly Walker _walker;
 
     private readonly AppearanceDataAdapter _appearanceData;
@@ -343,7 +358,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <summary>
     /// Gets or sets the player who sent a pending alliance request to this player.
     /// </summary>
-    public (Player?, GuildRelationshipType, GuildRelationshipRequestType) PendingAllianceRequest { get; set; }
+    public (Player? Player, GuildRelationshipType RelationshipType, GuildRelationshipRequestType RequestType) PendingAllianceRequest { get; set; }
 
     /// <summary>
     /// Gets or sets the guild war context.
@@ -1847,12 +1862,86 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <returns>Success of the save operation.</returns>
     public async ValueTask<bool> SaveProgressAsync(CancellationToken cancellationToken = default)
     {
-        if (!this.IsTemplatePlayer)
+        if (this.IsTemplatePlayer)
         {
-            return await this.PersistenceContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            return true;
         }
 
-        return true;
+        return await this.RunPersistenceExclusiveAsync(
+            () => this.PersistenceContext.SaveChangesAsync(cancellationToken),
+            cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Runs the given operation while holding this player's persistence lock, so that context
+    /// mutations and progress saves for the player never run concurrently.
+    /// </summary>
+    /// <remarks>
+    /// The periodic progress save (<see cref="PlugIns.PeriodicSaveProgressPlugIn"/>) runs on an
+    /// independent timer flow. Action handlers mutate tracked entities with plain field/collection
+    /// writes (e.g. crafting toggling <c>item.ItemOptions</c>) which bypass the persistence context's
+    /// own lock; if such a mutation runs while <see cref="IContext.SaveChangesAsync"/> enumerates the
+    /// change tracker, the save throws (collection-modified / DbUpdateConcurrency) and every following
+    /// save fails too, so the whole session is lost on relog. Serializing the packet handler funnel
+    /// and the save against each other closes that window. The lock is re-entrant per asynchronous
+    /// flow, so an inline save inside an already-serialized handler does not deadlock.
+    /// <para>
+    /// Invariant: never acquire another player's persistence lock (via their
+    /// <see cref="SaveProgressAsync"/> or <see cref="RunPersistenceExclusiveAsync{T}"/>) from inside a
+    /// packet handler, which already holds this player's lock, unless a global lock order is enforced.
+    /// Today only the trade accept does a cross-player save, and it cannot form a cycle because a trade
+    /// has a single accepting side (so the A-then-B acquisition order has no concurrent B-then-A
+    /// counterpart). A second cross-player caller with the opposite order could deadlock.
+    /// </para>
+    /// </remarks>
+    /// <typeparam name="T">The result type of the operation.</typeparam>
+    /// <param name="operation">The operation to run exclusively.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The result of the operation.</returns>
+    public async ValueTask<T> RunPersistenceExclusiveAsync<T>(Func<ValueTask<T>> operation, CancellationToken cancellationToken = default)
+    {
+        if (this._persistenceLockHeld.Value)
+        {
+            return await operation().ConfigureAwait(false);
+        }
+
+        using var l = await this._persistenceLock.LockAsync(cancellationToken).ConfigureAwait(false);
+        this._persistenceLockHeld.Value = true;
+        try
+        {
+            return await operation().ConfigureAwait(false);
+        }
+        finally
+        {
+            this._persistenceLockHeld.Value = false;
+        }
+    }
+
+    /// <summary>
+    /// Runs the given operation while holding this player's persistence lock.
+    /// See <see cref="RunPersistenceExclusiveAsync{T}"/> for the rationale.
+    /// </summary>
+    /// <param name="operation">The operation to run exclusively.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A value task which completes when the operation completed.</returns>
+    public async ValueTask RunPersistenceExclusiveAsync(Func<ValueTask> operation, CancellationToken cancellationToken = default)
+    {
+        if (this._persistenceLockHeld.Value)
+        {
+            await operation().ConfigureAwait(false);
+            return;
+        }
+
+        using var l = await this._persistenceLock.LockAsync(cancellationToken).ConfigureAwait(false);
+        this._persistenceLockHeld.Value = true;
+        try
+        {
+            await operation().ConfigureAwait(false);
+        }
+        finally
+        {
+            this._persistenceLockHeld.Value = false;
+        }
     }
 
     /// <summary>
@@ -2468,7 +2557,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         if (this.GameContext.PlugInManager.GetPlugInPoint<IAttackableGotKilledPlugIn>() is { } plugInPoint)
         {
-            await plugInPoint.AttackableGotKilledAsync(this, killer);
+            await plugInPoint.AttackableGotKilledAsync(this, killer).ConfigureAwait(false);
         }
 
         if (this.LastDeath is { } deathInformation)

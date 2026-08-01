@@ -122,7 +122,7 @@ public sealed class GameServerContainer : ServerContainerBase, IGameServerInstan
     /// <inheritdoc />
     protected override async ValueTask BeforeStartAsync(bool onDatabaseInit, CancellationToken cancellationToken)
     {
-        await base.BeforeStartAsync(onDatabaseInit, cancellationToken);
+        await base.BeforeStartAsync(onDatabaseInit, cancellationToken).ConfigureAwait(false);
         if (!onDatabaseInit)
         {
             (this._persistenceContextProvider as IMigratableDatabaseContextProvider)?.ResetCache();
