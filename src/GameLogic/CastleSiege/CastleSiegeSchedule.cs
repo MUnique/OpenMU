@@ -159,21 +159,6 @@ internal sealed class CastleSiegeSchedule
         return duration > TimeSpan.Zero ? duration : duration + WeekDuration;
     }
 
-    /// <summary>
-    /// Gets the most recent start of a configured state.
-    /// </summary>
-    /// <param name="state">The state.</param>
-    /// <param name="utcNow">The reference time.</param>
-    /// <returns>The most recent state start, including <paramref name="utcNow"/>.</returns>
-    private DateTime GetPreviousOrCurrentStateStart(CastleSiegeState state, DateTime utcNow)
-    {
-        utcNow = EnsureUtc(utcNow);
-        var scheduledState = this.GetScheduledState(state);
-        var weekStart = utcNow.Date.AddDays(-(int)utcNow.DayOfWeek);
-        var startUtc = weekStart + scheduledState.StartOfWeek;
-        return startUtc <= utcNow ? startUtc : startUtc - WeekDuration;
-    }
-
     private static TimeSpan GetStartOfWeek(CastleSiegeStateScheduleEntry entry)
     {
         if (entry.Hour > 23)
@@ -199,6 +184,21 @@ internal sealed class CastleSiegeSchedule
             DateTimeKind.Local => value.ToUniversalTime(),
             _ => DateTime.SpecifyKind(value, DateTimeKind.Utc),
         };
+    }
+
+    /// <summary>
+    /// Gets the most recent start of a configured state.
+    /// </summary>
+    /// <param name="state">The state.</param>
+    /// <param name="utcNow">The reference time.</param>
+    /// <returns>The most recent state start, including <paramref name="utcNow"/>.</returns>
+    private DateTime GetPreviousOrCurrentStateStart(CastleSiegeState state, DateTime utcNow)
+    {
+        utcNow = EnsureUtc(utcNow);
+        var scheduledState = this.GetScheduledState(state);
+        var weekStart = utcNow.Date.AddDays(-(int)utcNow.DayOfWeek);
+        var startUtc = weekStart + scheduledState.StartOfWeek;
+        return startUtc <= utcNow ? startUtc : startUtc - WeekDuration;
     }
 
     private int GetStateIndex(CastleSiegeState state)

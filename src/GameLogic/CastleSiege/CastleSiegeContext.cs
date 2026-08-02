@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic.CastleSiege;
 
-using System.Collections.Concurrent;
 using System.Threading;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
@@ -56,7 +55,7 @@ public class CastleSiegeContext : IEventStateProvider
     /// <summary>
     /// Gets the guild registrations keyed by their persistent guild identifier.
     /// </summary>
-    public ConcurrentDictionary<Guid, CastleSiegeGuildRegistration> RegisteredGuilds { get; } = new();
+    public System.Collections.Concurrent.ConcurrentDictionary<Guid, CastleSiegeGuildRegistration> RegisteredGuilds { get; } = new();
 
     /// <summary>
     /// Gets the selected guilds keyed by their runtime guild identifier.
@@ -66,7 +65,7 @@ public class CastleSiegeContext : IEventStateProvider
     /// <summary>
     /// Gets the participating characters keyed by their persistent character identifier.
     /// </summary>
-    public ConcurrentDictionary<Guid, CastleSiegeParticipant> ParticipantTracking { get; } = new();
+    public System.Collections.Concurrent.ConcurrentDictionary<Guid, CastleSiegeParticipant> ParticipantTracking { get; } = new();
 
     /// <summary>
     /// Gets or sets the runtime identifier of the guild which most recently captured the Crown.
@@ -100,6 +99,11 @@ public class CastleSiegeContext : IEventStateProvider
 
     /// <inheritdoc />
     public bool IsEventRunning => this.CurrentState == CastleSiegeState.Start;
+
+    /// <summary>
+    /// Gets the remaining time of the current state.
+    /// </summary>
+    public TimeSpan RemainingTime => this.GetRemainingTime(DateTime.UtcNow);
 
     /// <summary>
     /// Gets a value indicating whether the context has been initialized.
@@ -143,12 +147,6 @@ public class CastleSiegeContext : IEventStateProvider
 
     /// <inheritdoc />
     public bool IsSpawnWaveActive(byte waveNumber) => false;
-
-    /// <summary>
-    /// Gets the remaining time of the current state.
-    /// </summary>
-    /// <returns>The remaining time, or <see cref="TimeSpan.Zero"/> if the state already ended.</returns>
-    public TimeSpan GetRemainingTime() => this.GetRemainingTime(DateTime.UtcNow);
 
     /// <summary>
     /// Gets the side of a player in the current Castle Siege.

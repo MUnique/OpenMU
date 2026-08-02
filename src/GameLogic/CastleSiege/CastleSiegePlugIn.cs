@@ -179,7 +179,7 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn
     private async ValueTask ChangeStateAsync(CastleSiegeContext context, CastleSiegeStatePeriod period, ILogger logger)
     {
         var previousState = context.CurrentState;
-        await this.OnExitStateAsync(context).ConfigureAwait(false);
+        await this.OnExitStateAsync().ConfigureAwait(false);
 
         context.SetPeriod(period);
         this.ConfigureNotifications(context, period.StartUtc);
@@ -237,6 +237,8 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn
                 context.CrownAccumulatedTime = TimeSpan.Zero;
                 context.IsCrownAvailable = false;
                 break;
+            default:
+                break;
         }
 
         if (!isStartup)
@@ -245,7 +247,7 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn
         }
     }
 
-    private ValueTask OnExitStateAsync(CastleSiegeContext context) => ValueTask.CompletedTask;
+    private ValueTask OnExitStateAsync() => ValueTask.CompletedTask;
 
     private async ValueTask OnTickAsync(CastleSiegeContext context, DateTime utcNow)
     {
