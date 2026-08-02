@@ -250,6 +250,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Close.
+        /// </summary>
+        public static string Close {
+            get {
+                return ResourceManager.GetString("Close", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Command.
         /// </summary>
         public static string CommandColumn {
@@ -469,6 +478,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Download File.
+        /// </summary>
+        public static string DownloadFile {
+            get {
+                return ResourceManager.GetString("DownloadFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Drop item groups.
         /// </summary>
         public static string DropItemGroups {
@@ -555,6 +573,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string FileName {
             get {
                 return ResourceManager.GetString("FileName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Filter log entries....
+        /// </summary>
+        public static string FilterLogEntries {
+            get {
+                return ResourceManager.GetString("FilterLogEntries", resourceCulture);
             }
         }
         
@@ -775,6 +802,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Live.
+        /// </summary>
+        public static string Live {
+            get {
+                return ResourceManager.GetString("Live", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Live Map.
         /// </summary>
         public static string LiveMap {
@@ -816,6 +852,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string Logs {
             get {
                 return ResourceManager.GetString("Logs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Log Viewer.
+        /// </summary>
+        public static string LogViewer {
+            get {
+                return ResourceManager.GetString("LogViewer", resourceCulture);
             }
         }
         
@@ -969,6 +1014,24 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string NoInitializedDataFound {
             get {
                 return ResourceManager.GetString("NoInitializedDataFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No log entries found..
+        /// </summary>
+        public static string NoLogEntriesFound {
+            get {
+                return ResourceManager.GetString("NoLogEntriesFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No log entries match your filter..
+        /// </summary>
+        public static string NoLogEntriesMatchFilter {
+            get {
+                return ResourceManager.GetString("NoLogEntriesMatchFilter", resourceCulture);
             }
         }
         
@@ -1198,6 +1261,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Reload File List.
+        /// </summary>
+        public static string ReloadFileList {
+            get {
+                return ResourceManager.GetString("ReloadFileList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Remove.
         /// </summary>
         public static string Remove {
@@ -1257,6 +1329,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string SavingConfigurationInfo {
             get {
                 return ResourceManager.GetString("SavingConfigurationInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scroll to Bottom.
+        /// </summary>
+        public static string ScrollToBottom {
+            get {
+                return ResourceManager.GetString("ScrollToBottom", resourceCulture);
             }
         }
         
@@ -1374,6 +1455,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string ShowEntryForm {
             get {
                 return ResourceManager.GetString("ShowEntryForm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Showing {0} of {1} lines (Last {2} lines loaded)..
+        /// </summary>
+        public static string ShowingXOfYLines {
+            get {
+                return ResourceManager.GetString("ShowingXOfYLines", resourceCulture);
             }
         }
         
