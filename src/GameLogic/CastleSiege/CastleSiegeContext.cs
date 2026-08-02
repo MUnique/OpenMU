@@ -166,22 +166,9 @@ public class CastleSiegeContext : IEventStateProvider
     /// </summary>
     public async ValueTask LoadAsync()
     {
-        using (var context = this._gameContext.PersistenceContextProvider.CreateNewTypedContext(typeof(CastleSiegeData), false, this._gameContext.Configuration))
-        {
-            this.SiegeData = (await context.GetAsync<CastleSiegeData>().ConfigureAwait(false)).FirstOrDefault()
-                ?? context.CreateNew<CastleSiegeData>();
-            await context.SaveChangesAsync().ConfigureAwait(false);
-        }
-
-        using (var context = this._gameContext.PersistenceContextProvider.CreateNewTypedContext(typeof(CastleSiegeGuildRegistration), false, this._gameContext.Configuration))
-        {
-            var registrations = await context.GetAsync<CastleSiegeGuildRegistration>().ConfigureAwait(false);
-            this.RegisteredGuilds.Clear();
-            foreach (var registration in registrations)
-            {
-                this.RegisteredGuilds[registration.GuildId] = registration;
-            }
-        }
+        this.SiegeData = await this.LoadDataAsync().ConfigureAwait(false)
+            ?? throw new InvalidOperationException("The persistent Castle Siege state does not exist.");
+        await this.LoadRegistrationsAsync().ConfigureAwait(false);
     }
 
     /// <summary>
@@ -203,7 +190,7 @@ public class CastleSiegeContext : IEventStateProvider
     }
 
     /// <summary>
-    /// Replaces the persistent NPC states with the current runtime snapshot.
+    /// Updates the persistent NPC states from a complete runtime snapshot.
     /// </summary>
     public async ValueTask SaveNpcStatesAsync()
     {
@@ -212,23 +199,37 @@ public class CastleSiegeContext : IEventStateProvider
             return;
         }
 
-        var activeNpcStates = this.ActiveNpcs
-            .Where(npc => npc.IsAlive && npc.Definition.IsPersistedToDatabase && npc.PersistedState is not null)
-            .Select(npc => npc.PersistedState!)
+        var persistedNpcs = this.ActiveNpcs
+            .Where(npc => npc.Definition.IsPersistedToDatabase)
             .ToList();
-        var statesToSave = this.ActiveNpcs.Count > 0 ? activeNpcStates : this.SiegeData.NpcStates.ToList();
+        if (persistedNpcs.Count == 0 || persistedNpcs.Any(npc => npc.PersistedState is null))
+        {
+            return;
+        }
+
+        var statesToSave = persistedNpcs
+            .Where(npc => npc.IsAlive)
+            .Select(npc => npc.PersistedState!)
+            .ToDictionary(GetNpcKey);
 
         using var context = this._gameContext.PersistenceContextProvider.CreateNewTypedContext(typeof(CastleSiegeData), false, this._gameContext.Configuration);
         var persistentData = await context.GetByIdAsync<CastleSiegeData>(this.SiegeData.Id).ConfigureAwait(false)
             ?? throw new InvalidOperationException("The persistent Castle Siege state no longer exists.");
 
-        foreach (var oldState in persistentData.NpcStates.ToList())
+        foreach (var target in persistentData.NpcStates.ToList())
         {
-            await context.DeleteAsync(oldState).ConfigureAwait(false);
+            if (statesToSave.Remove(GetNpcKey(target), out var source))
+            {
+                CopyNpcState(source, target);
+            }
+            else
+            {
+                await context.DeleteAsync(target).ConfigureAwait(false);
+                persistentData.NpcStates.Remove(target);
+            }
         }
 
-        persistentData.NpcStates.Clear();
-        foreach (var source in statesToSave)
+        foreach (var source in statesToSave.Values)
         {
             var target = context.CreateNew<CastleSiegeNpcState>();
             CopyNpcState(source, target);
@@ -260,7 +261,9 @@ public class CastleSiegeContext : IEventStateProvider
     /// <returns>The initialized state period.</returns>
     internal async ValueTask<CastleSiegeStatePeriod> InitializeAsync(DateTime utcNow)
     {
-        await this.LoadAsync().ConfigureAwait(false);
+        this.SiegeData = await this.LoadDataAsync().ConfigureAwait(false)
+            ?? await this.CreateDataAsync().ConfigureAwait(false);
+        await this.LoadRegistrationsAsync().ConfigureAwait(false);
         var period = this.Schedule.GetCurrentEventPeriod(utcNow);
         this.SetPeriod(period);
         this.NextNpcSaveUtc = utcNow.AddMinutes(2);
@@ -311,5 +314,35 @@ public class CastleSiegeContext : IEventStateProvider
         target.RegenLevel = source.RegenLevel;
         target.LifeLevel = source.LifeLevel;
         target.CurrentHp = source.CurrentHp;
+    }
+
+    private static (short MonsterNumber, byte InstanceId) GetNpcKey(CastleSiegeNpcState state)
+    {
+        return (state.MonsterNumber, state.InstanceId);
+    }
+
+    private async ValueTask<CastleSiegeData?> LoadDataAsync()
+    {
+        using var context = this._gameContext.PersistenceContextProvider.CreateNewTypedContext(typeof(CastleSiegeData), false, this._gameContext.Configuration);
+        return (await context.GetAsync<CastleSiegeData>().ConfigureAwait(false)).FirstOrDefault();
+    }
+
+    private async ValueTask<CastleSiegeData> CreateDataAsync()
+    {
+        using var context = this._gameContext.PersistenceContextProvider.CreateNewTypedContext(typeof(CastleSiegeData), false, this._gameContext.Configuration);
+        var data = context.CreateNew<CastleSiegeData>();
+        await context.SaveChangesAsync().ConfigureAwait(false);
+        return data;
+    }
+
+    private async ValueTask LoadRegistrationsAsync()
+    {
+        using var context = this._gameContext.PersistenceContextProvider.CreateNewTypedContext(typeof(CastleSiegeGuildRegistration), false, this._gameContext.Configuration);
+        var registrations = await context.GetAsync<CastleSiegeGuildRegistration>().ConfigureAwait(false);
+        this.RegisteredGuilds.Clear();
+        foreach (var registration in registrations)
+        {
+            this.RegisteredGuilds[registration.GuildId] = registration;
+        }
     }
 }

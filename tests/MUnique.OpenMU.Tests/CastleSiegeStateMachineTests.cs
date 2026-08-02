@@ -136,12 +136,51 @@ public class CastleSiegeStateMachineTests
     }
 
     /// <summary>
+    /// Verifies that loading does not silently create a missing persistent state.
+    /// </summary>
+    [Test]
+    public async ValueTask ContextLoadDoesNotCreateMissingPersistentStateAsync()
+    {
+        var fixture = await CreateFixtureAsync(false).ConfigureAwait(false);
+        var context = new CastleSiegeContext(fixture.GameContext.Object, fixture.CastleSiegeConfiguration);
+
+        Assert.ThrowsAsync<InvalidOperationException>(async () => await context.LoadAsync().ConfigureAwait(false));
+
+        using var persistenceContext = fixture.PersistenceContextProvider.CreateNewTypedContext(
+            typeof(CastleSiegeData),
+            false,
+            fixture.GameConfiguration);
+        Assert.That(await persistenceContext.GetAsync<CastleSiegeData>().ConfigureAwait(false), Is.Empty);
+    }
+
+    /// <summary>
+    /// Verifies that initialization explicitly creates a missing persistent state.
+    /// </summary>
+    [Test]
+    public async ValueTask ContextInitializationCreatesMissingPersistentStateAsync()
+    {
+        var fixture = await CreateFixtureAsync(false).ConfigureAwait(false);
+        var context = new CastleSiegeContext(fixture.GameContext.Object, fixture.CastleSiegeConfiguration);
+
+        await context.InitializeAsync(new DateTime(2026, 8, 3, 12, 0, 0, DateTimeKind.Utc)).ConfigureAwait(false);
+
+        using var persistenceContext = fixture.PersistenceContextProvider.CreateNewTypedContext(
+            typeof(CastleSiegeData),
+            false,
+            fixture.GameConfiguration);
+        var savedData = (await persistenceContext.GetAsync<CastleSiegeData>().ConfigureAwait(false)).Single();
+        Assert.That(context.SiegeData.Id, Is.EqualTo(savedData.Id));
+    }
+
+    /// <summary>
     /// Verifies that only alive database-persisted NPC runtime states are stored.
     /// </summary>
     [Test]
     public async ValueTask ContextSavesAlivePersistentNpcStatesAsync()
     {
         var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var gateStateId = await AddNpcStateAsync(fixture, 277, 0, 250_000).ConfigureAwait(false);
+        await AddNpcStateAsync(fixture, 283, 0, 300_000).ConfigureAwait(false);
         var context = new CastleSiegeContext(fixture.GameContext.Object, fixture.CastleSiegeConfiguration);
         await context.InitializeAsync(new DateTime(2026, 8, 3, 12, 0, 0, DateTimeKind.Utc)).ConfigureAwait(false);
         context.ActiveNpcs.Add(CreateNpcRuntime(277, 0, 125_000, true, true));
@@ -156,8 +195,47 @@ public class CastleSiegeStateMachineTests
             fixture.GameConfiguration);
         var savedData = (await persistenceContext.GetAsync<CastleSiegeData>().ConfigureAwait(false)).Single();
         Assert.That(savedData.NpcStates, Has.Count.EqualTo(1));
+        Assert.That(savedData.NpcStates.Single().Id, Is.EqualTo(gateStateId));
         Assert.That(savedData.NpcStates.Single().MonsterNumber, Is.EqualTo(277));
         Assert.That(savedData.NpcStates.Single().CurrentHp, Is.EqualTo(125_000));
+    }
+
+    /// <summary>
+    /// Verifies that an incomplete runtime snapshot does not delete persistent NPC states.
+    /// </summary>
+    [Test]
+    public async ValueTask ContextPreservesNpcStatesForIncompleteRuntimeSnapshotAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var gateStateId = await AddNpcStateAsync(fixture, 277, 0, 250_000).ConfigureAwait(false);
+        var context = new CastleSiegeContext(fixture.GameContext.Object, fixture.CastleSiegeConfiguration);
+        await context.InitializeAsync(new DateTime(2026, 8, 3, 12, 0, 0, DateTimeKind.Utc)).ConfigureAwait(false);
+        context.ActiveNpcs.Add(new CastleSiegeNpcRuntime
+        {
+            Definition = new CastleSiegeNpcDefinition
+            {
+                MonsterDefinition = new MonsterDefinition { Number = 277 },
+                InstanceId = 0,
+                IsPersistedToDatabase = true,
+            },
+            IsAlive = true,
+        });
+
+        await context.SaveNpcStatesAsync().ConfigureAwait(false);
+
+        using var persistenceContext = fixture.PersistenceContextProvider.CreateNewTypedContext(
+            typeof(CastleSiegeData),
+            false,
+            fixture.GameConfiguration);
+        var savedState = (await persistenceContext.GetAsync<CastleSiegeData>().ConfigureAwait(false))
+            .Single()
+            .NpcStates
+            .Single();
+        Assert.Multiple(() =>
+        {
+            Assert.That(savedState.Id, Is.EqualTo(gateStateId));
+            Assert.That(savedState.CurrentHp, Is.EqualTo(250_000));
+        });
     }
 
     /// <summary>
@@ -380,7 +458,27 @@ public class CastleSiegeStateMachineTests
         };
     }
 
-    private static async ValueTask<TestFixture> CreateFixtureAsync()
+    private static async ValueTask<Guid> AddNpcStateAsync(
+        TestFixture fixture,
+        short monsterNumber,
+        byte instanceId,
+        int currentHp)
+    {
+        using var context = fixture.PersistenceContextProvider.CreateNewTypedContext(
+            typeof(CastleSiegeData),
+            false,
+            fixture.GameConfiguration);
+        var siegeData = (await context.GetAsync<CastleSiegeData>().ConfigureAwait(false)).Single();
+        var npcState = context.CreateNew<CastleSiegeNpcState>();
+        npcState.MonsterNumber = monsterNumber;
+        npcState.InstanceId = instanceId;
+        npcState.CurrentHp = currentHp;
+        siegeData.NpcStates.Add(npcState);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+        return npcState.Id;
+    }
+
+    private static async ValueTask<TestFixture> CreateFixtureAsync(bool createSiegeData = true)
     {
         var persistenceContextProvider = new InMemoryPersistenceContextProvider();
         using var context = persistenceContextProvider.CreateNewContext();
@@ -399,8 +497,11 @@ public class CastleSiegeStateMachineTests
 
         gameConfiguration.CastleSiegeConfiguration = castleSiegeConfiguration;
 
-        var siegeData = context.CreateNew<CastleSiegeData>();
-        siegeData.TributeMoney = 42;
+        if (createSiegeData)
+        {
+            var siegeData = context.CreateNew<CastleSiegeData>();
+            siegeData.TributeMoney = 42;
+        }
 
         var registeredGuildId = Guid.NewGuid();
         var registration = context.CreateNew<CastleSiegeGuildRegistration>();
