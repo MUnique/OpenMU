@@ -284,6 +284,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("BlessJewelConsumeHandlerPlugIn_Name", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Drives the weekly Castle Siege state cycle..
+        /// </summary>
+        public static string CastleSiegePlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegePlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege.
+        /// </summary>
+        public static string CastleSiegePlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegePlugIn_Name", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Handles the chain lightning skill of the summoner class. Additionally to the attacked target, it will hit up to two additional targets..
