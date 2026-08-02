@@ -1610,6 +1610,14 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         skillEntry.PowerUps = result;
         skillEntry.PowerUpsPvp = resultPvp.Count() > 0 ? resultPvp : result;
 
+        if (skillEntry.EnsureSkillAttributes(this.Attributes!) is { } skillAttributes
+            && skillAttributes[Stats.SleepStrBonusChance] is float bonusChance
+            && bonusChance > 0)
+        {
+            skillEntry.PowerUpChance = new CombinedElement(skillEntry.PowerUpChance, new ConstantElement(bonusChance));
+            skillEntry.PowerUpChancePvp = new CombinedElement(skillEntry.PowerUpChancePvp, new ConstantElement(bonusChance));
+        }
+
         void AddSkillPowersToResult(ICollection<PowerUpDefinition> powerUps, ref (AttributeDefinition Target, IElement BuffPowerUp)[] result)
         {
             if (powerUps.Count() == 0)

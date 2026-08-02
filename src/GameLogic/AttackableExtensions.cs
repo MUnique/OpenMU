@@ -628,6 +628,45 @@ public static class AttackableExtensions
         await attackable.MagicEffectList.AddEffectAsync(magicEffect).ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// Ensures the skill attributes of the specified skill entry are set up.
+    /// </summary>
+    /// <param name="skillEntry">The skill entry.</param>
+    /// <param name="attackerSystem">The attacker's attribute system.</param>
+    /// <returns>The skill attributes.</returns>
+    public static IAttributeSystem? EnsureSkillAttributes(this SkillEntry skillEntry, IAttributeSystem attackerSystem)
+    {
+        var skillAttributes = skillEntry.Attributes;
+        if (skillAttributes is not null)
+        {
+            return skillAttributes;
+        }
+
+        if (skillEntry.Skill is not { } skill)
+        {
+            return skillAttributes;
+        }
+
+        var baseSkills = new List<Skill> { skill };
+        baseSkills.AddRange(skillEntry.Skill.GetBaseSkills());
+
+        if (baseSkills.All(s => s.AttributeRelationships.Count == 0))
+        {
+            return skillAttributes;
+        }
+
+        skillAttributes = skillEntry.Attributes = new AttributeSystem([], [], []);
+        var levelElement = new SimpleElement(skillEntry.Level, AggregateType.AddRaw);
+        skillEntry.PropertyChanged += (_, _) => levelElement.Value = skillEntry.Level;
+        skillAttributes.AddElement(levelElement, Stats.SkillLevel);
+        foreach (var relationship in baseSkills.SelectMany(s => s.AttributeRelationships))
+        {
+            skillAttributes.AddAttributeRelationship(relationship, attackerSystem, relationship.AggregateType);
+        }
+
+        return skillAttributes;
+    }
+
     private static bool IsAttackSuccessfulTo(this IAttacker attacker, IAttackable defender)
     {
         var hitChance = attacker.GetHitChanceTo(defender);
@@ -697,39 +736,6 @@ public static class AttackableExtensions
         }
 
         return result;
-    }
-
-    private static IAttributeSystem? EnsureSkillAttributes(this SkillEntry skillEntry, IAttributeSystem attackerSystem)
-    {
-        var skillAttributes = skillEntry.Attributes;
-        if (skillAttributes is not null)
-        {
-            return skillAttributes;
-        }
-
-        if (skillEntry.Skill is not { } skill)
-        {
-            return skillAttributes;
-        }
-
-        var baseSkills = new List<Skill> { skill };
-        baseSkills.AddRange(skillEntry.Skill.GetBaseSkills());
-
-        if (baseSkills.All(s => s.AttributeRelationships.Count == 0))
-        {
-            return skillAttributes;
-        }
-
-        skillAttributes = skillEntry.Attributes = new AttributeSystem([], [], []);
-        var levelElement = new SimpleElement(skillEntry.Level, AggregateType.AddRaw);
-        skillEntry.PropertyChanged += (_, _) => levelElement.Value = skillEntry.Level;
-        skillAttributes.AddElement(levelElement, Stats.SkillLevel);
-        foreach (var relationship in baseSkills.SelectMany(s => s.AttributeRelationships))
-        {
-            skillAttributes.AddAttributeRelationship(relationship, attackerSystem, relationship.AggregateType);
-        }
-
-        return skillAttributes;
     }
 
     private static void GetSkillDmg(this IAttacker attacker, SkillEntry? skillEntry, out int skillMinimumDamage, out int skillMaximumDamage, out DamageType damageType, out bool isSummonerSkill)

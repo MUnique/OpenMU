@@ -20,8 +20,16 @@ public sealed class SkillList : ISkillList, IDisposable
     private const short TwistingSlashMasterySkillId = 332;
     private const short RagefulBlowMasterySkillId = 333;
     private const short TripleShotMasterySkillId = 418;
+    private const short SleepStrengthenerSkillId = 454;
+    private const short DrainLifeStrengthenerSkillId = 458;
 
-    private readonly short[] _castedSkillsWithPassiveBoost = [TwistingSlashMasterySkillId, RagefulBlowMasterySkillId, TripleShotMasterySkillId];
+    private readonly short[] _castedSkillsWithPassiveBoost = [
+        TwistingSlashMasterySkillId,
+        RagefulBlowMasterySkillId,
+        TripleShotMasterySkillId,
+        SleepStrengthenerSkillId,
+        DrainLifeStrengthenerSkillId
+    ];
 
     private readonly IDictionary<ushort, SkillEntry> _availableSkills;
 

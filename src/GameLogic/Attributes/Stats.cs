@@ -710,6 +710,16 @@ public class Stats
     public static AttributeDefinition PollutionBonusDmg { get; } = new(new Guid("9B7AF584-DB59-4770-BCE9-1B5131BBDE38"), "Pollution Bonus Damage (MST)", "The pollution skill (book of lagle) bonus damage, which rises with lightning tome strengthener and is added at a late stage.");
 
     /// <summary>
+    /// Gets the sleep strengthener MST bonus chance.
+    /// </summary>
+    public static AttributeDefinition SleepStrBonusChance { get; } = new(new Guid("3F9E2A7B-41C8-4D2E-9B0F-6A1C8D5E7B3F"), "Sleep Strengthener Bonus Chance (MST)", string.Empty);
+
+    /// <summary>
+    /// Gets the drain life strengthener MST bonus healing.
+    /// </summary>
+    public static AttributeDefinition DrainLifeStrBonusHealing { get; } = new(new Guid("5B1AA436-2CF9-4A45-AACA-5B1AA4362CF9"), "Drain Life Strengthener Bonus Healing (MST)", string.Empty);
+
+    /// <summary>
     /// Gets the is a scepter equipped.
     /// </summary>
     public static AttributeDefinition IsScepterEquipped { get; } = new(new Guid("8650DE3B-BE11-458E-B352-4046CE264402"), "Is Scepter Equipped", string.Empty);
@@ -932,7 +942,7 @@ public class Stats
     /// <summary>
     /// Gets the berserker proficiency buff damage multiplier MST attribute definition.
     /// </summary>
-    /// <remarks>Increases with MST berserker proficiency. Applies on <see cref="DamageType.Curse"/> and <see cref="DamageType.Wizardry"/> skills.</remarks>
+    /// <remarks>Increases with MST berserker proficiency. Applies on <see cref="DamageType.Curse"/> (once) and <see cref="DamageType.Wizardry"/> (twice) skills.</remarks>
     public static AttributeDefinition BerserkerProficiencyMultiplier { get; } = new(new Guid("55124C97-6EF3-4C46-AEC9-D01C11BE18A4"), "Berserker Proficiency Multiplier (MST)", "The berserker proficiency damage multiplier which is added to the wizardry multiplier but also by itself is multiplied by the wizardry/curse final damage and added to it.");
 
     /// <summary>
