@@ -238,6 +238,7 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn
                 context.IsCrownAvailable = false;
                 break;
             default:
+                // The remaining states do not require an entry action.
                 break;
         }
 
