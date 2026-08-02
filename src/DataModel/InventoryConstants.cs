@@ -112,7 +112,7 @@ public static class InventoryConstants
     /// <summary>
     /// Index of the first personal store slot.
     /// 12 = number of wearable item slots
-    /// 64 = number of inventory slots
+    /// 64 = number of inventory slots.
     /// </summary>
     public static readonly byte FirstExtensionItemSlotIndex = (byte)(
         EquippableSlotsCount + // 12

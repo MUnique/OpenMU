@@ -51,6 +51,7 @@ internal sealed class Program : IDisposable
     private readonly IDictionary<int, IGameServer> _gameServers = new Dictionary<int, IGameServer>();
     private readonly IList<IManageableServer> _servers = new List<IManageableServer>();
     private readonly Serilog.ILogger _logger;
+    private readonly IConfiguration _configuration;
 
     private IHost? _serverHost;
 
@@ -65,8 +66,10 @@ internal sealed class Program : IDisposable
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json", false, true)
             .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", true, true)
+            .AddEnvironmentVariables()
             .Build();
 
+        this._configuration = configuration;
         this._logger = new LoggerConfiguration()
             .ReadFrom.Configuration(configuration)
             .CreateLogger();
@@ -259,8 +262,9 @@ internal sealed class Program : IDisposable
             .AddSingleton(s =>
                 this.DeterminePersistenceContextProviderAsync(
                     args,
-                    s.GetService<ILoggerFactory>() ?? throw new Exception($"{nameof(ILoggerFactory)} not registered."),
-                    s.GetService<IConfigurationChangeListener>() ?? throw new Exception($"{nameof(IConfigurationChangeListener)} not registered."))
+                    s.GetService<ILoggerFactory>() ?? throw new InvalidOperationException($"{nameof(ILoggerFactory)} not registered."),
+                    s.GetService<IConfigurationChangeListener>() ?? throw new InvalidOperationException($"{nameof(IConfigurationChangeListener)} not registered."),
+                    s.GetService<IConfigurationChangePublisher>() ?? throw new InvalidOperationException($"{nameof(IConfigurationChangePublisher)} not registered."))
                     .WaitAndUnwrapException())
             .AddSingleton<IPersistenceContextProvider>(s => s.GetService<IMigratableDatabaseContextProvider>()!)
             .AddSingleton<Lazy<IPersistenceContextProvider>>(s => new(() => s.GetService<IMigratableDatabaseContextProvider>()!))
@@ -447,15 +451,17 @@ internal sealed class Program : IDisposable
         return parameter.Substring(parameter.IndexOf(':') + 1);
     }
 
-    private async Task<IMigratableDatabaseContextProvider> DeterminePersistenceContextProviderAsync(string[] args, ILoggerFactory loggerFactory, IConfigurationChangeListener changeListener)
+    private async Task<IMigratableDatabaseContextProvider> DeterminePersistenceContextProviderAsync(string[] args, ILoggerFactory loggerFactory, IConfigurationChangeListener changeListener, IConfigurationChangePublisher changePublisher)
     {
         var version = this.GetVersionParameter(args);
 
         IMigratableDatabaseContextProvider contextProvider;
         if (args.Contains("-demo"))
         {
-            contextProvider = new InMemoryPersistenceContextProvider(null); // TODO pass change mediator or whatever
+            var inMemoryProvider = new InMemoryPersistenceContextProvider();
+            contextProvider = inMemoryProvider;
             await this.InitializeDataAsync(version, loggerFactory, contextProvider).ConfigureAwait(false);
+            inMemoryProvider.ChangePublisher = changePublisher;
         }
         else
         {
@@ -472,14 +478,25 @@ internal sealed class Program : IDisposable
         var contextProvider = new PersistenceContextProvider(loggerFactory, changeListener);
         if (reinit || !await contextProvider.DatabaseExistsAsync().ConfigureAwait(false))
         {
-            this._logger.Information("The database is getting (re-)initialized...");
-            using var update = await contextProvider.ReCreateDatabaseAsync().ConfigureAwait(false);
+            // The database can be provisioned externally (e.g. by a Kubernetes operator,
+            // infrastructure-as-code, or a managed cloud database), where the connecting role is
+            // typically not permitted to create or drop databases. Enabling
+            // Database:AssumeExternallyProvisioned keeps the existing database and only builds its
+            // schema via migrations, instead of dropping and recreating it. The default (false)
+            // preserves the original drop-and-recreate behaviour; an explicit -reinit always recreates.
+            var assumeExternallyProvisioned = !reinit
+                && this._configuration.GetValue<bool>("Database:AssumeExternallyProvisioned");
+
+            this._logger.Information(assumeExternallyProvisioned
+                ? "Building the schema on the externally-provisioned database (no drop/create)..."
+                : "The database is getting (re-)initialized...");
+            using var update = await contextProvider.ReCreateDatabaseAsync(dropExistingDatabase: !assumeExternallyProvisioned).ConfigureAwait(false);
             await this.InitializeDataAsync(version, loggerFactory, contextProvider).ConfigureAwait(false);
             this._logger.Information("...initialization finished.");
         }
         else if (!await contextProvider.IsDatabaseUpToDateAsync().ConfigureAwait(false))
         {
-            if (_systemConfiguration?.AutoUpdateSchema is true || await contextProvider.ShouldDoAutoSchemaUpdateAsync())
+            if (_systemConfiguration?.AutoUpdateSchema is true || await contextProvider.ShouldDoAutoSchemaUpdateAsync().ConfigureAwait(false))
             {
                 Console.WriteLine("The database schema needs to be updated before the server can be started. Updating...");
                 await contextProvider.ApplyAllPendingUpdatesAsync().ConfigureAwait(false);

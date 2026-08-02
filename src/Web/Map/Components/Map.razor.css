@@ -1,4 +1,8 @@
 ﻿.livemap {
-    display: grid;
-    grid-template-columns: auto 250px;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.livemap-players {
+    flex: 0 0 500px;
 }

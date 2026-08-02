@@ -2,10 +2,9 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using System.Threading;
-
 namespace MUnique.OpenMU.Persistence.InMemory;
 
+using System.Threading;
 using MUnique.OpenMU.Persistence.BasicModel;
 
 /// <summary>
@@ -56,6 +55,18 @@ public class PlayerInMemoryContext : InMemoryContext, IPlayerContext
     {
         var allAccounts = await this.Provider.GetRepository<Account>().GetAllAsync(cancellationToken).ConfigureAwait(false);
         return allAccounts.OrderBy(a => a.LoginName).Skip(skip).Take(count);
+    }
+
+    /// <inheritdoc/>
+    public async ValueTask<IEnumerable<MUnique.OpenMU.DataModel.Entities.Account>> SearchAccountsAsync(string searchTerm, int skip, int count, CancellationToken cancellationToken = default)
+    {
+        var allAccounts = await this.Provider.GetRepository<Account>().GetAllAsync(cancellationToken).ConfigureAwait(false);
+        return allAccounts
+            .Where(a => a.LoginName.Contains(searchTerm, StringComparison.InvariantCultureIgnoreCase)
+                        || a.Characters.Any(c => c.Name.Contains(searchTerm, StringComparison.InvariantCultureIgnoreCase)))
+            .OrderBy(a => a.LoginName)
+            .Skip(skip)
+            .Take(count);
     }
 
     /// <inheritdoc/>

@@ -252,6 +252,16 @@ internal enum MagicEffectNumber : short
     Blind = 0x49,
 
     /// <summary>
+    /// The requiem (book of neil) effect. Similar to <see cref="Poisoned"/> but damage is every second.
+    /// </summary>
+    Requiem = 0x4A,
+
+    /// <summary>
+    /// The explosion (book of samut) effect. Similar to <see cref="Poisoned"/> but damage is every second.
+    /// </summary>
+    Explosion = 0x4B,
+
+    /// <summary>
     /// The weakness effect, which decreases the physical damage.
     /// </summary>
     Weakness = 0x4C,
@@ -287,6 +297,12 @@ internal enum MagicEffectNumber : short
     WizEnhance = 0x52,
 
     /// <summary>
+    /// The cold effect caused by skills such as Chain Drive and Strike of Destruction.
+    /// Like <see cref="Iced"/>, it slows down movement, but more so.
+    /// </summary>
+    Cold = 0x56,
+
+    /// <summary>
     /// The ignore defense effect of the rage fighter.
     /// </summary>
     IgnoreDefense = 129,
@@ -307,14 +323,24 @@ internal enum MagicEffectNumber : short
     DecreaseBlock = 132,
 
     /// <summary>
+    /// The greater fortitude (swell life proficiency) effect.
+    /// </summary>
+    GreaterFortitudeProficiency = 135,
+
+    /// <summary>
     /// The wiz enhance strengthener effect.
     /// </summary>
-    WizEnhance2 = 138,
+    WizEnhanceStrengthener = 138,
 
     /// <summary>
     /// The wiz enhance mastery effect.
     /// </summary>
-    WizEnhance3 = 139,
+    WizEnhanceMastery = 139,
+
+    /// <summary>
+    /// The critical damage increase mastery effect.
+    /// </summary>
+    CriticalDamageIncreaseMastery = 148,
 
     #region Artificial effects which are not sent to the client, starting at 200.
 

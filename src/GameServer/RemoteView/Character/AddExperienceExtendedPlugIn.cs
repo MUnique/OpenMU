@@ -33,8 +33,10 @@ public class AddExperienceExtendedPlugIn : IAddExperiencePlugIn
     public async ValueTask AddExperienceAsync(int exp, IAttackable? obj, ExperienceType experienceType)
     {
         uint damage = 0;
+
+        // Show damage only for party members.
         if (obj is not null
-            && this._player.Id != obj.LastDeath?.KillerId) // Show Damage only for party members.
+            && this._player.Id != obj.LastDeath?.KillerId)
         {
             damage = (uint)Math.Min(obj.LastDeath?.FinalHit.HealthDamage ?? 0, uint.MaxValue);
         }

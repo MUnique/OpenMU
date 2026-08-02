@@ -484,6 +484,24 @@ public partial class GameConfiguration : MUnique.OpenMU.DataModel.Configuration.
         set => base.DuelConfiguration = value;
     }
 
+    /// <summary>
+    /// Gets the raw object of <see cref="CastleSiegeConfiguration" />.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonPropertyName("castleSiegeConfiguration")]
+    public CastleSiegeConfiguration RawCastleSiegeConfiguration
+    {
+        get => base.CastleSiegeConfiguration as CastleSiegeConfiguration;
+        set => base.CastleSiegeConfiguration = value;
+    }
+
+    /// <inheritdoc/>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Configuration.CastleSiegeConfiguration CastleSiegeConfiguration
+    {
+        get => base.CastleSiegeConfiguration;
+        set => base.CastleSiegeConfiguration = value;
+    }
+
     /// <inheritdoc />
     public override MUnique.OpenMU.DataModel.Configuration.GameConfiguration Clone(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
     {

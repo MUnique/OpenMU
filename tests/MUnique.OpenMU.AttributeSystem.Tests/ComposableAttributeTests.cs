@@ -46,7 +46,7 @@ public class ComposableAttributeTests
     /// Tests if the value of multiple elements is combined in <see cref="ComposableAttribute.Value"/> by using <see cref="AggregateType.AddRaw"/>.
     /// </summary>
     [Test]
-    public void ValueOfMultipleElements()
+    public void ValueOfMultipleRawElements()
     {
         var element1 = new ConstantElement(3000);
         var element2 = new ConstantElement(5000);
@@ -56,10 +56,12 @@ public class ComposableAttributeTests
     }
 
     /// <summary>
-    /// Tests if the value of multiple elements is combined in <see cref="ComposableAttribute.Value"/> by using <see cref="AggregateType.Multiplicate"/> in the second element.
+    /// Tests if the value of multiple elements is combined in <see cref="ComposableAttribute.Value"/>
+    /// by using <see cref="AggregateType.AddRaw"/> in the first element and
+    /// by using <see cref="AggregateType.Multiplicate"/> in the second element.
     /// </summary>
     [Test]
-    public void ValueWithMultiplierElement()
+    public void ValueWithRawAndMultiplierElements()
     {
         var element1 = new ConstantElement(3000);
         var element2 = new SimpleElement { Value = 5, AggregateType = AggregateType.Multiplicate };
@@ -70,11 +72,12 @@ public class ComposableAttributeTests
 
     /// <summary>
     /// Tests if the value of multiple elements is combined in <see cref="ComposableAttribute.Value"/>
+    /// by using <see cref="AggregateType.AddRaw"/> in the first element,
     /// by using <see cref="AggregateType.Multiplicate"/> in the second element and
     /// by using <see cref="AggregateType.AddFinal"/> in the last element.
     /// </summary>
     [Test]
-    public void ValueWithMultiplierAndFinalElement()
+    public void ValueWithRawMultiplierAndFinalElements()
     {
         var element1 = new ConstantElement(3000);
         var element2 = new SimpleElement { Value = 5, AggregateType = AggregateType.Multiplicate };
@@ -83,6 +86,53 @@ public class ComposableAttributeTests
         this._composableAttribute.AddElement(element2);
         this._composableAttribute.AddElement(element3);
         Assert.That(this._composableAttribute.Value, Is.EqualTo((element1.Value * element2.Value) + element3.Value));
+    }
+
+    /// <summary>
+    /// Tests if the value of multiple elements is combined in <see cref="ComposableAttribute.Value"/>
+    /// by using one <see cref="AggregateType.AddRaw"/> element and
+    /// by using several <see cref="AggregateType.Maximum"/> elements.
+    /// </summary>
+    [Test]
+    public void ValueWithRawAndMultipleMaximumElements()
+    {
+        var element1 = new ConstantElement(3000);
+        var element2 = new SimpleElement { Value = 5, AggregateType = AggregateType.Maximum };
+        var element3 = new SimpleElement { Value = 1000, AggregateType = AggregateType.Maximum };
+        this._composableAttribute.AddElement(element1);
+        this._composableAttribute.AddElement(element2);
+        this._composableAttribute.AddElement(element3);
+        Assert.That(this._composableAttribute.Value, Is.EqualTo(element1.Value + Math.Max(element2.Value, element3.Value)));
+    }
+
+    /// <summary>
+    /// Tests if the value of multiple elements is combined in <see cref="ComposableAttribute.Value"/>
+    /// by using <see cref="AggregateType.Multiplicate"/> elements exclusively.
+    /// A <see cref="AggregateType.AddRaw"/> element of value 1 should be assumed.
+    /// </summary>
+    [Test]
+    public void ValueWithMultiplierElementsOnly()
+    {
+        var element1 = new SimpleElement { Value = 5, AggregateType = AggregateType.Multiplicate };
+        var element2 = new SimpleElement { Value = 1000, AggregateType = AggregateType.Multiplicate };
+        this._composableAttribute.AddElement(element1);
+        this._composableAttribute.AddElement(element2);
+        Assert.That(this._composableAttribute.Value, Is.EqualTo(element1.Value * element2.Value));
+    }
+
+    /// <summary>
+    /// Tests if the value of multiple elements is combined in <see cref="ComposableAttribute.Value"/>
+    /// by using <see cref="AggregateType.Multiplicate"/> in the first element and
+    /// by using <see cref="AggregateType.AddFinal"/> in the second element.
+    /// </summary>
+    [Test]
+    public void ValueWithMultiplierAndFinalElements()
+    {
+        var element1 = new SimpleElement { Value = 5, AggregateType = AggregateType.Multiplicate };
+        var element2 = new SimpleElement { Value = 1000, AggregateType = AggregateType.AddFinal };
+        this._composableAttribute.AddElement(element1);
+        this._composableAttribute.AddElement(element2);
+        Assert.That(this._composableAttribute.Value, Is.EqualTo(1000));
     }
 
     /// <summary>

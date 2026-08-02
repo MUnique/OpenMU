@@ -119,11 +119,13 @@ internal abstract class SkillsInitializerBase : InitializerBase
     /// <param name="delayBetweenHits">The delay between hits.</param>
     /// <param name="minimumHitsPerTarget">The minimum hits per target.</param>
     /// <param name="maximumHitsPerTarget">The maximum hits per target.</param>
+    /// <param name="minimumHitsPerAttack">The minimum hits per attack.</param>
     /// <param name="maximumHitsPerAttack">The maximum hits per attack.</param>
     /// <param name="hitChancePerDistanceMultiplier">The hit chance per distance multiplier.</param>
     /// <param name="useTargetAreaFilter">If set to <c>true</c>, the skill should use a target area filter.</param>
     /// <param name="targetAreaDiameter">The target area diameter.</param>
     /// <param name="projectileCount">The number of projectiles/arrows. When greater than 1, they are evenly distributed within the frustum.</param>
+    /// <param name="effectRange">The effect range of the skill, from the target area center.</param>
     protected void AddAreaSkillSettings(
         SkillNumber skillNumber,
         bool useFrustumFilter,
@@ -135,11 +137,13 @@ internal abstract class SkillsInitializerBase : InitializerBase
         TimeSpan delayBetweenHits = default,
         int minimumHitsPerTarget = 1,
         int maximumHitsPerTarget = 1,
+        int minimumHitsPerAttack = default,
         int maximumHitsPerAttack = default,
         float hitChancePerDistanceMultiplier = 1.0f,
         bool useTargetAreaFilter = false,
         float targetAreaDiameter = default,
-        int projectileCount = 1)
+        int projectileCount = 1,
+        int effectRange = default)
     {
         var skill = this.GameConfiguration.Skills.First(s => s.Number == (short)skillNumber);
         var areaSkillSettings = this.Context.CreateNew<AreaSkillSettings>();
@@ -156,9 +160,11 @@ internal abstract class SkillsInitializerBase : InitializerBase
         areaSkillSettings.DelayBetweenHits = delayBetweenHits;
         areaSkillSettings.MinimumNumberOfHitsPerTarget = minimumHitsPerTarget;
         areaSkillSettings.MaximumNumberOfHitsPerTarget = maximumHitsPerTarget;
+        areaSkillSettings.MinimumNumberOfHitsPerAttack = minimumHitsPerAttack;
         areaSkillSettings.MaximumNumberOfHitsPerAttack = maximumHitsPerAttack;
         areaSkillSettings.HitChancePerDistanceMultiplier = hitChancePerDistanceMultiplier;
         areaSkillSettings.ProjectileCount = projectileCount;
+        areaSkillSettings.EffectRange = effectRange;
     }
 
     private void ApplyElementalModifier(ElementalType elementalModifier, Skill skill)
@@ -170,17 +176,35 @@ internal abstract class SkillsInitializerBase : InitializerBase
             return;
         }
 
+        if ((SkillNumber)skill.Number is SkillNumber.Pollution)
+        {
+            skill.ElementalModifierTarget = Stats.LightningResistance.GetPersistent(this.GameConfiguration);
+            skill.SkipElementalModifier = true;
+            skill.MagicEffectDef = this.CreateEffect(ElementalType.Ice, MagicEffectNumber.Iced, Stats.IsIced, 2);
+            return;
+        }
+
+        if ((SkillNumber)skill.Number is SkillNumber.ChainDrive)
+        {
+            skill.ElementalModifierTarget = Stats.IceResistance.GetPersistent(this.GameConfiguration);
+            skill.SkipElementalModifier = true;
+            skill.MagicEffectDef = this.CreateEffect(ElementalType.Ice, MagicEffectNumber.Cold, Stats.IsIced, 10, 0.4f);
+            return;
+        }
+
+        if ((SkillNumber)skill.Number is SkillNumber.StrikeofDestruction)
+        {
+            skill.ElementalModifierTarget = Stats.IceResistance.GetPersistent(this.GameConfiguration);
+            skill.SkipElementalModifier = true;
+            skill.MagicEffectDef = this.CreateEffect(ElementalType.Ice, MagicEffectNumber.Cold, Stats.IsIced, 10);
+            return;
+        }
+
         switch (elementalModifier)
         {
             case ElementalType.Ice:
                 skill.ElementalModifierTarget = Stats.IceResistance.GetPersistent(this.GameConfiguration);
                 skill.MagicEffectDef = this.CreateEffect(ElementalType.Ice, MagicEffectNumber.Iced, Stats.IsIced, 10);
-
-                if ((SkillNumber)skill.Number is SkillNumber.ChainDrive)
-                {
-                    skill.MagicEffectDef.Chance = this.Context.CreateNew<PowerUpDefinitionValue>();
-                    skill.MagicEffectDef.Chance.ConstantValue.Value = 0.4f;
-                }
 
                 break;
             case ElementalType.Poison:
@@ -193,15 +217,30 @@ internal abstract class SkillsInitializerBase : InitializerBase
                 break;
             case ElementalType.Lightning:
                 skill.ElementalModifierTarget = Stats.LightningResistance.GetPersistent(this.GameConfiguration);
+                if ((SkillNumber)skill.Number is SkillNumber.LightningShock || (SkillNumber)skill.Number is SkillNumber.Earthshake)
+                {
+                    skill.SkipElementalModifier = true;
+                }
+
                 break;
             case ElementalType.Fire:
                 skill.ElementalModifierTarget = Stats.FireResistance.GetPersistent(this.GameConfiguration);
+                if ((SkillNumber)skill.Number is SkillNumber.Explosion223)
+                {
+                    skill.SkipElementalModifier = true;
+                }
+
                 break;
             case ElementalType.Earth:
                 skill.ElementalModifierTarget = Stats.EarthResistance.GetPersistent(this.GameConfiguration);
                 break;
             case ElementalType.Wind:
                 skill.ElementalModifierTarget = Stats.WindResistance.GetPersistent(this.GameConfiguration);
+                if ((SkillNumber)skill.Number is SkillNumber.Requiem)
+                {
+                    skill.SkipElementalModifier = true;
+                }
+
                 break;
             case ElementalType.Water:
                 skill.ElementalModifierTarget = Stats.WaterResistance.GetPersistent(this.GameConfiguration);
@@ -212,12 +251,13 @@ internal abstract class SkillsInitializerBase : InitializerBase
         }
     }
 
-    private MagicEffectDefinition CreateEffect(ElementalType type, MagicEffectNumber effectNumber, AttributeDefinition targetAttribute, float durationInSeconds)
+    private MagicEffectDefinition CreateEffect(ElementalType type, MagicEffectNumber effectNumber, AttributeDefinition targetAttribute, float durationInSeconds, float chance = 0)
     {
         if (this.GameConfiguration.MagicEffects.FirstOrDefault(
                 e => e.Number == (short)effectNumber
                      && e.SubType == (byte)(0xFF - type)
                      && Equals(e.Duration?.ConstantValue.Value, durationInSeconds)
+                     && Equals(e.Chance?.ConstantValue.Value, chance)
                      && e.PowerUpDefinitions.FirstOrDefault()?.TargetAttribute == targetAttribute) is { } existingEffect)
         {
             return existingEffect;
@@ -237,6 +277,30 @@ internal abstract class SkillsInitializerBase : InitializerBase
         powerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
         powerUpDefinition.Boost.ConstantValue.Value = 1;
         powerUpDefinition.TargetAttribute = targetAttribute.GetPersistent(this.GameConfiguration);
+        if (targetAttribute == Stats.IsIced)
+        {
+            var movementSpeedFactorPowerUp = this.Context.CreateNew<PowerUpDefinition>();
+            effect.PowerUpDefinitions.Add(movementSpeedFactorPowerUp);
+            movementSpeedFactorPowerUp.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+            movementSpeedFactorPowerUp.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
+            movementSpeedFactorPowerUp.TargetAttribute = Stats.MovementSpeedFactor.GetPersistent(this.GameConfiguration);
+
+            if (effectNumber == MagicEffectNumber.Cold)
+            {
+                movementSpeedFactorPowerUp.Boost.ConstantValue.Value = MovementSpeedConstants.ColdMovementSpeedFactor;
+            }
+            else
+            {
+                movementSpeedFactorPowerUp.Boost.ConstantValue.Value = MovementSpeedConstants.IcedMovementSpeedFactor;
+            }
+        }
+
+        if (chance > 0)
+        {
+            effect.Chance = this.Context.CreateNew<PowerUpDefinitionValue>();
+            effect.Chance.ConstantValue.Value = chance;
+        }
+
         return effect;
     }
 

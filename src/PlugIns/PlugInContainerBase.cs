@@ -42,7 +42,7 @@ public class PlugInContainerBase<TPlugIn> : IPlugInContainer<TPlugIn>
     /// <summary>
     /// Gets the reader writer lock which is used to add and remove plugins.
     /// </summary>
-    protected AsyncReaderWriterLock Lock { get; } = new ();
+    protected AsyncReaderWriterLock Lock { get; } = new();
 
     /// <summary>
     /// Gets the currently active plug ins.

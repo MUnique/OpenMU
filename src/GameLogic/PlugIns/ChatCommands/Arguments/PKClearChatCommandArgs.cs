@@ -1,4 +1,4 @@
-﻿// <copyright file="PKClearChatCommandArgs.cs" company="MUnique">
+// <copyright file="PKClearChatCommandArgs.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -12,6 +12,6 @@ public class PkClearChatCommandArgs : ArgumentsBase
     /// <summary>
     /// Gets or sets the character name.
     /// </summary>
-    [Argument("char")]
+    [Argument("char", false)]
     public string? CharacterName { get; set; }
 }

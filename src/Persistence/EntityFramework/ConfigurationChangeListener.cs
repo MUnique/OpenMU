@@ -4,11 +4,11 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
+using System.IO;
 using Microsoft.EntityFrameworkCore.Metadata;
 using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Interfaces;
-using System.IO;
 
 /// <summary>
 /// Class which listens to changes within the <see cref="GameConfiguration"/>,

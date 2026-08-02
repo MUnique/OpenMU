@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 
 using System.Reflection;
 using System.Threading;
-using Blazored.Modal.Services;
 using Blazored.Toast.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
@@ -18,8 +17,9 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
 using MUnique.OpenMU.Web.Shared;
-using MUnique.OpenMU.Web.Shared.Services;
 using MUnique.OpenMU.Web.Shared.Components;
+using MUnique.OpenMU.Web.Shared.Components.Modal;
+using MUnique.OpenMU.Web.Shared.Services;
 
 /// <summary>
 /// Abstract common base class for an edit page.
@@ -82,6 +82,12 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
     /// </summary>
     [Inject]
     public IToastService ToastService { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the loading overlay service.
+    /// </summary>
+    [Inject]
+    public LoadingOverlayService LoadingOverlay { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the configuration data source.
@@ -187,16 +193,17 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
         var editorsMarkup = this.GetEditorsMarkup();
 
         builder.AddMarkupContent(10, $"<h1>{Resources.Edit} {this.Type!.GetTypeCaption()}</h1>{downloadMarkup}{editorsMarkup}\r\n");
-        this.RenderRefreshButton(builder);
 
         builder.OpenComponent<CascadingValue<IContext>>(11);
         builder.AddAttribute(12, nameof(CascadingValue<IContext>.Value), this._persistenceContext);
         builder.AddAttribute(13, nameof(CascadingValue<IContext>.IsFixed), this._isOwningContext);
-        builder.AddAttribute(14, nameof(CascadingValue<IContext>.ChildContent), (RenderFragment)(builder2 =>
+        RenderFragment childContent = builder2 =>
         {
             var sequence = 14;
             this.AddFormToRenderTree(builder2, ref sequence);
-        }));
+        };
+
+        builder.AddAttribute(14, nameof(CascadingValue<IContext>.ChildContent), childContent);
 
         builder.CloseComponent();
     }
@@ -207,7 +214,6 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
         this._navigationLockDisposable = this.NavigationManager.RegisterLocationChangingHandler(this.OnBeforeInternalNavigationAsync);
         return base.OnInitializedAsync();
     }
-
 
     /// <summary>
     /// Adds the form to the render tree.
@@ -233,12 +239,11 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
             {
                 if (this._loadingState != DataLoadingState.Loaded)
                 {
-                    this._modalDisposable = this.ModalService.ShowLoadingIndicator();
+                    this._modalDisposable = this.LoadingOverlay.ShowLoadingIndicator();
                     this.StateHasChanged();
                 }
             }).ConfigureAwait(false);
         }
-
 
         await base.OnAfterRenderAsync(firstRender).ConfigureAwait(true);
     }
@@ -274,23 +279,18 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
     /// </summary>
     protected async Task RefreshAsync()
     {
+        var isConfirmed = await this.JavaScript.InvokeAsync<bool>("window.confirm", Resources.UnsavedChangesQuestion).ConfigureAwait(true);
+        if (!isConfirmed)
+        {
+            return;
+        }
+
         await this.EditDataSource.ForceDiscardChangesAsync().ConfigureAwait(true);
         this._loadingState = DataLoadingState.LoadingStarted;
         var cts = new CancellationTokenSource();
         this._disposeCts = cts;
         this._loadTask = Task.Run(() => this.LoadDataAsync(cts.Token), cts.Token);
         this.StateHasChanged();
-    }
-
-    private void RenderRefreshButton(RenderTreeBuilder builder)
-    {
-        builder.OpenElement(100, "p");
-        builder.OpenElement(101, "button");
-        builder.AddAttribute(102, "class", "btn btn-secondary");
-        builder.AddAttribute(103, "onclick", EventCallback.Factory.Create(this, this.RefreshAsync));
-        builder.AddContent(104, Resources.Refresh);
-        builder.CloseElement();
-        builder.CloseElement();
     }
 
     /// <summary>
@@ -315,8 +315,9 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
     {
         if (this._persistenceContext?.HasChanges is true)
         {
-            var isConfirmed = await this.JavaScript.InvokeAsync<bool>("window.confirm",
-                    Resources.UnsavedChangesQuestion)
+            var isConfirmed = await this.JavaScript.InvokeAsync<bool>(
+                "window.confirm",
+                Resources.UnsavedChangesQuestion)
                 .ConfigureAwait(true);
 
             if (!isConfirmed)

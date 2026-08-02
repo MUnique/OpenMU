@@ -49,7 +49,7 @@ public class ConnectServerContainer : ServerContainerBase, IEnumerable<IConnectS
             .ConfigureAwait(false);
 
         var newConnectServer = this.InitializeConnectServer(definition ?? throw new InvalidOperationException($"ConnectServerDefinition with id {connectServerDefinitionId} was not found."));
-        if(this._observers.TryGetValue(definition.Client!, out var observer))
+        if (this._observers.TryGetValue(definition.Client!, out var observer))
         {
             observer.PullRegistrations(newConnectServer);
         }

@@ -9,7 +9,6 @@ using MUnique.OpenMU.DataModel;
 /// <summary>
 /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.AttributeSystem.AttributeDefinition"/>.
 /// </summary>
-
 internal partial class AttributeDefinition :
     IAssignable,
     IAssignable<MUnique.OpenMU.AttributeSystem.AttributeDefinition>,
@@ -28,7 +27,7 @@ internal partial class AttributeDefinition :
     {
         if (other is AttributeSystem.AttributeDefinition typedOther)
         {
-            AssignValuesOf(typedOther, gameConfiguration);
+            this.AssignValuesOf(typedOther, gameConfiguration);
         }
     }
 

@@ -1,4 +1,4 @@
-﻿// <copyright file="GameConfigurationInitializer.cs" company="MUnique">
+// <copyright file="GameConfigurationInitializer.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -80,6 +80,7 @@ public class GameConfigurationInitializer : GameConfigurationInitializerBase
         new InvasionMobsInitialization(this.Context, this.GameConfiguration).Initialize();
         new GameMapsInitializer(this.Context, this.GameConfiguration).Initialize();
         this.AssignCharacterClassHomeMaps();
+        this.WireRenaDropToEventMaps();
         new SocketSystem(this.Context, this.GameConfiguration).Initialize();
         new ChaosMixes(this.Context, this.GameConfiguration).Initialize();
         new Gates(this.Context, this.GameConfiguration).Initialize();
@@ -88,6 +89,31 @@ public class GameConfigurationInitializer : GameConfigurationInitializerBase
         new DevilSquareInitializer(this.Context, this.GameConfiguration).Initialize();
         new BloodCastleInitializer(this.Context, this.GameConfiguration).Initialize();
         new ChaosCastleInitializer(this.Context, this.GameConfiguration).Initialize();
+        new CastleSiegeInitializer(this.Context, this.GameConfiguration).Initialize();
+    }
+
+    /// <summary>
+    /// Wires the Rena <see cref="DropItemGroup"/> (created in <see cref="Misc"/>) to the Blood Castle
+    /// and Devil Square 5-7 event maps, so it only drops there instead of everywhere.
+    /// </summary>
+    private void WireRenaDropToEventMaps()
+    {
+        var renaDropGroup = this.GameConfiguration.DropItemGroups
+            .FirstOrDefault(g => g.PossibleItems.Any(i => i.Group == 14 && i.Number == 21));
+        if (renaDropGroup is null)
+        {
+            return;
+        }
+
+        var eventMaps = this.GameConfiguration.Maps
+            .Where(m => m.Name.Value?.StartsWith("Blood Castle") is true || m.Name.Value is "Devil Square 5" or "Devil Square 6" or "Devil Square 7");
+        foreach (var map in eventMaps)
+        {
+            if (!map.DropItemGroups.Contains(renaDropGroup))
+            {
+                map.DropItemGroups.Add(renaDropGroup);
+            }
+        }
     }
 
     private void CreateJewelMixes()

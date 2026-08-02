@@ -4,8 +4,8 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework.Json;
 
-using MUnique.OpenMU.PlugIns;
 using System.Text.Json;
+using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// A deserializer which parses the json retrieved from the postgres database by using a query built by the <see cref="JsonQueryBuilder"/>.

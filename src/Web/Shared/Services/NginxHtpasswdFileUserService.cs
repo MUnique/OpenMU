@@ -5,7 +5,7 @@
 namespace MUnique.OpenMU.Web.Shared.Services;
 
 using System.IO;
-using Blazored.Modal.Services;
+using MUnique.OpenMU.Web.Shared.Components.Modal;
 
 /// <summary>
 /// Implementation of <see cref="IUserService"/> which modifies the .htpasswd file of the nginx basic authentication.

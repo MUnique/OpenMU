@@ -21,6 +21,13 @@ internal abstract class KalimaBase : BaseMapInitializer
     {
     }
 
+    /// <inheritdoc />
+    protected override void AdditionalInitialization(GameMapDefinition mapDefinition)
+    {
+        base.AdditionalInitialization(mapDefinition);
+        this.AddUnderwaterMovementPowerUp();
+    }
+
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
     {

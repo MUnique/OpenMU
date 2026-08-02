@@ -1,7 +1,16 @@
 @using MUnique.OpenMU.Web.AdminPanel.Components.Layout
+@using MUnique.OpenMU.Web.Shared.Services
+
+@code {
+    [CascadingParameter]
+    public HttpContext? HttpContext { get; set; }
+
+    private string CurrentTheme =>
+        ThemeController.NormalizeTheme(this.HttpContext?.Request.Cookies[ThemeController.CookieName]);
+}
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="@this.CurrentTheme">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,6 +18,7 @@
     <base href="/" />
     <ResourcePreloader />
     <link href="@Assets["MUnique.OpenMU.Startup.styles.css"]" rel="stylesheet" />
+    <link href="@Assets["_content/MUnique.OpenMU.Web.AdminPanel/MUnique.OpenMU.Web.AdminPanel.styles.css"]" rel="stylesheet" />
     @foreach (var stylesheetSrc in Web.AdminPanel.Exports.Stylesheets)
     {
       <link href="@Assets[stylesheetSrc]" rel="stylesheet" />

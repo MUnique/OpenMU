@@ -9,7 +9,7 @@ using MUnique.OpenMU.Pathfinding;
 using Nito.AsyncEx;
 
 /// <summary>
-/// The implementation of a non-player-character (Monster) which can not be attacked or attack.
+/// The implementation of a non-player-character (Monster) which cannot be attacked or attack.
 /// </summary>
 public class NonPlayerCharacter : AsyncDisposable, IObservable, IRotatable, ILocateable, IHasBucketInformation
 {
@@ -66,6 +66,11 @@ public class NonPlayerCharacter : AsyncDisposable, IObservable, IRotatable, ILoc
 
     /// <inheritdoc/>
     public Bucket<ILocateable>? OldBucket { get; set; }
+
+    /// <summary>
+    /// Gets a value indicating whether this instance can spawn in a safe zone.
+    /// </summary>
+    protected virtual bool CanSpawnInSafezone => this.Definition.ObjectKind != NpcObjectKind.Monster && this.Definition.ObjectKind != NpcObjectKind.Trap;
 
     /// <summary>
     /// Initializes this instance.
@@ -183,11 +188,6 @@ public class NonPlayerCharacter : AsyncDisposable, IObservable, IRotatable, ILoc
     {
         throw new NotSupportedException("NPCs can't be moved");
     }
-
-    /// <summary>
-    /// Gets a value indicating whether this instance can spawn in a safe zone.
-    /// </summary>
-    protected virtual bool CanSpawnInSafezone => this.Definition.ObjectKind != NpcObjectKind.Monster && this.Definition.ObjectKind != NpcObjectKind.Trap;
 
     /// <summary>
     /// Gets the spawn direction.

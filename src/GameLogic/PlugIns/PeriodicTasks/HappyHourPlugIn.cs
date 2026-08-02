@@ -1,4 +1,4 @@
-﻿// <copyright file="HappyHourPlugIn.cs" company="MUnique">
+// <copyright file="HappyHourPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -124,7 +124,7 @@ public class HappyHourPlugIn : PeriodicTaskBasePlugIn<HappyHourConfiguration, Pe
 
         try
         {
-            var message = configuration.Message.GetTranslation(player.Culture) is { Length: > 0 } translation ? translation : player.GetLocalizedMessage(nameof(PlayerMessage.HappyHourEventHasBeenStarted));
+            var message = configuration.StartMessage.GetTranslation(player.Culture) is { Length: > 0 } translation ? translation : player.GetLocalizedMessage(nameof(PlayerMessage.HappyHourEventHasBeenStarted));
             await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, Interfaces.MessageType.GoldenCenter)).ConfigureAwait(false);
         }
         catch (Exception ex)

@@ -4,8 +4,8 @@
 
 namespace MUnique.OpenMU.LoginServer;
 
-using Nito.AsyncEx;
 using MUnique.OpenMU.Interfaces;
+using Nito.AsyncEx;
 
 /// <summary>
 /// The login server which keeps track of connected accounts in-memory.
@@ -14,7 +14,7 @@ public class LoginServer : ILoginServer
 {
     private readonly Dictionary<string, byte> _connectedAccounts = new();
 
-    private readonly AsyncLock _syncRoot = new ();
+    private readonly AsyncLock _syncRoot = new();
 
     /// <inheritdoc/>
     public async ValueTask<Dictionary<string, byte>> GetSnapshotAsync()

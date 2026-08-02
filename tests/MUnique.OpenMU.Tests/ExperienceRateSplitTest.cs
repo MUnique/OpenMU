@@ -15,9 +15,16 @@ using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
 
+/// <summary>
+/// Tests for experience rate splitting between normal and master experience.
+/// </summary>
 [TestFixture]
 public class ExperienceRateSplitTest
 {
+    /// <summary>
+    /// Verifies that master classes receive master experience at the global master rate,
+    /// while non-master classes receive normal experience.
+    /// </summary>
     [Test]
     public async ValueTask SoloKillUsesMasterExperienceRateForMasterClassesAsync()
     {
@@ -46,6 +53,9 @@ public class ExperienceRateSplitTest
         Assert.That(normalPlayer.SelectedCharacter!.Experience, Is.EqualTo(normalGained));
     }
 
+    /// <summary>
+    /// Verifies that the server experience rate is correctly applied to master experience gains.
+    /// </summary>
     [Test]
     public async ValueTask SoloKillAppliesServerExperienceRateToMasterExperienceAsync()
     {
@@ -72,6 +82,9 @@ public class ExperienceRateSplitTest
         Assert.That(highRateGain, Is.GreaterThan(baseRateGain * 2));
     }
 
+    /// <summary>
+    /// Verifies that party experience distribution applies master experience rates for master class members.
+    /// </summary>
     [Test]
     public async ValueTask PartyDistributionUsesMasterExperienceRateForMasterMembersAsync()
     {
@@ -84,7 +97,7 @@ public class ExperienceRateSplitTest
         var masterPlayer = await this.CreatePlayerAsync(context, level: 3, totalLevel: 2, isMasterClass: true).ConfigureAwait(false);
         var normalPlayer = await this.CreatePlayerAsync(context, level: 2, totalLevel: 2, isMasterClass: false).ConfigureAwait(false);
 
-        var party = new Party(5, new NullLogger<Party>());
+        var party = new Party(new PartyManager(5, new NullLogger<Party>()), 5, new NullLogger<Party>());
         await party.AddAsync(masterPlayer).ConfigureAwait(false);
         await party.AddAsync(normalPlayer).ConfigureAwait(false);
         await masterPlayer.AddObserverAsync(normalPlayer).ConfigureAwait(false);
@@ -100,6 +113,156 @@ public class ExperienceRateSplitTest
         Assert.That(masterGained, Is.GreaterThan(normalGained * 3));
     }
 
+    /// <summary>
+    /// Verifies that a party member at the maximum level without the master quest still gets a
+    /// money basis. It gains no experience, but the money drop is derived from that value, and a
+    /// solo kill returns it too - so returning zero would leave it without any zen in a party.
+    /// </summary>
+    [Test]
+    public async ValueTask MaxLevelMemberWithoutMasterQuestStillHasMoneyBasisAsync()
+    {
+        var context = this.CreateGameServerContext(
+            normalExperienceRate: 1.0f,
+            globalMasterExperienceRate: 1.0f,
+            maximumLevel: 3,
+            maximumMasterLevel: 200);
+
+        var maxedPlayer = await this.CreatePlayerAsync(context, level: 3, totalLevel: 3, isMasterClass: false).ConfigureAwait(false);
+        var levelingPlayer = await this.CreatePlayerAsync(context, level: 2, totalLevel: 2, isMasterClass: false).ConfigureAwait(false);
+
+        var party = new Party(new PartyManager(5, new NullLogger<Party>()), 5, new NullLogger<Party>());
+        await party.AddAsync(maxedPlayer).ConfigureAwait(false);
+        await party.AddAsync(levelingPlayer).ConfigureAwait(false);
+        await maxedPlayer.AddObserverAsync(levelingPlayer).ConfigureAwait(false);
+
+        var killedObject = CreateKilledObject(level: 5);
+        var shares = await party.DistributeExperienceAfterKillAsync(killedObject.Object, maxedPlayer).ConfigureAwait(false);
+
+        var maxedShare = shares.First(s => s.Player == maxedPlayer);
+        Assert.That(maxedShare.Experience, Is.GreaterThan(0));
+
+        // It still must not actually gain any experience.
+        Assert.That(maxedPlayer.SelectedCharacter!.Experience, Is.EqualTo(0));
+        Assert.That(maxedPlayer.SelectedCharacter.MasterExperience, Is.EqualTo(0));
+    }
+
+    /// <summary>
+    /// Verifies that concurrent normal experience gains cannot exceed the maximum level.
+    /// </summary>
+    [Test]
+    public async ValueTask ConcurrentNormalExperienceCantExceedMaximumLevelAsync()
+    {
+        var context = this.CreateGameServerContext(
+            normalExperienceRate: 1.0f,
+            globalMasterExperienceRate: 1.0f,
+            maximumLevel: 2,
+            maximumMasterLevel: 200);
+
+        var player = await this.CreatePlayerAsync(context, level: 1, totalLevel: 1, isMasterClass: false).ConfigureAwait(false);
+        player.SelectedCharacter!.Experience = context.ExperienceTable[2] - 1;
+
+        var initialLevelUpPoints = player.SelectedCharacter.LevelUpPoints;
+        var pointsPerLevelUp = (int)player.Attributes![Stats.PointsPerLevelUp];
+
+        await Task.WhenAll(
+            player.AddExperienceAsync(10, null).AsTask(),
+            player.AddExperienceAsync(10, null).AsTask()).ConfigureAwait(false);
+
+        Assert.That((int)player.Attributes[Stats.Level], Is.EqualTo(2));
+        Assert.That(player.SelectedCharacter.LevelUpPoints, Is.EqualTo(initialLevelUpPoints + pointsPerLevelUp));
+    }
+
+    /// <summary>
+    /// Verifies that concurrent master experience stays within configured maximum bounds.
+    /// </summary>
+    [Test]
+    public async ValueTask ConcurrentMasterExperienceStaysWithinConfiguredMaximumBoundsAsync()
+    {
+        var context = this.CreateGameServerContext(
+            normalExperienceRate: 1.0f,
+            globalMasterExperienceRate: 1.0f,
+            maximumLevel: 400,
+            maximumMasterLevel: 1);
+
+        var player = await this.CreatePlayerAsync(context, level: 400, totalLevel: 400, isMasterClass: true).ConfigureAwait(false);
+        player.Attributes![Stats.MasterLevel] = 0;
+        player.SelectedCharacter!.MasterExperience = context.MasterExperienceTable[1] - 1;
+        var maxMasterExperience = context.MasterExperienceTable[context.Configuration.MaximumMasterLevel];
+
+        await Task.WhenAll(
+            player.AddMasterExperienceAsync(10, null).AsTask(),
+            player.AddMasterExperienceAsync(10, null).AsTask()).ConfigureAwait(false);
+
+        Assert.That((int)player.Attributes[Stats.MasterLevel], Is.LessThanOrEqualTo(context.Configuration.MaximumMasterLevel));
+        Assert.That(player.SelectedCharacter.MasterExperience, Is.LessThanOrEqualTo(maxMasterExperience));
+    }
+
+    /// <summary>
+    /// Verifies that experience overflow is applied below max when not prevented.
+    /// </summary>
+    [Test]
+    public async ValueTask OverflowIsAppliedBelowMaxWhenNotPreventedAsync()
+    {
+        var context = this.CreateGameServerContext(
+            normalExperienceRate: 1.0f,
+            globalMasterExperienceRate: 1.0f,
+            maximumLevel: 10,
+            maximumMasterLevel: 200);
+
+        var player = await this.CreatePlayerAsync(context, level: 1, totalLevel: 1, isMasterClass: false).ConfigureAwait(false);
+        var requiredForLevel2 = context.ExperienceTable[2] - player.SelectedCharacter!.Experience;
+
+        await player.AddExperienceAsync((int)requiredForLevel2 + 10, null).ConfigureAwait(false);
+
+        Assert.That((int)player.Attributes![Stats.Level], Is.EqualTo(2));
+        Assert.That(player.SelectedCharacter.Experience, Is.EqualTo(context.ExperienceTable[2] + 10));
+    }
+
+    /// <summary>
+    /// Verifies that experience overflow is discarded below max when prevented.
+    /// </summary>
+    [Test]
+    public async ValueTask OverflowIsDiscardedBelowMaxWhenPreventedAsync()
+    {
+        var context = this.CreateGameServerContext(
+            normalExperienceRate: 1.0f,
+            globalMasterExperienceRate: 1.0f,
+            maximumLevel: 10,
+            maximumMasterLevel: 200,
+            preventExperienceOverflow: true);
+
+        var player = await this.CreatePlayerAsync(context, level: 1, totalLevel: 1, isMasterClass: false).ConfigureAwait(false);
+        var requiredForLevel2 = context.ExperienceTable[2] - player.SelectedCharacter!.Experience;
+
+        await player.AddExperienceAsync((int)requiredForLevel2 + 10, null).ConfigureAwait(false);
+
+        Assert.That((int)player.Attributes![Stats.Level], Is.EqualTo(2));
+        Assert.That(player.SelectedCharacter.Experience, Is.EqualTo(context.ExperienceTable[2]));
+    }
+
+    /// <summary>
+    /// Verifies that experience always stops at the maximum level regardless of the overflow setting.
+    /// </summary>
+    /// <param name="preventExperienceOverflow">Whether to prevent experience overflow.</param>
+    [TestCase(false)]
+    [TestCase(true)]
+    public async ValueTask ExperienceAlwaysStopsAtMaximumLevelRegardlessOfOverflowSettingAsync(bool preventExperienceOverflow)
+    {
+        var context = this.CreateGameServerContext(
+            normalExperienceRate: 1.0f,
+            globalMasterExperienceRate: 1.0f,
+            maximumLevel: 2,
+            maximumMasterLevel: 200,
+            preventExperienceOverflow);
+
+        var player = await this.CreatePlayerAsync(context, level: 1, totalLevel: 1, isMasterClass: false).ConfigureAwait(false);
+
+        await player.AddExperienceAsync(int.MaxValue, null).ConfigureAwait(false);
+        await player.AddExperienceAsync(int.MaxValue, null).ConfigureAwait(false);
+
+        Assert.That((int)player.Attributes![Stats.Level], Is.EqualTo(2));
+    }
+
     private static Mock<IAttackable> CreateKilledObject(float level)
     {
         var attributes = new Mock<IAttributeSystem>();
@@ -113,9 +276,12 @@ public class ExperienceRateSplitTest
 
     private async ValueTask<Player> CreatePlayerAsync(IGameContext context, short level, float totalLevel, bool isMasterClass)
     {
-        var player = await TestHelper.CreatePlayerAsync(context).ConfigureAwait(false);
+        var player = await PlayerTestHelper.CreatePlayerAsync(context).ConfigureAwait(false);
         player.SelectedCharacter!.CharacterClass!.IsMasterClass = isMasterClass;
         player.Attributes![Stats.Level] = level;
+        player.Attributes[Stats.MasterLevel] = 0;
+        player.Attributes[Stats.PointsPerLevelUp] = 1;
+        player.Attributes[Stats.MasterPointsPerLevelUp] = 1;
         player.Attributes.AddElement(new SimpleElement(1.0f, AggregateType.AddRaw), Stats.ExperienceRate);
         player.Attributes.AddElement(new SimpleElement(1.0f, AggregateType.AddRaw), Stats.MasterExperienceRate);
         player.Attributes.AddElement(new SimpleElement(totalLevel, AggregateType.AddRaw), Stats.TotalLevel);
@@ -124,13 +290,19 @@ public class ExperienceRateSplitTest
         return player;
     }
 
-    private IGameServerContext CreateGameServerContext(float normalExperienceRate, float globalMasterExperienceRate, short maximumLevel, short maximumMasterLevel)
+    private IGameServerContext CreateGameServerContext(float normalExperienceRate, float globalMasterExperienceRate, short maximumLevel, short maximumMasterLevel, bool preventExperienceOverflow = false)
     {
         var contextProvider = new InMemoryPersistenceContextProvider();
         var gameConfiguration = contextProvider.CreateNewContext().CreateNew<GameConfiguration>();
+        if (gameConfiguration.CharacterClasses is null)
+        {
+            typeof(GameConfiguration).GetProperty(nameof(GameConfiguration.CharacterClasses))?.SetValue(gameConfiguration, new List<CharacterClass>());
+        }
+
         gameConfiguration.RecoveryInterval = int.MaxValue;
         gameConfiguration.MaximumLevel = maximumLevel;
         gameConfiguration.MaximumMasterLevel = maximumMasterLevel;
+        gameConfiguration.PreventExperienceOverflow = preventExperienceOverflow;
         gameConfiguration.MinimumMonsterLevelForMasterExperience = 0;
         gameConfiguration.ExperienceRate = 1.0f;
         gameConfiguration.MasterExperienceRate = globalMasterExperienceRate;

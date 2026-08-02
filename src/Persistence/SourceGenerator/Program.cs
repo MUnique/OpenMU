@@ -36,7 +36,7 @@ public static class Program
         {
             EfCoreModelGenerator.TargetAssemblyName => new EfCoreModelGenerator(),
             BasicModelGenerator.TargetAssemblyName => new BasicModelGenerator(),
-            _ => null
+            _ => null,
         };
 
         if (generator is null)

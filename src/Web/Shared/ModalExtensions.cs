@@ -4,42 +4,14 @@
 
 namespace MUnique.OpenMU.Web.Shared;
 
-using System.Threading;
-using Blazored.Modal;
-using Blazored.Modal.Services;
 using MUnique.OpenMU.Web.Shared.Components;
-using MUnique.OpenMU.Web.Shared.Components.Form;
+using MUnique.OpenMU.Web.Shared.Components.Modal;
 
 /// <summary>
 /// Extension methods for the <see cref="IModalService"/>.
 /// </summary>
 public static class ModalExtensions
 {
-    /// <summary>
-    /// Shows a loading indicator in a modal dialog.
-    /// </summary>
-    /// <param name="modalService">The modal service.</param>
-    /// <returns>The disposable which closes the modal indicator.</returns>
-    public static IDisposable ShowLoadingIndicator(this IModalService modalService)
-    {
-        var cts = new CancellationTokenSource();
-        var modalOptions = new ModalOptions
-        {
-            DisableBackgroundCancel = true,
-            HideCloseButton = true,
-            HideHeader = true,
-        };
-        var modalParameters = new ModalParameters();
-        modalParameters.Add(nameof(ModalLoadingIndicator.CancellationToken), cts.Token);
-        modalService.Show<ModalLoadingIndicator>(string.Empty, modalParameters, modalOptions);
-
-        return new DisposeWrapper(() =>
-        {
-            cts.Cancel();
-            cts.Dispose();
-        });
-    }
-
     /// <summary>
     /// Shows a message in a modal dialog.
     /// </summary>
@@ -64,7 +36,7 @@ public static class ModalExtensions
     {
         var messageParams = new ModalParameters();
         messageParams.Add(nameof(ModalQuestion.Question), question);
-        
+
         var modal = modalService.Show<ModalQuestion>(title, messageParams);
         var result = await modal.Result.ConfigureAwait(false);
         return result.Data is true;

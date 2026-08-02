@@ -36,6 +36,7 @@ public class BerserkerEffectInitializer : InitializerBase
         magicEffect.StopByDeath = true;
         magicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.Duration.ConstantValue.Value = 30; // 30 Seconds
+        magicEffect.Duration.MaximumValue = 180;
 
         var durationPerEnergy = this.Context.CreateNew<AttributeRelationship>();
         durationPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
@@ -48,6 +49,7 @@ public class BerserkerEffectInitializer : InitializerBase
         magicEffect.PowerUpDefinitions.Add(manaPowerUpDefinition);
         manaPowerUpDefinition.TargetAttribute = Stats.BerserkerManaMultiplier.GetPersistent(this.GameConfiguration);
         manaPowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        manaPowerUpDefinition.Boost.MaximumValue = 1f; // 100% increase
 
         var manaMultiplier = this.Context.CreateNew<AttributeRelationship>();
         manaMultiplier.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);

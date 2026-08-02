@@ -1,4 +1,4 @@
-﻿// <copyright file="Quests.cs" company="MUnique">
+// <copyright file="Quests.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -57,8 +57,15 @@ internal class Quests : InitializerBase
         this.CreateNewQuests();
     }
 
-    private QuestDefinition CreateQuest(string name, short @group, short startingNumber, short number,
-        short refuseNumber, int minimumLevel, int maximumLevel, short npcNumber,
+    private QuestDefinition CreateQuest(
+        string name,
+        short @group,
+        short startingNumber,
+        short number,
+        short refuseNumber,
+        int minimumLevel,
+        int maximumLevel,
+        short npcNumber,
         CharacterClassNumber? qualifiedCharacter = null)
     {
         var npc = this.GameConfiguration.Monsters.First(m => m.Number == npcNumber);

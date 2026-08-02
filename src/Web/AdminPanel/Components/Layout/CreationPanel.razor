@@ -1,0 +1,72 @@
+@* <copyright file="CreationPanel.razor" company="MUnique">
+   Licensed under the MIT License. See LICENSE file in the project root for full license information.
+   </copyright> *@
+
+@using MUnique.OpenMU.Web.AdminPanel.Properties
+@using MUnique.OpenMU.Web.Shared.Components.Form
+@using MUnique.OpenMU.Web.Shared.Services
+
+@implements IDisposable
+@inject CreationPanelService Panel
+@inject Blazored.Toast.Services.IToastService ToastService
+
+@if (this.Panel.Current is { } session)
+{
+    <div class="creation-panel @(this.Panel.IsCollapsed ? "collapsed" : "expanded")">
+        <button type="button"
+                class="collapse-toggle"
+                title="@(this.Panel.IsCollapsed ? Resources.ShowEntryForm : Resources.HideEntryForm)"
+                @onclick="@this.Panel.ToggleCollapse">
+            <span class="oi @(this.Panel.IsCollapsed ? "oi-chevron-left" : "oi-chevron-right")" aria-hidden="true"></span>
+        </button>
+        @if (!this.Panel.IsCollapsed)
+        {
+            <div class="creation-panel-body">
+                <h3>@session.Title</h3>
+                <ItemCreationForm Item="@session.Item"
+                                  PersistenceContext="@session.Context"
+                                  Owner="@session.Owner"
+                                  OnValidSubmit="@this.OnSubmitAsync"
+                                  OnCancel="@this.OnCancelAsync" />
+            </div>
+        }
+    </div>
+}
+
+@code {
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        this.Panel.StateChanged += this.OnStateChanged;
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        this.Panel.StateChanged -= this.OnStateChanged;
+    }
+
+    private void OnStateChanged()
+    {
+        _ = this.InvokeAsync(this.StateHasChanged);
+    }
+
+    private async Task OnSubmitAsync()
+    {
+        try
+        {
+            await this.Panel.CompleteAsync();
+        }
+        catch (Exception ex)
+        {
+            this.ToastService.ShowError($"Could not save the new entry: {ex.Message}");
+        }
+    }
+
+    private Task OnCancelAsync()
+    {
+        return this.Panel.CancelAsync();
+    }
+}

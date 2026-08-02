@@ -40,15 +40,23 @@ public class GreaterDefenseEffectInitializer : InitializerBase
         // The buff gives 2 + (energy / 8) defense
         var powerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
         magicEffect.PowerUpDefinitions.Add(powerUpDefinition);
-        powerUpDefinition.TargetAttribute = Stats.DefenseFinal.GetPersistent(this.GameConfiguration);
+        powerUpDefinition.TargetAttribute = Stats.GreaterDefenseBonus.GetPersistent(this.GameConfiguration);
         powerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
         powerUpDefinition.Boost.ConstantValue.Value = 2f;
-        powerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.AddFinal;
+        powerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.AddRaw;
 
         var boostPerEnergy = this.Context.CreateNew<AttributeRelationship>();
         boostPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
         boostPerEnergy.InputOperator = InputOperator.Multiply;
         boostPerEnergy.InputOperand = 1f / 8f; // one defense per 8 energy
         powerUpDefinition.Boost.RelatedValues.Add(boostPerEnergy);
+
+        // Placeholder for DefenseIncreaseStr and DefenseIncreaseMastery master skills
+        var powerUpDefinition2 = this.Context.CreateNew<PowerUpDefinition>();
+        magicEffect.PowerUpDefinitions.Add(powerUpDefinition2);
+        powerUpDefinition2.TargetAttribute = Stats.GreaterDefenseBonus.GetPersistent(this.GameConfiguration);
+        powerUpDefinition2.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        powerUpDefinition2.Boost.ConstantValue.Value = 1f;
+        powerUpDefinition2.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
     }
 }

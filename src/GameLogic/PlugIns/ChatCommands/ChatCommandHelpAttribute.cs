@@ -39,6 +39,7 @@ public class ChatCommandHelpAttribute : Attribute
     public ChatCommandHelpAttribute(string command, string description, Type? argumentsType)
         : this(command, argumentsType, CharacterStatus.Normal)
     {
+        this.Description = description;
     }
 
     /// <summary>
@@ -63,6 +64,15 @@ public class ChatCommandHelpAttribute : Attribute
     /// Gets the minimum character status.
     /// </summary>
     public CharacterStatus MinimumCharacterStatus { get; }
+
+    /// <summary>
+    /// Gets the description of the command, if one was specified.
+    /// </summary>
+    /// <remarks>
+    /// This is only a fallback for commands without a <see cref="DisplayAttribute"/>.
+    /// A description defined there can be translated, so it's preferred.
+    /// </remarks>
+    public string? Description { get; }
 
     /// <summary>
     /// Gets the type of the arguments of the chat command.

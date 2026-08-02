@@ -4,12 +4,11 @@
 
 using Microsoft.Extensions.DependencyInjection;
 
-using MUnique.OpenMU.ChatServer;
 using MUnique.OpenMU.ChatServer.Host;
 using MUnique.OpenMU.Dapr.Common;
 using MUnique.OpenMU.DataModel.Configuration;
-using MUnique.OpenMU.Network;
 using MUnique.OpenMU.PlugIns;
+using ChatServer = MUnique.OpenMU.ChatServer.ChatServer;
 
 var plugInConfigurations = new List<PlugInConfiguration>();
 var builder = DaprService.CreateBuilder("ChatServer", args);
@@ -22,13 +21,7 @@ services.AddSingleton<ChatServer>()
     .AddIpResolver(args)
     .AddPersistentSingleton<ChatServerDefinition>();
 
-services.AddHostedService(p =>
-{
-    var settings = p.GetService<ChatServerDefinition>()?.ConvertToSettings() ?? throw new Exception($"{nameof(ChatServerSettings)} not registered.");
-    var chatServer = p.GetService<ChatServer>()!;
-    chatServer.Initialize(settings);
-    return chatServer;
-});
+services.AddHostedService<ChatServerHostedServiceWrapper>();
 
 services.PublishManageableServer<ChatServer>();
 
@@ -37,9 +30,6 @@ metricsRegistry.AddNetworkMeters();
 builder.AddOpenTelemetryMetrics(metricsRegistry);
 
 var app = builder.BuildAndConfigure();
-
-await app.WaitForUpdatedDatabaseAsync().ConfigureAwait(false);
-
-await app.Services.TryLoadPlugInConfigurationsAsync(plugInConfigurations).ConfigureAwait(false);
+await app.WaitForDatabaseConnectionInitializationAsync().ConfigureAwait(false);
 
 app.Run();

@@ -2,13 +2,11 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using System.Threading;
-using Nito.Disposables;
-
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
 using System.Collections;
 using System.Reflection;
+using System.Threading;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -16,6 +14,7 @@ using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Composition;
 using MUnique.OpenMU.DataModel.Configuration;
 using Nito.AsyncEx;
+using Nito.Disposables;
 
 /// <summary>
 /// Abstract base class for an <see cref="IContext"/> which uses an <see cref="DbContext"/>.
@@ -70,6 +69,55 @@ internal class EntityFrameworkContextBase : IContext
     /// <inheritdoc/>
     public async ValueTask<bool> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
+        // A player's entities can be mutated by game logic on a flow that is not serialized against
+        // this save (for example item destruction on an attacker's thread during combat). Such a
+        // concurrent mutation makes change detection throw while it enumerates a tracked collection.
+        // The mutation is a single, quick operation, so a bounded retry lands on a stable moment
+        // instead of failing the whole save - which would otherwise leave the session unpersisted and
+        // roll the player back on relog.
+        const int maxAttempts = 3;
+        var attempt = 0;
+        while (true)
+        {
+            attempt++;
+            try
+            {
+                return await this.SaveChangesCoreAsync(cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception ex) when (attempt < maxAttempts && IsTransientConcurrencyConflict(ex))
+            {
+                this._logger.LogWarning(ex, "Transient concurrency conflict while saving (attempt {Attempt}/{MaxAttempts}); retrying.", attempt, maxAttempts);
+                await Task.Delay(attempt * 10, cancellationToken).ConfigureAwait(false);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Determines whether the exception is a transient conflict caused by a concurrent entity mutation
+    /// racing this save, and is therefore worth retrying.
+    /// </summary>
+    /// <param name="exception">The exception thrown by the save.</param>
+    /// <returns><c>true</c> if the save should be retried.</returns>
+    private static bool IsTransientConcurrencyConflict(Exception exception)
+    {
+        // A concurrent entity mutation racing this save corrupts the change tracker mid-enumeration.
+        // Depending on exactly where change detection was, it surfaces as one of several types - a
+        // modified collection (InvalidOperationException), a transiently-null internal key
+        // (ArgumentNullException/NullReferenceException), or an out-of-range index. All are transient:
+        // the racing mutation is a single quick operation, so a bounded retry lands on a stable moment.
+        // A genuinely persistent error of the same type is not masked - it rethrows once the retries
+        // are exhausted. The deterministic serialization (per-player persistence lock) is the primary
+        // guard; this retry only needs to absorb the rare, bursty sources that lock isn't held for.
+        return exception is DbUpdateConcurrencyException
+            or InvalidOperationException
+            or ArgumentNullException
+            or NullReferenceException
+            or IndexOutOfRangeException
+            or KeyNotFoundException;
+    }
+
+    private async ValueTask<bool> SaveChangesCoreAsync(CancellationToken cancellationToken)
+    {
         using var l = await this._lock.LockAsync();
 
         // when we have a change publisher attached, we want to get the changed entries before accepting them.
@@ -117,22 +165,14 @@ internal class EntityFrameworkContextBase : IContext
     /// <inheritdoc />
     public bool Detach(object item)
     {
-        var entry = this.Context.Entry(item);
-        if (entry is null)
-        {
-            return false;
-        }
-
-        var previousState = entry.State;
-        entry.State = EntityState.Detached;
-        this.ForEachAggregate(item, obj => this.Detach(obj));
-
-        return previousState != EntityState.Added;
+        using var l = this._lock.Lock();
+        return this.DetachInternal(item);
     }
 
     /// <inheritdoc />
     public void Attach(object item)
     {
+        using var l = this._lock.Lock();
         this.Context.Attach(item);
     }
 
@@ -174,7 +214,7 @@ internal class EntityFrameworkContextBase : IContext
             case EntityState.Detached:
                 return true;
             case EntityState.Added:
-                this.Detach(obj);
+                this.DetachInternal(obj);
                 break;
             default:
                 this.Context.Remove(obj);
@@ -262,6 +302,14 @@ internal class EntityFrameworkContextBase : IContext
     }
 
     /// <summary>
+    /// Determines whether changes of an entity type are published as configuration changes.
+    /// </summary>
+    /// <param name="entityType">The entity type.</param>
+    /// <returns><see langword="true"/> when the entity belongs to the configuration schema.</returns>
+    internal static bool PublishesConfigurationChanges(IReadOnlyEntityType entityType)
+        => entityType.GetSchema() == SchemaNames.Configuration;
+
+    /// <summary>
     /// Releases unmanaged and - optionally - managed resources.
     /// </summary>
     /// <param name="dispose"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
@@ -273,6 +321,21 @@ internal class EntityFrameworkContextBase : IContext
         }
 
         this.Context.Dispose();
+    }
+
+    private bool DetachInternal(object item)
+    {
+        var entry = this.Context.Entry(item);
+        if (entry is null)
+        {
+            return false;
+        }
+
+        var previousState = entry.State;
+        entry.State = EntityState.Detached;
+        this.ForEachAggregate(item, obj => this.DetachInternal(obj));
+
+        return previousState != EntityState.Added;
     }
 
     private IRepository<T> GetRepository<T>()
@@ -337,7 +400,9 @@ internal class EntityFrameworkContextBase : IContext
             }
 
             var changedEntries = this.Context.ChangeTracker.Entries()
-                .Where(entity => entity.State != EntityState.Unchanged).ToList();
+                .Where(entity => entity.State != EntityState.Unchanged
+                                 && PublishesConfigurationChanges(entity.Metadata))
+                .ToList();
             foreach (var entry in changedEntries)
             {
                 var (parent, parentCollectionNavigation) = this.GetParentInformation(entry);

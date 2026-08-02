@@ -15,7 +15,6 @@ using MUnique.OpenMU.Persistence.Initialization.Version095d.Events;
 /// </summary>
 internal class DevilSquare4 : BaseMapInitializer
 {
-
     /// <summary>
     /// The default number of the map.
     /// </summary>

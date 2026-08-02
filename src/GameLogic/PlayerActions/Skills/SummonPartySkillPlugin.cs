@@ -133,9 +133,10 @@ public class SummonPartySkillPlugin : TargetedSkillPluginBase
 
     private bool CanPlayerSummon(Player player)
     {
-        return player.Party is not null 
+        return player.Party is not null
                && player.OpenedNpc is null
                && player.CurrentMiniGame is null;
+
         // todo, not in:
         // * Kalima
         // * kanturu boss (39)

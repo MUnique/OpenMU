@@ -55,7 +55,7 @@ public class ServerInfoController : ControllerBase
     /// <summary>
     /// Gets the connection count of all game servers.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>The overall count of current connections.</returns>
     [HttpGet("playerCount")]
     public int GetOverallConnectionCount()
     {

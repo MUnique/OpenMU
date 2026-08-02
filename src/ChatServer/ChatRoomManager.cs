@@ -19,7 +19,7 @@ internal class ChatRoomManager
     /// </summary>
     private readonly IDictionary<ushort, ChatRoom> _rooms = new ConcurrentDictionary<ushort, ChatRoom>();
 
-    private readonly ConcurrentBag<ushort> _freeRoomIds = new ();
+    private readonly ConcurrentBag<ushort> _freeRoomIds = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ChatRoomManager" /> class.

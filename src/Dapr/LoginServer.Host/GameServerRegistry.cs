@@ -6,8 +6,8 @@ namespace MUnique.OpenMU.LoginServer.Host;
 
 using System.Threading;
 using Microsoft.Extensions.Logging;
-using Nito.AsyncEx;
 using MUnique.OpenMU.PlugIns;
+using Nito.AsyncEx;
 
 /// <summary>
 /// The registry for game servers.
@@ -30,7 +30,7 @@ public sealed class GameServerRegistry : IDisposable
     {
         this._logger = logger;
 
-        async Task RunCleanupLoop()
+        async Task RunCleanupLoopAsync()
         {
             try
             {
@@ -42,7 +42,7 @@ public sealed class GameServerRegistry : IDisposable
             }
         }
 
-        _ = RunCleanupLoop();
+        _ = RunCleanupLoopAsync();
     }
 
     /// <summary>

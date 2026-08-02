@@ -79,7 +79,7 @@ internal class FrustumBasedTargetFilterTest
         // Left projectile should be able to hit (index 0)
         var leftResult = filter.IsTargetWithinBounds(attacker, target, 128, 0);
         Assert.That(leftResult, Is.True);
-        
+
         // Right projectile should NOT be able to hit (index 2)
         var rightResult = filter.IsTargetWithinBounds(attacker, target, 128, 2);
         Assert.That(rightResult, Is.False);
@@ -99,7 +99,7 @@ internal class FrustumBasedTargetFilterTest
         // Right projectile should be able to hit (index 2)
         var rightResult = filter.IsTargetWithinBounds(attacker, target, 128, 2);
         Assert.That(rightResult, Is.True);
-        
+
         // Left projectile should NOT be able to hit (index 0)
         var leftResult = filter.IsTargetWithinBounds(attacker, target, 128, 0);
         Assert.That(leftResult, Is.False);

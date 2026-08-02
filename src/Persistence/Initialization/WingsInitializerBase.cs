@@ -28,15 +28,40 @@ public abstract class WingsInitializerBase : InitializerBase
     {
     }
 
+    /// <summary>
+    /// The option type for wings.
+    /// </summary>
     protected enum OptionType
     {
+        /// <summary>
+        /// Health recover option.
+        /// </summary>
         HealthRecover,
+
+        /// <summary>
+        /// Physical damage option.
+        /// </summary>
         PhysDamage,
+
+        /// <summary>
+        /// Wizardry damage option.
+        /// </summary>
         WizDamage,
+
+        /// <summary>
+        /// Curse damage option.
+        /// </summary>
         CurseDamage,
+
+        /// <summary>
+        /// Defense option.
+        /// </summary>
         Defense,
     }
 
+    /// <summary>
+    /// Gets the maximum item level.
+    /// </summary>
     protected abstract int MaximumItemLevel { get; }
 
     /// <summary>
@@ -66,7 +91,7 @@ public abstract class WingsInitializerBase : InitializerBase
                     yield return this.CreateItemOption(tuple.Item1, Stats.HealthRecoveryMultiplier, 0, AggregateType.AddRaw, 0.01f, ItemOptionDefinitionNumbers.WingHealthRecover);
                     break;
                 case OptionType.PhysDamage:
-                    yield return this.CreateItemOption(tuple.Item1, Stats.PhysicalBaseDmg, 0, AggregateType.AddRaw, 4f, ItemOptionDefinitionNumbers.WingPhysical);
+                    yield return this.CreateItemOption(tuple.Item1, Stats.PhysicalBaseDmg, 0, AggregateType.AddFinal, 4f, ItemOptionDefinitionNumbers.WingPhysical);
                     break;
                 case OptionType.WizDamage:
                     yield return this.CreateItemOption(tuple.Item1, Stats.WizardryBaseDmg, 0, AggregateType.AddRaw, 4f, ItemOptionDefinitionNumbers.WingWizardry);
@@ -77,6 +102,9 @@ public abstract class WingsInitializerBase : InitializerBase
         }
     }
 
+    /// <summary>
+    /// Creates the absorb bonus per level table.
+    /// </summary>
     protected ItemLevelBonusTable CreateAbsorbBonusPerLevel()
     {
         IEnumerable<float> Generate()
@@ -90,6 +118,9 @@ public abstract class WingsInitializerBase : InitializerBase
         return this.CreateItemBonusTable(Generate().ToArray(), "Wing absorb", "The damage absorb of wings per item level, 2 % less damage per level.");
     }
 
+    /// <summary>
+    /// Creates the damage increase bonus per level table for first and third wings.
+    /// </summary>
     protected ItemLevelBonusTable CreateDamageIncreaseBonusPerLevelFirstAndThirdWings()
     {
         IEnumerable<float> Generate()
@@ -103,6 +134,9 @@ public abstract class WingsInitializerBase : InitializerBase
         return this.CreateItemBonusTable(Generate().ToArray(), "Damage Increase (1st and 3rd Wings)", "Defines the damage increase multiplier for first and third level wings. It's 2 % per wing level.");
     }
 
+    /// <summary>
+    /// Creates the damage increase bonus per level table for second wings.
+    /// </summary>
     protected ItemLevelBonusTable CreateDamageIncreaseBonusPerLevelSecondWings()
     {
         IEnumerable<float> Generate()
@@ -116,11 +150,17 @@ public abstract class WingsInitializerBase : InitializerBase
         return this.CreateItemBonusTable(Generate().ToArray(), "Damage Increase (2nd Wings)", "Defines the damage increase multiplier for second level wings. It's 1 % per wing level.");
     }
 
+    /// <summary>
+    /// Creates the bonus defense per level table.
+    /// </summary>
     protected ItemLevelBonusTable CreateBonusDefensePerLevel()
     {
         return this.CreateItemBonusTable(DefenseIncreaseByLevel, "Defense Bonus (1st and 2nd Wings)", "Defines the defense bonus per level for 1st and 2nd level wings.");
     }
 
+    /// <summary>
+    /// Creates the bonus defense per level table for third wings.
+    /// </summary>
     protected ItemLevelBonusTable CreateBonusDefensePerLevelThirdWings()
     {
         return this.CreateItemBonusTable(DefenseIncreaseByLevelThirdWings, "Defense Bonus (3rd Wings)", "Defines the defense bonus per level for 3rd level wings.");

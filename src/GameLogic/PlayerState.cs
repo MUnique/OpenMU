@@ -79,7 +79,7 @@ public static class PlayerState
         EnteredWorld.PossibleTransitions.Add(PlayerState.CharacterSelection);
     }
 
-     /// <summary>
+    /// <summary>
     /// Gets the finished state. When this state is active, the player session was saved and the player object can be safely removed from the game.
     /// </summary>
     public static State Finished { get; } = new(new Guid("AB24C7C4-4F37-40ED-B874-0F6C7984C471"))

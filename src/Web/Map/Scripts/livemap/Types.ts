@@ -33,7 +33,7 @@ export interface PlayerData extends ObjectData {
 }
 
 export interface NpcData extends ObjectData {
-    readonly isMonster: boolean;
+    readonly npcObjectKind: number;
 }
 
 export interface Step {

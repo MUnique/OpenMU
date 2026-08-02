@@ -345,6 +345,7 @@ public enum UpdateVersion
     /// </summary>
     AddProjectileCountToTripleShot = 67,
 
+    /// <summary>
     /// The version of the <see cref="RemoveJewelDropLevelGapPlugIn075"/>.
     /// </summary>
     RemoveJewelDropLevelGap075 = 68,
@@ -359,6 +360,7 @@ public enum UpdateVersion
     /// </summary>
     RemoveJewelDropLevelGapSeason6 = 70,
 
+    /// <summary>
     /// The version of the <see cref="FixRageFighterMultipleHitSkillsPlugIn"/>.
     /// </summary>
     FixRageFighterMultipleHitSkills = 71,
@@ -387,4 +389,128 @@ public enum UpdateVersion
     /// The version of the <see cref="AddMaximumAllianceSizeUpdatePlugInSeason6"/>.
     /// </summary>
     AddMaximumAllianceSizeSeason6 = 76,
+
+    /// <summary>
+    /// The version of the <see cref="FixSummonerCurseSkillsPlugIn"/>.
+    /// </summary>
+    FixSummonerCurseSkills = 77,
+
+    /// <summary>
+    /// The version of the <see cref="FixAreaSkillsUpdatePlugIn"/>.
+    /// </summary>
+    FixAreaSkills = 78,
+
+    /// <summary>
+    /// The version of the <see cref="FinishDarkLordMasterTreePlugIn"/>.
+    /// </summary>
+    FinishDarkLordMasterTree = 79,
+
+    /// <summary>
+    /// The version of the <see cref="FixBloodCastleMonsterAttributesUpdatePlugIn"/>.
+    /// </summary>
+    FixBloodCastleMonsterAttributes = 80,
+
+    /// <summary>
+    /// The version of the <see cref="AddRandomExperienceConfigAttributesPlugIn075"/>.
+    /// </summary>
+    AddRandomExperienceConfigAttributes075 = 81,
+
+    /// <summary>
+    /// The version of the <see cref="AddRandomExperienceConfigAttributesPlugIn095d"/>.
+    /// </summary>
+    AddRandomExperienceConfigAttributes095d = 82,
+
+    /// <summary>
+    /// The version of the <see cref="AddRandomExperienceConfigAttributesPlugInSeason6"/>.
+    /// </summary>
+    AddRandomExperienceConfigAttributesSeason6 = 83,
+
+    /// <summary>
+    /// The version of the <see cref="AddMovementSpeedAttributesPlugIn075"/>.
+    /// </summary>
+    AddMovementSpeedAttributes075 = 84,
+
+    /// <summary>
+    /// The version of the <see cref="AddMovementSpeedAttributesPlugIn095D"/>.
+    /// </summary>
+    AddMovementSpeedAttributes095d = 85,
+
+    /// <summary>
+    /// The version of the <see cref="AddMovementSpeedAttributesPlugInSeason6"/>.
+    /// </summary>
+    AddMovementSpeedAttributesSeason6 = 86,
+
+    /// <summary>
+    /// The version of the <see cref="AddMissingMerchantStoresPlugIn"/>.
+    /// </summary>
+    AddMissingMerchantStores = 87,
+
+    /// <summary>
+    /// The version of the <see cref="FinishDarkKnightMasterTreePlugIn075"/>.
+    /// </summary>
+    FinishDarkKnightMasterTree075 = 88,
+
+    /// <summary>
+    /// The version of the <see cref="FinishDarkKnightMasterTreePlugIn095D"/>.
+    /// </summary>
+    FinishDarkKnightMasterTree095d = 89,
+
+    /// <summary>
+    /// The version of the <see cref="FinishDarkKnightMasterTreePlugInSeason6"/>.
+    /// </summary>
+    FinishDarkKnightMasterTreeSeason6 = 90,
+
+    /// <summary>
+    /// The version of the <see cref="AddWhiteWizardInvasionMobsUpdatePlugIn"/>.
+    /// </summary>
+    AddWhiteWizardInvasionMobs = 91,
+
+    /// <summary>
+    /// The version of the <see cref="LimitWhiteWizardDropsUpdatePlugIn"/>.
+    /// </summary>
+    LimitWhiteWizardDrops = 92,
+
+    /// <summary>
+    /// The version of the <see cref="AddLorenMarketJuliaWarpPlugIn"/>.
+    /// </summary>
+    AddLorenMarketJuliaWarp = 93,
+
+    /// <summary>
+    /// The version of the <see cref="AddIsQuestItemFlagPlugIn"/>.
+    /// </summary>
+    AddIsQuestItemFlag = 94,
+
+    /// <summary>
+    /// The version of the <see cref="AddElfSoldierBuffPlugIn"/>.
+    /// </summary>
+    AddElfSoldierBuff = 95,
+
+    /// <summary>
+    /// The version of the <see cref="FinishDarkWizardMasterTreePlugIn"/>.
+    /// </summary>
+    FinishDarkWizardMasterTree = 96,
+
+    /// <summary>
+    /// The version of the <see cref="FinishElfMasterTreePlugIn"/>.
+    /// </summary>
+    FinishElfMasterTree = 97,
+
+    /// <summary>
+    /// The version of the <see cref="AddItemRegistrationAttributesUpdatePlugIn"/>.
+    /// </summary>
+    AddItemRegistrationAttributes = 98,
+
+    /// <summary>
+    /// The version of the <see cref="AddRenaItemUpdatePlugIn"/>.
+    /// </summary>
+    AddRenaItem = 99,
+
+    /// The version of the <see cref="AddCastleSiegeDataUpdatePlugIn"/>.
+    /// </summary>
+    AddCastleSiegeData = 100,
+
+    /// <summary>
+    /// The version of the <see cref="FinishSummonerMasterTreePlugIn"/>.
+    /// </summary>
+    FinishSummonerMasterTree = 101,
 }

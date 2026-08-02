@@ -15,7 +15,7 @@ public partial class DuelConfiguration
     /// <summary>
     /// Gets or sets the maximum score at which the duel will end with a winner.
     /// </summary>
-    public int MaximumScore {get; set; }
+    public int MaximumScore { get; set; }
 
     /// <summary>
     /// Gets or sets the entrance fee for a duel.

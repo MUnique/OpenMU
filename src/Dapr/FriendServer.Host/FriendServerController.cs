@@ -78,6 +78,17 @@ public class FriendServerController : ControllerBase
     }
 
     /// <summary>
+    /// Determines whether two players are friends.
+    /// </summary>
+    /// <param name="data">The data.</param>
+    /// <returns>True if the two players are friends; otherwise false.</returns>
+    [HttpPost(nameof(IFriendServer.IsFriendAsync))]
+    public async Task<bool> IsFriendAsync([FromBody] RequestArguments data)
+    {
+        return await this._friendServer.IsFriendAsync(data.Requester, data.Receiver).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a friend request to the friend, and adds a new friend view item to the players friend list.
     /// </summary>
     /// <param name="data">The data.</param>

@@ -14,9 +14,6 @@ using MUnique.OpenMU.Web.Shared.Services;
 public partial class ConfigNavMenu
 {
     private bool _expandGameConfig;
-    
-    [Inject]
-    private NavigationHistory NavigationHistory { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the game configuration identifier.
@@ -24,6 +21,9 @@ public partial class ConfigNavMenu
     [Parameter]
     [Required]
     public Guid GameConfigurationId { get; set; }
+
+    [Inject]
+    private NavigationHistory NavigationHistory { get; set; } = null!;
 
     private void ToggleGameConfig()
     {

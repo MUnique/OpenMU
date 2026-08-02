@@ -13,5 +13,5 @@ using MUnique.OpenMU.DataModel.Configuration;
 /// <param name="Discriminator">The dicriminator of the map.</param>
 internal record MapIdentity(short MapNumber, int Discriminator = 0)
 {
-    public static implicit operator MapIdentity(short mapNumber) => new (mapNumber);
+    public static implicit operator MapIdentity(short mapNumber) => new(mapNumber);
 }

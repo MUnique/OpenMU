@@ -66,6 +66,7 @@ public class PetInfoViewPlugIn : IPetInfoViewPlugIn
             PetStorageLocation.Inventory => StorageType.Inventory,
             PetStorageLocation.InventoryPetSlot => StorageType.InventoryPetSlot,
             PetStorageLocation.PersonalShop => StorageType.PersonalShop,
+            PetStorageLocation.NpcShop => StorageType.NpcShop,
             PetStorageLocation.TradeOther => StorageType.TradeOther,
             PetStorageLocation.TradeOwn => StorageType.TradeOwn,
             PetStorageLocation.Vault => StorageType.Vault,

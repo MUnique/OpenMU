@@ -27,7 +27,7 @@ public class SkillListTest
     [Test]
     public async ValueTask LearnedSkillAsync()
     {
-        var player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         player.SelectedCharacter!.LearnedSkills.Add(this.CreateSkillEntry(LearnedSkillId));
         var skillList = new SkillList(player);
         Assert.That(skillList.ContainsSkill(LearnedSkillId), Is.True);
@@ -39,7 +39,7 @@ public class SkillListTest
     [Test]
     public async ValueTask ItemSkillAddedAsync()
     {
-        var player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var skillList = player.SkillList as SkillList;
         await player.Inventory!.AddItemAsync(0, this.CreateItemWithSkill(QualifiedItemSkillId, player.SelectedCharacter!.CharacterClass)).ConfigureAwait(false);
         await player.Inventory!.AddItemAsync(1, this.CreateItemWithSkill(NonQualifiedItemSkillId)).ConfigureAwait(false);
@@ -54,7 +54,7 @@ public class SkillListTest
     [Test]
     public async ValueTask ItemSkillRemovedAsync()
     {
-        var player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var item = this.CreateItemWithSkill(QualifiedItemSkillId, player.SelectedCharacter!.CharacterClass);
         item.Durability = 1;
         await player.Inventory!.AddItemAsync(0, item).ConfigureAwait(false);
@@ -69,7 +69,7 @@ public class SkillListTest
     [Test]
     public async ValueTask NonLearnedSkillAsync()
     {
-        var player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         Assert.That(player.SkillList!.ContainsSkill(NonLearnedSkillId), Is.False);
     }
 

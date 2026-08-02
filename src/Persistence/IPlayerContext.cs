@@ -4,9 +4,9 @@
 
 namespace MUnique.OpenMU.Persistence;
 
+using System.Threading;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Interfaces;
-using System.Threading;
 
 /// <summary>
 /// Persistence context which is used by in-game players.
@@ -77,6 +77,19 @@ public interface IPlayerContext : IContext
     /// The account objects, without dependent data.
     /// </returns>
     ValueTask<IEnumerable<Account>> GetAccountsOrderedByLoginNameAsync(int skip, int count, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets the accounts which contain the search term in their login name or in one of
+    /// their character names, ordered by login name.
+    /// </summary>
+    /// <param name="searchTerm">The search term.</param>
+    /// <param name="skip">The skip count.</param>
+    /// <param name="count">The count.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>
+    /// The account objects, without dependent data.
+    /// </returns>
+    ValueTask<IEnumerable<Account>> SearchAccountsAsync(string searchTerm, int skip, int count, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets the account by character name.

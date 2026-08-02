@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <PacketDefinitions xmlns="http://www.munique.net/OpenMU/PacketDefinitions">
   <Description>This file contains all packet definitions for packets which are sent from game server to client.</Description>
   <Structures>
@@ -6322,7 +6322,7 @@
       <Code>F3</Code>
       <SubCode>03</SubCode>
       <Name>CharacterInformationExtended</Name>
-      <Length>96</Length>
+      <Length>92</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>After the character was selected by the player and entered the game.</SentWhen>
       <CausedReaction>The characters enters the game world.</CausedReaction>
@@ -6478,6 +6478,12 @@
           <Index>88</Index>
           <Type>Byte</Type>
           <Name>InventoryExtensions</Name>
+        </Field>
+        <!-- 1 spare byte here -->
+        <Field>
+          <Index>90</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Resets</Name>
         </Field>
       </Fields>
     </Packet>
@@ -10288,7 +10294,7 @@
       </Fields>
     </Packet>
     <Packet>
-      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
       <Code>F6</Code>
       <SubCode>0C</SubCode>
       <Name>QuestProgressExtended</Name>
@@ -12078,6 +12084,138 @@
         </Field>
       </Fields>
     </Packet>
+    <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>F5</Code>
+      <SubCode>01</SubCode>
+      <Name>AvailableChatCommand</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the client requested the list of available chat commands. One message is sent for each command which is available to the player.</SentWhen>
+      <CausedReaction>The client adds the command to its list of known commands, so that it can offer them to the player without requiring him to know or type them.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Index</Name>
+          <Description>The index of this command within the list, starting at 0.</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>Count</Name>
+          <Description>The total number of commands which are available to the player, so that the client knows when it received all of them.</Description>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Enum</Type>
+          <TypeName>CharacterStatus</TypeName>
+          <Name>MinimumCharacterStatus</Name>
+          <Description>The character status which is required to execute the command.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Byte</Type>
+          <Name>ParameterCount</Name>
+        </Field>
+        <Field>
+          <Index>9</Index>
+          <Type>String</Type>
+          <Name>Command</Name>
+          <Length>32</Length>
+          <Description>The command including its slash, e.g. '/item'.</Description>
+        </Field>
+        <Field>
+          <Index>41</Index>
+          <Type>String</Type>
+          <Name>Name</Name>
+          <Length>48</Length>
+          <Description>The name of the command, in the language of the player.</Description>
+        </Field>
+        <Field>
+          <Index>89</Index>
+          <Type>String</Type>
+          <Name>Description</Name>
+          <Length>256</Length>
+          <Description>The description of the command, in the language of the player.</Description>
+        </Field>
+        <Field>
+          <Index>345</Index>
+          <Type>Structure[]</Type>
+          <TypeName>ChatCommandParameter</TypeName>
+          <Name>Parameters</Name>
+          <ItemCountField>ParameterCount</ItemCountField>
+          <Description>The parameters of the command, in the order in which they are expected when they are entered without their short names.</Description>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>ChatCommandParameter</Name>
+          <Description>Describes one parameter of a chat command, so that a user interface can offer an input for it.</Description>
+          <Length>102</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>Boolean</Type>
+              <Name>IsRequired</Name>
+              <Description>Defines if the parameter has to be specified to execute the command.</Description>
+            </Field>
+            <Field>
+              <Index>1</Index>
+              <Type>Enum</Type>
+              <TypeName>ChatCommandParameterType</TypeName>
+              <Name>Type</Name>
+              <Description>The kind of value which is expected, so that a fitting input can be shown.</Description>
+            </Field>
+            <Field>
+              <Index>2</Index>
+              <Type>String</Type>
+              <Name>Name</Name>
+              <Length>32</Length>
+            </Field>
+            <Field>
+              <Index>34</Index>
+              <Type>String</Type>
+              <Name>ShortName</Name>
+              <Length>20</Length>
+              <Description>The short name which is used in the 'shortName=value' notation. It's empty when the parameter can only be passed by its position.</Description>
+            </Field>
+            <Field>
+              <Index>54</Index>
+              <Type>String</Type>
+              <Name>ValidValues</Name>
+              <Length>48</Length>
+              <Description>The accepted values, separated by a pipe. It's empty when the parameter isn't limited to a set of values.</Description>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>94</Code>
+      <Name>EventChipRegistrationResult</Name>
+      <Length>10</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player receives the result of registering Rena or Event Chips at the Golden Archer NPC.</SentWhen>
+      <CausedReaction>The client updates the Golden Archer interface with total registered count and remaining count in inventory.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>RegisteredCount</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>RemainingInventoryCount</Name>
+        </Field>
+      </Fields>
+    </Packet>
   </Packets>
   <Enums>
     <Enum>
@@ -12643,6 +12781,27 @@
           <Name>White</Name>
           <Description>White color.</Description>
           <Value>7</Value>
+        </EnumValue>
+      </Values>
+    </Enum>
+    <Enum>
+      <Name>ChatCommandParameterType</Name>
+      <Description>The kind of value which a chat command parameter expects.</Description>
+      <Values>
+        <EnumValue>
+          <Name>Text</Name>
+          <Description>The parameter expects a text.</Description>
+          <Value>0</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Number</Name>
+          <Description>The parameter expects a number.</Description>
+          <Value>1</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Boolean</Name>
+          <Description>The parameter expects a 0 or a 1.</Description>
+          <Value>2</Value>
         </EnumValue>
       </Values>
     </Enum>

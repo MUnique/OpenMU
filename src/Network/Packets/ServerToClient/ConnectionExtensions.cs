@@ -3385,11 +3385,12 @@ public static class ConnectionExtensions
     /// <param name="magicSpeed">The magic speed.</param>
     /// <param name="maximumAttackSpeed">The maximum attack speed.</param>
     /// <param name="inventoryExtensions">The inventory extensions.</param>
+    /// <param name="resets">The resets.</param>
     /// <remarks>
     /// Is sent by the server when: After the character was selected by the player and entered the game.
     /// Causes reaction on client side: The characters enters the game world.
     /// </remarks>
-    public static async ValueTask SendCharacterInformationExtendedAsync(this IConnection? connection, byte @x, byte @y, ushort @mapId, ulong @currentExperience, ulong @experienceForNextLevel, ushort @levelUpPoints, ushort @strength, ushort @agility, ushort @vitality, ushort @energy, ushort @leadership, uint @currentHealth, uint @maximumHealth, uint @currentMana, uint @maximumMana, uint @currentShield, uint @maximumShield, uint @currentAbility, uint @maximumAbility, uint @money, CharacterHeroState @heroState, CharacterStatus @status, ushort @usedFruitPoints, ushort @maxFruitPoints, ushort @usedNegativeFruitPoints, ushort @maxNegativeFruitPoints, ushort @attackSpeed, ushort @magicSpeed, ushort @maximumAttackSpeed, byte @inventoryExtensions)
+    public static async ValueTask SendCharacterInformationExtendedAsync(this IConnection? connection, byte @x, byte @y, ushort @mapId, ulong @currentExperience, ulong @experienceForNextLevel, ushort @levelUpPoints, ushort @strength, ushort @agility, ushort @vitality, ushort @energy, ushort @leadership, uint @currentHealth, uint @maximumHealth, uint @currentMana, uint @maximumMana, uint @currentShield, uint @maximumShield, uint @currentAbility, uint @maximumAbility, uint @money, CharacterHeroState @heroState, CharacterStatus @status, ushort @usedFruitPoints, ushort @maxFruitPoints, ushort @usedNegativeFruitPoints, ushort @maxNegativeFruitPoints, ushort @attackSpeed, ushort @magicSpeed, ushort @maximumAttackSpeed, byte @inventoryExtensions, ushort @resets)
     {
         if (connection is null)
         {
@@ -3430,6 +3431,7 @@ public static class ConnectionExtensions
             packet.MagicSpeed = @magicSpeed;
             packet.MaximumAttackSpeed = @maximumAttackSpeed;
             packet.InventoryExtensions = @inventoryExtensions;
+            packet.Resets = @resets;
 
             return packet.Header.Length;
         }
@@ -7143,6 +7145,38 @@ public static class ConnectionExtensions
             var packet = new HuntingZoneGuardInfoRef(connection.Output.GetSpan(length)[..length]);
             packet.IsEnabled = @isEnabled;
             packet.TaxRate = @taxRate;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="EventChipRegistrationResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="registeredCount">The registered count.</param>
+    /// <param name="remainingInventoryCount">The remaining inventory count.</param>
+    /// <remarks>
+    /// Is sent by the server when: The player receives the result of registering Rena or Event Chips at the Golden Archer NPC.
+    /// Causes reaction on client side: The client updates the Golden Archer interface with total registered count and remaining count in inventory.
+    /// </remarks>
+    public static async ValueTask SendEventChipRegistrationResultAsync(this IConnection? connection, byte @result, uint @registeredCount, ushort @remainingInventoryCount)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = EventChipRegistrationResultRef.Length;
+            var packet = new EventChipRegistrationResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.RegisteredCount = @registeredCount;
+            packet.RemainingInventoryCount = @remainingInventoryCount;
 
             return packet.Header.Length;
         }

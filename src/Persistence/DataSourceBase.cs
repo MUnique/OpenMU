@@ -44,7 +44,7 @@ public abstract class DataSourceBase<TOwner> : IDataSource<TOwner>
     }
 
     /// <summary>
-    /// Gets the mapping of a <see cref="Type"/> to their <see cref="IEnumerable{T}"/> of the <see cref="TOwner"/>.
+    /// Gets the mapping of a <see cref="Type"/> to their <see cref="IEnumerable{T}"/> of the <typeparamref name="TOwner"/>.
     /// </summary>
     protected abstract IReadOnlyDictionary<Type, Func<TOwner, IEnumerable>> TypeToEnumerables { get; }
 
@@ -96,7 +96,7 @@ public abstract class DataSourceBase<TOwner> : IDataSource<TOwner>
         }
         else
         {
-            owner = (await context.GetByIdAsync<TOwner>(ownerId, cancellationToken).ConfigureAwait(false));
+            owner = await context.GetByIdAsync<TOwner>(ownerId, cancellationToken).ConfigureAwait(false);
         }
 
         this._owner = owner;
@@ -109,7 +109,7 @@ public abstract class DataSourceBase<TOwner> : IDataSource<TOwner>
     /// <inheritdoc />
     public async ValueTask DiscardChangesAsync()
     {
-        using var l = await _loadLock.LockAsync().ConfigureAwait(false);
+        using var l = await this._loadLock.LockAsync().ConfigureAwait(false);
         if (this._context?.HasChanges is true)
         {
             // next time, we have to load again.
@@ -121,7 +121,7 @@ public abstract class DataSourceBase<TOwner> : IDataSource<TOwner>
     /// <inheritdoc />
     public async ValueTask ForceDiscardChangesAsync()
     {
-        using var l = await _loadLock.LockAsync().ConfigureAwait(false);
+        using var l = await this._loadLock.LockAsync().ConfigureAwait(false);
         this.Reset();
     }
 
@@ -136,18 +136,18 @@ public abstract class DataSourceBase<TOwner> : IDataSource<TOwner>
     {
         var gameConfiguration = this._owner ?? throw new InvalidOperationException("config is not loaded.");
 
-        if (TypeToEnumerables.TryGetValue(type, out var getter))
+        if (this.TypeToEnumerables.TryGetValue(type, out var getter))
         {
             return getter(gameConfiguration);
         }
 
-        throw new ArgumentOutOfRangeException($"The type {type} is not registered as child of the {nameof(Owner)}", nameof(type));
+        throw new ArgumentOutOfRangeException($"The type {type} is not registered as child of the {nameof(this.Owner)}", nameof(type));
     }
 
     /// <inheritdoc />
     public IIdentifiable? Get(Guid id)
     {
-        using var l = _loadLock.Lock();
+        using var l = this._loadLock.Lock();
         if (this.SubObjects.TryGetValue(id, out var obj))
         {
             return obj;
@@ -177,7 +177,7 @@ public abstract class DataSourceBase<TOwner> : IDataSource<TOwner>
 
         var result = new Dictionary<Guid, IIdentifiable>();
 
-        foreach (var (type, objects) in TypeToEnumerables)
+        foreach (var (type, objects) in this.TypeToEnumerables)
         {
             foreach (var obj in objects(owner).OfType<IIdentifiable>())
             {

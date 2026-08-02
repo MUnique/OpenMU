@@ -25,9 +25,9 @@ internal static class StorageViewModelFactory
         switch (storageType)
         {
             case StorageType.Inventory:
-            {
-                var emptyRowsToPersonalStore = (byte)((InventoryConstants.MaximumNumberOfExtensions - extensions) * InventoryConstants.RowsOfOneExtension);
-                var emptyRowsToNextStorage = extensions == 0 ? emptyRowsToPersonalStore : (byte)0;
+                {
+                    var emptyRowsToPersonalStore = (byte)((InventoryConstants.MaximumNumberOfExtensions - extensions) * InventoryConstants.RowsOfOneExtension);
+                    var emptyRowsToNextStorage = extensions == 0 ? emptyRowsToPersonalStore : (byte)0;
                     return new StorageViewModel(
                     storage,
                     storageType,
@@ -35,20 +35,22 @@ internal static class StorageViewModelFactory
                     InventoryConstants.EquippableSlotsCount,
                     (byte)(InventoryConstants.GetInventorySize(0) - 1),
                     emptyRowsToNextStorage);
-            }
+                }
+
             case StorageType.InventoryExtension:
-            {
-                var emptyRowsToPersonalStore = (byte)((InventoryConstants.MaximumNumberOfExtensions - extensions) * InventoryConstants.RowsOfOneExtension);
-                var emptyRowsToNextStorage = extensions > (extensionIndex + 1) ? (byte)0 : emptyRowsToPersonalStore;
-                var startIndex = InventoryConstants.FirstExtensionItemSlotIndex + (extensionIndex * InventoryConstants.RowsOfOneExtension * InventoryConstants.RowSize);
-                return new StorageViewModel(
-                    storage,
-                    storageType,
-                    InventoryConstants.RowsOfOneExtension,
-                    startIndex,
-                    (byte)(InventoryConstants.GetInventorySize(extensionIndex + 1) - 1),
-                    emptyRowsToNextStorage);
-            }
+                {
+                    var emptyRowsToPersonalStore = (byte)((InventoryConstants.MaximumNumberOfExtensions - extensions) * InventoryConstants.RowsOfOneExtension);
+                    var emptyRowsToNextStorage = extensions > (extensionIndex + 1) ? (byte)0 : emptyRowsToPersonalStore;
+                    var startIndex = InventoryConstants.FirstExtensionItemSlotIndex + (extensionIndex * InventoryConstants.RowsOfOneExtension * InventoryConstants.RowSize);
+                    return new StorageViewModel(
+                        storage,
+                        storageType,
+                        InventoryConstants.RowsOfOneExtension,
+                        startIndex,
+                        (byte)(InventoryConstants.GetInventorySize(extensionIndex + 1) - 1),
+                        emptyRowsToNextStorage);
+                }
+
             case StorageType.PersonalStore:
                 var emptyRowsToInventory = (byte)((InventoryConstants.MaximumNumberOfExtensions - extensions) * InventoryConstants.RowsOfOneExtension);
                 return new StorageViewModel(

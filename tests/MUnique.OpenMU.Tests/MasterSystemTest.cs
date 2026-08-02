@@ -31,7 +31,7 @@ public class MasterSystemTest
     [SetUp]
     public async Task SetupAsync()
     {
-        this._player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        this._player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var context = this._player.GameContext;
         this._skillRank1 = this.CreateSkill(1, 1, 1, null, this._player.SelectedCharacter!.CharacterClass!);
         this._skillRank2 = this.CreateSkill(2, 2, 1, null, this._player.SelectedCharacter!.CharacterClass!);

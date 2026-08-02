@@ -159,7 +159,8 @@ public abstract class FixDefenseCalcsPlugInBase : UpdatePlugInBase
             charClass.AttributeCombinations.Add(bonusDefenseWithShieldToDefenseFinal);
             charClass.AttributeCombinations.Add(bonusDefenseRateWithShieldToDefenseRatePvm);
 
-            if (charClass.Number == 16 || charClass.Number == 17) // Lord classes
+            // Lord classes.
+            if (charClass.Number == 16 || charClass.Number == 17)
             {
                 var bonusDefenseWithHorseToDefenseFinal = context.CreateNew<AttributeRelationship>(
                     defenseFinal,

@@ -1,4 +1,4 @@
-﻿// <copyright file="PeriodicTaskGameServerState.cs" company="MUnique">
+// <copyright file="PeriodicTaskGameServerState.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -27,6 +27,12 @@ public class PeriodicTaskGameServerState
     /// Gets or sets the next run in UTC.
     /// </summary>
     public DateTime NextRunUtc { get; set; } = DateTime.UtcNow;
+
+    /// <summary>
+    /// Gets or sets the UTC timestamp of when the last event run started.
+    /// Used to prevent a new event from starting before the previous task duration has elapsed.
+    /// </summary>
+    public DateTime LastRunUtc { get; set; } = DateTime.MinValue;
 
     /// <summary>
     /// Gets or sets the state.

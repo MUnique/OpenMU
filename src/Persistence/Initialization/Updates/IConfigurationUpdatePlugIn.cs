@@ -1,4 +1,4 @@
-﻿// <copyright file="IConfigurationUpdatePlugIn.cs" company="MUnique">
+// <copyright file="IConfigurationUpdatePlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -21,7 +21,7 @@ public interface IConfigurationUpdatePlugIn : IStrategyPlugIn<int>
     UpdateVersion Version { get; }
 
     /// <summary>
-    /// Gets the <see cref="IDataInitializationPlugIn.Key"/> to which this update belongs to.
+    /// Gets the data initialization key to which this update belongs.
     /// </summary>
     string DataInitializationKey { get; }
 

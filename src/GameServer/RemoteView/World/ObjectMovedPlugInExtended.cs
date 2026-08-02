@@ -1,4 +1,4 @@
-﻿// <copyright file="ObjectMovedPlugIn.cs" company="MUnique">
+﻿// <copyright file="ObjectMovedPlugInExtended.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -40,7 +40,7 @@ public class ObjectMovedPlugInExtended : ObjectMovedPlugIn
     {
         int Write()
         {
-            var stepsSize = steps.Length == 0 ? 1 : (steps.Length / 2) + 2;
+            var stepsSize = stepsLength == 0 ? 0 : (stepsLength / 2) + 2;
             var size = ObjectWalkedExtended.GetRequiredSize(stepsSize);
             var span = connection.Output.GetSpan(size)[..size];
 
@@ -56,7 +56,7 @@ public class ObjectMovedPlugInExtended : ObjectMovedPlugIn
                 StepCount = (byte)stepsLength,
             };
 
-            this.SetStepData(walkPacket, steps.Span, stepsSize);
+            this.SetStepData(walkPacket, steps.Span[..stepsLength], stepsSize);
             return size;
         }
 

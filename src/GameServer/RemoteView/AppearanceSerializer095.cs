@@ -85,7 +85,6 @@ public class AppearanceSerializer095 : IAppearanceSerializer
     /// </summary>
     /// <param name="target">The target.</param>
     /// <param name="appearanceData">The appearance data.</param>
-    /// <returns></returns>
     private void WritePreviewCharSet(Span<byte> target, IAppearanceData appearanceData)
     {
         ItemAppearance?[] itemArray = new ItemAppearance[InventoryConstants.EquippableSlotsCount];
@@ -123,8 +122,8 @@ public class AppearanceSerializer095 : IAppearanceSerializer
 
         target[5] |= (byte)((itemArray[InventoryConstants.WingsSlot]?.Definition?.Number & 0x03) << 2 ?? 0b1100);
         this.SetPet(target, itemArray[InventoryConstants.PetSlot]);
-        // index9: upper 5 bits are the equipped flags of SetArmorPiece
 
+        // index9: upper 5 bits are the equipped flags of SetArmorPiece
         this.SetItemLevels(target, itemArray);
     }
 
@@ -241,6 +240,5 @@ public class AppearanceSerializer095 : IAppearanceSerializer
         }
 
         preview[5] |= (byte)((wing?.Definition?.Number & 0x03) << 2 ?? 0b1100);
-            
     }
 }

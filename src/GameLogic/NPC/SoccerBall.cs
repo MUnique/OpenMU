@@ -77,6 +77,13 @@ public sealed class SoccerBall : NonPlayerCharacter, IAttackable, IMovable
     }
 
     /// <inheritdoc />
+    public ValueTask ApplyBleedingDamageAsync(IAttacker initialAttacker, uint damage)
+    {
+        // A ball doesn't take any damage
+        return ValueTask.CompletedTask;
+    }
+
+    /// <inheritdoc />
     public ValueTask KillInstantlyAsync()
     {
         throw new NotImplementedException();

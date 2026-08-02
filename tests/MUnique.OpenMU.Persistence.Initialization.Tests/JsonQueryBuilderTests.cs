@@ -24,7 +24,10 @@ internal class JsonQueryBuilderTests
     [OneTimeSetUp]
     public void Setup()
     {
-        ConnectionConfigurator.Initialize(new ConfigFileDatabaseConnectionStringProvider());
+        if (!ConnectionConfigurator.IsInitialized)
+        {
+            ConnectionConfigurator.Initialize(new ConfigFileDatabaseConnectionStringProvider());
+        }
     }
 
     /// <summary>
@@ -36,7 +39,7 @@ internal class JsonQueryBuilderTests
         using var installationContext = new ConfigurationContext();
         var type = installationContext.Model.GetEntityTypes().FirstOrDefault(t => t.ClrType == typeof(GameConfiguration));
         string result;
-        Stopwatch stopwatch = new ();
+        Stopwatch stopwatch = new();
         stopwatch.Start();
         try
         {
@@ -61,7 +64,7 @@ internal class JsonQueryBuilderTests
         using var installationContext = new ConfigurationContext();
         var type = installationContext.Model.GetEntityTypes().FirstOrDefault(t => t.ClrType == typeof(Account));
         string result;
-        Stopwatch stopwatch = new ();
+        Stopwatch stopwatch = new();
         stopwatch.Start();
         try
         {
@@ -89,7 +92,7 @@ internal class JsonQueryBuilderTests
         installationContext.Database.OpenConnection();
         var builder = new GameConfigurationJsonObjectLoader();
         IEnumerable<GameConfiguration> result;
-        Stopwatch stopwatch = new ();
+        Stopwatch stopwatch = new();
         stopwatch.Start();
         try
         {

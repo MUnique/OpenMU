@@ -155,6 +155,7 @@ internal partial class CharacterClassInitialization
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0, Stats.BerserkerManaMultiplier)); // placeholder value
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0, Stats.BerserkerHealthDecrement)); // placeholder value
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0, Stats.BerserkerProficiencyMultiplier)); // placeholder value
+        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0.6f, Stats.BleedingDamageMultiplier));
 
         this.AddCommonBaseAttributeValues(result.BaseAttributeValues, isMaster);
 

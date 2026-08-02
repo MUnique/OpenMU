@@ -6,12 +6,11 @@ namespace MUnique.OpenMU.Web.Shared.Services;
 
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
-using Blazored.Modal;
-using Blazored.Modal.Services;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
-using MUnique.OpenMU.Web.Shared.Components.Form;
+using MUnique.OpenMU.Web.Shared.Components.Form.Modal;
+using MUnique.OpenMU.Web.Shared.Components.Modal;
 using MUnique.OpenMU.Web.Shared.Models;
 
 /// <summary>
@@ -21,8 +20,9 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
 {
     private readonly IDataSource<GameConfiguration> _dataSource;
     private readonly IModalService _modalService;
-    private string _nameFilter = string.Empty;
+
     private Guid _pointFilter;
+    private string _nameFilter = string.Empty;
     private string _typeFilter = string.Empty;
 
     /// <summary>
@@ -42,9 +42,6 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
     /// <summary>
     /// Gets or sets the name filter.
     /// </summary>
-    /// <value>
-    /// The name filter.
-    /// </value>
     public string NameFilter
     {
         get => this._nameFilter;
@@ -58,9 +55,6 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
     /// <summary>
     /// Gets or sets the type filter.
     /// </summary>
-    /// <value>
-    /// The type filter.
-    /// </value>
     public string TypeFilter
     {
         get => this._typeFilter;
@@ -130,7 +124,7 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
 
         try
         {
-            var gameConfiguration = await this._dataSource.GetOwnerAsync(Guid.Empty);
+            var gameConfiguration = await this._dataSource.GetOwnerAsync(Guid.Empty).ConfigureAwait(true);
             var allPlugIns = GetPluginTypes().ToDictionary(t => t.GUID, t => t);
 
             var rest = count - result.Count;
@@ -139,10 +133,36 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
         }
         catch (NotImplementedException)
         {
-            // swallow
+            // Ignored.
         }
 
         return result;
+    }
+
+    /// <summary>
+    /// Gets the plug-in by identifier.
+    /// </summary>
+    /// <param name="id">The identifier.</param>
+    /// <returns>The plug-in view item, if found.</returns>
+    public async Task<PlugInConfigurationViewItem?> GetByIdAsync(Guid id)
+    {
+        try
+        {
+            var gameConfiguration = await this._dataSource.GetOwnerAsync(Guid.Empty).ConfigureAwait(true);
+            var allPlugIns = GetPluginTypes().ToDictionary(t => t.GUID, t => t);
+
+            var config = gameConfiguration.PlugInConfigurations.FirstOrDefault(c => c.GetId() == id);
+            if (config != null && allPlugIns.TryGetValue(config.TypeId, out var plugInType))
+            {
+                return BuildConfigurationDto(plugInType, gameConfiguration, config);
+            }
+        }
+        catch (NotImplementedException)
+        {
+            // Ignored.
+        }
+
+        return null;
     }
 
     /// <summary>
@@ -164,7 +184,7 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
     }
 
     /// <summary>
-    /// Shows the custom plug in configuration in a modal dialog.
+    /// Shows the custom plugin configuration in a modal dialog.
     /// </summary>
     /// <param name="item">The item.</param>
     public async Task ShowPlugInConfigAsync(PlugInConfigurationViewItem item)
@@ -180,7 +200,7 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
                             ?? Activator.CreateInstance(item.ConfigurationType);
         var parameters = new ModalParameters();
         parameters.Add(nameof(ModalCreateNew<object>.Item), configuration!);
-        parameters.Add(nameof(ModalCreateNew<object>.PersistenceContext), await this._dataSource.GetContextAsync());
+        parameters.Add(nameof(ModalCreateNew<object>.PersistenceContext), await this._dataSource.GetContextAsync().ConfigureAwait(true));
         var options = new ModalOptions
         {
             DisableBackgroundCancel = true,
@@ -198,38 +218,19 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
         {
             item.Configuration.SetConfiguration(configuration!, referenceResolver);
             await (await this._dataSource.GetContextAsync().ConfigureAwait(false)).SaveChangesAsync().ConfigureAwait(false);
+
             this.DataChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 
-    private static IEnumerable<Type> GetPluginTypes()
-    {
-        return AppDomain.CurrentDomain.GetAssemblies().SelectMany(assembly =>
-        {
-            try
-            {
-                return assembly.DefinedTypes.Where(type => type.GetCustomAttribute<PlugInAttribute>() != null);
-            }
-            catch (ReflectionTypeLoadException)
-            {
-                return Enumerable.Empty<Type>();
-            }
-        });
-    }
-
-    private static string GetPlugInName(Type plugInType)
-    {
-        return plugInType.GetCustomAttribute<DisplayAttribute>()?.Name ?? plugInType.Name;
-    }
-
-    private static Type? GetPlugInExtensionPointType(Type plugInType)
-    {
-        var plugInPoint = plugInType.GetInterfaces().FirstOrDefault(i => i.GetCustomAttribute<PlugInPointAttribute>() != null);
-        var customPlugInContainer = plugInType.GetInterfaces().FirstOrDefault(i => i.GetCustomAttribute<CustomPlugInContainerAttribute>() != null);
-        return plugInPoint ?? customPlugInContainer;
-    }
-
-    private static PlugInConfigurationViewItem BuildConfigurationDto(Type plugInType, GameConfiguration gameConfiguration, PlugInConfiguration plugInConfiguration)
+    /// <summary>
+    /// Builds the view item of a plugin configuration.
+    /// </summary>
+    /// <param name="plugInType">Type of the plugin.</param>
+    /// <param name="gameConfiguration">The game configuration to which the plugin configuration belongs.</param>
+    /// <param name="plugInConfiguration">The plugin configuration.</param>
+    /// <returns>The view item of the plugin configuration.</returns>
+    internal static PlugInConfigurationViewItem BuildConfigurationDto(Type plugInType, GameConfiguration gameConfiguration, PlugInConfiguration plugInConfiguration)
     {
         var plugInAttribute = plugInType.GetCustomAttribute<DisplayAttribute>();
         var plugInPoint = plugInType.GetInterfaces().FirstOrDefault(i => i.GetCustomAttribute<PlugInPointAttribute>() != null)?.GetCustomAttribute<PlugInPointAttribute>();
@@ -267,6 +268,33 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
         }
 
         return viewItem;
+    }
+
+    private static IEnumerable<Type> GetPluginTypes()
+    {
+        return AppDomain.CurrentDomain.GetAssemblies().SelectMany(assembly =>
+        {
+            try
+            {
+                return assembly.DefinedTypes.Where(type => type.GetCustomAttribute<PlugInAttribute>() != null);
+            }
+            catch (ReflectionTypeLoadException)
+            {
+                return Enumerable.Empty<Type>();
+            }
+        });
+    }
+
+    private static string GetPlugInName(Type plugInType)
+    {
+        return plugInType.GetCustomAttribute<DisplayAttribute>()?.GetName() ?? plugInType.Name;
+    }
+
+    private static Type? GetPlugInExtensionPointType(Type plugInType)
+    {
+        var plugInPoint = plugInType.GetInterfaces().FirstOrDefault(i => i.GetCustomAttribute<PlugInPointAttribute>() != null);
+        var customPlugInContainer = plugInType.GetInterfaces().FirstOrDefault(i => i.GetCustomAttribute<CustomPlugInContainerAttribute>() != null);
+        return plugInPoint ?? customPlugInContainer;
     }
 
     private IEnumerable<PlugInConfigurationViewItem> GetPluginsOfConfig(int offset, Dictionary<Guid, Type> allPlugIns, GameConfiguration gameConfig, int rest)

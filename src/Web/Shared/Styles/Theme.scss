@@ -1,0 +1,196 @@
+// =============================================================================
+// Theme — light + dark design tokens for custom components.
+//
+// BS5's built-in [data-bs-theme="dark"] (in _root.scss) handles all Bootstrap
+// component dark mode automatically. This file only provides:
+//   a) Custom --omu-* tokens for non-Boostrap components (sidebar,
+//      multi-lookup-field, sticky footers, etc.)
+//   b) Overrides for those custom components in dark mode
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// SCSS token maps
+// -----------------------------------------------------------------------------
+
+$omu-light: (
+    bg:                   #ffffff,
+    surface:              #f8f9fa,
+    surface-2:            #ffffff,
+    surface-muted:        #f7f7f7,
+    surface-hover:        #e9e9e9,
+    text:                 #212529,
+    text-muted:           #5f6368,
+    text-secondary:       #6c757d,
+    border:               #d6d5d5,
+    link:                 #0366d6,
+    link-primary:         #1b6ec2,
+    link-primary-border:  #1861ac,
+    mark-bg:              #ffff00,
+    error-bg:             lightyellow,
+    error-text:           #212529,
+    sidebar-gradient:     linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%),
+    nav-link:             #d7d7d7,
+    spinner-dot:          rgb(5, 39, 103),
+    overlay-bg:           rgba(0, 0, 0, 0.5),
+    overlay-spinner:      #ffffff,
+);
+
+$omu-dark: (
+    bg:                   #121417,
+    surface:              #1c1f24,
+    surface-2:            #1a1d22,
+    surface-muted:        #23272d,
+    surface-hover:        #2a2f36,
+    text:                 #e6e6e6,
+    text-muted:           #a0a4ab,
+    text-secondary:       #b0b4bb,
+    border:               #2a2f36,
+    link:                 #66b2ff,
+    link-primary:         #2e86d6,
+    link-primary-border:  #1f6fb8,
+    mark-bg:              #6b5e00,
+    error-bg:             #3a2f00,
+    error-text:           #f5e9b3,
+    sidebar-gradient:     linear-gradient(180deg, #0a1330 0%, #1a0322 70%),
+    nav-link:             #d7d7d7,
+    spinner-dot:          #66b2ff,
+    overlay-bg:           rgba(0, 0, 0, 0.5),
+    overlay-spinner:      #ffffff,
+);
+
+@mixin omu-theme-vars($map) {
+    @each $key, $value in $map {
+        --omu-#{$key}: #{$value};
+    }
+}
+
+// -----------------------------------------------------------------------------
+// Token emission
+// -----------------------------------------------------------------------------
+
+:root,
+[data-bs-theme="light"] {
+    @include omu-theme-vars($omu-light);
+}
+
+[data-bs-theme="dark"] {
+    @include omu-theme-vars($omu-dark);
+}
+
+// -----------------------------------------------------------------------------
+// Base background/color — defer to BS5 CSS variables
+// -----------------------------------------------------------------------------
+
+html,
+body {
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+}
+
+// -----------------------------------------------------------------------------
+// Custom-component dark overrides
+// -----------------------------------------------------------------------------
+
+[data-bs-theme="dark"] {
+
+    .oi {
+        color: inherit;
+    }
+
+    .sidebar {
+        .nav-link {
+            color: var(--omu-nav-link);
+        }
+
+        > nav > div > ul > li.dropdown {
+            > div {
+                background-color: var(--omu-surface);
+                color: var(--omu-text);
+                border-color: var(--omu-border);
+
+                > a {
+                    color: var(--omu-text);
+
+                    &:hover,
+                    &:focus {
+                        background-color: var(--omu-surface-hover);
+                        color: var(--omu-text);
+                    }
+
+                    &.active {
+                        background-color: var(--omu-surface-hover);
+                        color: var(--omu-text);
+                    }
+                }
+
+                hr {
+                    border-color: var(--omu-border);
+                }
+            }
+        }
+    }
+
+    #blazor-error-ui {
+        background: var(--omu-error-bg);
+        color: var(--omu-error-text);
+    }
+
+    .creation-panel-body .form-actions {
+        background-color: var(--omu-surface) !important;
+        border-top: 1px solid var(--omu-border) !important;
+    }
+
+    .add-new-bar {
+        background-color: var(--omu-surface) !important;
+        border-top: var(--bs-border-width) solid var(--omu-border) !important;
+    }
+
+    .multi-lookup-field {
+        &__selected-items {
+            background: var(--omu-surface-2);
+            border-color: var(--omu-border);
+            color: var(--omu-text);
+        }
+
+        &__tag {
+            background-color: var(--omu-surface-hover);
+            border-color: var(--omu-border);
+            color: var(--omu-text);
+        }
+
+        &__tag-remove {
+            color: var(--omu-text-muted);
+        }
+
+        &__dropdown {
+            background: var(--omu-surface-2);
+            border-color: var(--omu-border);
+        }
+
+        &__dropdown-item {
+            color: var(--omu-text);
+
+            &:hover,
+            &--selected {
+                background-color: var(--omu-surface-hover);
+            }
+
+            &--selected:hover {
+                background-color: var(--omu-surface-muted);
+            }
+
+            &--loading,
+            &--empty {
+                color: var(--omu-text-muted);
+            }
+        }
+    }
+
+    .sort-indicator,
+    .go-first,
+    .go-previous,
+    .go-next,
+    .go-last {
+        filter: invert(1);
+    }
+}

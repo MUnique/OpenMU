@@ -10,7 +10,6 @@ using MUnique.OpenMU.GameLogic.PlayerActions.Vault;
 using MUnique.OpenMU.Network.Packets.ClientToServer;
 using MUnique.OpenMU.PlugIns;
 
-
 /// <summary>
 /// Packet handler for vault pin remove packets (0x83, 0x02 identifier).
 /// </summary>

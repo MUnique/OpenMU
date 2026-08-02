@@ -66,7 +66,7 @@ public class ItemCraftAction
         if (player.OpenedNpc?.Definition is { } npc)
         {
             // Wing crafting is similar but has one extra requirement (chaos weapon) than
-            // chaos weapon crafting, so we set a descending order so it gets get checked first
+            // chaos weapon crafting, so we set a descending order so it gets checked first
             foreach (var itemCrafting in npc.ItemCraftings.OrderByDescending(c => c.Number))
             {
                 if (!this._craftingHandlerCache.TryGetValue(itemCrafting, out var craftingHandler))

@@ -284,6 +284,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("BlessJewelConsumeHandlerPlugIn_Name", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Drives the weekly Castle Siege state cycle..
+        /// </summary>
+        public static string CastleSiegePlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegePlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege.
+        /// </summary>
+        public static string CastleSiegePlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegePlugIn_Name", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Handles the chain lightning skill of the summoner class. Additionally to the attacked target, it will hit up to two additional targets..
@@ -588,6 +606,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string EndDuelWhenLeavingDuelMapPlugIn_Name {
             get {
                 return ResourceManager.GetString("EndDuelWhenLeavingDuelMapPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the fire scream skill of the dark lord class. Based on a chance, it does an additional damage (explosion) to any targets in a radius which origin is the target itself..
+        /// </summary>
+        public static string FireScreamSkillPlugIn_Description {
+            get {
+                return ResourceManager.GetString("FireScreamSkillPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fire scream skill.
+        /// </summary>
+        public static string FireScreamSkillPlugIn_Name {
+            get {
+                return ResourceManager.GetString("FireScreamSkillPlugIn_Name", resourceCulture);
             }
         }
         
@@ -1492,6 +1528,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Allows players to start offline leveling with /offlevel. The character stays in the world after the client disconnects and stops when the player logs back in..
+        /// </summary>
+        public static string OfflineLevelingChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("OfflineLevelingChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Offline Leveling Command.
+        /// </summary>
+        public static string OfflineLevelingChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("OfflineLevelingChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the chat command &apos;/online&apos;. Gets the count of game masters and players online..
         /// </summary>
         public static string OnlineChatCommandPlugIn_Description {
@@ -1564,6 +1618,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Automatically rejoins players to their previous party upon entering the world..
+        /// </summary>
+        public static string PartyAutoRejoinPlugIn_Description {
+            get {
+                return ResourceManager.GetString("PartyAutoRejoinPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Party Auto-Rejoin.
+        /// </summary>
+        public static string PartyAutoRejoinPlugIn_Name {
+            get {
+                return ResourceManager.GetString("PartyAutoRejoinPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Saves the progress of players periodically when their status is &apos;EnteredWorld&apos;..
         /// </summary>
         public static string PeriodicSaveProgressPlugIn_Description {
@@ -1591,20 +1663,38 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The text which prints as a golden message in the game..
+        ///   Looks up a localized string similar to The text which prints as a golden message in the game when task starts..
         /// </summary>
-        public static string PeriodicTaskConfiguration_Message_Description {
+        public static string PeriodicTaskConfiguration_StartMessage_Description {
             get {
-                return ResourceManager.GetString("PeriodicTaskConfiguration_Message_Description", resourceCulture);
+                return ResourceManager.GetString("PeriodicTaskConfiguration_StartMessage_Description", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Message.
+        ///   Looks up a localized string similar to Start message.
         /// </summary>
-        public static string PeriodicTaskConfiguration_Message_Name {
+        public static string PeriodicTaskConfiguration_StartMessage_Name {
             get {
-                return ResourceManager.GetString("PeriodicTaskConfiguration_Message_Name", resourceCulture);
+                return ResourceManager.GetString("PeriodicTaskConfiguration_StartMessage_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The text which prints as a golden message in the game when task ends..
+        /// </summary>
+        public static string PeriodicTaskConfiguration_EndMessage_Description {
+            get {
+                return ResourceManager.GetString("PeriodicTaskConfiguration_EndMessage_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to End message.
+        /// </summary>
+        public static string PeriodicTaskConfiguration_EndMessage_Name {
+            get {
+                return ResourceManager.GetString("PeriodicTaskConfiguration_EndMessage_Name", resourceCulture);
             }
         }
         
@@ -1843,6 +1933,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handles the pollution skill (book of lagle) of the summoner class. Based on a chance, it may push the targets 2 squares away from the attacker..
+        /// </summary>
+        public static string PollutionSkillPlugIn_Description {
+            get {
+                return ResourceManager.GetString("PollutionSkillPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pollution Skill.
+        /// </summary>
+        public static string PollutionSkillPlugIn_Name {
+            get {
+                return ResourceManager.GetString("PollutionSkillPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the chat command &apos;/post message&apos;. Sends a global blue system message to all players of the game..
         /// </summary>
         public static string PostChatCommandPlugIn_Description {
@@ -2016,6 +2124,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handles the requiem skill (book of neil) of the summoner class. Based on a chance, it may stun the target..
+        /// </summary>
+        public static string RequiemSkillPlugIn_Description {
+            get {
+                return ResourceManager.GetString("RequiemSkillPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Requiem Skill.
+        /// </summary>
+        public static string RequiemSkillPlugIn_Name {
+            get {
+                return ResourceManager.GetString("RequiemSkillPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handle Reset Character NPC Request.
         /// </summary>
         public static string ResetCharacterNpcPlugin_Description {
@@ -2106,7 +2232,7 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Reset points per reset.
+        ///   Looks up a localized string similar to Replace level-up points with reset total.
         /// </summary>
         public static string ResetConfiguration_ReplacePointsPerReset_Name {
             get {
@@ -2142,7 +2268,7 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Reset stats.
+        ///   Looks up a localized string similar to Reset base stats to class defaults.
         /// </summary>
         public static string ResetConfiguration_ResetStats_Name {
             get {
@@ -2156,6 +2282,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string ResetFeaturePlugIn_Description {
             get {
                 return ResourceManager.GetString("ResetFeaturePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the chat command &apos;/resetinfo&apos;. Shows the required costs and the granted points for the next reset..
+        /// </summary>
+        public static string ResetInfoChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ResetInfoChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset info chat command.
+        /// </summary>
+        public static string ResetInfoChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ResetInfoChatCommandPlugIn_Name", resourceCulture);
             }
         }
         
@@ -2736,6 +2880,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handles the twisting slash mastery skill of the dark knight class. Based on a chance, it may push the targets 2 squares away from the attacker..
+        /// </summary>
+        public static string TwistingSlashMasterySkillPlugIn_Description {
+            get {
+                return ResourceManager.GetString("TwistingSlashMasterySkillPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to TwistingSlashMasterySkillPlugIn.
+        /// </summary>
+        public static string TwistingSlashMasterySkillPlugIn_Name {
+            get {
+                return ResourceManager.GetString("TwistingSlashMasterySkillPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the chat command &apos;/unbanacc &lt;acc&gt;&apos;. Unbans an account from the game..
         /// </summary>
         public static string UnBanAccChatCommandPlugIn_Description {
@@ -3130,40 +3292,112 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("WeatherUpdatePlugIn_Name", resourceCulture);
             }
         }
- 
+
         /// <summary>
-        ///   Looks up a localized string similar to Offline Leveling Command.
+        ///   Looks up a localized string similar to Increases all monster base stats by a configurable percentage..
         /// </summary>
-        public static string OfflineLevelingChatCommandPlugIn_Name {
+        public static string MonsterAttributeScaler_Description {
             get {
-                return ResourceManager.GetString("OfflineLevelingChatCommandPlugIn_Name", resourceCulture);
+                return ResourceManager.GetString("MonsterAttributeScaler_Description", resourceCulture);
             }
         }
 
         /// <summary>
-        ///   Looks up a localized string similar to Allows players to start offline leveling.
+        ///   Looks up a localized string similar to Monster Attribute Scaler.
         /// </summary>
-        public static string OfflineLevelingChatCommandPlugIn_Description {
+        public static string MonsterAttributeScaler_Name {
             get {
-                return ResourceManager.GetString("OfflineLevelingChatCommandPlugIn_Description", resourceCulture);
+                return ResourceManager.GetString("MonsterAttributeScaler_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to Allows players to start offline leveling.
+        ///   Looks up a localized string similar to Provides configuration for the stat reset feature..
         /// </summary>
-        public static string OfflineLevelingStopOnLoginPlugIn_Name {
+        public static string StatResetFeaturePlugIn_Description {
             get {
-                return ResourceManager.GetString("OfflineLevelingStopOnLoginPlugIn_Name", resourceCulture);
+                return ResourceManager.GetString("StatResetFeaturePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to Allows players to start offline leveling.
-        /// </summary>        
-        public static string OfflineLevelingStopOnLoginPlugIn_Description {
+        ///   Looks up a localized string similar to Stat Reset Feature.
+        /// </summary>
+        public static string StatResetFeaturePlugIn_Name {
             get {
-                return ResourceManager.GetString("OfflineLevelingStopOnLoginPlugIn_Description", resourceCulture);
+                return ResourceManager.GetString("StatResetFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the chat command &apos;/resetstats&apos;..
+        /// </summary>
+        public static string ResetStatsChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ResetStatsChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset Stats chat command.
+        /// </summary>
+        public static string ResetStatsChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ResetStatsChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Required level.
+        /// </summary>
+        public static string StatResetConfiguration_RequiredLevel_Name {
+            get {
+                return ResourceManager.GetString("StatResetConfiguration_RequiredLevel_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Required money.
+        /// </summary>
+        public static string StatResetConfiguration_RequiredMoney_Name {
+            get {
+                return ResourceManager.GetString("StatResetConfiguration_RequiredMoney_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Required reset item.
+        /// </summary>
+        public static string StatResetConfiguration_RequiredResetItem_Name {
+            get {
+                return ResourceManager.GetString("StatResetConfiguration_RequiredResetItem_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chat command enabled.
+        /// </summary>
+        public static string StatResetConfiguration_ChatCommandEnabled_Name {
+            get {
+                return ResourceManager.GetString("StatResetConfiguration_ChatCommandEnabled_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Move home.
+        /// </summary>
+        public static string StatResetConfiguration_MoveHome_Name {
+            get {
+                return ResourceManager.GetString("StatResetConfiguration_MoveHome_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Log out.
+        /// </summary>
+        public static string StatResetConfiguration_LogOut_Name {
+            get {
+                return ResourceManager.GetString("StatResetConfiguration_LogOut_Name", resourceCulture);
             }
         }
     }

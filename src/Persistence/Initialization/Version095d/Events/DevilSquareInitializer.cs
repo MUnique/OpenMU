@@ -44,7 +44,7 @@ internal class DevilSquareInitializer : InitializerBase
     /// <summary>
     /// Gets the rewards based on game level and rank.
     /// </summary>
-    private static readonly List<(int GameLevel, int Rank, int Experience, int Money)> RewardTable = new ()
+    private static readonly List<(int GameLevel, int Rank, int Experience, int Money)> RewardTable = new()
     {
         (1, 1, 6000, 30000),
         (1, 2, 4000, 25000),

@@ -31,7 +31,7 @@ public class ItemSerializerExtendedTests : ItemSerializerTests<ItemSerializerExt
 /// </summary>
 [Ignore("Generic test")]
 public class ItemSerializerTests<T>
-    where T: IItemSerializer, new()
+    where T : IItemSerializer, new()
 {
     private GameConfiguration _gameConfiguration = null!;
     private IPersistenceContextProvider _contextProvider = null!;

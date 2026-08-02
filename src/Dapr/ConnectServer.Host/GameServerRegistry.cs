@@ -7,8 +7,8 @@ namespace MUnique.OpenMU.ConnectServer.Host;
 using System.Net;
 using System.Threading;
 using Microsoft.Extensions.Logging;
-using Nito.AsyncEx;
 using MUnique.OpenMU.Interfaces;
+using Nito.AsyncEx;
 
 /// <summary>
 /// A registry which keeps track of available <see cref="IGameServer"/>s.
@@ -33,7 +33,7 @@ public sealed class GameServerRegistry : IDisposable
         this._connectServer = connectServer;
         this._logger = logger;
 
-        async Task RunCleanupLoop()
+        async Task RunCleanupLoopAsync()
         {
             try
             {
@@ -45,7 +45,7 @@ public sealed class GameServerRegistry : IDisposable
             }
         }
 
-        _ = RunCleanupLoop();
+        _ = RunCleanupLoopAsync();
     }
 
     /// <inheritdoc />

@@ -1,4 +1,4 @@
-﻿// <copyright file="IGameContext.cs" company="MUnique">
+// <copyright file="IGameContext.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -83,9 +83,9 @@ public interface IGameContext
     FeaturePlugInContainer FeaturePlugIns { get; }
 
     /// <summary>
-    /// Gets the offline leveling manager which tracks active ghost players.
+    /// Gets the offline player manager which tracks active offline players.
     /// </summary>
-    OfflineLeveling.OfflineLevelingManager OfflineLevelingManager { get; }
+    Offline.OfflinePlayerManager OfflinePlayerManager { get; }
 
     /// <summary>
     /// Gets the players count of the game.
@@ -118,6 +118,11 @@ public interface IGameContext
     ConcurrentDictionary<(Player Attacker, Player Defender), DateTime> SelfDefenseState { get; }
 
     /// <summary>
+    /// Gets the party manager which handles party creation and persistence.
+    /// </summary>
+    IPartyManager PartyManager { get; }
+
+    /// <summary>
     /// Gets the initialized maps which are hosted on this context.
     /// </summary>
     ValueTask<IEnumerable<GameMap>> GetMapsAsync();
@@ -132,6 +137,12 @@ public interface IGameContext
     /// </summary>
     /// <param name="player">The player.</param>
     ValueTask AddPlayerAsync(Player player);
+
+    /// <summary>
+    /// Removes the player from the game.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    ValueTask RemovePlayerAsync(Player player);
 
     /// <summary>
     /// Gets the maps which is meant to be hosted by the game.

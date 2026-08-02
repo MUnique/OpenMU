@@ -1,4 +1,4 @@
-﻿// <copyright file="PartyResponseAction.cs" company="MUnique">
+// <copyright file="PartyResponseAction.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -58,7 +58,7 @@ public class PartyResponseAction
         else
         {
             var master = player.LastPartyRequester;
-            var party = new Party(player.GameContext.Configuration.MaximumPartySize, player.GameContext.LoggerFactory.CreateLogger<Party>());
+            var party = player.GameContext.PartyManager.CreateParty();
             await party.AddAsync(master).ConfigureAwait(false);
             await party.AddAsync(player).ConfigureAwait(false);
         }

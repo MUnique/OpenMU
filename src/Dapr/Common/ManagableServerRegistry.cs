@@ -33,7 +33,7 @@ public class ManagableServerRegistry : IServerProvider, IDisposable
         this._daprClient = daprClient;
         this._logger = logger;
 
-        async Task RunTimeoutLoop()
+        async Task RunTimeoutLoopAsync()
         {
             try
             {
@@ -45,7 +45,7 @@ public class ManagableServerRegistry : IServerProvider, IDisposable
             }
         }
 
-        _ = RunTimeoutLoop();
+        _ = RunTimeoutLoopAsync();
     }
 
     /// <inheritdoc />

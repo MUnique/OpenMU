@@ -83,7 +83,8 @@ public class FixCharStatsForceWavePlugInSeason6 : FixCharStatsForceWavePlugInBas
                 }
             }
 
-            if (charClass.Number == 16 || charClass.Number == 17) // Lord classes
+            // Lord classes.
+            if (charClass.Number == 16 || charClass.Number == 17)
             {
                 charClass.StatAttributes.First(attr => attr.Attribute == Stats.CurrentHealth).BaseValue = 90;
                 charClass.StatAttributes.First(attr => attr.Attribute == Stats.CurrentMana).BaseValue = 40;
@@ -103,7 +104,9 @@ public class FixCharStatsForceWavePlugInSeason6 : FixCharStatsForceWavePlugInBas
                     totalVitalityoMaximumHealth.InputOperand = 2;
                 }
             }
-            else if (charClass.Number == 24 || charClass.Number == 25) // RF classes
+
+            // RF classes.
+            else if (charClass.Number == 24 || charClass.Number == 25)
             {
                 if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.DefenseRatePvp && attrCombo.InputAttribute == Stats.TotalAgility) is { } totalAgilityToDefenseRatePvp)
                 {
@@ -150,7 +153,9 @@ public class FixCharStatsForceWavePlugInSeason6 : FixCharStatsForceWavePlugInBas
                     totalVitalityToFenrirBaseDmg.InputOperand = 1.0f / 3;
                 }
             }
-            else if (charClass.Number == 20 || charClass.Number == 22 || charClass.Number == 23) // Summoner classes
+
+            // Summoner classes.
+            else if (charClass.Number == 20 || charClass.Number == 22 || charClass.Number == 23)
             {
                 charClass.StatAttributes.First(attr => attr.Attribute == Stats.CurrentMana).BaseValue = 40;
 

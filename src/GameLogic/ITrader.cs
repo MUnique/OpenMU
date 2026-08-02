@@ -4,9 +4,9 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
+using System.Threading;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
-using System.Threading;
 
 /// <summary>
 /// Interface of a trader.

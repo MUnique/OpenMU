@@ -71,7 +71,7 @@ public class LiveConnection : INotifyPropertyChanged, ICapturedConnection
     /// <summary>
     /// Gets the packet list of all captured packets.
     /// </summary>
-    public BindingList<Packet> PacketList { get; } = new ();
+    public BindingList<Packet> PacketList { get; } = new();
 
     /// <summary>
     /// Gets or sets the name of the proxied connection.

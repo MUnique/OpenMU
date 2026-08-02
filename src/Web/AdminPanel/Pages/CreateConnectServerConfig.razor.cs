@@ -1,4 +1,4 @@
-﻿// <copyright file="CreateGameServerConfig.razor.cs" company="MUnique">
+﻿// <copyright file="CreateConnectServerConfig.razor.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -12,6 +12,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
+using MUnique.OpenMU.Web.Shared.Services;
 
 /// <summary>
 /// Razor page which shows objects of the specified type in a grid.
@@ -22,7 +23,7 @@ public partial class CreateConnectServerConfig : ComponentBase, IAsyncDisposable
     private CancellationTokenSource? _disposeCts;
 
     private ConnectServerViewModel? _viewModel;
-    private string? _initState;
+    private bool _isProcessing;
 
     /// <summary>
     /// Gets or sets the context provider.
@@ -53,6 +54,12 @@ public partial class CreateConnectServerConfig : ComponentBase, IAsyncDisposable
     /// </summary>
     [Inject]
     public NavigationManager NavigationManager { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the loading overlay service.
+    /// </summary>
+    [Inject]
+    public LoadingOverlayService LoadingService { get; set; } = null!;
 
     /// <inheritdoc />
     public async ValueTask DisposeAsync()
@@ -86,6 +93,7 @@ public partial class CreateConnectServerConfig : ComponentBase, IAsyncDisposable
 
     private async Task LoadDataAsync(CancellationToken cancellationToken)
     {
+        using var loading = this.LoadingService.ShowLoadingIndicator();
         cancellationToken.ThrowIfCancellationRequested();
 
         var gameConfiguration = await this.DataSource.GetOwnerAsync(default, cancellationToken).ConfigureAwait(true);
@@ -126,7 +134,7 @@ public partial class CreateConnectServerConfig : ComponentBase, IAsyncDisposable
         result.ServerId = this._viewModel.ServerId;
         result.Description = this._viewModel.Description;
         result.Client = this._viewModel.Client!;
-        result.ClientListenerPort = _viewModel.NetworkPort;
+        result.ClientListenerPort = this._viewModel.NetworkPort;
         return result;
     }
 
@@ -134,11 +142,11 @@ public partial class CreateConnectServerConfig : ComponentBase, IAsyncDisposable
     {
         try
         {
-            var gameConfiguration = await this.DataSource.GetOwnerAsync().ConfigureAwait(false);
-
+            this._isProcessing = true;
+            var gameConfiguration = await this.DataSource.GetOwnerAsync().ConfigureAwait(true);
             using var saveContext = this.ContextProvider.CreateNewTypedContext(typeof(DataModel.Configuration.ConnectServerDefinition), true, gameConfiguration);
 
-            var existingServerDefinitions = (await saveContext.GetAsync<ConnectServerDefinition>().ConfigureAwait(false)).ToList();
+            var existingServerDefinitions = (await saveContext.GetAsync<ConnectServerDefinition>().ConfigureAwait(true)).ToList();
             if (existingServerDefinitions.Any(def => def.ServerId == this._viewModel?.ServerId))
             {
                 this.ToastService.ShowError(string.Format(Resources.ServerWithIdAlreadyExists, this._viewModel?.ServerId));
@@ -151,20 +159,13 @@ public partial class CreateConnectServerConfig : ComponentBase, IAsyncDisposable
                 return;
             }
 
-            this._initState = Resources.CreatingConfigurationInfo;
-            await this.InvokeAsync(this.StateHasChanged);
-            var connectServerDefinition = await this.CreateDefinitionByViewModelAsync(saveContext).ConfigureAwait(false);
-            this._initState = Resources.SavingConfigurationInfo;
-            await this.InvokeAsync(this.StateHasChanged);
+            var connectServerDefinition = await this.CreateDefinitionByViewModelAsync(saveContext).ConfigureAwait(true);
             var success = await saveContext.SaveChangesAsync().ConfigureAwait(true);
 
-            // if success, init new game server instance
             if (success)
             {
                 this.ToastService.ShowSuccess(Resources.ConnectionServerConfigurationSaved);
-                this._initState = Resources.InitializingConnectServerInfo;
-                await this.InvokeAsync(this.StateHasChanged);
-                await this.ServerInstanceManager.InitializeConnectServerAsync(connectServerDefinition.ConfigurationId);
+                await this.ServerInstanceManager.InitializeConnectServerAsync(connectServerDefinition.ConfigurationId).ConfigureAwait(true);
                 this.NavigationManager.NavigateTo("servers");
                 return;
             }
@@ -175,8 +176,10 @@ public partial class CreateConnectServerConfig : ComponentBase, IAsyncDisposable
         {
             this.ToastService.ShowError(string.Format(Resources.UnexpectedErrorOccurred, ex.Message));
         }
-
-        this._initState = null;
+        finally
+        {
+            this._isProcessing = false;
+        }
     }
 
     /// <summary>

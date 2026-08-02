@@ -27,6 +27,9 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Statistics.MiniGameRankingEntry>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.Account>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.AppearanceData>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.CastleSiegeData>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.CastleSiegeGuildRegistration>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.CastleSiegeNpcState>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.Character>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.CharacterQuestState>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.Guild>();
@@ -40,6 +43,12 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.SkillEntry>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.AreaSkillSettings>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.BattleZoneDefinition>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Buff>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.CastleSiegeConfiguration>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.CastleSiegeNpcDefinition>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.CastleSiegeStateScheduleEntry>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.CastleSiegeUpgradeDefinition>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.CastleSiegeZoneDefinition>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.CharacterClass>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.ChatServerDefinition>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.ChatServerEndpoint>();
@@ -117,6 +126,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Entity<Account>().HasMany(entity => entity.RawCharacters).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Account>().HasMany(entity => entity.RawAttributes).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<AppearanceData>().HasMany(entity => entity.RawEquippedItems).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<CastleSiegeData>().HasMany(entity => entity.RawNpcStates).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Character>().HasMany(entity => entity.RawAttributes).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Character>().HasMany(entity => entity.RawLetters).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Character>().HasMany(entity => entity.RawLearnedSkills).WithOne().OnDelete(DeleteBehavior.Cascade);
@@ -129,6 +139,18 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Entity<BattleZoneDefinition>().HasOne(entity => entity.RawGround).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<BattleZoneDefinition>().HasOne(entity => entity.RawLeftGoal).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<BattleZoneDefinition>().HasOne(entity => entity.RawRightGoal).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<Buff>().HasOne(entity => entity.RawMagicEffectDefinition).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<CastleSiegeConfiguration>().HasMany(entity => entity.RawStateSchedule).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<CastleSiegeConfiguration>().HasMany(entity => entity.RawNpcDefinitions).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<CastleSiegeConfiguration>().HasMany(entity => entity.RawGateDefenseUpgrades).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<CastleSiegeConfiguration>().HasMany(entity => entity.RawGateLifeUpgrades).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<CastleSiegeConfiguration>().HasMany(entity => entity.RawStatueDefenseUpgrades).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<CastleSiegeConfiguration>().HasMany(entity => entity.RawStatueLifeUpgrades).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<CastleSiegeConfiguration>().HasMany(entity => entity.RawStatueRegenUpgrades).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<CastleSiegeConfiguration>().HasMany(entity => entity.RawAttackMachineZones).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<CastleSiegeConfiguration>().HasMany(entity => entity.RawDefenseMachineZones).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<CastleSiegeConfiguration>().HasOne(entity => entity.RawDefenseRespawnArea).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<CastleSiegeConfiguration>().HasOne(entity => entity.RawAttackRespawnArea).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<CharacterClass>().HasMany(entity => entity.RawStatAttributes).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<CharacterClass>().HasMany(entity => entity.RawAttributeCombinations).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<CharacterClass>().HasMany(entity => entity.RawBaseAttributeValues).WithOne().OnDelete(DeleteBehavior.Cascade);
@@ -157,6 +179,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Entity<GameConfiguration>().HasMany(entity => entity.RawGlobalBaseAttributeValues).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameConfiguration>().HasMany(entity => entity.RawPlugInConfigurations).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameConfiguration>().HasMany(entity => entity.RawMiniGameDefinitions).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<GameConfiguration>().HasOne(entity => entity.RawCastleSiegeConfiguration).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameMapDefinition>().HasMany(entity => entity.RawMonsterSpawns).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameMapDefinition>().HasMany(entity => entity.RawEnterGates).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameMapDefinition>().HasOne(entity => entity.RawBattleZone).WithOne().OnDelete(DeleteBehavior.Cascade);
@@ -179,6 +202,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Entity<MonsterDefinition>().HasMany(entity => entity.RawItemCraftings).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<MonsterDefinition>().HasMany(entity => entity.RawAttributes).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<MonsterDefinition>().HasMany(entity => entity.RawQuests).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<MonsterDefinition>().HasMany(entity => entity.RawBuffs).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Skill>().HasMany(entity => entity.RawRequirements).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Skill>().HasMany(entity => entity.RawConsumeRequirements).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Skill>().HasMany(entity => entity.RawAttributeRelationships).WithOne().OnDelete(DeleteBehavior.Cascade);

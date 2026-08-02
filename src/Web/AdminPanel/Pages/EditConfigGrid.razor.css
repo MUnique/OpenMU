@@ -1,9 +1,20 @@
-﻿
-.col-title {
+﻿.col-title {
     min-width: 0px;
     display: flex;
+    align-items: center;
+    gap: 0.25rem;
     flex-grow: 1;
-    padding: 0;
+    padding: 0.25rem 0.5rem;
+    border: none;
+    border-radius: var(--bs-border-radius);
+    background: none;
+    cursor: pointer;
+    color: inherit;
+    transition: background-color 0.15s;
+}
+
+.col-title:hover {
+    background-color: rgba(128, 128, 128, 0.15);
 }
 
 .col-title-text {
@@ -12,4 +23,17 @@
 
 .col-search {
     width: 50%;
+}
+
+.add-new-bar {
+    position: sticky;
+    bottom: 0;
+    background-color: var(--omu-surface-2);
+    padding: 0.5rem 1.5rem;
+    margin: 1rem -1.5rem -1rem -1.5rem;
+    border-top: var(--bs-border-width) solid var(--omu-border);
+}
+
+.add-new-bar hr {
+    display: none;
 }

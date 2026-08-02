@@ -1,37 +1,24 @@
 ﻿<div class='resizers'>
-    <div class='resizer top-left' @onmousedown=this.OnTopLeftStartResize></div>
-    <div class='resizer top-right' @onmousedown=this.OnTopRightStartResize></div>
-    <div class='resizer bottom-left' @onmousedown=this.OnBottomLeftStartResize></div>
-    <div class='resizer bottom-right' @onmousedown=this.OnBottomRightStartResize></div>
+    <div class='resizer top-left' @onmousedown="OnTopLeftStartResize"></div>
+    <div class='resizer top-right' @onmousedown="OnTopRightStartResize"></div>
+    <div class='resizer bottom-left' @onmousedown="OnBottomLeftStartResize"></div>
+    <div class='resizer bottom-right' @onmousedown="OnBottomRightStartResize"></div>
 </div>
 
 @code {
-
     /// <summary>
-    /// Gets or sets an <see cref="EventCallback"/> which gets called to inform the <see cref="ResizerPosition"/> when a resizing operation takes place.
+    /// Gets or sets an <see cref="EventCallback"/> which gets called to start resizing.
     /// </summary>
     [Parameter]
-    public EventCallback<ResizerPosition?> Resizing { get; set; }
+    public EventCallback<ResizerPosition?> ResizeStart { get; set; }
 
-    private async Task OnTopLeftStartResize(MouseEventArgs args)
-    {
-        await this.Resizing.InvokeAsync(ResizerPosition.TopLeft);
-    }
+    private Task OnTopLeftStartResize(MouseEventArgs args) => this.ResizeStart.InvokeAsync(ResizerPosition.TopLeft);
 
-    private async Task OnTopRightStartResize(MouseEventArgs args)
-    {
-        await this.Resizing.InvokeAsync(ResizerPosition.TopRight);
-    }
+    private Task OnTopRightStartResize(MouseEventArgs args) => this.ResizeStart.InvokeAsync(ResizerPosition.TopRight);
 
-    private async Task OnBottomLeftStartResize(MouseEventArgs args)
-    {
-        await this.Resizing.InvokeAsync(ResizerPosition.BottomLeft);
-    }
+    private Task OnBottomLeftStartResize(MouseEventArgs args) => this.ResizeStart.InvokeAsync(ResizerPosition.BottomLeft);
 
-    private async Task OnBottomRightStartResize(MouseEventArgs args)
-    {
-        await this.Resizing.InvokeAsync(ResizerPosition.BottomRight);
-    }
+    private Task OnBottomRightStartResize(MouseEventArgs args) => this.ResizeStart.InvokeAsync(ResizerPosition.BottomRight);
 
     public enum ResizerPosition
     {

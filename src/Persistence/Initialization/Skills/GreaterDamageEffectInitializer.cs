@@ -36,11 +36,11 @@ public class GreaterDamageEffectInitializer : InitializerBase
         magicEffect.StopByDeath = true;
         magicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.Duration.ConstantValue.Value = 60; // 60 Seconds
+
+        // The buff gives 3 + (energy / 7) damage
         var powerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
         magicEffect.PowerUpDefinitions.Add(powerUpDefinition);
         powerUpDefinition.TargetAttribute = Stats.GreaterDamageBonus.GetPersistent(this.GameConfiguration);
-
-        // The buff gives 3 + (energy / 7) damage
         powerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
         powerUpDefinition.Boost.ConstantValue.Value = 3f;
         powerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.AddRaw;
@@ -50,5 +50,13 @@ public class GreaterDamageEffectInitializer : InitializerBase
         boostPerEnergy.InputOperator = InputOperator.Multiply;
         boostPerEnergy.InputOperand = 1f / 7f; // one damage per 7 energy
         powerUpDefinition.Boost.RelatedValues.Add(boostPerEnergy);
+
+        // Placeholder for AttackIncreaseStr and AttackIncreaseMastery master skills
+        var powerUpDefinition2 = this.Context.CreateNew<PowerUpDefinition>();
+        magicEffect.PowerUpDefinitions.Add(powerUpDefinition2);
+        powerUpDefinition2.TargetAttribute = Stats.GreaterDamageBonus.GetPersistent(this.GameConfiguration);
+        powerUpDefinition2.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        powerUpDefinition2.Boost.ConstantValue.Value = 1f;
+        powerUpDefinition2.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
     }
 }

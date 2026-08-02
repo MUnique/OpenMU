@@ -1,8 +1,8 @@
 ﻿<Router AppAssembly="@typeof(Program).Assembly" NotFoundPage="@typeof(Pages.NotFound)">
   <Found Context="routeData">
-    <CascadingBlazoredModal>
+    <ModalContainer>
       <RouteView RouteData="routeData" DefaultLayout="@typeof(Layout.MainLayout)"/>
       <FocusOnNavigate RouteData="routeData" Selector="h1"/>
-    </CascadingBlazoredModal>
+    </ModalContainer>
   </Found>
 </Router>

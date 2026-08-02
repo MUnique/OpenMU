@@ -9,7 +9,6 @@ namespace MUnique.OpenMU.GameLogic.Views.Duel;
 /// </summary>
 public interface IDuelStatusUpdatePlugIn : IViewPlugIn
 {
-
     /// <summary>
     /// SHows the status of the duel rooms.
     /// </summary>

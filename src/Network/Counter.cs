@@ -13,7 +13,7 @@ public class Counter
 {
     private readonly byte _maxCount;
     private readonly byte _minCount;
-    private readonly object _lockObject = new ();
+    private readonly object _lockObject = new();
     private int _counter;
 
     /// <summary>

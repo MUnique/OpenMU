@@ -285,7 +285,6 @@ public class Gates : InitializerBase
         targetGates.Add(130, this.CreateExitGate(maps[38], 70, 104, 70, 107, 0));
         targetGates.Add(136, this.CreateExitGate(maps[38], 137, 162, 143, 163, 0));
 
-
         // Illusion Temple 1
         targetGates.Add(142, this.CreateExitGate(maps[45], 98, 128, 108, 137, 0, true));
         targetGates.Add(148, this.CreateExitGate(maps[45], 141, 41, 146, 45, 0, true));

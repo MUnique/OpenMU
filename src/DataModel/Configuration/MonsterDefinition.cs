@@ -1,4 +1,4 @@
-﻿// <copyright file="MonsterDefinition.cs" company="MUnique">
+// <copyright file="MonsterDefinition.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -165,6 +165,16 @@ public enum NpcWindow
     /// The dialog for the legacy quest system.
     /// </summary>
     LegacyQuest,
+
+    /// <summary>
+    /// The castle siege gate NPC interaction window.
+    /// </summary>
+    CastleSiegeGateNpc,
+
+    /// <summary>
+    /// The castle siege lever NPC interaction window.
+    /// </summary>
+    CastleSiegeLeverNpc,
 }
 
 /// <summary>
@@ -193,7 +203,7 @@ public enum NpcObjectKind
     Trap,
 
     /// <summary>
-    /// The npc is a gate
+    /// The npc is a gate.
     /// </summary>
     Gate,
 
@@ -327,6 +337,12 @@ public partial class MonsterDefinition
     /// </summary>
     [MemberOfAggregate]
     public virtual ICollection<QuestDefinition> Quests { get; protected set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the buffs which can be granted by this npc.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<Buff> Buffs { get; protected set; } = null!;
 
     /// <summary>
     /// Attribute default accessor.

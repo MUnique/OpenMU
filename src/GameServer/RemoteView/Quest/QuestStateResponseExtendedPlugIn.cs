@@ -27,7 +27,8 @@ public class QuestStateResponseExtendedPlugIn : QuestStateResponsePlugIn, IQuest
     /// Initializes a new instance of the <see cref="QuestStateResponseExtendedPlugIn"/> class.
     /// </summary>
     /// <param name="player">The player.</param>
-    public QuestStateResponseExtendedPlugIn(RemotePlayer player) : base(player)
+    public QuestStateResponseExtendedPlugIn(RemotePlayer player)
+        : base(player)
     {
         this._player = player;
     }

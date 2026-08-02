@@ -239,7 +239,7 @@ internal class ChatClient : IChatClient
                 break;
 
             case var value:
-                this._logger.LogError("Received unknown packet of type {PacketType}: {PacketSpan}",value,  packet.Span.AsString());
+                this._logger.LogError("Received unknown packet of type {PacketType}: {PacketSpan}", value, packet.Span.AsString());
                 await this.LogOffAsync().ConfigureAwait(false);
                 break;
         }

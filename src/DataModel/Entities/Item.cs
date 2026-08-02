@@ -154,7 +154,11 @@ public partial class Item
         return stringBuilder.ToString();
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Returns a string that represents this item, using the specified culture for localization.
+    /// </summary>
+    /// <param name="culture">The culture to use for localization.</param>
+    /// <returns>The localized string.</returns>
     public string ToString(CultureInfo culture)
     {
         using var cultureHelper = CultureHelper.SetTemporaryCulture(culture);

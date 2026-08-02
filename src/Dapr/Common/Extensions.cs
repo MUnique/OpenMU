@@ -1,11 +1,11 @@
-﻿// <copyright file="Extensions.cs" company="MUnique">
+// <copyright file="Extensions.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
 namespace MUnique.OpenMU.Dapr.Common;
 
-using System.Threading;
 using System.Text.Json.Serialization;
+using System.Threading;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -34,9 +34,9 @@ public static class Extensions
     /// <summary>
     /// Adds the <see cref="PersistenceContextProvider"/>.
     /// </summary>
-    /// <param name="services">The services.</param>
+    /// <param name="services">The service collection.</param>
     /// <param name="publishConfigChanges">If set to <c>true</c>, configuration changes are published to other Dapr services.</param>
-    /// <returns>The services.</returns>
+    /// <returns>The modified service collection.</returns>
     public static IServiceCollection AddPeristenceProvider(this IServiceCollection services, bool publishConfigChanges = false)
     {
         services.AddSingleton<IConfigurationChangeListener, ConfigurationChangeListener>();
@@ -59,9 +59,9 @@ public static class Extensions
     /// <summary>
     /// Adds the plug in manager.
     /// </summary>
-    /// <param name="services">The services.</param>
+    /// <param name="services">The service collection.</param>
     /// <param name="plugInConfigurations">The plug in configurations.</param>
-    /// <returns>The services.</returns>
+    /// <returns>The modified service collection.</returns>
     public static IServiceCollection AddPlugInManager(this IServiceCollection services, ICollection<PlugInConfiguration> plugInConfigurations)
     {
         return services
@@ -114,9 +114,9 @@ public static class Extensions
     /// Adds a persistent object as singleton to the services.
     /// </summary>
     /// <typeparam name="T">The base type of the persistent object.</typeparam>
-    /// <param name="services">The services.</param>
+    /// <param name="services">The service collection.</param>
     /// <param name="predicate">The predicate to select actual object.</param>
-    /// <returns>The services.</returns>
+    /// <returns>The modified service collection.</returns>
     public static IServiceCollection AddPersistentSingleton<T>(this IServiceCollection services, Func<T, bool>? predicate = null)
         where T : class
     {
@@ -128,9 +128,9 @@ public static class Extensions
     /// </summary>
     /// <typeparam name="TTarget">The target, exposed type of the persistent object, usually an interface.</typeparam>
     /// <typeparam name="TActual">The actual base type of the persistent object.</typeparam>
-    /// <param name="services">The services.</param>
-    /// <param name="predicate">The predicate.</param>
-    /// <returns>The services.</returns>
+    /// <param name="services">The service collection.</param>
+    /// <param name="predicate">The predicate to select the actual object.</param>
+    /// <returns>The modified service collection.</returns>
     public static IServiceCollection AddPersistentSingleton<TTarget, TActual>(this IServiceCollection services, Func<TActual, bool>? predicate = null)
         where TActual : class, TTarget
         where TTarget : class
@@ -150,8 +150,8 @@ public static class Extensions
     /// <summary>
     /// Adds the <see cref="ManagableServerRegistry"/> to the services.
     /// </summary>
-    /// <param name="services">The services.</param>
-    /// <returns>The services.</returns>
+    /// <param name="services">The service collection.</param>
+    /// <returns>The modified service collection.</returns>
     public static IServiceCollection AddManageableServerRegistry(this IServiceCollection services)
     {
         services.AddSingleton<ManagableServerRegistry>()
@@ -163,8 +163,8 @@ public static class Extensions
     /// Publishes the server to other daprized services by registering a <see cref="ManagableServerStatePublisher"/>.
     /// </summary>
     /// <typeparam name="TServer">The type of the server.</typeparam>
-    /// <param name="services">The services.</param>
-    /// <returns>The services.</returns>
+    /// <param name="services">The service collection.</param>
+    /// <returns>The modified service collection.</returns>
     public static IServiceCollection PublishManageableServer<TServer>(this IServiceCollection services)
         where TServer : IManageableServer
     {
@@ -180,7 +180,7 @@ public static class Extensions
     /// </summary>
     /// <param name="builder">The web application builder.</param>
     /// <param name="serviceName">Name of the service.</param>
-    /// <returns>The web application builder.</returns>
+    /// <returns>The configured web application builder.</returns>
     public static WebApplicationBuilder UseLoki(this WebApplicationBuilder builder, string serviceName)
     {
         // We just want to transmit some static labels, as suggested in the best practice in the Loki documentation
@@ -211,7 +211,7 @@ public static class Extensions
     /// </summary>
     /// <param name="builder">The web application builder.</param>
     /// <param name="registry">The registry.</param>
-    /// <returns>The web application builder.</returns>
+    /// <returns>The configured web application builder.</returns>
     public static WebApplicationBuilder AddOpenTelemetryMetrics(this WebApplicationBuilder builder, MetricsRegistry registry)
     {
         builder.Services.AddOpenTelemetry()
@@ -292,6 +292,28 @@ public static class Extensions
     {
         await app.Services.GetService<IDatabaseConnectionSettingProvider>()!
             .InitializeAsync(default)
+            .ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Waits for the database secrets to be loaded and then for the database to be up-to-date.
+    /// This is intended to be called from <see cref="Microsoft.Extensions.Hosting.IHostedLifecycleService.StartedAsync"/>
+    /// which is called after the web server has already started, breaking the circular dependency where:
+    /// the Dapr sidecar needs the app HTTP API to be up before it initializes its secret store,
+    /// but the app needs Dapr secrets to connect to the database.
+    /// </summary>
+    /// <param name="serviceProvider">The service provider.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    public static async Task WaitForDatabaseInitializationAsync(this IServiceProvider serviceProvider, CancellationToken cancellationToken = default)
+    {
+        var dbConnectionProvider = serviceProvider.GetRequiredService<IDatabaseConnectionSettingProvider>();
+        if (dbConnectionProvider.Initialization is { } initTask)
+        {
+            await initTask.WaitAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        await serviceProvider.GetRequiredService<PersistenceContextProvider>()
+            .WaitForUpdatedDatabaseAsync(cancellationToken)
             .ConfigureAwait(false);
     }
 

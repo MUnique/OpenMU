@@ -522,7 +522,7 @@
   <data name="PlayerStoreNotOpen" xml:space="preserve">
     <value>Player's Store not open.</value>
   </data>
-  <data name="ElfSoldierStrongEnoughMessage" xml:space="preserve">
+  <data name="CharacterTooStrongMessage" xml:space="preserve">
     <value>You're strong enough on your own.</value>
   </data>
   <data name="NotEnoughMoneyToProceed" xml:space="preserve">
@@ -656,5 +656,53 @@
   </data>
   <data name="OfflineLevelingMuHelperNotRunning" xml:space="preserve">
     <value>MU Helper must be running to start offline leveling.</value>
+  </data>
+  <data name="StatResetNotEnabled" xml:space="preserve">
+    <value>Stat reset is not enabled.</value>
+  </data>
+  <data name="StatResetNotConfigured" xml:space="preserve">
+    <value>Stat reset is not configured.</value>
+  </data>
+  <data name="RequiredLevelForStatReset" xml:space="preserve">
+    <value>Required level for stat reset is {0}.</value>
+  </data>
+  <data name="NotEnoughMoneyForStatReset" xml:space="preserve">
+    <value>You don't have enough money for stat reset, required zen is {0}.</value>
+  </data>
+  <data name="NotEnoughItemsForStatReset" xml:space="preserve">
+    <value>You don't have enough required items for stat reset, required {0} x {1}.</value>
+  </data>
+  <data name="CantResetStatsNotInSafezone" xml:space="preserve">
+    <value>Stat reset is only possible in a safezone.</value>
+  </data>
+  <data name="CantResetStatsWithOpenedWindows" xml:space="preserve">
+    <value>Cannot reset stats with any windows opened.</value>
+  </data>
+  <data name="StatResetChatCommandDisabled" xml:space="preserve">
+    <value>The /resetstats command is disabled.</value>
+  </data>
+  <data name="StatsResetSuccessfully" xml:space="preserve">
+    <value>Your stats have been reset. You have {0} level-up points available.</value>
+  </data>
+  <data name="InvasionMonsterDefeated" xml:space="preserve">
+    <value>{0} has defeated the {1} {2}!</value>
+  </data>
+  <data name="PkClearCommandOnlyForGameMasters" xml:space="preserve">
+    <value>This command is only available to Game Masters.</value>
+  </data>
+  <data name="PkClearOnlyClearOwnPk" xml:space="preserve">
+    <value>You can only clear your own PK status.</value>
+  </data>
+  <data name="PkClearTargetNotPlayerKiller" xml:space="preserve">
+    <value>{0} is not a Player Killer.</value>
+  </data>
+  <data name="PkClearYouAreNotPlayerKiller" xml:space="preserve">
+    <value>You are not a Player Killer.</value>
+  </data>
+  <data name="ItemDoesNotBelongToYou" xml:space="preserve">
+    <value>This item doesn't belong to you.</value>
+  </data>
+  <data name="CharacterNotStrongEnoughMessage" xml:space="preserve">
+    <value>You are not strong enough for this yet.</value>
   </data>
 </root>

@@ -4,14 +4,14 @@
 @using MUnique.OpenMU.Persistence
 @inherits NotifyableInputBase<TObject>
 
-    <div class="card">
+    <div class="card mb-3">
         <h5 class="card-header">
             <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
         </h5>
         <div class="card-body card-text">
             @if (this.CurrentValue is null)
             {
-                <button type="button" class="btn-primary" @onclick="this.OnCreateClick">Create</button>
+                <button type="button" class="btn btn-primary" @onclick="this.OnCreateClick">Create</button>
             }
             else
             {

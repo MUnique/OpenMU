@@ -23,7 +23,7 @@ public class ApplyMagicEffectConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn
             return false;
         }
 
-        return await this.ConsumeItemAsyncCore(player, item, targetItem, fruitUsage, effectDefinition).ConfigureAwait(false);
+        return await this.ConsumeItemCoreAsync(player, item, targetItem, fruitUsage, effectDefinition).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -39,7 +39,7 @@ public class ApplyMagicEffectConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn
     /// <returns>
     /// The success of the consumption.
     /// </returns>
-    protected async ValueTask<bool> ConsumeItemAsyncCore(Player player, Item item, Item? targetItem, FruitUsage fruitUsage, MagicEffectDefinition effectDefinition)
+    protected async ValueTask<bool> ConsumeItemCoreAsync(Player player, Item item, Item? targetItem, FruitUsage fruitUsage, MagicEffectDefinition effectDefinition)
     {
         if (!effectDefinition.PowerUpDefinitions.Any()
             || effectDefinition.Duration?.ConstantValue.Value is not { } durationInSeconds)

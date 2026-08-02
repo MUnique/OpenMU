@@ -1,4 +1,4 @@
-﻿// <copyright file="NavMenu.razor.cs" company="MUnique">
+// <copyright file="NavMenu.razor.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -45,7 +45,7 @@ public partial class NavMenu : IDisposable
     /// <summary>
     /// Gets the class for the entries of the navigation menu.
     /// "collapse" is a class of bootstrap which hides it.
-    /// In our css we also define to show it anyway, if the width sufficient.
+    /// In our CSS we also define to show it anyway, if the width sufficient.
     /// </summary>
     private string NavMenuCssClass => this._collapseNavMenu ? "collapse" : string.Empty;
 

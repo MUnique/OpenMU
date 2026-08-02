@@ -1,26 +1,16 @@
-﻿@import "Common";
+﻿.sidebar {
+    display: flex;
+    flex-direction: column;
+}
 
 .sidebar > nav {
-  @extend .rounded-bottom;
-  @extend .shadow-lg;
-  background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+  background-image: var(--omu-sidebar-gradient);
 }
 
-.sidebar > nav > div:first-child {
-    @extend .top-row;
-    @extend .pl-4;
-    @extend .navbar;
-    @extend .navbar-dark;
-    background-color: rgba(0,0,0,0.4);
-}
-
-@media (min-width: $widthThreshold) {
+@media (min-width: 768px) {
   .sidebar > nav {
     width: 250px;
-    height: 100%;
-    position: sticky;
-    top: 0;
-    min-height: inherit;
+    min-height: 100%;
   }
 
     .sidebar > nav > div:first-child > button {
@@ -28,10 +18,21 @@
     }
 
   .sidebar > nav > .collapse {
-    // Never collapse the app > navbar for wide screens
-    // We use important, because specifing collapse class in the html element otherwise overwrites this here.
     display: block !important;
   }
+}
+
+.sidebar .nav-link {
+    color: var(--omu-nav-link);
+    font-size: 0.9rem;
+    background: none;
+    border: none;
+    border-radius: 4px;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    line-height: 3rem;
+    width: 100%;
 }
 
 .sidebar > nav .oi {
@@ -41,78 +42,28 @@
   top: -2px;
 }
 
-.sidebar > nav > div:first-child > a {
-  @extend .navbar-brand;
-  font-size: 1.1rem;
+.sidebar > nav > div > ul > li.dropdown > div {
+    display: none;
 }
 
-.sidebar > nav > div:first-child > button {
-  @extend .navbar-toggler;
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-  .sidebar > nav > div:first-child > button > span {
-    @extend .navbar-toggler-icon;
-  }
-
-.sidebar > nav > div {
-  @extend .navbar-collapse;
-}
-
-  .sidebar > nav > div > ul {
-    @extend .nav;
-    @extend .flex-column;
-  }
-
-  .sidebar > nav > div > ul > li {
-    @extend .nav-item;
-    @extend .px-3;
-    font-size: 0.9rem;
-    padding-bottom: 0.5rem;
-  }
-
-  .sidebar > nav > div > ul > li:first-of-type {
-    padding-top: 1rem;
-  }
-
-  .sidebar > nav > div > ul > li:last-of-type {
-    padding-bottom: 1rem;
-  }
-
-  .sidebar > nav > div > ul > li > a {
-    @extend .nav-link;
-    color: #d7d7d7;
-    border-radius: 4px;
-    height: 3rem;
-    display: flex;
-    align-items: center;
-    line-height: 3rem;
-  }
-
-.sidebar > nav > div > ul > li > a.active {
-  background-color: rgba(255,255,255,0.25);
-  color: white;
-}
-
-  .sidebar > nav > div > ul > li > a.hover {
-    background-color: rgba(255,255,255,0.1);
-    color: white;
-  }
-
-  .sidebar > nav > div > ul > li.dropdown > a {
-    @extend .dropdown-toggle;
-  }
-
-  .sidebar > nav > div > ul > li.dropdown > div {
-    @extend .dropdown-menu;
+.sidebar > nav > div > ul > li.dropdown > div.show {
     display: block;
     position: relative;
     width: 100%;
-  }
+    border-radius: 0;
+}
 
-  .sidebar > nav > div > ul > li.dropdown > div > a {
-    @extend .dropdown-item;
-  }
+.sidebar > nav > div > ul > li.dropdown > a::after {
+    transition: transform 0.3s ease;
+}
+
+.sidebar > nav > div > ul > li.dropdown.expanded > a::after {
+    transform: rotate(180deg);
+}
+
+.culture-selector-icon {
+    color: var(--omu-nav-link);
+}
 
 .culture-selector {
   display: flex;
@@ -132,17 +83,4 @@
     height: 1px;
     background: linear-gradient( 90deg, rgba(215, 215, 215, 0.1) 0%, rgba(215, 215, 215, 1) 50%, rgba(215, 215, 215, 0.1) 100% );
     pointer-events: none;
-  }
-
-.culture-selector-icon {
-  color: #d7d7d7;
-}
-
-.culture-selector > select {
-  background-color: transparent;
-  color: #d7d7d7;
-}
-
-  .culture-selector > select option {
-    color: #212529;
   }

@@ -18,10 +18,11 @@ services.AddSingleton<IGuildServer, GuildServer>()
     .AddPeristenceProvider();
 
 var metricsRegistry = new MetricsRegistry();
+
 // todo: add some meaningful metrics
 builder.AddOpenTelemetryMetrics(metricsRegistry);
 
 var app = builder.BuildAndConfigure();
-await app.WaitForUpdatedDatabaseAsync().ConfigureAwait(false);
+await app.WaitForDatabaseConnectionInitializationAsync().ConfigureAwait(false);
 
 app.Run();

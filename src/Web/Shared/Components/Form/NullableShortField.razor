@@ -1,9 +1,9 @@
 ﻿@using System.Diagnostics.CodeAnalysis
 @inherits NotifyableInputBase<short?>
 
-<div>
+<div class="mb-3">
     <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
-    <InputNullableShort id="@this.FieldIdentifier.FieldName" @bind-Value="@CurrentValue" />
+    <InputNullableShort class="form-control" id="@this.FieldIdentifier.FieldName" @bind-Value="@CurrentValue" />
     <ValidationMessage For=@this.ValueExpression />
 </div>
 

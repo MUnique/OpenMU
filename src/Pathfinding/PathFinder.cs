@@ -98,6 +98,14 @@ public class PathFinder : IPathFinder
         }
     }
 
+    /// <summary>
+    /// Resets the pathfinder.
+    /// </summary>
+    public void ResetPathFinder()
+    {
+        this._openList.Clear();
+    }
+
     private IList<PathResultNode>? FindPathInner(Point start, Point end, byte[,] terrain, bool includeSafezone, CancellationToken cancellationToken)
     {
         if (this.MaximumDistanceExceeded(start, end))
@@ -159,14 +167,6 @@ public class PathFinder : IPathFinder
         }
 
         return null;
-    }
-
-    /// <summary>
-    /// Resets the pathfinder.
-    /// </summary>
-    public void ResetPathFinder()
-    {
-        this._openList.Clear();
     }
 
     private void ExpandNodes(Node node, Point start, Point end)

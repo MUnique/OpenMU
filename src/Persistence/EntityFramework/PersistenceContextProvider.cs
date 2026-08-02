@@ -32,6 +32,9 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
         this.RepositoryProvider = new CacheAwareRepositoryProvider(loggerFactory, changeListener);
     }
 
+    /// <inheritdoc />
+    IRepositoryProvider IPersistenceContextProvider.RepositoryProvider => this.RepositoryProvider;
+
     /// <summary>
     /// Gets the repository provider.
     /// </summary>
@@ -39,9 +42,6 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
     /// The repository provider.
     /// </value>
     internal CacheAwareRepositoryProvider RepositoryProvider { get; private set; }
-
-    /// <inheritdoc />
-    IRepositoryProvider IPersistenceContextProvider.RepositoryProvider => this.RepositoryProvider;
 
     /// <inheritdoc />
     public async Task<bool> IsDatabaseUpToDateAsync(CancellationToken cancellationToken = default)
@@ -143,7 +143,7 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
                    SELECT "AutoUpdateSchema" as "Value" FROM config."SystemConfiguration"
                    """).FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return false;
         }
@@ -152,26 +152,35 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
     /// <summary>
     /// Recreates the database by deleting and creating it again.
     /// </summary>
-    /// <returns>The disposable which should be disposed when the data creation process is finished.</returns>
-    public async Task<IDisposable> ReCreateDatabaseAsync()
+    /// <param name="dropExistingDatabase">
+    /// If <see langword="true"/> (the default), the database is dropped and created again from scratch.
+    /// If <see langword="false"/>, the existing database is kept and only its schema is built via
+    /// migrations — required when the database is provisioned externally and the connecting role is
+    /// not permitted to create or drop databases.
+    /// </param>
+    /// <returns>The disposable that should be disposed of when the data creation process is finished.</returns>
+    public async Task<IDisposable> ReCreateDatabaseAsync(bool dropExistingDatabase = true)
     {
         var changePublisher = this._changeListener;
         this._changeListener = null;
         try
         {
-            try
+            if (dropExistingDatabase)
             {
-                await using var installationContext = new EntityDataContext();
-                await installationContext.Database.EnsureDeletedAsync().ConfigureAwait(false);
-            }
-            catch (NpgsqlException)
-            {
-                // That's expected for a fresh database
+                try
+                {
+                    await using var installationContext = new EntityDataContext();
+                    await installationContext.Database.EnsureDeletedAsync().ConfigureAwait(false);
+                }
+                catch (NpgsqlException)
+                {
+                    // That's expected for a fresh database
+                }
             }
 
             await this.ApplyAllPendingUpdatesAsync().ConfigureAwait(false);
 
-            // We create a new repository provider, so that the previously loaded data is not effective anymore.
+            // We create a new repository provider so that the previously loaded data is not effective anymore.
             this.ResetCache();
         }
         catch
@@ -240,6 +249,7 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
         return new GuildServerContext(new GuildContext(), this.RepositoryProvider, this._loggerFactory.CreateLogger<GuildServerContext>());
     }
 
+    /// <inheritdoc/>
     public IContext CreateNewTypedContext(Type editType, bool useCache, DataModel.Configuration.GameConfiguration? gameConfiguration = null)
     {
         if (!editType.IsConfigurationType() && gameConfiguration is null)

@@ -140,4 +140,60 @@ public interface IMuHelperSettings
 
     /// <summary>Gets a value indicating whether to repair items.</summary>
     bool RepairItem { get; }
+
+    /// <summary>Gets a value indicating whether to automatically defend against players attacking the character.</summary>
+    bool UseSelfDefense { get; }
+
+    /// <summary>Gets a value indicating whether to automatically accept requests from friends.</summary>
+    bool AutoAcceptFriend { get; }
+
+    /// <summary>Gets a value indicating whether to automatically accept requests from guild.</summary>
+    bool AutoAcceptGuild { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether to automatically accept party requests from anyone, not just
+    /// friends or guild mates. Defaults to <c>false</c>; used by server-side bots so they group up
+    /// with players who invite them (see <c>Bots.BotPartyHandler</c> for the applied safeguards).
+    /// </summary>
+    bool AutoAcceptAnyone => false;
+
+    /// <summary>Gets a value indicating whether to use basic attack as fallback when the configured skill cannot be used.</summary>
+    bool FallbackBasicAttack { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether the combat AI should automatically cast the strongest learned
+    /// attack skill the character can currently afford, instead of relying on the explicitly configured
+    /// skill IDs. Used by server-side bots (which have no client-side MU Helper config) so they fight
+    /// with class- and level-appropriate skills; human offline sessions keep their explicit configuration.
+    /// </summary>
+    bool AutoSelectBestSkill { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether the buff AI should automatically cast the learned buff skills
+    /// of the character, instead of relying on the explicitly configured buff slot IDs. Used by
+    /// server-side bots so each class keeps its own buffs up (e.g. elf Greater Defense/Greater Damage);
+    /// human offline sessions keep their explicit configuration.
+    /// </summary>
+    bool AutoSelectBuffs { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether to drink a mana potion when mana runs low, so casters can keep
+    /// casting. There is no client-side MU Helper setting for this; it is used by server-side bots.
+    /// </summary>
+    bool UseManaPotion { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether the combat AI only engages monsters the character can safely
+    /// handle (up to half its own level, like the bot navigator's hunting-ground selection). Without
+    /// this, a bot travelling through hostile territory would pick fights with monsters far above its
+    /// level and die. Human offline sessions keep the unrestricted behavior - the player chose the spot.
+    /// </summary>
+    bool OnlyHuntSafeMonsters { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether to also pick up equippable items which are an upgrade over the
+    /// character's currently equipped gear (evaluated before pickup), so bots progress their equipment
+    /// like a real player without hoarding junk.
+    /// </summary>
+    bool PickUpgradeItems { get; }
 }

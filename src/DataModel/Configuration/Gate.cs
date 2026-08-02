@@ -1,4 +1,4 @@
-﻿// <copyright file="Gate.cs" company="MUnique">
+// <copyright file="Gate.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -10,7 +10,7 @@ using MUnique.OpenMU.Annotations;
 /// Defines a gate through which a player can exit or enter to other maps.
 /// </summary>
 [Cloneable]
-public partial class Gate
+public partial class Gate : IMapArea
 {
     /// <summary>
     /// Gets or sets the upper left corner, x-coordinate.

@@ -18,7 +18,7 @@ using System.Reflection;
 public abstract class CustomPlugInContainerBase<TPlugIn> : PlugInContainerBase<TPlugIn>, ICustomPlugInContainer<TPlugIn>
     where TPlugIn : class
 {
-    private readonly ConcurrentDictionary<Type, TPlugIn> _currentlyEffectivePlugIns = new ();
+    private readonly ConcurrentDictionary<Type, TPlugIn> _currentlyEffectivePlugIns = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CustomPlugInContainerBase{TPlugIn}"/> class.

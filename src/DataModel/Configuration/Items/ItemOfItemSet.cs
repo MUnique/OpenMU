@@ -4,8 +4,8 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration.Items;
 
-using MUnique.OpenMU.Annotations;
 using System.Text.Json.Serialization;
+using MUnique.OpenMU.Annotations;
 
 /// <summary>
 /// Defines additional bonus options for this item of a set.

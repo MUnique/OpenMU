@@ -17,11 +17,15 @@ internal class MulticastConnectionServerStateObserver : IGameServerStateObserver
 {
     private readonly MemorizingObserver _memorizingObserver = new();
     private readonly List<IGameServerStateObserver> _observers = new();
-    
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MulticastConnectionServerStateObserver"/> class.
+    /// </summary>
     public MulticastConnectionServerStateObserver()
     {
         this._observers.Add(this._memorizingObserver);
     }
+
     /// <summary>
     /// Adds the observer which wants to get notified about changes.
     /// </summary>
@@ -69,7 +73,7 @@ internal class MulticastConnectionServerStateObserver : IGameServerStateObserver
 
     private class MemorizingObserver : IGameServerStateObserver
     {
-        public ConcurrentDictionary<ushort, (ServerInfo, IPEndPoint)> ServerInfos { get; } = new();
+        public ConcurrentDictionary<ushort, (ServerInfo ServerInfo, IPEndPoint EndPoint)> ServerInfos { get; } = new();
 
         public void RegisterGameServer(ServerInfo gameServer, IPEndPoint publicEndPoint)
         {
@@ -85,7 +89,7 @@ internal class MulticastConnectionServerStateObserver : IGameServerStateObserver
         {
             if (this.ServerInfos.TryGetValue(serverId, out var tuple))
             {
-                tuple.Item1.CurrentConnections = currentConnections;
+                tuple.ServerInfo.CurrentConnections = currentConnections;
             }
         }
     }

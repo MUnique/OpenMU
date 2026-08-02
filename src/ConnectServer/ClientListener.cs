@@ -6,10 +6,10 @@ namespace MUnique.OpenMU.ConnectServer;
 
 using System.Net;
 using Microsoft.Extensions.Logging;
-using Nito.AsyncEx;
 using MUnique.OpenMU.ConnectServer.PacketHandler;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Network;
+using Nito.AsyncEx;
 
 /// <summary>
 /// The listener which is waiting for new connecting clients.

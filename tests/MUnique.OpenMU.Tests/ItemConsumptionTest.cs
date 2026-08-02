@@ -167,7 +167,7 @@ public class ItemConsumptionTest
 
             await consumeHandler.ConsumeItemAsync(player, jol1, upgradeableItem, FruitUsage.Undefined).ConfigureAwait(false);
         }
- 
+
         Assert.That(upgradeableItem.ItemOptions.Count, Is.EqualTo(1));
 
         // then adding fails, so option needs to be removed
@@ -356,7 +356,7 @@ public class ItemConsumptionTest
 
     private Item GetItem()
     {
-        return new ()
+        return new()
         {
             Definition = new DataModel.Configuration.Items.ItemDefinition { Width = 1, Height = 1 },
             Durability = 1,
@@ -365,7 +365,7 @@ public class ItemConsumptionTest
 
     private async ValueTask<Player> GetPlayerAsync()
     {
-        var player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
 
         player.SelectedCharacter!.Attributes.Add(new StatAttribute(Stats.Level, 100));
         player.SelectedCharacter.Attributes.Add(new StatAttribute(Stats.CurrentHealth, 0));

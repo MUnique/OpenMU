@@ -15,7 +15,7 @@ internal partial class NpcInitialization
     /// <inheritdoc />
     protected override ItemStorage CreatePotionGirlItemStorage(short number)
     {
-        List<Item> itemList = new ()
+        List<Item> itemList = new()
         {
             this.ItemHelper.CreatePotion(0, 0, 1, 0),     // Apple +0 x1
             this.ItemHelper.CreatePotion(8, 0, 3, 0),     // Apple +0 x3
@@ -71,7 +71,7 @@ internal partial class NpcInitialization
     /// <inheritdoc />
     protected override ItemStorage CreateWanderingMerchant(short number)
     {
-        List<Item> itemList = new ()
+        List<Item> itemList = new()
         {
             this.ItemHelper.CreateSetItem(0, 5, ItemGroups.Helm, null, 0, 1, true),     // Leather Helm     +0+4+L
             this.ItemHelper.CreateSetItem(16, 5, ItemGroups.Armor, null, 0, 1, true),    // Leather Armor    +0+4+L
@@ -112,7 +112,7 @@ internal partial class NpcInitialization
     /// <inheritdoc />
     protected override ItemStorage CreateHanzoTheBlacksmith(short number)
     {
-        List<Item> itemList = new ()
+        List<Item> itemList = new()
         {
             this.ItemHelper.CreateShield(0, 0, false, null, 0, 1, true),  // Small Shield     +0+4+L
             this.ItemHelper.CreateShield(2, 4, true, null, 1, 1, true),   // Buckler          +1+4+L+S
@@ -153,7 +153,7 @@ internal partial class NpcInitialization
     /// <inheritdoc />
     protected override ItemStorage CreatePasiTheMageStore(short number)
     {
-        List<Item> itemList = new ()
+        List<Item> itemList = new()
         {
             this.ItemHelper.CreateScroll(0, 3),   // Scroll of Fire Ball
             this.ItemHelper.CreateScroll(1, 10),  // Scroll of Power Wave
@@ -198,7 +198,7 @@ internal partial class NpcInitialization
     /// <inheritdoc />
     protected override ItemStorage CreateElfLalaStore(short number)
     {
-        List<Item> itemList = new ()
+        List<Item> itemList = new()
         {
             this.ItemHelper.CreatePotion(0, 0, 1, 0),     // Apple +0 x1
             this.ItemHelper.CreatePotion(8, 0, 3, 0),     // Apple +0 x3
@@ -280,7 +280,7 @@ internal partial class NpcInitialization
     /// <inheritdoc />
     protected override ItemStorage CreateIzabelTheWizardStore(short number)
     {
-        List<Item> itemList = new ()
+        List<Item> itemList = new()
         {
             this.ItemHelper.CreatePotion(0, 0, 1, 0),     // Apple +0 x1
             this.ItemHelper.CreatePotion(8, 0, 3, 0),     // Apple +0 x3
@@ -346,7 +346,7 @@ internal partial class NpcInitialization
     /// <inheritdoc />
     protected override ItemStorage CreateEoTheCraftsmanStore(short number)
     {
-        List<Item> itemList = new ()
+        List<Item> itemList = new()
         {
             this.ItemHelper.CreateSetItem(0, 13, ItemGroups.Helm, null, 3, 1, true), // Spirit Helm +3+Luck+4
             this.ItemHelper.CreateSetItem(2, 13, ItemGroups.Armor, null, 3, 1, true), // Spirit Armor +3+Luck+4
@@ -383,7 +383,7 @@ internal partial class NpcInitialization
     /// <inheritdoc />
     protected override ItemStorage CreateZiennaStore(short number)
     {
-        List<Item> itemList = new ()
+        List<Item> itemList = new()
         {
             this.ItemHelper.CreateSetItem(0, 1, ItemGroups.Helm, null, 3, 1, true), // Dragon Helm +3+Luck+4
             this.ItemHelper.CreateSetItem(2, 1, ItemGroups.Armor, null, 3, 1, true), // Dragon Armor +3+Luck+4
@@ -416,7 +416,7 @@ internal partial class NpcInitialization
     /// <inheritdoc />
     protected override ItemStorage CreateLumenTheBarmaidStore(short number)
     {
-        List<Item> itemList = new ()
+        List<Item> itemList = new()
         {
             this.ItemHelper.CreateItem(0, 17, 13, 1, 1), // Blood Bone + 1
             this.ItemHelper.CreateItem(1, 17, 13, 1, 2), // Blood Bone + 2
@@ -474,7 +474,7 @@ internal partial class NpcInitialization
     /// <inheritdoc />
     protected override ItemStorage CreateCarenTheBarmaidStore(short number)
     {
-        List<Item> itemList = new ()
+        List<Item> itemList = new()
         {
             this.ItemHelper.CreatePotion(0, 9, 1, 0), // Ale
             this.ItemHelper.CreateItem(1, 10, 14, 1, 0), // Town Portal Scroll
@@ -500,7 +500,7 @@ internal partial class NpcInitialization
     /// <returns>The created store.</returns>
     private ItemStorage CreateAlexStore(short number)
     {
-        List<Item> itemList = new ()
+        List<Item> itemList = new()
         {
             this.ItemHelper.CreateWeapon(0, ItemGroups.Spears, 5, 3, 1, true, false, null), // Double Poleaxe +3+Luck+4
             this.ItemHelper.CreateWeapon(2, ItemGroups.Spears, 1, 3, 1, true, false, null), // Spear +3+Luck+4
@@ -520,7 +520,7 @@ internal partial class NpcInitialization
 
     private ItemStorage CreateMarceStore(short number)
     {
-        List<Item> itemList = new ()
+        List<Item> itemList = new()
         {
             this.ItemHelper.CreateScroll(0, 3),   // Scroll of Fire Ball
             this.ItemHelper.CreateScroll(1, 10),  // Scroll of Power Wave
@@ -536,7 +536,7 @@ internal partial class NpcInitialization
 
     private ItemStorage CreateRheaStore(short number)
     {
-        List<Item> itemList = new ()
+        List<Item> itemList = new()
         {
             this.ItemHelper.CreateSetItem(0, 39, ItemGroups.Helm, null, 2, 1, true), // Violent Wind Helm +2+Luck+4
             this.ItemHelper.CreateSetItem(2, 39, ItemGroups.Armor, null, 2, 1, true), // Violent Wind Armor +2+Luck+4
@@ -571,7 +571,7 @@ internal partial class NpcInitialization
 
     private ItemStorage CreateBoloStore(short number)
     {
-        List<Item> itemList = new ()
+        List<Item> itemList = new()
         {
             this.ItemHelper.CreateWeapon(0, ItemGroups.Swords, 16, 3, 3, true, false, null), // Sword of Destruction +3+Luck+12
             this.ItemHelper.CreateWeapon(1, ItemGroups.Scepters, 8, 3, 3, true, true, null), // Battle Scepter +3+Skill+Luck+12

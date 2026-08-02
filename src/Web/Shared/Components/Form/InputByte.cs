@@ -1,4 +1,4 @@
-﻿// <copyright file="InputByte.cs" company="MUnique">
+// <copyright file="InputByte.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Components;
 /// <summary>
 /// An input component for editing numeric byte values.
 /// </summary>
-/// <typeparam name="TByte">The type of the byte.</typeparam>
 public class InputByte : InputByteBase<byte>
 {
     /// <inheritdoc />

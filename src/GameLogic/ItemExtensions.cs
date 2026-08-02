@@ -138,6 +138,37 @@ public static class ItemExtensions
     }
 
     /// <summary>
+    /// Determines whether equipping an item of this definition into the given hand slot would conflict
+    /// with what the other hand already holds: a two-handed item needs the other hand free (ammunition
+    /// aside), and nothing but ammunition fits next to an already equipped two-handed item.
+    /// </summary>
+    /// <param name="itemDefinition">The definition of the item which would be equipped.</param>
+    /// <param name="inventory">The inventory to check the other hand in.</param>
+    /// <param name="toSlot">The hand slot the item would be equipped into.</param>
+    /// <returns><c>true</c> if the other hand blocks this item; otherwise, <c>false</c>.</returns>
+    public static bool ConflictsWithEquippedHands(this ItemDefinition itemDefinition, IStorage inventory, byte toSlot)
+    {
+        if (itemDefinition.ItemSlot is null)
+        {
+            return false;
+        }
+
+        static bool IsOneHandedOrShield(ItemDefinition definition) =>
+            (definition.ItemSlot!.ItemSlots.Contains(InventoryConstants.RightHandSlot) && definition.ItemSlot.ItemSlots.Contains(InventoryConstants.LeftHandSlot))
+            || definition.Group == ShieldItemGroup;
+
+        var rightHandItemDefinition = inventory.GetItem(InventoryConstants.RightHandSlot)?.Definition;
+
+        return (toSlot == InventoryConstants.LeftHandSlot
+                && itemDefinition.Width >= 2
+                && rightHandItemDefinition is not null
+                && !rightHandItemDefinition.IsAmmunition)
+               || (toSlot == InventoryConstants.RightHandSlot
+                   && IsOneHandedOrShield(itemDefinition)
+                   && inventory.GetItem(InventoryConstants.LeftHandSlot)?.Definition?.Width >= 2);
+    }
+
+    /// <summary>
     /// Determines whether this item is a jewelry (pendant or ring) item.
     /// </summary>
     /// <param name="item">The item.</param>
@@ -147,6 +178,18 @@ public static class ItemExtensions
     public static bool IsJewelry(this Item item)
     {
         return item.ItemSlot >= InventoryConstants.PendantSlot && item.ItemSlot <= InventoryConstants.Ring2Slot;
+    }
+
+    /// <summary>
+    /// Determines whether this item is an armor item.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <returns>
+    ///   <c>true</c> if the specified item is armor; otherwise, <c>false</c>.
+    /// </returns>
+    public static bool IsArmorItem(this Item item)
+    {
+        return item.ItemSlot >= InventoryConstants.HelmSlot && item.ItemSlot <= InventoryConstants.BootsSlot;
     }
 
     /// <summary>
@@ -237,11 +280,14 @@ public static class ItemExtensions
 
         switch (random % 3)
         {
-            case 0 when left is { }: result = left;
+            case 0 when left is { }:
+                result = left;
                 break;
-            case 1 when right is { }: result = right;
+            case 1 when right is { }:
+                result = right;
                 break;
-            case 2 when pendant is { }: result = pendant;
+            case 2 when pendant is { }:
+                result = pendant;
                 break;
             default:
                 // keep first available result
@@ -339,6 +385,7 @@ public static class ItemExtensions
             // -> we check it based on the item set group.
             appearance.VisibleOptions.Add(ItemOptionTypes.AncientOption);
         }
+
         return appearance;
     }
 

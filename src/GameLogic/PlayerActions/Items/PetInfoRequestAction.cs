@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Items;
 
+using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Views.Pet;
 
 /// <summary>
@@ -48,6 +49,10 @@ public class PetInfoRequestAction
             PetStorageLocation.Inventory => player.Inventory,
             PetStorageLocation.InventoryPetSlot => player.Inventory,
             PetStorageLocation.Crafting => player.TemporaryStorage,
+            PetStorageLocation.NpcShop =>
+                player.OpenedNpc is MerchantNpc merchant
+                    ? merchant.MerchantStorage
+                    : null,
             PetStorageLocation.PersonalShop =>
                 player.LastRequestedPlayerStore?.TryGetTarget(out var targetPlayer) ?? false
                     ? targetPlayer.ShopStorage

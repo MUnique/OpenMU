@@ -51,6 +51,13 @@ public abstract class UpdatePlugInBase : IConfigurationUpdatePlugIn
     /// </remarks>
     protected abstract ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration);
 
+    /// <summary>
+    /// Adds a stat attribute if it does not already exist in the game configuration.
+    /// </summary>
+    /// <param name="context">The persistence context.</param>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    /// <param name="attribute">The attribute to add.</param>
+    /// <returns><c>true</c> if the attribute was added; otherwise, <c>false</c>.</returns>
     protected bool AddStatIfNotExists(IContext context, GameConfiguration gameConfiguration, AttributeDefinition attribute)
     {
         if (gameConfiguration.Attributes.Contains(attribute))

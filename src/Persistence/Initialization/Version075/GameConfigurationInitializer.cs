@@ -9,7 +9,6 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 
 using MUnique.OpenMU.Persistence.Initialization.Version075.Items;
 
-
 /// <summary>
 /// Initializes the <see cref="GameConfiguration"/>.
 /// </summary>

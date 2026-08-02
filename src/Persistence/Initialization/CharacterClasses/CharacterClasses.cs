@@ -21,82 +21,82 @@ public enum CharacterClasses : long
     All = 0xFFFFFFFF,
 
     /// <summary>
-    /// The dark wizard
+    /// The dark wizard.
     /// </summary>
     DarkWizard = 0b0000_0001,
 
     /// <summary>
-    /// The soul master
+    /// The soul master.
     /// </summary>
     SoulMaster = 0b0000_0010,
 
     /// <summary>
-    /// The grand master
+    /// The grand master.
     /// </summary>
     GrandMaster = 0b0000_0100,
 
     /// <summary>
-    /// The dark knight
+    /// The dark knight.
     /// </summary>
     DarkKnight = 0b0001_0000,
 
     /// <summary>
-    /// The blade knight
+    /// The blade knight.
     /// </summary>
     BladeKnight = 0b0010_0000,
 
     /// <summary>
-    /// The blade master
+    /// The blade master.
     /// </summary>
     BladeMaster = 0b0100_0000,
 
     /// <summary>
-    /// The fairy elf
+    /// The fairy elf.
     /// </summary>
     FairyElf = 0b0001_000_0000,
 
     /// <summary>
-    /// The muse elf
+    /// The muse elf.
     /// </summary>
     MuseElf = 0b0010_0000_0000,
 
     /// <summary>
-    /// The high elf
+    /// The high elf.
     /// </summary>
     HighElf = 0b0100_0000_0000,
 
     /// <summary>
-    /// The magic gladiator
+    /// The magic gladiator.
     /// </summary>
     MagicGladiator = 0b0001_0000_0000_0000,
 
     /// <summary>
-    /// The duel master
+    /// The duel master.
     /// </summary>
     DuelMaster = 0b0010_0000_0000_0000,
 
     /// <summary>
-    /// The dark lord
+    /// The dark lord.
     /// </summary>
     DarkLord = 0b0001_0000_0000_0000_0000,
 
     /// <summary>
-    /// The lord emperor
+    /// The lord emperor.
     /// </summary>
     LordEmperor = 0b0010_0000_0000_0000_0000,
 
     /// <summary>
-    /// The summoner
+    /// The summoner.
     /// </summary>
     Summoner = 0b0001_0000_0000_0000_0000_0000,
 
     /// <summary>
-    /// The bloody summoner
+    /// The bloody summoner.
     /// </summary>
     BloodySummoner = 0b0010_0000_0000_0000_0000_0000,
 
     /// <summary>
-    /// The dimension master
+    /// The dimension master.
     /// </summary>
     DimensionMaster = 0b0100_0000_0000_0000_0000_0000,
 

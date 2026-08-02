@@ -1,4 +1,4 @@
-﻿// <copyright file="FixDamageCalcsPlugInSeason6.cs" company="MUnique">
+// <copyright file="FixDamageCalcsPlugInSeason6.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -145,7 +145,8 @@ public class FixDamageCalcsPlugInSeason6 : FixDamageCalcsPlugInBase
             var powerUps = infiniteArrowEffect.PowerUpDefinitions.ToList();
             foreach (var powerUp in powerUps)
             {
-                if (powerUp.TargetAttribute == Stats.SkillExtraManaCost || powerUp.TargetAttribute == Stats.BaseDamageBonus) // SkillExtraManaCost is the old ManaLossAfterHit
+                // SkillExtraManaCost is the old ManaLossAfterHit.
+                if (powerUp.TargetAttribute == Stats.SkillExtraManaCost || powerUp.TargetAttribute == Stats.BaseDamageBonus)
                 {
                     infiniteArrowEffect.PowerUpDefinitions.Remove(powerUp);
                 }

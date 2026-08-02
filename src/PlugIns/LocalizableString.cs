@@ -12,7 +12,7 @@ using System.Reflection;
 ///     This class is currently compiled in both System.Web.dll and System.ComponentModel.DataAnnotations.dll.
 /// </summary>
 /// <remarks>
-/// See internal class of the same name in System.ComponentModel.DataAnnotations for reference.
+/// See the internal class of the same name in System.ComponentModel.DataAnnotations for reference.
 /// </remarks>
 internal sealed class LocalizableString
 {
@@ -23,6 +23,7 @@ internal sealed class LocalizableString
     private Type? _resourceType;
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="LocalizableString"/> class.
     ///     Constructs a localizable string, specifying the property name associated
     ///     with this item.  The <paramref name="propertyName" /> value will be used
     ///     within any exceptions thrown as a result of localization failures.
@@ -72,15 +73,6 @@ internal sealed class LocalizableString
     }
 
     /// <summary>
-    ///     Clears any cached values, forcing <see cref="GetLocalizableValue" /> to
-    ///     perform evaluation.
-    /// </summary>
-    private void ClearCache()
-    {
-        this._cachedResult = null;
-    }
-
-    /// <summary>
     ///     Gets the potentially localized value.
     /// </summary>
     /// <remarks>
@@ -104,8 +96,8 @@ internal sealed class LocalizableString
     {
         if (this._cachedResult == null)
         {
-            // If the property value is null, then just cache that value
-            // If the resource type is null, then property value is literal, so cache it
+            // If the property value is null, then just cache that value.
+            // If the resource type is null, then the property value is literal, so cache it.
             if (this._propertyValue == null || this._resourceType == null)
             {
                 this._cachedResult = () => this._propertyValue;
@@ -152,5 +144,14 @@ internal sealed class LocalizableString
 
         // Return the cached result
         return this._cachedResult();
+    }
+
+    /// <summary>
+    ///     Clears any cached values, forcing <see cref="GetLocalizableValue" /> to
+    ///     perform evaluation.
+    /// </summary>
+    private void ClearCache()
+    {
+        this._cachedResult = null;
     }
 }

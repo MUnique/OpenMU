@@ -2,25 +2,25 @@
 
 @inherits InputBase<IList<TValue>>
 
-<div class="card">
+<div class="card mb-3">
     <h5 class="card-header">
         <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
         @if (this._isStartingCollapsed)
     {
         @if (this._isCollapsed)
         {
-        <button type="button" class="btn-outline-info" @onclick="@this.OnToggleCollapseClick">Expand (@(this.Value?.Count) Items)</button>
+        <button type="button" class="btn btn-outline-info" @onclick="@this.OnToggleCollapseClick">Expand (@(this.Value?.Count) Items)</button>
         }
         else
         {
-        <button type="button" class="btn-outline-info" @onclick="@this.OnToggleCollapseClick">Collapse</button>
+        <button type="button" class="btn btn-outline-info" @onclick="@this.OnToggleCollapseClick">Collapse</button>
         }
     }
     </h5>
     @if (!this._isCollapsed)
     {
         <div class="card-body card-text">
-            <table>
+            <table class="table table-striped table-hover">
                 <tbody>
                 @if (this.WrappedList is not null)
                 {
@@ -36,19 +36,19 @@
                                 </EditForm>
                             </td>
                             <td>
-                                <button type="button" class="btn-danger" @onclick="@(() => OnRemoveClickAsync(index))">Remove</button>
+                                <button type="button" class="btn btn-danger" @onclick="@(() => OnRemoveClickAsync(index))"><span class="oi oi-trash" aria-hidden="true"></span> Remove</button>
                             </td>
                         </tr>
                     }
                 }
                 </tbody>
-                <tfooter>
+                <tfoot>
                     <tr>
-                        <td colspan="2">
-                            <button type="button" class="btn-primary" @onclick="@OnAddClickAsync">Add Value</button>
+                        <td colspan="2" class="border-bottom-0">
+                            <button type="button" class="btn btn-primary" @onclick="@OnAddClickAsync">Add Value</button>
                         </td>
                     </tr>
-                </tfooter>
+                </tfoot>
             </table>
         </div>
     }

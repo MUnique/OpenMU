@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix;
 
 using MUnique.OpenMU.AttributeSystem;
+using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.MiniGames;
@@ -117,6 +118,52 @@ internal partial class NpcInitialization : Version095d.NpcInitialization
             def.ObjectKind = NpcObjectKind.PassiveNpc;
             this.GameConfiguration.Monsters.Add(def);
             def.SetGuid(def.Number);
+        }
+
+        // Elf Soldier Buff
+        {
+            var buffEffect = this.Context.CreateNew<MagicEffectDefinition>();
+            this.GameConfiguration.MagicEffects.Add(buffEffect);
+            buffEffect.Number = (short)MagicEffectNumber.ElfSoldierBuff;
+            buffEffect.Name = "Elf Soldier Buff";
+            buffEffect.InformObservers = true;
+            buffEffect.StopByDeath = true;
+
+            // Duration: 60 minutes
+            buffEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
+            buffEffect.Duration.ConstantValue.Value = 3600;
+
+            // Defense boost: 50 + (Level / 5)
+            var defensePowerUp = this.Context.CreateNew<PowerUpDefinition>();
+            defensePowerUp.TargetAttribute = Stats.DefenseFinal.GetPersistent(this.GameConfiguration);
+            defensePowerUp.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+            defensePowerUp.Boost.ConstantValue.Value = 50;
+            defensePowerUp.Boost.ConstantValue.AggregateType = AggregateType.AddFinal;
+            var defensePerLevel = this.Context.CreateNew<AttributeRelationship>();
+            defensePerLevel.InputAttribute = Stats.Level.GetPersistent(this.GameConfiguration);
+            defensePerLevel.InputOperand = 1f / 5;
+            defensePerLevel.InputOperator = InputOperator.Multiply;
+            defensePowerUp.Boost.RelatedValues.Add(defensePerLevel);
+            buffEffect.PowerUpDefinitions.Add(defensePowerUp);
+
+            // Damage boost: 45 + (Level / 3)
+            var damagePowerUp = this.Context.CreateNew<PowerUpDefinition>();
+            damagePowerUp.TargetAttribute = Stats.GreaterDamageBonus.GetPersistent(this.GameConfiguration);
+            damagePowerUp.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+            damagePowerUp.Boost.ConstantValue.Value = 45;
+            damagePowerUp.Boost.ConstantValue.AggregateType = AggregateType.AddRaw;
+            var damagePerLevel = this.Context.CreateNew<AttributeRelationship>();
+            damagePerLevel.InputAttribute = Stats.Level.GetPersistent(this.GameConfiguration);
+            damagePerLevel.InputOperand = 1f / 3;
+            damagePerLevel.InputOperator = InputOperator.Multiply;
+            damagePowerUp.Boost.RelatedValues.Add(damagePerLevel);
+            buffEffect.PowerUpDefinitions.Add(damagePowerUp);
+
+            var elfSoldier = this.GameConfiguration.Monsters.First(m => m.Number == 257);
+            var buff = this.Context.CreateNew<Buff>();
+            buff.MagicEffectDefinition = buffEffect;
+            buff.MaximumLevel = 220;
+            elfSoldier.Buffs.Add(buff);
         }
 
         {
@@ -941,6 +988,7 @@ internal partial class NpcInitialization : Version095d.NpcInitialization
             def.Designation = "Christine the General Goods Merchant";
             def.NpcWindow = NpcWindow.Merchant;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
+            def.MerchantStore = this.CreatePotionGirlItemStorage(def.Number);
             def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
         }
@@ -958,7 +1006,7 @@ internal partial class NpcInitialization : Version095d.NpcInitialization
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 547;
             def.Designation = "Market Union Member Julia";
-            def.NpcWindow = NpcWindow.Merchant;
+            def.NpcWindow = NpcWindow.JuliaWarpMarketServer;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
             def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
