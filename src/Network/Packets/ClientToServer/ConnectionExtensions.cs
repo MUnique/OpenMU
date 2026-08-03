@@ -1353,13 +1353,13 @@ public static class ConnectionExtensions
     /// Sends a <see cref="ToggleCastleGateRequest" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
-    /// <param name="closeState">The close state.</param>
+    /// <param name="isOpen">The is open.</param>
     /// <param name="gateId">The gate id.</param>
     /// <remarks>
     /// Is sent by the client when: The guild member of the castle owner wants to toggle the gate switch.
     /// Causes reaction on server side: The castle gate is getting opened or closed.
     /// </remarks>
-    public static async ValueTask SendToggleCastleGateRequestAsync(this IConnection? connection, bool @closeState, ushort @gateId)
+    public static async ValueTask SendToggleCastleGateRequestAsync(this IConnection? connection, bool @isOpen, ushort @gateId)
     {
         if (connection is null)
         {
@@ -1370,7 +1370,7 @@ public static class ConnectionExtensions
         {
             var length = ToggleCastleGateRequestRef.Length;
             var packet = new ToggleCastleGateRequestRef(connection.Output.GetSpan(length)[..length]);
-            packet.CloseState = @closeState;
+            packet.IsOpen = @isOpen;
             packet.GateId = @gateId;
 
             return packet.Header.Length;

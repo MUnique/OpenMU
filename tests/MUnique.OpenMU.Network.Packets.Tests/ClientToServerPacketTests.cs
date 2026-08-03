@@ -1,4 +1,4 @@
-﻿// <copyright file="ClientToServerPacketTests.cs" company="MUnique">
+// <copyright file="ClientToServerPacketTests.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -1009,9 +1009,9 @@ public class PacketStructureTests
         Assert.That(actualLength, Is.EqualTo(expectedLength), 
             "Packet length mismatch: declared length does not match calculated size");
         
-        // Validate field 'CloseState' boundary
+        // Validate field 'IsOpen' boundary
         Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
-            "Field 'CloseState' exceeds packet boundary");
+            "Field 'IsOpen' exceeds packet boundary");
         
         // Validate field 'GateId' boundary
         Assert.That(5 + 2, Is.LessThanOrEqualTo(expectedLength), 
@@ -2818,14 +2818,16 @@ public class PacketStructureTests
     [Test]
     public void RemoveAllianceGuildRequest_PacketSizeValidation()
     {
-        // Variable-length packet validation
-        // Test GetRequiredSize method with sample data
-        const string testString = "TestData";
-        var calculatedSize = RemoveAllianceGuildRequestRef.GetRequiredSize(testString);
-        var expectedMinSize = Encoding.UTF8.GetByteCount(testString) + 1 + 4;
-        
-        Assert.That(calculatedSize, Is.GreaterThanOrEqualTo(expectedMinSize), 
-            "GetRequiredSize calculation incorrect for string field");
+        // Fixed-length packet validation
+        const int expectedLength = 12;
+        var actualLength = RemoveAllianceGuildRequestRef.Length;
+
+        Assert.That(actualLength, Is.EqualTo(expectedLength),
+            "Packet length mismatch: declared length does not match calculated size");
+
+        // Validate field 'GuildName' boundary
+        Assert.That(4 + 8, Is.LessThanOrEqualTo(expectedLength),
+            "Field 'GuildName' exceeds packet boundary");
     }
 
     /// <summary>

@@ -4166,9 +4166,9 @@ public readonly ref struct ToggleCastleGateRequestRef
     public C1HeaderWithSubCodeRef Header => new (this._data);
 
     /// <summary>
-    /// Gets or sets the close state.
+    /// Gets or sets the is open.
     /// </summary>
-    public bool CloseState
+    public bool IsOpen
     {
         get => this._data[4..].GetBoolean();
         set => this._data[4..].SetBoolean(value);
@@ -12444,8 +12444,8 @@ public readonly ref struct RemoveAllianceGuildRequestRef
     /// </summary>
     public string GuildName
     {
-        get => this._data.ExtractString(4, this._data.Length - 4, System.Text.Encoding.UTF8);
-        set => this._data.Slice(4).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.ExtractString(4, 8, System.Text.Encoding.UTF8);
+        set => this._data.Slice(4, 8).WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
@@ -12461,18 +12461,6 @@ public readonly ref struct RemoveAllianceGuildRequestRef
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
     public static implicit operator Span<byte>(RemoveAllianceGuildRequestRef packet) => packet._data; 
-
-    /// <summary>
-    /// Calculates the size of the packet for the specified field content.
-    /// </summary>
-    /// <param name="content">The content of the variable 'GuildName' field from which the size will be calculated.</param>
-    public static int GetRequiredSize(string content) => System.Text.Encoding.UTF8.GetByteCount(content) + 1 + 4;
-
-    /// <summary>
-    /// Calculates the size of the packet for the specified field content.
-    /// </summary>
-    /// <param name="contentLength">The content length in bytes of the variable 'GuildName' field from which the size will be calculated.</param>
-    public static int GetRequiredSize(int contentLength) => contentLength + 1 + 4;
 }
 
 

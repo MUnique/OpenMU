@@ -16,4 +16,4 @@ The server removes the guild from the alliance.
 | 1 | 1 |    Byte   |   12   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xEB  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x01  | Packet header - sub packet type identifier |
-| 4 |  | String |  | GuildName |
+| 4 | 8 | String |  | GuildName |

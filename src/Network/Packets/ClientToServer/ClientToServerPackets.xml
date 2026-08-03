@@ -1061,7 +1061,7 @@
         <Field>
           <Index>4</Index>
           <Type>Boolean</Type>
-          <Name>CloseState</Name>
+          <Name>IsOpen</Name>
         </Field>
         <Field>
           <Index>5</Index>
@@ -3129,6 +3129,7 @@
           <Index>4</Index>
           <Type>String</Type>
           <Name>GuildName</Name>
+          <Length>8</Length>
         </Field>
       </Fields>
     </Packet>
