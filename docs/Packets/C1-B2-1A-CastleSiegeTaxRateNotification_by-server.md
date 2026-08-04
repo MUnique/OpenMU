@@ -16,5 +16,16 @@ The client updates the applicable tax rate.
 | 1 | 1 |    Byte   |   6   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xB2  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x1A  | Packet header - sub packet type identifier |
-| 4 | 1 | Byte |  | TaxType |
+| 4 | 1 | CastleSiegeTaxType |  | TaxType |
 | 5 | 1 | Byte |  | TaxRate |
+
+### CastleSiegeTaxType Enum
+
+Defines the castle tax or fee being changed.
+
+| Value | Name | Description |
+|-------|------|-------------|
+| 0 | Undefined | No tax type is selected. |
+| 1 | ChaosMachine | The Chaos Machine tax rate. |
+| 2 | Store | The NPC store tax rate. |
+| 3 | HuntingZoneEntranceFee | The hunting-zone entrance fee. |

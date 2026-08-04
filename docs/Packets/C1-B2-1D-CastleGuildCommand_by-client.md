@@ -19,4 +19,14 @@ The command is shown on the mini map of the guild members.
 | 4 | 1 | Byte |  | Team; Team Number 0 to 7. |
 | 5 | 1 | Byte |  | PositionX |
 | 6 | 1 | Byte |  | PositionY |
-| 7 | 1 | Byte |  | Command; 0 = Attack, 1 = Defend, 2 = Wait |
+| 7 | 1 | CastleSiegeGuildCommandType |  | Command |
+
+### CastleSiegeGuildCommandType Enum
+
+Defines a command placed on the Castle Siege mini-map.
+
+| Value | Name | Description |
+|-------|------|-------------|
+| 0 | Attack | Orders the team to attack. |
+| 1 | Defend | Orders the team to defend. |
+| 2 | Wait | Orders the team to wait. |

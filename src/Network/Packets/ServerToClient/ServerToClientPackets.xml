@@ -11216,7 +11216,8 @@
         </Field>
         <Field>
           <Index>5</Index>
-          <Type>Byte</Type>
+          <Type>Enum</Type>
+          <TypeName>CastleSiegeState</TypeName>
           <Name>State</Name>
         </Field>
         <Field>
@@ -11580,13 +11581,15 @@
         </Field>
         <Field>
           <Index>5</Index>
-          <Type>Byte</Type>
+          <Type>Enum</Type>
+          <TypeName>CastleSiegeTaxType</TypeName>
           <Name>TaxType</Name>
         </Field>
         <Field>
           <Index>6</Index>
           <Type>IntegerBigEndian</Type>
-          <Name>TaxRate</Name>
+          <Name>TaxValue</Name>
+          <Description>The percentage rate for shop and Chaos Machine taxes, or the entrance fee amount for the hunting zone.</Description>
         </Field>
       </Fields>
     </Packet>
@@ -11705,7 +11708,8 @@
         </Field>
         <Field>
           <Index>8</Index>
-          <Type>Byte</Type>
+          <Type>Enum</Type>
+          <TypeName>CastleSiegeCrownSwitchStateType</TypeName>
           <Name>State</Name>
         </Field>
       </Fields>
@@ -11722,7 +11726,8 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>Byte</Type>
+          <Type>Enum</Type>
+          <TypeName>CastleSiegeCrownAccessStateType</TypeName>
           <Name>State</Name>
         </Field>
         <Field>
@@ -11744,7 +11749,8 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>Byte</Type>
+          <Type>Enum</Type>
+          <TypeName>CastleSiegeCrownState</TypeName>
           <Name>State</Name>
         </Field>
       </Fields>
@@ -11778,7 +11784,8 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>Byte</Type>
+          <Type>Enum</Type>
+          <TypeName>CastleSiegeBattleProcessState</TypeName>
           <Name>State</Name>
         </Field>
         <Field>
@@ -11801,7 +11808,8 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>Byte</Type>
+          <Type>Enum</Type>
+          <TypeName>CastleSiegeJoinSide</TypeName>
           <Name>Side</Name>
         </Field>
       </Fields>
@@ -11818,7 +11826,8 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>Byte</Type>
+          <Type>Enum</Type>
+          <TypeName>CastleSiegeTaxType</TypeName>
           <Name>TaxType</Name>
         </Field>
         <Field>
@@ -11842,7 +11851,7 @@
           <Index>4</Index>
           <Type>Byte</Type>
           <Name>Result</Name>
-          <Description>1 = success, 2 = battle not in progress, 3 = not authorized</Description>
+          <Description>The result code. The client currently ignores it; historically documented values are not yet verified.</Description>
         </Field>
       </Fields>
     </Packet>
@@ -11874,9 +11883,9 @@
         </Field>
         <Field>
           <Index>7</Index>
-          <Type>Byte</Type>
+          <Type>Enum</Type>
+          <TypeName>CastleSiegeGuildCommandType</TypeName>
           <Name>Command</Name>
-          <Description>0 = attack, 1 = defend, 2 = wait</Description>
         </Field>
       </Fields>
     </Packet>
@@ -11941,12 +11950,13 @@
         </Field>
         <Field>
           <Index>6</Index>
-          <Type>Byte</Type>
-          <Name>State</Name>
+          <Type>Boolean</Type>
+          <Name>IsOccupied</Name>
         </Field>
         <Field>
           <Index>7</Index>
-          <Type>Byte</Type>
+          <Type>Enum</Type>
+          <TypeName>CastleSiegeJoinSide</TypeName>
           <Name>JoinSide</Name>
         </Field>
         <Field>
@@ -12135,9 +12145,9 @@
           <Fields>
             <Field>
               <Index>0</Index>
-              <Type>Byte</Type>
+              <Type>Enum</Type>
+              <TypeName>CastleSiegeJoinSide</TypeName>
               <Name>Side</Name>
-              <Description>0 = defender, 1 = attacker</Description>
             </Field>
             <Field>
               <Index>1</Index>
@@ -12217,7 +12227,8 @@
         </Field>
         <Field>
           <Index>5</Index>
-          <Type>Byte</Type>
+          <Type>Enum</Type>
+          <TypeName>CastleSiegeMachineType</TypeName>
           <Name>MachineType</Name>
         </Field>
         <Field>
@@ -12249,7 +12260,8 @@
         </Field>
         <Field>
           <Index>7</Index>
-          <Type>Byte</Type>
+          <Type>Enum</Type>
+          <TypeName>CastleSiegeMachineType</TypeName>
           <Name>MachineType</Name>
         </Field>
         <Field>
@@ -12276,7 +12288,8 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>Byte</Type>
+          <Type>Enum</Type>
+          <TypeName>CastleSiegeMachineType</TypeName>
           <Name>MachineType</Name>
         </Field>
         <Field>
@@ -12318,7 +12331,7 @@
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>B9</Code>
       <SubCode>02</SubCode>
-      <Name>CastleOwnerLogo</Name>
+      <Name>CastleSiegeOwnerLogo</Name>
       <Length>36</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>After the client requested the guild logo of the current castle owner.</SentWhen>
@@ -12336,7 +12349,7 @@
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>B9</Code>
       <SubCode>03</SubCode>
-      <Name>HuntingZoneGuardInfo</Name>
+      <Name>CastleSiegeHuntingZoneGuardInfo</Name>
       <Length>18</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>The server sends information about the hunting zone guard configuration.</SentWhen>
@@ -12415,9 +12428,9 @@
           <Fields>
             <Field>
               <Index>0</Index>
-              <Type>Byte</Type>
+              <Type>Enum</Type>
+              <TypeName>CastleSiegeMiniMapNpcType</TypeName>
               <Name>NpcType</Name>
-              <Description>0 = gate, 1 = Guardian Statue</Description>
             </Field>
             <Field>
               <Index>1</Index>
@@ -13020,6 +13033,261 @@
           <Name>Boolean</Name>
           <Description>The parameter expects a 0 or a 1.</Description>
           <Value>2</Value>
+        </EnumValue>
+      </Values>
+    </Enum>
+    <Enum>
+      <Name>CastleSiegeState</Name>
+      <Description>Defines the scheduled state of the Castle Siege event.</Description>
+      <Values>
+        <EnumValue>
+          <Name>Idle1</Name>
+          <Description>The first idle period.</Description>
+          <Value>0</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>RegisterGuild</Name>
+          <Description>Guild registration is open.</Description>
+          <Value>1</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Idle2</Name>
+          <Description>The second idle period.</Description>
+          <Value>2</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>RegisterMark</Name>
+          <Description>Sign of Lord registration is open.</Description>
+          <Value>3</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Idle3</Name>
+          <Description>The third idle period.</Description>
+          <Value>4</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Notify</Name>
+          <Description>The selected participants are announced.</Description>
+          <Value>5</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Ready</Name>
+          <Description>The event is preparing to start.</Description>
+          <Value>6</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Start</Name>
+          <Description>The siege battle is running.</Description>
+          <Value>7</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>End</Name>
+          <Description>The siege battle has ended.</Description>
+          <Value>8</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>EndCycle</Name>
+          <Description>The current siege cycle is ending.</Description>
+          <Value>9</Value>
+        </EnumValue>
+      </Values>
+    </Enum>
+    <Enum>
+      <Name>CastleSiegeTaxType</Name>
+      <Description>Defines the castle tax or fee being changed.</Description>
+      <Values>
+        <EnumValue>
+          <Name>Undefined</Name>
+          <Description>No tax type is selected.</Description>
+          <Value>0</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>ChaosMachine</Name>
+          <Description>The Chaos Machine tax rate.</Description>
+          <Value>1</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Store</Name>
+          <Description>The NPC store tax rate.</Description>
+          <Value>2</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>HuntingZoneEntranceFee</Name>
+          <Description>The hunting-zone entrance fee.</Description>
+          <Value>3</Value>
+        </EnumValue>
+      </Values>
+    </Enum>
+    <Enum>
+      <Name>CastleSiegeCrownSwitchStateType</Name>
+      <Description>Defines the interaction state of a crown switch.</Description>
+      <Values>
+        <EnumValue>
+          <Name>Released</Name>
+          <Description>The switch is not occupied.</Description>
+          <Value>0</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>OccupiedByCurrentPlayer</Name>
+          <Description>The current player occupies the switch.</Description>
+          <Value>1</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>OccupiedByOtherPlayer</Name>
+          <Description>Another player occupies the switch.</Description>
+          <Value>2</Value>
+        </EnumValue>
+      </Values>
+    </Enum>
+    <Enum>
+      <Name>CastleSiegeCrownAccessStateType</Name>
+      <Description>Defines the result or progress state of a crown-access attempt.</Description>
+      <Values>
+        <EnumValue>
+          <Name>Started</Name>
+          <Description>Crown registration has started.</Description>
+          <Value>0</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Succeeded</Name>
+          <Description>Crown registration succeeded.</Description>
+          <Value>1</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Failed</Name>
+          <Description>Crown registration failed.</Description>
+          <Value>2</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>OccupiedByOtherPlayer</Name>
+          <Description>Another player is accessing the crown.</Description>
+          <Value>3</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>OccupiedByOtherSide</Name>
+          <Description>A player from another siege side is accessing the crown.</Description>
+          <Value>4</Value>
+        </EnumValue>
+      </Values>
+    </Enum>
+    <Enum>
+      <Name>CastleSiegeCrownState</Name>
+      <Description>Defines the availability of the castle crown.</Description>
+      <Values>
+        <EnumValue>
+          <Name>Accessible</Name>
+          <Description>The crown is accessible.</Description>
+          <Value>0</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Protected</Name>
+          <Description>The crown is protected.</Description>
+          <Value>1</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>RegistrationSucceeded</Name>
+          <Description>A guild successfully registered the crown.</Description>
+          <Value>2</Value>
+        </EnumValue>
+      </Values>
+    </Enum>
+    <Enum>
+      <Name>CastleSiegeBattleProcessState</Name>
+      <Description>Defines a public Castle Siege battle-process announcement.</Description>
+      <Values>
+        <EnumValue>
+          <Name>CrownRegistrationStarted</Name>
+          <Description>A guild started registering the crown.</Description>
+          <Value>0</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>CrownRegistrationSucceeded</Name>
+          <Description>A guild successfully registered the crown.</Description>
+          <Value>1</Value>
+        </EnumValue>
+      </Values>
+    </Enum>
+    <Enum>
+      <Name>CastleSiegeJoinSide</Name>
+      <Description>Defines a participant's side in the Castle Siege battle.</Description>
+      <Values>
+        <EnumValue>
+          <Name>None</Name>
+          <Description>The participant does not belong to a siege side.</Description>
+          <Value>0</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Defense</Name>
+          <Description>The defending alliance.</Description>
+          <Value>1</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Attack1</Name>
+          <Description>The first attacking alliance.</Description>
+          <Value>2</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Attack2</Name>
+          <Description>The second attacking alliance.</Description>
+          <Value>3</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Attack3</Name>
+          <Description>The third attacking alliance.</Description>
+          <Value>4</Value>
+        </EnumValue>
+      </Values>
+    </Enum>
+    <Enum>
+      <Name>CastleSiegeGuildCommandType</Name>
+      <Description>Defines a command placed on the Castle Siege mini-map.</Description>
+      <Values>
+        <EnumValue>
+          <Name>Attack</Name>
+          <Description>Orders the team to attack.</Description>
+          <Value>0</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Defend</Name>
+          <Description>Orders the team to defend.</Description>
+          <Value>1</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Wait</Name>
+          <Description>Orders the team to wait.</Description>
+          <Value>2</Value>
+        </EnumValue>
+      </Values>
+    </Enum>
+    <Enum>
+      <Name>CastleSiegeMachineType</Name>
+      <Description>Defines the side-specific Castle Siege catapult type.</Description>
+      <Values>
+        <EnumValue>
+          <Name>Attack</Name>
+          <Description>The attacking-side catapult.</Description>
+          <Value>1</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Defense</Name>
+          <Description>The defending-side catapult.</Description>
+          <Value>2</Value>
+        </EnumValue>
+      </Values>
+    </Enum>
+    <Enum>
+      <Name>CastleSiegeMiniMapNpcType</Name>
+      <Description>Defines a Castle Siege NPC shown on the mini-map.</Description>
+      <Values>
+        <EnumValue>
+          <Name>Gate</Name>
+          <Description>A castle gate.</Description>
+          <Value>0</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>GuardianStatue</Name>
+          <Description>A Guardian Statue.</Description>
+          <Value>1</Value>
         </EnumValue>
       </Values>
     </Enum>

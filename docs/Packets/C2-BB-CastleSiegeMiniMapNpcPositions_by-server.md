@@ -26,6 +26,15 @@ Length: 3 Bytes
 
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
-| 0 | 1 | Byte |  | NpcType; 0 = gate, 1 = Guardian Statue |
+| 0 | 1 | CastleSiegeMiniMapNpcType |  | NpcType |
 | 1 | 1 | Byte |  | PositionX |
 | 2 | 1 | Byte |  | PositionY |
+
+### CastleSiegeMiniMapNpcType Enum
+
+Defines a Castle Siege NPC shown on the mini-map.
+
+| Value | Name | Description |
+|-------|------|-------------|
+| 0 | Gate | A castle gate. |
+| 1 | GuardianStatue | A Guardian Statue. |

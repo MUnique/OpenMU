@@ -18,6 +18,15 @@ The client shows the catapult animation toward the target area.
 | 3 | 1 |    Byte   | 0x01  | Packet header - sub packet type identifier |
 | 4 | 1 | Byte |  | Result |
 | 5 | 2 | ShortBigEndian |  | NpcIndex |
-| 7 | 1 | Byte |  | MachineType |
+| 7 | 1 | CastleSiegeMachineType |  | MachineType |
 | 8 | 1 | Byte |  | TargetX |
 | 9 | 1 | Byte |  | TargetY |
+
+### CastleSiegeMachineType Enum
+
+Defines the side-specific Castle Siege catapult type.
+
+| Value | Name | Description |
+|-------|------|-------------|
+| 1 | Attack | The attacking-side catapult. |
+| 2 | Defense | The defending-side catapult. |

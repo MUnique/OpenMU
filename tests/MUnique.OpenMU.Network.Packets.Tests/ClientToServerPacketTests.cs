@@ -973,9 +973,9 @@ public class PacketStructureTests
         Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'TaxType' exceeds packet boundary");
         
-        // Validate field 'TaxRate' boundary
+        // Validate field 'TaxValue' boundary
         Assert.That(5 + 4, Is.LessThanOrEqualTo(expectedLength), 
-            "Field 'TaxRate' exceeds packet boundary");
+            "Field 'TaxValue' exceeds packet boundary");
     }
 
     /// <summary>

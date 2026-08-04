@@ -8,7 +8,7 @@ using System.IO;
 using System.Xml.Linq;
 
 /// <summary>
-/// Verifies the Castle Siege packet layouts which are consumed and produced by MuMain.
+/// Verifies the packed Castle Siege wire layouts which are consumed and produced by MuMain.
 /// </summary>
 [TestFixture]
 public class CastleSiegePacketDefinitionTests
@@ -42,10 +42,10 @@ public class CastleSiegePacketDefinitionTests
         "4:IntegerLittleEndian:NpcNumber;8:IntegerLittleEndian:NpcIndex;"
         + "12:IntegerLittleEndian:NpcUpgradeType;16:IntegerLittleEndian:NpcUpgradeValue")]
     [TestCase("CastleSiegeTaxInfoRequest", "C1HeaderWithSubCode", "B2", "08", "4", "")]
-    [TestCase("CastleSiegeTaxChangeRequest", "C1HeaderWithSubCode", "B2", "09", "9", "4:Byte:TaxType;5:IntegerBigEndian:TaxRate")]
+    [TestCase("CastleSiegeTaxChangeRequest", "C1HeaderWithSubCode", "B2", "09", "9", "4:Enum:TaxType;5:IntegerBigEndian:TaxValue")]
     [TestCase("CastleSiegeTaxMoneyWithdraw", "C1HeaderWithSubCode", "B2", "10", "8", "4:IntegerBigEndian:Amount")]
     [TestCase("ToggleCastleGateRequest", "C1HeaderWithSubCode", "B2", "12", "7", "4:Boolean:IsOpen;5:ShortBigEndian:GateId")]
-    [TestCase("CastleGuildCommand", "C1HeaderWithSubCode", "B2", "1D", "8", "4:Byte:Team;5:Byte:PositionX;6:Byte:PositionY;7:Byte:Command")]
+    [TestCase("CastleGuildCommand", "C1HeaderWithSubCode", "B2", "1D", "8", "4:Byte:Team;5:Byte:PositionX;6:Byte:PositionY;7:Enum:Command")]
     [TestCase("CastleSiegeHuntingZoneEntranceSetting", "C1HeaderWithSubCode", "B2", "1F", "5", "4:Boolean:IsPublic")]
     [TestCase("CastleSiegeGateListRequest", "C1HeaderWithSubCode", "B3", "01", "4", "")]
     [TestCase("CastleSiegeStatueListRequest", "C1HeaderWithSubCode", "B3", "02", "4", "")]
@@ -78,7 +78,7 @@ public class CastleSiegePacketDefinitionTests
     }
 
     /// <summary>
-    /// Verifies a server-to-client packet definition against MuMain's receiving layout.
+    /// Verifies a server-to-client packet definition against MuMain's packed receiving layout.
     /// </summary>
     /// <param name="name">The packet name.</param>
     /// <param name="headerType">The expected header type.</param>
@@ -92,7 +92,7 @@ public class CastleSiegePacketDefinitionTests
         "B2",
         "00",
         "46",
-        "4:Byte:Result;5:Byte:State;6:ShortBigEndian:StartYear;8:Byte:StartMonth;9:Byte:StartDay;"
+        "4:Byte:Result;5:Enum:State;6:ShortBigEndian:StartYear;8:Byte:StartMonth;9:Byte:StartDay;"
         + "10:Byte:StartHour;11:Byte:StartMinute;12:ShortBigEndian:EndYear;14:Byte:EndMonth;"
         + "15:Byte:EndDay;16:Byte:EndHour;17:Byte:EndMinute;18:ShortBigEndian:SiegeStartYear;"
         + "20:Byte:SiegeStartMonth;21:Byte:SiegeStartDay;22:Byte:SiegeStartHour;"
@@ -127,34 +127,34 @@ public class CastleSiegePacketDefinitionTests
         "4:Byte:Result;5:IntegerLittleEndian:NpcNumber;9:IntegerLittleEndian:NpcIndex;"
         + "13:IntegerLittleEndian:NpcUpgradeType;17:IntegerLittleEndian:NpcUpgradeValue")]
     [TestCase("CastleSiegeTaxInfoResponse", "C1HeaderWithSubCode", "B2", "08", "15", "4:Byte:Result;5:Byte:TaxRateChaosMachine;6:Byte:TaxRateNormal;7:LongBigEndian:Treasury")]
-    [TestCase("CastleSiegeTaxChangeResponse", "C1HeaderWithSubCode", "B2", "09", "10", "4:Byte:Result;5:Byte:TaxType;6:IntegerBigEndian:TaxRate")]
+    [TestCase("CastleSiegeTaxChangeResponse", "C1HeaderWithSubCode", "B2", "09", "10", "4:Byte:Result;5:Enum:TaxType;6:IntegerBigEndian:TaxValue")]
     [TestCase("CastleSiegeTributeWithdrawResponse", "C1HeaderWithSubCode", "B2", "10", "13", "4:Byte:Result;5:LongBigEndian:Money")]
     [TestCase("CastleSiegeGateInterfaceResponse", "C1HeaderWithSubCode", "B2", "11", "7", "4:Byte:Result;5:ShortBigEndian:GateIndex")]
     [TestCase("CastleSiegeGateOperateResponse", "C1HeaderWithSubCode", "B2", "12", "8", "4:Byte:Result;5:Boolean:IsOpen;6:ShortBigEndian:GateIndex")]
     [TestCase("CastleSiegeGateStateNotification", "C1HeaderWithSubCode", "B2", "13", "7", "4:Boolean:IsOpen;5:ShortBigEndian:GateIndex")]
-    [TestCase("CastleSiegeCrownSwitchState", "C1HeaderWithSubCode", "B2", "14", "9", "4:ShortBigEndian:SwitchIndex;6:ShortBigEndian:PlayerIndex;8:Byte:State")]
-    [TestCase("CastleSiegeCrownAccessState", "C1HeaderWithSubCode", "B2", "15", "9", "4:Byte:State;5:IntegerLittleEndian:AccumulatedTimeMs")]
-    [TestCase("CastleSiegeCrownStateUpdate", "C1HeaderWithSubCode", "B2", "16", "5", "4:Byte:State")]
+    [TestCase("CastleSiegeCrownSwitchState", "C1HeaderWithSubCode", "B2", "14", "9", "4:ShortBigEndian:SwitchIndex;6:ShortBigEndian:PlayerIndex;8:Enum:State")]
+    [TestCase("CastleSiegeCrownAccessState", "C1HeaderWithSubCode", "B2", "15", "9", "4:Enum:State;5:IntegerLittleEndian:AccumulatedTimeMs")]
+    [TestCase("CastleSiegeCrownStateUpdate", "C1HeaderWithSubCode", "B2", "16", "5", "4:Enum:State")]
     [TestCase("CastleSiegeBattleStartEnd", "C1HeaderWithSubCode", "B2", "17", "5", "4:Boolean:IsStarted")]
-    [TestCase("CastleSiegeBattleProcess", "C1HeaderWithSubCode", "B2", "18", "13", "4:Byte:State;5:String:GuildName[8]")]
-    [TestCase("CastleSiegeJoinSideNotification", "C1HeaderWithSubCode", "B2", "19", "5", "4:Byte:Side")]
-    [TestCase("CastleSiegeTaxRateNotification", "C1HeaderWithSubCode", "B2", "1A", "6", "4:Byte:TaxType;5:Byte:TaxRate")]
+    [TestCase("CastleSiegeBattleProcess", "C1HeaderWithSubCode", "B2", "18", "13", "4:Enum:State;5:String:GuildName[8]")]
+    [TestCase("CastleSiegeJoinSideNotification", "C1HeaderWithSubCode", "B2", "19", "5", "4:Enum:Side")]
+    [TestCase("CastleSiegeTaxRateNotification", "C1HeaderWithSubCode", "B2", "1A", "6", "4:Enum:TaxType;5:Byte:TaxRate")]
     [TestCase("CastleSiegeMiniMapResponse", "C1HeaderWithSubCode", "B2", "1B", "5", "4:Byte:Result")]
-    [TestCase("CastleSiegeGuildCommand", "C1HeaderWithSubCode", "B2", "1D", "8", "4:Byte:Team;5:Byte:PositionX;6:Byte:PositionY;7:Byte:Command")]
+    [TestCase("CastleSiegeGuildCommand", "C1HeaderWithSubCode", "B2", "1D", "8", "4:Byte:Team;5:Byte:PositionX;6:Byte:PositionY;7:Enum:Command")]
     [TestCase("CastleSiegeRemainingTime", "C1HeaderWithSubCode", "B2", "1E", "6", "4:Byte:Hour;5:Byte:Minute")]
     [TestCase("CastleSiegeHuntingZoneEntranceSettingResponse", "C1HeaderWithSubCode", "B2", "1F", "6", "4:Byte:Result;5:Boolean:IsPublic")]
-    [TestCase("CastleSiegeSwitchInfo", "C1HeaderWithSubCode", "B2", "20", "27", "4:ShortBigEndian:SwitchIndex;6:Byte:State;7:Byte:JoinSide;8:String:GuildName[8];16:String:UserName[11]")]
+    [TestCase("CastleSiegeSwitchInfo", "C1HeaderWithSubCode", "B2", "20", "27", "4:ShortBigEndian:SwitchIndex;6:Boolean:IsOccupied;7:Enum:JoinSide;8:String:GuildName[8];16:String:UserName[11]")]
     [TestCase("CastleSiegeNpcList", "C2Header", "B3", "", "", "4:Byte:Result;5:IntegerLittleEndian:NpcCount;9:Structure[]:NpcList")]
     [TestCase("CastleSiegeRegisteredGuildList", "C2Header", "B4", "", "", "4:Byte:Result;5:IntegerLittleEndian:GuildCount;9:Structure[]:Guilds")]
     [TestCase("CastleSiegeGuildList", "C2Header", "B5", "", "", "4:Byte:Result;5:IntegerLittleEndian:GuildCount;9:Structure[]:Guilds")]
     [TestCase("CastleSiegeMiniMapPlayerPositions", "C2Header", "B6", "", "", "4:IntegerLittleEndian:PlayerCount;8:Structure[]:Players")]
-    [TestCase("CastleSiegeMachineInterface", "C1HeaderWithSubCode", "B7", "00", "8", "4:Byte:Result;5:Byte:MachineType;6:ShortBigEndian:NpcIndex")]
-    [TestCase("CastleSiegeMachineUseResult", "C1HeaderWithSubCode", "B7", "01", "10", "4:Byte:Result;5:ShortBigEndian:NpcIndex;7:Byte:MachineType;8:Byte:TargetX;9:Byte:TargetY")]
-    [TestCase("CastleSiegeMachineRegionNotify", "C1HeaderWithSubCode", "B7", "02", "7", "4:Byte:MachineType;5:Byte:TargetX;6:Byte:TargetY")]
+    [TestCase("CastleSiegeMachineInterface", "C1HeaderWithSubCode", "B7", "00", "8", "4:Byte:Result;5:Enum:MachineType;6:ShortBigEndian:NpcIndex")]
+    [TestCase("CastleSiegeMachineUseResult", "C1HeaderWithSubCode", "B7", "01", "10", "4:Byte:Result;5:ShortBigEndian:NpcIndex;7:Enum:MachineType;8:Byte:TargetX;9:Byte:TargetY")]
+    [TestCase("CastleSiegeMachineRegionNotify", "C1HeaderWithSubCode", "B7", "02", "7", "4:Enum:MachineType;5:Byte:TargetX;6:Byte:TargetY")]
     [TestCase("CastleSiegeLifeStoneBuildTime", "C1HeaderWithSubCode", "B9", "01", "7", "4:ShortBigEndian:NpcIndex;6:Byte:BuildTime")]
-    [TestCase("CastleOwnerLogo", "C1HeaderWithSubCode", "B9", "02", "36", "4:Binary:Logo[32]")]
+    [TestCase("CastleSiegeOwnerLogo", "C1HeaderWithSubCode", "B9", "02", "36", "4:Binary:Logo[32]")]
     [TestCase(
-        "HuntingZoneGuardInfo",
+        "CastleSiegeHuntingZoneGuardInfo",
         "C1HeaderWithSubCode",
         "B9",
         "03",
@@ -201,9 +201,9 @@ public class CastleSiegePacketDefinitionTests
         + "16:IntegerLittleEndian:MaxHp;20:IntegerLittleEndian:CurrentHp;"
         + "24:Byte:PositionX;25:Byte:PositionY;26:Boolean:IsAlive")]
     [TestCase("CastleSiegeRegisteredGuildList", "RegisteredGuildEntry", "14", "0:String:GuildName[8];8:IntegerBigEndian:GuildMarkCount;12:Boolean:IsGivingUp;13:Byte:SequenceNumber")]
-    [TestCase("CastleSiegeGuildList", "CastleSiegeGuildEntry", "14", "0:Byte:Side;1:Boolean:IsInvolved;2:String:GuildName[8];10:IntegerLittleEndian:Score")]
+    [TestCase("CastleSiegeGuildList", "CastleSiegeGuildEntry", "14", "0:Enum:Side;1:Boolean:IsInvolved;2:String:GuildName[8];10:IntegerLittleEndian:Score")]
     [TestCase("CastleSiegeMiniMapPlayerPositions", "MiniMapPlayerPosition", "2", "0:Byte:PositionX;1:Byte:PositionY")]
-    [TestCase("CastleSiegeMiniMapNpcPositions", "MiniMapNpcPosition", "3", "0:Byte:NpcType;1:Byte:PositionX;2:Byte:PositionY")]
+    [TestCase("CastleSiegeMiniMapNpcPositions", "MiniMapNpcPosition", "3", "0:Enum:NpcType;1:Byte:PositionX;2:Byte:PositionY")]
     [TestCase("AllianceList", "AllianceGuildEntry", "41", "0:Byte:MemberCount;1:Binary:Logo[32];33:String:GuildName[8]")]
     public void ServerPacketStructureMatchesMuMain(
         string packetName,
@@ -222,6 +222,41 @@ public class CastleSiegePacketDefinitionTests
             Assert.That(structure.Element(PacketDefinitionNamespace + "Length")!.Value, Is.EqualTo(length));
             Assert.That(GetFieldLayout(structure), Is.EqualTo(fields));
         });
+    }
+
+    /// <summary>
+    /// Verifies enum values which are consumed by the MuMain Castle Siege implementation.
+    /// </summary>
+    /// <param name="relativePath">The packet-definition file.</param>
+    /// <param name="enumName">The enum name.</param>
+    /// <param name="values">The expected enum values.</param>
+    [TestCase(ServerPacketDefinitions, "CastleSiegeState", "Idle1=0;RegisterGuild=1;Idle2=2;RegisterMark=3;Idle3=4;Notify=5;Ready=6;Start=7;End=8;EndCycle=9")]
+    [TestCase(ServerPacketDefinitions, "CastleSiegeTaxType", "Undefined=0;ChaosMachine=1;Store=2;HuntingZoneEntranceFee=3")]
+    [TestCase(ServerPacketDefinitions, "CastleSiegeCrownSwitchStateType", "Released=0;OccupiedByCurrentPlayer=1;OccupiedByOtherPlayer=2")]
+    [TestCase(ServerPacketDefinitions, "CastleSiegeCrownAccessStateType", "Started=0;Succeeded=1;Failed=2;OccupiedByOtherPlayer=3;OccupiedByOtherSide=4")]
+    [TestCase(ServerPacketDefinitions, "CastleSiegeCrownState", "Accessible=0;Protected=1;RegistrationSucceeded=2")]
+    [TestCase(ServerPacketDefinitions, "CastleSiegeBattleProcessState", "CrownRegistrationStarted=0;CrownRegistrationSucceeded=1")]
+    [TestCase(ServerPacketDefinitions, "CastleSiegeJoinSide", "None=0;Defense=1;Attack1=2;Attack2=3;Attack3=4")]
+    [TestCase(ServerPacketDefinitions, "CastleSiegeGuildCommandType", "Attack=0;Defend=1;Wait=2")]
+    [TestCase(ServerPacketDefinitions, "CastleSiegeMachineType", "Attack=1;Defense=2")]
+    [TestCase(ServerPacketDefinitions, "CastleSiegeMiniMapNpcType", "Gate=0;GuardianStatue=1")]
+    [TestCase(ClientPacketDefinitions, "CastleSiegeTaxType", "Undefined=0;ChaosMachine=1;Store=2;HuntingZoneEntranceFee=3")]
+    [TestCase(ClientPacketDefinitions, "CastleSiegeGuildCommandType", "Attack=0;Defend=1;Wait=2")]
+    public void PacketEnumsMatchMuMain(string relativePath, string enumName, string values)
+    {
+        var definitions = LoadPacketDefinitions(relativePath);
+        var enumDefinition = definitions.Root!
+            .Element(PacketDefinitionNamespace + "Enums")!
+            .Elements(PacketDefinitionNamespace + "Enum")
+            .Single(element => element.Element(PacketDefinitionNamespace + "Name")!.Value == enumName);
+
+        var actualValues = string.Join(
+            ';',
+            enumDefinition.Element(PacketDefinitionNamespace + "Values")!
+                .Elements(PacketDefinitionNamespace + "EnumValue")
+                .Select(value => $"{value.Element(PacketDefinitionNamespace + "Name")!.Value}={value.Element(PacketDefinitionNamespace + "Value")!.Value}"));
+
+        Assert.That(actualValues, Is.EqualTo(values));
     }
 
     private static XDocument LoadPacketDefinitions(string relativePath)

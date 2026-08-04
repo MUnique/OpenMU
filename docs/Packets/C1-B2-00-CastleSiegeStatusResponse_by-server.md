@@ -17,7 +17,7 @@ The client shows the castle siege status.
 | 2 | 1 |    Byte   | 0xB2  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x00  | Packet header - sub packet type identifier |
 | 4 | 1 | Byte |  | Result |
-| 5 | 1 | Byte |  | State |
+| 5 | 1 | CastleSiegeState |  | State |
 | 6 | 2 | ShortBigEndian |  | StartYear |
 | 8 | 1 | Byte |  | StartMonth |
 | 9 | 1 | Byte |  | StartDay |
@@ -36,3 +36,20 @@ The client shows the castle siege status.
 | 24 | 8 | String |  | GuildName |
 | 32 | 10 | String |  | GuildMasterName |
 | 42 | 4 | IntegerBigEndian |  | RemainingTime |
+
+### CastleSiegeState Enum
+
+Defines the scheduled state of the Castle Siege event.
+
+| Value | Name | Description |
+|-------|------|-------------|
+| 0 | Idle1 | The first idle period. |
+| 1 | RegisterGuild | Guild registration is open. |
+| 2 | Idle2 | The second idle period. |
+| 3 | RegisterMark | Sign of Lord registration is open. |
+| 4 | Idle3 | The third idle period. |
+| 5 | Notify | The selected participants are announced. |
+| 6 | Ready | The event is preparing to start. |
+| 7 | Start | The siege battle is running. |
+| 8 | End | The siege battle has ended. |
+| 9 | EndCycle | The current siege cycle is ending. |

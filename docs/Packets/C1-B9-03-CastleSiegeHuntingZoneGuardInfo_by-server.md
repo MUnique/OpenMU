@@ -1,4 +1,4 @@
-# C1 B9 03 - HuntingZoneGuardInfo (by server)
+# C1 B9 03 - CastleSiegeHuntingZoneGuardInfo (by server)
 
 ## Is sent when
 

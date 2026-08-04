@@ -29421,10 +29421,10 @@ public readonly ref struct CastleSiegeStatusResponseRef
     /// <summary>
     /// Gets or sets the state.
     /// </summary>
-    public byte State
+    public CastleSiegeState State
     {
-        get => this._data[5];
-        set => this._data[5] = value;
+        get => (CastleSiegeState)this._data[5];
+        set => this._data[5] = (byte)value;
     }
 
     /// <summary>
@@ -30564,16 +30564,16 @@ public readonly ref struct CastleSiegeTaxChangeResponseRef
     /// <summary>
     /// Gets or sets the tax type.
     /// </summary>
-    public byte TaxType
+    public CastleSiegeTaxType TaxType
     {
-        get => this._data[5];
-        set => this._data[5] = value;
+        get => (CastleSiegeTaxType)this._data[5];
+        set => this._data[5] = (byte)value;
     }
 
     /// <summary>
-    /// Gets or sets the tax rate.
+    /// Gets or sets the percentage rate for shop and Chaos Machine taxes, or the entrance fee amount for the hunting zone.
     /// </summary>
-    public uint TaxRate
+    public uint TaxValue
     {
         get => ReadUInt32BigEndian(this._data[6..]);
         set => WriteUInt32BigEndian(this._data[6..], value);
@@ -31066,10 +31066,10 @@ public readonly ref struct CastleSiegeCrownSwitchStateRef
     /// <summary>
     /// Gets or sets the state.
     /// </summary>
-    public byte State
+    public CastleSiegeCrownSwitchStateType State
     {
-        get => this._data[8];
-        set => this._data[8] = value;
+        get => (CastleSiegeCrownSwitchStateType)this._data[8];
+        set => this._data[8] = (byte)value;
     }
 
     /// <summary>
@@ -31152,10 +31152,10 @@ public readonly ref struct CastleSiegeCrownAccessStateRef
     /// <summary>
     /// Gets or sets the state.
     /// </summary>
-    public byte State
+    public CastleSiegeCrownAccessStateType State
     {
-        get => this._data[4];
-        set => this._data[4] = value;
+        get => (CastleSiegeCrownAccessStateType)this._data[4];
+        set => this._data[4] = (byte)value;
     }
 
     /// <summary>
@@ -31247,10 +31247,10 @@ public readonly ref struct CastleSiegeCrownStateUpdateRef
     /// <summary>
     /// Gets or sets the state.
     /// </summary>
-    public byte State
+    public CastleSiegeCrownState State
     {
-        get => this._data[4];
-        set => this._data[4] = value;
+        get => (CastleSiegeCrownState)this._data[4];
+        set => this._data[4] = (byte)value;
     }
 
     /// <summary>
@@ -31419,10 +31419,10 @@ public readonly ref struct CastleSiegeBattleProcessRef
     /// <summary>
     /// Gets or sets the state.
     /// </summary>
-    public byte State
+    public CastleSiegeBattleProcessState State
     {
-        get => this._data[4];
-        set => this._data[4] = value;
+        get => (CastleSiegeBattleProcessState)this._data[4];
+        set => this._data[4] = (byte)value;
     }
 
     /// <summary>
@@ -31514,10 +31514,10 @@ public readonly ref struct CastleSiegeJoinSideNotificationRef
     /// <summary>
     /// Gets or sets the side.
     /// </summary>
-    public byte Side
+    public CastleSiegeJoinSide Side
     {
-        get => this._data[4];
-        set => this._data[4] = value;
+        get => (CastleSiegeJoinSide)this._data[4];
+        set => this._data[4] = (byte)value;
     }
 
     /// <summary>
@@ -31600,10 +31600,10 @@ public readonly ref struct CastleSiegeTaxRateNotificationRef
     /// <summary>
     /// Gets or sets the tax type.
     /// </summary>
-    public byte TaxType
+    public CastleSiegeTaxType TaxType
     {
-        get => this._data[4];
-        set => this._data[4] = value;
+        get => (CastleSiegeTaxType)this._data[4];
+        set => this._data[4] = (byte)value;
     }
 
     /// <summary>
@@ -31693,7 +31693,7 @@ public readonly ref struct CastleSiegeMiniMapResponseRef
     public C1HeaderWithSubCodeRef Header => new (this._data);
 
     /// <summary>
-    /// Gets or sets 1 = success, 2 = battle not in progress, 3 = not authorized
+    /// Gets or sets the result code. The client currently ignores it; historically documented values are not yet verified.
     /// </summary>
     public byte Result
     {
@@ -31806,12 +31806,12 @@ public readonly ref struct CastleSiegeGuildCommandRef
     }
 
     /// <summary>
-    /// Gets or sets 0 = attack, 1 = defend, 2 = wait
+    /// Gets or sets the command.
     /// </summary>
-    public byte Command
+    public CastleSiegeGuildCommandType Command
     {
-        get => this._data[7];
-        set => this._data[7] = value;
+        get => (CastleSiegeGuildCommandType)this._data[7];
+        set => this._data[7] = (byte)value;
     }
 
     /// <summary>
@@ -32091,21 +32091,21 @@ public readonly ref struct CastleSiegeSwitchInfoRef
     }
 
     /// <summary>
-    /// Gets or sets the state.
+    /// Gets or sets the is occupied.
     /// </summary>
-    public byte State
+    public bool IsOccupied
     {
-        get => this._data[6];
-        set => this._data[6] = value;
+        get => this._data[6..].GetBoolean();
+        set => this._data[6..].SetBoolean(value);
     }
 
     /// <summary>
     /// Gets or sets the join side.
     /// </summary>
-    public byte JoinSide
+    public CastleSiegeJoinSide JoinSide
     {
-        get => this._data[7];
-        set => this._data[7] = value;
+        get => (CastleSiegeJoinSide)this._data[7];
+        set => this._data[7] = (byte)value;
     }
 
     /// <summary>
@@ -32611,12 +32611,12 @@ public readonly ref struct CastleSiegeGuildEntryRef
     public static int Length => 14;
 
     /// <summary>
-    /// Gets or sets 0 = defender, 1 = attacker
+    /// Gets or sets the side.
     /// </summary>
-    public byte Side
+    public CastleSiegeJoinSide Side
     {
-        get => this._data[0];
-        set => this._data[0] = value;
+        get => (CastleSiegeJoinSide)this._data[0];
+        set => this._data[0] = (byte)value;
     }
 
     /// <summary>
@@ -32849,10 +32849,10 @@ public readonly ref struct CastleSiegeMachineInterfaceRef
     /// <summary>
     /// Gets or sets the machine type.
     /// </summary>
-    public byte MachineType
+    public CastleSiegeMachineType MachineType
     {
-        get => this._data[5];
-        set => this._data[5] = value;
+        get => (CastleSiegeMachineType)this._data[5];
+        set => this._data[5] = (byte)value;
     }
 
     /// <summary>
@@ -32962,10 +32962,10 @@ public readonly ref struct CastleSiegeMachineUseResultRef
     /// <summary>
     /// Gets or sets the machine type.
     /// </summary>
-    public byte MachineType
+    public CastleSiegeMachineType MachineType
     {
-        get => this._data[7];
-        set => this._data[7] = value;
+        get => (CastleSiegeMachineType)this._data[7];
+        set => this._data[7] = (byte)value;
     }
 
     /// <summary>
@@ -33066,10 +33066,10 @@ public readonly ref struct CastleSiegeMachineRegionNotifyRef
     /// <summary>
     /// Gets or sets the machine type.
     /// </summary>
-    public byte MachineType
+    public CastleSiegeMachineType MachineType
     {
-        get => this._data[4];
-        set => this._data[4] = value;
+        get => (CastleSiegeMachineType)this._data[4];
+        set => this._data[4] = (byte)value;
     }
 
     /// <summary>
@@ -33205,25 +33205,25 @@ public readonly ref struct CastleSiegeLifeStoneBuildTimeRef
 /// Is sent by the server when: After the client requested the guild logo of the current castle owner.
 /// Causes reaction on client side: The client shows the castle owner guild logo.
 /// </summary>
-public readonly ref struct CastleOwnerLogoRef
+public readonly ref struct CastleSiegeOwnerLogoRef
 {
     private readonly Span<byte> _data;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="CastleOwnerLogoRef"/> struct.
+    /// Initializes a new instance of the <see cref="CastleSiegeOwnerLogoRef"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public CastleOwnerLogoRef(Span<byte> data)
+    public CastleSiegeOwnerLogoRef(Span<byte> data)
         : this(data, true)
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="CastleOwnerLogoRef"/> struct.
+    /// Initializes a new instance of the <see cref="CastleSiegeOwnerLogoRef"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private CastleOwnerLogoRef(Span<byte> data, bool initialize)
+    private CastleSiegeOwnerLogoRef(Span<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -33271,18 +33271,18 @@ public readonly ref struct CastleOwnerLogoRef
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="CastleOwnerLogo"/>.
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="CastleSiegeOwnerLogo"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator CastleOwnerLogoRef(Span<byte> packet) => new (packet, false);
+    public static implicit operator CastleSiegeOwnerLogoRef(Span<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="CastleOwnerLogo"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="CastleSiegeOwnerLogo"/> to a Span of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(CastleOwnerLogoRef packet) => packet._data;
+    public static implicit operator Span<byte>(CastleSiegeOwnerLogoRef packet) => packet._data;
 }
 
 
@@ -33290,25 +33290,25 @@ public readonly ref struct CastleOwnerLogoRef
 /// Is sent by the server when: The server sends information about the hunting zone guard configuration.
 /// Causes reaction on client side: The client shows the hunting zone entrance configuration.
 /// </summary>
-public readonly ref struct HuntingZoneGuardInfoRef
+public readonly ref struct CastleSiegeHuntingZoneGuardInfoRef
 {
     private readonly Span<byte> _data;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="HuntingZoneGuardInfoRef"/> struct.
+    /// Initializes a new instance of the <see cref="CastleSiegeHuntingZoneGuardInfoRef"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public HuntingZoneGuardInfoRef(Span<byte> data)
+    public CastleSiegeHuntingZoneGuardInfoRef(Span<byte> data)
         : this(data, true)
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="HuntingZoneGuardInfoRef"/> struct.
+    /// Initializes a new instance of the <see cref="CastleSiegeHuntingZoneGuardInfoRef"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private HuntingZoneGuardInfoRef(Span<byte> data, bool initialize)
+    private CastleSiegeHuntingZoneGuardInfoRef(Span<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -33393,18 +33393,18 @@ public readonly ref struct HuntingZoneGuardInfoRef
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="HuntingZoneGuardInfo"/>.
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="CastleSiegeHuntingZoneGuardInfo"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator HuntingZoneGuardInfoRef(Span<byte> packet) => new (packet, false);
+    public static implicit operator CastleSiegeHuntingZoneGuardInfoRef(Span<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="HuntingZoneGuardInfo"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="CastleSiegeHuntingZoneGuardInfo"/> to a Span of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(HuntingZoneGuardInfoRef packet) => packet._data;
+    public static implicit operator Span<byte>(CastleSiegeHuntingZoneGuardInfoRef packet) => packet._data;
 }
 
 
@@ -33601,12 +33601,12 @@ public readonly ref struct MiniMapNpcPositionRef
     public static int Length => 3;
 
     /// <summary>
-    /// Gets or sets 0 = gate, 1 = Guardian Statue
+    /// Gets or sets the npc type.
     /// </summary>
-    public byte NpcType
+    public CastleSiegeMiniMapNpcType NpcType
     {
-        get => this._data[0];
-        set => this._data[0] = value;
+        get => (CastleSiegeMiniMapNpcType)this._data[0];
+        set => this._data[0] = (byte)value;
     }
 
     /// <summary>

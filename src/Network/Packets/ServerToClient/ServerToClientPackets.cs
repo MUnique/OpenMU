@@ -31058,10 +31058,10 @@ public readonly struct CastleSiegeStatusResponse
     /// <summary>
     /// Gets or sets the state.
     /// </summary>
-    public byte State
+    public CastleSiegeState State
     {
-        get => this._data.Span[5];
-        set => this._data.Span[5] = value;
+        get => (CastleSiegeState)this._data.Span[5];
+        set => this._data.Span[5] = (byte)value;
     }
 
     /// <summary>
@@ -32201,16 +32201,16 @@ public readonly struct CastleSiegeTaxChangeResponse
     /// <summary>
     /// Gets or sets the tax type.
     /// </summary>
-    public byte TaxType
+    public CastleSiegeTaxType TaxType
     {
-        get => this._data.Span[5];
-        set => this._data.Span[5] = value;
+        get => (CastleSiegeTaxType)this._data.Span[5];
+        set => this._data.Span[5] = (byte)value;
     }
 
     /// <summary>
-    /// Gets or sets the tax rate.
+    /// Gets or sets the percentage rate for shop and Chaos Machine taxes, or the entrance fee amount for the hunting zone.
     /// </summary>
-    public uint TaxRate
+    public uint TaxValue
     {
         get => ReadUInt32BigEndian(this._data.Span[6..]);
         set => WriteUInt32BigEndian(this._data.Span[6..], value);
@@ -32703,10 +32703,10 @@ public readonly struct CastleSiegeCrownSwitchState
     /// <summary>
     /// Gets or sets the state.
     /// </summary>
-    public byte State
+    public CastleSiegeCrownSwitchStateType State
     {
-        get => this._data.Span[8];
-        set => this._data.Span[8] = value;
+        get => (CastleSiegeCrownSwitchStateType)this._data.Span[8];
+        set => this._data.Span[8] = (byte)value;
     }
 
     /// <summary>
@@ -32789,10 +32789,10 @@ public readonly struct CastleSiegeCrownAccessState
     /// <summary>
     /// Gets or sets the state.
     /// </summary>
-    public byte State
+    public CastleSiegeCrownAccessStateType State
     {
-        get => this._data.Span[4];
-        set => this._data.Span[4] = value;
+        get => (CastleSiegeCrownAccessStateType)this._data.Span[4];
+        set => this._data.Span[4] = (byte)value;
     }
 
     /// <summary>
@@ -32884,10 +32884,10 @@ public readonly struct CastleSiegeCrownStateUpdate
     /// <summary>
     /// Gets or sets the state.
     /// </summary>
-    public byte State
+    public CastleSiegeCrownState State
     {
-        get => this._data.Span[4];
-        set => this._data.Span[4] = value;
+        get => (CastleSiegeCrownState)this._data.Span[4];
+        set => this._data.Span[4] = (byte)value;
     }
 
     /// <summary>
@@ -33056,10 +33056,10 @@ public readonly struct CastleSiegeBattleProcess
     /// <summary>
     /// Gets or sets the state.
     /// </summary>
-    public byte State
+    public CastleSiegeBattleProcessState State
     {
-        get => this._data.Span[4];
-        set => this._data.Span[4] = value;
+        get => (CastleSiegeBattleProcessState)this._data.Span[4];
+        set => this._data.Span[4] = (byte)value;
     }
 
     /// <summary>
@@ -33151,10 +33151,10 @@ public readonly struct CastleSiegeJoinSideNotification
     /// <summary>
     /// Gets or sets the side.
     /// </summary>
-    public byte Side
+    public CastleSiegeJoinSide Side
     {
-        get => this._data.Span[4];
-        set => this._data.Span[4] = value;
+        get => (CastleSiegeJoinSide)this._data.Span[4];
+        set => this._data.Span[4] = (byte)value;
     }
 
     /// <summary>
@@ -33237,10 +33237,10 @@ public readonly struct CastleSiegeTaxRateNotification
     /// <summary>
     /// Gets or sets the tax type.
     /// </summary>
-    public byte TaxType
+    public CastleSiegeTaxType TaxType
     {
-        get => this._data.Span[4];
-        set => this._data.Span[4] = value;
+        get => (CastleSiegeTaxType)this._data.Span[4];
+        set => this._data.Span[4] = (byte)value;
     }
 
     /// <summary>
@@ -33330,7 +33330,7 @@ public readonly struct CastleSiegeMiniMapResponse
     public C1HeaderWithSubCode Header => new (this._data);
 
     /// <summary>
-    /// Gets or sets 1 = success, 2 = battle not in progress, 3 = not authorized
+    /// Gets or sets the result code. The client currently ignores it; historically documented values are not yet verified.
     /// </summary>
     public byte Result
     {
@@ -33443,12 +33443,12 @@ public readonly struct CastleSiegeGuildCommand
     }
 
     /// <summary>
-    /// Gets or sets 0 = attack, 1 = defend, 2 = wait
+    /// Gets or sets the command.
     /// </summary>
-    public byte Command
+    public CastleSiegeGuildCommandType Command
     {
-        get => this._data.Span[7];
-        set => this._data.Span[7] = value;
+        get => (CastleSiegeGuildCommandType)this._data.Span[7];
+        set => this._data.Span[7] = (byte)value;
     }
 
     /// <summary>
@@ -33728,21 +33728,21 @@ public readonly struct CastleSiegeSwitchInfo
     }
 
     /// <summary>
-    /// Gets or sets the state.
+    /// Gets or sets the is occupied.
     /// </summary>
-    public byte State
+    public bool IsOccupied
     {
-        get => this._data.Span[6];
-        set => this._data.Span[6] = value;
+        get => this._data.Span[6..].GetBoolean();
+        set => this._data.Span[6..].SetBoolean(value);
     }
 
     /// <summary>
     /// Gets or sets the join side.
     /// </summary>
-    public byte JoinSide
+    public CastleSiegeJoinSide JoinSide
     {
-        get => this._data.Span[7];
-        set => this._data.Span[7] = value;
+        get => (CastleSiegeJoinSide)this._data.Span[7];
+        set => this._data.Span[7] = (byte)value;
     }
 
     /// <summary>
@@ -34248,12 +34248,12 @@ public readonly struct CastleSiegeGuildEntry
     public static int Length => 14;
 
     /// <summary>
-    /// Gets or sets 0 = defender, 1 = attacker
+    /// Gets or sets the side.
     /// </summary>
-    public byte Side
+    public CastleSiegeJoinSide Side
     {
-        get => this._data.Span[0];
-        set => this._data.Span[0] = value;
+        get => (CastleSiegeJoinSide)this._data.Span[0];
+        set => this._data.Span[0] = (byte)value;
     }
 
     /// <summary>
@@ -34486,10 +34486,10 @@ public readonly struct CastleSiegeMachineInterface
     /// <summary>
     /// Gets or sets the machine type.
     /// </summary>
-    public byte MachineType
+    public CastleSiegeMachineType MachineType
     {
-        get => this._data.Span[5];
-        set => this._data.Span[5] = value;
+        get => (CastleSiegeMachineType)this._data.Span[5];
+        set => this._data.Span[5] = (byte)value;
     }
 
     /// <summary>
@@ -34599,10 +34599,10 @@ public readonly struct CastleSiegeMachineUseResult
     /// <summary>
     /// Gets or sets the machine type.
     /// </summary>
-    public byte MachineType
+    public CastleSiegeMachineType MachineType
     {
-        get => this._data.Span[7];
-        set => this._data.Span[7] = value;
+        get => (CastleSiegeMachineType)this._data.Span[7];
+        set => this._data.Span[7] = (byte)value;
     }
 
     /// <summary>
@@ -34703,10 +34703,10 @@ public readonly struct CastleSiegeMachineRegionNotify
     /// <summary>
     /// Gets or sets the machine type.
     /// </summary>
-    public byte MachineType
+    public CastleSiegeMachineType MachineType
     {
-        get => this._data.Span[4];
-        set => this._data.Span[4] = value;
+        get => (CastleSiegeMachineType)this._data.Span[4];
+        set => this._data.Span[4] = (byte)value;
     }
 
     /// <summary>
@@ -34842,25 +34842,25 @@ public readonly struct CastleSiegeLifeStoneBuildTime
 /// Is sent by the server when: After the client requested the guild logo of the current castle owner.
 /// Causes reaction on client side: The client shows the castle owner guild logo.
 /// </summary>
-public readonly struct CastleOwnerLogo
+public readonly struct CastleSiegeOwnerLogo
 {
     private readonly Memory<byte> _data;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="CastleOwnerLogo"/> struct.
+    /// Initializes a new instance of the <see cref="CastleSiegeOwnerLogo"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public CastleOwnerLogo(Memory<byte> data)
+    public CastleSiegeOwnerLogo(Memory<byte> data)
         : this(data, true)
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="CastleOwnerLogo"/> struct.
+    /// Initializes a new instance of the <see cref="CastleSiegeOwnerLogo"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private CastleOwnerLogo(Memory<byte> data, bool initialize)
+    private CastleSiegeOwnerLogo(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -34908,18 +34908,18 @@ public readonly struct CastleOwnerLogo
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleOwnerLogo"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeOwnerLogo"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator CastleOwnerLogo(Memory<byte> packet) => new (packet, false);
+    public static implicit operator CastleSiegeOwnerLogo(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="CastleOwnerLogo"/> to a Memory of bytes.
+    /// Performs an implicit conversion from <see cref="CastleSiegeOwnerLogo"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleOwnerLogo packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeOwnerLogo packet) => packet._data;
 }
 
 
@@ -34927,25 +34927,25 @@ public readonly struct CastleOwnerLogo
 /// Is sent by the server when: The server sends information about the hunting zone guard configuration.
 /// Causes reaction on client side: The client shows the hunting zone entrance configuration.
 /// </summary>
-public readonly struct HuntingZoneGuardInfo
+public readonly struct CastleSiegeHuntingZoneGuardInfo
 {
     private readonly Memory<byte> _data;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="HuntingZoneGuardInfo"/> struct.
+    /// Initializes a new instance of the <see cref="CastleSiegeHuntingZoneGuardInfo"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public HuntingZoneGuardInfo(Memory<byte> data)
+    public CastleSiegeHuntingZoneGuardInfo(Memory<byte> data)
         : this(data, true)
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="HuntingZoneGuardInfo"/> struct.
+    /// Initializes a new instance of the <see cref="CastleSiegeHuntingZoneGuardInfo"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private HuntingZoneGuardInfo(Memory<byte> data, bool initialize)
+    private CastleSiegeHuntingZoneGuardInfo(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -35030,18 +35030,18 @@ public readonly struct HuntingZoneGuardInfo
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Memory of bytes to a <see cref="HuntingZoneGuardInfo"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeHuntingZoneGuardInfo"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator HuntingZoneGuardInfo(Memory<byte> packet) => new (packet, false);
+    public static implicit operator CastleSiegeHuntingZoneGuardInfo(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="HuntingZoneGuardInfo"/> to a Memory of bytes.
+    /// Performs an implicit conversion from <see cref="CastleSiegeHuntingZoneGuardInfo"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(HuntingZoneGuardInfo packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeHuntingZoneGuardInfo packet) => packet._data;
 }
 
 
@@ -35238,12 +35238,12 @@ public readonly struct MiniMapNpcPosition
     public static int Length => 3;
 
     /// <summary>
-    /// Gets or sets 0 = gate, 1 = Guardian Statue
+    /// Gets or sets the npc type.
     /// </summary>
-    public byte NpcType
+    public CastleSiegeMiniMapNpcType NpcType
     {
-        get => this._data.Span[0];
-        set => this._data.Span[0] = value;
+        get => (CastleSiegeMiniMapNpcType)this._data.Span[0];
+        set => this._data.Span[0] = (byte)value;
     }
 
     /// <summary>
@@ -35850,5 +35850,260 @@ public readonly struct MiniMapNpcPosition
         /// The parameter expects a 0 or a 1.
         /// </summary>
             Boolean = 2,
+    }
+
+    /// <summary>
+    /// Defines the scheduled state of the Castle Siege event.
+    /// </summary>
+    public enum CastleSiegeState
+    {
+        /// <summary>
+        /// The first idle period.
+        /// </summary>
+            Idle1 = 0,
+
+        /// <summary>
+        /// Guild registration is open.
+        /// </summary>
+            RegisterGuild = 1,
+
+        /// <summary>
+        /// The second idle period.
+        /// </summary>
+            Idle2 = 2,
+
+        /// <summary>
+        /// Sign of Lord registration is open.
+        /// </summary>
+            RegisterMark = 3,
+
+        /// <summary>
+        /// The third idle period.
+        /// </summary>
+            Idle3 = 4,
+
+        /// <summary>
+        /// The selected participants are announced.
+        /// </summary>
+            Notify = 5,
+
+        /// <summary>
+        /// The event is preparing to start.
+        /// </summary>
+            Ready = 6,
+
+        /// <summary>
+        /// The siege battle is running.
+        /// </summary>
+            Start = 7,
+
+        /// <summary>
+        /// The siege battle has ended.
+        /// </summary>
+            End = 8,
+
+        /// <summary>
+        /// The current siege cycle is ending.
+        /// </summary>
+            EndCycle = 9,
+    }
+
+    /// <summary>
+    /// Defines the castle tax or fee being changed.
+    /// </summary>
+    public enum CastleSiegeTaxType
+    {
+        /// <summary>
+        /// No tax type is selected.
+        /// </summary>
+            Undefined = 0,
+
+        /// <summary>
+        /// The Chaos Machine tax rate.
+        /// </summary>
+            ChaosMachine = 1,
+
+        /// <summary>
+        /// The NPC store tax rate.
+        /// </summary>
+            Store = 2,
+
+        /// <summary>
+        /// The hunting-zone entrance fee.
+        /// </summary>
+            HuntingZoneEntranceFee = 3,
+    }
+
+    /// <summary>
+    /// Defines the interaction state of a crown switch.
+    /// </summary>
+    public enum CastleSiegeCrownSwitchStateType
+    {
+        /// <summary>
+        /// The switch is not occupied.
+        /// </summary>
+            Released = 0,
+
+        /// <summary>
+        /// The current player occupies the switch.
+        /// </summary>
+            OccupiedByCurrentPlayer = 1,
+
+        /// <summary>
+        /// Another player occupies the switch.
+        /// </summary>
+            OccupiedByOtherPlayer = 2,
+    }
+
+    /// <summary>
+    /// Defines the result or progress state of a crown-access attempt.
+    /// </summary>
+    public enum CastleSiegeCrownAccessStateType
+    {
+        /// <summary>
+        /// Crown registration has started.
+        /// </summary>
+            Started = 0,
+
+        /// <summary>
+        /// Crown registration succeeded.
+        /// </summary>
+            Succeeded = 1,
+
+        /// <summary>
+        /// Crown registration failed.
+        /// </summary>
+            Failed = 2,
+
+        /// <summary>
+        /// Another player is accessing the crown.
+        /// </summary>
+            OccupiedByOtherPlayer = 3,
+
+        /// <summary>
+        /// A player from another siege side is accessing the crown.
+        /// </summary>
+            OccupiedByOtherSide = 4,
+    }
+
+    /// <summary>
+    /// Defines the availability of the castle crown.
+    /// </summary>
+    public enum CastleSiegeCrownState
+    {
+        /// <summary>
+        /// The crown is accessible.
+        /// </summary>
+            Accessible = 0,
+
+        /// <summary>
+        /// The crown is protected.
+        /// </summary>
+            Protected = 1,
+
+        /// <summary>
+        /// A guild successfully registered the crown.
+        /// </summary>
+            RegistrationSucceeded = 2,
+    }
+
+    /// <summary>
+    /// Defines a public Castle Siege battle-process announcement.
+    /// </summary>
+    public enum CastleSiegeBattleProcessState
+    {
+        /// <summary>
+        /// A guild started registering the crown.
+        /// </summary>
+            CrownRegistrationStarted = 0,
+
+        /// <summary>
+        /// A guild successfully registered the crown.
+        /// </summary>
+            CrownRegistrationSucceeded = 1,
+    }
+
+    /// <summary>
+    /// Defines a participant's side in the Castle Siege battle.
+    /// </summary>
+    public enum CastleSiegeJoinSide
+    {
+        /// <summary>
+        /// The participant does not belong to a siege side.
+        /// </summary>
+            None = 0,
+
+        /// <summary>
+        /// The defending alliance.
+        /// </summary>
+            Defense = 1,
+
+        /// <summary>
+        /// The first attacking alliance.
+        /// </summary>
+            Attack1 = 2,
+
+        /// <summary>
+        /// The second attacking alliance.
+        /// </summary>
+            Attack2 = 3,
+
+        /// <summary>
+        /// The third attacking alliance.
+        /// </summary>
+            Attack3 = 4,
+    }
+
+    /// <summary>
+    /// Defines a command placed on the Castle Siege mini-map.
+    /// </summary>
+    public enum CastleSiegeGuildCommandType
+    {
+        /// <summary>
+        /// Orders the team to attack.
+        /// </summary>
+            Attack = 0,
+
+        /// <summary>
+        /// Orders the team to defend.
+        /// </summary>
+            Defend = 1,
+
+        /// <summary>
+        /// Orders the team to wait.
+        /// </summary>
+            Wait = 2,
+    }
+
+    /// <summary>
+    /// Defines the side-specific Castle Siege catapult type.
+    /// </summary>
+    public enum CastleSiegeMachineType
+    {
+        /// <summary>
+        /// The attacking-side catapult.
+        /// </summary>
+            Attack = 1,
+
+        /// <summary>
+        /// The defending-side catapult.
+        /// </summary>
+            Defense = 2,
+    }
+
+    /// <summary>
+    /// Defines a Castle Siege NPC shown on the mini-map.
+    /// </summary>
+    public enum CastleSiegeMiniMapNpcType
+    {
+        /// <summary>
+        /// A castle gate.
+        /// </summary>
+            Gate = 0,
+
+        /// <summary>
+        /// A Guardian Statue.
+        /// </summary>
+            GuardianStatue = 1,
     }
 

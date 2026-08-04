@@ -18,4 +18,14 @@ The client updates the crown switch interaction state.
 | 3 | 1 |    Byte   | 0x14  | Packet header - sub packet type identifier |
 | 4 | 2 | ShortBigEndian |  | SwitchIndex |
 | 6 | 2 | ShortBigEndian |  | PlayerIndex |
-| 8 | 1 | Byte |  | State |
+| 8 | 1 | CastleSiegeCrownSwitchStateType |  | State |
+
+### CastleSiegeCrownSwitchStateType Enum
+
+Defines the interaction state of a crown switch.
+
+| Value | Name | Description |
+|-------|------|-------------|
+| 0 | Released | The switch is not occupied. |
+| 1 | OccupiedByCurrentPlayer | The current player occupies the switch. |
+| 2 | OccupiedByOtherPlayer | Another player occupies the switch. |

@@ -1,4 +1,4 @@
-﻿// <copyright file="ConnectionExtensions.cs" company="MUnique">
+// <copyright file="ConnectionExtensions.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -6350,7 +6350,7 @@ public static class ConnectionExtensions
     /// Is sent by the server when: After the player requested the current castle siege status from a castle siege npc.
     /// Causes reaction on client side: The client shows the castle siege status.
     /// </remarks>
-    public static async ValueTask SendCastleSiegeStatusResponseAsync(this IConnection? connection, byte @result, byte @state, ushort @startYear, byte @startMonth, byte @startDay, byte @startHour, byte @startMinute, ushort @endYear, byte @endMonth, byte @endDay, byte @endHour, byte @endMinute, ushort @siegeStartYear, byte @siegeStartMonth, byte @siegeStartDay, byte @siegeStartHour, byte @siegeStartMinute, string @guildName, string @guildMasterName, uint @remainingTime)
+    public static async ValueTask SendCastleSiegeStatusResponseAsync(this IConnection? connection, byte @result, CastleSiegeState @state, ushort @startYear, byte @startMonth, byte @startDay, byte @startHour, byte @startMinute, ushort @endYear, byte @endMonth, byte @endDay, byte @endHour, byte @endMinute, ushort @siegeStartYear, byte @siegeStartMonth, byte @siegeStartDay, byte @siegeStartHour, byte @siegeStartMinute, string @guildName, string @guildMasterName, uint @remainingTime)
     {
         if (connection is null)
         {
@@ -6662,12 +6662,12 @@ public static class ConnectionExtensions
     /// <param name="connection">The connection.</param>
     /// <param name="result">The result.</param>
     /// <param name="taxType">The tax type.</param>
-    /// <param name="taxRate">The tax rate.</param>
+    /// <param name="taxValue">The percentage rate for shop and Chaos Machine taxes, or the entrance fee amount for the hunting zone.</param>
     /// <remarks>
     /// Is sent by the server when: After the guild master changed the tax rate.
     /// Causes reaction on client side: The client shows the result of the tax rate change.
     /// </remarks>
-    public static async ValueTask SendCastleSiegeTaxChangeResponseAsync(this IConnection? connection, byte @result, byte @taxType, uint @taxRate)
+    public static async ValueTask SendCastleSiegeTaxChangeResponseAsync(this IConnection? connection, byte @result, CastleSiegeTaxType @taxType, uint @taxValue)
     {
         if (connection is null)
         {
@@ -6680,7 +6680,7 @@ public static class ConnectionExtensions
             var packet = new CastleSiegeTaxChangeResponseRef(connection.Output.GetSpan(length)[..length]);
             packet.Result = @result;
             packet.TaxType = @taxType;
-            packet.TaxRate = @taxRate;
+            packet.TaxValue = @taxValue;
 
             return packet.Header.Length;
         }
@@ -6821,7 +6821,7 @@ public static class ConnectionExtensions
     /// Is sent by the server when: A player starts or stops occupying a castle crown switch.
     /// Causes reaction on client side: The client updates the crown switch interaction state.
     /// </remarks>
-    public static async ValueTask SendCastleSiegeCrownSwitchStateAsync(this IConnection? connection, ushort @switchIndex, ushort @playerIndex, byte @state)
+    public static async ValueTask SendCastleSiegeCrownSwitchStateAsync(this IConnection? connection, ushort @switchIndex, ushort @playerIndex, CastleSiegeCrownSwitchStateType @state)
     {
         if (connection is null)
         {
@@ -6852,7 +6852,7 @@ public static class ConnectionExtensions
     /// Is sent by the server when: The server updates the access state of the castle crown during the siege.
     /// Causes reaction on client side: The client updates the crown access state and accumulated time display.
     /// </remarks>
-    public static async ValueTask SendCastleSiegeCrownAccessStateAsync(this IConnection? connection, byte @state, uint @accumulatedTimeMs)
+    public static async ValueTask SendCastleSiegeCrownAccessStateAsync(this IConnection? connection, CastleSiegeCrownAccessStateType @state, uint @accumulatedTimeMs)
     {
         if (connection is null)
         {
@@ -6881,7 +6881,7 @@ public static class ConnectionExtensions
     /// Is sent by the server when: The server updates the state of the castle crown during the siege.
     /// Causes reaction on client side: The client updates the crown state display.
     /// </remarks>
-    public static async ValueTask SendCastleSiegeCrownStateUpdateAsync(this IConnection? connection, byte @state)
+    public static async ValueTask SendCastleSiegeCrownStateUpdateAsync(this IConnection? connection, CastleSiegeCrownState @state)
     {
         if (connection is null)
         {
@@ -6938,7 +6938,7 @@ public static class ConnectionExtensions
     /// Is sent by the server when: A guild starts accessing the crown or successfully takes ownership of the castle.
     /// Causes reaction on client side: The client announces the crown access or castle ownership change.
     /// </remarks>
-    public static async ValueTask SendCastleSiegeBattleProcessAsync(this IConnection? connection, byte @state, string @guildName)
+    public static async ValueTask SendCastleSiegeBattleProcessAsync(this IConnection? connection, CastleSiegeBattleProcessState @state, string @guildName)
     {
         if (connection is null)
         {
@@ -6967,7 +6967,7 @@ public static class ConnectionExtensions
     /// Is sent by the server when: The server notifies the player of which siege side (attacker/defender) they are on.
     /// Causes reaction on client side: The client updates the player regiment and Castle Siege mini-map accordingly.
     /// </remarks>
-    public static async ValueTask SendCastleSiegeJoinSideNotificationAsync(this IConnection? connection, byte @side)
+    public static async ValueTask SendCastleSiegeJoinSideNotificationAsync(this IConnection? connection, CastleSiegeJoinSide @side)
     {
         if (connection is null)
         {
@@ -6996,7 +6996,7 @@ public static class ConnectionExtensions
     /// Is sent by the server when: The castle owner changes a server-wide chaos machine or store tax rate.
     /// Causes reaction on client side: The client updates the applicable tax rate.
     /// </remarks>
-    public static async ValueTask SendCastleSiegeTaxRateNotificationAsync(this IConnection? connection, byte @taxType, byte @taxRate)
+    public static async ValueTask SendCastleSiegeTaxRateNotificationAsync(this IConnection? connection, CastleSiegeTaxType @taxType, byte @taxRate)
     {
         if (connection is null)
         {
@@ -7020,7 +7020,7 @@ public static class ConnectionExtensions
     /// Sends a <see cref="CastleSiegeMiniMapResponse" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
-    /// <param name="result">1 = success, 2 = battle not in progress, 3 = not authorized</param>
+    /// <param name="result">The result code. The client currently ignores it; historically documented values are not yet verified.</param>
     /// <remarks>
     /// Is sent by the server when: The server responds to a Castle Siege mini-map request.
     /// Causes reaction on client side: The client opens the mini map when the request was accepted.
@@ -7051,12 +7051,12 @@ public static class ConnectionExtensions
     /// <param name="team">Team number from 0 to 7.</param>
     /// <param name="positionX">The position x.</param>
     /// <param name="positionY">The position y.</param>
-    /// <param name="command">0 = attack, 1 = defend, 2 = wait</param>
+    /// <param name="command">The command.</param>
     /// <remarks>
     /// Is sent by the server when: An alliance master sends a command during the Castle Siege battle.
     /// Causes reaction on client side: The client shows the command on the mini map.
     /// </remarks>
-    public static async ValueTask SendCastleSiegeGuildCommandAsync(this IConnection? connection, byte @team, byte @positionX, byte @positionY, byte @command)
+    public static async ValueTask SendCastleSiegeGuildCommandAsync(this IConnection? connection, byte @team, byte @positionX, byte @positionY, CastleSiegeGuildCommandType @command)
     {
         if (connection is null)
         {
@@ -7143,7 +7143,7 @@ public static class ConnectionExtensions
     /// </summary>
     /// <param name="connection">The connection.</param>
     /// <param name="switchIndex">The switch index.</param>
-    /// <param name="state">The state.</param>
+    /// <param name="isOccupied">The is occupied.</param>
     /// <param name="joinSide">The join side.</param>
     /// <param name="guildName">The guild name.</param>
     /// <param name="userName">The user name.</param>
@@ -7151,7 +7151,7 @@ public static class ConnectionExtensions
     /// Is sent by the server when: The server sends information about a Castle Siege crown switch.
     /// Causes reaction on client side: The client updates the crown switch occupation display.
     /// </remarks>
-    public static async ValueTask SendCastleSiegeSwitchInfoAsync(this IConnection? connection, ushort @switchIndex, byte @state, byte @joinSide, string @guildName, string @userName)
+    public static async ValueTask SendCastleSiegeSwitchInfoAsync(this IConnection? connection, ushort @switchIndex, bool @isOccupied, CastleSiegeJoinSide @joinSide, string @guildName, string @userName)
     {
         if (connection is null)
         {
@@ -7163,7 +7163,7 @@ public static class ConnectionExtensions
             var length = CastleSiegeSwitchInfoRef.Length;
             var packet = new CastleSiegeSwitchInfoRef(connection.Output.GetSpan(length)[..length]);
             packet.SwitchIndex = @switchIndex;
-            packet.State = @state;
+            packet.IsOccupied = @isOccupied;
             packet.JoinSide = @joinSide;
             packet.GuildName = @guildName;
             packet.UserName = @userName;
@@ -7185,7 +7185,7 @@ public static class ConnectionExtensions
     /// Is sent by the server when: The server sends the siege machine interface to a player who is operating the machine.
     /// Causes reaction on client side: The client shows the siege machine operation interface.
     /// </remarks>
-    public static async ValueTask SendCastleSiegeMachineInterfaceAsync(this IConnection? connection, byte @result, byte @machineType, ushort @npcIndex)
+    public static async ValueTask SendCastleSiegeMachineInterfaceAsync(this IConnection? connection, byte @result, CastleSiegeMachineType @machineType, ushort @npcIndex)
     {
         if (connection is null)
         {
@@ -7219,7 +7219,7 @@ public static class ConnectionExtensions
     /// Is sent by the server when: After the player fired a siege machine (catapult).
     /// Causes reaction on client side: The client shows the catapult animation toward the target area.
     /// </remarks>
-    public static async ValueTask SendCastleSiegeMachineUseResultAsync(this IConnection? connection, byte @result, ushort @npcIndex, byte @machineType, byte @targetX, byte @targetY)
+    public static async ValueTask SendCastleSiegeMachineUseResultAsync(this IConnection? connection, byte @result, ushort @npcIndex, CastleSiegeMachineType @machineType, byte @targetX, byte @targetY)
     {
         if (connection is null)
         {
@@ -7253,7 +7253,7 @@ public static class ConnectionExtensions
     /// Is sent by the server when: The server notifies the player of the impact region of a siege machine.
     /// Causes reaction on client side: The client shows the impact area effect.
     /// </remarks>
-    public static async ValueTask SendCastleSiegeMachineRegionNotifyAsync(this IConnection? connection, byte @machineType, byte @targetX, byte @targetY)
+    public static async ValueTask SendCastleSiegeMachineRegionNotifyAsync(this IConnection? connection, CastleSiegeMachineType @machineType, byte @targetX, byte @targetY)
     {
         if (connection is null)
         {
@@ -7305,7 +7305,7 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
-    /// Sends a <see cref="CastleOwnerLogo" /> to this connection.
+    /// Sends a <see cref="CastleSiegeOwnerLogo" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
     /// <param name="logo">The logo.</param>
@@ -7313,7 +7313,7 @@ public static class ConnectionExtensions
     /// Is sent by the server when: After the client requested the guild logo of the current castle owner.
     /// Causes reaction on client side: The client shows the castle owner guild logo.
     /// </remarks>
-    public static async ValueTask SendCastleOwnerLogoAsync(this IConnection? connection, Memory<byte> @logo)
+    public static async ValueTask SendCastleSiegeOwnerLogoAsync(this IConnection? connection, Memory<byte> @logo)
     {
         if (connection is null)
         {
@@ -7322,8 +7322,8 @@ public static class ConnectionExtensions
 
         int WritePacket()
         {
-            var length = CastleOwnerLogoRef.Length;
-            var packet = new CastleOwnerLogoRef(connection.Output.GetSpan(length)[..length]);
+            var length = CastleSiegeOwnerLogoRef.Length;
+            var packet = new CastleSiegeOwnerLogoRef(connection.Output.GetSpan(length)[..length]);
             @logo.Span.CopyTo(packet.Logo);
 
             return packet.Header.Length;
@@ -7333,7 +7333,7 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
-    /// Sends a <see cref="HuntingZoneGuardInfo" /> to this connection.
+    /// Sends a <see cref="CastleSiegeHuntingZoneGuardInfo" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
     /// <param name="result">The result.</param>
@@ -7345,7 +7345,7 @@ public static class ConnectionExtensions
     /// Is sent by the server when: The server sends information about the hunting zone guard configuration.
     /// Causes reaction on client side: The client shows the hunting zone entrance configuration.
     /// </remarks>
-    public static async ValueTask SendHuntingZoneGuardInfoAsync(this IConnection? connection, byte @result, bool @isEnabled, uint @currentPrice, uint @maxPrice, uint @unitPrice)
+    public static async ValueTask SendCastleSiegeHuntingZoneGuardInfoAsync(this IConnection? connection, byte @result, bool @isEnabled, uint @currentPrice, uint @maxPrice, uint @unitPrice)
     {
         if (connection is null)
         {
@@ -7354,8 +7354,8 @@ public static class ConnectionExtensions
 
         int WritePacket()
         {
-            var length = HuntingZoneGuardInfoRef.Length;
-            var packet = new HuntingZoneGuardInfoRef(connection.Output.GetSpan(length)[..length]);
+            var length = CastleSiegeHuntingZoneGuardInfoRef.Length;
+            var packet = new CastleSiegeHuntingZoneGuardInfoRef(connection.Output.GetSpan(length)[..length]);
             packet.Result = @result;
             packet.IsEnabled = @isEnabled;
             packet.CurrentPrice = @currentPrice;

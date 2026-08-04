@@ -16,5 +16,14 @@ The client announces the crown access or castle ownership change.
 | 1 | 1 |    Byte   |   13   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xB2  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x18  | Packet header - sub packet type identifier |
-| 4 | 1 | Byte |  | State |
+| 4 | 1 | CastleSiegeBattleProcessState |  | State |
 | 5 | 8 | String |  | GuildName |
+
+### CastleSiegeBattleProcessState Enum
+
+Defines a public Castle Siege battle-process announcement.
+
+| Value | Name | Description |
+|-------|------|-------------|
+| 0 | CrownRegistrationStarted | A guild started registering the crown. |
+| 1 | CrownRegistrationSucceeded | A guild successfully registered the crown. |

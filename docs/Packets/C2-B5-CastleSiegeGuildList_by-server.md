@@ -27,7 +27,19 @@ Length: 14 Bytes
 
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
-| 0 | 1 | Byte |  | Side; 0 = defender, 1 = attacker |
+| 0 | 1 | CastleSiegeJoinSide |  | Side |
 | 1 | 1 | Boolean |  | IsInvolved |
 | 2 | 8 | String |  | GuildName |
 | 10 | 4 | IntegerLittleEndian |  | Score |
+
+### CastleSiegeJoinSide Enum
+
+Defines a participant's side in the Castle Siege battle.
+
+| Value | Name | Description |
+|-------|------|-------------|
+| 0 | None | The participant does not belong to a siege side. |
+| 1 | Defense | The defending alliance. |
+| 2 | Attack1 | The first attacking alliance. |
+| 3 | Attack2 | The second attacking alliance. |
+| 4 | Attack3 | The third attacking alliance. |

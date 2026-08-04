@@ -1,4 +1,4 @@
-# C1 B9 02 - CastleOwnerLogo (by server)
+# C1 B9 02 - CastleSiegeOwnerLogo (by server)
 
 ## Is sent when
 

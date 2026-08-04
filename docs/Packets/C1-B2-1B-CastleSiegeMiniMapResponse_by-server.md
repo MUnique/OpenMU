@@ -16,4 +16,4 @@ The client opens the mini map when the request was accepted.
 | 1 | 1 |    Byte   |   5   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xB2  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x1B  | Packet header - sub packet type identifier |
-| 4 | 1 | Byte |  | Result; 1 = success, 2 = battle not in progress, 3 = not authorized |
+| 4 | 1 | Byte |  | Result; The result code. The client currently ignores it; historically documented values are not yet verified. |

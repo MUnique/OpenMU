@@ -1,4 +1,4 @@
-﻿// <copyright file="ClientToServerPacketsRef.cs" company="MUnique">
+// <copyright file="ClientToServerPacketsRef.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -3985,18 +3985,18 @@ public readonly ref struct CastleSiegeTaxChangeRequestRef
     public C1HeaderWithSubCodeRef Header => new (this._data);
 
     /// <summary>
-    /// Gets or sets 0=Undefined, 1=ChaosMachine, 2 = Normal, 3 = EntranceFeeLandOfTrials
+    /// Gets or sets the tax type.
     /// </summary>
-    public byte TaxType
+    public CastleSiegeTaxType TaxType
     {
-        get => this._data[4];
-        set => this._data[4] = value;
+        get => (CastleSiegeTaxType)this._data[4];
+        set => this._data[4] = (byte)value;
     }
 
     /// <summary>
-    /// Gets or sets the tax rate.
+    /// Gets or sets the percentage rate for shop and Chaos Machine taxes, or the entrance fee amount for the hunting zone.
     /// </summary>
-    public uint TaxRate
+    public uint TaxValue
     {
         get => ReadUInt32BigEndian(this._data[5..]);
         set => WriteUInt32BigEndian(this._data[5..], value);
@@ -4288,12 +4288,12 @@ public readonly ref struct CastleGuildCommandRef
     }
 
     /// <summary>
-    /// Gets or sets 0 = Attack, 1 = Defend, 2 = Wait
+    /// Gets or sets the command.
     /// </summary>
-    public byte Command
+    public CastleSiegeGuildCommandType Command
     {
-        get => this._data[7];
-        set => this._data[7] = value;
+        get => (CastleSiegeGuildCommandType)this._data[7];
+        set => this._data[7] = (byte)value;
     }
 
     /// <summary>

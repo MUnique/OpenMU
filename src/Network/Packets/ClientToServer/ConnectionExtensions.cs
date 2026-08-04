@@ -1,4 +1,4 @@
-﻿// <copyright file="ConnectionExtensions.cs" company="MUnique">
+// <copyright file="ConnectionExtensions.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -1295,13 +1295,13 @@ public static class ConnectionExtensions
     /// Sends a <see cref="CastleSiegeTaxChangeRequest" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
-    /// <param name="taxType">0=Undefined, 1=ChaosMachine, 2 = Normal, 3 = EntranceFeeLandOfTrials</param>
-    /// <param name="taxRate">The tax rate.</param>
+    /// <param name="taxType">The tax type.</param>
+    /// <param name="taxValue">The percentage rate for shop and Chaos Machine taxes, or the entrance fee amount for the hunting zone.</param>
     /// <remarks>
     /// Is sent by the client when: The guild master wants to change the tax rate in the castle npc.
     /// Causes reaction on server side: The server changes the tax rates accordingly.
     /// </remarks>
-    public static async ValueTask SendCastleSiegeTaxChangeRequestAsync(this IConnection? connection, byte @taxType, uint @taxRate)
+    public static async ValueTask SendCastleSiegeTaxChangeRequestAsync(this IConnection? connection, CastleSiegeTaxType @taxType, uint @taxValue)
     {
         if (connection is null)
         {
@@ -1313,7 +1313,7 @@ public static class ConnectionExtensions
             var length = CastleSiegeTaxChangeRequestRef.Length;
             var packet = new CastleSiegeTaxChangeRequestRef(connection.Output.GetSpan(length)[..length]);
             packet.TaxType = @taxType;
-            packet.TaxRate = @taxRate;
+            packet.TaxValue = @taxValue;
 
             return packet.Header.Length;
         }
@@ -1386,12 +1386,12 @@ public static class ConnectionExtensions
     /// <param name="team">Team Number 0 to 7.</param>
     /// <param name="positionX">The position x.</param>
     /// <param name="positionY">The position y.</param>
-    /// <param name="command">0 = Attack, 1 = Defend, 2 = Wait</param>
+    /// <param name="command">The command.</param>
     /// <remarks>
     /// Is sent by the client when: The guild master sent a command to his guild during the castle siege event.
     /// Causes reaction on server side: The command is shown on the mini map of the guild members.
     /// </remarks>
-    public static async ValueTask SendCastleGuildCommandAsync(this IConnection? connection, byte @team, byte @positionX, byte @positionY, byte @command)
+    public static async ValueTask SendCastleGuildCommandAsync(this IConnection? connection, byte @team, byte @positionX, byte @positionY, CastleSiegeGuildCommandType @command)
     {
         if (connection is null)
         {

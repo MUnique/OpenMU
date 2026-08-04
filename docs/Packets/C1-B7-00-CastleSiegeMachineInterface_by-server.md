@@ -17,5 +17,14 @@ The client shows the siege machine operation interface.
 | 2 | 1 |    Byte   | 0xB7  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x00  | Packet header - sub packet type identifier |
 | 4 | 1 | Byte |  | Result |
-| 5 | 1 | Byte |  | MachineType |
+| 5 | 1 | CastleSiegeMachineType |  | MachineType |
 | 6 | 2 | ShortBigEndian |  | NpcIndex |
+
+### CastleSiegeMachineType Enum
+
+Defines the side-specific Castle Siege catapult type.
+
+| Value | Name | Description |
+|-------|------|-------------|
+| 1 | Attack | The attacking-side catapult. |
+| 2 | Defense | The defending-side catapult. |

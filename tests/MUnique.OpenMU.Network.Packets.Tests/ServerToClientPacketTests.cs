@@ -6825,9 +6825,9 @@ public class PacketStructureTests
         Assert.That(5 + 1, Is.LessThanOrEqualTo(expectedLength),
             "Field 'TaxType' exceeds packet boundary");
 
-        // Validate field 'TaxRate' boundary
+        // Validate field 'TaxValue' boundary
         Assert.That(6 + 4, Is.LessThanOrEqualTo(expectedLength),
-            "Field 'TaxRate' exceeds packet boundary");
+            "Field 'TaxValue' exceeds packet boundary");
     }
 
     /// <summary>
@@ -7177,9 +7177,9 @@ public class PacketStructureTests
         Assert.That(4 + 2, Is.LessThanOrEqualTo(expectedLength),
             "Field 'SwitchIndex' exceeds packet boundary");
 
-        // Validate field 'State' boundary
+        // Validate field 'IsOccupied' boundary
         Assert.That(6 + 1, Is.LessThanOrEqualTo(expectedLength),
-            "Field 'State' exceeds packet boundary");
+            "Field 'IsOccupied' exceeds packet boundary");
 
         // Validate field 'JoinSide' boundary
         Assert.That(7 + 1, Is.LessThanOrEqualTo(expectedLength),
@@ -7371,14 +7371,14 @@ public class PacketStructureTests
     }
 
     /// <summary>
-    /// Tests the packet size calculation for CastleOwnerLogo.
+    /// Tests the packet size calculation for CastleSiegeOwnerLogo.
     /// </summary>
     [Test]
-    public void CastleOwnerLogo_PacketSizeValidation()
+    public void CastleSiegeOwnerLogo_PacketSizeValidation()
     {
         // Fixed-length packet validation
         const int expectedLength = 36;
-        var actualLength = CastleOwnerLogoRef.Length;
+        var actualLength = CastleSiegeOwnerLogoRef.Length;
 
         Assert.That(actualLength, Is.EqualTo(expectedLength),
             "Packet length mismatch: declared length does not match calculated size");
@@ -7389,14 +7389,14 @@ public class PacketStructureTests
     }
 
     /// <summary>
-    /// Tests the packet size calculation for HuntingZoneGuardInfo.
+    /// Tests the packet size calculation for CastleSiegeHuntingZoneGuardInfo.
     /// </summary>
     [Test]
-    public void HuntingZoneGuardInfo_PacketSizeValidation()
+    public void CastleSiegeHuntingZoneGuardInfo_PacketSizeValidation()
     {
         // Fixed-length packet validation
         const int expectedLength = 18;
-        var actualLength = HuntingZoneGuardInfoRef.Length;
+        var actualLength = CastleSiegeHuntingZoneGuardInfoRef.Length;
 
         Assert.That(actualLength, Is.EqualTo(expectedLength),
             "Packet length mismatch: declared length does not match calculated size");
