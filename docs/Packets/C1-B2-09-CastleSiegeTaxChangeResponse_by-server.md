@@ -1,23 +1,24 @@
-# C1 B2 09 - CastleSiegeTaxChangeRequest (by client)
+# C1 B2 09 - CastleSiegeTaxChangeResponse (by server)
 
 ## Is sent when
 
-The guild master wants to change the tax rate in the castle npc.
+After the guild master changed the tax rate.
 
-## Causes the following actions on the server side
+## Causes the following actions on the client side
 
-The server changes the tax rates accordingly.
+The client shows the result of the tax rate change.
 
 ## Structure
 
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
 | 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
-| 1 | 1 |    Byte   |   9   | Packet header - length of the packet |
+| 1 | 1 |    Byte   |   10   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xB2  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x09  | Packet header - sub packet type identifier |
-| 4 | 1 | CastleSiegeTaxType |  | TaxType |
-| 5 | 4 | IntegerBigEndian |  | TaxValue; The percentage rate for shop and Chaos Machine taxes, or the entrance fee amount for the hunting zone. |
+| 4 | 1 | Byte |  | Result |
+| 5 | 1 | CastleSiegeTaxType |  | TaxType |
+| 6 | 4 | IntegerBigEndian |  | TaxValue; The percentage rate for shop and Chaos Machine taxes, or the entrance fee amount for the hunting zone. |
 
 ### CastleSiegeTaxType Enum
 

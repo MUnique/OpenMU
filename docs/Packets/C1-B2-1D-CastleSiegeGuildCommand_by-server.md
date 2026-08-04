@@ -1,12 +1,12 @@
-# C1 B2 1D - CastleGuildCommand (by client)
+# C1 B2 1D - CastleSiegeGuildCommand (by server)
 
 ## Is sent when
 
-The guild master sent a command to his guild during the castle siege event.
+An alliance master sends a command during the Castle Siege battle.
 
-## Causes the following actions on the server side
+## Causes the following actions on the client side
 
-The command is shown on the mini map of the guild members.
+The client shows the command on the mini map.
 
 ## Structure
 
@@ -16,7 +16,7 @@ The command is shown on the mini map of the guild members.
 | 1 | 1 |    Byte   |   8   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xB2  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x1D  | Packet header - sub packet type identifier |
-| 4 | 1 | Byte |  | Team; Team Number 0 to 7. |
+| 4 | 1 | Byte |  | Team; Team number from 0 to 7. |
 | 5 | 1 | Byte |  | PositionX |
 | 6 | 1 | Byte |  | PositionY |
 | 7 | 1 | CastleSiegeGuildCommandType |  | Command |

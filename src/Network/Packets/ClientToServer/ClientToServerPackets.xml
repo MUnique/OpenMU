@@ -1020,14 +1020,15 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>Byte</Type>
+          <Type>Enum</Type>
+          <TypeName>CastleSiegeTaxType</TypeName>
           <Name>TaxType</Name>
-          <Description>0=Undefined, 1=ChaosMachine, 2 = Normal, 3 = EntranceFeeLandOfTrials</Description>
         </Field>
         <Field>
           <Index>5</Index>
           <Type>IntegerBigEndian</Type>
-          <Name>TaxRate</Name>
+          <Name>TaxValue</Name>
+          <Description>The percentage rate for shop and Chaos Machine taxes, or the entrance fee amount for the hunting zone.</Description>
         </Field>
       </Fields>
     </Packet>
@@ -1061,7 +1062,7 @@
         <Field>
           <Index>4</Index>
           <Type>Boolean</Type>
-          <Name>CloseState</Name>
+          <Name>IsOpen</Name>
         </Field>
         <Field>
           <Index>5</Index>
@@ -1098,9 +1099,9 @@
         </Field>
         <Field>
           <Index>7</Index>
-          <Type>Byte</Type>
+          <Type>Enum</Type>
+          <TypeName>CastleSiegeGuildCommandType</TypeName>
           <Name>Command</Name>
-          <Description>0 = Attack, 1 = Defend, 2 = Wait</Description>
         </Field>
       </Fields>
     </Packet>
@@ -3129,6 +3130,7 @@
           <Index>4</Index>
           <Type>String</Type>
           <Name>GuildName</Name>
+          <Length>8</Length>
         </Field>
       </Fields>
     </Packet>
@@ -4433,6 +4435,53 @@
         <EnumValue>
           <Name>Leave</Name>
           <Description>The leave type.</Description>
+          <Value>2</Value>
+        </EnumValue>
+      </Values>
+    </Enum>
+    <Enum>
+      <Name>CastleSiegeTaxType</Name>
+      <Description>Defines the castle tax or fee being changed.</Description>
+      <Values>
+        <EnumValue>
+          <Name>Undefined</Name>
+          <Description>No tax type is selected.</Description>
+          <Value>0</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>ChaosMachine</Name>
+          <Description>The Chaos Machine tax rate.</Description>
+          <Value>1</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Store</Name>
+          <Description>The NPC store tax rate.</Description>
+          <Value>2</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>HuntingZoneEntranceFee</Name>
+          <Description>The hunting-zone entrance fee.</Description>
+          <Value>3</Value>
+        </EnumValue>
+      </Values>
+    </Enum>
+    <Enum>
+      <Name>CastleSiegeGuildCommandType</Name>
+      <Description>Defines a command placed on the Castle Siege mini-map.</Description>
+      <Values>
+        <EnumValue>
+          <Name>Attack</Name>
+          <Description>Orders the team to attack.</Description>
+          <Value>0</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Defend</Name>
+          <Description>Orders the team to defend.</Description>
+          <Value>1</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Wait</Name>
+          <Description>Orders the team to wait.</Description>
           <Value>2</Value>
         </EnumValue>
       </Values>
