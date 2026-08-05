@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.Web.AdminPanel;
 
 using System.IO;
-using Blazored.Toast;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -61,7 +60,7 @@ public class Startup
             .ConfigureApplicationPartManager(setup =>
                 setup.FeatureProviders.Add(new GenericControllerFeatureProvider()));
 
-        services.AddBlazoredToast();
+        services.AddToasts();
         services.AddScoped<ModalService>();
         services.AddScoped<IModalService>(sp => sp.GetRequiredService<ModalService>());
 
