@@ -563,9 +563,9 @@ public static class AttackableExtensions
     /// </summary>
     /// <param name="attacker">The attacker.</param>
     /// <param name="attributeRequirement">The attribute requirement, e.g. of a skill.</param>
-    /// <param name="skillEntry">The skill entry.</param>
+    /// <param name="skillEntry">The skill entry, if there is one.</param>
     /// <returns>The required value.</returns>
-    public static int GetRequiredValue(this IAttacker attacker, AttributeRequirement attributeRequirement, SkillEntry? skillEntry)
+    public static int GetRequiredValue(this IAttacker attacker, AttributeRequirement attributeRequirement, SkillEntry? skillEntry = null)
     {
         var modifier = 1.0f;
         if (ReductionModifiers.TryGetValue(

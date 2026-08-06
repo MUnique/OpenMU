@@ -49,14 +49,14 @@ public class NovaSkillStartPlugin : TargetedSkillPluginBase
 
         // Consume full ability points first...
         var novaStart = player.GameContext.Configuration.Skills.First(s => s.Number == skillId);
-        if (novaStart.ConsumeRequirements.Any(r => player.GetRequiredValue(r, null) > player.Attributes![r.Attribute]))
+        if (novaStart.ConsumeRequirements.Any(r => player.GetRequiredValue(r) > player.Attributes![r.Attribute]))
         {
             return;
         }
 
         foreach (var requirement in novaStart.ConsumeRequirements)
         {
-            player.Attributes![requirement.Attribute] -= player.GetRequiredValue(requirement, null);
+            player.Attributes![requirement.Attribute] -= player.GetRequiredValue(requirement);
         }
 
         await player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowNovaStartAsync(player), true).ConfigureAwait(false);
