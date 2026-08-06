@@ -565,7 +565,7 @@ public static class AttackableExtensions
     /// <param name="attributeRequirement">The attribute requirement, e.g. of a skill.</param>
     /// <param name="skillEntry">The skill entry.</param>
     /// <returns>The required value.</returns>
-    public static int GetRequiredValue(this IAttacker attacker, AttributeRequirement attributeRequirement, SkillEntry skillEntry)
+    public static int GetRequiredValue(this IAttacker attacker, AttributeRequirement attributeRequirement, SkillEntry? skillEntry)
     {
         var modifier = 1.0f;
         if (ReductionModifiers.TryGetValue(
@@ -578,12 +578,12 @@ public static class AttackableExtensions
         var extraCost = 0;
         if (attributeRequirement.Attribute == Stats.CurrentMana)
         {
-            if (skillEntry.Level > 0)
+            if (skillEntry?.Level > 0)
             {
                 extraCost += (int)(attributeRequirement.MinimumValue * MasterSkillExtensions.CalculateManaRateValue(skillEntry.Level));
             }
 
-            if (skillEntry.EnsureSkillAttributes(attacker.Attributes) is { } skillAttributes)
+            if (skillEntry?.EnsureSkillAttributes(attacker.Attributes) is { } skillAttributes)
             {
                 extraCost += (int)skillAttributes[Stats.SkillExtraManaCost];
             }
