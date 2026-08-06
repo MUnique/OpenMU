@@ -921,7 +921,7 @@ public sealed class CombatHandler
 
         foreach (var requirement in skill.ConsumeRequirements)
         {
-            int required = this._player.GetRequiredValue(requirement);
+            int required = this._player.GetRequiredValue(requirement, skillEntry);
             if (this._player.Attributes[requirement.Attribute] < required)
             {
                 return false;

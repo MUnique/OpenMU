@@ -32,46 +32,40 @@ public class IncreaseBlockEffectInitializer : InitializerBase
         magicEffect.Number = (byte)MagicEffectNumber.IncreaseBlock;
         magicEffect.Name = "Increase Block Skill Effect";
         magicEffect.InformObservers = true;
+        magicEffect.SubType = 74;
         magicEffect.SendDuration = false;
         magicEffect.StopByDeath = true;
-
         magicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.Duration.ConstantValue.Value = 60f;
+        magicEffect.Duration.MaximumValue = 180f;
 
         var durationPerEnergy = this.Context.CreateNew<AttributeRelationship>();
         durationPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
         durationPerEnergy.InputOperator = InputOperator.Multiply;
-        durationPerEnergy.InputOperand = 1f / 10f; // 10 energy adds 1 second duration
+        durationPerEnergy.InputOperand = 1f / 5f; // 5 energy adds 1 second duration
         magicEffect.Duration.RelatedValues.Add(durationPerEnergy);
 
-        var powerUpDefinitionPvm = this.Context.CreateNew<PowerUpDefinition>();
-        magicEffect.PowerUpDefinitions.Add(powerUpDefinitionPvm);
-        powerUpDefinitionPvm.TargetAttribute = Stats.DefenseRatePvm.GetPersistent(this.GameConfiguration);
+        // The buff gives 2 + (energy / 10) defense rate (PvM)
+        var powerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
+        magicEffect.PowerUpDefinitions.Add(powerUpDefinition);
+        powerUpDefinition.TargetAttribute = Stats.IncreaseBlockBonus.GetPersistent(this.GameConfiguration);
+        powerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        powerUpDefinition.Boost.ConstantValue.Value = 2f;   // The parchment requires 80 energy => base value = 10
+        powerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.AddFinal;
+        powerUpDefinition.Boost.MaximumValue = 100f;
 
-        // one per 10 energy
-        var boostPerEnergyPvm = this.Context.CreateNew<AttributeRelationship>();
-        boostPerEnergyPvm.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
-        boostPerEnergyPvm.InputOperator = InputOperator.Multiply;
-        boostPerEnergyPvm.InputOperand = 1f / 10f;
+        var boostPerEnergy = this.Context.CreateNew<AttributeRelationship>();
+        boostPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
+        boostPerEnergy.InputOperator = InputOperator.Multiply;
+        boostPerEnergy.InputOperand = 1f / 10f; // one defense rate per 10 energy
+        powerUpDefinition.Boost.RelatedValues.Add(boostPerEnergy);
 
-        powerUpDefinitionPvm.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-        powerUpDefinitionPvm.Boost.ConstantValue.Value = 16f;
-        powerUpDefinitionPvm.Boost.ConstantValue.AggregateType = AggregateType.AddFinal;
-        powerUpDefinitionPvm.Boost.RelatedValues.Add(boostPerEnergyPvm);
-
-        var powerUpDefinitionPvp = this.Context.CreateNew<PowerUpDefinition>();
-        magicEffect.PowerUpDefinitions.Add(powerUpDefinitionPvp);
-        powerUpDefinitionPvp.TargetAttribute = Stats.DefenseRatePvp.GetPersistent(this.GameConfiguration);
-
-        // one per 10 energy
-        var boostPerEnergyPvp = this.Context.CreateNew<AttributeRelationship>();
-        boostPerEnergyPvp.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
-        boostPerEnergyPvp.InputOperator = InputOperator.Multiply;
-        boostPerEnergyPvp.InputOperand = 1f / 10f;
-
-        powerUpDefinitionPvp.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-        powerUpDefinitionPvp.Boost.ConstantValue.Value = 16f;
-        powerUpDefinitionPvp.Boost.ConstantValue.AggregateType = AggregateType.AddFinal;
-        powerUpDefinitionPvp.Boost.RelatedValues.Add(boostPerEnergyPvp);
+        // Only increases with DefSuccessRateIncPowUp master skill, but we need to nullify the AggregateType.AddRaw values until then
+        var powerUpDefinition2 = this.Context.CreateNew<PowerUpDefinition>();
+        magicEffect.PowerUpDefinitions.Add(powerUpDefinition2);
+        powerUpDefinition2.TargetAttribute = Stats.IncreaseBlockBonus.GetPersistent(this.GameConfiguration);
+        powerUpDefinition2.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        powerUpDefinition2.Boost.ConstantValue.Value = 0f;
+        powerUpDefinition2.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
     }
 }

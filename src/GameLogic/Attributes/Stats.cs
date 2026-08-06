@@ -755,6 +755,17 @@ public class Stats
     public static AttributeDefinition GloveWeaponBonusDamage { get; } = new(new Guid("F9CB1174-0184-4F21-B71D-AFC7359BC594"), "Glove Weapon Bonus Damage (MST)", string.Empty);
 
     /// <summary>
+    /// Gets the rage fighter's increase block (defense rate) buff bonus.
+    /// </summary>
+    /// <remarks>It only adds to PvM defense rate (<see cref="DefenseRatePvm"/>).</remarks>
+    public static AttributeDefinition IncreaseBlockBonus { get; } = new(new Guid("8F2D1A7C-4E6B-4A9D-B1F3-5C7E8A2D9F0B"), "Increase Block Bonus", string.Empty);
+
+    /// <summary>
+    /// Gets the equipped weapon mastery double damage MST chance attribute definition.
+    /// </summary>
+    public static AttributeDefinition EquippedWeaponMasteryDoubleDamageChance { get; } = new(new Guid("B7C2E1A9-5F4D-4B3A-8C6E-2D1F9A7B4C5E"), "Equipped Weapon Mastery Double Damage Chance (MST)", string.Empty);
+
+    /// <summary>
     /// Gets the summoned monster health increase, percentage.
     /// </summary>
     public static AttributeDefinition SummonedMonsterHealthIncrease { get; } = new(new Guid("7B0625C8-DA1A-4A5D-BCA5-26AACDA0BDC6"), "Summoned Monster Health Increase %", string.Empty);
@@ -806,7 +817,8 @@ public class Stats
     /// <see cref="AggregateType.Multiplicate"/> values include:
     ///     <see cref="DefenseIncreaseWithEquippedShield"/>.
     /// <see cref="AggregateType.AddFinal"/> values include:
-    ///     MST bonus defense with shield (shield strengthener); MST dark horse strengthener; Jack O'Lantern Cry bonus (halved); Berserker defense reduction.
+    ///     MST bonus defense with shield (shield strengthener); MST dark horse strengthener; Jack O'Lantern Cry bonus (halved); Berserker defense reduction;
+    ///     Defense Success Rate Increase Mastery (increase block) defense bonus.
     /// </remarks>
     public static AttributeDefinition DefenseFinal { get; } = new(new Guid("0888AD48-0CC8-47CA-B6A3-99F3771AA5FC"), "Final Defense", string.Empty);
 

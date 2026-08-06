@@ -29,18 +29,17 @@ public class SummonPartySkillPlugin : TargetedSkillPluginBase
     public override async ValueTask PerformSkillAsync(Player player, IAttackable target, ushort skillId)
     {
         var skillEntry = player.SkillList?.GetSkill(skillId);
-
-        if (skillEntry?.Skill is null || !this.CanPlayerSummon(player))
+        if (skillEntry?.Skill is not { } skill || !this.CanPlayerSummon(player))
         {
             return;
         }
 
-        if (!await player.TryConsumeForSkillAsync(skillEntry.Skill).ConfigureAwait(false))
+        if (!await player.TryConsumeForSkillAsync(skillEntry).ConfigureAwait(false))
         {
             return;
         }
 
-        await player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowSkillAnimationAsync(player, player, skillEntry.Skill.Number, true), true).ConfigureAwait(false);
+        await player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowSkillAnimationAsync(player, player, skill.Number, true), true).ConfigureAwait(false);
 
         var cancellationTokenSource = new SkillCancellationTokenSource();
         player.SkillCancelTokenSource = cancellationTokenSource;

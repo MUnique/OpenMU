@@ -83,6 +83,9 @@ internal class SkillsInitializer : SkillsInitializerBase
         { SkillNumber.SwellLifeProficiency, MagicEffectNumber.GreaterFortitudeProficiency },
         { SkillNumber.ExpansionofWizStreng, MagicEffectNumber.WizEnhanceStrengthener },
         { SkillNumber.ExpansionofWizMas, MagicEffectNumber.WizEnhanceMastery },
+        { SkillNumber.StaminaIncreaseStrengthener, MagicEffectNumber.IncreaseHealthStrengthener },
+        { SkillNumber.DefSuccessRateIncPowUp, MagicEffectNumber.IncreaseBlockPowerUp },
+        { SkillNumber.DefSuccessRateIncMastery, MagicEffectNumber.IncreaseBlockMastery },
     };
 
     private readonly IDictionary<byte, MasterSkillRoot> _masterSkillRoots;
@@ -195,7 +198,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.CreateSkill(SkillNumber.InfinityArrow, "Infinity Arrow", CharacterClasses.MuseElfAndHighElf, distance: 6, abilityConsumption: 10, manaConsumption: 50, levelRequirement: 220, skillType: SkillType.Buff, targetRestriction: SkillTargetRestriction.Self);
         this.CreateSkill(SkillNumber.FireScream, "Fire Scream", CharacterClasses.AllLords, DamageType.Physical, 130, 6, 10, 45, energyRequirement: 70, leadershipRequirement: 150, skillType: SkillType.AreaSkillAutomaticHits);
         this.AddAreaSkillSettings(SkillNumber.FireScream, true, 2f, 3f, 6f);
-        this.CreateSkill(SkillNumber.Explosion79, "Explosion", CharacterClasses.AllLords, DamageType.Physical, distance: 2);
+        this.CreateSkill(SkillNumber.Explosion79, "Explosion", CharacterClasses.None, DamageType.Physical, distance: 2);
         this.CreateSkill(SkillNumber.SummonMonster, "Summon Monster", manaConsumption: 40, energyRequirement: 90);
         this.CreateSkill(SkillNumber.MagicAttackImmunity, "Magic Attack Immunity", manaConsumption: 40, energyRequirement: 90);
         this.CreateSkill(SkillNumber.PhysicalAttackImmunity, "Physical Attack Immunity", manaConsumption: 40, energyRequirement: 90);
@@ -232,7 +235,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.CreateSkill(SkillNumber.GiganticStorm, "Gigantic Storm", CharacterClasses.AllMGs, DamageType.Wizardry, 110, 6, 10, 120, 220, 118, elementalModifier: ElementalType.Wind, skillType: SkillType.AreaSkillAutomaticHits);
         this.CreateSkill(SkillNumber.ChaoticDiseier, "Chaotic Diseier", CharacterClasses.AllLords, DamageType.Physical, 190, 6, 15, 50, 100, 16, skillType: SkillType.AreaSkillAutomaticHits);
         this.AddAreaSkillSettings(SkillNumber.ChaoticDiseier, true, 1.5f, 1.5f, 6f, minimumHitsPerAttack: 7);
-        this.CreateSkill(SkillNumber.DoppelgangerSelfExplosion, "Doppelganger Self Explosion", CharacterClasses.AllMGs, DamageType.Wizardry, 140, 3, 25, 20, 100, elementalModifier: ElementalType.Fire);
+        this.CreateSkill(SkillNumber.DoppelgangerSelfExplosion, "Doppelganger Self Explosion", CharacterClasses.None, DamageType.Wizardry, 140, 3, 25, 20, 100, elementalModifier: ElementalType.Fire);
         this.CreateSkill(SkillNumber.KillingBlow, "Killing Blow", CharacterClasses.AllFighters, DamageType.Physical, distance: 2, manaConsumption: 9, elementalModifier: ElementalType.Earth, hitsPerAttack: 4); // 1 packet => 1*4 hits
         this.CreateSkill(SkillNumber.BeastUppercut, "Beast Uppercut", CharacterClasses.AllFighters, DamageType.Physical, distance: 2, manaConsumption: 9, elementalModifier: ElementalType.Fire, hitsPerAttack: 2);  // 2 packets => 2*2 hits
         this.CreateSkill(SkillNumber.ChainDrive, "Chain Drive", CharacterClasses.AllFighters, DamageType.Physical, distance: 4, abilityConsumption: 20, manaConsumption: 15, levelRequirement: 150, elementalModifier: ElementalType.Ice, hitsPerAttack: 4); // 2 packets => 2*4 hits
@@ -658,7 +661,12 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.AddAttributeRelationship(SkillNumber.DragonRoar, Stats.SkillFinalMultiplier, 1.0f, Stats.SkillMultiplier);
         this.AddAttributeRelationship(SkillNumber.DragonSlasher, Stats.SkillFinalMultiplier, 1.0f, Stats.SkillMultiplier);
 
-        // Other
+        // Other (mirror relationships)
+        this.AddAttributeRelationship(SkillNumber.TripleShot, Stats.SkillExtraManaCost, 1, Stats.SkillExtraManaCost);
+        this.AddAttributeRelationship(SkillNumber.IceArrow, Stats.SkillExtraManaCost, 1, Stats.SkillExtraManaCost);
+        this.AddAttributeRelationship(SkillNumber.Penetration, Stats.SkillExtraManaCost, 1, Stats.SkillExtraManaCost);
+        this.AddAttributeRelationship(SkillNumber.Starfall, Stats.SkillExtraManaCost, 1, Stats.SkillExtraManaCost);
+        this.AddAttributeRelationship(SkillNumber.MultiShot, Stats.SkillExtraManaCost, 1, Stats.SkillExtraManaCost);
         this.AddAttributeRelationship(SkillNumber.RagefulBlowMastery, Stats.RagefulBlowMasteryDurabilityDecChance, 1, Stats.RagefulBlowMasteryDurabilityDecChance);
         this.AddAttributeRelationship(SkillNumber.SleepStrengthener, Stats.SleepStrBonusChance, 1, Stats.SleepStrBonusChance);
     }
@@ -706,6 +714,9 @@ internal class SkillsInitializer : SkillsInitializerBase
         new LifeSwellProficiencyEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new WizardryEnhanceStrengthenerEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new WizardryEnhanceMasteryEffectInitializer(this.Context, this.GameConfiguration).Initialize();
+        new IncreaseHealthStrengthenerEffectInitializer(this.Context, this.GameConfiguration).Initialize();
+        new IncreaseBlockPowerUpEffectInitializer(this.Context, this.GameConfiguration).Initialize();
+        new IncreaseBlockMasteryEffectInitializer(this.Context, this.GameConfiguration).Initialize();
     }
 
     private void MapSkillsToEffects()
@@ -919,8 +930,8 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.AddPassiveMasterSkillDefinition(SkillNumber.IncreaseAttackSuccessRate, Stats.AttackRatePvm, AggregateType.AddRaw, Formula20469, 1, 2);
         this.AddMasterSkillDefinition(SkillNumber.KillingBlowStrengthener, SkillNumber.Undefined, SkillNumber.Undefined, 2, 2, SkillNumber.KillingBlow, 20, Formula502);
         this.AddMasterSkillDefinition(SkillNumber.BeastUppercutStrengthener, SkillNumber.Undefined, SkillNumber.Undefined, 2, 2, SkillNumber.BeastUppercut, 20, Formula502);
-        this.AddMasterSkillDefinition(SkillNumber.KillingBlowMastery, SkillNumber.KillingBlowStrengthener, SkillNumber.Undefined, 2, 3, SkillNumber.KillingBlowStrengthener, 20, $"{Formula120} / 100", Formula120, Stats.WeaknessPhysDmgDecrement, AggregateType.AddRaw);
-        this.AddMasterSkillDefinition(SkillNumber.BeastUppercutMastery, SkillNumber.BeastUppercutStrengthener, SkillNumber.Undefined, 2, 3, SkillNumber.BeastUppercutStrengthener, 20, $"{Formula120} / -100", Formula120, Stats.DefenseDecrement, AggregateType.Multiplicate);
+        this.AddMasterSkillDefinition(SkillNumber.KillingBlowMastery, SkillNumber.KillingBlowStrengthener, SkillNumber.Undefined, 2, 3, SkillNumber.KillingBlowStrengthener, 20, Formula120Value, Formula120, Stats.WeaknessPhysDmgDecrement, AggregateType.AddRaw);
+        this.AddMasterSkillDefinition(SkillNumber.BeastUppercutMastery, SkillNumber.BeastUppercutStrengthener, SkillNumber.Undefined, 2, 3, SkillNumber.BeastUppercutStrengthener, 20, $"-1 * {Formula120Value}", Formula120, Stats.DefenseDecrement, AggregateType.Multiplicate);
         this.AddPassiveMasterSkillDefinition(SkillNumber.IncreaseMaximumHp, Stats.MaximumHealth, AggregateType.AddRaw, Formula5418, 4, 2);
         this.AddPassiveMasterSkillDefinition(SkillNumber.WeaponMasteryFistMaster, Stats.MasterSkillPhysBonusDmg, AggregateType.AddRaw, Formula502, 4, 2);
         this.AddMasterSkillDefinition(SkillNumber.ChainDriveStrengthener, SkillNumber.ChainDrive, SkillNumber.Undefined, 2, 5, SkillNumber.ChainDrive, 20, Formula502);
@@ -929,13 +940,11 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.AddMasterSkillDefinition(SkillNumber.DragonRoarStrengthener, SkillNumber.DragonRoar, SkillNumber.Undefined, 2, 5, SkillNumber.DragonRoar, 20, Formula502);
         this.AddPassiveMasterSkillDefinition(SkillNumber.IncreasePvPAttackRate, Stats.AttackRatePvp, AggregateType.AddRaw, Formula32751, 1, 3);
         this.AddPassiveMasterSkillDefinition(SkillNumber.EquippedWeaponStrengthener, Stats.GloveWeaponBonusDamage, AggregateType.AddRaw, Formula502, 2, 3);
-        this.AddMasterSkillDefinition(SkillNumber.DefSuccessRateIncPowUp, SkillNumber.IncreaseBlock, SkillNumber.Undefined, 3, 2, SkillNumber.IncreaseBlock, 20, Formula502);
-
-        // todo: Increases the probability of Double Damage while using gloves according to the assigned Skill Level.
-        this.AddMasterSkillDefinition(SkillNumber.EquippedWeaponMastery, SkillNumber.EquippedWeaponStrengthener, SkillNumber.Undefined, 3, 3, SkillNumber.Undefined, 20, Formula120);
-        this.AddMasterSkillDefinition(SkillNumber.DefSuccessRateIncMastery, SkillNumber.DefSuccessRateIncPowUp, SkillNumber.Undefined, 3, 3, SkillNumber.IncreaseBlock, 20, Formula502);
-        this.AddMasterSkillDefinition(SkillNumber.StaminaIncreaseStrengthener, SkillNumber.IncreaseHealth, SkillNumber.Undefined, 3, 4, SkillNumber.IncreaseHealth, 20, Formula1154);
-        this.AddMasterSkillDefinition(SkillNumber.DecreaseMana, SkillNumber.Undefined, SkillNumber.Undefined, 3, 4, SkillNumber.Undefined, 20, Formula722);
+        this.AddMasterSkillDefinition(SkillNumber.DefSuccessRateIncPowUp, SkillNumber.IncreaseBlock, SkillNumber.Undefined, 3, 2, SkillNumber.IncreaseBlock, 20, $"{Formula502} / 100", Formula502, Stats.IncreaseBlockBonus, AggregateType.Multiplicate);
+        this.AddPassiveMasterSkillDefinition(SkillNumber.EquippedWeaponMastery, Stats.EquippedWeaponMasteryDoubleDamageChance, AggregateType.AddRaw, Formula120Value, Formula120, 3, 3, SkillNumber.EquippedWeaponStrengthener);
+        this.AddMasterSkillDefinition(SkillNumber.DefSuccessRateIncMastery, SkillNumber.DefSuccessRateIncPowUp, SkillNumber.Undefined, 3, 3, SkillNumber.DefSuccessRateIncPowUp, 20, Formula502, Formula502, Stats.DefenseFinal, AggregateType.AddFinal);
+        this.AddMasterSkillDefinition(SkillNumber.StaminaIncreaseStrengthener, SkillNumber.IncreaseHealth, SkillNumber.Undefined, 3, 4, SkillNumber.IncreaseHealth, 20, Formula1154, Formula1154, Stats.TotalVitality, AggregateType.AddFinal);
+        this.AddPassiveMasterSkillDefinition(SkillNumber.DecreaseMana, Stats.ManaUsageReduction, AggregateType.AddRaw, Formula722Value, Formula722, 4, 3);
         this.AddPassiveMasterSkillDefinition(SkillNumber.RecoverSDfromMonsterKills, Stats.ShieldAfterMonsterKillMultiplier, AggregateType.AddFinal, Formula914, 4, 3);
         this.AddPassiveMasterSkillDefinition(SkillNumber.RecoverHPfromMonsterKills, Stats.HealthAfterMonsterKillMultiplier, AggregateType.AddFinal, Formula4319, 4, 3);
         this.AddPassiveMasterSkillDefinition(SkillNumber.IncreaseMinimumAttackPower, Stats.MinimumPhysBaseDmg, AggregateType.AddRaw, Formula502, 5, 3);
