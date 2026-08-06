@@ -14,6 +14,7 @@ public interface ICastleSiegeRegistrationResultPlugIn : IViewPlugIn
     /// </summary>
     /// <param name="result">The result.</param>
     /// <param name="guildName">The guild name.</param>
+    /// <returns>A task which represents the asynchronous operation.</returns>
     ValueTask ShowRegistrationResultAsync(CastleSiegeRegistrationResult result, string guildName);
 
     /// <summary>
@@ -22,6 +23,7 @@ public interface ICastleSiegeRegistrationResultPlugIn : IViewPlugIn
     /// <param name="result">The result.</param>
     /// <param name="isGivingUp">Whether the guild requested to give up its registration.</param>
     /// <param name="guildName">The guild name.</param>
+    /// <returns>A task which represents the asynchronous operation.</returns>
     ValueTask ShowUnregistrationResultAsync(
         CastleSiegeUnregistrationResult result,
         bool isGivingUp,

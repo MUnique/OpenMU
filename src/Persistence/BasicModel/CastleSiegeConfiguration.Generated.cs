@@ -215,6 +215,24 @@ public partial class CastleSiegeConfiguration : MUnique.OpenMU.DataModel.Configu
     }
 
     /// <summary>
+    /// Gets the raw object of <see cref="SignOfLordItemDefinition" />.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonPropertyName("signOfLordItemDefinition")]
+    public ItemDefinition RawSignOfLordItemDefinition
+    {
+        get => base.SignOfLordItemDefinition as ItemDefinition;
+        set => base.SignOfLordItemDefinition = value;
+    }
+
+    /// <inheritdoc/>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition SignOfLordItemDefinition
+    {
+        get => base.SignOfLordItemDefinition;
+        set => base.SignOfLordItemDefinition = value;
+    }
+
+    /// <summary>
     /// Gets the raw object of <see cref="CastleSiegeMapDefinition" />.
     /// </summary>
     [System.Text.Json.Serialization.JsonPropertyName("castleSiegeMapDefinition")]

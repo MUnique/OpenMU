@@ -110,6 +110,32 @@ internal partial class CastleSiegeConfiguration : MUnique.OpenMU.DataModel.Confi
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.CastleSiegeZoneDefinition> DefenseMachineZones => base.DefenseMachineZones ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.CastleSiegeZoneDefinition, CastleSiegeZoneDefinition>(this.RawDefenseMachineZones);
 
     /// <summary>
+    /// Gets or sets the identifier of <see cref="SignOfLordItemDefinition"/>.
+    /// </summary>
+    public Guid? SignOfLordItemDefinitionId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="SignOfLordItemDefinition" />.
+    /// </summary>
+    [ForeignKey(nameof(SignOfLordItemDefinitionId))]
+    public ItemDefinition RawSignOfLordItemDefinition
+    {
+        get => base.SignOfLordItemDefinition as ItemDefinition;
+        set => base.SignOfLordItemDefinition = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition SignOfLordItemDefinition
+    {
+        get => base.SignOfLordItemDefinition;set
+        {
+            base.SignOfLordItemDefinition = value;
+            this.SignOfLordItemDefinitionId = this.RawSignOfLordItemDefinition?.Id;
+        }
+    }
+
+    /// <summary>
     /// Gets or sets the identifier of <see cref="CastleSiegeMapDefinition"/>.
     /// </summary>
     public Guid? CastleSiegeMapDefinitionId { get; set; }

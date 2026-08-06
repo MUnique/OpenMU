@@ -16,11 +16,9 @@ internal static class CastleSiegeGuildResolver
     /// Resolves a guild which is allowed to mutate a Castle Siege registration.
     /// </summary>
     /// <param name="player">The requesting player.</param>
-    /// <param name="context">The Castle Siege context.</param>
     /// <returns>The resolved guild and validation result.</returns>
     public static async ValueTask<(CastleSiegeGuildReference? Guild, CastleSiegeRegistrationResult Result)> ResolveAuthorizedGuildAsync(
-        Player player,
-        CastleSiegeContext context)
+        Player player)
     {
         if (player.GuildStatus is not { } guildStatus)
         {
@@ -44,7 +42,7 @@ internal static class CastleSiegeGuildResolver
             return (null, CastleSiegeRegistrationResult.InvalidGuild);
         }
 
-        if (await context.GetPersistentGuildIdAsync(guild.Name).ConfigureAwait(false) is not { } persistentGuildId)
+        if (await gameServerContext.GuildServer.GetPersistentGuildIdAsync(guildStatus.GuildId).ConfigureAwait(false) is not { } persistentGuildId)
         {
             return (null, CastleSiegeRegistrationResult.InvalidGuild);
         }
@@ -56,9 +54,8 @@ internal static class CastleSiegeGuildResolver
     /// Resolves the registration identity visible to any member of a guild or alliance.
     /// </summary>
     /// <param name="player">The requesting player.</param>
-    /// <param name="context">The Castle Siege context.</param>
-    /// <returns>The resolved registration identity, or <see langword="null"/>.</returns>
-    public static async ValueTask<CastleSiegeGuildReference?> ResolveRegistrationGuildAsync(Player player, CastleSiegeContext context)
+    /// <returns>The persistent registration guild identifier, or <see langword="null"/>.</returns>
+    public static async ValueTask<Guid?> ResolveRegistrationGuildIdAsync(Player player)
     {
         if (player.GuildStatus is not { } guildStatus
             || player.GameContext is not IGameServerContext gameServerContext
@@ -67,15 +64,11 @@ internal static class CastleSiegeGuildResolver
             return null;
         }
 
-        var registrationGuildName = guild.AllianceGuild?.Name ?? guild.Name;
-        if (await context.GetPersistentGuildIdAsync(registrationGuildName).ConfigureAwait(false) is not { } persistentGuildId)
-        {
-            return null;
-        }
-
-        var registrationGuildId = string.Equals(registrationGuildName, guild.Name, StringComparison.OrdinalIgnoreCase)
+        var registrationGuildId = guild.AllianceGuild is null
             ? guildStatus.GuildId
-            : await gameServerContext.GuildServer.GetGuildIdByNameAsync(registrationGuildName).ConfigureAwait(false);
-        return new(registrationGuildId, persistentGuildId, registrationGuildName);
+            : await gameServerContext.GuildServer.GetGuildIdByNameAsync(guild.AllianceGuild.Name!).ConfigureAwait(false);
+        return registrationGuildId == 0
+            ? null
+            : await gameServerContext.GuildServer.GetPersistentGuildIdAsync(registrationGuildId).ConfigureAwait(false);
     }
 }

@@ -37,7 +37,7 @@ public class CastleSiegeRegistrationRemoteViewTests
                 4)
             .ConfigureAwait(false);
         await new CastleSiegeMarkRegistrationResultPlugIn(player)
-            .ShowMarkRegistrationResultAsync(true, "GuildA", 22)
+            .ShowMarkRegistrationResultAsync(CastleSiegeMarkRegistrationResult.IncorrectItem, "GuildA", 22)
             .ConfigureAwait(false);
 
         var data = output.ToArray().AsMemory();
@@ -75,7 +75,7 @@ public class CastleSiegeRegistrationRemoteViewTests
         var mark = (CastleSiegeMarkRegistrationResponse)data.Slice(
             offset,
             CastleSiegeMarkRegistrationResponse.Length);
-        Assert.That(mark.Result, Is.EqualTo(1));
+        Assert.That(mark.Result, Is.EqualTo((byte)CastleSiegeMarkRegistrationResult.IncorrectItem));
         Assert.That(mark.GuildName, Is.EqualTo("GuildA"));
         Assert.That(mark.GuildMarkCount, Is.EqualTo(22));
     }

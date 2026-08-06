@@ -5,15 +5,16 @@
 namespace MUnique.OpenMU.GameLogic.Views.CastleSiege;
 
 /// <summary>
-/// A view which reports Emblem of Lord submission results.
+/// A view which reports Sign of Lord submission results.
 /// </summary>
 public interface ICastleSiegeMarkRegistrationResultPlugIn : IViewPlugIn
 {
     /// <summary>
     /// Shows the mark registration result.
     /// </summary>
-    /// <param name="success">Whether an Emblem of Lord was submitted.</param>
+    /// <param name="result">The registration result.</param>
     /// <param name="guildName">The registered guild name.</param>
     /// <param name="marks">The updated mark count.</param>
-    ValueTask ShowMarkRegistrationResultAsync(bool success, string guildName, int marks);
+    /// <returns>A task which represents the asynchronous operation.</returns>
+    ValueTask ShowMarkRegistrationResultAsync(CastleSiegeMarkRegistrationResult result, string guildName, int marks);
 }

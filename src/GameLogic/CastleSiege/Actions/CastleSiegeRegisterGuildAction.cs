@@ -18,6 +18,7 @@ public class CastleSiegeRegisterGuildAction
     /// </summary>
     /// <param name="player">The requesting player.</param>
     /// <param name="context">The Castle Siege context, if initialized.</param>
+    /// <returns>A task which represents the asynchronous operation.</returns>
     public async ValueTask RegisterAsync(Player player, CastleSiegeContext? context)
     {
         var (result, guildName) = await RegisterCoreAsync(player, context).ConfigureAwait(false);
@@ -42,7 +43,7 @@ public class CastleSiegeRegisterGuildAction
                 return (CastleSiegeRegistrationResult.NotRegistrationPeriod, string.Empty);
             }
 
-            var (guild, resolutionResult) = await CastleSiegeGuildResolver.ResolveAuthorizedGuildAsync(player, context).ConfigureAwait(false);
+            var (guild, resolutionResult) = await CastleSiegeGuildResolver.ResolveAuthorizedGuildAsync(player).ConfigureAwait(false);
             if (guild is null)
             {
                 return (resolutionResult, string.Empty);

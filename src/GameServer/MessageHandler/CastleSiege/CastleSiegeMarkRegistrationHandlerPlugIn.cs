@@ -12,7 +12,7 @@ using MUnique.OpenMU.Network.Packets.ClientToServer;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// Handles Emblem of Lord registration requests.
+/// Handles Sign of Lord registration requests.
 /// </summary>
 [PlugIn]
 [Display(Name = nameof(PlugInResources.CastleSiegeMarkRegistrationHandlerPlugIn_Name), Description = nameof(PlugInResources.CastleSiegeMarkRegistrationHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
@@ -31,6 +31,11 @@ internal class CastleSiegeMarkRegistrationHandlerPlugIn : ISubPacketHandlerPlugI
     /// <inheritdoc/>
     public ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
+        if (packet.Length < CastleSiegeMarkRegistration.Length)
+        {
+            return ValueTask.CompletedTask;
+        }
+
         CastleSiegeMarkRegistration request = packet;
         if (!TryGetInventorySlot(request.ItemIndex, out var inventorySlot))
         {

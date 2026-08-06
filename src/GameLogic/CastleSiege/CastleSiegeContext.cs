@@ -11,6 +11,10 @@ using MUnique.OpenMU.DataModel.Entities;
 /// <summary>
 /// Holds the runtime state of Castle Siege for one game context.
 /// </summary>
+/// <remarks>
+/// Runtime registrations and <see cref="ExecutionLock"/> are scoped to this game context. Deployments which run
+/// multiple game-server processes require external coordination when registrations are changed concurrently.
+/// </remarks>
 public class CastleSiegeContext : IEventStateProvider
 {
     private readonly IGameContext _gameContext;
@@ -255,22 +259,6 @@ public class CastleSiegeContext : IEventStateProvider
     }
 
     /// <summary>
-    /// Resolves the persistent identifier of a guild by its unique name.
-    /// </summary>
-    /// <param name="guildName">The guild name.</param>
-    /// <returns>The persistent identifier, or <see langword="null"/> if the guild was not found.</returns>
-    internal async ValueTask<Guid?> GetPersistentGuildIdAsync(string guildName)
-    {
-        using var context = this._gameContext.PersistenceContextProvider.CreateNewTypedContext(
-            typeof(Guild),
-            false,
-            this._gameContext.Configuration);
-        return (await context.GetAsync<Guild>().ConfigureAwait(false))
-            .FirstOrDefault(guild => string.Equals(guild.Name, guildName, StringComparison.OrdinalIgnoreCase))
-            ?.Id;
-    }
-
-    /// <summary>
     /// Creates and persists a guild registration.
     /// </summary>
     /// <param name="guildId">The persistent guild identifier.</param>
@@ -285,7 +273,9 @@ public class CastleSiegeContext : IEventStateProvider
         var registration = context.CreateNew<CastleSiegeGuildRegistration>();
         registration.GuildId = guildId;
         registration.GuildName = guildName;
-        registration.RegistrationOrder = this.RegisteredGuilds.Count == 0
+
+        // Registration orders stay monotonic for one cycle and are intentionally not compacted after unregistration.
+        registration.RegistrationOrder = this.RegisteredGuilds.IsEmpty
             ? 1
             : this.RegisteredGuilds.Values.Max(entry => entry.RegistrationOrder) + 1;
         await context.SaveChangesAsync().ConfigureAwait(false);
@@ -316,15 +306,19 @@ public class CastleSiegeContext : IEventStateProvider
     /// Increments and persists the submitted mark count.
     /// </summary>
     /// <param name="registration">The registration.</param>
-    /// <returns>The updated mark count.</returns>
-    internal async ValueTask<int> IncrementMarksAsync(CastleSiegeGuildRegistration registration)
+    /// <returns>The updated mark count, or <see langword="null"/> if the registration no longer exists.</returns>
+    internal async ValueTask<int?> IncrementMarksAsync(CastleSiegeGuildRegistration registration)
     {
         using var context = this._gameContext.PersistenceContextProvider.CreateNewTypedContext(
             typeof(CastleSiegeGuildRegistration),
             false,
             this._gameContext.Configuration);
-        var persistentRegistration = await context.GetByIdAsync<CastleSiegeGuildRegistration>(registration.Id).ConfigureAwait(false)
-            ?? throw new InvalidOperationException("The Castle Siege guild registration no longer exists.");
+        if (await context.GetByIdAsync<CastleSiegeGuildRegistration>(registration.Id).ConfigureAwait(false) is not { } persistentRegistration)
+        {
+            this.RegisteredGuilds.TryRemove(registration.GuildId, out _);
+            return null;
+        }
+
         persistentRegistration.Marks++;
         await context.SaveChangesAsync().ConfigureAwait(false);
         registration.Marks = persistentRegistration.Marks;

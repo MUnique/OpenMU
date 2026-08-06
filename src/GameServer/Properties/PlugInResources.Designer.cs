@@ -637,7 +637,7 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
 
         /// <summary>
-        ///   Looks up a localized string similar to Handles Castle Siege Emblem of Lord registration requests..
+        ///   Looks up a localized string similar to Handles Castle Siege Sign of Lord registration requests..
         /// </summary>
         public static string CastleSiegeMarkRegistrationHandlerPlugIn_Description {
             get {
@@ -651,6 +651,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         public static string CastleSiegeMarkRegistrationHandlerPlugIn_Name {
             get {
                 return ResourceManager.GetString("CastleSiegeMarkRegistrationHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Sends Sign of Lord registration results to the game client..
+        /// </summary>
+        public static string CastleSiegeMarkRegistrationResultPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeMarkRegistrationResultPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Mark Registration View.
+        /// </summary>
+        public static string CastleSiegeMarkRegistrationResultPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeMarkRegistrationResultPlugIn_Name", resourceCulture);
             }
         }
 
@@ -673,6 +691,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Sends Castle Siege registration results to the game client..
+        /// </summary>
+        public static string CastleSiegeRegistrationResultPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeRegistrationResultPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Registration Result View.
+        /// </summary>
+        public static string CastleSiegeRegistrationResultPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeRegistrationResultPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Handles Castle Siege registration-state requests..
         /// </summary>
         public static string CastleSiegeRegistrationStateHandlerPlugIn_Description {
@@ -687,6 +723,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         public static string CastleSiegeRegistrationStateHandlerPlugIn_Name {
             get {
                 return ResourceManager.GetString("CastleSiegeRegistrationStateHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Sends Castle Siege registration state to the game client..
+        /// </summary>
+        public static string CastleSiegeRegistrationStatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeRegistrationStatePlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Registration State View.
+        /// </summary>
+        public static string CastleSiegeRegistrationStatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeRegistrationStatePlugIn_Name", resourceCulture);
             }
         }
 

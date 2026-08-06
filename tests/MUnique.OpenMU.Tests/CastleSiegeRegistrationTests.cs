@@ -8,7 +8,6 @@ using System.Collections.Immutable;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
-using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
@@ -18,6 +17,7 @@ using MUnique.OpenMU.GameLogic.Views.CastleSiege;
 using MUnique.OpenMU.GameServer;
 using MUnique.OpenMU.GameServer.MessageHandler.CastleSiege;
 using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Network.Packets.ClientToServer;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
@@ -25,7 +25,7 @@ using BasicModel = MUnique.OpenMU.Persistence.BasicModel;
 using RuntimeGuild = MUnique.OpenMU.Interfaces.Guild;
 
 /// <summary>
-/// Tests Castle Siege guild and Emblem of Lord registration.
+/// Tests Castle Siege guild and Sign of Lord registration.
 /// </summary>
 [TestFixture]
 public class CastleSiegeRegistrationTests
@@ -50,6 +50,10 @@ public class CastleSiegeRegistrationTests
             Assert.That((byte)CastleSiegeRegistrationResult.NoGuild, Is.EqualTo(6));
             Assert.That((byte)CastleSiegeRegistrationResult.NotRegistrationPeriod, Is.EqualTo(7));
             Assert.That((byte)CastleSiegeRegistrationResult.NotEnoughMembers, Is.EqualTo(8));
+            Assert.That((byte)CastleSiegeMarkRegistrationResult.Failed, Is.Zero);
+            Assert.That((byte)CastleSiegeMarkRegistrationResult.Success, Is.EqualTo(1));
+            Assert.That((byte)CastleSiegeMarkRegistrationResult.GuildNotRegistered, Is.EqualTo(2));
+            Assert.That((byte)CastleSiegeMarkRegistrationResult.IncorrectItem, Is.EqualTo(3));
         });
     }
 
@@ -173,37 +177,31 @@ public class CastleSiegeRegistrationTests
     }
 
     /// <summary>
-    /// Verifies Emblem validation, consumption, mark persistence, and registration-state queries.
+    /// Verifies Sign of Lord validation, consumption, mark persistence, and registration-state queries.
     /// </summary>
     [Test]
-    public async ValueTask MarkRegistrationConsumesValidEmblemAndPersistsCountAsync()
+    public async ValueTask MarkRegistrationConsumesValidSignOfLordAndPersistsCountAsync()
     {
         const byte itemSlot = 20;
         var fixture = await CreateRegisteredFixtureAsync().ConfigureAwait(false);
         fixture.Context.SetPeriod(fixture.Context.Schedule.GetCurrentPeriod(new DateTime(2026, 8, 4, 12, 0, 0, DateTimeKind.Utc)));
         var markView = fixture.Player.ViewPlugIns.GetPlugIn<ICastleSiegeMarkRegistrationResultPlugIn>()!;
         var item = fixture.Player.PersistenceContext.CreateNew<Item>();
-        item.Definition = new ItemDefinition
-        {
-            Group = 14,
-            Number = 21,
-            Width = 1,
-            Height = 1,
-        };
+        item.Definition = fixture.CastleSiegeConfiguration.SignOfLordItemDefinition;
         item.Level = 2;
         await fixture.Player.Inventory!.AddItemAsync(itemSlot, item).ConfigureAwait(false);
 
         var action = new CastleSiegeRegisterMarkAction();
         await action.RegisterMarkAsync(fixture.Player, fixture.Context, itemSlot).ConfigureAwait(false);
         Mock.Get(markView).Verify(
-            plugIn => plugIn.ShowMarkRegistrationResultAsync(false, GuildName, 0),
+            plugIn => plugIn.ShowMarkRegistrationResultAsync(CastleSiegeMarkRegistrationResult.IncorrectItem, GuildName, 0),
             Times.Once);
         Assert.That(fixture.Player.Inventory.GetItem(itemSlot), Is.SameAs(item));
 
-        item.Level = 3;
+        item.Level = fixture.CastleSiegeConfiguration.SignOfLordItemLevel;
         await action.RegisterMarkAsync(fixture.Player, fixture.Context, itemSlot).ConfigureAwait(false);
         Mock.Get(markView).Verify(
-            plugIn => plugIn.ShowMarkRegistrationResultAsync(true, GuildName, 1),
+            plugIn => plugIn.ShowMarkRegistrationResultAsync(CastleSiegeMarkRegistrationResult.Success, GuildName, 1),
             Times.Once);
         Assert.That(fixture.Player.Inventory.GetItem(itemSlot), Is.Null);
         Assert.That(fixture.Context.RegisteredGuilds[fixture.PersistentGuildId].Marks, Is.EqualTo(1));
@@ -225,6 +223,45 @@ public class CastleSiegeRegistrationTests
                 false,
                 1),
             Times.Once);
+    }
+
+    /// <summary>
+    /// Verifies that a Sign of Lord is preserved if the persistent guild registration disappeared.
+    /// </summary>
+    [Test]
+    public async ValueTask MarkRegistrationPreservesItemWhenRegistrationDisappearedAsync()
+    {
+        const byte itemSlot = 20;
+        var fixture = await CreateRegisteredFixtureAsync().ConfigureAwait(false);
+        fixture.Context.SetPeriod(fixture.Context.Schedule.GetCurrentPeriod(new DateTime(2026, 8, 4, 12, 0, 0, DateTimeKind.Utc)));
+        var cachedRegistration = fixture.Context.RegisteredGuilds[fixture.PersistentGuildId];
+        using (var persistenceContext = fixture.PersistenceContextProvider.CreateNewTypedContext(
+                   typeof(CastleSiegeGuildRegistration),
+                   false,
+                   fixture.GameConfiguration))
+        {
+            var persistentRegistration = await persistenceContext.GetByIdAsync<CastleSiegeGuildRegistration>(cachedRegistration.Id).ConfigureAwait(false);
+            Assert.That(persistentRegistration, Is.Not.Null);
+            await persistenceContext.DeleteAsync(persistentRegistration!).ConfigureAwait(false);
+            await persistenceContext.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        var signOfLord = fixture.Player.PersistenceContext.CreateNew<Item>();
+        signOfLord.Definition = fixture.CastleSiegeConfiguration.SignOfLordItemDefinition;
+        signOfLord.Level = fixture.CastleSiegeConfiguration.SignOfLordItemLevel;
+        await fixture.Player.Inventory!.AddItemAsync(itemSlot, signOfLord).ConfigureAwait(false);
+
+        await new CastleSiegeRegisterMarkAction().RegisterMarkAsync(fixture.Player, fixture.Context, itemSlot).ConfigureAwait(false);
+
+        var view = fixture.Player.ViewPlugIns.GetPlugIn<ICastleSiegeMarkRegistrationResultPlugIn>()!;
+        Mock.Get(view).Verify(
+            plugIn => plugIn.ShowMarkRegistrationResultAsync(
+                CastleSiegeMarkRegistrationResult.GuildNotRegistered,
+                GuildName,
+                0),
+            Times.Once);
+        Assert.That(fixture.Player.Inventory.GetItem(itemSlot), Is.SameAs(signOfLord));
+        Assert.That(fixture.Context.RegisteredGuilds, Does.Not.ContainKey(fixture.PersistentGuildId));
     }
 
     /// <summary>
@@ -304,6 +341,20 @@ public class CastleSiegeRegistrationTests
         });
     }
 
+    /// <summary>
+    /// Verifies that a truncated mark-registration packet is ignored.
+    /// </summary>
+    [Test]
+    public async ValueTask MarkRegistrationHandlerIgnoresTruncatedPacketAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var packet = new byte[CastleSiegeMarkRegistration.Length - 1];
+
+        await new CastleSiegeMarkRegistrationHandlerPlugIn()
+            .HandlePacketAsync(fixture.Player, packet)
+            .ConfigureAwait(false);
+    }
+
     private static async ValueTask<TestFixture> CreateRegisteredFixtureAsync()
     {
         var fixture = await CreateFixtureAsync().ConfigureAwait(false);
@@ -327,6 +378,16 @@ public class CastleSiegeRegistrationTests
             castleSiegeConfiguration.Enabled = true;
             castleSiegeConfiguration.RegisterMinLevel = 200;
             castleSiegeConfiguration.RegisterMinMembers = 2;
+            var signOfLordDefinition = persistenceContext.CreateNew<BasicModel.ItemDefinition>();
+            signOfLordDefinition.Name = "Rena";
+            signOfLordDefinition.Group = 14;
+            signOfLordDefinition.Number = 21;
+            signOfLordDefinition.MaximumItemLevel = 3;
+            signOfLordDefinition.Width = 1;
+            signOfLordDefinition.Height = 1;
+            gameConfiguration.Items.Add(signOfLordDefinition);
+            castleSiegeConfiguration.SignOfLordItemDefinition = signOfLordDefinition;
+            castleSiegeConfiguration.SignOfLordItemLevel = 3;
             castleSiegeConfiguration.StateSchedule.Add(new BasicModel.CastleSiegeStateScheduleEntry
             {
                 State = CastleSiegeState.RegisterGuild,
@@ -359,6 +420,9 @@ public class CastleSiegeRegistrationTests
         guildServer
             .Setup(server => server.GetGuildIdByNameAsync(GuildName))
             .Returns(new ValueTask<uint>(RuntimeGuildId));
+        guildServer
+            .Setup(server => server.GetPersistentGuildIdAsync(RuntimeGuildId))
+            .Returns(new ValueTask<Guid?>(persistentGuildId));
 
         var mapInitializer = new MapInitializer(gameConfiguration, new NullLogger<MapInitializer>(), NullDropGenerator.Instance, null);
         var gameServerContext = new GameServerContext(

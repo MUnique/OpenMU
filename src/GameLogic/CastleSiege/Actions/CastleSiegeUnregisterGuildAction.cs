@@ -18,6 +18,7 @@ public class CastleSiegeUnregisterGuildAction
     /// <param name="player">The requesting player.</param>
     /// <param name="context">The Castle Siege context, if initialized.</param>
     /// <param name="isGivingUp">Whether the guild requests to give up its registration.</param>
+    /// <returns>A task which represents the asynchronous operation.</returns>
     public async ValueTask UnregisterAsync(
         Player player,
         CastleSiegeContext? context,
@@ -45,9 +46,10 @@ public class CastleSiegeUnregisterGuildAction
                 return (CastleSiegeUnregistrationResult.WrongState, string.Empty);
             }
 
-            var (guild, _) = await CastleSiegeGuildResolver.ResolveAuthorizedGuildAsync(player, context).ConfigureAwait(false);
+            var (guild, _) = await CastleSiegeGuildResolver.ResolveAuthorizedGuildAsync(player).ConfigureAwait(false);
             if (guild is null)
             {
+                // The client protocol has no separate NoGuild or InvalidGuild result for unregistration.
                 return (CastleSiegeUnregistrationResult.Failed, string.Empty);
             }
 

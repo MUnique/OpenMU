@@ -71,6 +71,15 @@ public class GuildServer : IGuildServer
     }
 
     /// <inheritdoc/>
+    public ValueTask<Guid?> GetPersistentGuildIdAsync(uint guildId)
+    {
+        return ValueTask.FromResult(
+            this._guildDictionary.TryGetValue(guildId, out var guild)
+                ? (Guid?)guild.Guild.Id
+                : null);
+    }
+
+    /// <inheritdoc/>
     public async ValueTask<uint> GetGuildIdByNameAsync(string guildName)
     {
         var guild = this._guildDictionary

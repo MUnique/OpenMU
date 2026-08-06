@@ -14,6 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// which forwards registration results to the game client.
 /// </summary>
 [PlugIn]
+[Display(Name = nameof(PlugInResources.CastleSiegeRegistrationResultPlugIn_Name), Description = nameof(PlugInResources.CastleSiegeRegistrationResultPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("1FF48BAE-9F33-4316-B4C0-D6082653C383")]
 public class CastleSiegeRegistrationResultPlugIn : ICastleSiegeRegistrationResultPlugIn
 {

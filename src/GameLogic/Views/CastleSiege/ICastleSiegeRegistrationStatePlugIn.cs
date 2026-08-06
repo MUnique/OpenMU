@@ -14,9 +14,10 @@ public interface ICastleSiegeRegistrationStatePlugIn : IViewPlugIn
     /// </summary>
     /// <param name="result">The query result.</param>
     /// <param name="guildName">The registered guild name, or an empty string.</param>
-    /// <param name="marks">The number of submitted Emblems of Lord.</param>
+    /// <param name="marks">The number of submitted Signs of Lord.</param>
     /// <param name="isGivingUp">Whether the guild gave up its registration.</param>
     /// <param name="registrationRank">The registration rank, or zero when not registered.</param>
+    /// <returns>A task which represents the asynchronous operation.</returns>
     ValueTask ShowRegistrationStateAsync(
         CastleSiegeRegistrationStateResult result,
         string guildName,

@@ -16,6 +16,7 @@ public class CastleSiegeRegistrationStateAction
     /// </summary>
     /// <param name="player">The requesting player.</param>
     /// <param name="context">The Castle Siege context, if initialized.</param>
+    /// <returns>A task which represents the asynchronous operation.</returns>
     public async ValueTask ShowStateAsync(Player player, CastleSiegeContext? context)
     {
         var (result, guildName, marks, registrationRank) = await GetStateAsync(player, context).ConfigureAwait(false);
@@ -39,15 +40,20 @@ public class CastleSiegeRegistrationStateAction
         await context.ExecutionLock.WaitAsync().ConfigureAwait(false);
         try
         {
-            var guild = await CastleSiegeGuildResolver.ResolveRegistrationGuildAsync(player, context).ConfigureAwait(false);
-            return guild is not null
-                   && context.RegisteredGuilds.TryGetValue(guild.PersistentId, out var registration)
-                ? (
-                    CastleSiegeRegistrationStateResult.Registered,
-                    registration.GuildName,
-                    registration.Marks,
-                    checked((byte)Math.Min(registration.RegistrationOrder, byte.MaxValue)))
-                : (CastleSiegeRegistrationStateResult.NotRegistered, string.Empty, 0, (byte)0);
+            var guildId = await CastleSiegeGuildResolver.ResolveRegistrationGuildIdAsync(player).ConfigureAwait(false);
+            if (guildId is null
+                || !context.RegisteredGuilds.TryGetValue(guildId.Value, out var registration))
+            {
+                return (CastleSiegeRegistrationStateResult.NotRegistered, string.Empty, 0, (byte)0);
+            }
+
+            // MuMain carries the rank in one byte, so later registrations use the highest representable rank.
+            var registrationRank = (byte)Math.Min(registration.RegistrationOrder, byte.MaxValue);
+            return (
+                CastleSiegeRegistrationStateResult.Registered,
+                registration.GuildName,
+                registration.Marks,
+                registrationRank);
         }
         finally
         {

@@ -14,6 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// which forwards mark registration results to the game client.
 /// </summary>
 [PlugIn]
+[Display(Name = nameof(PlugInResources.CastleSiegeMarkRegistrationResultPlugIn_Name), Description = nameof(PlugInResources.CastleSiegeMarkRegistrationResultPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("12ED701D-B865-4D2B-B044-445E662BFE0E")]
 public class CastleSiegeMarkRegistrationResultPlugIn : ICastleSiegeMarkRegistrationResultPlugIn
 {
@@ -26,9 +27,9 @@ public class CastleSiegeMarkRegistrationResultPlugIn : ICastleSiegeMarkRegistrat
     public CastleSiegeMarkRegistrationResultPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc />
-    public ValueTask ShowMarkRegistrationResultAsync(bool success, string guildName, int marks)
+    public ValueTask ShowMarkRegistrationResultAsync(CastleSiegeMarkRegistrationResult result, string guildName, int marks)
         => this._player.Connection.SendCastleSiegeMarkRegistrationResponseAsync(
-            success ? (byte)1 : (byte)0,
+            (byte)result,
             guildName,
             checked((uint)marks));
 }
