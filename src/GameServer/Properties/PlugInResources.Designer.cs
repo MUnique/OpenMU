@@ -617,6 +617,96 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("CancelGuildCreationHandlerPlugIn_Name", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Routes Castle Siege packet subcodes..
+        /// </summary>
+        public static string CastleSiegeGroupHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeGroupHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Packet Group Handler.
+        /// </summary>
+        public static string CastleSiegeGroupHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeGroupHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Handles Castle Siege Emblem of Lord registration requests..
+        /// </summary>
+        public static string CastleSiegeMarkRegistrationHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeMarkRegistrationHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Mark Registration Handler.
+        /// </summary>
+        public static string CastleSiegeMarkRegistrationHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeMarkRegistrationHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Handles Castle Siege guild registration requests..
+        /// </summary>
+        public static string CastleSiegeRegistrationHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeRegistrationHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Registration Handler.
+        /// </summary>
+        public static string CastleSiegeRegistrationHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeRegistrationHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Handles Castle Siege registration-state requests..
+        /// </summary>
+        public static string CastleSiegeRegistrationStateHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeRegistrationStateHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Registration State Handler.
+        /// </summary>
+        public static string CastleSiegeRegistrationStateHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeRegistrationStateHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Handles Castle Siege guild unregistration requests..
+        /// </summary>
+        public static string CastleSiegeUnregisterHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeUnregisterHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Unregister Handler.
+        /// </summary>
+        public static string CastleSiegeUnregisterHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeUnregisterHandlerPlugIn_Name", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Handler for online state change packets..
