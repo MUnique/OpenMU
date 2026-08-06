@@ -761,9 +761,9 @@ public class Stats
     public static AttributeDefinition IncreaseBlockBonus { get; } = new(new Guid("8F2D1A7C-4E6B-4A9D-B1F3-5C7E8A2D9F0B"), "Increase Block Bonus", string.Empty);
 
     /// <summary>
-    /// Gets the equipped weapon mastery double damage MST chance attribute definition.
+    /// Gets the glove weapon mastery double damage MST chance attribute definition.
     /// </summary>
-    public static AttributeDefinition EquippedWeaponMasteryDoubleDamageChance { get; } = new(new Guid("B7C2E1A9-5F4D-4B3A-8C6E-2D1F9A7B4C5E"), "Equipped Weapon Mastery Double Damage Chance (MST)", string.Empty);
+    public static AttributeDefinition GloveWeaponMasteryDoubleDamageChance { get; } = new(new Guid("B7C2E1A9-5F4D-4B3A-8C6E-2D1F9A7B4C5E"), "Glove Weapon Mastery Double Damage Chance (MST)", string.Empty);
 
     /// <summary>
     /// Gets the summoned monster health increase, percentage.

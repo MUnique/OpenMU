@@ -90,7 +90,7 @@ internal partial class CharacterClassInitialization
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.SkillMultiplier, 0.001f, Stats.TotalEnergy));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.VitalitySkillMultiplier, 0.001f, Stats.TotalVitality));
 
-        result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.DoubleDamageChance, Stats.IsGloveWeaponEquipped, Stats.EquippedWeaponMasteryDoubleDamageChance));
+        result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.DoubleDamageChance, Stats.IsGloveWeaponEquipped, Stats.GloveWeaponMasteryDoubleDamageChance));
 
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.FenrirBaseDmg, 1.0f / 5, Stats.TotalStrength));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.FenrirBaseDmg, 1.0f / 5, Stats.TotalAgility));
