@@ -1,0 +1,66 @@
+@using MUnique.OpenMU.Web.Shared.Components.Toast
+@using MUnique.OpenMU.Web.Shared.Services
+@inject ToastService ToastService
+@implements IDisposable
+
+@if (this.ToastService.Toasts.Count > 0)
+{
+    <div class="toast-container position-fixed top-0 end-0 p-3" aria-live="polite" aria-atomic="true">
+        @foreach (var toast in this.ToastService.Toasts)
+        {
+            var (iconClass, accentClass) = this.GetStyling(toast.Level);
+            <div @key="toast.Key" class="toast @accentClass @(toast.IsClosing ? "closing" : "show")" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body d-flex align-items-start">
+                        <span class="oi @iconClass toast__icon" aria-hidden="true"></span>
+                        <div class="ms-2 w-100">
+                            @if (toast.Heading is { } heading)
+                            {
+                                <strong class="d-block">@heading</strong>
+                            }
+                            <div>@toast.Message</div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close" @onclick="() => this.CloseAsync(toast)"></button>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        this.ToastService.StateChanged += this.OnStateChanged;
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        this.ToastService.StateChanged -= this.OnStateChanged;
+    }
+
+    private void OnStateChanged()
+    {
+        _ = this.InvokeAsync(this.StateHasChanged);
+    }
+
+    private Task CloseAsync(ToastInstance toast)
+    {
+        this.ToastService.Close(toast);
+        return Task.CompletedTask;
+    }
+
+    private (string IconClass, string AccentClass) GetStyling(ToastLevel level)
+    {
+        return level switch
+        {
+            ToastLevel.Success => ("oi-circle-check", "text-success"),
+            ToastLevel.Info => ("oi-info", "text-primary"),
+            ToastLevel.Warning => ("oi-warning", "text-warning"),
+            ToastLevel.Error => ("oi-bolt", "text-danger"),
+            _ => ("oi-info", "text-primary"),
+        };
+    }
+}

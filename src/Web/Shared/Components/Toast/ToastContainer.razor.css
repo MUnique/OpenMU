@@ -1,0 +1,34 @@
+.toast-container {
+    z-index: 1080;
+}
+
+.toast {
+    min-width: 18rem;
+    border-left: 4px solid currentColor;
+    background-color: var(--bs-body-bg);
+    box-shadow: var(--bs-box-shadow-lg);
+    animation: toast-slide-in 0.2s ease-out;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.toast.closing {
+    opacity: 0;
+}
+
+.toast__icon {
+    font-size: 1.1rem;
+    line-height: 1;
+    align-self: center;
+}
+
+@keyframes toast-slide-in {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
