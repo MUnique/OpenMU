@@ -940,7 +940,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.AddMasterSkillDefinition(SkillNumber.DragonRoarStrengthener, SkillNumber.DragonRoar, SkillNumber.Undefined, 2, 5, SkillNumber.DragonRoar, 20, Formula502);
         this.AddPassiveMasterSkillDefinition(SkillNumber.IncreasePvPAttackRate, Stats.AttackRatePvp, AggregateType.AddRaw, Formula32751, 1, 3);
         this.AddPassiveMasterSkillDefinition(SkillNumber.EquippedWeaponStrengthener, Stats.GloveWeaponBonusDamage, AggregateType.AddRaw, Formula502, 2, 3);
-        this.AddMasterSkillDefinition(SkillNumber.DefSuccessRateIncPowUp, SkillNumber.IncreaseBlock, SkillNumber.Undefined, 3, 2, SkillNumber.IncreaseBlock, 20, $"{Formula502} / 100", Formula502, Stats.IncreaseBlockBonus, AggregateType.Multiplicate);
+        this.AddMasterSkillDefinition(SkillNumber.DefSuccessRateIncPowUp, SkillNumber.IncreaseBlock, SkillNumber.Undefined, 3, 2, SkillNumber.IncreaseBlock, 20, $"{Formula502} / 100", Formula502, Stats.IncreaseBlockBonus, AggregateType.AddRaw);
         this.AddPassiveMasterSkillDefinition(SkillNumber.EquippedWeaponMastery, Stats.GloveWeaponMasteryDoubleDamageChance, AggregateType.AddRaw, Formula120Value, Formula120, 3, 3, SkillNumber.EquippedWeaponStrengthener);
         this.AddMasterSkillDefinition(SkillNumber.DefSuccessRateIncMastery, SkillNumber.DefSuccessRateIncPowUp, SkillNumber.Undefined, 3, 3, SkillNumber.DefSuccessRateIncPowUp, 20, Formula502, Formula502, Stats.DefenseFinal, AggregateType.AddFinal);
         this.AddMasterSkillDefinition(SkillNumber.StaminaIncreaseStrengthener, SkillNumber.IncreaseHealth, SkillNumber.Undefined, 3, 4, SkillNumber.IncreaseHealth, 20, Formula1154, Formula1154, Stats.TotalVitality, AggregateType.AddFinal);

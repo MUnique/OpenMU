@@ -70,11 +70,11 @@ public class IncreaseBlockMasteryEffectInitializer : InitializerBase
             }
         }
 
-        var powerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
-        magicEffect.PowerUpDefinitions.Add(powerUpDefinition);
-        powerUpDefinition.TargetAttribute = Stats.DefenseFinal.GetPersistent(this.GameConfiguration);
-        powerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-        powerUpDefinition.Boost.ConstantValue.Value = 0f;
-        powerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.AddFinal;
+        var defensePowerUp = this.Context.CreateNew<PowerUpDefinition>();
+        magicEffect.PowerUpDefinitions.Add(defensePowerUp);
+        defensePowerUp.TargetAttribute = Stats.DefenseFinal.GetPersistent(this.GameConfiguration);
+        defensePowerUp.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        defensePowerUp.Boost.ConstantValue.Value = 0f;
+        defensePowerUp.Boost.ConstantValue.AggregateType = AggregateType.AddFinal;
     }
 }

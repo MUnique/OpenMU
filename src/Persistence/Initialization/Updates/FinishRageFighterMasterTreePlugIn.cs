@@ -77,6 +77,7 @@ public class FinishRageFighterMasterTreePlugIn : UpdatePlugInBase
                 AggregateType.AddRaw);
 
             charClass.AttributeCombinations.Add(defenseRatePvmToIncreaseBlockBonus);
+            charClass.BaseAttributeValues.Add(context.CreateNew<ConstValueAttribute>(0, increaseBlockBonus));
 
             if (charClass.Number == 8 || charClass.Number == 10 || charClass.Number == 11) // Elf classes
             {
@@ -142,13 +143,6 @@ public class FinishRageFighterMasterTreePlugIn : UpdatePlugInBase
         boostPerEnergy.InputOperator = InputOperator.Multiply;
         boostPerEnergy.InputOperand = 1f / 10f; // one defense rate per 10 energy
         powerUpDefinition.Boost.RelatedValues.Add(boostPerEnergy);
-
-        var powerUpDefinition2 = context.CreateNew<PowerUpDefinition>();
-        increaseBlockEffect.PowerUpDefinitions.Add(powerUpDefinition2);
-        powerUpDefinition2.TargetAttribute = Stats.IncreaseBlockBonus.GetPersistent(gameConfiguration);
-        powerUpDefinition2.Boost = context.CreateNew<PowerUpDefinitionValue>();
-        powerUpDefinition2.Boost.ConstantValue.Value = 0f;
-        powerUpDefinition2.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
 
         // Create Increase Block Power Up, Increase Block Mastery effects
         var increaseBlockPowerUpEffect = this.CreateIncreaseBlockPowerUpEffect(context, gameConfiguration);
@@ -226,7 +220,7 @@ public class FinishRageFighterMasterTreePlugIn : UpdatePlugInBase
             {
                 masterDefinition.ValueFormula = $"{SkillsInitializer.Formula502} / 100";
                 masterDefinition.TargetAttribute = increaseBlockBonus;
-                masterDefinition.Aggregation = AggregateType.Multiplicate;
+                masterDefinition.Aggregation = AggregateType.AddRaw;
             }
         }
 
@@ -243,6 +237,7 @@ public class FinishRageFighterMasterTreePlugIn : UpdatePlugInBase
 
             if (defSuccessRateIncMastery.MasterDefinition is { } masterDefinition)
             {
+                masterDefinition.ReplacedSkill = gameConfiguration.Skills.First(s => s.Number == (short)SkillNumber.DefSuccessRateIncPowUp);
                 masterDefinition.TargetAttribute = Stats.DefenseFinal.GetPersistent(gameConfiguration);
                 masterDefinition.Aggregation = AggregateType.AddFinal;
             }
@@ -265,6 +260,61 @@ public class FinishRageFighterMasterTreePlugIn : UpdatePlugInBase
             decreaseMana.TargetAttribute = Stats.ManaUsageReduction.GetPersistent(gameConfiguration);
             decreaseMana.Aggregation = AggregateType.AddRaw;
         }
+    }
+
+    private MagicEffectDefinition CreateIncreaseBlockPowerUpEffect(IContext context, GameConfiguration gameConfiguration)
+    {
+        var magicEffect = context.CreateNew<MagicEffectDefinition>();
+        gameConfiguration.MagicEffects.Add(magicEffect);
+        magicEffect.Number = (byte)MagicEffectNumber.IncreaseBlockPowerUp;
+        magicEffect.Name = "Increase Block Power Up Skill Effect";
+
+        var increaseBlockEffect = gameConfiguration.MagicEffects.First(e => e.Number == (short)MagicEffectNumber.IncreaseBlock);
+        magicEffect.InformObservers = increaseBlockEffect.InformObservers;
+        magicEffect.SubType = increaseBlockEffect.SubType;
+        magicEffect.SendDuration = increaseBlockEffect.SendDuration;
+        magicEffect.StopByDeath = increaseBlockEffect.StopByDeath;
+        magicEffect.Duration = context.CreateNew<PowerUpDefinitionValue>();
+        magicEffect.Duration.ConstantValue.Value = increaseBlockEffect.Duration!.ConstantValue.Value;
+        magicEffect.Duration.MaximumValue = increaseBlockEffect.Duration.MaximumValue;
+
+        foreach (var durationRelatedValue in increaseBlockEffect.Duration.RelatedValues)
+        {
+            var durationRelatedValueCopy = context.CreateNew<AttributeRelationship>();
+            durationRelatedValueCopy.InputAttribute = durationRelatedValue.InputAttribute!.GetPersistent(gameConfiguration);
+            durationRelatedValueCopy.InputOperator = durationRelatedValue.InputOperator;
+            durationRelatedValueCopy.InputOperand = durationRelatedValue.InputOperand;
+            magicEffect.Duration.RelatedValues.Add(durationRelatedValueCopy);
+        }
+
+        foreach (var powerUp in increaseBlockEffect.PowerUpDefinitions)
+        {
+            var powerUpCopy = context.CreateNew<PowerUpDefinition>();
+            magicEffect.PowerUpDefinitions.Add(powerUpCopy);
+            powerUpCopy.TargetAttribute = powerUp.TargetAttribute!.GetPersistent(gameConfiguration);
+            powerUpCopy.Boost = context.CreateNew<PowerUpDefinitionValue>();
+            powerUpCopy.Boost.ConstantValue.Value = powerUp.Boost!.ConstantValue.Value;
+            powerUpCopy.Boost.ConstantValue.AggregateType = powerUp.Boost.ConstantValue.AggregateType;
+            powerUpCopy.Boost.MaximumValue = powerUp.Boost.MaximumValue;
+
+            foreach (var boostRelatedValue in powerUp.Boost.RelatedValues)
+            {
+                var boostRelatedValueCopy = context.CreateNew<AttributeRelationship>();
+                boostRelatedValueCopy.InputAttribute = boostRelatedValue.InputAttribute!.GetPersistent(gameConfiguration);
+                boostRelatedValueCopy.InputOperator = boostRelatedValue.InputOperator;
+                boostRelatedValueCopy.InputOperand = boostRelatedValue.InputOperand;
+                powerUpCopy.Boost.RelatedValues.Add(boostRelatedValueCopy);
+            }
+        }
+
+        var increaseBlockPowerUp = context.CreateNew<PowerUpDefinition>();
+        magicEffect.PowerUpDefinitions.Add(increaseBlockPowerUp);
+        increaseBlockPowerUp.TargetAttribute = Stats.IncreaseBlockBonus.GetPersistent(gameConfiguration);
+        increaseBlockPowerUp.Boost = context.CreateNew<PowerUpDefinitionValue>();
+        increaseBlockPowerUp.Boost.ConstantValue.Value = 0f;
+        increaseBlockPowerUp.Boost.ConstantValue.AggregateType = AggregateType.AddRaw;
+
+        return magicEffect;
     }
 
     private MagicEffectDefinition CreateIncreaseBlockMasteryEffect(IContext context, GameConfiguration gameConfiguration)
@@ -312,60 +362,12 @@ public class FinishRageFighterMasterTreePlugIn : UpdatePlugInBase
             }
         }
 
-        var powerUpDefinition = context.CreateNew<PowerUpDefinition>();
-        magicEffect.PowerUpDefinitions.Add(powerUpDefinition);
-        powerUpDefinition.TargetAttribute = Stats.DefenseFinal.GetPersistent(gameConfiguration);
-        powerUpDefinition.Boost = context.CreateNew<PowerUpDefinitionValue>();
-        powerUpDefinition.Boost.ConstantValue.Value = 0f;
-        powerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.AddFinal;
-
-        return magicEffect;
-    }
-
-    private MagicEffectDefinition CreateIncreaseBlockPowerUpEffect(IContext context, GameConfiguration gameConfiguration)
-    {
-        var magicEffect = context.CreateNew<MagicEffectDefinition>();
-        gameConfiguration.MagicEffects.Add(magicEffect);
-        magicEffect.Number = (byte)MagicEffectNumber.IncreaseBlockPowerUp;
-        magicEffect.Name = "Increase Block Power Up Skill Effect";
-
-        var increaseBlockEffect = gameConfiguration.MagicEffects.First(e => e.Number == (short)MagicEffectNumber.IncreaseBlock);
-        magicEffect.InformObservers = increaseBlockEffect.InformObservers;
-        magicEffect.SubType = increaseBlockEffect.SubType;
-        magicEffect.SendDuration = increaseBlockEffect.SendDuration;
-        magicEffect.StopByDeath = increaseBlockEffect.StopByDeath;
-        magicEffect.Duration = context.CreateNew<PowerUpDefinitionValue>();
-        magicEffect.Duration.ConstantValue.Value = increaseBlockEffect.Duration!.ConstantValue.Value;
-        magicEffect.Duration.MaximumValue = increaseBlockEffect.Duration.MaximumValue;
-
-        foreach (var durationRelatedValue in increaseBlockEffect.Duration.RelatedValues)
-        {
-            var durationRelatedValueCopy = context.CreateNew<AttributeRelationship>();
-            durationRelatedValueCopy.InputAttribute = durationRelatedValue.InputAttribute!.GetPersistent(gameConfiguration);
-            durationRelatedValueCopy.InputOperator = durationRelatedValue.InputOperator;
-            durationRelatedValueCopy.InputOperand = durationRelatedValue.InputOperand;
-            magicEffect.Duration.RelatedValues.Add(durationRelatedValueCopy);
-        }
-
-        foreach (var powerUp in increaseBlockEffect.PowerUpDefinitions)
-        {
-            var powerUpCopy = context.CreateNew<PowerUpDefinition>();
-            magicEffect.PowerUpDefinitions.Add(powerUpCopy);
-            powerUpCopy.TargetAttribute = powerUp.TargetAttribute!.GetPersistent(gameConfiguration);
-            powerUpCopy.Boost = context.CreateNew<PowerUpDefinitionValue>();
-            powerUpCopy.Boost.ConstantValue.Value = powerUp.Boost!.ConstantValue.Value;
-            powerUpCopy.Boost.ConstantValue.AggregateType = powerUp.Boost.ConstantValue.AggregateType;
-            powerUpCopy.Boost.MaximumValue = powerUp.Boost.MaximumValue;
-
-            foreach (var boostRelatedValue in powerUp.Boost.RelatedValues)
-            {
-                var boostRelatedValueCopy = context.CreateNew<AttributeRelationship>();
-                boostRelatedValueCopy.InputAttribute = boostRelatedValue.InputAttribute!.GetPersistent(gameConfiguration);
-                boostRelatedValueCopy.InputOperator = boostRelatedValue.InputOperator;
-                boostRelatedValueCopy.InputOperand = boostRelatedValue.InputOperand;
-                powerUpCopy.Boost.RelatedValues.Add(boostRelatedValueCopy);
-            }
-        }
+        var defensePowerUp = context.CreateNew<PowerUpDefinition>();
+        magicEffect.PowerUpDefinitions.Add(defensePowerUp);
+        defensePowerUp.TargetAttribute = Stats.DefenseFinal.GetPersistent(gameConfiguration);
+        defensePowerUp.Boost = context.CreateNew<PowerUpDefinitionValue>();
+        defensePowerUp.Boost.ConstantValue.Value = 0f;
+        defensePowerUp.Boost.ConstantValue.AggregateType = AggregateType.AddFinal;
 
         return magicEffect;
     }

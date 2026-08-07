@@ -1,4 +1,4 @@
-﻿// <copyright file="IncreaseBlockStrengthenerEffectInitializer.cs" company="MUnique">
+﻿// <copyright file="IncreaseBlockPowerUpEffectInitializer.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.GameLogic.Attributes;
 
 /// <summary>
 /// Initializer which initializes the increase block power up effect.
@@ -68,5 +69,12 @@ public class IncreaseBlockPowerUpEffectInitializer : InitializerBase
                 powerUpCopy.Boost.RelatedValues.Add(boostRelatedValueCopy);
             }
         }
+
+        var increaseBlockPowerUp = this.Context.CreateNew<PowerUpDefinition>();
+        magicEffect.PowerUpDefinitions.Add(increaseBlockPowerUp);
+        increaseBlockPowerUp.TargetAttribute = Stats.IncreaseBlockBonus.GetPersistent(this.GameConfiguration);
+        increaseBlockPowerUp.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        increaseBlockPowerUp.Boost.ConstantValue.Value = 0f;
+        increaseBlockPowerUp.Boost.ConstantValue.AggregateType = AggregateType.AddRaw;
     }
 }

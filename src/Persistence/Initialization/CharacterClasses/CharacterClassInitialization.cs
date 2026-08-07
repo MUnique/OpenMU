@@ -120,7 +120,7 @@ internal partial class CharacterClassInitialization : InitializerBase
 
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.MaximumHealth, 1, Stats.SwellLifeHealthIncrease, aggregateType: AggregateType.Multiplicate));
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.MaximumMana, 1, Stats.SwellLifeManaIncrease, aggregateType: AggregateType.Multiplicate));
-        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.IncreaseBlockBonus, 1, Stats.DefenseRatePvm));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.IncreaseBlockBonus, 1, Stats.DefenseRatePvm, aggregateType: AggregateType.Multiplicate));
 
         // If two weapons are equipped (DK, MG, Sum, RF) we subtract the half of the sum of the speeds again from the attack speed
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.AreTwoWeaponsEquipped, 1, Stats.EquippedWeaponCount));
@@ -174,6 +174,7 @@ internal partial class CharacterClassInitialization : InitializerBase
         baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.SwellLifeHealthIncrease));
         baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.SwellLifeManaIncrease));
         baseAttributeValues.Add(this.CreateConstValueAttribute(0.1f, Stats.DurabilityReductionFactor));
+        baseAttributeValues.Add(this.CreateConstValueAttribute(0, Stats.IncreaseBlockBonus));   // Nullify the Multiplicate values until DefSuccessRateIncPowUp master Skill is learned
 
         if (isMaster)
         {

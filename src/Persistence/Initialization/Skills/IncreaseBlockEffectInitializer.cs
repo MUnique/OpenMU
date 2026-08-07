@@ -59,13 +59,5 @@ public class IncreaseBlockEffectInitializer : InitializerBase
         boostPerEnergy.InputOperator = InputOperator.Multiply;
         boostPerEnergy.InputOperand = 1f / 10f; // one defense rate per 10 energy
         powerUpDefinition.Boost.RelatedValues.Add(boostPerEnergy);
-
-        // Only increases with DefSuccessRateIncPowUp master skill, but we need to nullify the AggregateType.AddRaw values until then
-        var powerUpDefinition2 = this.Context.CreateNew<PowerUpDefinition>();
-        magicEffect.PowerUpDefinitions.Add(powerUpDefinition2);
-        powerUpDefinition2.TargetAttribute = Stats.IncreaseBlockBonus.GetPersistent(this.GameConfiguration);
-        powerUpDefinition2.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-        powerUpDefinition2.Boost.ConstantValue.Value = 0f;
-        powerUpDefinition2.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
     }
 }

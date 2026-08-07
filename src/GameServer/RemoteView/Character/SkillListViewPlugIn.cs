@@ -181,7 +181,7 @@ public class SkillListViewPlugIn : ISkillListViewPlugIn
     protected void BuildSkillList()
     {
         this.SkillList.Clear();
-        var skills = this._player.SkillList!.Skills.ToList();
+        var skills = this._player.SkillList!.Skills.OrderBy(s => s.Skill?.Number).ToList();
 
         var replacedSkills = skills.Select(entry => entry.Skill?.MasterDefinition?.ReplacedSkill).Where(skill => skill != null);
         skills.RemoveAll(s => replacedSkills.Contains(s.Skill));

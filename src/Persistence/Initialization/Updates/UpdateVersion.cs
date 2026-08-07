@@ -513,4 +513,9 @@ public enum UpdateVersion
     /// The version of the <see cref="FinishSummonerMasterTreePlugIn"/>.
     /// </summary>
     FinishSummonerMasterTree = 101,
+
+    /// <summary>
+    /// The version of the <see cref="FinishRageFighterMasterTreePlugIn"/>.
+    /// </summary>
+    FinishRageFighterMasterTree = 102,
 }
