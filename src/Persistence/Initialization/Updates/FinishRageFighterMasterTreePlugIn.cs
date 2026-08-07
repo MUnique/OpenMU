@@ -74,7 +74,7 @@ public class FinishRageFighterMasterTreePlugIn : UpdatePlugInBase
                 defenseRatePvm,
                 InputOperator.Multiply,
                 default(AttributeDefinition?),
-                AggregateType.AddRaw);
+                AggregateType.Multiplicate);
 
             charClass.AttributeCombinations.Add(defenseRatePvmToIncreaseBlockBonus);
             charClass.BaseAttributeValues.Add(context.CreateNew<ConstValueAttribute>(0, increaseBlockBonus));
