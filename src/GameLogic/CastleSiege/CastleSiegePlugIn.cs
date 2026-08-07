@@ -17,9 +17,10 @@ using MUnique.OpenMU.PlugIns;
 [PlugIn]
 [Display(Name = nameof(PlugInResources.CastleSiegePlugIn_Name), Description = nameof(PlugInResources.CastleSiegePlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("B7F62FA9-59E6-49E9-B499-0358A14957CF")]
-public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, IObjectRemovedFromMapPlugIn
+public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, IObjectRemovedFromMapPlugIn, IPlayerStateChangedPlugIn
 {
     private static readonly TimeSpan NpcSaveInterval = TimeSpan.FromMinutes(2);
+    private static readonly TimeSpan ParticipantUpdateInterval = TimeSpan.FromSeconds(5);
 
     private readonly ConditionalWeakTable<IGameContext, CastleSiegeContext> _contexts = new();
     private readonly TimeProvider _timeProvider;
@@ -62,15 +63,40 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
     }
 
     /// <inheritdoc />
-    public ValueTask ObjectRemovedFromMapAsync(GameMap map, ILocateable removedObject)
+    public async ValueTask ObjectRemovedFromMapAsync(GameMap map, ILocateable removedObject)
     {
-        if (removedObject is Player player
-            && this.GetContext(player.GameContext) is { } context)
+        if (removedObject is not Player player
+            || this.GetContext(player.GameContext) is not { } context)
         {
-            context.UntrackPlayer(player);
+            return;
         }
 
-        return ValueTask.CompletedTask;
+        context.UntrackPlayer(player);
+        if (context.Configuration.CastleSiegeMapDefinition?.Number != map.Definition.Number)
+        {
+            return;
+        }
+
+        await context.ExecutionLock.WaitAsync().ConfigureAwait(false);
+        try
+        {
+            await context.ClearPlayerJoinSideAsync(player).ConfigureAwait(false);
+        }
+        finally
+        {
+            context.ExecutionLock.Release();
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask PlayerStateChangedAsync(Player player, State previousState, State currentState)
+    {
+        if (currentState == PlayerState.EnteredWorld
+            && player.CurrentMap is { } map
+            && this.GetContext(player.GameContext) is { } context)
+        {
+            await SynchronizePlayerAsync(player, map, context).ConfigureAwait(false);
+        }
     }
 
     /// <summary>
@@ -203,6 +229,7 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
         try
         {
             await context.NpcController.SynchronizePlayerAsync(player).ConfigureAwait(false);
+            await context.SynchronizePlayerJoinSideAsync(player).ConfigureAwait(false);
         }
         finally
         {
@@ -257,6 +284,10 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
     {
         switch (context.CurrentState)
         {
+            case CastleSiegeState.Idle1:
+            case CastleSiegeState.Idle2:
+            case CastleSiegeState.Idle3:
+                break;
             case CastleSiegeState.RegisterGuild:
                 if (!isStartup)
                 {
@@ -268,22 +299,53 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
             case CastleSiegeState.RegisterMark:
                 await this.SendStateNotificationAsync(context).ConfigureAwait(false);
                 break;
+            case CastleSiegeState.Notify:
+                await CastleSiegeGuildSelector.SelectGuildsAsync(context).ConfigureAwait(false);
+                await this.SendStateNotificationAsync(context).ConfigureAwait(false);
+                break;
             case CastleSiegeState.Ready:
+                if (context.FinalGuildList.IsEmpty)
+                {
+                    await CastleSiegeGuildSelector.SelectGuildsAsync(context).ConfigureAwait(false);
+                }
+
                 await context.NpcController.PrepareAsync().ConfigureAwait(false);
                 await context.NpcController.CloseGatesAsync().ConfigureAwait(false);
+                await context.SetPlayerJoinSideAsync(false).ConfigureAwait(false);
                 break;
             case CastleSiegeState.Start:
+                if (context.FinalGuildList.IsEmpty)
+                {
+                    await CastleSiegeGuildSelector.SelectGuildsAsync(context).ConfigureAwait(false);
+                }
+
+                if (!isStartup)
+                {
+                    context.ParticipantTracking.Clear();
+                }
+
                 await context.NpcController.PrepareAsync().ConfigureAwait(false);
                 await context.NpcController.CloseGatesAsync().ConfigureAwait(false);
                 await context.NpcController.SpawnMachinesAsync().ConfigureAwait(false);
+                await context.SetPlayerJoinSideAsync(false).ConfigureAwait(false);
+                context.NextParticipantUpdateUtc = this._timeProvider.GetUtcNow().UtcDateTime + ParticipantUpdateInterval;
                 break;
             case CastleSiegeState.End:
+                if (!isStartup)
+                {
+                    await CastleSiegeParticipantTracker.AwardRewardsAsync(context).ConfigureAwait(false);
+                    context.ParticipantTracking.Clear();
+                }
+
                 await context.SaveNpcStatesAsync().ConfigureAwait(false);
                 await context.NpcController.DespawnMachinesAsync().ConfigureAwait(false);
                 break;
             case CastleSiegeState.EndCycle:
                 await context.ClearRegistrationsAsync().ConfigureAwait(false);
                 context.FinalGuildList.Clear();
+                await context.SaveFinalGuildListAsync().ConfigureAwait(false);
+                await context.SetPlayerJoinSideAsync(false).ConfigureAwait(false);
+                context.ClearPlayerJoinSides();
                 context.ParticipantTracking.Clear();
                 await context.NpcController.DespawnAllAsync().ConfigureAwait(false);
                 context.MiddleOwnerGuildId = null;
@@ -291,9 +353,7 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
                 Array.Clear(context.SwitchUsers);
                 context.CrownAccumulatedTime = TimeSpan.Zero;
                 context.IsCrownAvailable = false;
-                break;
-            default:
-                // The remaining states do not require an entry action.
+                context.NextParticipantUpdateUtc = DateTime.MaxValue;
                 break;
         }
 
@@ -318,13 +378,26 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
             await this.SendReadyCountdownIfDueAsync(context, utcNow).ConfigureAwait(false);
         }
 
+        if (context.CurrentState == CastleSiegeState.Start
+            && context.NextParticipantUpdateUtc <= utcNow)
+        {
+            await context.SetPlayerJoinSideAsync(false).ConfigureAwait(false);
+            await CastleSiegeParticipantTracker
+                .TrackAsync(context, (int)ParticipantUpdateInterval.TotalSeconds)
+                .ConfigureAwait(false);
+            context.NextParticipantUpdateUtc = GetNextInterval(
+                context.StateStartTimeUtc,
+                utcNow,
+                ParticipantUpdateInterval);
+        }
+
         if (!context.IsEventRunning && context.NextNpcSaveUtc <= utcNow)
         {
             await context.SaveNpcStatesAsync().ConfigureAwait(false);
             context.NextNpcSaveUtc = utcNow + NpcSaveInterval;
         }
 
-        // Start-state Crown, switch, mini-map and participant ticks are implemented by their dedicated phases.
+        // Start-state Crown, switch and mini-map ticks are implemented by their dedicated phases.
     }
 
     private async ValueTask SendReadyCountdownIfDueAsync(CastleSiegeContext context, DateTime utcNow)

@@ -889,6 +889,96 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Handles requests for the selected Castle Siege guild list..
+        /// </summary>
+        public static string CastleSiegeGuildListHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeGuildListHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Guild List Handler.
+        /// </summary>
+        public static string CastleSiegeGuildListHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeGuildListHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Handles requests for the current Castle Siege guild registrations..
+        /// </summary>
+        public static string CastleSiegeRegisteredGuildListHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeRegisteredGuildListHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Registered Guild List Handler.
+        /// </summary>
+        public static string CastleSiegeRegisteredGuildListHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeRegisteredGuildListHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Sends the selected Castle Siege guild list to the game client..
+        /// </summary>
+        public static string CastleSiegeGuildListPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeGuildListPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Guild List View.
+        /// </summary>
+        public static string CastleSiegeGuildListPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeGuildListPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Sends the current Castle Siege guild registrations to the game client..
+        /// </summary>
+        public static string CastleSiegeRegisteredGuildListPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeRegisteredGuildListPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Registered Guild List View.
+        /// </summary>
+        public static string CastleSiegeRegisteredGuildListPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeRegisteredGuildListPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Sends a player&apos;s assigned Castle Siege side to the game client..
+        /// </summary>
+        public static string CastleSiegeJoinSidePlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeJoinSidePlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Join Side View.
+        /// </summary>
+        public static string CastleSiegeJoinSidePlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeJoinSidePlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Handles requests for the Castle Siege Guardian Statue list..
         /// </summary>
         public static string CastleSiegeStatueListHandlerPlugIn_Description {

@@ -71,6 +71,14 @@ public class GuildServer : IGuildServer
     }
 
     /// <inheritdoc/>
+    public async ValueTask<uint> GetGuildIdAsync(Guid guildId)
+    {
+        return await this.GetOrCreateGuildContainerAsync(guildId).ConfigureAwait(false) is { } guild
+            ? guild.Id
+            : 0;
+    }
+
+    /// <inheritdoc/>
     public ValueTask<Guid?> GetPersistentGuildIdAsync(uint guildId)
     {
         return ValueTask.FromResult(

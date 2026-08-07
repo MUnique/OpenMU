@@ -28,8 +28,10 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.Account>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.AppearanceData>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.CastleSiegeData>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.CastleSiegeGuild>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.CastleSiegeGuildRegistration>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.CastleSiegeNpcState>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.CastleSiegePendingReward>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.Character>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.CharacterQuestState>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.Guild>();
@@ -127,6 +129,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Entity<Account>().HasMany(entity => entity.RawAttributes).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<AppearanceData>().HasMany(entity => entity.RawEquippedItems).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<CastleSiegeData>().HasMany(entity => entity.RawNpcStates).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<CastleSiegeData>().HasMany(entity => entity.RawGuilds).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Character>().HasMany(entity => entity.RawAttributes).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Character>().HasMany(entity => entity.RawLetters).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Character>().HasMany(entity => entity.RawLearnedSkills).WithOne().OnDelete(DeleteBehavior.Cascade);

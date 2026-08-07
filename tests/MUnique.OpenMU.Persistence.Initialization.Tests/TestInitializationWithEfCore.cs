@@ -216,6 +216,11 @@ internal class TestInitializationWithEfCore
             Assert.That(configuration.DefenseRespawnArea, Is.Not.Null);
             Assert.That(configuration.AttackRespawnArea, Is.Not.Null);
         });
+        Assert.That(
+            gameConfiguration.MagicEffects
+                .Where(effect => Enum.IsDefined(typeof(CastleSiegeMagicEffectNumber), effect.Number))
+                .Select(effect => effect.Number),
+            Is.EquivalentTo(Enum.GetValues<CastleSiegeMagicEffectNumber>().Select(number => (short)number)));
 
         var expectedSchedule = new (CastleSiegeState State, DayOfWeek Day, byte Hour, byte Minute)[]
         {
@@ -368,6 +373,22 @@ internal class TestInitializationWithEfCore
             Assert.That(configuration.SignOfLordItemDefinition, Is.Null);
             Assert.That(configuration.SignOfLordItemLevel, Is.Zero);
         });
+
+        foreach (var participantEffect in gameConfiguration.MagicEffects
+                     .Where(effect => Enum.IsDefined(typeof(CastleSiegeMagicEffectNumber), effect.Number))
+                     .ToList())
+        {
+            gameConfiguration.MagicEffects.Remove(participantEffect);
+        }
+
+        var participationUpdate = new ConfigureCastleSiegeParticipationUpdatePlugIn();
+        await participationUpdate.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await participationUpdate.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        Assert.That(
+            gameConfiguration.MagicEffects
+                .Where(effect => Enum.IsDefined(typeof(CastleSiegeMagicEffectNumber), effect.Number))
+                .Select(effect => effect.Number),
+            Is.EquivalentTo(Enum.GetValues<CastleSiegeMagicEffectNumber>().Select(number => (short)number)));
 
         gameConfiguration.Items.Add(signOfLord);
         configuration.SignOfLordItemDefinition = signOfLord;

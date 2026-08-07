@@ -98,6 +98,13 @@ public interface IGuildServer
     ValueTask<Guild?> GetGuildAsync(uint guildId);
 
     /// <summary>
+    /// Gets the runtime identifier of a persistent guild, loading the guild when necessary.
+    /// </summary>
+    /// <param name="guildId">The persistent guild identifier.</param>
+    /// <returns>The runtime guild identifier, or <c>0</c> if the guild was not found.</returns>
+    ValueTask<uint> GetGuildIdAsync(Guid guildId);
+
+    /// <summary>
     /// Gets the persistent identifier of a guild by its runtime identifier.
     /// </summary>
     /// <param name="guildId">The runtime guild identifier.</param>
