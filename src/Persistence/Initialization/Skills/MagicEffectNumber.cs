@@ -308,7 +308,7 @@ internal enum MagicEffectNumber : short
     IgnoreDefense = 129,
 
     /// <summary>
-    /// The increase health effect of the rage fighter.
+    /// The increase health (stamina) effect of the rage fighter.
     /// </summary>
     IncreaseHealth = 130,
 
@@ -341,6 +341,21 @@ internal enum MagicEffectNumber : short
     /// The critical damage increase mastery effect.
     /// </summary>
     CriticalDamageIncreaseMastery = 148,
+
+    /// <summary>
+    /// The increase block power up effect of the rage fighter.
+    /// </summary>
+    IncreaseBlockPowerUp = 153,
+
+    /// <summary>
+    /// The increase block mastery effect of the rage fighter.
+    /// </summary>
+    IncreaseBlockMastery = 154,
+
+    /// <summary>
+    /// The increase health (stamina) strengthener effect of the rage fighter.
+    /// </summary>
+    IncreaseHealthStrengthener = 155,
 
     #region Artificial effects which are not sent to the client, starting at 200.
 

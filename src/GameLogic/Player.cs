@@ -1558,28 +1558,31 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <summary>
     /// Tries to consume the <see cref="Skill.ConsumeRequirements"/> of a skill.
     /// </summary>
-    /// <param name="skill">The skill which should get performed.</param>
+    /// <param name="skillEntry">The skill entry of the skill which should get performed.</param>
     /// <returns>
     ///     <c>True</c>, if the <see cref="Skill.ConsumeRequirements"/> and <see cref="Skill.Requirements"/>
     ///     are being met, and the <see cref="Skill.ConsumeRequirements"/> have been consumed; Otherwise, <c>false</c>.
     /// </returns>
-    public async ValueTask<bool> TryConsumeForSkillAsync(Skill skill)
+    public async ValueTask<bool> TryConsumeForSkillAsync(SkillEntry skillEntry)
     {
+        if (skillEntry.Skill is not { } skill)
+        {
+            return false;
+        }
+
         if (skill.Requirements.Any(r => r.MinimumValue > this.Attributes![r.Attribute]))
         {
             return false;
         }
 
-        var addExtraManaCost = this.Attributes![Stats.AmmunitionConsumptionRate] == 0
-            && skill.SkillType is SkillType.DirectHit or SkillType.AreaSkillAutomaticHits;
-        if (skill.ConsumeRequirements.Any(r => this.GetRequiredValue(r, addExtraManaCost) > this.Attributes![r.Attribute]))
+        if (skill.ConsumeRequirements.Any(r => this.GetRequiredValue(r, skillEntry) > this.Attributes![r.Attribute]))
         {
             return false;
         }
 
         foreach (var requirement in skill.ConsumeRequirements)
         {
-            this.Attributes![requirement.Attribute] -= this.GetRequiredValue(requirement, addExtraManaCost);
+            this.Attributes![requirement.Attribute] -= this.GetRequiredValue(requirement, skillEntry);
         }
 
         return true;

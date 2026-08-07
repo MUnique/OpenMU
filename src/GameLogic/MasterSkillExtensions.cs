@@ -12,6 +12,8 @@ using org.mariuszgromada.math.mxparser;
 /// </summary>
 public static class MasterSkillExtensions
 {
+    private const string FormulaManaRateIncrease = "(2 + (((((((level - 30) ^ 3) + 25000) / 499) / 6)))) * 1.5";
+
     private static readonly ConcurrentDictionary<string, float[]> ValueResultCache = new();
 
     /// <summary>
@@ -85,6 +87,13 @@ public static class MasterSkillExtensions
             }
         }
     }
+
+    /// <summary>
+    /// Calculates the mana increase rate for a master skill of the specified level.
+    /// </summary>
+    /// <param name="level">The skill level.</param>
+    /// <returns>The value which to multiply the skill's base mana value by.</returns>
+    public static float CalculateManaRateValue(int level) => FormulaManaRateIncrease.GetValue(level, 20) / 100;
 
     private static float CalculateValue(this MasterSkillDefinition? skillDefinition, int level) => skillDefinition?.ValueFormula.GetValue(level, skillDefinition.MaximumLevel) ?? 0;
 

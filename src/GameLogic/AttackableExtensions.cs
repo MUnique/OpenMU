@@ -563,9 +563,9 @@ public static class AttackableExtensions
     /// </summary>
     /// <param name="attacker">The attacker.</param>
     /// <param name="attributeRequirement">The attribute requirement, e.g. of a skill.</param>
-    /// <param name="addExtraManaCost">If set to <c>true</c>, <see cref="Stats.SkillExtraManaCost"/> applies.</param>
+    /// <param name="skillEntry">The skill entry, if there is one.</param>
     /// <returns>The required value.</returns>
-    public static int GetRequiredValue(this IAttacker attacker, AttributeRequirement attributeRequirement, bool addExtraManaCost = false)
+    public static int GetRequiredValue(this IAttacker attacker, AttributeRequirement attributeRequirement, SkillEntry? skillEntry = null)
     {
         var modifier = 1.0f;
         if (ReductionModifiers.TryGetValue(
@@ -576,9 +576,17 @@ public static class AttackableExtensions
         }
 
         var extraCost = 0;
-        if (addExtraManaCost && attributeRequirement.Attribute == Stats.CurrentMana)
+        if (attributeRequirement.Attribute == Stats.CurrentMana)
         {
-            extraCost = (int)attacker.Attributes[Stats.SkillExtraManaCost];
+            if (skillEntry?.Level > 0)
+            {
+                extraCost += (int)(attributeRequirement.MinimumValue * MasterSkillExtensions.CalculateManaRateValue(skillEntry.Level));
+            }
+
+            if (skillEntry?.EnsureSkillAttributes(attacker.Attributes) is { } skillAttributes)
+            {
+                extraCost += (int)skillAttributes[Stats.SkillExtraManaCost];
+            }
         }
 
         return (int)((attributeRequirement.MinimumValue + extraCost) * modifier);
@@ -684,7 +692,7 @@ public static class AttackableExtensions
         }
         else
         {
-            defenseRate = defender.Attributes[Stats.DefenseRatePvm];
+            defenseRate = defender.Attributes[Stats.DefenseRatePvm] + defender.Attributes[Stats.IncreaseBlockBonus];
             attackRate = attacker.Attributes[Stats.AttackRatePvm];
         }
 
@@ -962,19 +970,14 @@ public static class AttackableExtensions
         {
             int bonusDamage = 0;
 
-            // Always two-handed.
             if (attacker.Attributes[Stats.IsSpearEquipped] > 0)
             {
                 bonusDamage = (int)attacker.Attributes[Stats.SpearBonusDamage];
             }
-
-            // Impossible to double wield.
             else if (attacker.Attributes[Stats.IsScepterEquipped] > 0)
             {
                 bonusDamage = (int)attacker.Attributes[Stats.ScepterStrBonusDamage];
             }
-
-            // Impossible to double wield.
             else if (attacker.Attributes[Stats.IsGloveWeaponEquipped] > 0)
             {
                 bonusDamage = (int)attacker.Attributes[Stats.GloveWeaponBonusDamage];
