@@ -1388,7 +1388,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return;
         }
 
-        var canWalkToTarget = currentMap.Terrain.WalkMap[target.X, target.Y];
+        var canWalkToTarget = CanWalkPath(currentMap.Terrain, target, steps.Span);
         if (canWalkToTarget)
         {
             this.Logger.LogDebug("WalkToAsync: Player is walking to {0}", target);
@@ -2042,6 +2042,24 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     protected virtual ICustomPlugInContainer<IViewPlugIn> CreateViewPlugInContainer()
     {
         throw new NotImplementedException("CreateViewPlugInContainer must be overwritten in derived classes.");
+    }
+
+    private static bool CanWalkPath(GameMapTerrain terrain, Point target, ReadOnlySpan<WalkingStep> steps)
+    {
+        if (!terrain.WalkMap[target.X, target.Y])
+        {
+            return false;
+        }
+
+        foreach (var step in steps)
+        {
+            if (!terrain.WalkMap[step.To.X, step.To.Y])
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private async ValueTask AddMasterExperienceCoreAsync(int experience, IAttackable? killedObject)

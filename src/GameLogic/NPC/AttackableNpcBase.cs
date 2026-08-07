@@ -104,7 +104,9 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
     /// <inheritdoc />
     public async ValueTask<HitInfo?> AttackByAsync(IAttacker attacker, SkillEntry? skill, bool isCombo, double damageFactor = 1.0, bool? isFinalStreakHit = null)
     {
-        if (this.Definition.ObjectKind == NpcObjectKind.Guard || this.IsAttackBlockedBySafezone(attacker))
+        if (this.Definition.ObjectKind == NpcObjectKind.Guard
+            || this.IsAttackBlockedBySafezone(attacker)
+            || !this.CanBeAttackedBy(attacker))
         {
             return null;
         }
@@ -270,6 +272,13 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
     {
         return attacker as Player ?? (attacker as IPlayerSurrogate)?.Owner;
     }
+
+    /// <summary>
+    /// Determines whether the specified attacker may attack this NPC.
+    /// </summary>
+    /// <param name="attacker">The attacker.</param>
+    /// <returns><see langword="true"/> when the attack is allowed; otherwise, <see langword="false"/>.</returns>
+    protected virtual bool CanBeAttackedBy(IAttacker attacker) => true;
 
     /// <summary>
     /// Registers the hit.

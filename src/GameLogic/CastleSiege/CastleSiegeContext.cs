@@ -29,6 +29,7 @@ public class CastleSiegeContext : IEventStateProvider
         this._gameContext = gameContext;
         this.Configuration = configuration;
         this.Schedule = new CastleSiegeSchedule(configuration.StateSchedule);
+        this.NpcController = new CastleSiegeNpcController(this);
     }
 
     /// <summary>
@@ -80,6 +81,11 @@ public class CastleSiegeContext : IEventStateProvider
     /// Gets the active Castle Siege NPCs.
     /// </summary>
     public List<CastleSiegeNpcRuntime> ActiveNpcs { get; } = new();
+
+    /// <summary>
+    /// Gets the controller for Castle Siege NPC lifecycle and lookup operations.
+    /// </summary>
+    public CastleSiegeNpcController NpcController { get; }
 
     /// <summary>
     /// Gets or sets the player which currently operates the Crown.
@@ -172,6 +178,7 @@ public class CastleSiegeContext : IEventStateProvider
     {
         this.SiegeData = await this.LoadDataAsync().ConfigureAwait(false)
             ?? throw new InvalidOperationException("The persistent Castle Siege state does not exist.");
+        this.NpcController.InitializePersistentStructures();
         await this.LoadRegistrationsAsync().ConfigureAwait(false);
     }
 
@@ -203,6 +210,7 @@ public class CastleSiegeContext : IEventStateProvider
             return;
         }
 
+        this.NpcController.SynchronizeNpcStates();
         var persistedNpcs = this.ActiveNpcs
             .Where(npc => npc.Definition.IsPersistedToDatabase)
             .ToList();
@@ -212,7 +220,6 @@ public class CastleSiegeContext : IEventStateProvider
         }
 
         var statesToSave = persistedNpcs
-            .Where(npc => npc.IsAlive)
             .Select(npc => npc.PersistedState!)
             .ToDictionary(GetNpcKey);
 
@@ -334,6 +341,7 @@ public class CastleSiegeContext : IEventStateProvider
     {
         this.SiegeData = await this.LoadDataAsync().ConfigureAwait(false)
             ?? await this.CreateDataAsync().ConfigureAwait(false);
+        this.NpcController.InitializePersistentStructures();
         await this.LoadRegistrationsAsync().ConfigureAwait(false);
         var period = this.Schedule.GetCurrentEventPeriod(utcNow);
         this.SetPeriod(period);

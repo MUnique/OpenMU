@@ -286,6 +286,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Opens the operation interface for a Castle Siege gate lever..
+        /// </summary>
+        public static string CastleSiegeLeverTalkPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeLeverTalkPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Gate Lever.
+        /// </summary>
+        public static string CastleSiegeLeverTalkPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeLeverTalkPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Drives the weekly Castle Siege state cycle..
         /// </summary>
         public static string CastleSiegePlugIn_Description {
