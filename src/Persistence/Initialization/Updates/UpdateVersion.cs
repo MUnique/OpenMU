@@ -514,8 +514,12 @@ public enum UpdateVersion
     /// </summary>
     FinishSummonerMasterTree = 101,
 
+    /// The version of the <see cref="ConfigureCastleSiegeRegistrationUpdatePlugIn"/>.
+    /// </summary>
+    ConfigureCastleSiegeRegistration = 102,
+
     /// <summary>
     /// The version of the <see cref="FinishRageFighterMasterTreePlugIn"/>.
     /// </summary>
-    FinishRageFighterMasterTree = 102,
+    FinishRageFighterMasterTree = 103,
 }

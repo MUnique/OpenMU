@@ -147,6 +147,26 @@ public class GuildAllianceTest : GuildTestBase
         Assert.That(isMaster, Is.False);
     }
 
+    /// <summary>
+    /// An online alliance member can resolve the persistent master guild after the master's last member went offline.
+    /// </summary>
+    [Test]
+    public async ValueTask GetPersistentAllianceMasterGuildId_MasterOffline_ReturnsMasterId()
+    {
+        await this.GuildServer.CreateAllianceAsync(this._firstGuildId, this._secondGuildId).ConfigureAwait(false);
+        var masterPersistentId = await this.GuildServer.GetPersistentGuildIdAsync(this._firstGuildId).ConfigureAwait(false);
+
+        await this.GuildServer.GuildMemberLeftGameAsync(this._firstGuildId, this.GuildMaster.Id, 0).ConfigureAwait(false);
+        var masterGuildMember = (await this.GuildServer.GetGuildListAsync(this._firstGuildId).ConfigureAwait(false)).Single();
+        var resolvedMasterId = await this.GuildServer.GetPersistentAllianceMasterGuildIdAsync(this._secondGuildId).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(masterGuildMember.ServerId, Is.EqualTo(MUnique.OpenMU.GuildServer.GuildServer.OfflineServerId));
+            Assert.That(resolvedMasterId, Is.EqualTo(masterPersistentId));
+        });
+    }
+
     // -------------------------------------------------------------------------
     // GetAllianceGuildsAsync
     // -------------------------------------------------------------------------

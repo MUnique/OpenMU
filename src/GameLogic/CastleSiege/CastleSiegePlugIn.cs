@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 [PlugIn]
 [Display(Name = nameof(PlugInResources.CastleSiegePlugIn_Name), Description = nameof(PlugInResources.CastleSiegePlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("B7F62FA9-59E6-49E9-B499-0358A14957CF")]
-public class CastleSiegePlugIn : IPeriodicTaskPlugIn
+public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, IObjectRemovedFromMapPlugIn
 {
     private static readonly TimeSpan NpcSaveInterval = TimeSpan.FromMinutes(2);
 
@@ -49,6 +49,29 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn
 
     /// <inheritdoc />
     public void ForceStart() => this.ForceState(CastleSiegeState.Start);
+
+    /// <inheritdoc />
+    public async ValueTask ObjectAddedToMapAsync(GameMap map, ILocateable addedObject)
+    {
+        if (addedObject is Player player
+            && this.GetContext(player.GameContext) is { } context)
+        {
+            context.TrackPlayer(player, map);
+            await SynchronizePlayerAsync(player, map, context).ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc />
+    public ValueTask ObjectRemovedFromMapAsync(GameMap map, ILocateable removedObject)
+    {
+        if (removedObject is Player player
+            && this.GetContext(player.GameContext) is { } context)
+        {
+            context.UntrackPlayer(player);
+        }
+
+        return ValueTask.CompletedTask;
+    }
 
     /// <summary>
     /// Forces all Castle Siege contexts to enter a state on their next timer tick.
@@ -165,6 +188,28 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn
         return stateStartUtc.AddTicks((completedIntervals + 1) * interval.Ticks);
     }
 
+    private static async ValueTask SynchronizePlayerAsync(
+        Player player,
+        GameMap map,
+        CastleSiegeContext context)
+    {
+        if (context.CurrentState is not (CastleSiegeState.Ready or CastleSiegeState.Start)
+            || context.Configuration.CastleSiegeMapDefinition?.Number != map.Definition.Number)
+        {
+            return;
+        }
+
+        await context.ExecutionLock.WaitAsync().ConfigureAwait(false);
+        try
+        {
+            await context.NpcController.SynchronizePlayerAsync(player).ConfigureAwait(false);
+        }
+        finally
+        {
+            context.ExecutionLock.Release();
+        }
+    }
+
     private async ValueTask AdvanceExpiredStatesAsync(CastleSiegeContext context, DateTime utcNow, ILogger logger)
     {
         var maximumTransitions = context.Schedule.Count + 1;
@@ -223,14 +268,24 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn
             case CastleSiegeState.RegisterMark:
                 await this.SendStateNotificationAsync(context).ConfigureAwait(false);
                 break;
+            case CastleSiegeState.Ready:
+                await context.NpcController.PrepareAsync().ConfigureAwait(false);
+                await context.NpcController.CloseGatesAsync().ConfigureAwait(false);
+                break;
+            case CastleSiegeState.Start:
+                await context.NpcController.PrepareAsync().ConfigureAwait(false);
+                await context.NpcController.CloseGatesAsync().ConfigureAwait(false);
+                await context.NpcController.SpawnMachinesAsync().ConfigureAwait(false);
+                break;
             case CastleSiegeState.End:
                 await context.SaveNpcStatesAsync().ConfigureAwait(false);
+                await context.NpcController.DespawnMachinesAsync().ConfigureAwait(false);
                 break;
             case CastleSiegeState.EndCycle:
                 await context.ClearRegistrationsAsync().ConfigureAwait(false);
                 context.FinalGuildList.Clear();
                 context.ParticipantTracking.Clear();
-                context.ActiveNpcs.Clear();
+                await context.NpcController.DespawnAllAsync().ConfigureAwait(false);
                 context.MiddleOwnerGuildId = null;
                 context.CrownUser = null;
                 Array.Clear(context.SwitchUsers);
@@ -242,10 +297,7 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn
                 break;
         }
 
-        if (!isStartup)
-        {
-            context.NextNpcSaveUtc = this._timeProvider.GetUtcNow().UtcDateTime + NpcSaveInterval;
-        }
+        context.NextNpcSaveUtc = this._timeProvider.GetUtcNow().UtcDateTime + NpcSaveInterval;
     }
 
     private ValueTask OnExitStateAsync() => ValueTask.CompletedTask;
