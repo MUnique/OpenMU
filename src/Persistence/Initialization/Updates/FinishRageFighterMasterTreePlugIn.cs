@@ -178,18 +178,18 @@ public class FinishRageFighterMasterTreePlugIn : UpdatePlugInBase
         }
 
         // Add skill attributes for elf shooting skills
-        var elfShootingSkills = new short[]
+        var elfShootingSkills = new[]
         {
-            (short)SkillNumber.TripleShot,
-            (short)SkillNumber.IceArrow,
-            (short)SkillNumber.Penetration,
-            (short)SkillNumber.Starfall,
-            (short)SkillNumber.MultiShot,
+            SkillNumber.TripleShot,
+            SkillNumber.IceArrow,
+            SkillNumber.Penetration,
+            SkillNumber.Starfall,
+            SkillNumber.MultiShot,
         };
 
         foreach (var skillNumber in elfShootingSkills)
         {
-            if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == skillNumber) is { } skill)
+            if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)skillNumber) is { } skill)
             {
                 skill.AttributeRelationships.Add(context.CreateNew<AttributeRelationship>(
                     skillExtraManaCost,

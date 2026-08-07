@@ -70,7 +70,7 @@ public class NovaSkillStartPlugin : TargetedSkillPluginBase
     {
         var cancellationToken = cancellationTokenSource.Token;
         if (player.Attributes is not { } playerAttributes
-            || skillEntry.Skill is not { } skill)
+            || skillEntry.Skill is null)
         {
             return;
         }
