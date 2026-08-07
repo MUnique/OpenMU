@@ -12,20 +12,20 @@ public interface IMapArea
     /// <summary>
     /// Gets or sets the upper-left corner X coordinate.
     /// </summary>
-    byte X1 { get; set; }
+    ushort X1 { get; set; }
 
     /// <summary>
     /// Gets or sets the upper-left corner Y coordinate.
     /// </summary>
-    byte Y1 { get; set; }
+    ushort Y1 { get; set; }
 
     /// <summary>
     /// Gets or sets the bottom-right corner X coordinate.
     /// </summary>
-    byte X2 { get; set; }
+    ushort X2 { get; set; }
 
     /// <summary>
     /// Gets or sets the bottom-right corner Y coordinate.
     /// </summary>
-    byte Y2 { get; set; }
+    ushort Y2 { get; set; }
 }

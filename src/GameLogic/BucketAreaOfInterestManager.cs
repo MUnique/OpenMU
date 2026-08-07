@@ -17,9 +17,10 @@ internal class BucketAreaOfInterestManager : IAreaOfInterestManager
     /// Initializes a new instance of the <see cref="BucketAreaOfInterestManager" /> class.
     /// </summary>
     /// <param name="chunkSize">Size of the chunk.</param>
-    public BucketAreaOfInterestManager(int chunkSize)
+    /// <param name="mapSize">Size of the map.</param>
+    public BucketAreaOfInterestManager(int chunkSize, int mapSize)
     {
-        this.Map = new BucketMap<ILocateable>(0x100, true, chunkSize / 2, chunkSize);
+        this.Map = new BucketMap<ILocateable>(mapSize, true, chunkSize / 2, chunkSize);
     }
 
     /// <summary>

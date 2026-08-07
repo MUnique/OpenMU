@@ -20,9 +20,17 @@ public class WarpGateAction
     /// <param name="gate">The enter gate.</param>
     public async ValueTask EnterGateAsync(Player player, EnterGate gate)
     {
+        if (player.CurrentMap is null || player.PlayerState.CurrentState == PlayerState.ChangingMap)
+        {
+            return;
+        }
+
         if (await this.IsWarpLegitAsync(player, gate).ConfigureAwait(false))
         {
-            await player.WarpToAsync(gate.TargetGate!).ConfigureAwait(false);
+            if (await player.WarpToAsync(gate.TargetGate!).ConfigureAwait(false) is not (WarpResult.Success or WarpResult.AlreadyChangingMap))
+            {
+                await player.InvokeViewPlugInAsync<IMapChangePlugIn>(p => p.MapChangeFailedAsync()).ConfigureAwait(false);
+            }
         }
         else
         {

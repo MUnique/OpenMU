@@ -202,8 +202,8 @@ public class ResetCharacterAction
         if (homeMapDef is { }
             && await this._player.GameContext.GetMapAsync((ushort)homeMapDef.Number).ConfigureAwait(false) is { SafeZoneSpawnGate: { } spawnGate })
         {
-            this._player.SelectedCharacter.PositionX = (byte)Rand.NextInt(spawnGate.X1, spawnGate.X2);
-            this._player.SelectedCharacter.PositionY = (byte)Rand.NextInt(spawnGate.Y1, spawnGate.Y2);
+            this._player.SelectedCharacter.PositionX = (ushort)Rand.NextInt(spawnGate.X1, spawnGate.X2);
+            this._player.SelectedCharacter.PositionY = (ushort)Rand.NextInt(spawnGate.Y1, spawnGate.Y2);
             this._player.SelectedCharacter.CurrentMap = spawnGate.Map;
             this._player.Rotation = spawnGate.Direction;
         }

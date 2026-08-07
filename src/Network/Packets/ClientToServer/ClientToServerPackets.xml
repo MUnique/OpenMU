@@ -1953,6 +1953,45 @@
     </Packet>
     <Packet>
       <HeaderType>C1Header</HeaderType>
+      <Code>D5</Code>
+      <Name>WalkRequestGlobal</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A global-world player wants to walk from an absolute ushort coordinate.</SentWhen>
+      <CausedReaction>The player gets moved using global-world coordinates.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>SourceX</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>SourceY</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <LeftShifted>0</LeftShifted>
+          <Type>Byte</Type>
+          <Name>StepCount</Name>
+          <Length>4</Length>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <LeftShifted>4</LeftShifted>
+          <Type>Byte</Type>
+          <Name>TargetRotation</Name>
+          <Length>4</Length>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Binary</Type>
+          <Name>Directions</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
       <Code>10</Code>
       <Name>WalkRequest075</Name>
       <Direction>ClientToServer</Direction>

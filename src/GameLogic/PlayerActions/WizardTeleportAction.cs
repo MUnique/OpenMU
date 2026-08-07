@@ -36,6 +36,8 @@ public class WizardTeleportAction
         if (!player.IsAtSafezone()
             && player.IsActive()
             && player.SkillList?.GetSkill(TeleportSkillId) is { Skill: { } skill }
+            && target.X < player.CurrentMap!.Terrain.Size
+            && target.Y < player.CurrentMap.Terrain.Size
             && player.CurrentMap!.Terrain.WalkMap[target.X, target.Y]
             && !player.CurrentMap.Terrain.SafezoneMap[target.X, target.Y]
             && player.IsInRange(target, skill.Range)
@@ -62,6 +64,8 @@ public class WizardTeleportAction
             && player.IsActive()
             && player.SkillList?.GetSkill(TeleportTargetSkillId) is { Skill: { } skill }
             && player.Party is not null
+            && target.X < player.CurrentMap!.Terrain.Size
+            && target.Y < player.CurrentMap.Terrain.Size
             && player.CurrentMap!.Terrain.WalkMap[target.X, target.Y]
             && !player.CurrentMap.Terrain.SafezoneMap[target.X, target.Y]
             && await player.GetObservingPlayerWithIdAsync(targetId).ConfigureAwait(false) is { } targetPlayer

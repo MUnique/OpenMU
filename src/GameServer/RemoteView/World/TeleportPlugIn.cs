@@ -38,6 +38,13 @@ public class TeleportPlugIn : ITeleportPlugIn
 
         var mapNumber = this._player.SelectedCharacter.CurrentMap.Number.ToUnsigned();
         var position = this._player.Position;
-        await this._player.Connection.SendMapChangedAsync(mapNumber, position.X, position.Y, this._player.Rotation.ToPacketByte(), false).ConfigureAwait(false);
+        if (mapNumber > byte.MaxValue || position.X > byte.MaxValue || position.Y > byte.MaxValue)
+        {
+            await this._player.Connection.SendMapChangedGlobalAsync(mapNumber, position.X, position.Y, this._player.Rotation.ToPacketByte(), false).ConfigureAwait(false);
+        }
+        else
+        {
+            await this._player.Connection.SendMapChangedAsync(mapNumber, checked((byte)(position.X)), checked((byte)(position.Y)), this._player.Rotation.ToPacketByte(), false).ConfigureAwait(false);
+        }
     }
 }

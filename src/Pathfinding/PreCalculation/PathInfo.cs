@@ -11,5 +11,5 @@ using System.Runtime.InteropServices;
 /// </summary>
 /// <param name="Combination">The start/end point combination which acts like a key for the next step.</param>
 /// <param name="NextStep">The next step to get one step closer to the <see cref="PointCombination.End"/>.</param>
-[StructLayout(LayoutKind.Sequential, Pack = 1, Size = 6)]
+[StructLayout(LayoutKind.Sequential, Pack = 1, Size = 12)]
 public record struct PathInfo(PointCombination Combination, Point NextStep);

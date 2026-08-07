@@ -15,22 +15,22 @@ public partial class Gate : IMapArea
     /// <summary>
     /// Gets or sets the upper left corner, x-coordinate.
     /// </summary>
-    public byte X1 { get; set; }
+    public ushort X1 { get; set; }
 
     /// <summary>
     /// Gets or sets the upper left corner, y-coordinate.
     /// </summary>
-    public byte Y1 { get; set; }
+    public ushort Y1 { get; set; }
 
     /// <summary>
     /// Gets or sets the bottom right corner, x-coordinate.
     /// </summary>
-    public byte X2 { get; set; }
+    public ushort X2 { get; set; }
 
     /// <summary>
     /// Gets or sets the bottom right corner, y-coordinate.
     /// </summary>
-    public byte Y2 { get; set; }
+    public ushort Y2 { get; set; }
 
     /// <inheritdoc />
     public override string ToString()

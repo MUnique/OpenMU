@@ -100,8 +100,8 @@ public sealed class MovementHandler
         }
 
         var factor = (double)(distance - stopRange) / distance;
-        var x = (byte)Math.Clamp(from.X + (int)Math.Round(dx * factor), 0, 255);
-        var y = (byte)Math.Clamp(from.Y + (int)Math.Round(dy * factor), 0, 255);
+        var x = (ushort)Math.Clamp(from.X + (int)Math.Round(dx * factor), 0, map.Terrain.Size - 1);
+        var y = (ushort)Math.Clamp(from.Y + (int)Math.Round(dy * factor), 0, map.Terrain.Size - 1);
         if (map.Terrain.WalkMap[x, y] && !map.Terrain.SafezoneMap[x, y])
         {
             return new Point(x, y);

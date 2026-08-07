@@ -14,10 +14,10 @@ public record struct PathResultNode(Point Point, Point PreviousPoint)
     /// <summary>
     /// Gets the x coordinate.
     /// </summary>
-    public byte X => this.Point.X;
+    public ushort X => this.Point.X;
 
     /// <summary>
     /// Gets the y coordinate.
     /// </summary>
-    public byte Y => this.Point.Y;
+    public ushort Y => this.Point.Y;
 }

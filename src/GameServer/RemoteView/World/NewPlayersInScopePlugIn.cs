@@ -78,6 +78,40 @@ public class NewPlayersInScopePlugIn : INewPlayersInScopePlugIn
             return;
         }
 
+        var target = newPlayer.IsWalking ? newPlayer.WalkTarget : newPlayer.Position;
+        if (newPlayer.Position.X > byte.MaxValue || newPlayer.Position.Y > byte.MaxValue || target.X > byte.MaxValue || target.Y > byte.MaxValue)
+        {
+            var appearanceSerializer = this.Player.AppearanceSerializer;
+            var activeEffects = newPlayer.MagicEffectList.VisibleEffects;
+            var appearanceAndEffects = new byte[appearanceSerializer.NeededSpace + activeEffects.Count + 1];
+            appearanceSerializer.WriteAppearanceData(appearanceAndEffects.AsSpan(), newPlayer.AppearanceData, true);
+            appearanceAndEffects[appearanceSerializer.NeededSpace] = (byte)activeEffects.Count;
+            for (var effect = 0; effect < activeEffects.Count; effect++)
+            {
+                appearanceAndEffects[appearanceSerializer.NeededSpace + 1 + effect] = (byte)activeEffects[effect].Id;
+            }
+
+            var id = newPlayer.GetId(this.Player);
+            if (isSpawned)
+            {
+                id |= 0x8000;
+            }
+
+            await connection.SendAddCharacterToScopeGlobalAsync(
+                id,
+                newPlayer.Position.X,
+                newPlayer.Position.Y,
+                target.X,
+                target.Y,
+                newPlayer.Rotation.ToPacketByte(),
+                selectedCharacter.State.Convert(),
+                (ushort)(newPlayer.Attributes?[Stats.AttackSpeed] ?? 0),
+                (ushort)(newPlayer.Attributes?[Stats.MagicSpeed] ?? 0),
+                selectedCharacter.Name,
+                appearanceAndEffects).ConfigureAwait(false);
+            return;
+        }
+
         int Write()
         {
             var appearanceSerializer = this.Player.AppearanceSerializer;
@@ -99,20 +133,20 @@ public class NewPlayersInScopePlugIn : INewPlayersInScopePlugIn
                 playerBlock.Id |= 0x8000;
             }
 
-            playerBlock.CurrentPositionX = newPlayer.Position.X;
-            playerBlock.CurrentPositionY = newPlayer.Position.Y;
+            playerBlock.CurrentPositionX = checked((byte)(newPlayer.Position.X));
+            playerBlock.CurrentPositionY = checked((byte)(newPlayer.Position.Y));
 
             appearanceSerializer.WriteAppearanceData(playerBlock.Appearance, newPlayer.AppearanceData, true); // 4 ... 21
             playerBlock.Name = selectedCharacter.Name;
             if (newPlayer.IsWalking)
             {
-                playerBlock.TargetPositionX = newPlayer.WalkTarget.X;
-                playerBlock.TargetPositionY = newPlayer.WalkTarget.Y;
+                playerBlock.TargetPositionX = checked((byte)(newPlayer.WalkTarget.X));
+                playerBlock.TargetPositionY = checked((byte)(newPlayer.WalkTarget.Y));
             }
             else
             {
-                playerBlock.TargetPositionX = newPlayer.Position.X;
-                playerBlock.TargetPositionY = newPlayer.Position.Y;
+                playerBlock.TargetPositionX = checked((byte)(newPlayer.Position.X));
+                playerBlock.TargetPositionY = checked((byte)(newPlayer.Position.Y));
             }
 
             playerBlock.Rotation = newPlayer.Rotation.ToPacketByte();
@@ -206,20 +240,20 @@ public class NewPlayersInScopePlugIn : INewPlayersInScopePlugIn
                 playerBlock.Id |= 0x8000;
             }
 
-            playerBlock.CurrentPositionX = newPlayer.Position.X;
-            playerBlock.CurrentPositionY = newPlayer.Position.Y;
+            playerBlock.CurrentPositionX = checked((byte)(newPlayer.Position.X));
+            playerBlock.CurrentPositionY = checked((byte)(newPlayer.Position.Y));
 
             appearanceSerializer.WriteAppearanceData(playerBlock.Appearance, newPlayer.AppearanceData, true); // 4 ... 21
             playerBlock.Name = selectedCharacter.Name;
             if (newPlayer.IsWalking)
             {
-                playerBlock.TargetPositionX = newPlayer.WalkTarget.X;
-                playerBlock.TargetPositionY = newPlayer.WalkTarget.Y;
+                playerBlock.TargetPositionX = checked((byte)(newPlayer.WalkTarget.X));
+                playerBlock.TargetPositionY = checked((byte)(newPlayer.WalkTarget.Y));
             }
             else
             {
-                playerBlock.TargetPositionX = newPlayer.Position.X;
-                playerBlock.TargetPositionY = newPlayer.Position.Y;
+                playerBlock.TargetPositionX = checked((byte)(newPlayer.Position.X));
+                playerBlock.TargetPositionY = checked((byte)(newPlayer.Position.Y));
             }
 
             playerBlock.Rotation = newPlayer.Rotation.ToPacketByte();

@@ -1,4 +1,4 @@
-// <copyright file="ServerToClientPackets.cs" company="MUnique">
+﻿// <copyright file="ServerToClientPackets.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -580,6 +580,362 @@ public readonly struct GameServerEntered
 
 
 /// <summary>
+/// Is sent by the server when: After a character with global coordinates was selected and entered the game.
+/// Causes reaction on client side: The character enters the global game world.
+/// </summary>
+public readonly struct CharacterInformationGlobal
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CharacterInformationGlobal"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CharacterInformationGlobal(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CharacterInformationGlobal"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CharacterInformationGlobal(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC3;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xF3;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x61;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 94;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C3HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the x.
+    /// </summary>
+    public ushort X
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[4..]);
+        set => WriteUInt16LittleEndian(this._data.Span[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the y.
+    /// </summary>
+    public ushort Y
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[6..]);
+        set => WriteUInt16LittleEndian(this._data.Span[6..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the map id.
+    /// </summary>
+    public ushort MapId
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[8..]);
+        set => WriteUInt16LittleEndian(this._data.Span[8..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the current experience.
+    /// </summary>
+    public ulong CurrentExperience
+    {
+        get => ReadUInt64BigEndian(this._data.Span[10..]);
+        set => WriteUInt64BigEndian(this._data.Span[10..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the experience for next level.
+    /// </summary>
+    public ulong ExperienceForNextLevel
+    {
+        get => ReadUInt64BigEndian(this._data.Span[18..]);
+        set => WriteUInt64BigEndian(this._data.Span[18..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the level up points.
+    /// </summary>
+    public ushort LevelUpPoints
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[26..]);
+        set => WriteUInt16LittleEndian(this._data.Span[26..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the strength.
+    /// </summary>
+    public ushort Strength
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[28..]);
+        set => WriteUInt16LittleEndian(this._data.Span[28..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the agility.
+    /// </summary>
+    public ushort Agility
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[30..]);
+        set => WriteUInt16LittleEndian(this._data.Span[30..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the vitality.
+    /// </summary>
+    public ushort Vitality
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[32..]);
+        set => WriteUInt16LittleEndian(this._data.Span[32..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the energy.
+    /// </summary>
+    public ushort Energy
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[34..]);
+        set => WriteUInt16LittleEndian(this._data.Span[34..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the leadership.
+    /// </summary>
+    public ushort Leadership
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[36..]);
+        set => WriteUInt16LittleEndian(this._data.Span[36..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the current health.
+    /// </summary>
+    public uint CurrentHealth
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[38..]);
+        set => WriteUInt32LittleEndian(this._data.Span[38..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the maximum health.
+    /// </summary>
+    public uint MaximumHealth
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[42..]);
+        set => WriteUInt32LittleEndian(this._data.Span[42..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the current mana.
+    /// </summary>
+    public uint CurrentMana
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[46..]);
+        set => WriteUInt32LittleEndian(this._data.Span[46..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the maximum mana.
+    /// </summary>
+    public uint MaximumMana
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[50..]);
+        set => WriteUInt32LittleEndian(this._data.Span[50..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the current shield.
+    /// </summary>
+    public uint CurrentShield
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[54..]);
+        set => WriteUInt32LittleEndian(this._data.Span[54..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the maximum shield.
+    /// </summary>
+    public uint MaximumShield
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[58..]);
+        set => WriteUInt32LittleEndian(this._data.Span[58..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the current ability.
+    /// </summary>
+    public uint CurrentAbility
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[62..]);
+        set => WriteUInt32LittleEndian(this._data.Span[62..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the maximum ability.
+    /// </summary>
+    public uint MaximumAbility
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[66..]);
+        set => WriteUInt32LittleEndian(this._data.Span[66..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the money.
+    /// </summary>
+    public uint Money
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[70..]);
+        set => WriteUInt32LittleEndian(this._data.Span[70..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the hero state.
+    /// </summary>
+    public CharacterHeroState HeroState
+    {
+        get => (CharacterHeroState)this._data.Span[74];
+        set => this._data.Span[74] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the status.
+    /// </summary>
+    public CharacterStatus Status
+    {
+        get => (CharacterStatus)this._data.Span[75];
+        set => this._data.Span[75] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the used fruit points.
+    /// </summary>
+    public ushort UsedFruitPoints
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[76..]);
+        set => WriteUInt16LittleEndian(this._data.Span[76..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the max fruit points.
+    /// </summary>
+    public ushort MaxFruitPoints
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[78..]);
+        set => WriteUInt16LittleEndian(this._data.Span[78..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the used negative fruit points.
+    /// </summary>
+    public ushort UsedNegativeFruitPoints
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[80..]);
+        set => WriteUInt16LittleEndian(this._data.Span[80..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the max negative fruit points.
+    /// </summary>
+    public ushort MaxNegativeFruitPoints
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[82..]);
+        set => WriteUInt16LittleEndian(this._data.Span[82..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the attack speed.
+    /// </summary>
+    public ushort AttackSpeed
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[84..]);
+        set => WriteUInt16LittleEndian(this._data.Span[84..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the magic speed.
+    /// </summary>
+    public ushort MagicSpeed
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[86..]);
+        set => WriteUInt16LittleEndian(this._data.Span[86..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the maximum attack speed.
+    /// </summary>
+    public ushort MaximumAttackSpeed
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[88..]);
+        set => WriteUInt16LittleEndian(this._data.Span[88..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the inventory extensions.
+    /// </summary>
+    public byte InventoryExtensions
+    {
+        get => this._data.Span[90];
+        set => this._data.Span[90] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the resets.
+    /// </summary>
+    public ushort Resets
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[92..]);
+        set => WriteUInt16LittleEndian(this._data.Span[92..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CharacterInformationGlobal"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CharacterInformationGlobal(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CharacterInformationGlobal"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CharacterInformationGlobal packet) => packet._data; 
+}
+
+
+/// <summary>
 /// Is sent by the server when: A magic effect was added or removed to the own or another player.
 /// Causes reaction on client side: The user interface updates itself. If it's the effect of the own player, it's shown as icon at the top of the interface.
 /// </summary>
@@ -931,6 +1287,183 @@ public readonly struct AddCharacterToScopeExtended
     /// <param name="appearanceAndEffectsLength">The length in bytes of <see cref="AppearanceAndEffects"/> on which the required size depends.</param>
         
     public static int GetRequiredSize(int appearanceAndEffectsLength) => appearanceAndEffectsLength + 26;
+}
+
+
+/// <summary>
+/// Is sent by the server when: A character entered the observed scope in the global coordinate world.
+/// Causes reaction on client side: The client adds the character using absolute ushort coordinates.
+/// </summary>
+public readonly struct AddCharacterToScopeGlobal
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AddCharacterToScopeGlobal"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public AddCharacterToScopeGlobal(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AddCharacterToScopeGlobal"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private AddCharacterToScopeGlobal(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0x12;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0xD6;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the id.
+    /// </summary>
+    public ushort Id
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[5..]);
+        set => WriteUInt16LittleEndian(this._data.Span[5..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the current position x.
+    /// </summary>
+    public ushort CurrentPositionX
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[7..]);
+        set => WriteUInt16LittleEndian(this._data.Span[7..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the current position y.
+    /// </summary>
+    public ushort CurrentPositionY
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[9..]);
+        set => WriteUInt16LittleEndian(this._data.Span[9..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the target position x.
+    /// </summary>
+    public ushort TargetPositionX
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[11..]);
+        set => WriteUInt16LittleEndian(this._data.Span[11..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the target position y.
+    /// </summary>
+    public ushort TargetPositionY
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[13..]);
+        set => WriteUInt16LittleEndian(this._data.Span[13..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the rotation.
+    /// </summary>
+    public byte Rotation
+    {
+        get => this._data.Span[15..].GetByteValue(4, 4);
+        set => this._data.Span[15..].SetByteValue(value, 4, 4);
+    }
+
+    /// <summary>
+    /// Gets or sets the hero state.
+    /// </summary>
+    public CharacterHeroState HeroState
+    {
+        get => (CharacterHeroState)this._data.Span[15..].GetByteValue(4, 0);
+        set => this._data.Span[15..].SetByteValue((byte)value, 4, 0);
+    }
+
+    /// <summary>
+    /// Gets or sets the attack speed.
+    /// </summary>
+    public ushort AttackSpeed
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[17..]);
+        set => WriteUInt16LittleEndian(this._data.Span[17..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the magic speed.
+    /// </summary>
+    public ushort MagicSpeed
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[19..]);
+        set => WriteUInt16LittleEndian(this._data.Span[19..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the name.
+    /// </summary>
+    public string Name
+    {
+        get => this._data.Span.ExtractString(21, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(21, 10).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the appearance and effects.
+    /// </summary>
+    public Span<byte> AppearanceAndEffects
+    {
+        get => this._data.Slice(31).Span;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="AddCharacterToScopeGlobal"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator AddCharacterToScopeGlobal(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="AddCharacterToScopeGlobal"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(AddCharacterToScopeGlobal packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified length of <see cref="AppearanceAndEffects"/>.
+    /// </summary>
+    /// <param name="appearanceAndEffectsLength">The length in bytes of <see cref="AppearanceAndEffects"/> on which the required size depends.</param>
+        
+    public static int GetRequiredSize(int appearanceAndEffectsLength) => appearanceAndEffectsLength + 31;
 }
 
 
@@ -6686,6 +7219,112 @@ public readonly struct ObjectHitExtended
 
 
 /// <summary>
+/// Is sent by the server when: An object in the global-world scope moved instantly.
+/// Causes reaction on client side: The client updates the object position using absolute ushort coordinates.
+/// </summary>
+public readonly struct ObjectMovedGlobal
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ObjectMovedGlobal"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public ObjectMovedGlobal(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ObjectMovedGlobal"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private ObjectMovedGlobal(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xD6;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 10;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1Header Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the header code.
+    /// </summary>
+    public byte HeaderCode
+    {
+        get => this._data.Span[2];
+        set => this._data.Span[2] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the object id.
+    /// </summary>
+    public ushort ObjectId
+    {
+        get => ReadUInt16BigEndian(this._data.Span[3..]);
+        set => WriteUInt16BigEndian(this._data.Span[3..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the position x.
+    /// </summary>
+    public ushort PositionX
+    {
+        get => ReadUInt16BigEndian(this._data.Span[5..]);
+        set => WriteUInt16BigEndian(this._data.Span[5..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the position y.
+    /// </summary>
+    public ushort PositionY
+    {
+        get => ReadUInt16BigEndian(this._data.Span[7..]);
+        set => WriteUInt16BigEndian(this._data.Span[7..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="ObjectMovedGlobal"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator ObjectMovedGlobal(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="ObjectMovedGlobal"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(ObjectMovedGlobal packet) => packet._data; 
+}
+
+
+/// <summary>
 /// Is sent by the server when: An object in the observed scope (including the own player) moved instantly.
 /// Causes reaction on client side: The position of the object is updated on client side.
 /// </summary>
@@ -7074,6 +7713,158 @@ public readonly struct ObjectWalkedExtended
     /// <param name="stepDataLength">The length in bytes of <see cref="StepData"/> on which the required size depends.</param>
         
     public static int GetRequiredSize(int stepDataLength) => stepDataLength + 10;
+}
+
+
+/// <summary>
+/// Is sent by the server when: An object in the global-world scope walked to another absolute position.
+/// Causes reaction on client side: The object is animated to walk using global coordinates.
+/// </summary>
+public readonly struct ObjectWalkedGlobal
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ObjectWalkedGlobal"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public ObjectWalkedGlobal(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ObjectWalkedGlobal"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private ObjectWalkedGlobal(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)data.Length;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xD5;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1Header Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the header code.
+    /// </summary>
+    public byte HeaderCode
+    {
+        get => this._data.Span[2];
+        set => this._data.Span[2] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the object id.
+    /// </summary>
+    public ushort ObjectId
+    {
+        get => ReadUInt16BigEndian(this._data.Span[3..]);
+        set => WriteUInt16BigEndian(this._data.Span[3..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the source x.
+    /// </summary>
+    public ushort SourceX
+    {
+        get => ReadUInt16BigEndian(this._data.Span[5..]);
+        set => WriteUInt16BigEndian(this._data.Span[5..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the source y.
+    /// </summary>
+    public ushort SourceY
+    {
+        get => ReadUInt16BigEndian(this._data.Span[7..]);
+        set => WriteUInt16BigEndian(this._data.Span[7..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the target x.
+    /// </summary>
+    public ushort TargetX
+    {
+        get => ReadUInt16BigEndian(this._data.Span[9..]);
+        set => WriteUInt16BigEndian(this._data.Span[9..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the target y.
+    /// </summary>
+    public ushort TargetY
+    {
+        get => ReadUInt16BigEndian(this._data.Span[11..]);
+        set => WriteUInt16BigEndian(this._data.Span[11..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the target rotation.
+    /// </summary>
+    public byte TargetRotation
+    {
+        get => this._data.Span[13..].GetByteValue(4, 4);
+        set => this._data.Span[13..].SetByteValue(value, 4, 4);
+    }
+
+    /// <summary>
+    /// Gets or sets the step count.
+    /// </summary>
+    public byte StepCount
+    {
+        get => this._data.Span[13..].GetByteValue(4, 0);
+        set => this._data.Span[13..].SetByteValue(value, 4, 0);
+    }
+
+    /// <summary>
+    /// Gets or sets the step data.
+    /// </summary>
+    public Span<byte> StepData
+    {
+        get => this._data.Slice(14).Span;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="ObjectWalkedGlobal"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator ObjectWalkedGlobal(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="ObjectWalkedGlobal"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(ObjectWalkedGlobal packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified length of <see cref="StepData"/>.
+    /// </summary>
+    /// <param name="stepDataLength">The length in bytes of <see cref="StepData"/> on which the required size depends.</param>
+        
+    public static int GetRequiredSize(int stepDataLength) => stepDataLength + 14;
 }
 
 
@@ -7551,6 +8342,129 @@ public readonly struct MapChanged
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
     public static implicit operator Memory<byte>(MapChanged packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: The map or global position changed.
+/// Causes reaction on client side: The client changes map and position using ushort coordinates.
+/// </summary>
+public readonly struct MapChangedGlobal
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MapChangedGlobal"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public MapChangedGlobal(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MapChangedGlobal"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private MapChangedGlobal(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+            this.IsMapChange = true;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC3;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0x1C;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x10;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 12;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C3HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the is map change.
+    /// </summary>
+    public bool IsMapChange
+    {
+        get => this._data.Span[4..].GetBoolean();
+        set => this._data.Span[4..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the map number.
+    /// </summary>
+    public ushort MapNumber
+    {
+        get => ReadUInt16BigEndian(this._data.Span[5..]);
+        set => WriteUInt16BigEndian(this._data.Span[5..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the position x.
+    /// </summary>
+    public ushort PositionX
+    {
+        get => ReadUInt16BigEndian(this._data.Span[7..]);
+        set => WriteUInt16BigEndian(this._data.Span[7..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the position y.
+    /// </summary>
+    public ushort PositionY
+    {
+        get => ReadUInt16BigEndian(this._data.Span[9..]);
+        set => WriteUInt16BigEndian(this._data.Span[9..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the rotation.
+    /// </summary>
+    public byte Rotation
+    {
+        get => this._data.Span[11];
+        set => this._data.Span[11] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="MapChangedGlobal"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator MapChangedGlobal(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="MapChangedGlobal"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(MapChangedGlobal packet) => packet._data; 
 }
 
 
@@ -14711,6 +15625,164 @@ public readonly struct RespawnAfterDeath
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
     public static implicit operator Memory<byte>(RespawnAfterDeath packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: The character respawned at a global coordinate.
+/// Causes reaction on client side: The character respawns with the specified attributes.
+/// </summary>
+public readonly struct RespawnAfterDeathGlobal
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RespawnAfterDeathGlobal"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public RespawnAfterDeathGlobal(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RespawnAfterDeathGlobal"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private RespawnAfterDeathGlobal(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xF3;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x64;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 31;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the position x.
+    /// </summary>
+    public ushort PositionX
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[4..]);
+        set => WriteUInt16LittleEndian(this._data.Span[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the position y.
+    /// </summary>
+    public ushort PositionY
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[6..]);
+        set => WriteUInt16LittleEndian(this._data.Span[6..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the map number.
+    /// </summary>
+    public ushort MapNumber
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[8..]);
+        set => WriteUInt16LittleEndian(this._data.Span[8..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the direction.
+    /// </summary>
+    public byte Direction
+    {
+        get => this._data.Span[10];
+        set => this._data.Span[10] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the current health.
+    /// </summary>
+    public uint CurrentHealth
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[11..]);
+        set => WriteUInt32LittleEndian(this._data.Span[11..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the current mana.
+    /// </summary>
+    public uint CurrentMana
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[15..]);
+        set => WriteUInt32LittleEndian(this._data.Span[15..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the current shield.
+    /// </summary>
+    public uint CurrentShield
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[19..]);
+        set => WriteUInt32LittleEndian(this._data.Span[19..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the current ability.
+    /// </summary>
+    public uint CurrentAbility
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[23..]);
+        set => WriteUInt32LittleEndian(this._data.Span[23..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the money.
+    /// </summary>
+    public uint Money
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[27..]);
+        set => WriteUInt32LittleEndian(this._data.Span[27..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="RespawnAfterDeathGlobal"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator RespawnAfterDeathGlobal(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="RespawnAfterDeathGlobal"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(RespawnAfterDeathGlobal packet) => packet._data; 
 }
 
 
@@ -31238,7 +32310,7 @@ public readonly struct CastleSiegeStatusResponse
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeStatusResponse packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeStatusResponse packet) => packet._data; 
 }
 
 
@@ -31333,7 +32405,7 @@ public readonly struct CastleSiegeRegistrationResponse
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeRegistrationResponse packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeRegistrationResponse packet) => packet._data; 
 }
 
 
@@ -31437,7 +32509,7 @@ public readonly struct CastleSiegeUnregisterResponse
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeUnregisterResponse packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeUnregisterResponse packet) => packet._data; 
 }
 
 
@@ -31559,7 +32631,7 @@ public readonly struct CastleSiegeRegistrationStateResponse
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeRegistrationStateResponse packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeRegistrationStateResponse packet) => packet._data; 
 }
 
 
@@ -31663,7 +32735,7 @@ public readonly struct CastleSiegeMarkRegistrationResponse
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeMarkRegistrationResponse packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeMarkRegistrationResponse packet) => packet._data; 
 }
 
 
@@ -31767,7 +32839,7 @@ public readonly struct CastleSiegeDefenseBuyResponse
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeDefenseBuyResponse packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeDefenseBuyResponse packet) => packet._data; 
 }
 
 
@@ -31889,7 +32961,7 @@ public readonly struct CastleSiegeDefenseRepairResponse
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeDefenseRepairResponse packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeDefenseRepairResponse packet) => packet._data; 
 }
 
 
@@ -32011,7 +33083,7 @@ public readonly struct CastleSiegeDefenseUpgradeResponse
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeDefenseUpgradeResponse packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeDefenseUpgradeResponse packet) => packet._data; 
 }
 
 
@@ -32124,7 +33196,7 @@ public readonly struct CastleSiegeTaxInfoResponse
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeTaxInfoResponse packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeTaxInfoResponse packet) => packet._data; 
 }
 
 
@@ -32228,7 +33300,7 @@ public readonly struct CastleSiegeTaxChangeResponse
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeTaxChangeResponse packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeTaxChangeResponse packet) => packet._data; 
 }
 
 
@@ -32323,7 +33395,7 @@ public readonly struct CastleSiegeTributeWithdrawResponse
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeTributeWithdrawResponse packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeTributeWithdrawResponse packet) => packet._data; 
 }
 
 
@@ -32418,7 +33490,7 @@ public readonly struct CastleSiegeGateInterfaceResponse
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeGateInterfaceResponse packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeGateInterfaceResponse packet) => packet._data; 
 }
 
 
@@ -32522,7 +33594,7 @@ public readonly struct CastleSiegeGateOperateResponse
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeGateOperateResponse packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeGateOperateResponse packet) => packet._data; 
 }
 
 
@@ -32617,7 +33689,7 @@ public readonly struct CastleSiegeGateStateNotification
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeGateStateNotification packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeGateStateNotification packet) => packet._data; 
 }
 
 
@@ -32721,7 +33793,7 @@ public readonly struct CastleSiegeCrownSwitchState
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeCrownSwitchState packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeCrownSwitchState packet) => packet._data; 
 }
 
 
@@ -32816,7 +33888,7 @@ public readonly struct CastleSiegeCrownAccessState
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeCrownAccessState packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeCrownAccessState packet) => packet._data; 
 }
 
 
@@ -32902,7 +33974,7 @@ public readonly struct CastleSiegeCrownStateUpdate
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeCrownStateUpdate packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeCrownStateUpdate packet) => packet._data; 
 }
 
 
@@ -32988,7 +34060,7 @@ public readonly struct CastleSiegeBattleStartEnd
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeBattleStartEnd packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeBattleStartEnd packet) => packet._data; 
 }
 
 
@@ -33083,7 +34155,7 @@ public readonly struct CastleSiegeBattleProcess
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeBattleProcess packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeBattleProcess packet) => packet._data; 
 }
 
 
@@ -33169,7 +34241,7 @@ public readonly struct CastleSiegeJoinSideNotification
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeJoinSideNotification packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeJoinSideNotification packet) => packet._data; 
 }
 
 
@@ -33264,7 +34336,7 @@ public readonly struct CastleSiegeTaxRateNotification
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeTaxRateNotification packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeTaxRateNotification packet) => packet._data; 
 }
 
 
@@ -33350,7 +34422,7 @@ public readonly struct CastleSiegeMiniMapResponse
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeMiniMapResponse packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeMiniMapResponse packet) => packet._data; 
 }
 
 
@@ -33463,7 +34535,7 @@ public readonly struct CastleSiegeGuildCommand
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeGuildCommand packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeGuildCommand packet) => packet._data; 
 }
 
 
@@ -33558,7 +34630,7 @@ public readonly struct CastleSiegeRemainingTime
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeRemainingTime packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeRemainingTime packet) => packet._data; 
 }
 
 
@@ -33653,7 +34725,7 @@ public readonly struct CastleSiegeHuntingZoneEntranceSettingResponse
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeHuntingZoneEntranceSettingResponse packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeHuntingZoneEntranceSettingResponse packet) => packet._data; 
 }
 
 
@@ -33775,7 +34847,7 @@ public readonly struct CastleSiegeSwitchInfo
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeSwitchInfo packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeSwitchInfo packet) => packet._data; 
 }
 
 
@@ -33863,13 +34935,13 @@ public readonly struct CastleSiegeNpcList
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeNpcList packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeNpcList packet) => packet._data; 
 
     /// <summary>
     /// Calculates the size of the packet for the specified count of <see cref="CastleSiegeNpcInfo"/>.
     /// </summary>
     /// <param name="npcListCount">The count of <see cref="CastleSiegeNpcInfo"/> from which the size will be calculated.</param>
-
+        
     public static int GetRequiredSize(int npcListCount) => npcListCount * CastleSiegeNpcInfo.Length + 9;
 
 
@@ -34062,13 +35134,13 @@ public readonly struct CastleSiegeRegisteredGuildList
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeRegisteredGuildList packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeRegisteredGuildList packet) => packet._data; 
 
     /// <summary>
     /// Calculates the size of the packet for the specified count of <see cref="RegisteredGuildEntry"/>.
     /// </summary>
     /// <param name="guildsCount">The count of <see cref="RegisteredGuildEntry"/> from which the size will be calculated.</param>
-
+        
     public static int GetRequiredSize(int guildsCount) => guildsCount * RegisteredGuildEntry.Length + 9;
 
 
@@ -34216,13 +35288,13 @@ public readonly struct CastleSiegeGuildList
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeGuildList packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeGuildList packet) => packet._data; 
 
     /// <summary>
     /// Calculates the size of the packet for the specified count of <see cref="CastleSiegeGuildEntry"/>.
     /// </summary>
     /// <param name="guildsCount">The count of <see cref="CastleSiegeGuildEntry"/> from which the size will be calculated.</param>
-
+        
     public static int GetRequiredSize(int guildsCount) => guildsCount * CastleSiegeGuildEntry.Length + 9;
 
 
@@ -34361,13 +35433,13 @@ public readonly struct CastleSiegeMiniMapPlayerPositions
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeMiniMapPlayerPositions packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeMiniMapPlayerPositions packet) => packet._data; 
 
     /// <summary>
     /// Calculates the size of the packet for the specified count of <see cref="MiniMapPlayerPosition"/>.
     /// </summary>
     /// <param name="playersCount">The count of <see cref="MiniMapPlayerPosition"/> from which the size will be calculated.</param>
-
+        
     public static int GetRequiredSize(int playersCount) => playersCount * MiniMapPlayerPosition.Length + 8;
 
 
@@ -34513,7 +35585,7 @@ public readonly struct CastleSiegeMachineInterface
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeMachineInterface packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeMachineInterface packet) => packet._data; 
 }
 
 
@@ -34635,7 +35707,7 @@ public readonly struct CastleSiegeMachineUseResult
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeMachineUseResult packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeMachineUseResult packet) => packet._data; 
 }
 
 
@@ -34739,7 +35811,7 @@ public readonly struct CastleSiegeMachineRegionNotify
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeMachineRegionNotify packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeMachineRegionNotify packet) => packet._data; 
 }
 
 
@@ -34834,7 +35906,7 @@ public readonly struct CastleSiegeLifeStoneBuildTime
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeLifeStoneBuildTime packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeLifeStoneBuildTime packet) => packet._data; 
 }
 
 
@@ -34919,7 +35991,7 @@ public readonly struct CastleSiegeOwnerLogo
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeOwnerLogo packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeOwnerLogo packet) => packet._data; 
 }
 
 
@@ -35041,7 +36113,7 @@ public readonly struct CastleSiegeHuntingZoneGuardInfo
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeHuntingZoneGuardInfo packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeHuntingZoneGuardInfo packet) => packet._data; 
 }
 
 
@@ -35127,7 +36199,7 @@ public readonly struct CastleSiegeHuntingZoneEnterResponse
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeHuntingZoneEnterResponse packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeHuntingZoneEnterResponse packet) => packet._data; 
 }
 
 
@@ -35206,13 +36278,13 @@ public readonly struct CastleSiegeMiniMapNpcPositions
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeMiniMapNpcPositions packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeMiniMapNpcPositions packet) => packet._data; 
 
     /// <summary>
     /// Calculates the size of the packet for the specified count of <see cref="MiniMapNpcPosition"/>.
     /// </summary>
     /// <param name="npcsCount">The count of <see cref="MiniMapNpcPosition"/> from which the size will be calculated.</param>
-
+        
     public static int GetRequiredSize(int npcsCount) => npcsCount * MiniMapNpcPosition.Length + 5;
 
 
@@ -35262,6 +36334,194 @@ public readonly struct MiniMapNpcPosition
     {
         get => this._data.Span[2];
         set => this._data.Span[2] = value;
+    }
+}
+}
+
+
+/// <summary>
+/// Is sent by the server when: NPCs enter scope in a global coordinate world.
+/// Causes reaction on client side: The client adds NPCs using ushort coordinates.
+/// </summary>
+public readonly struct AddNpcsToScopeGlobal
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AddNpcsToScopeGlobal"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public AddNpcsToScopeGlobal(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AddNpcsToScopeGlobal"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private AddNpcsToScopeGlobal(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0x13;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0xD5;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the npc count.
+    /// </summary>
+    public byte NpcCount
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Gets the <see cref="NpcDataGlobal"/> of the specified index.
+    /// </summary>
+        public NpcDataGlobal this[int index] => new (this._data.Slice(6 + index * NpcDataGlobal.Length));
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="AddNpcsToScopeGlobal"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator AddNpcsToScopeGlobal(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="AddNpcsToScopeGlobal"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(AddNpcsToScopeGlobal packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="NpcDataGlobal"/>.
+    /// </summary>
+    /// <param name="nPCsCount">The count of <see cref="NpcDataGlobal"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int nPCsCount) => nPCsCount * NpcDataGlobal.Length + 6;
+
+
+/// <summary>
+/// NPC data with global ushort coordinates..
+/// </summary>
+public readonly struct NpcDataGlobal
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="NpcDataGlobal"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public NpcDataGlobal(Memory<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 14;
+
+    /// <summary>
+    /// Gets or sets the id.
+    /// </summary>
+    public ushort Id
+    {
+        get => ReadUInt16BigEndian(this._data.Span);
+        set => WriteUInt16BigEndian(this._data.Span, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the type number.
+    /// </summary>
+    public ushort TypeNumber
+    {
+        get => ReadUInt16BigEndian(this._data.Span[2..]);
+        set => WriteUInt16BigEndian(this._data.Span[2..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the current position x.
+    /// </summary>
+    public ushort CurrentPositionX
+    {
+        get => ReadUInt16BigEndian(this._data.Span[4..]);
+        set => WriteUInt16BigEndian(this._data.Span[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the current position y.
+    /// </summary>
+    public ushort CurrentPositionY
+    {
+        get => ReadUInt16BigEndian(this._data.Span[6..]);
+        set => WriteUInt16BigEndian(this._data.Span[6..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the target position x.
+    /// </summary>
+    public ushort TargetPositionX
+    {
+        get => ReadUInt16BigEndian(this._data.Span[8..]);
+        set => WriteUInt16BigEndian(this._data.Span[8..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the target position y.
+    /// </summary>
+    public ushort TargetPositionY
+    {
+        get => ReadUInt16BigEndian(this._data.Span[10..]);
+        set => WriteUInt16BigEndian(this._data.Span[10..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the rotation.
+    /// </summary>
+    public byte Rotation
+    {
+        get => this._data.Span[12..].GetByteValue(4, 4);
+        set => this._data.Span[12..].SetByteValue(value, 4, 4);
+    }
+
+    /// <summary>
+    /// Gets or sets the effect count.
+    /// </summary>
+    public byte EffectCount
+    {
+        get => this._data.Span[13];
+        set => this._data.Span[13] = value;
     }
 }
 }

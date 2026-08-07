@@ -23,14 +23,14 @@ public static class DirectionExtensions
         return direction switch
         {
             Direction.Undefined => origin,
-            Direction.North => new Point((byte)(origin.X - 1), (byte)(origin.Y + 1)),
-            Direction.South => new Point((byte)(origin.X + 1), (byte)(origin.Y - 1)),
-            Direction.East => new Point((byte)(origin.X + 1), (byte)(origin.Y + 1)),
-            Direction.West => new Point((byte)(origin.X - 1), (byte)(origin.Y - 1)),
-            Direction.NorthEast => new Point(origin.X, (byte)(origin.Y + 1)),
-            Direction.NorthWest => new Point((byte)(origin.X - 1), origin.Y),
-            Direction.SouthEast => new Point((byte)(origin.X + 1), origin.Y),
-            Direction.SouthWest => new Point(origin.X, (byte)(origin.Y - 1)),
+            Direction.North => new Point((ushort)(origin.X - 1), (ushort)(origin.Y + 1)),
+            Direction.South => new Point((ushort)(origin.X + 1), (ushort)(origin.Y - 1)),
+            Direction.East => new Point((ushort)(origin.X + 1), (ushort)(origin.Y + 1)),
+            Direction.West => new Point((ushort)(origin.X - 1), (ushort)(origin.Y - 1)),
+            Direction.NorthEast => new Point(origin.X, (ushort)(origin.Y + 1)),
+            Direction.NorthWest => new Point((ushort)(origin.X - 1), origin.Y),
+            Direction.SouthEast => new Point((ushort)(origin.X + 1), origin.Y),
+            Direction.SouthWest => new Point(origin.X, (ushort)(origin.Y - 1)),
             _ => throw new ArgumentException($"Direction value {direction} is not defined", nameof(direction)),
         };
     }

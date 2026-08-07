@@ -97,23 +97,23 @@ public sealed class ScopedGridNetwork : BaseGridNetwork
                 if (node is not null)
                 {
                     node.Status = NodeStatus.Undefined;
-                    node.Position = new((byte)x, (byte)y);
+                    node.Position = new((ushort)x, (ushort)y);
                 }
             }
         }
 
         return base.Prepare(start, end, grid, includeSafezone);
 
-        byte GetOffset(byte avgValue, int gridSize)
+        ushort GetOffset(ushort avgValue, int gridSize)
         {
             var offset = Math.Max(avgValue - (this._actualSegmentSideLength / 2), 0);
             offset = Math.Min(offset, Math.Max(gridSize - this._actualSegmentSideLength, 0));
-            return (byte)offset;
+            return (ushort)offset;
         }
     }
 
     /// <inheritdoc />
-    protected override bool IsWithinBounds(byte x, byte y)
+    protected override bool IsWithinBounds(ushort x, ushort y)
     {
         return base.IsWithinBounds(x, y)
                && x >= this._segmentOffset.X

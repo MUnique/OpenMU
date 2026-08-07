@@ -66,10 +66,10 @@ public class StatIncreaseResultPlugIn : IStatIncreaseResultPlugIn
         var currentGate = new Persistence.BasicModel.ExitGate
         {
             Map = map.Definition,
-            X1 = player.Position.X,
-            X2 = player.Position.X,
-            Y1 = player.Position.Y,
-            Y2 = player.Position.Y,
+            X1 = checked((byte)(player.Position.X)),
+            X2 = checked((byte)(player.Position.X)),
+            Y1 = checked((byte)(player.Position.Y)),
+            Y2 = checked((byte)(player.Position.Y)),
         };
 
         await player.WarpToAsync(currentGate).ConfigureAwait(false);

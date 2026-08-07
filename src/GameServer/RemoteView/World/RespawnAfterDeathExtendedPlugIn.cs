@@ -40,9 +40,25 @@ public class RespawnAfterDeathExtendedPlugIn : IRespawnAfterDeathPlugIn
         var position = this._player.IsWalking ? this._player.WalkTarget : this._player.Position;
         var isMaster = this._player.SelectedCharacter.CharacterClass?.IsMasterClass is true;
 
+        if (position.X > byte.MaxValue || position.Y > byte.MaxValue)
+        {
+            await this._player.Connection.SendRespawnAfterDeathGlobalAsync(
+                    position.X,
+                    position.Y,
+                    checked((ushort)this._player.SelectedCharacter.CurrentMap.Number),
+                    this._player.Rotation.ToPacketByte(),
+                    (uint)this._player.Attributes[Stats.CurrentHealth],
+                    (uint)this._player.Attributes[Stats.CurrentMana],
+                    (uint)this._player.Attributes[Stats.CurrentShield],
+                    (uint)this._player.Attributes[Stats.CurrentAbility],
+                    (uint)this._player.Money)
+                .ConfigureAwait(false);
+            return;
+        }
+
         await this._player.Connection.SendRespawnAfterDeathExtendedAsync(
-                position.X,
-                position.Y,
+                checked((byte)(position.X)),
+                checked((byte)(position.Y)),
                 mapNumber,
                 this._player.Rotation.ToPacketByte(),
                 (uint)this._player.Attributes[Stats.CurrentHealth],

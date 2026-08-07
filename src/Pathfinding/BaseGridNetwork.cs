@@ -74,13 +74,13 @@ public abstract class BaseGridNetwork : INetwork
         {
             var calculatedX = node.X + DirectionOffsetsX[i];
             var calculatedY = node.Y + DirectionOffsetsY[i];
-            if ((uint)calculatedX > byte.MaxValue || (uint)calculatedY > byte.MaxValue)
+            if (calculatedX < 0 || calculatedX >= this._gridWidth || calculatedY < 0 || calculatedY >= this._gridHeight)
             {
                 continue;
             }
 
-            var newX = (byte)calculatedX;
-            var newY = (byte)calculatedY;
+            var newX = (ushort)calculatedX;
+            var newY = (ushort)calculatedY;
 
             if (!this.IsWithinBounds(newX, newY))
             {
@@ -131,7 +131,7 @@ public abstract class BaseGridNetwork : INetwork
     /// <returns>
     ///   <c>true</c> if the coordinates are within bounds of this network; otherwise, <c>false</c>.
     /// </returns>
-    protected virtual bool IsWithinBounds(byte x, byte y)
+    protected virtual bool IsWithinBounds(ushort x, ushort y)
     {
         return x < this._gridWidth && y < this._gridHeight;
     }

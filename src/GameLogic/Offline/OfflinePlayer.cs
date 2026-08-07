@@ -198,7 +198,7 @@ public class OfflinePlayer : Player
 
             await this.SetupCharacterAsync(character).ConfigureAwait(false);
 
-            await this.ClientReadyAfterMapChangeAsync().ConfigureAwait(false);
+            await this.ClientReadyAfterMapChangeOfflineAsync().ConfigureAwait(false);
 
             this.HuntingOrigin = this.Position;
 

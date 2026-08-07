@@ -64,4 +64,18 @@ internal class PointExtensionsTest
         var degree = start.GetAngleDegreeTo(end);
         Assert.That(degree, Is.EqualTo(270.0));
     }
+
+    [TestCase(255, 255)]
+    [TestCase(256, 256)]
+    [TestCase(511, 511)]
+    public void SupportsExpandedMapCoordinates(int x, int y)
+    {
+        var point = new Point((ushort)x, (ushort)y);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(point.X, Is.EqualTo(x));
+            Assert.That(point.Y, Is.EqualTo(y));
+        });
+    }
 }

@@ -1,4 +1,4 @@
-// <copyright file="ClientToServerPackets.cs" company="MUnique">
+﻿// <copyright file="ClientToServerPackets.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -7895,6 +7895,122 @@ public readonly struct WalkRequest
     /// <param name="directionsLength">The length in bytes of <see cref="Directions"/> on which the required size depends.</param>
         
     public static int GetRequiredSize(int directionsLength) => directionsLength + 6;
+}
+
+
+/// <summary>
+/// Is sent by the client when: A global-world player wants to walk from an absolute ushort coordinate.
+/// Causes reaction on server side: The player gets moved using global-world coordinates.
+/// </summary>
+public readonly struct WalkRequestGlobal
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WalkRequestGlobal"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public WalkRequestGlobal(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WalkRequestGlobal"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private WalkRequestGlobal(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)data.Length;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xD5;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1Header Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the source x.
+    /// </summary>
+    public ushort SourceX
+    {
+        get => ReadUInt16BigEndian(this._data.Span[3..]);
+        set => WriteUInt16BigEndian(this._data.Span[3..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the source y.
+    /// </summary>
+    public ushort SourceY
+    {
+        get => ReadUInt16BigEndian(this._data.Span[5..]);
+        set => WriteUInt16BigEndian(this._data.Span[5..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the step count.
+    /// </summary>
+    public byte StepCount
+    {
+        get => this._data.Span[7..].GetByteValue(4, 0);
+        set => this._data.Span[7..].SetByteValue(value, 4, 0);
+    }
+
+    /// <summary>
+    /// Gets or sets the target rotation.
+    /// </summary>
+    public byte TargetRotation
+    {
+        get => this._data.Span[7..].GetByteValue(4, 4);
+        set => this._data.Span[7..].SetByteValue(value, 4, 4);
+    }
+
+    /// <summary>
+    /// Gets or sets the directions.
+    /// </summary>
+    public Span<byte> Directions
+    {
+        get => this._data.Slice(8).Span;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="WalkRequestGlobal"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator WalkRequestGlobal(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="WalkRequestGlobal"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(WalkRequestGlobal packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified length of <see cref="Directions"/>.
+    /// </summary>
+    /// <param name="directionsLength">The length in bytes of <see cref="Directions"/> on which the required size depends.</param>
+        
+    public static int GetRequiredSize(int directionsLength) => directionsLength + 8;
 }
 
 
