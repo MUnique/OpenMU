@@ -70,10 +70,10 @@ public static class CastleSiegeNpcBuyAction
 
             var (price, initialHealth) = runtime.Definition.MonsterDefinition?.Number switch
             {
-                CastleSiegeGate.MonsterNumber => (
+                var number when number == CastleSiegeGate.MonsterNumber => (
                     context.Configuration.GateBuyPrice,
                     context.Configuration.GetUpgrades(CastleSiegeGate.MonsterNumber, CastleSiegeUpgradeType.Life)?.GetValue(0) ?? 0),
-                CastleSiegeStatue.MonsterNumber => (
+                var number when number == CastleSiegeStatue.MonsterNumber => (
                     context.Configuration.StatueBuyPrice,
                     context.Configuration.GetUpgrades(CastleSiegeStatue.MonsterNumber, CastleSiegeUpgradeType.Life)?.GetValue(0) ?? 0),
                 _ => (0, 0),

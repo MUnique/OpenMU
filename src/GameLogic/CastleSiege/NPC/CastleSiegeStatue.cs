@@ -14,11 +14,6 @@ using MUnique.OpenMU.PlugIns;
 public sealed class CastleSiegeStatue : CastleSiegeAttackableNpc
 {
     /// <summary>
-    /// Gets the monster number of Castle Siege Guardian Statues.
-    /// </summary>
-    public const short MonsterNumber = 283;
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="CastleSiegeStatue"/> class.
     /// </summary>
     /// <param name="spawnInfo">The spawn information.</param>
@@ -41,6 +36,11 @@ public sealed class CastleSiegeStatue : CastleSiegeAttackableNpc
         : base(spawnInfo, stats, map, context, runtime, intelligence, dropGenerator, plugInManager)
     {
     }
+
+    /// <summary>
+    /// Gets the monster number of Castle Siege Guardian Statues.
+    /// </summary>
+    public static short MonsterNumber { get; } = 283;
 
     /// <summary>
     /// Gets the defense upgrade level.

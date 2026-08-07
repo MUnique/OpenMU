@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic.CastleSiege;
 
-using System.Collections.Concurrent;
 using System.Threading;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
@@ -19,7 +18,7 @@ using MUnique.OpenMU.DataModel.Entities;
 public class CastleSiegeContext : IEventStateProvider
 {
     private readonly IGameContext _gameContext;
-    private readonly ConcurrentDictionary<Player, byte> _siegeMapPlayers = new();
+    private readonly System.Collections.Concurrent.ConcurrentDictionary<Player, byte> _siegeMapPlayers = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CastleSiegeContext"/> class.
