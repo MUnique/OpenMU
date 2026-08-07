@@ -80,8 +80,18 @@ internal sealed class CastleSiegeInitializer : InitializerBase
     /// <param name="configuration">The Castle Siege configuration.</param>
     internal void InitializeRegistration(CastleSiegeConfiguration configuration)
     {
-        var itemDefinition = this.GameConfiguration.Items.Single(
+        if (configuration.SignOfLordItemDefinition is not null)
+        {
+            return;
+        }
+
+        var itemDefinition = this.GameConfiguration.Items.SingleOrDefault(
             item => item.Group == SignOfLordItemGroup && item.Number == SignOfLordItemNumber);
+        if (itemDefinition is null)
+        {
+            return;
+        }
+
         itemDefinition.MaximumItemLevel = Math.Max(itemDefinition.MaximumItemLevel, SignOfLordItemLevel);
         configuration.SignOfLordItemDefinition = itemDefinition;
         configuration.SignOfLordItemLevel = SignOfLordItemLevel;

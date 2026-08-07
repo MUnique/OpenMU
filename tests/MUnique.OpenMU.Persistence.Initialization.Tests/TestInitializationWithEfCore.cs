@@ -345,6 +345,30 @@ internal class TestInitializationWithEfCore
             Assert.That(configuration.SignOfLordItemLevel, Is.EqualTo(3));
             Assert.That(signOfLord.MaximumItemLevel, Is.EqualTo(3));
         });
+
+        var customSignOfLord = gameConfiguration.Items.First(item => item != signOfLord);
+        configuration.SignOfLordItemDefinition = customSignOfLord;
+        configuration.SignOfLordItemLevel = 1;
+        await registrationUpdate.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        Assert.Multiple(() =>
+        {
+            Assert.That(configuration.SignOfLordItemDefinition, Is.SameAs(customSignOfLord));
+            Assert.That(configuration.SignOfLordItemLevel, Is.EqualTo(1));
+        });
+
+        gameConfiguration.Items.Remove(signOfLord);
+        configuration.SignOfLordItemDefinition = null;
+        configuration.SignOfLordItemLevel = 0;
+        await registrationUpdate.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        Assert.Multiple(() =>
+        {
+            Assert.That(configuration.SignOfLordItemDefinition, Is.Null);
+            Assert.That(configuration.SignOfLordItemLevel, Is.Zero);
+        });
+
+        gameConfiguration.Items.Add(signOfLord);
+        configuration.SignOfLordItemDefinition = signOfLord;
+        configuration.SignOfLordItemLevel = 3;
     }
 
     private void AssertUpgrades(

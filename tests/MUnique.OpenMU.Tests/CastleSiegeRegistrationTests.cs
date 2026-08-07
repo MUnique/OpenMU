@@ -268,7 +268,7 @@ public class CastleSiegeRegistrationTests
     /// Verifies that alliance members can query, but cannot mutate, the alliance master's registration.
     /// </summary>
     [Test]
-    public async ValueTask AllianceMemberUsesMasterRegistrationForQueriesOnlyAsync()
+    public async ValueTask AllianceMemberUsesOfflineMasterRegistrationForQueriesOnlyAsync()
     {
         const uint allianceMemberGuildId = 43;
         var fixture = await CreateFixtureAsync().ConfigureAwait(false);
@@ -291,6 +291,9 @@ public class CastleSiegeRegistrationTests
             .Setup(server => server.GetGuildAsync(allianceMemberGuildId))
             .Returns(new ValueTask<RuntimeGuild?>(allianceMember));
         fixture.GuildServer
+            .Setup(server => server.GetPersistentAllianceMasterGuildIdAsync(allianceMemberGuildId))
+            .Returns(new ValueTask<Guid?>(fixture.PersistentGuildId));
+        fixture.GuildServer
             .Setup(server => server.IsAllianceMasterAsync(allianceMemberGuildId))
             .Returns(new ValueTask<bool>(false));
         fixture.Player.GuildStatus = new GuildMemberStatus(allianceMemberGuildId, GuildPosition.GuildMaster);
@@ -300,6 +303,9 @@ public class CastleSiegeRegistrationTests
             plugIn => plugIn.ShowRegistrationResultAsync(CastleSiegeRegistrationResult.InvalidGuild, string.Empty),
             Times.Once);
 
+        fixture.GuildServer
+            .Setup(server => server.GetGuildAsync(RuntimeGuildId))
+            .Returns(new ValueTask<RuntimeGuild?>((RuntimeGuild?)null));
         var stateView = fixture.Player.ViewPlugIns.GetPlugIn<ICastleSiegeRegistrationStatePlugIn>()!;
         await new CastleSiegeRegistrationStateAction().ShowStateAsync(fixture.Player, fixture.Context).ConfigureAwait(false);
         Mock.Get(stateView).Verify(
@@ -310,6 +316,7 @@ public class CastleSiegeRegistrationTests
                 false,
                 1),
             Times.Once);
+        fixture.GuildServer.Verify(server => server.GetGuildIdByNameAsync(It.IsAny<string>()), Times.Never);
     }
 
     /// <summary>
@@ -422,6 +429,9 @@ public class CastleSiegeRegistrationTests
             .Returns(new ValueTask<uint>(RuntimeGuildId));
         guildServer
             .Setup(server => server.GetPersistentGuildIdAsync(RuntimeGuildId))
+            .Returns(new ValueTask<Guid?>(persistentGuildId));
+        guildServer
+            .Setup(server => server.GetPersistentAllianceMasterGuildIdAsync(RuntimeGuildId))
             .Returns(new ValueTask<Guid?>(persistentGuildId));
 
         var mapInitializer = new MapInitializer(gameConfiguration, new NullLogger<MapInitializer>(), NullDropGenerator.Instance, null);

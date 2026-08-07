@@ -59,6 +59,8 @@ public class CastleSiegeRegisterMarkAction
                 return (CastleSiegeMarkRegistrationResult.IncorrectItem, guild.Name, registration.Marks);
             }
 
+            // Persist first so a failed registration never consumes the player's item. If item removal fails afterward,
+            // the durable mark is preferred over losing an item without receiving credit.
             if (await context.IncrementMarksAsync(registration).ConfigureAwait(false) is not { } marks)
             {
                 return (CastleSiegeMarkRegistrationResult.GuildNotRegistered, guild.Name, registration.Marks);

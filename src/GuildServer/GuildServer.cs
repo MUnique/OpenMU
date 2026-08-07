@@ -80,6 +80,20 @@ public class GuildServer : IGuildServer
     }
 
     /// <inheritdoc/>
+    public ValueTask<Guid?> GetPersistentAllianceMasterGuildIdAsync(uint guildId)
+    {
+        if (!this._guildDictionary.TryGetValue(guildId, out var guild))
+        {
+            return ValueTask.FromResult<Guid?>(null);
+        }
+
+        return ValueTask.FromResult<Guid?>(
+            guild.Guild.AllianceGuild is Guild allianceMaster
+                ? allianceMaster.Id
+                : guild.Guild.Id);
+    }
+
+    /// <inheritdoc/>
     public async ValueTask<uint> GetGuildIdByNameAsync(string guildName)
     {
         var guild = this._guildDictionary
