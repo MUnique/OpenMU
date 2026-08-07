@@ -18,6 +18,8 @@ using MUnique.OpenMU.Pathfinding;
 public sealed class CastleSiegeNpcController
 {
     private readonly CastleSiegeContext _context;
+    private readonly object _gateTerrainLock = new();
+    private readonly Dictionary<Point, (bool WasWalkable, int ReferenceCount)> _gateTerrain = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CastleSiegeNpcController"/> class.
@@ -113,6 +115,7 @@ public sealed class CastleSiegeNpcController
     /// <returns>The matching runtime, or <see langword="null"/>.</returns>
     public CastleSiegeNpcRuntime? FindDefenseStructure(uint monsterNumber, uint npcIndex)
     {
+        // Management packets use the configured instance id, while the gate interface returns the live map object id.
         return this._context.ActiveNpcs.FirstOrDefault(runtime =>
             runtime.Definition.MonsterDefinition?.Number == monsterNumber
             && (runtime.Definition.InstanceId == npcIndex || runtime.SpawnedInstance?.Id == npcIndex));
@@ -145,13 +148,9 @@ public sealed class CastleSiegeNpcController
     /// <returns>The configured maximum health, or 0 when no matching level exists.</returns>
     public int GetMaximumHealth(CastleSiegeNpcRuntime runtime)
     {
-        IEnumerable<CastleSiegeUpgradeDefinition> definitions = runtime.Definition.MonsterDefinition?.Number switch
-        {
-            var number when number == CastleSiegeGate.MonsterNumber => this._context.Configuration.GateLifeUpgrades,
-            var number when number == CastleSiegeStatue.MonsterNumber => this._context.Configuration.StatueLifeUpgrades,
-            _ => [],
-        };
-        return definitions.FirstOrDefault(definition => definition.Level == runtime.PersistedState?.LifeLevel)?.Value ?? 0;
+        var monsterNumber = runtime.Definition.MonsterDefinition?.Number ?? 0;
+        var lifeLevel = runtime.PersistedState?.LifeLevel ?? byte.MaxValue;
+        return this._context.Configuration.GetUpgrades(monsterNumber, CastleSiegeUpgradeType.Life)?.GetValue(lifeLevel) ?? 0;
     }
 
     /// <summary>
@@ -207,6 +206,83 @@ public sealed class CastleSiegeNpcController
     }
 
     /// <summary>
+    /// Applies a reference-counted terrain block for one gate area.
+    /// </summary>
+    /// <param name="map">The Castle Siege map.</param>
+    /// <param name="area">The gate terrain area.</param>
+    internal void BlockGateTerrain(
+        GameMap map,
+        (byte StartX, byte StartY, byte EndX, byte EndY) area)
+    {
+        lock (this._gateTerrainLock)
+        {
+            for (var x = area.StartX; x <= area.EndX; x++)
+            {
+                for (var y = area.StartY; y <= area.EndY; y++)
+                {
+                    var point = new Point(x, y);
+                    if (this._gateTerrain.TryGetValue(point, out var state))
+                    {
+                        this._gateTerrain[point] = (state.WasWalkable, state.ReferenceCount + 1);
+                    }
+                    else
+                    {
+                        this._gateTerrain[point] = (map.Terrain.WalkMap[x, y], 1);
+                    }
+
+                    map.Terrain.WalkMap[x, y] = false;
+                    map.Terrain.UpdateAiGridValue(x, y);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Releases one gate's terrain block and returns tiles which must remain blocked.
+    /// </summary>
+    /// <param name="map">The Castle Siege map.</param>
+    /// <param name="area">The gate terrain area.</param>
+    /// <returns>Tiles which were originally blocked or are still covered by another closed gate.</returns>
+    internal IReadOnlyCollection<(byte StartX, byte StartY, byte EndX, byte EndY)> ReleaseGateTerrain(
+        GameMap map,
+        (byte StartX, byte StartY, byte EndX, byte EndY) area)
+    {
+        var blockedAreas = new List<(byte StartX, byte StartY, byte EndX, byte EndY)>();
+        lock (this._gateTerrainLock)
+        {
+            for (var x = area.StartX; x <= area.EndX; x++)
+            {
+                for (var y = area.StartY; y <= area.EndY; y++)
+                {
+                    var point = new Point(x, y);
+                    if (!this._gateTerrain.Remove(point, out var state))
+                    {
+                        continue;
+                    }
+
+                    if (state.ReferenceCount > 1)
+                    {
+                        this._gateTerrain[point] = (state.WasWalkable, state.ReferenceCount - 1);
+                        map.Terrain.WalkMap[x, y] = false;
+                    }
+                    else
+                    {
+                        map.Terrain.WalkMap[x, y] = state.WasWalkable;
+                    }
+
+                    map.Terrain.UpdateAiGridValue(x, y);
+                    if (!map.Terrain.WalkMap[x, y])
+                    {
+                        blockedAreas.Add((x, y, x, y));
+                    }
+                }
+            }
+        }
+
+        return blockedAreas;
+    }
+
+    /// <summary>
     /// Initializes the persistent defense-structure runtimes after the siege data has been loaded.
     /// </summary>
     internal void InitializePersistentStructures()
@@ -243,8 +319,8 @@ public sealed class CastleSiegeNpcController
     private static async ValueTask RemoveConfiguredDuplicateAsync(GameMap map, CastleSiegeNpcRuntime runtime)
     {
         var position = new Point(
-            checked((byte)runtime.Definition.SpawnX),
-            checked((byte)runtime.Definition.SpawnY));
+            runtime.Definition.SpawnX,
+            runtime.Definition.SpawnY);
         var duplicates = map.GetNpcsInRange(position, 1)
             .Where(npc => npc is not ICastleSiegeNpc
                           && npc.Definition.Number == runtime.Definition.MonsterDefinition?.Number
@@ -300,8 +376,8 @@ public sealed class CastleSiegeNpcController
             state?.RegenLevel ?? 0,
             attackable?.MaximumHealth ?? this.GetMaximumHealth(runtime),
             attackable?.Health ?? state?.CurrentHp ?? 0,
-            checked((byte)runtime.Definition.SpawnX),
-            checked((byte)runtime.Definition.SpawnY),
+            runtime.Definition.SpawnX,
+            runtime.Definition.SpawnY,
             runtime.IsAlive);
     }
 
@@ -347,13 +423,12 @@ public sealed class CastleSiegeNpcController
 
     private int GetInitialHealth(short monsterNumber)
     {
-        var upgrades = monsterNumber switch
+        if (monsterNumber is not (CastleSiegeGate.MonsterNumber or CastleSiegeStatue.MonsterNumber))
         {
-            var number when number == CastleSiegeGate.MonsterNumber => this._context.Configuration.GateLifeUpgrades,
-            var number when number == CastleSiegeStatue.MonsterNumber => this._context.Configuration.StatueLifeUpgrades,
-            _ => throw new ArgumentOutOfRangeException(nameof(monsterNumber), monsterNumber, "Not a persistent Castle Siege structure."),
-        };
-        return upgrades.FirstOrDefault(upgrade => upgrade.Level == 0)?.Value
+            throw new ArgumentOutOfRangeException(nameof(monsterNumber), monsterNumber, "Not a persistent Castle Siege structure.");
+        }
+
+        return this._context.Configuration.GetUpgrades(monsterNumber, CastleSiegeUpgradeType.Life)?.GetValue(0)
                ?? throw new InvalidOperationException($"Initial health for Castle Siege NPC {monsterNumber} is not configured.");
     }
 
@@ -376,10 +451,10 @@ public sealed class CastleSiegeNpcController
         {
             MonsterDefinition = monsterDefinition,
             GameMap = map.Definition,
-            X1 = checked((byte)definition.SpawnX),
-            X2 = checked((byte)definition.SpawnX),
-            Y1 = checked((byte)definition.SpawnY),
-            Y2 = checked((byte)definition.SpawnY),
+            X1 = definition.SpawnX,
+            X2 = definition.SpawnX,
+            Y1 = definition.SpawnY,
+            Y2 = definition.SpawnY,
             Direction = definition.Direction,
             Quantity = 1,
             SpawnTrigger = SpawnTrigger.ManuallyForEvent,
@@ -402,7 +477,7 @@ public sealed class CastleSiegeNpcController
         var definition = spawnArea.MonsterDefinition!;
         return definition.Number switch
         {
-            var number when number == CastleSiegeGate.MonsterNumber => new CastleSiegeGate(
+            CastleSiegeGate.MonsterNumber => new CastleSiegeGate(
                 spawnArea,
                 definition,
                 map,
@@ -411,7 +486,7 @@ public sealed class CastleSiegeNpcController
                 new CastleSiegeGateIntelligence(),
                 this._context.GameContext.DropGenerator,
                 this._context.GameContext.PlugInManager),
-            var number when number == CastleSiegeStatue.MonsterNumber => new CastleSiegeStatue(
+            CastleSiegeStatue.MonsterNumber => new CastleSiegeStatue(
                 spawnArea,
                 definition,
                 map,
@@ -420,35 +495,34 @@ public sealed class CastleSiegeNpcController
                 new CastleSiegeStatueIntelligence(),
                 this._context.GameContext.DropGenerator,
                 this._context.GameContext.PlugInManager),
-            var number when number == CastleSiegeCrown.MonsterNumber => new CastleSiegeCrown(
+            CastleSiegeCrown.MonsterNumber => new CastleSiegeCrown(
                 spawnArea,
                 definition,
                 map,
                 runtime,
                 new CastleSiegeCrownIntelligence(this._context)),
-            var number when number == CastleSiegeSwitch.FirstMonsterNumber => new CastleSiegeSwitch(
+            CastleSiegeSwitch.FirstMonsterNumber => new CastleSiegeSwitch(
                 spawnArea,
                 definition,
                 map,
                 runtime,
                 new CastleSiegeSwitchIntelligence(this._context),
                 0),
-            var number when number == CastleSiegeSwitch.SecondMonsterNumber => new CastleSiegeSwitch(
+            CastleSiegeSwitch.SecondMonsterNumber => new CastleSiegeSwitch(
                 spawnArea,
                 definition,
                 map,
                 runtime,
                 new CastleSiegeSwitchIntelligence(this._context),
                 1),
-            var number when number == CastleSiegeLever.MonsterNumber => new CastleSiegeLever(
+            CastleSiegeLever.MonsterNumber => new CastleSiegeLever(
                 spawnArea,
                 definition,
                 map,
                 this._context,
                 runtime,
                 new CastleSiegeLeverIntelligence()),
-            var number when number == CastleSiegeMachine.AttackMonsterNumber
-                            || number == CastleSiegeMachine.DefenseMonsterNumber => new CastleSiegeMachine(
+            CastleSiegeMachine.AttackMonsterNumber or CastleSiegeMachine.DefenseMonsterNumber => new CastleSiegeMachine(
                 spawnArea,
                 definition,
                 map,

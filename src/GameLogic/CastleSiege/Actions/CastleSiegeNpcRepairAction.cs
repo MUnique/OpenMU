@@ -87,10 +87,12 @@ public static class CastleSiegeNpcRepairAction
             var missingHealth = Math.Max(0L, (long)maximumHealth - currentHealth);
             var cost = runtime.Definition.MonsterDefinition?.Number switch
             {
-                var number when number == CastleSiegeGate.MonsterNumber =>
-                    (missingHealth * 5) + ((long)state.DefenseLevel * 1_000_000),
-                var number when number == CastleSiegeStatue.MonsterNumber =>
-                    (missingHealth * 3) + ((long)(state.DefenseLevel + state.RegenLevel) * 1_000_000),
+                CastleSiegeGate.MonsterNumber =>
+                    (missingHealth * context.Configuration.GateRepairCostPerHealthPoint)
+                    + ((long)state.DefenseLevel * context.Configuration.RepairCostPerUpgradeLevel),
+                CastleSiegeStatue.MonsterNumber =>
+                    (missingHealth * context.Configuration.StatueRepairCostPerHealthPoint)
+                    + ((long)(state.DefenseLevel + state.RegenLevel) * context.Configuration.RepairCostPerUpgradeLevel),
                 _ => -1,
             };
             if (cost is < 0 or > int.MaxValue)

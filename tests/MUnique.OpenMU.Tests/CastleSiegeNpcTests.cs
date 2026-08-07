@@ -174,7 +174,7 @@ public class CastleSiegeNpcTests
     public async ValueTask ClosedGateBlocksCrossingRouteAndSynchronizesEntrantAsync()
     {
         var fixture = await CreateFixtureAsync().ConfigureAwait(false);
-        await AddSiegePlayerAsync(fixture, CastleSiegeJoinSide.Attack1, GateX - 4, GateY).ConfigureAwait(false);
+        await AddSiegePlayerAsync(fixture, CastleSiegeJoinSide.Attack1, GateX - 5, GateY).ConfigureAwait(false);
         try
         {
             await fixture.Context.NpcController.PrepareAsync().ConfigureAwait(false);
@@ -191,7 +191,8 @@ public class CastleSiegeNpcTests
                     It.IsAny<IReadOnlyCollection<(byte StartX, byte StartY, byte EndX, byte EndY)>>()),
                 Times.Once);
 
-            var start = new Point(GateX - 4, GateY);
+            var start = new Point(GateX - 5, GateY);
+            var lastReachablePosition = new Point(GateX - 4, GateY);
             var target = new Point(GateX + 3, GateY);
             var steps = Enumerable.Range(start.X, target.X - start.X)
                 .Select(x => new WalkingStep
@@ -205,9 +206,10 @@ public class CastleSiegeNpcTests
             movementView.Invocations.Clear();
 
             await fixture.Player.WalkToAsync(target, steps).ConfigureAwait(false);
+            await Task.Delay(TimeSpan.FromMilliseconds(500)).ConfigureAwait(false);
 
-            Assert.That(fixture.Player.Position, Is.EqualTo(start));
-            movementView.Verify(view => view.ObjectMovedAsync(fixture.Player, MoveType.Instant), Times.Once);
+            Assert.That(fixture.Player.Position, Is.EqualTo(lastReachablePosition));
+            movementView.Verify(view => view.ObjectMovedAsync(fixture.Player, MoveType.Instant), Times.Never);
         }
         finally
         {
@@ -381,6 +383,75 @@ public class CastleSiegeNpcTests
             else
             {
                 await fixture.Context.NpcController.DespawnAllAsync().ConfigureAwait(false);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Verifies that overlapping gate terrain remains blocked until every covering gate has opened.
+    /// </summary>
+    [Test]
+    public async ValueTask OverlappingGateTerrainUsesReferenceCountsAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var firstArea = (StartX: (byte)47, StartY: (byte)50, EndX: (byte)52, EndY: (byte)51);
+        var secondArea = (StartX: (byte)52, StartY: (byte)50, EndX: (byte)57, EndY: (byte)51);
+        try
+        {
+            fixture.Context.NpcController.BlockGateTerrain(fixture.Map, firstArea);
+            fixture.Context.NpcController.BlockGateTerrain(fixture.Map, secondArea);
+
+            var stillBlocked = fixture.Context.NpcController.ReleaseGateTerrain(fixture.Map, firstArea);
+            Assert.Multiple(() =>
+            {
+                Assert.That(fixture.Map.Terrain.WalkMap[47, 50], Is.True);
+                Assert.That(fixture.Map.Terrain.WalkMap[52, 50], Is.False);
+                Assert.That(stillBlocked, Does.Contain(((byte)52, (byte)50, (byte)52, (byte)50)));
+            });
+
+            fixture.Context.NpcController.ReleaseGateTerrain(fixture.Map, secondArea);
+            Assert.That(fixture.Map.Terrain.WalkMap[52, 50], Is.True);
+        }
+        finally
+        {
+            await fixture.Context.NpcController.DespawnAllAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Verifies that a server which starts during the battle restores closed gates before spawning siege machines.
+    /// </summary>
+    [Test]
+    public async ValueTask ServerStartupDuringBattleClosesGatesAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var battleTimeUtc = new DateTime(2026, 8, 4, 12, 0, 0, DateTimeKind.Utc);
+        var plugIn = new CastleSiegePlugIn(new FixedTimeProvider(battleTimeUtc));
+        CastleSiegeContext? context = null;
+        try
+        {
+            await plugIn.ExecuteTaskAsync(fixture.GameServerContext).ConfigureAwait(false);
+            context = plugIn.GetContext(fixture.GameServerContext);
+            var gate = context!.ActiveNpcs
+                .Select(runtime => runtime.SpawnedInstance)
+                .OfType<CastleSiegeGate>()
+                .Single();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(context.CurrentState, Is.EqualTo(CastleSiegeState.Start));
+                Assert.That(gate.IsClosed, Is.True);
+                Assert.That(fixture.Map.Terrain.WalkMap[GateX, GateY], Is.False);
+                Assert.That(
+                    context.ActiveNpcs.Select(runtime => runtime.SpawnedInstance),
+                    Has.Exactly(2).InstanceOf<CastleSiegeMachine>());
+            });
+        }
+        finally
+        {
+            if (context is not null)
+            {
+                await context.NpcController.DespawnAllAsync().ConfigureAwait(false);
             }
         }
     }
@@ -570,7 +641,9 @@ public class CastleSiegeNpcTests
             gate.ApplyPersistedUpgrades(false);
             gate.Health = 900;
             runtime.PersistedState.CurrentHp = gate.Health;
-            fixture.Player.Money = 1_000_500;
+            fixture.Configuration.GateRepairCostPerHealthPoint = 2;
+            fixture.Configuration.RepairCostPerUpgradeLevel = 100;
+            fixture.Player.Money = 300;
 
             var repairResult = await CastleSiegeNpcRepairAction
                 .RepairAsync(fixture.Player, fixture.Context, (uint)CastleSiegeGate.MonsterNumber, GateInstanceId)
@@ -644,6 +717,12 @@ public class CastleSiegeNpcTests
                 Direction = Direction.South,
             }).ConfigureAwait(false);
             await fixture.Player.ClientReadyAfterMapChangeAsync().ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(fixture.Player.Position, Is.EqualTo(crown.Position));
+                Assert.That(fixture.Player.CurrentMap, Is.SameAs(crown.CurrentMap));
+                Assert.That(crown.CurrentMap.GetAttackablesInRange(crown.Position, 1), Does.Contain(fixture.Player));
+            });
 
             using var crownIntelligence = new CastleSiegeCrownIntelligence(fixture.Context)
             {
@@ -658,7 +737,16 @@ public class CastleSiegeNpcTests
                 Assert.That(crown.State, Is.EqualTo(CastleSiegeCrownState.Idle));
             });
 
-            fixture.Player.Position = siegeSwitch.Position;
+            await fixture.Player.WarpToAsync(new ExitGate
+            {
+                Map = fixture.SiegeMap,
+                X1 = siegeSwitch.Position.X,
+                X2 = siegeSwitch.Position.X,
+                Y1 = siegeSwitch.Position.Y,
+                Y2 = siegeSwitch.Position.Y,
+                Direction = Direction.South,
+            }).ConfigureAwait(false);
+            await fixture.Player.ClientReadyAfterMapChangeAsync().ConfigureAwait(false);
             using var switchIntelligence = new CastleSiegeSwitchIntelligence(fixture.Context)
             {
                 Npc = siegeSwitch,
@@ -1016,6 +1104,7 @@ public class CastleSiegeNpcTests
             Direction = Direction.South,
         }).ConfigureAwait(false);
         await fixture.Player.ClientReadyAfterMapChangeAsync().ConfigureAwait(false);
+        fixture.Context.TrackPlayer(fixture.Player, fixture.Map);
         SetPlayerJoinSide(fixture, side);
     }
 
@@ -1051,4 +1140,12 @@ public class CastleSiegeNpcTests
         Player Player,
         Guid OwnerPersistentGuildId,
         DateTime InitializationTimeUtc);
+
+    private sealed class FixedTimeProvider(DateTime utcNow) : TimeProvider
+    {
+        private readonly DateTimeOffset _utcNow = utcNow;
+
+        /// <inheritdoc />
+        public override DateTimeOffset GetUtcNow() => this._utcNow;
+    }
 }

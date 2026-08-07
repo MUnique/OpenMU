@@ -70,12 +70,12 @@ public static class CastleSiegeNpcBuyAction
 
             var (price, initialHealth) = runtime.Definition.MonsterDefinition?.Number switch
             {
-                var number when number == CastleSiegeGate.MonsterNumber => (
+                CastleSiegeGate.MonsterNumber => (
                     context.Configuration.GateBuyPrice,
-                    GetInitialValue(context.Configuration.GateLifeUpgrades)),
-                var number when number == CastleSiegeStatue.MonsterNumber => (
+                    context.Configuration.GetUpgrades(CastleSiegeGate.MonsterNumber, CastleSiegeUpgradeType.Life)?.GetValue(0) ?? 0),
+                CastleSiegeStatue.MonsterNumber => (
                     context.Configuration.StatueBuyPrice,
-                    GetInitialValue(context.Configuration.StatueLifeUpgrades)),
+                    context.Configuration.GetUpgrades(CastleSiegeStatue.MonsterNumber, CastleSiegeUpgradeType.Life)?.GetValue(0) ?? 0),
                 _ => (0, 0),
             };
             if (price <= 0 || initialHealth <= 0)
@@ -105,10 +105,5 @@ public static class CastleSiegeNpcBuyAction
         {
             context.ExecutionLock.Release();
         }
-    }
-
-    private static int GetInitialValue(IEnumerable<CastleSiegeUpgradeDefinition> definitions)
-    {
-        return definitions.FirstOrDefault(definition => definition.Level == 0)?.Value ?? 0;
     }
 }

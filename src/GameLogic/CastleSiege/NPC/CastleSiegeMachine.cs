@@ -12,6 +12,16 @@ using MUnique.OpenMU.GameLogic.CastleSiege.Intelligence;
 public sealed class CastleSiegeMachine : CastleSiegeNpcBase
 {
     /// <summary>
+    /// Gets the attacking machine monster number.
+    /// </summary>
+    public const short AttackMonsterNumber = 221;
+
+    /// <summary>
+    /// Gets the defending machine monster number.
+    /// </summary>
+    public const short DefenseMonsterNumber = 222;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="CastleSiegeMachine"/> class.
     /// </summary>
     /// <param name="spawnInfo">The spawn information.</param>
@@ -28,16 +38,6 @@ public sealed class CastleSiegeMachine : CastleSiegeNpcBase
         : base(spawnInfo, stats, map, runtime, intelligence)
     {
     }
-
-    /// <summary>
-    /// Gets the attacking machine monster number.
-    /// </summary>
-    public static short AttackMonsterNumber { get; } = 221;
-
-    /// <summary>
-    /// Gets the defending machine monster number.
-    /// </summary>
-    public static short DefenseMonsterNumber { get; } = 222;
 
     /// <summary>
     /// Gets or sets the current operator.

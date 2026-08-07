@@ -14,6 +14,11 @@ using MUnique.OpenMU.PlugIns;
 public sealed class CastleSiegeStatue : CastleSiegeAttackableNpc
 {
     /// <summary>
+    /// Gets the monster number of Castle Siege Guardian Statues.
+    /// </summary>
+    public const short MonsterNumber = 283;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="CastleSiegeStatue"/> class.
     /// </summary>
     /// <param name="spawnInfo">The spawn information.</param>
@@ -38,11 +43,6 @@ public sealed class CastleSiegeStatue : CastleSiegeAttackableNpc
     }
 
     /// <summary>
-    /// Gets the monster number of Castle Siege Guardian Statues.
-    /// </summary>
-    public static short MonsterNumber { get; } = 283;
-
-    /// <summary>
     /// Gets the defense upgrade level.
     /// </summary>
     public byte DefenseLevel => this.State.DefenseLevel;
@@ -60,9 +60,12 @@ public sealed class CastleSiegeStatue : CastleSiegeAttackableNpc
     /// <inheritdoc />
     public override void ApplyPersistedUpgrades(bool preserveMissingHealth)
     {
-        this.SetDefense(GetValue(this.Context.Configuration.StatueDefenseUpgrades, this.DefenseLevel));
+        this.SetDefense(
+            this.Context.Configuration.GetUpgrades(MonsterNumber, CastleSiegeUpgradeType.Defense)?.GetValue(this.DefenseLevel)
+            ?? throw new InvalidOperationException($"Castle Siege statue defense level {this.DefenseLevel} is not configured."));
         this.SetMaximumHealth(
-            GetValue(this.Context.Configuration.StatueLifeUpgrades, this.LifeLevel),
+            this.Context.Configuration.GetUpgrades(MonsterNumber, CastleSiegeUpgradeType.Life)?.GetValue(this.LifeLevel)
+            ?? throw new InvalidOperationException($"Castle Siege statue life level {this.LifeLevel} is not configured."),
             preserveMissingHealth);
     }
 
@@ -77,19 +80,16 @@ public sealed class CastleSiegeStatue : CastleSiegeAttackableNpc
             return 0;
         }
 
-        var regenerationPercentage = GetValue(
-            this.Context.Configuration.StatueRegenUpgrades,
-            this.RegenLevel);
+        var regenerationPercentage = this.Context.Configuration
+            .GetUpgrades(MonsterNumber, CastleSiegeUpgradeType.Regen)
+            ?.GetValue(this.RegenLevel)
+            ?? throw new InvalidOperationException($"Castle Siege statue regeneration level {this.RegenLevel} is not configured.");
         var restored = Math.Max(1, this.MaximumHealth * regenerationPercentage / 100);
-        var previousHealth = this.Health;
-        this.Health = Math.Min(this.MaximumHealth, this.Health + restored);
-        this.State.CurrentHp = this.Health;
-        return this.Health - previousHealth;
-    }
+        restored = this.RestoreHealth(restored, this.MaximumHealth);
 
-    private static int GetValue(IEnumerable<CastleSiegeUpgradeDefinition> definitions, byte level)
-    {
-        return definitions.FirstOrDefault(definition => definition.Level == level)?.Value
-               ?? throw new InvalidOperationException($"Castle Siege statue upgrade level {level} is not configured.");
+        // There is no standalone structure-heal packet. Combat updates the client on the next hit, while the
+        // management interface receives the current value with its next structure-list response. The periodic
+        // NPC snapshot copies the atomic health value into the persisted state.
+        return restored;
     }
 }

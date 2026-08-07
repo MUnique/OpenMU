@@ -12,6 +12,11 @@ using MUnique.OpenMU.GameLogic.CastleSiege.Intelligence;
 public sealed class CastleSiegeCrown : CastleSiegeNpcBase
 {
     /// <summary>
+    /// Gets the monster number of the Crown.
+    /// </summary>
+    public const short MonsterNumber = 216;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="CastleSiegeCrown"/> class.
     /// </summary>
     /// <param name="spawnInfo">The spawn information.</param>
@@ -28,11 +33,6 @@ public sealed class CastleSiegeCrown : CastleSiegeNpcBase
         : base(spawnInfo, stats, map, runtime, intelligence)
     {
     }
-
-    /// <summary>
-    /// Gets the monster number of the Crown.
-    /// </summary>
-    public static short MonsterNumber { get; } = 216;
 
     /// <summary>
     /// Gets or sets the Crown state.

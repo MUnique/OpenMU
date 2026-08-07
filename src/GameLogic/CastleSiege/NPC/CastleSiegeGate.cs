@@ -16,7 +16,10 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 public sealed class CastleSiegeGate : CastleSiegeAttackableNpc
 {
-    private readonly Dictionary<Point, bool> _originalTerrain = new();
+    /// <summary>
+    /// Gets the monster number of Castle Siege gates.
+    /// </summary>
+    public const short MonsterNumber = 277;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CastleSiegeGate"/> class.
@@ -43,11 +46,6 @@ public sealed class CastleSiegeGate : CastleSiegeAttackableNpc
     }
 
     /// <summary>
-    /// Gets the monster number of Castle Siege gates.
-    /// </summary>
-    public static short MonsterNumber { get; } = 277;
-
-    /// <summary>
     /// Gets the defense upgrade level.
     /// </summary>
     public byte DefenseLevel => this.State.DefenseLevel;
@@ -65,9 +63,12 @@ public sealed class CastleSiegeGate : CastleSiegeAttackableNpc
     /// <inheritdoc />
     public override void ApplyPersistedUpgrades(bool preserveMissingHealth)
     {
-        this.SetDefense(GetValue(this.Context.Configuration.GateDefenseUpgrades, this.DefenseLevel));
+        this.SetDefense(
+            this.Context.Configuration.GetUpgrades(MonsterNumber, CastleSiegeUpgradeType.Defense)?.GetValue(this.DefenseLevel)
+            ?? throw new InvalidOperationException($"Castle Siege gate defense level {this.DefenseLevel} is not configured."));
         this.SetMaximumHealth(
-            GetValue(this.Context.Configuration.GateLifeUpgrades, this.LifeLevel),
+            this.Context.Configuration.GetUpgrades(MonsterNumber, CastleSiegeUpgradeType.Life)?.GetValue(this.LifeLevel)
+            ?? throw new InvalidOperationException($"Castle Siege gate life level {this.LifeLevel} is not configured."),
             preserveMissingHealth);
     }
 
@@ -83,20 +84,9 @@ public sealed class CastleSiegeGate : CastleSiegeAttackableNpc
         }
 
         var area = this.GetTerrainArea();
-        for (var x = area.StartX; x <= area.EndX; x++)
-        {
-            for (var y = area.StartY; y <= area.EndY; y++)
-            {
-                var point = new Point(x, y);
-                this._originalTerrain.TryAdd(point, this.CurrentMap.Terrain.WalkMap[x, y]);
-                this.CurrentMap.Terrain.WalkMap[x, y] = false;
-                this.CurrentMap.Terrain.UpdateAiGridValue(x, y);
-            }
-        }
-
+        this.Context.NpcController.BlockGateTerrain(this.CurrentMap, area);
         this.IsClosed = true;
-        await this.NotifyTerrainChangeAsync(true, [area]).ConfigureAwait(false);
-        await this.NotifyGateStateAsync().ConfigureAwait(false);
+        await this.NotifyStateAsync(true, [area], []).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -111,25 +101,9 @@ public sealed class CastleSiegeGate : CastleSiegeAttackableNpc
         }
 
         var area = this.GetTerrainArea();
-        var originallyBlockedAreas = this._originalTerrain
-            .Where(entry => !entry.Value)
-            .Select(entry => (entry.Key.X, entry.Key.Y, entry.Key.X, entry.Key.Y))
-            .ToList();
-        foreach (var (point, wasWalkable) in this._originalTerrain)
-        {
-            this.CurrentMap.Terrain.WalkMap[point.X, point.Y] = wasWalkable;
-            this.CurrentMap.Terrain.UpdateAiGridValue(point.X, point.Y);
-        }
-
-        this._originalTerrain.Clear();
+        var blockedAreas = this.Context.NpcController.ReleaseGateTerrain(this.CurrentMap, area);
         this.IsClosed = false;
-        await this.NotifyTerrainChangeAsync(false, [area]).ConfigureAwait(false);
-        if (originallyBlockedAreas.Count > 0)
-        {
-            await this.NotifyTerrainChangeAsync(true, originallyBlockedAreas).ConfigureAwait(false);
-        }
-
-        await this.NotifyGateStateAsync().ConfigureAwait(false);
+        await this.NotifyStateAsync(false, [area], blockedAreas).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -156,12 +130,6 @@ public sealed class CastleSiegeGate : CastleSiegeAttackableNpc
         await base.OnDeathAsync(attacker).ConfigureAwait(false);
     }
 
-    private static int GetValue(IEnumerable<CastleSiegeUpgradeDefinition> definitions, byte level)
-    {
-        return definitions.FirstOrDefault(definition => definition.Level == level)?.Value
-               ?? throw new InvalidOperationException($"Castle Siege gate upgrade level {level} is not configured.");
-    }
-
     private static async ValueTask NotifyTerrainChangeAsync(
         Player player,
         bool setBlocked,
@@ -174,6 +142,8 @@ public sealed class CastleSiegeGate : CastleSiegeAttackableNpc
 
     private (byte StartX, byte StartY, byte EndX, byte EndY) GetTerrainArea()
     {
+        // The shipped map defines every gate horizontally. Its spawn X is the width center, while spawn Y is the
+        // lower edge of the two-tile blocked area; visual direction does not describe the collision rectangle.
         const int gateWidth = 6;
         const int gateHeight = 2;
         var startX = Math.Clamp(this.Position.X - (gateWidth / 2), byte.MinValue, byte.MaxValue - gateWidth + 1);
@@ -181,25 +151,22 @@ public sealed class CastleSiegeGate : CastleSiegeAttackableNpc
         return ((byte)startX, (byte)startY, (byte)(startX + gateWidth - 1), (byte)(startY + gateHeight - 1));
     }
 
-    private async ValueTask NotifyTerrainChangeAsync(
+    private ValueTask NotifyStateAsync(
         bool setBlocked,
-        IReadOnlyCollection<(byte StartX, byte StartY, byte EndX, byte EndY)> areas)
+        IReadOnlyCollection<(byte StartX, byte StartY, byte EndX, byte EndY)> areas,
+        IReadOnlyCollection<(byte StartX, byte StartY, byte EndX, byte EndY)> blockedAreas)
     {
-        var players = await this.Context.GameContext.GetPlayersAsync().ConfigureAwait(false);
-        foreach (var player in players.Where(player => player.CurrentMap == this.CurrentMap))
+        return this.Context.ForEachSiegePlayerAsync(async player =>
         {
             await NotifyTerrainChangeAsync(player, setBlocked, areas).ConfigureAwait(false);
-        }
-    }
+            if (blockedAreas.Count > 0)
+            {
+                await NotifyTerrainChangeAsync(player, true, blockedAreas).ConfigureAwait(false);
+            }
 
-    private async ValueTask NotifyGateStateAsync()
-    {
-        var players = await this.Context.GameContext.GetPlayersAsync().ConfigureAwait(false);
-        foreach (var player in players.Where(player => player.CurrentMap == this.CurrentMap))
-        {
             await player.InvokeViewPlugInAsync<ICastleSiegeNpcOperationResultPlugIn>(
                     view => view.ShowGateStateAsync(!this.IsClosed, this.Id))
                 .ConfigureAwait(false);
-        }
+        });
     }
 }

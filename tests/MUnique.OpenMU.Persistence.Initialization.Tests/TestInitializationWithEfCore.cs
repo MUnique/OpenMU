@@ -204,6 +204,9 @@ internal class TestInitializationWithEfCore
             Assert.That(configuration.MaxAttackingGuilds, Is.EqualTo(3));
             Assert.That(configuration.GateBuyPrice, Is.EqualTo(9_500_000));
             Assert.That(configuration.StatueBuyPrice, Is.EqualTo(4_500_000));
+            Assert.That(configuration.GateRepairCostPerHealthPoint, Is.EqualTo(5));
+            Assert.That(configuration.StatueRepairCostPerHealthPoint, Is.EqualTo(3));
+            Assert.That(configuration.RepairCostPerUpgradeLevel, Is.EqualTo(1_000_000));
             Assert.That(configuration.CastleSiegeMapDefinition?.Number, Is.EqualTo(30));
             Assert.That(configuration.LandOfTrialsMapDefinition?.Number, Is.EqualTo(31));
             Assert.That(configuration.SignOfLordItemDefinition?.Group, Is.EqualTo(14));

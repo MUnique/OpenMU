@@ -77,7 +77,8 @@ public static class CastleSiegeNpcUpgradeAction
                 return CastleSiegeNpcOperationResult.NpcNotFound;
             }
 
-            if (GetDefinitions(context.Configuration, runtime, upgradeType) is not { } definitions)
+            var monsterNumber = runtime.Definition.MonsterDefinition?.Number ?? 0;
+            if (context.Configuration.GetUpgrades(monsterNumber, upgradeType) is not { } definitions)
             {
                 return CastleSiegeNpcOperationResult.InvalidUpgradeType;
             }
@@ -140,27 +141,6 @@ public static class CastleSiegeNpcUpgradeAction
         {
             context.ExecutionLock.Release();
         }
-    }
-
-    private static ICollection<CastleSiegeUpgradeDefinition>? GetDefinitions(
-        CastleSiegeConfiguration configuration,
-        CastleSiegeNpcRuntime runtime,
-        CastleSiegeUpgradeType upgradeType)
-    {
-        return (runtime.Definition.MonsterDefinition?.Number, upgradeType) switch
-        {
-            var (number, type) when number == CastleSiegeGate.MonsterNumber
-                                    && type == CastleSiegeUpgradeType.Defense => configuration.GateDefenseUpgrades,
-            var (number, type) when number == CastleSiegeGate.MonsterNumber
-                                    && type == CastleSiegeUpgradeType.Life => configuration.GateLifeUpgrades,
-            var (number, type) when number == CastleSiegeStatue.MonsterNumber
-                                    && type == CastleSiegeUpgradeType.Defense => configuration.StatueDefenseUpgrades,
-            var (number, type) when number == CastleSiegeStatue.MonsterNumber
-                                    && type == CastleSiegeUpgradeType.Life => configuration.StatueLifeUpgrades,
-            var (number, type) when number == CastleSiegeStatue.MonsterNumber
-                                    && type == CastleSiegeUpgradeType.Regen => configuration.StatueRegenUpgrades,
-            _ => null,
-        };
     }
 
     private static byte GetLevel(CastleSiegeNpcState state, CastleSiegeUpgradeType type)

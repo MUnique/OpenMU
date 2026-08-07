@@ -48,29 +48,30 @@ public sealed class CastleSiegeCrownIntelligence : CastleSiegeNpcIntelligenceBas
     /// Executes one player-tracking tick.
     /// </summary>
     /// <returns>A task that represents the asynchronous tracking operation.</returns>
-    public async ValueTask TickAsync()
+    public ValueTask TickAsync()
     {
         if (this.Npc is not CastleSiegeCrown crown)
         {
-            return;
+            return ValueTask.CompletedTask;
         }
 
         if (this._context.CurrentState != CastleSiegeState.Start)
         {
             this._context.CrownUser = null;
             crown.State = CastleSiegeCrownState.Locked;
-            return;
+            return ValueTask.CompletedTask;
         }
 
-        var candidate = (await this._context.GameContext.GetPlayersAsync().ConfigureAwait(false))
+        var candidate = crown.CurrentMap.GetAttackablesInRange(crown.Position, 1)
+            .OfType<Player>()
             .Where(player => player.IsAlive
-                             && player.CurrentMap == crown.CurrentMap
-                             && player.GetDistanceTo(crown.Position) <= 1)
+                             && player.CurrentMap == crown.CurrentMap)
             .MinBy(player => player.Id);
         this._context.CrownUser = candidate;
         crown.State = this._context.IsCrownAvailable
             ? CastleSiegeCrownState.Idle
             : CastleSiegeCrownState.Locked;
+        return ValueTask.CompletedTask;
     }
 
     /// <inheritdoc />

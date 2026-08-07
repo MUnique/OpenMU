@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 [PlugIn]
 [Display(Name = nameof(PlugInResources.CastleSiegePlugIn_Name), Description = nameof(PlugInResources.CastleSiegePlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("B7F62FA9-59E6-49E9-B499-0358A14957CF")]
-public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
+public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, IObjectRemovedFromMapPlugIn
 {
     private static readonly TimeSpan NpcSaveInterval = TimeSpan.FromMinutes(2);
 
@@ -56,8 +56,21 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
         if (addedObject is Player player
             && this.GetContext(player.GameContext) is { } context)
         {
+            context.TrackPlayer(player, map);
             await SynchronizePlayerAsync(player, map, context).ConfigureAwait(false);
         }
+    }
+
+    /// <inheritdoc />
+    public ValueTask ObjectRemovedFromMapAsync(GameMap map, ILocateable removedObject)
+    {
+        if (removedObject is Player player
+            && this.GetContext(player.GameContext) is { } context)
+        {
+            context.UntrackPlayer(player);
+        }
+
+        return ValueTask.CompletedTask;
     }
 
     /// <summary>
@@ -261,6 +274,7 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
                 break;
             case CastleSiegeState.Start:
                 await context.NpcController.PrepareAsync().ConfigureAwait(false);
+                await context.NpcController.CloseGatesAsync().ConfigureAwait(false);
                 await context.NpcController.SpawnMachinesAsync().ConfigureAwait(false);
                 break;
             case CastleSiegeState.End:

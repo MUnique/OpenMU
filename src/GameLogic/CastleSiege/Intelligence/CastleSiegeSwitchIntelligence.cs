@@ -48,22 +48,23 @@ public sealed class CastleSiegeSwitchIntelligence : CastleSiegeNpcIntelligenceBa
     /// Executes one player-tracking tick.
     /// </summary>
     /// <returns>A task that represents the asynchronous tracking operation.</returns>
-    public async ValueTask TickAsync()
+    public ValueTask TickAsync()
     {
         if (this.Npc is not CastleSiegeSwitch siegeSwitch)
         {
-            return;
+            return ValueTask.CompletedTask;
         }
 
         var candidate = this._context.CurrentState == CastleSiegeState.Start
-            ? (await this._context.GameContext.GetPlayersAsync().ConfigureAwait(false))
+            ? siegeSwitch.CurrentMap.GetAttackablesInRange(siegeSwitch.Position, 1)
+                .OfType<Player>()
                 .Where(player => player.IsAlive
-                                 && player.CurrentMap == siegeSwitch.CurrentMap
-                                 && player.GetDistanceTo(siegeSwitch.Position) <= 1)
+                                 && player.CurrentMap == siegeSwitch.CurrentMap)
                 .MinBy(player => player.Id)
             : null;
         siegeSwitch.Occupant = candidate;
         this._context.SwitchUsers[siegeSwitch.SwitchIndex] = candidate;
+        return ValueTask.CompletedTask;
     }
 
     /// <inheritdoc />

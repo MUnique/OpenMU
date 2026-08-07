@@ -93,8 +93,8 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
     /// </summary>
     public int Health
     {
-        get => Math.Max(this._health, 0);
-        set => this._health = value;
+        get => Math.Max(Volatile.Read(ref this._health), 0);
+        set => Interlocked.Exchange(ref this._health, value);
     }
 
     private bool ShouldRespawn => this.SpawnArea.SpawnTrigger == SpawnTrigger.Automatic
@@ -287,6 +287,38 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
     protected virtual void RegisterHit(IAttacker attacker)
     {
         // can be overwritten
+    }
+
+    /// <summary>
+    /// Atomically restores health without exceeding the specified maximum.
+    /// </summary>
+    /// <param name="amount">The maximum amount of health to restore.</param>
+    /// <param name="maximumHealth">The maximum health after the restoration.</param>
+    /// <returns>The restored health.</returns>
+    protected int RestoreHealth(int amount, int maximumHealth)
+    {
+        if (amount <= 0 || maximumHealth <= 0)
+        {
+            return 0;
+        }
+
+        while (true)
+        {
+            var currentHealth = Volatile.Read(ref this._health);
+            if (currentHealth <= 0 || currentHealth >= maximumHealth)
+            {
+                return 0;
+            }
+
+            var restoredHealth = Math.Min(amount, maximumHealth - currentHealth);
+            if (Interlocked.CompareExchange(
+                    ref this._health,
+                    currentHealth + restoredHealth,
+                    currentHealth) == currentHealth)
+            {
+                return restoredHealth;
+            }
+        }
     }
 
     /// <summary>
