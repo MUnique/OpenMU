@@ -58,7 +58,7 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
             && this.GetContext(player.GameContext) is { } context)
         {
             context.TrackPlayer(player, map);
-            await SynchronizePlayerAsync(player, map, context).ConfigureAwait(false);
+            await this.SynchronizePlayerAsync(player, map, context).ConfigureAwait(false);
         }
     }
 
@@ -80,6 +80,10 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
         await context.ExecutionLock.WaitAsync().ConfigureAwait(false);
         try
         {
+            CastleSiegeParticipantTracker.StopTracking(
+                context,
+                player,
+                this._timeProvider.GetUtcNow().UtcDateTime);
             await context.ClearPlayerJoinSideAsync(player).ConfigureAwait(false);
         }
         finally
@@ -95,7 +99,7 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
             && player.CurrentMap is { } map
             && this.GetContext(player.GameContext) is { } context)
         {
-            await SynchronizePlayerAsync(player, map, context).ConfigureAwait(false);
+            await this.SynchronizePlayerAsync(player, map, context).ConfigureAwait(false);
         }
     }
 
@@ -214,7 +218,7 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
         return stateStartUtc.AddTicks((completedIntervals + 1) * interval.Ticks);
     }
 
-    private static async ValueTask SynchronizePlayerAsync(
+    private async ValueTask SynchronizePlayerAsync(
         Player player,
         GameMap map,
         CastleSiegeContext context)
@@ -228,8 +232,18 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
         await context.ExecutionLock.WaitAsync().ConfigureAwait(false);
         try
         {
+            if (context.CurrentState is not (CastleSiegeState.Ready or CastleSiegeState.Start)
+                || context.Configuration.CastleSiegeMapDefinition?.Number != player.CurrentMap?.Definition.Number)
+            {
+                return;
+            }
+
             await context.NpcController.SynchronizePlayerAsync(player).ConfigureAwait(false);
             await context.SynchronizePlayerJoinSideAsync(player).ConfigureAwait(false);
+            CastleSiegeParticipantTracker.StartTracking(
+                context,
+                player,
+                this._timeProvider.GetUtcNow().UtcDateTime);
         }
         finally
         {
@@ -251,6 +265,11 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
     private async ValueTask ChangeStateAsync(CastleSiegeContext context, CastleSiegeStatePeriod period, ILogger logger)
     {
         var previousState = context.CurrentState;
+        if (previousState == CastleSiegeState.Start)
+        {
+            await CastleSiegeParticipantTracker.TrackAsync(context, period.StartUtc).ConfigureAwait(false);
+        }
+
         await this.OnExitStateAsync().ConfigureAwait(false);
 
         context.SetPeriod(period);
@@ -328,7 +347,9 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
                 await context.NpcController.CloseGatesAsync().ConfigureAwait(false);
                 await context.NpcController.SpawnMachinesAsync().ConfigureAwait(false);
                 await context.SetPlayerJoinSideAsync().ConfigureAwait(false);
-                context.NextParticipantUpdateUtc = this._timeProvider.GetUtcNow().UtcDateTime + ParticipantUpdateInterval;
+                var utcNow = this._timeProvider.GetUtcNow().UtcDateTime;
+                await CastleSiegeParticipantTracker.TrackAsync(context, utcNow).ConfigureAwait(false);
+                context.NextParticipantUpdateUtc = utcNow + ParticipantUpdateInterval;
                 break;
             case CastleSiegeState.End:
                 if (!isStartup)
@@ -383,7 +404,7 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
         {
             await context.SetPlayerJoinSideAsync().ConfigureAwait(false);
             await CastleSiegeParticipantTracker
-                .TrackAsync(context, (int)ParticipantUpdateInterval.TotalSeconds)
+                .TrackAsync(context, utcNow)
                 .ConfigureAwait(false);
             context.NextParticipantUpdateUtc = GetNextInterval(
                 context.StateStartTimeUtc,

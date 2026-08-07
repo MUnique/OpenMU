@@ -180,9 +180,20 @@ public class CastleSiegeContext : IEventStateProvider
     /// <returns>The assigned side, or <see cref="CastleSiegeJoinSide.None"/>.</returns>
     public CastleSiegeJoinSide GetPlayerJoinSide(Player player)
     {
-        return player.SelectedCharacter is { } character
-               && this.PlayerJoinSides.TryGetValue(character.Id, out var side)
-            ? side
+        if (this.Configuration.CastleSiegeMapDefinition?.Number != player.CurrentMap?.Definition.Number)
+        {
+            return CastleSiegeJoinSide.None;
+        }
+
+        if (player.SelectedCharacter is { } character
+            && this.PlayerJoinSides.TryGetValue(character.Id, out var assignedSide))
+        {
+            return assignedSide;
+        }
+
+        return player.GuildStatus is { } guildStatus
+               && this.FinalGuildList.TryGetValue(guildStatus.GuildId, out var participatingGuild)
+            ? participatingGuild.Side
             : CastleSiegeJoinSide.None;
     }
 
@@ -285,10 +296,7 @@ public class CastleSiegeContext : IEventStateProvider
         }
 
         persistentData.Guilds.Clear();
-        foreach (var guild in this.FinalGuildList.Values
-                     .OrderBy(entry => entry.Side)
-                     .ThenByDescending(entry => entry.IsAllianceMaster)
-                     .ThenBy(entry => entry.GuildName, StringComparer.OrdinalIgnoreCase))
+        foreach (var guild in CastleSiegeGuildSelector.OrderFinalGuilds(this.FinalGuildList.Values))
         {
             var persistentGuild = context.CreateNew<CastleSiegeGuild>();
             persistentGuild.GuildId = guild.PersistentGuildId;

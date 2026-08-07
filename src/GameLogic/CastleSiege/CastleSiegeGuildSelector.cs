@@ -30,6 +30,20 @@ public static class CastleSiegeGuildSelector
     }
 
     /// <summary>
+    /// Orders the final guild list consistently for persistence and client display.
+    /// </summary>
+    /// <param name="guilds">The guilds to order.</param>
+    /// <returns>The ordered guilds.</returns>
+    public static IEnumerable<CastleSiegeGuildParticipant> OrderFinalGuilds(
+        IEnumerable<CastleSiegeGuildParticipant> guilds)
+    {
+        return guilds
+            .OrderBy(guild => guild.Side)
+            .ThenByDescending(guild => guild.IsAllianceMaster)
+            .ThenBy(guild => guild.GuildName, StringComparer.OrdinalIgnoreCase);
+    }
+
+    /// <summary>
     /// Selects the attacking guilds, assigns the defending guild and expands their alliances.
     /// </summary>
     /// <param name="context">The Castle Siege context.</param>
@@ -39,6 +53,7 @@ public static class CastleSiegeGuildSelector
         context.FinalGuildList.Clear();
         if (context.GameContext is not IGameServerContext gameServerContext)
         {
+            await context.SaveFinalGuildListAsync().ConfigureAwait(false);
             return;
         }
 

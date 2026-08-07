@@ -15,12 +15,11 @@ public static class CastleSiegeParticipantTracker
     /// Records participation for players on the Castle Siege map.
     /// </summary>
     /// <param name="context">The Castle Siege context.</param>
-    /// <param name="elapsedSeconds">The elapsed number of seconds represented by this tick.</param>
+    /// <param name="utcNow">The current UTC time.</param>
     /// <returns>A task that represents the asynchronous tracking operation.</returns>
-    public static async ValueTask TrackAsync(CastleSiegeContext context, int elapsedSeconds)
+    public static async ValueTask TrackAsync(CastleSiegeContext context, DateTime utcNow)
     {
         if (context.CurrentState != CastleSiegeState.Start
-            || elapsedSeconds <= 0
             || context.Configuration.CastleSiegeMapDefinition is not { } mapDefinition)
         {
             return;
@@ -28,29 +27,12 @@ public static class CastleSiegeParticipantTracker
 
         foreach (var player in await context.GameContext.GetPlayersAsync().ConfigureAwait(false))
         {
-            if (player.CurrentMap?.Definition.Number != mapDefinition.Number
-                || player.SelectedCharacter is not { } character
-                || player.GuildStatus is not { } guildStatus
-                || context.GetPlayerJoinSide(player) == CastleSiegeJoinSide.None)
+            if (player.CurrentMap?.Definition.Number != mapDefinition.Number)
             {
                 continue;
             }
 
-            context.ParticipantTracking.AddOrUpdate(
-                character.Id,
-                _ => new CastleSiegeParticipant
-                {
-                    CharacterId = character.Id,
-                    CharacterName = character.Name,
-                    GuildId = guildStatus.GuildId,
-                    Seconds = elapsedSeconds,
-                },
-                (_, participant) =>
-                {
-                    participant.GuildId = guildStatus.GuildId;
-                    participant.Seconds += elapsedSeconds;
-                    return participant;
-                });
+            UpdateParticipant(context, player, utcNow, true, false);
         }
     }
 
@@ -62,7 +44,7 @@ public static class CastleSiegeParticipantTracker
     public static async ValueTask AwardRewardsAsync(CastleSiegeContext context)
     {
         var eligibleParticipants = context.ParticipantTracking.Values
-            .Where(participant => participant.Seconds >= context.Configuration.ParticipantRewardMinSeconds)
+            .Where(participant => participant.ParticipationTime.TotalSeconds >= context.Configuration.ParticipantRewardMinSeconds)
             .ToList();
         var onlinePlayers = (await context.GameContext.GetPlayersAsync().ConfigureAwait(false))
             .Where(player => player.SelectedCharacter is not null)
@@ -117,5 +99,72 @@ public static class CastleSiegeParticipantTracker
                 await gameServerContext.GuildServer.IncreaseGuildScoreAsync(runtimeGuildId).ConfigureAwait(false);
             }
         }
+    }
+
+    /// <summary>
+    /// Starts tracking a player who entered the Castle Siege map during the battle.
+    /// </summary>
+    /// <param name="context">The Castle Siege context.</param>
+    /// <param name="player">The player.</param>
+    /// <param name="utcNow">The current UTC time.</param>
+    internal static void StartTracking(CastleSiegeContext context, Player player, DateTime utcNow)
+    {
+        if (context.CurrentState == CastleSiegeState.Start)
+        {
+            UpdateParticipant(context, player, utcNow, false, false);
+        }
+    }
+
+    /// <summary>
+    /// Completes the current tracking interval when a player leaves the Castle Siege map.
+    /// </summary>
+    /// <param name="context">The Castle Siege context.</param>
+    /// <param name="player">The player.</param>
+    /// <param name="utcNow">The current UTC time.</param>
+    internal static void StopTracking(CastleSiegeContext context, Player player, DateTime utcNow)
+    {
+        if (context.CurrentState == CastleSiegeState.Start)
+        {
+            UpdateParticipant(context, player, utcNow, true, true);
+        }
+    }
+
+    private static void UpdateParticipant(
+        CastleSiegeContext context,
+        Player player,
+        DateTime utcNow,
+        bool creditElapsedTime,
+        bool allowPlayerOutsideSiegeMap)
+    {
+        if ((!allowPlayerOutsideSiegeMap
+             && player.CurrentMap?.Definition.Number != context.Configuration.CastleSiegeMapDefinition?.Number)
+            || player.SelectedCharacter is not { } character
+            || player.GuildStatus is not { } guildStatus
+            || context.GetPlayerJoinSide(player) == CastleSiegeJoinSide.None)
+        {
+            return;
+        }
+
+        context.ParticipantTracking.AddOrUpdate(
+            character.Id,
+            _ => new CastleSiegeParticipant
+            {
+                CharacterId = character.Id,
+                CharacterName = character.Name,
+                GuildId = guildStatus.GuildId,
+                LastUpdateUtc = utcNow,
+            },
+            (_, participant) =>
+            {
+                participant.CharacterName = character.Name;
+                participant.GuildId = guildStatus.GuildId;
+                if (creditElapsedTime && utcNow > participant.LastUpdateUtc)
+                {
+                    participant.ParticipationTime += utcNow - participant.LastUpdateUtc;
+                }
+
+                participant.LastUpdateUtc = utcNow;
+                return participant;
+            });
     }
 }

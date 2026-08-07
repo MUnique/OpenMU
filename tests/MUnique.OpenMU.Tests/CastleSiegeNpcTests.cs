@@ -787,6 +787,12 @@ public class CastleSiegeNpcTests
                 .OfType<CastleSiegeLever>()
                 .Single();
             var gate = lever.Gate!;
+            await AddSiegePlayerAsync(
+                    fixture,
+                    CastleSiegeJoinSide.Defense,
+                    lever.Position.X,
+                    lever.Position.Y)
+                .ConfigureAwait(false);
             var plugIn = new CastleSiegeLeverTalkPlugIn();
             var eventArgs = new NpcTalkEventArgs();
 
@@ -803,13 +809,6 @@ public class CastleSiegeNpcTests
                     Times.Once);
 
             fixture.Context.CurrentState = CastleSiegeState.Start;
-            fixture.Context.FinalGuildList[OwnerRuntimeGuildId] = new CastleSiegeGuildParticipant
-            {
-                GuildId = OwnerRuntimeGuildId,
-                PersistentGuildId = fixture.OwnerPersistentGuildId,
-                GuildName = "Owner",
-                Side = CastleSiegeJoinSide.Defense,
-            };
             var operationResult = await CastleSiegeGateOperateAction
                 .OperateAsync(fixture.Player, fixture.Context, gate.Id, true)
                 .ConfigureAwait(false);
@@ -821,6 +820,7 @@ public class CastleSiegeNpcTests
         }
         finally
         {
+            await fixture.GameServerContext.RemovePlayerAsync(fixture.Player).ConfigureAwait(false);
             await fixture.Context.NpcController.DespawnAllAsync().ConfigureAwait(false);
         }
     }

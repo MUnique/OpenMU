@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.CastleSiege;
 
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.CastleSiege;
 using MUnique.OpenMU.GameLogic.Views.CastleSiege;
 using MUnique.OpenMU.Network.Packets.ClientToServer;
 using MUnique.OpenMU.PlugIns;
@@ -30,11 +31,7 @@ internal class CastleSiegeGuildListHandlerPlugIn : IPacketHandlerPlugIn
         var context = CastleSiegeHandlerContext.Get(player);
         var isAvailable = context is not null && !context.FinalGuildList.IsEmpty;
         var guilds = isAvailable
-            ? context!.FinalGuildList.Values
-                .OrderBy(guild => guild.Side)
-                .ThenByDescending(guild => guild.IsAllianceMaster)
-                .ThenBy(guild => guild.GuildName, StringComparer.OrdinalIgnoreCase)
-                .ToList()
+            ? CastleSiegeGuildSelector.OrderFinalGuilds(context!.FinalGuildList.Values).ToList()
             : [];
         return player.InvokeViewPlugInAsync<ICastleSiegeGuildListPlugIn>(
             plugIn => plugIn.ShowGuildListAsync(isAvailable ? (byte)1 : (byte)2, guilds));

@@ -101,6 +101,55 @@ public class CastleSiegeGuildSelectionTests
     }
 
     /// <summary>
+    /// Verifies that an unavailable guild server cannot leave a stale final guild list in persistence.
+    /// </summary>
+    [Test]
+    public async ValueTask SelectionWithoutGameServerClearsPersistedFinalGuildListAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        await CastleSiegeGuildSelector.SelectGuildsAsync(fixture.Context).ConfigureAwait(false);
+
+        var gameContext = new Mock<IGameContext>();
+        gameContext.SetupGet(context => context.Configuration).Returns(fixture.GameConfiguration);
+        gameContext.SetupGet(context => context.PersistenceContextProvider).Returns(fixture.PersistenceContextProvider);
+        gameContext.Setup(context => context.GetPlayersAsync()).ReturnsAsync(Array.Empty<Player>());
+        var context = new CastleSiegeContext(gameContext.Object, fixture.CastleSiegeConfiguration);
+        await context.InitializeAsync(fixture.InitializationTimeUtc).ConfigureAwait(false);
+
+        await CastleSiegeGuildSelector.SelectGuildsAsync(context).ConfigureAwait(false);
+
+        using var persistenceContext = fixture.PersistenceContextProvider.CreateNewTypedContext(
+            typeof(CastleSiegeData),
+            false,
+            fixture.GameConfiguration);
+        var persistedData = (await persistenceContext.GetAsync<CastleSiegeData>().ConfigureAwait(false)).Single();
+        Assert.Multiple(() =>
+        {
+            Assert.That(context.FinalGuildList, Is.Empty);
+            Assert.That(persistedData.Guilds, Is.Empty);
+        });
+    }
+
+    /// <summary>
+    /// Verifies that persistence and packet views use one deterministic final guild ordering.
+    /// </summary>
+    [Test]
+    public void FinalGuildOrderingUsesSideAllianceMasterAndName()
+    {
+        var guilds = new[]
+        {
+            new CastleSiegeGuildParticipant { GuildId = 1, GuildName = "Zulu", Side = CastleSiegeJoinSide.Attack1 },
+            new CastleSiegeGuildParticipant { GuildId = 2, GuildName = "Alpha", Side = CastleSiegeJoinSide.Defense },
+            new CastleSiegeGuildParticipant { GuildId = 3, GuildName = "Bravo", Side = CastleSiegeJoinSide.Attack1, IsAllianceMaster = true },
+            new CastleSiegeGuildParticipant { GuildId = 4, GuildName = "alpha", Side = CastleSiegeJoinSide.Attack1 },
+        };
+
+        Assert.That(
+            CastleSiegeGuildSelector.OrderFinalGuilds(guilds).Select(guild => guild.GuildId),
+            Is.EqualTo(new uint[] { 2, 3, 4, 1 }));
+    }
+
+    /// <summary>
     /// Verifies join-side notification, reconnect mapping, magic effects, and participant accumulation.
     /// </summary>
     [Test]
@@ -126,15 +175,16 @@ public class CastleSiegeGuildSelectionTests
         });
 
         fixture.Context.CurrentState = CastleSiegeState.Start;
-        await CastleSiegeParticipantTracker.TrackAsync(fixture.Context, 5).ConfigureAwait(false);
-        await CastleSiegeParticipantTracker.TrackAsync(fixture.Context, 5).ConfigureAwait(false);
+        var firstUpdateUtc = fixture.InitializationTimeUtc;
+        await CastleSiegeParticipantTracker.TrackAsync(fixture.Context, firstUpdateUtc).ConfigureAwait(false);
+        await CastleSiegeParticipantTracker.TrackAsync(fixture.Context, firstUpdateUtc.AddSeconds(17)).ConfigureAwait(false);
 
         var participant = fixture.Context.ParticipantTracking[player.SelectedCharacter!.Id];
         Assert.Multiple(() =>
         {
             Assert.That(participant.CharacterName, Is.EqualTo("Fighter"));
             Assert.That(participant.GuildId, Is.EqualTo(ReconnectedAlphaGuildId));
-            Assert.That(participant.Seconds, Is.EqualTo(10));
+            Assert.That(participant.ParticipationTime, Is.EqualTo(TimeSpan.FromSeconds(17)));
         });
 
         await player.WarpToAsync(new ExitGate
@@ -172,14 +222,14 @@ public class CastleSiegeGuildSelectionTests
             CharacterId = player.SelectedCharacter.Id,
             CharacterName = player.Name,
             GuildId = AlphaGuildId,
-            Seconds = fixture.CastleSiegeConfiguration.ParticipantRewardMinSeconds,
+            ParticipationTime = TimeSpan.FromSeconds(fixture.CastleSiegeConfiguration.ParticipantRewardMinSeconds),
         };
         fixture.Context.ParticipantTracking[fixture.OfflineCharacterId] = new CastleSiegeParticipant
         {
             CharacterId = fixture.OfflineCharacterId,
             CharacterName = "Offline",
             GuildId = AlphaGuildId,
-            Seconds = fixture.CastleSiegeConfiguration.ParticipantRewardMinSeconds,
+            ParticipationTime = TimeSpan.FromSeconds(fixture.CastleSiegeConfiguration.ParticipantRewardMinSeconds),
         };
 
         await CastleSiegeParticipantTracker.AwardRewardsAsync(fixture.Context).ConfigureAwait(false);
