@@ -1947,6 +1947,54 @@
   <data name="CharacterGroupHandlerPlugIn_Description" xml:space="preserve">
     <value>Packet handler for character packets (0xF3 identifier).</value>
   </data>
+  <data name="CastleSiegeGroupHandlerPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege Packet Group Handler</value>
+  </data>
+  <data name="CastleSiegeGroupHandlerPlugIn_Description" xml:space="preserve">
+    <value>Routes Castle Siege packet subcodes.</value>
+  </data>
+  <data name="CastleSiegeRegistrationHandlerPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege Registration Handler</value>
+  </data>
+  <data name="CastleSiegeRegistrationHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles Castle Siege guild registration requests.</value>
+  </data>
+  <data name="CastleSiegeUnregisterHandlerPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege Unregister Handler</value>
+  </data>
+  <data name="CastleSiegeUnregisterHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles Castle Siege guild unregistration requests.</value>
+  </data>
+  <data name="CastleSiegeRegistrationStateHandlerPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege Registration State Handler</value>
+  </data>
+  <data name="CastleSiegeRegistrationStateHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles Castle Siege registration-state requests.</value>
+  </data>
+  <data name="CastleSiegeMarkRegistrationHandlerPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege Mark Registration Handler</value>
+  </data>
+  <data name="CastleSiegeMarkRegistrationHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles Castle Siege Sign of Lord registration requests.</value>
+  </data>
+  <data name="CastleSiegeMarkRegistrationResultPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege Mark Registration View</value>
+  </data>
+  <data name="CastleSiegeMarkRegistrationResultPlugIn_Description" xml:space="preserve">
+    <value>Sends Sign of Lord registration results to the game client.</value>
+  </data>
+  <data name="CastleSiegeRegistrationResultPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege Registration Result View</value>
+  </data>
+  <data name="CastleSiegeRegistrationResultPlugIn_Description" xml:space="preserve">
+    <value>Sends Castle Siege registration results to the game client.</value>
+  </data>
+  <data name="CastleSiegeRegistrationStatePlugIn_Name" xml:space="preserve">
+    <value>Castle Siege Registration State View</value>
+  </data>
+  <data name="CastleSiegeRegistrationStatePlugIn_Description" xml:space="preserve">
+    <value>Sends Castle Siege registration state to the game client.</value>
+  </data>
   <data name="CharacterKeyConfigurationPacketHandlerPlugIn_Name" xml:space="preserve">
     <value>Character - Key Configuration</value>
   </data>

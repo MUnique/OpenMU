@@ -15,6 +15,9 @@ internal sealed class CastleSiegeInitializer : InitializerBase
 {
     private const short GateMonsterNumber = 277;
     private const short StatueMonsterNumber = 283;
+    private const byte SignOfLordItemGroup = 14;
+    private const short SignOfLordItemNumber = 21;
+    private const byte SignOfLordItemLevel = 3;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CastleSiegeInitializer"/> class.
@@ -41,6 +44,7 @@ internal sealed class CastleSiegeInitializer : InitializerBase
     {
         if (this.GameConfiguration.CastleSiegeConfiguration is { } existingConfiguration)
         {
+            this.InitializeRegistration(existingConfiguration);
             return existingConfiguration;
         }
 
@@ -49,6 +53,7 @@ internal sealed class CastleSiegeInitializer : InitializerBase
         configuration.CrownHoldTimeSeconds = 30;
         configuration.RegisterMinLevel = 200;
         configuration.RegisterMinMembers = 20;
+        this.InitializeRegistration(configuration);
         configuration.ParticipantRewardMinSeconds = 60;
         configuration.MaxAttackingGuilds = 3;
         configuration.GuildScoreCastleSiege = 0;
@@ -67,6 +72,29 @@ internal sealed class CastleSiegeInitializer : InitializerBase
 
         this.GameConfiguration.CastleSiegeConfiguration = configuration;
         return configuration;
+    }
+
+    /// <summary>
+    /// Initializes the item configuration used for Sign of Lord registration.
+    /// </summary>
+    /// <param name="configuration">The Castle Siege configuration.</param>
+    internal void InitializeRegistration(CastleSiegeConfiguration configuration)
+    {
+        if (configuration.SignOfLordItemDefinition is not null)
+        {
+            return;
+        }
+
+        var itemDefinition = this.GameConfiguration.Items.SingleOrDefault(
+            item => item.Group == SignOfLordItemGroup && item.Number == SignOfLordItemNumber);
+        if (itemDefinition is null)
+        {
+            return;
+        }
+
+        itemDefinition.MaximumItemLevel = Math.Max(itemDefinition.MaximumItemLevel, SignOfLordItemLevel);
+        configuration.SignOfLordItemDefinition = itemDefinition;
+        configuration.SignOfLordItemLevel = SignOfLordItemLevel;
     }
 
     /// <summary>

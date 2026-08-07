@@ -34,6 +34,16 @@ public partial class CastleSiegeConfiguration
     public int RegisterMinMembers { get; set; } = 20;
 
     /// <summary>
+    /// Gets or sets the item definition used for Sign of Lord registration.
+    /// </summary>
+    public virtual ItemDefinition? SignOfLordItemDefinition { get; set; }
+
+    /// <summary>
+    /// Gets or sets the required level of a Sign of Lord item.
+    /// </summary>
+    public byte SignOfLordItemLevel { get; set; } = 3;
+
+    /// <summary>
     /// Gets or sets the minimum number of seconds a participant must be present in the battle to be eligible for a reward.
     /// </summary>
     public int ParticipantRewardMinSeconds { get; set; }
