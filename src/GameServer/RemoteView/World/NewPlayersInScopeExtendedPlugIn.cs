@@ -48,6 +48,13 @@ public class NewPlayersInScopeExtendedPlugIn : NewPlayersInScopePlugIn, INewPlay
             return;
         }
 
+        var target = newPlayer.IsWalking ? newPlayer.WalkTarget : newPlayer.Position;
+        if (newPlayer.Position.X > byte.MaxValue || newPlayer.Position.Y > byte.MaxValue || target.X > byte.MaxValue || target.Y > byte.MaxValue)
+        {
+            await base.SendCharacterAsync(newPlayer, isSpawned).ConfigureAwait(false);
+            return;
+        }
+
         int Write()
         {
             var appearanceSerializer = this.Player.AppearanceSerializer;
@@ -68,19 +75,19 @@ public class NewPlayersInScopeExtendedPlugIn : NewPlayersInScopePlugIn, INewPlay
                 packet.Id |= 0x8000;
             }
 
-            packet.CurrentPositionX = newPlayer.Position.X;
-            packet.CurrentPositionY = newPlayer.Position.Y;
+            packet.CurrentPositionX = checked((byte)(newPlayer.Position.X));
+            packet.CurrentPositionY = checked((byte)(newPlayer.Position.Y));
 
             packet.Name = selectedCharacter.Name;
             if (newPlayer.IsWalking)
             {
-                packet.TargetPositionX = newPlayer.WalkTarget.X;
-                packet.TargetPositionY = newPlayer.WalkTarget.Y;
+                packet.TargetPositionX = checked((byte)(newPlayer.WalkTarget.X));
+                packet.TargetPositionY = checked((byte)(newPlayer.WalkTarget.Y));
             }
             else
             {
-                packet.TargetPositionX = newPlayer.Position.X;
-                packet.TargetPositionY = newPlayer.Position.Y;
+                packet.TargetPositionX = checked((byte)(newPlayer.Position.X));
+                packet.TargetPositionY = checked((byte)(newPlayer.Position.Y));
             }
 
             packet.Rotation = newPlayer.Rotation.ToPacketByte();

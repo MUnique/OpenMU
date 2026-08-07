@@ -157,12 +157,12 @@ public class Character
     /// <summary>
     /// Gets or sets the x-coordinate of its map position.
     /// </summary>
-    public byte PositionX { get; set; }
+    public ushort PositionX { get; set; }
 
     /// <summary>
     /// Gets or sets the y-coordinate of its map position.
     /// </summary>
-    public byte PositionY { get; set; }
+    public ushort PositionY { get; set; }
 
     /// <summary>
     /// Gets or sets the player kill count.

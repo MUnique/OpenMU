@@ -106,11 +106,10 @@ public class CreateCharacterAction
         var attributes = character.CharacterClass.StatAttributes.Select(a => player.PersistenceContext.CreateNew<StatAttribute>(a.Attribute, a.BaseValue)).ToList();
         attributes.ForEach(character.Attributes.Add);
         character.CurrentMap = characterClass.HomeMap;
-        var randomSpawnGate = character.CurrentMap!.ExitGates.Where(g => g.IsSpawnGate).SelectRandom();
-        if (randomSpawnGate is not null)
+        if (await player.GameContext.GetMapAsync((ushort)character.CurrentMap.Number).ConfigureAwait(false) is { SafeZoneSpawnGate: { } spawnGate })
         {
-            character.PositionX = (byte)Rand.NextInt(randomSpawnGate.X1, randomSpawnGate.X2);
-            character.PositionY = (byte)Rand.NextInt(randomSpawnGate.Y1, randomSpawnGate.Y2);
+            character.PositionX = (ushort)Rand.NextInt(spawnGate.X1, spawnGate.X2);
+            character.PositionY = (ushort)Rand.NextInt(spawnGate.Y1, spawnGate.Y2);
         }
 
         character.Inventory = player.PersistenceContext.CreateNew<ItemStorage>();

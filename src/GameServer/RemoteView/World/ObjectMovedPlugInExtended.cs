@@ -38,6 +38,12 @@ public class ObjectMovedPlugInExtended : ObjectMovedPlugIn
     /// <inheritdoc />
     protected override async ValueTask SendWalkAsync(IConnection connection, ushort objectId, Point sourcePoint, Point targetPoint, Memory<Direction> steps, Direction rotation, int stepsLength)
     {
+        if (sourcePoint.X > byte.MaxValue || sourcePoint.Y > byte.MaxValue || targetPoint.X > byte.MaxValue || targetPoint.Y > byte.MaxValue)
+        {
+            await this.SendGlobalWalkAsync(connection, objectId, sourcePoint, targetPoint, steps, rotation, stepsLength).ConfigureAwait(false);
+            return;
+        }
+
         int Write()
         {
             var stepsSize = stepsLength == 0 ? 0 : (stepsLength / 2) + 2;
@@ -48,10 +54,10 @@ public class ObjectMovedPlugInExtended : ObjectMovedPlugIn
             {
                 HeaderCode = this.GetWalkCode(),
                 ObjectId = objectId,
-                SourceX = sourcePoint.X,
-                SourceY = sourcePoint.Y,
-                TargetX = targetPoint.X,
-                TargetY = targetPoint.Y,
+                SourceX = checked((byte)sourcePoint.X),
+                SourceY = checked((byte)sourcePoint.Y),
+                TargetX = checked((byte)targetPoint.X),
+                TargetY = checked((byte)targetPoint.Y),
                 TargetRotation = rotation.ToPacketByte(),
                 StepCount = (byte)stepsLength,
             };
@@ -61,6 +67,49 @@ public class ObjectMovedPlugInExtended : ObjectMovedPlugIn
         }
 
         await connection.SendAsync(Write).ConfigureAwait(false);
+    }
+
+    private async ValueTask SendGlobalWalkAsync(IConnection connection, ushort objectId, Point sourcePoint, Point targetPoint, Memory<Direction> steps, Direction rotation, int stepsLength)
+    {
+        int Write()
+        {
+            var stepsSize = stepsLength == 0 ? 0 : (stepsLength / 2) + 2;
+            var size = ObjectWalkedGlobal.GetRequiredSize(stepsSize);
+            var span = connection.Output.GetSpan(size)[..size];
+            var walkPacket = new ObjectWalkedGlobalRef(span)
+            {
+                HeaderCode = ObjectWalkedGlobalRef.Code,
+                ObjectId = objectId,
+                SourceX = sourcePoint.X,
+                SourceY = sourcePoint.Y,
+                TargetX = targetPoint.X,
+                TargetY = targetPoint.Y,
+                TargetRotation = rotation.ToPacketByte(),
+                StepCount = (byte)stepsLength,
+            };
+
+            this.SetGlobalStepData(walkPacket, steps.Span[..stepsLength], stepsSize);
+            return size;
+        }
+
+        await connection.SendAsync(Write).ConfigureAwait(false);
+    }
+
+    private void SetGlobalStepData(ObjectWalkedGlobalRef walkPacket, Span<Direction> steps, int stepsSize)
+    {
+        if (steps == default || walkPacket.StepCount == 0)
+        {
+            return;
+        }
+
+        walkPacket.StepData[0] = (byte)(steps[0].ToPacketByte() << 4 | stepsSize);
+        for (int i = 0; i < stepsSize - 1; i += 2)
+        {
+            var index = 1 + (i / 2);
+            var firstStep = steps[i].ToPacketByte();
+            var secondStep = steps.Length > i + 1 ? steps[i + 1].ToPacketByte() : 0;
+            walkPacket.StepData[index] = (byte)(firstStep << 4 | secondStep);
+        }
     }
 
     private void SetStepData(ObjectWalkedExtendedRef walkPacket, Span<Direction> steps, int stepsSize)

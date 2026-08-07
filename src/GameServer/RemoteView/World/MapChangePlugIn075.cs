@@ -36,7 +36,7 @@ public class MapChangePlugIn075 : IMapChangePlugIn
         var mapNumber = (byte)this._player.SelectedCharacter.CurrentMap.Number;
         var position = this._player.IsWalking ? this._player.WalkTarget : this._player.Position;
 
-        await this._player.Connection.SendMapChanged075Async(mapNumber, position.X, position.Y, this._player.Rotation.ToPacketByte()).ConfigureAwait(false);
+        await this._player.Connection.SendMapChanged075Async(mapNumber, checked((byte)(position.X)), checked((byte)(position.Y)), this._player.Rotation.ToPacketByte()).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>

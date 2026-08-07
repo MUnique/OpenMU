@@ -24,22 +24,23 @@ public class PreCalculator
     public IEnumerable<PathInfo> PreCalcuatePaths(byte[,] aiGrid, bool[,] walkMap, int maximumRange)
     {
         var grid = aiGrid;
+        int size = grid.GetUpperBound(0) + 1;
         int finished = 0;
-        var resultList = new List<PathInfo>[256];
-        Parallel.For(0, 256, new ParallelOptions { MaxDegreeOfParallelism = 4 }, (x) =>
+        var resultList = new List<PathInfo>[size];
+        Parallel.For(0, size, new ParallelOptions { MaxDegreeOfParallelism = 4 }, (x) =>
         {
             var network = new FullGridNetwork(true);
             var pathFinder = new PathFinder(network);
             var result = new List<PathInfo>();
             resultList[x] = result;
-            for (int y = 0; y < 256; y++)
+            for (int y = 0; y < size; y++)
             {
                 if (!walkMap[x, y])
                 {
                     continue;
                 }
 
-                result.AddRange(this.FindPaths(new Point((byte)x, (byte)y), walkMap, aiGrid, pathFinder, maximumRange));
+                result.AddRange(this.FindPaths(new Point((ushort)x, (ushort)y), walkMap, aiGrid, pathFinder, maximumRange));
             }
 
             Interlocked.Increment(ref finished);
@@ -50,8 +51,9 @@ public class PreCalculator
 
     private IEnumerable<PathInfo> FindPaths(Point start, bool[,] map, byte[,] aiGrid, IPathFinder pathFinder, int maxDistance)
     {
-        byte toX = (byte)Math.Min(start.X + maxDistance - 1, 0xFF);
-        byte toY = (byte)Math.Min(start.Y + maxDistance - 1, 0xFF);
+        int maxCoord = map.GetUpperBound(0);
+        byte toX = (byte)Math.Min(start.X + maxDistance - 1, maxCoord);
+        byte toY = (byte)Math.Min(start.Y + maxDistance - 1, maxCoord);
         byte fromX = (byte)Math.Max(start.X - maxDistance, 0);
         byte fromY = (byte)Math.Max(start.Y - maxDistance, 0);
         for (byte x = fromX; x <= toX; x++)

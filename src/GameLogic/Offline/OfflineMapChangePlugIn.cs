@@ -26,7 +26,7 @@ internal sealed class OfflineMapChangePlugIn : IMapChangePlugIn
     /// <inheritdoc/>
     public async ValueTask MapChangeAsync()
     {
-        await this._player.ClientReadyAfterMapChangeAsync().ConfigureAwait(false);
+        await this._player.ClientReadyAfterMapChangeOfflineAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>

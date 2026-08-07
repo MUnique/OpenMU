@@ -18,6 +18,6 @@ public static class ExitGateExtensions
     /// <returns>The random point.</returns>
     public static Point GetRandomPoint(this ExitGate gate)
     {
-        return new Point((byte)Rand.NextInt(gate.X1, gate.X2), (byte)Rand.NextInt(gate.Y1, gate.Y2));
+        return new Point((ushort)Rand.NextInt(gate.X1, gate.X2), (ushort)Rand.NextInt(gate.Y1, gate.Y2));
     }
 }

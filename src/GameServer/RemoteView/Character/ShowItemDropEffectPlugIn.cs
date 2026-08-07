@@ -34,13 +34,13 @@ public class ShowItemDropEffectPlugIn : IShowItemDropEffectPlugIn
         switch (effect)
         {
             case ItemDropEffect.Fireworks:
-                await this._player.Connection.SendShowFireworksAsync(x, y).ConfigureAwait(false);
+                await this._player.Connection.SendShowFireworksAsync(checked((byte)x), checked((byte)y)).ConfigureAwait(false);
                 break;
             case ItemDropEffect.ChristmasFireworks:
-                await this._player.Connection.SendShowChristmasFireworksAsync(x, y).ConfigureAwait(false);
+                await this._player.Connection.SendShowChristmasFireworksAsync(checked((byte)x), checked((byte)y)).ConfigureAwait(false);
                 break;
             case ItemDropEffect.FanfareSound:
-                await this._player.Connection.SendPlayFanfareSoundAsync(x, y).ConfigureAwait(false);
+                await this._player.Connection.SendPlayFanfareSoundAsync(checked((byte)x), checked((byte)y)).ConfigureAwait(false);
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(effect));

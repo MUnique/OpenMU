@@ -39,9 +39,34 @@ public class UpdateCharacterStatsExtendedPlugIn : IUpdateCharacterStatsPlugIn
         }
 
         var maxAttackSpeed = this._player.GameContext.Configuration.Attributes.FirstOrDefault(a => a == Stats.AttackSpeed)?.MaximumValue ?? 200;
-        await connection.SendCharacterInformationExtendedAsync(
+        if (this._player.Position.X > byte.MaxValue || this._player.Position.Y > byte.MaxValue)
+        {
+            await connection.SendCharacterInformationGlobalAsync(
                 this._player.Position.X,
                 this._player.Position.Y,
+                this._player.SelectedCharacter!.CurrentMap!.Number.ToUnsigned(),
+                (ulong)this._player.SelectedCharacter.Experience,
+                (ulong)this._player.GameServerContext.ExperienceTable[(int)this._player.Attributes![Stats.Level] + 1],
+                (ushort)Math.Max(0, this._player.SelectedCharacter.LevelUpPoints),
+                (ushort)this._player.Attributes[Stats.BaseStrength], (ushort)this._player.Attributes[Stats.BaseAgility],
+                (ushort)this._player.Attributes[Stats.BaseVitality], (ushort)this._player.Attributes[Stats.BaseEnergy],
+                (ushort)this._player.Attributes[Stats.BaseLeadership], (uint)this._player.Attributes[Stats.CurrentHealth],
+                (uint)this._player.Attributes[Stats.MaximumHealth], (uint)this._player.Attributes[Stats.CurrentMana],
+                (uint)this._player.Attributes[Stats.MaximumMana], (uint)this._player.Attributes[Stats.CurrentShield],
+                (uint)this._player.Attributes[Stats.MaximumShield], (uint)this._player.Attributes[Stats.CurrentAbility],
+                (uint)this._player.Attributes[Stats.MaximumAbility], (uint)this._player.Money,
+                this._player.SelectedCharacter.State.Convert(), this._player.SelectedCharacter.CharacterStatus.Convert(),
+                (ushort)this._player.SelectedCharacter.UsedFruitPoints, this._player.SelectedCharacter.GetMaximumFruitPoints(),
+                (ushort)this._player.SelectedCharacter.UsedNegFruitPoints, this._player.SelectedCharacter.GetMaximumFruitPoints(),
+                (ushort)this._player.Attributes[Stats.AttackSpeed], (ushort)this._player.Attributes[Stats.MagicSpeed],
+                (ushort)maxAttackSpeed, (byte)this._player.SelectedCharacter.InventoryExtensions,
+                (ushort)this._player.Attributes[Stats.Resets]).ConfigureAwait(false);
+        }
+        else
+        {
+            await connection.SendCharacterInformationExtendedAsync(
+                checked((byte)(this._player.Position.X)),
+                checked((byte)(this._player.Position.Y)),
                 this._player.SelectedCharacter!.CurrentMap!.Number.ToUnsigned(),
                 (ulong)this._player.SelectedCharacter.Experience,
                 (ulong)this._player.GameServerContext.ExperienceTable[(int)this._player.Attributes![Stats.Level] + 1],
@@ -70,8 +95,8 @@ public class UpdateCharacterStatsExtendedPlugIn : IUpdateCharacterStatsPlugIn
                 (ushort)this._player.Attributes[Stats.MagicSpeed],
                 (ushort)maxAttackSpeed,
                 (byte)this._player.SelectedCharacter.InventoryExtensions,
-                (ushort)this._player.Attributes[Stats.Resets])
-            .ConfigureAwait(false);
+                (ushort)this._player.Attributes[Stats.Resets]).ConfigureAwait(false);
+        }
 
         if (this._player.SelectedCharacter.CharacterClass!.IsMasterClass)
         {

@@ -53,6 +53,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     private readonly AsyncLock _moveLock = new();
     private readonly AsyncLock _experienceLock = new();
+    private readonly AsyncLock _warpLock = new();
+    private readonly AsyncLock _mapChangeReadyLock = new();
 
     /// <summary>
     /// Serializes context mutations done by this player's action handlers against the periodic and
@@ -408,8 +410,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         {
             if (this.Position != value && this.SelectedCharacter is { } character)
             {
-                character.PositionX = value.X;
-                character.PositionY = value.Y;
+                character.PositionX = (ushort)value.X;
+                character.PositionY = (ushort)value.Y;
                 this.GameContext.PlugInManager?.GetPlugInPoint<IAttackableMovedPlugIn>()?.AttackableMoved(this);
             }
         }
@@ -606,7 +608,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 await duelRoom.CancelDuelAsync().ConfigureAwait(false);
                 if (this.GameContext.Configuration.DuelConfiguration?.Exit is { } exit)
                 {
-                    await this.PlaceAtGateAsync(exit).ConfigureAwait(false);
+                    await this.PlaceAtGateAsync(exit, await this.GetRandomWalkableGatePositionAsync(exit).ConfigureAwait(false)).ConfigureAwait(false);
                 }
             }
 
@@ -1105,31 +1107,124 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// Moves the player to the specified gate.
     /// </summary>
     /// <param name="gate">The gate to which the player should be moved.</param>
-    public async ValueTask WarpToAsync(ExitGate gate)
+    /// <param name="costs">The Zen cost to charge after the gate has been validated.</param>
+    public async ValueTask<WarpResult> WarpToAsync(ExitGate gate, int costs = 0)
     {
-        var isRespawnOnSameMap = object.Equals(this.CurrentMap?.Definition, gate.Map);
-        if (!await this.TryRemoveFromCurrentMapAsync(isRespawnOnSameMap).ConfigureAwait(false))
+        GameMap? previousMap = null;
+        Point previousPosition = default;
+        Direction previousRotation = default;
+        bool previousIsAlive = false;
+        bool previousIsTeleporting = false;
+        State? previousState = null;
+        bool removeAttempted = false;
+        bool moneyRemoved = false;
+        Monster? summon = null;
+        Point previousSummonPosition = default;
+
+        try
         {
-            return;
+            using (await this._warpLock.LockAsync().ConfigureAwait(false))
+            {
+                if (this.PlayerState.CurrentState == GameLogic.PlayerState.ChangingMap)
+                {
+                    return WarpResult.AlreadyChangingMap;
+                }
+
+                if (this.CurrentMap is null)
+                {
+                    return WarpResult.Failed;
+                }
+
+                if (costs < 0 || this.SelectedCharacter is null)
+                {
+                    return WarpResult.Failed;
+                }
+
+                previousMap = this.CurrentMap;
+                previousPosition = this.Position;
+                previousRotation = this.Rotation;
+                previousIsAlive = this.IsAlive;
+                previousIsTeleporting = this.IsTeleporting;
+                previousState = this.PlayerState.CurrentState;
+                summon = this.Summon?.Item1 is { IsAlive: true } activeSummon ? activeSummon : null;
+                previousSummonPosition = summon?.Position ?? default;
+
+                if (previousState == GameLogic.PlayerState.EnteredWorld
+                    && !await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.ChangingMap).ConfigureAwait(false))
+                {
+                    return WarpResult.Failed;
+                }
+
+                Point targetPosition;
+                try
+                {
+                    targetPosition = await this.GetRandomWalkableGatePositionAsync(gate).ConfigureAwait(false);
+                }
+                catch (InvalidOperationException exception)
+                {
+                    this.Logger.LogWarning(exception, "Rejected invalid warp gate {Gate}.", gate);
+                    await this.RestoreWarpStateAsync(previousState).ConfigureAwait(false);
+                    return WarpResult.InvalidGate;
+                }
+
+                if (costs > 0 && !this.TryRemoveMoney(costs))
+                {
+                    await this.RestoreWarpStateAsync(previousState).ConfigureAwait(false);
+                    return WarpResult.InsufficientMoney;
+                }
+
+                moneyRemoved = costs > 0;
+                removeAttempted = true;
+                if (!await this.TryRemoveFromCurrentMapAsync(object.Equals(previousMap.Definition, gate.Map)).ConfigureAwait(false))
+                {
+                    throw new InvalidOperationException("The player could not be removed from the current map.");
+                }
+
+                await this.PlaceAtGateAsync(gate, targetPosition).ConfigureAwait(false);
+                this.CurrentMap = null; // Will be set again after the client acknowledged the map change.
+            }
+
+            if (!this.PlayerState.CurrentState.IsDisconnectedOrFinished())
+            {
+                await this.InvokeViewPlugInAsync<IMapChangePlugIn>(p => p.MapChangeAsync()).ConfigureAwait(false);
+            }
+
+            return WarpResult.Success;
         }
-
-        await this.PlaceAtGateAsync(gate).ConfigureAwait(false);
-        this.CurrentMap = null; // Will be set again, when the client acknowledged the map change by F3 12 packet.
-
-        if (!this.PlayerState.CurrentState.IsDisconnectedOrFinished())
+        catch (Exception exception)
         {
-            await this.InvokeViewPlugInAsync<IMapChangePlugIn>(p => p.MapChangeAsync()).ConfigureAwait(false);
+            this.Logger.LogWarning(exception, "Warp to gate {Gate} failed and will be rolled back.", gate);
+            await this.RollbackWarpAsync(
+                previousMap,
+                previousPosition,
+                previousRotation,
+                previousIsAlive,
+                previousIsTeleporting,
+                previousState,
+                removeAttempted,
+                summon,
+                previousSummonPosition,
+                costs,
+                moneyRemoved).ConfigureAwait(false);
+            return WarpResult.Failed;
         }
-
-        // after this, the Client will send us a F3 12 packet, to tell us it loaded
-        // the map and is ready to receive the new meet player/monster etc.
-        // Then ClientReadyAfterMapChange is called.
     }
 
     /// <summary>
     /// Moves the player to the safe zone.
     /// </summary>
-    public async ValueTask WarpToSafezoneAsync() => await this.WarpToAsync(await this.GetSpawnGateOfCurrentMapAsync().ConfigureAwait(false)).ConfigureAwait(false);
+    public async ValueTask<WarpResult> WarpToSafezoneAsync()
+    {
+        try
+        {
+            return await this.WarpToAsync(await this.GetSpawnGateOfCurrentMapAsync().ConfigureAwait(false)).ConfigureAwait(false);
+        }
+        catch (Exception exception)
+        {
+            this.Logger.LogWarning(exception, "Could not determine a safezone warp destination.");
+            return WarpResult.Failed;
+        }
+    }
 
     /// <summary>
     /// Respawns the player to the specified gate.
@@ -1137,6 +1232,17 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <param name="gate">The gate at which the player should be respawned.</param>
     public virtual async ValueTask RespawnAtAsync(ExitGate gate)
     {
+        Point targetPosition;
+        try
+        {
+            targetPosition = await this.GetRandomWalkableGatePositionAsync(gate).ConfigureAwait(false);
+        }
+        catch (InvalidOperationException exception)
+        {
+            this.Logger.LogWarning(exception, "Rejected invalid respawn gate {Gate}.", gate);
+            return;
+        }
+
         var isRespawnOnSameMap = object.Equals(this.CurrentMap?.Definition, gate.Map);
 
         if (!await this.TryRemoveFromCurrentMapAsync(isRespawnOnSameMap).ConfigureAwait(false))
@@ -1146,7 +1252,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         this.ThrowNotInitializedProperty(this.SelectedCharacter is null, nameof(this.SelectedCharacter));
         this.SelectedCharacter.ThrowNotInitializedProperty(this.SelectedCharacter.CurrentMap is null, nameof(this.SelectedCharacter.CurrentMap));
-        await this.PlaceAtGateAsync(gate).ConfigureAwait(false);
+        await this.PlaceAtGateAsync(gate, targetPosition).ConfigureAwait(false);
         this._respawnAfterDeathCts?.Dispose();
         this._respawnAfterDeathCts = null;
 
@@ -1181,6 +1287,27 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// </remarks>
     public async ValueTask ClientReadyAfterMapChangeAsync()
     {
+        using var l = await this._mapChangeReadyLock.LockAsync().ConfigureAwait(false);
+        await this.CompleteMapChangeAsync().ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Completes a map change for an offline player without requiring a network ACK.
+    /// </summary>
+    internal async ValueTask ClientReadyAfterMapChangeOfflineAsync()
+    {
+        using var l = await this._mapChangeReadyLock.LockAsync().ConfigureAwait(false);
+        await this.CompleteMapChangeAsync().ConfigureAwait(false);
+    }
+
+    private async ValueTask CompleteMapChangeAsync()
+    {
+        // A repeated F3:12 must not re-add the player or summon to the map.
+        if (this.CurrentMap is not null)
+        {
+            return;
+        }
+
         this.ThrowNotInitializedProperty(this.SelectedCharacter is null, nameof(this.SelectedCharacter));
         this.SelectedCharacter.ThrowNotInitializedProperty(this.SelectedCharacter.CurrentMap is null, nameof(this.SelectedCharacter.CurrentMap));
 
@@ -1193,18 +1320,47 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             this.CurrentMap = await this.GameContext.GetMapAsync(this.SelectedCharacter!.CurrentMap.Number.ToUnsigned()).ConfigureAwait(false);
         }
 
-        await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.EnteredWorld).ConfigureAwait(false);
+        if (this.CurrentMap is null)
+        {
+            this.Logger.LogError("Could not enter map {MapNumber} because it was not found.", this.SelectedCharacter.CurrentMap.Number);
+            await this.RestoreWarpStateAsync(GameLogic.PlayerState.EnteredWorld).ConfigureAwait(false);
+            return;
+        }
+
+        if (!await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.EnteredWorld).ConfigureAwait(false)
+            && this.PlayerState.CurrentState != GameLogic.PlayerState.EnteredWorld)
+        {
+            this.CurrentMap = null;
+            return;
+        }
+
         this.IsAlive = true;
 
-        await this.CurrentMap!.AddAsync(this).ConfigureAwait(false);
-        if (!this.CurrentMap.Terrain.WalkMap[this.SelectedCharacter.PositionX, this.SelectedCharacter.PositionY])
+        var map = this.CurrentMap;
+        var x = this.SelectedCharacter.PositionX;
+        var y = this.SelectedCharacter.PositionY;
+        if ((uint)x >= (uint)map.Terrain.Size
+            || (uint)y >= (uint)map.Terrain.Size
+            || !map.Terrain.WalkMap[x, y])
         {
-            await this.WarpToSafezoneAsync().ConfigureAwait(false);
+            try
+            {
+                await this.ApplyWalkableFallbackPositionAsync(map).ConfigureAwait(false);
+            }
+            catch (InvalidOperationException exception)
+            {
+                this.Logger.LogWarning(exception, "Could not repair invalid position after map change.");
+                this.CurrentMap = null;
+                await this.RestoreWarpStateAsync(GameLogic.PlayerState.EnteredWorld).ConfigureAwait(false);
+                return;
+            }
         }
+
+        await map.AddAsync(this).ConfigureAwait(false);
 
         if (this.Summon?.Item1 is { IsAlive: true } summon)
         {
-            await this.CurrentMap.AddAsync(summon).ConfigureAwait(false);
+            await map.AddAsync(summon).ConfigureAwait(false);
             summon.OnSpawn();
         }
     }
@@ -1360,7 +1516,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         var startPoint = steps.Span[0].From;
 
         var config = this.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()?.Configuration;
-        int maxAllowedWalkStartOffset = config?.MaxAllowedWalkStartOffset ?? 5;
+        int maxAllowedWalkStartOffset = config?.MaxAllowedWalkStartOffset ?? 12;
 
         var speedCheck = this.GameContext.PlugInManager.GetPlugInPoint<ISpeedHackCheatCheckPlugIn>();
         if (speedCheck is { })
@@ -1388,7 +1544,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return;
         }
 
-        var canWalkToTarget = currentMap.Terrain.WalkMap[target.X, target.Y];
+        var canWalkToTarget = target.X < currentMap.Terrain.Size
+                              && target.Y < currentMap.Terrain.Size
+                              && currentMap.Terrain.WalkMap[target.X, target.Y];
         if (canWalkToTarget)
         {
             this.Logger.LogDebug("WalkToAsync: Player is walking to {0}", target);
@@ -1737,10 +1895,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             MonsterDefinition = definition,
             SpawnTrigger = SpawnTrigger.OnceAtEventStart,
             Quantity = 1,
-            X1 = (byte)Math.Max(this.Position.X - 3, byte.MinValue),
-            X2 = (byte)Math.Min(this.Position.X + 3, byte.MaxValue),
-            Y1 = (byte)Math.Max(this.Position.Y - 3, byte.MinValue),
-            Y2 = (byte)Math.Min(this.Position.Y + 3, byte.MaxValue),
+            X1 = (ushort)Math.Max(this.Position.X - 3, ushort.MinValue),
+            X2 = (ushort)Math.Min(this.Position.X + 3, ushort.MaxValue),
+            Y1 = (ushort)Math.Max(this.Position.Y - 3, ushort.MinValue),
+            Y2 = (ushort)Math.Min(this.Position.Y + 3, ushort.MaxValue),
         };
         var intelligence = new SummonedMonsterIntelligence(this);
         var monster = new Monster(area, definition, gameMap, NullDropGenerator.Instance, intelligence, this.GameContext.PlugInManager, this.GameContext.PathFinderPool);
@@ -2191,10 +2349,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         return true;
     }
 
-    private async ValueTask PlaceAtGateAsync(ExitGate gate)
+    private async ValueTask PlaceAtGateAsync(ExitGate gate, Point position)
     {
-        this.SelectedCharacter!.PositionX = (byte)Rand.NextInt(gate.X1, gate.X2);
-        this.SelectedCharacter.PositionY = (byte)Rand.NextInt(gate.Y1, gate.Y2);
+        this.SelectedCharacter!.PositionX = position.X;
+        this.SelectedCharacter.PositionY = position.Y;
         this.SelectedCharacter.CurrentMap = gate.Map;
         this.Rotation = gate.Direction;
 
@@ -2205,9 +2363,170 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         if (this.Summon?.Item1 is { IsAlive: true } summon)
         {
-            summon.Position = gate.GetRandomPoint();
+            summon.Position = position;
             summon.Rotation = gate.Direction;
         }
+    }
+
+    private async ValueTask<Point> GetRandomWalkableGatePositionAsync(ExitGate gate)
+    {
+        if (gate.Map is null)
+        {
+            throw new InvalidOperationException("Gate has no target map.");
+        }
+
+        var targetMap = await this.GameContext.GetMapAsync((ushort)gate.Map.Number).ConfigureAwait(false);
+        if (targetMap is null)
+        {
+            throw new InvalidOperationException($"Target map {gate.Map.Number} was not found.");
+        }
+
+        var terrain = targetMap.Terrain;
+        if (gate.X1 > gate.X2 || gate.Y1 > gate.Y2
+            || gate.X2 >= terrain.Size || gate.Y2 >= terrain.Size)
+        {
+            throw new InvalidOperationException($"Gate {gate} is outside target map {gate.Map.Name}.");
+        }
+
+        var positions = new List<Point>();
+        for (var x = gate.X1; x <= gate.X2; x++)
+        {
+            for (var y = gate.Y1; y <= gate.Y2; y++)
+            {
+                if (terrain.WalkMap[x, y])
+                {
+                    positions.Add(new Point(x, y));
+                }
+            }
+        }
+
+        if (positions.Count == 0)
+        {
+            throw new InvalidOperationException($"Gate {gate} has no walkable destination on map {gate.Map.Name}.");
+        }
+
+        return positions[Rand.NextInt(0, positions.Count)];
+    }
+
+    private async ValueTask ApplyWalkableFallbackPositionAsync(GameMap map)
+    {
+        if (map.SafeZoneSpawnGate is { } safeZoneGate && object.Equals(safeZoneGate.Map, map.Definition))
+        {
+            await this.PlaceAtGateAsync(safeZoneGate, await this.GetRandomWalkableGatePositionAsync(safeZoneGate).ConfigureAwait(false)).ConfigureAwait(false);
+            return;
+        }
+
+        var fallbackPosition = map.Terrain.GetCenterCoordinate();
+        if (!map.Terrain.WalkMap[fallbackPosition.X, fallbackPosition.Y])
+        {
+            throw new InvalidOperationException($"Map {map.Definition} has no walkable fallback position.");
+        }
+
+        this.SelectedCharacter!.PositionX = fallbackPosition.X;
+        this.SelectedCharacter.PositionY = fallbackPosition.Y;
+    }
+
+    private async ValueTask RestoreWarpStateAsync(State? previousState)
+    {
+        if (previousState is not null
+            && this.PlayerState.CurrentState == GameLogic.PlayerState.ChangingMap)
+        {
+            await this.PlayerState.TryAdvanceToAsync(previousState).ConfigureAwait(false);
+        }
+    }
+
+    private async ValueTask RollbackWarpAsync(
+        GameMap? previousMap,
+        Point previousPosition,
+        Direction previousRotation,
+        bool previousIsAlive,
+        bool previousIsTeleporting,
+        State? previousState,
+        bool removeAttempted,
+        Monster? summon,
+        Point previousSummonPosition,
+        int costs,
+        bool moneyRemoved)
+    {
+        using var l = await this._warpLock.LockAsync().ConfigureAwait(false);
+
+        if (moneyRemoved && costs > 0)
+        {
+            try
+            {
+                this.Money = checked(this.Money + costs);
+            }
+            catch (Exception exception)
+            {
+                this.Logger.LogError(exception, "Could not refund {Costs} Zen after a failed warp.", costs);
+            }
+        }
+
+        if (previousMap is not null)
+        {
+            if (this.CurrentMap is { } currentMap && !object.Equals(currentMap, previousMap))
+            {
+                try
+                {
+                    await currentMap.RemoveAsync(this).ConfigureAwait(false);
+                    if (summon is { IsAlive: true })
+                    {
+                        await currentMap.RemoveAsync(summon).ConfigureAwait(false);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    this.Logger.LogWarning(exception, "Could not remove the failed warp registration.");
+                }
+            }
+
+            this.SelectedCharacter!.PositionX = previousPosition.X;
+            this.SelectedCharacter.PositionY = previousPosition.Y;
+            this.Rotation = previousRotation;
+            if (summon is { })
+            {
+                summon.Position = previousSummonPosition;
+                summon.Rotation = previousRotation;
+            }
+
+            this.SelectedCharacter.CurrentMap = previousMap.Definition;
+            this.CurrentMap = previousMap;
+            this.IsAlive = previousIsAlive;
+            this.IsTeleporting = previousIsTeleporting;
+
+            if (removeAttempted)
+            {
+                try
+                {
+                    if (previousMap.GetObject(this.Id) == this)
+                    {
+                        await previousMap.RespawnAsync(this).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        await previousMap.AddAsync(this).ConfigureAwait(false);
+                    }
+
+                    if (summon is { IsAlive: true })
+                    {
+                        if (previousMap.GetObject(summon.Id) == summon)
+                        {
+                            await previousMap.RespawnAsync(summon).ConfigureAwait(false);
+                        }
+                        else
+                        {
+                            await previousMap.AddAsync(summon).ConfigureAwait(false);
+                        }
+                    }
+                }
+                catch (Exception exception)
+                {
+                    this.Logger.LogError(exception, "Could not restore the player registration after a failed warp.");
+                }
+            }
+        }
+
+        await this.RestoreWarpStateAsync(previousState).ConfigureAwait(false);
     }
 
     private async ValueTask RemoveFromCurrentMapAsync()
@@ -2673,6 +2992,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
 
         selectedCharacter.CurrentMap ??= selectedCharacter.CharacterClass?.HomeMap;
+
         this.AddMissingStatAttributes();
 
         this.Attributes = new ItemAwareAttributeSystem(this.Account!, selectedCharacter, this.GameContext.Configuration);

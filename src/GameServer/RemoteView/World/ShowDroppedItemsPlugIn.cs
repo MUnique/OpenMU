@@ -60,8 +60,8 @@ public class ShowDroppedItemsPlugIn : IShowDroppedItemsPlugIn
                     itemBlock.IsFreshDrop = true;
                 }
 
-                itemBlock.PositionX = item.Position.X;
-                itemBlock.PositionY = item.Position.Y;
+                itemBlock.PositionX = checked((byte)(item.Position.X));
+                itemBlock.PositionY = checked((byte)(item.Position.Y));
                 var itemSize = itemSerializer.SerializeItem(itemBlock.ItemData, item.Item);
                 actualSize += ItemsDroppedRef.DroppedItemRef.GetRequiredSize(itemSize);
                 i++;

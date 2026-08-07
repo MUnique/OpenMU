@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions;
 using System.Diagnostics.CodeAnalysis;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views;
+using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Interfaces;
 
 /// <summary>
@@ -23,7 +24,15 @@ public class WarpAction
     {
         if (this.CheckRequirements(player, warpInfo, out var errorMessage))
         {
-            await player.WarpToAsync(warpInfo.Gate!).ConfigureAwait(false);
+            var result = await player.WarpToAsync(warpInfo.Gate!, warpInfo.Costs).ConfigureAwait(false);
+            if (result == WarpResult.InsufficientMoney)
+            {
+                await player.ShowBlueMessageAsync($"You need {warpInfo.Costs} in order to warp").ConfigureAwait(false);
+            }
+            else if (result is not (WarpResult.Success or WarpResult.AlreadyChangingMap))
+            {
+                await player.InvokeViewPlugInAsync<IMapChangePlugIn>(p => p.MapChangeFailedAsync()).ConfigureAwait(false);
+            }
         }
         else
         {
@@ -54,23 +63,13 @@ public class WarpAction
             return false;
         }
 
-        // Money check should be last to avoid getting zen when other checks failed
-        if (!this.CheckMoneyRequirement(player, warpInfo))
+        // Check money without mutating it; WarpToAsync charges only after reserving and validating the warp.
+        if (player.Money < warpInfo.Costs)
         {
             errorMessage = $"You need {warpInfo.Costs} in order to warp";
             return false;
         }
 
         return true;
-    }
-
-    private bool CheckMoneyRequirement(Player player, WarpInfo warpInfo)
-    {
-        if (player.TryRemoveMoney(warpInfo.Costs))
-        {
-            return true;
-        }
-
-        return false;
     }
 }

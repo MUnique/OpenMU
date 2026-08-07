@@ -74,8 +74,8 @@ public class NewNpcsInScopePlugIn095 : INewNpcsInScopePlugIn
                 }
 
                 npcBlock.TypeNumber = (byte)npc.Definition.Number;
-                npcBlock.CurrentPositionX = npc.Position.X;
-                npcBlock.CurrentPositionY = npc.Position.Y;
+                npcBlock.CurrentPositionX = checked((byte)(npc.Position.X));
+                npcBlock.CurrentPositionY = checked((byte)(npc.Position.Y));
                 if (npc is Monster monster)
                 {
                     npcBlock.IsPoisoned = monster.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.Poisoned);
@@ -87,13 +87,13 @@ public class NewNpcsInScopePlugIn095 : INewNpcsInScopePlugIn
                 var supportWalk = npc as ISupportWalk;
                 if (supportWalk?.IsWalking ?? false)
                 {
-                    npcBlock.TargetPositionX = supportWalk.WalkTarget.X;
-                    npcBlock.TargetPositionY = supportWalk.WalkTarget.Y;
+                    npcBlock.TargetPositionX = checked((byte)(supportWalk.WalkTarget.X));
+                    npcBlock.TargetPositionY = checked((byte)(supportWalk.WalkTarget.Y));
                 }
                 else
                 {
-                    npcBlock.TargetPositionX = npc.Position.X;
-                    npcBlock.TargetPositionY = npc.Position.Y;
+                    npcBlock.TargetPositionX = checked((byte)(npc.Position.X));
+                    npcBlock.TargetPositionY = checked((byte)(npc.Position.Y));
                 }
 
                 npcBlock.Rotation = npc.Rotation.ToPacketByte();
@@ -128,8 +128,8 @@ public class NewNpcsInScopePlugIn095 : INewNpcsInScopePlugIn
                 }
 
                 block.TypeNumber = (byte)summon.Definition.Number;
-                block.CurrentPositionX = summon.Position.X;
-                block.CurrentPositionY = summon.Position.Y;
+                block.CurrentPositionX = checked((byte)(summon.Position.X));
+                block.CurrentPositionY = checked((byte)(summon.Position.Y));
                 block.IsPoisoned = summon.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.Poisoned);
                 block.IsIced = summon.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.Iced);
                 block.IsDamageBuffed = summon.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.DamageBuff);
@@ -138,13 +138,13 @@ public class NewNpcsInScopePlugIn095 : INewNpcsInScopePlugIn
                 var supportWalk = summon as ISupportWalk;
                 if (supportWalk?.IsWalking ?? false)
                 {
-                    block.TargetPositionX = supportWalk.WalkTarget.X;
-                    block.TargetPositionY = supportWalk.WalkTarget.Y;
+                    block.TargetPositionX = checked((byte)(supportWalk.WalkTarget.X));
+                    block.TargetPositionY = checked((byte)(supportWalk.WalkTarget.Y));
                 }
                 else
                 {
-                    block.TargetPositionX = summon.Position.X;
-                    block.TargetPositionY = summon.Position.Y;
+                    block.TargetPositionX = checked((byte)(summon.Position.X));
+                    block.TargetPositionY = checked((byte)(summon.Position.Y));
                 }
 
                 block.Rotation = summon.Rotation.ToPacketByte();

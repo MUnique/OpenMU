@@ -549,11 +549,11 @@ public static class AttackableExtensions
             var terrain = map.Terrain;
             var newX = target.Position.X + Rand.NextInt(-1, 2);
             var newY = target.Position.Y + Rand.NextInt(-1, 2);
-            var isNewXAllowed = newX is >= byte.MinValue and <= byte.MaxValue;
-            var isNewYAllowed = newY is >= byte.MinValue and <= byte.MaxValue;
+            var isNewXAllowed = newX >= 0 && newX < terrain.Size;
+            var isNewYAllowed = newY >= 0 && newY < terrain.Size;
             if (isNewXAllowed && isNewYAllowed && terrain.AIgrid[newX, newY] == 1)
             {
-                await movable.MoveAsync(new Point((byte)newX, (byte)newY)).ConfigureAwait(false);
+                await movable.MoveAsync(new Point((ushort)newX, (ushort)newY)).ConfigureAwait(false);
             }
         }
     }

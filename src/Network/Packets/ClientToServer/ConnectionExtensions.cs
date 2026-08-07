@@ -1,4 +1,4 @@
-// <copyright file="ConnectionExtensions.cs" company="MUnique">
+﻿// <copyright file="ConnectionExtensions.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -2522,6 +2522,42 @@ public static class ConnectionExtensions
         {
             var length = WalkRequestRef.GetRequiredSize(directions.Length);
             var packet = new WalkRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.SourceX = @sourceX;
+            packet.SourceY = @sourceY;
+            packet.StepCount = @stepCount;
+            packet.TargetRotation = @targetRotation;
+            @directions.Span.CopyTo(packet.Directions);
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="WalkRequestGlobal" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="sourceX">The source x.</param>
+    /// <param name="sourceY">The source y.</param>
+    /// <param name="stepCount">The step count.</param>
+    /// <param name="targetRotation">The target rotation.</param>
+    /// <param name="directions">The directions.</param>
+    /// <remarks>
+    /// Is sent by the client when: A global-world player wants to walk from an absolute ushort coordinate.
+    /// Causes reaction on server side: The player gets moved using global-world coordinates.
+    /// </remarks>
+    public static async ValueTask SendWalkRequestGlobalAsync(this IConnection? connection, ushort @sourceX, ushort @sourceY, byte @stepCount, byte @targetRotation, Memory<byte> @directions)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = WalkRequestGlobalRef.GetRequiredSize(directions.Length);
+            var packet = new WalkRequestGlobalRef(connection.Output.GetSpan(length)[..length]);
             packet.SourceX = @sourceX;
             packet.SourceY = @sourceY;
             packet.StepCount = @stepCount;

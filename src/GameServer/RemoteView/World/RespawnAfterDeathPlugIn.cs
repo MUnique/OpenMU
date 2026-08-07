@@ -40,8 +40,8 @@ public class RespawnAfterDeathPlugIn : IRespawnAfterDeathPlugIn
         var position = this._player.IsWalking ? this._player.WalkTarget : this._player.Position;
         var isMaster = this._player.SelectedCharacter.CharacterClass?.IsMasterClass is true;
         await this._player.Connection.SendRespawnAfterDeathAsync(
-                position.X,
-                position.Y,
+                checked((byte)(position.X)),
+                checked((byte)(position.Y)),
                 mapNumber,
                 this._player.Rotation.ToPacketByte(),
                 (ushort)this._player.Attributes[Stats.CurrentHealth],

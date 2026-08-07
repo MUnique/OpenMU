@@ -39,8 +39,8 @@ public class UpdateCharacterStatsPlugIn097 : IUpdateCharacterStatsPlugIn
         }
 
         await connection.SendCharacterInformation097Async(
-            this._player.Position.X,
-            this._player.Position.Y,
+            checked((byte)(this._player.Position.X)),
+            checked((byte)(this._player.Position.Y)),
             (byte)this._player.SelectedCharacter!.CurrentMap!.Number,
             this._player.Rotation.ToPacketByte(),
             (uint)this._player.SelectedCharacter.Experience,

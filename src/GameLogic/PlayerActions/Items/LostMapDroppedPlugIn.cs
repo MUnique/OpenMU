@@ -73,10 +73,10 @@ public sealed class LostMapDroppedPlugIn : IItemDropPlugIn
             Quantity = 1,
             MonsterDefinition = gateNpcDef,
             SpawnTrigger = SpawnTrigger.ManuallyForEvent,
-            X1 = target.X,
-            X2 = target.X,
-            Y1 = target.Y,
-            Y2 = target.Y,
+            X1 = checked((byte)target.X),
+            X2 = checked((byte)target.X),
+            Y1 = checked((byte)target.Y),
+            Y2 = checked((byte)target.Y),
         };
 
         var targetGate = player.GameContext.Configuration.Maps.FirstOrDefault(g => g.Number == KalimaMapNumbers[item.Level - 1])?.ExitGates.FirstOrDefault();

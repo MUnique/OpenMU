@@ -77,6 +77,7 @@ public static class PlayerState
         EnteredWorld.PossibleTransitions.Add(PlayerState.Dead);
 
         EnteredWorld.PossibleTransitions.Add(PlayerState.CharacterSelection);
+        EnteredWorld.PossibleTransitions.Add(PlayerState.ChangingMap);
     }
 
     /// <summary>

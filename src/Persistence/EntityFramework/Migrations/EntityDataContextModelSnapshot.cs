@@ -763,11 +763,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<byte>("Pose")
                         .HasColumnType("smallint");
 
-                    b.Property<byte>("PositionX")
-                        .HasColumnType("smallint");
+                    b.Property<int>("PositionX")
+                        .HasColumnType("integer");
 
-                    b.Property<byte>("PositionY")
-                        .HasColumnType("smallint");
+                    b.Property<int>("PositionY")
+                        .HasColumnType("integer");
 
                     b.Property<int>("State")
                         .HasColumnType("integer");
@@ -1258,17 +1258,17 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid?>("TargetGateId")
                         .HasColumnType("uuid");
 
-                    b.Property<byte>("X1")
-                        .HasColumnType("smallint");
+                    b.Property<int>("X1")
+                        .HasColumnType("integer");
 
-                    b.Property<byte>("X2")
-                        .HasColumnType("smallint");
+                    b.Property<int>("X2")
+                        .HasColumnType("integer");
 
-                    b.Property<byte>("Y1")
-                        .HasColumnType("smallint");
+                    b.Property<int>("Y1")
+                        .HasColumnType("integer");
 
-                    b.Property<byte>("Y2")
-                        .HasColumnType("smallint");
+                    b.Property<int>("Y2")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -1294,17 +1294,17 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid?>("MapId")
                         .HasColumnType("uuid");
 
-                    b.Property<byte>("X1")
-                        .HasColumnType("smallint");
+                    b.Property<int>("X1")
+                        .HasColumnType("integer");
 
-                    b.Property<byte>("X2")
-                        .HasColumnType("smallint");
+                    b.Property<int>("X2")
+                        .HasColumnType("integer");
 
-                    b.Property<byte>("Y1")
-                        .HasColumnType("smallint");
+                    b.Property<int>("Y1")
+                        .HasColumnType("integer");
 
-                    b.Property<byte>("Y2")
-                        .HasColumnType("smallint");
+                    b.Property<int>("Y2")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -3171,17 +3171,17 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<byte>("WaveNumber")
                         .HasColumnType("smallint");
 
-                    b.Property<byte>("X1")
-                        .HasColumnType("smallint");
+                    b.Property<int>("X1")
+                        .HasColumnType("integer");
 
-                    b.Property<byte>("X2")
-                        .HasColumnType("smallint");
+                    b.Property<int>("X2")
+                        .HasColumnType("integer");
 
-                    b.Property<byte>("Y1")
-                        .HasColumnType("smallint");
+                    b.Property<int>("Y1")
+                        .HasColumnType("integer");
 
-                    b.Property<byte>("Y2")
-                        .HasColumnType("smallint");
+                    b.Property<int>("Y2")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -3458,17 +3458,17 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<byte>("X1")
-                        .HasColumnType("smallint");
+                    b.Property<int>("X1")
+                        .HasColumnType("integer");
 
-                    b.Property<byte>("X2")
-                        .HasColumnType("smallint");
+                    b.Property<int>("X2")
+                        .HasColumnType("integer");
 
-                    b.Property<byte>("Y1")
-                        .HasColumnType("smallint");
+                    b.Property<int>("Y1")
+                        .HasColumnType("integer");
 
-                    b.Property<byte>("Y2")
-                        .HasColumnType("smallint");
+                    b.Property<int>("Y2")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 

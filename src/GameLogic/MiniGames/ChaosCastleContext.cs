@@ -368,11 +368,11 @@ public sealed class ChaosCastleContext : MiniGameContext
             var targetX = playerPosition.X + (blowX * directionX);
             var targetY = playerPosition.Y + (blowY * directionY);
             targetX = Math.Max(0, targetX);
-            targetX = Math.Min(0xFF, targetX);
+            targetX = Math.Min(this.Map.Terrain.Size - 1, targetX);
             targetY = Math.Max(0, targetY);
-            targetY = Math.Min(0xFF, targetY);
+            targetY = Math.Min(this.Map.Terrain.Size - 1, targetY);
 
-            var targetPoint = new Point((byte)targetX, (byte)targetY);
+            var targetPoint = new Point((ushort)targetX, (ushort)targetY);
             var moved = await this.SetPlayerPositionAsync(player, targetPoint).ConfigureAwait(false);
             if (moved)
             {
@@ -539,7 +539,7 @@ public sealed class ChaosCastleContext : MiniGameContext
         var minY = changeEvent.TerrainChanges.Min(c => c.StartY);
         var maxY = changeEvent.TerrainChanges.Max(x => x.EndY);
 
-        var middlePoint = new Point((byte)((minX + maxX) / 2), (byte)((minY + maxY) / 2));
+            var middlePoint = new Point((ushort)((minX + maxX) / 2), (ushort)((minY + maxY) / 2));
 
         var walkMap = this.Map.Terrain.WalkMap;
 

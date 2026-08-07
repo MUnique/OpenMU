@@ -11,7 +11,9 @@ namespace MUnique.OpenMU.Pathfinding;
 /// </summary>
 public class FullGridNetwork : BaseGridNetwork
 {
-    private readonly Node[] _nodes;
+    private Node[] _nodes = Array.Empty<Node>();
+
+    private int _size;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FullGridNetwork"/> class.
@@ -20,7 +22,6 @@ public class FullGridNetwork : BaseGridNetwork
     public FullGridNetwork(bool allowDiagonals)
         : base(allowDiagonals)
     {
-        this._nodes = new Node[0x10000];
     }
 
     /// <inheritdoc/>
@@ -40,6 +41,13 @@ public class FullGridNetwork : BaseGridNetwork
     /// <inheritdoc/>
     public override bool Prepare(Point start, Point end, byte[,] grid, bool includeSafezone)
     {
+        var size = grid.GetUpperBound(0) + 1;
+        if (size != this._size)
+        {
+            this._size = size;
+            this._nodes = new Node[size * size];
+        }
+
         foreach (var node in this._nodes.Where(n => n != null))
         {
             node.Status = NodeStatus.Undefined;
@@ -50,6 +58,6 @@ public class FullGridNetwork : BaseGridNetwork
 
     private int GetIndexOfPoint(Point position)
     {
-        return (position.Y << 8) + position.X;
+        return position.Y * this._size + position.X;
     }
 }

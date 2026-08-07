@@ -54,7 +54,14 @@ public class ObjectMovedPlugIn : IObjectMovedPlugIn
         switch (type)
         {
             case MoveType.Instant:
-                await connection.SendObjectMovedAsync(this.GetInstantMoveCode(), objectId, obj.Position.X, obj.Position.Y).ConfigureAwait(false);
+                if (obj.Position.X > byte.MaxValue || obj.Position.Y > byte.MaxValue)
+                {
+                    await connection.SendObjectMovedGlobalAsync(ObjectMovedGlobalRef.Code, objectId, obj.Position.X, obj.Position.Y).ConfigureAwait(false);
+                }
+                else
+                {
+                    await connection.SendObjectMovedAsync(this.GetInstantMoveCode(), objectId, checked((byte)(obj.Position.X)), checked((byte)(obj.Position.Y))).ConfigureAwait(false);
+                }
                 break;
 
             case MoveType.Teleport when obj is Player movedPlayer && movedPlayer != this._player:
@@ -103,8 +110,8 @@ public class ObjectMovedPlugIn : IObjectMovedPlugIn
             {
                 HeaderCode = this.GetWalkCode(),
                 ObjectId = objectId,
-                TargetX = targetPoint.X,
-                TargetY = targetPoint.Y,
+                TargetX = checked((byte)(targetPoint.X)),
+                TargetY = checked((byte)(targetPoint.Y)),
                 TargetRotation = rotation.ToPacketByte(),
                 StepCount = (byte)stepsLength,
             };

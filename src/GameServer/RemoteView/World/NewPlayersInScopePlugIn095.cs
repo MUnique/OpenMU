@@ -93,8 +93,8 @@ public class NewPlayersInScopePlugIn095 : INewPlayersInScopePlugIn
 
             playerBlock.Skin = (byte)(transformedPlayer.Attributes?[Stats.TransformationSkin] ?? 0);
 
-            playerBlock.CurrentPositionX = transformedPlayer.Position.X;
-            playerBlock.CurrentPositionY = transformedPlayer.Position.Y;
+            playerBlock.CurrentPositionX = checked((byte)(transformedPlayer.Position.X));
+            playerBlock.CurrentPositionY = checked((byte)(transformedPlayer.Position.Y));
 
             playerBlock.IsPoisoned = transformedPlayer.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.Poisoned);
             playerBlock.IsIced = transformedPlayer.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.Iced);
@@ -104,13 +104,13 @@ public class NewPlayersInScopePlugIn095 : INewPlayersInScopePlugIn
 
             if (transformedPlayer.IsWalking)
             {
-                playerBlock.TargetPositionX = transformedPlayer.WalkTarget.X;
-                playerBlock.TargetPositionY = transformedPlayer.WalkTarget.Y;
+                playerBlock.TargetPositionX = checked((byte)(transformedPlayer.WalkTarget.X));
+                playerBlock.TargetPositionY = checked((byte)(transformedPlayer.WalkTarget.Y));
             }
             else
             {
-                playerBlock.TargetPositionX = transformedPlayer.Position.X;
-                playerBlock.TargetPositionY = transformedPlayer.Position.Y;
+                playerBlock.TargetPositionX = checked((byte)(transformedPlayer.Position.X));
+                playerBlock.TargetPositionY = checked((byte)(transformedPlayer.Position.Y));
             }
 
             playerBlock.Rotation = transformedPlayer.Rotation.ToPacketByte();
@@ -141,8 +141,8 @@ public class NewPlayersInScopePlugIn095 : INewPlayersInScopePlugIn
                 playerBlock.Id |= 0x8000;
             }
 
-            playerBlock.CurrentPositionX = newPlayer.Position.X;
-            playerBlock.CurrentPositionY = newPlayer.Position.Y;
+            playerBlock.CurrentPositionX = checked((byte)(newPlayer.Position.X));
+            playerBlock.CurrentPositionY = checked((byte)(newPlayer.Position.Y));
             appearanceSerializer.WriteAppearanceData(playerBlock.Appearance, newPlayer.AppearanceData, true); // 4 ... 12
 
             playerBlock.IsPoisoned = newPlayer.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.Poisoned);
@@ -153,13 +153,13 @@ public class NewPlayersInScopePlugIn095 : INewPlayersInScopePlugIn
 
             if (newPlayer.IsWalking)
             {
-                playerBlock.TargetPositionX = newPlayer.WalkTarget.X;
-                playerBlock.TargetPositionY = newPlayer.WalkTarget.Y;
+                playerBlock.TargetPositionX = checked((byte)(newPlayer.WalkTarget.X));
+                playerBlock.TargetPositionY = checked((byte)(newPlayer.WalkTarget.Y));
             }
             else
             {
-                playerBlock.TargetPositionX = newPlayer.Position.X;
-                playerBlock.TargetPositionY = newPlayer.Position.Y;
+                playerBlock.TargetPositionX = checked((byte)(newPlayer.Position.X));
+                playerBlock.TargetPositionY = checked((byte)(newPlayer.Position.Y));
             }
 
             playerBlock.Rotation = newPlayer.Rotation.ToPacketByte();

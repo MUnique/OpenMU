@@ -50,12 +50,12 @@ public class Node
     /// <summary>
     /// Gets the x coordinate of this node.
     /// </summary>
-    public byte X => this.Position.X;
+    public ushort X => this.Position.X;
 
     /// <summary>
     /// Gets the y coordinate of this node.
     /// </summary>
-    public byte Y => this.Position.Y;
+    public ushort Y => this.Position.Y;
 
     /// <summary>
     /// Gets or sets the previous node.

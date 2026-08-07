@@ -5,37 +5,42 @@
 namespace MUnique.OpenMU.Pathfinding.PreCalculation;
 
 using System.IO;
+using System.Text;
 
-/// <summary>
-/// Serializes the path infos into the normal format. Every point uses exactly 2 bytes.
-/// </summary>
-/// <seealso cref="OpenMU.Pathfinding.PreCalculation.IPathsSerializer" />
-internal class NormalPathsSerializer : IPathsSerializer
-{
-    /// <inheritdoc/>
-    public IEnumerable<PathInfo> Deserialize(Stream source)
+    /// <summary>
+    /// Serializes the path infos into the normal format. Every coordinate uses exactly 2 bytes (ushort).
+    /// </summary>
+    /// <seealso cref="OpenMU.Pathfinding.PreCalculation.IPathsSerializer" />
+    internal class NormalPathsSerializer : IPathsSerializer
     {
-        const int elementSize = 8;
-        while (source.Position + elementSize < source.Length)
+        private const int CoordinatesPerInfo = 6;
+
+        /// <inheritdoc/>
+        public IEnumerable<PathInfo> Deserialize(Stream source)
         {
-            var start = new Point((byte)source.ReadByte(), (byte)source.ReadByte());
-            var end = new Point((byte)source.ReadByte(), (byte)source.ReadByte());
-            var nextStep = new Point((byte)source.ReadByte(), (byte)source.ReadByte());
-            yield return new PathInfo(new PointCombination(start, end), nextStep);
+            using var reader = new BinaryReader(source, Encoding.UTF8, leaveOpen: true);
+            var elementSize = CoordinatesPerInfo * sizeof(ushort);
+            while (source.Position + elementSize <= source.Length)
+            {
+                var start = new Point(reader.ReadUInt16(), reader.ReadUInt16());
+                var end = new Point(reader.ReadUInt16(), reader.ReadUInt16());
+                var nextStep = new Point(reader.ReadUInt16(), reader.ReadUInt16());
+                yield return new PathInfo(new PointCombination(start, end), nextStep);
+            }
+        }
+
+        /// <inheritdoc/>
+        public void Serialize(IEnumerable<PathInfo> pathInfos, Stream targetStream)
+        {
+            using var writer = new BinaryWriter(targetStream, Encoding.UTF8, leaveOpen: true);
+            foreach (var info in pathInfos)
+            {
+                writer.Write(info.Combination.Start.X);
+                writer.Write(info.Combination.Start.Y);
+                writer.Write(info.Combination.End.X);
+                writer.Write(info.Combination.End.Y);
+                writer.Write(info.NextStep.X);
+                writer.Write(info.NextStep.Y);
+            }
         }
     }
-
-    /// <inheritdoc/>
-    public void Serialize(IEnumerable<PathInfo> pathInfos, Stream targetStream)
-    {
-        foreach (var info in pathInfos)
-        {
-            targetStream.WriteByte(info.Combination.Start.X);
-            targetStream.WriteByte(info.Combination.Start.Y);
-            targetStream.WriteByte(info.Combination.End.X);
-            targetStream.WriteByte(info.Combination.End.Y);
-            targetStream.WriteByte(info.NextStep.X);
-            targetStream.WriteByte(info.NextStep.Y);
-        }
-    }
-}

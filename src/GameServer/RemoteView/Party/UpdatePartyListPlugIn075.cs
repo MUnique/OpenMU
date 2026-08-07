@@ -56,8 +56,8 @@ public class UpdatePartyListPlugIn075 : IUpdatePartyListPlugIn
                 partyMemberBlock.Index = i;
                 partyMemberBlock.Name = partyMember.Name;
                 partyMemberBlock.MapId = (byte)(partyMember.CurrentMap?.MapId ?? 0);
-                partyMemberBlock.PositionX = partyMember.Position.X;
-                partyMemberBlock.PositionY = partyMember.Position.Y;
+                partyMemberBlock.PositionX = checked((byte)(partyMember.Position.X));
+                partyMemberBlock.PositionY = checked((byte)(partyMember.Position.Y));
             }
 
             return size;

@@ -44,12 +44,12 @@ public class GameMap
         this.Definition = mapDefinition;
         this.ItemDropDuration = itemDropDuration;
         this.Terrain = new GameMapTerrain(this.Definition);
-
-        this._areaOfInterestManager = new BucketAreaOfInterestManager(chunkSize);
+        this._areaOfInterestManager = new BucketAreaOfInterestManager(chunkSize, this.Terrain.Size);
         this._objectIdGenerator = new IdGenerator(ViewExtensions.ConstantPlayerId + 1, 0x7FFF);
         this._dropIdGenerator = new IdGenerator(0, ViewExtensions.ConstantPlayerId - 1);
 
-        this._safezoneSpawnGate = this.Definition.GetSafezoneGate(this.Terrain);
+        this._safezoneSpawnGate = this.Definition.GetSafezoneGate(this.Terrain)
+            ?? (this.Terrain.Size > 256 ? this.CreateCenterSpawnGate() : null);
     }
 
     /// <summary>
@@ -76,6 +76,21 @@ public class GameMap
     /// Gets the safe zone spawn gate.
     /// </summary>
     public ExitGate? SafeZoneSpawnGate => this._safezoneSpawnGate;
+
+    private ExitGate CreateCenterSpawnGate()
+    {
+        var center = this.Terrain.GetCenterCoordinate();
+        return new ExitGate
+        {
+            Map = this.Definition,
+            X1 = center.X,
+            X2 = center.X,
+            Y1 = center.Y,
+            Y2 = center.Y,
+            Direction = 0,
+            IsSpawnGate = true,
+        };
+    }
 
     /// <summary>
     /// Gets the duration about how long drops are laying on the ground until they are disappearing.

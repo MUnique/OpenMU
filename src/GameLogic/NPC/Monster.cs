@@ -263,8 +263,8 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
 
         var newX = this.Position.X + moveByX;
         var newY = this.Position.Y + moveByY;
-        byte randx = (byte)Math.Min(0xFF, Math.Max(0, newX));
-        byte randy = (byte)Math.Min(0xFF, Math.Max(0, newY));
+        ushort randx = (ushort)Math.Clamp(newX, 0, this.CurrentMap!.Terrain.Size - 1);
+        ushort randy = (ushort)Math.Clamp(newY, 0, this.CurrentMap.Terrain.Size - 1);
 
         var target = new Point(randx, randy);
         if (this._intelligence.CanWalkOn(target))

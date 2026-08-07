@@ -39,8 +39,8 @@ public class UpdateCharacterStatsPlugIn : IUpdateCharacterStatsPlugIn
         }
 
         await connection.SendCharacterInformationAsync(
-            this._player.Position.X,
-            this._player.Position.Y,
+            checked((byte)(this._player.Position.X)),
+            checked((byte)(this._player.Position.Y)),
             this._player.SelectedCharacter!.CurrentMap!.Number.ToUnsigned(),
             (ulong)this._player.SelectedCharacter.Experience,
             (ulong)this._player.GameServerContext.ExperienceTable[(int)this._player.Attributes![Stats.Level] + 1],

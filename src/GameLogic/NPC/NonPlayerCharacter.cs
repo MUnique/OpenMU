@@ -213,7 +213,7 @@ public class NonPlayerCharacter : AsyncDisposable, IObservable, IRotatable, ILoc
 
         var x = Rand.NextInt(minX, maxX + 1);
         var y = Rand.NextInt(minY, maxY + 1);
-        var point = new Point((byte)x, (byte)y);
+        var point = new Point((ushort)x, (ushort)y);
         if (this.IsValidSpawnPoint(point))
         {
             return point;
