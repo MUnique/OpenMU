@@ -60,6 +60,9 @@ internal sealed class CastleSiegeInitializer : InitializerBase
         configuration.GuildScoreCastleSiegeMembers = 0;
         configuration.GateBuyPrice = 9_500_000;
         configuration.StatueBuyPrice = 4_500_000;
+        configuration.GateRepairCostPerHealthPoint = 5;
+        configuration.StatueRepairCostPerHealthPoint = 3;
+        configuration.RepairCostPerUpgradeLevel = 1_000_000;
         configuration.CastleSiegeMapDefinition = this.GameConfiguration.Maps.Single(map => map.Number == ValleyOfLoren.Number);
         configuration.LandOfTrialsMapDefinition = this.GameConfiguration.Maps.Single(map => map.Number == LandOfTrials.Number);
 

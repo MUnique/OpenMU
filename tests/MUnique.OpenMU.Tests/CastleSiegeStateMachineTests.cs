@@ -173,14 +173,14 @@ public class CastleSiegeStateMachineTests
     }
 
     /// <summary>
-    /// Verifies that only alive database-persisted NPC runtime states are stored.
+    /// Verifies that all database-persisted NPC runtime states are stored, including destroyed and unspawned structures.
     /// </summary>
     [Test]
-    public async ValueTask ContextSavesAlivePersistentNpcStatesAsync()
+    public async ValueTask ContextSavesPersistentNpcStatesIncludingDestroyedAsync()
     {
         var fixture = await CreateFixtureAsync().ConfigureAwait(false);
         var gateStateId = await AddNpcStateAsync(fixture, 277, 0, 250_000).ConfigureAwait(false);
-        await AddNpcStateAsync(fixture, 283, 0, 300_000).ConfigureAwait(false);
+        var statueStateId = await AddNpcStateAsync(fixture, 283, 0, 300_000).ConfigureAwait(false);
         var context = new CastleSiegeContext(fixture.GameContext.Object, fixture.CastleSiegeConfiguration);
         await context.InitializeAsync(new DateTime(2026, 8, 3, 12, 0, 0, DateTimeKind.Utc)).ConfigureAwait(false);
         context.ActiveNpcs.Add(CreateNpcRuntime(277, 0, 125_000, true, true));
@@ -194,10 +194,17 @@ public class CastleSiegeStateMachineTests
             false,
             fixture.GameConfiguration);
         var savedData = (await persistenceContext.GetAsync<CastleSiegeData>().ConfigureAwait(false)).Single();
-        Assert.That(savedData.NpcStates, Has.Count.EqualTo(1));
-        Assert.That(savedData.NpcStates.Single().Id, Is.EqualTo(gateStateId));
-        Assert.That(savedData.NpcStates.Single().MonsterNumber, Is.EqualTo(277));
-        Assert.That(savedData.NpcStates.Single().CurrentHp, Is.EqualTo(125_000));
+        Assert.That(savedData.NpcStates, Has.Count.EqualTo(2));
+        Assert.That(savedData.NpcStates.Select(state => state.MonsterNumber), Is.EquivalentTo(new short[] { 277, 283 }));
+        Assert.Multiple(() =>
+        {
+            var gateState = savedData.NpcStates.Single(state => state.MonsterNumber == 277);
+            var statueState = savedData.NpcStates.Single(state => state.MonsterNumber == 283);
+            Assert.That(gateState.Id, Is.EqualTo(gateStateId));
+            Assert.That(gateState.CurrentHp, Is.EqualTo(125_000));
+            Assert.That(statueState.Id, Is.EqualTo(statueStateId));
+            Assert.That(statueState.CurrentHp, Is.Zero);
+        });
     }
 
     /// <summary>
@@ -323,6 +330,31 @@ public class CastleSiegeStateMachineTests
                 Is.EqualTo(state == CastleSiegeState.Start),
                 $"Unexpected event-running value for state {state}.");
         }
+    }
+
+    /// <summary>
+    /// Verifies that the periodic NPC snapshot is scheduled when the server starts outside the battle phase.
+    /// </summary>
+    [Test]
+    public async ValueTask PeriodicNpcSaveIsScheduledOnStartupAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        await AddNpcStateAsync(fixture, 277, 1, 1_000).ConfigureAwait(false);
+        var timeProvider = new ManualTimeProvider(new DateTimeOffset(2026, 8, 3, 12, 0, 0, TimeSpan.Zero));
+        var plugIn = new CastleSiegePlugIn(timeProvider);
+        await plugIn.ExecuteTaskAsync(fixture.GameContext.Object).ConfigureAwait(false);
+        var context = plugIn.GetContext(fixture.GameContext.Object)!;
+        context.ActiveNpcs.Add(CreateNpcRuntime(277, 1, 500, true, true));
+
+        timeProvider.Advance(TimeSpan.FromMinutes(2));
+        await plugIn.ExecuteTaskAsync(fixture.GameContext.Object).ConfigureAwait(false);
+
+        using var persistenceContext = fixture.PersistenceContextProvider.CreateNewTypedContext(
+            typeof(CastleSiegeData),
+            false,
+            fixture.GameConfiguration);
+        var savedData = (await persistenceContext.GetAsync<CastleSiegeData>().ConfigureAwait(false)).Single();
+        Assert.That(savedData.NpcStates.Single(state => state.MonsterNumber == 277).CurrentHp, Is.EqualTo(500));
     }
 
     /// <summary>

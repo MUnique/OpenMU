@@ -93,8 +93,8 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
     /// </summary>
     public int Health
     {
-        get => Math.Max(this._health, 0);
-        set => this._health = value;
+        get => Math.Max(Volatile.Read(ref this._health), 0);
+        set => Interlocked.Exchange(ref this._health, value);
     }
 
     private bool ShouldRespawn => this.SpawnArea.SpawnTrigger == SpawnTrigger.Automatic
@@ -104,7 +104,9 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
     /// <inheritdoc />
     public async ValueTask<HitInfo?> AttackByAsync(IAttacker attacker, SkillEntry? skill, bool isCombo, double damageFactor = 1.0, bool? isFinalStreakHit = null)
     {
-        if (this.Definition.ObjectKind == NpcObjectKind.Guard || this.IsAttackBlockedBySafezone(attacker))
+        if (this.Definition.ObjectKind == NpcObjectKind.Guard
+            || this.IsAttackBlockedBySafezone(attacker)
+            || !this.CanBeAttackedBy(attacker))
         {
             return null;
         }
@@ -272,12 +274,51 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
     }
 
     /// <summary>
+    /// Determines whether the specified attacker may attack this NPC.
+    /// </summary>
+    /// <param name="attacker">The attacker.</param>
+    /// <returns><see langword="true"/> when the attack is allowed; otherwise, <see langword="false"/>.</returns>
+    protected virtual bool CanBeAttackedBy(IAttacker attacker) => true;
+
+    /// <summary>
     /// Registers the hit.
     /// </summary>
     /// <param name="attacker">The attacker.</param>
     protected virtual void RegisterHit(IAttacker attacker)
     {
         // can be overwritten
+    }
+
+    /// <summary>
+    /// Atomically restores health without exceeding the specified maximum.
+    /// </summary>
+    /// <param name="amount">The maximum amount of health to restore.</param>
+    /// <param name="maximumHealth">The maximum health after the restoration.</param>
+    /// <returns>The restored health.</returns>
+    protected int RestoreHealth(int amount, int maximumHealth)
+    {
+        if (amount <= 0 || maximumHealth <= 0)
+        {
+            return 0;
+        }
+
+        while (true)
+        {
+            var currentHealth = Volatile.Read(ref this._health);
+            if (currentHealth <= 0 || currentHealth >= maximumHealth)
+            {
+                return 0;
+            }
+
+            var restoredHealth = Math.Min(amount, maximumHealth - currentHealth);
+            if (Interlocked.CompareExchange(
+                    ref this._health,
+                    currentHealth + restoredHealth,
+                    currentHealth) == currentHealth)
+            {
+                return restoredHealth;
+            }
+        }
     }
 
     /// <summary>

@@ -18,6 +18,7 @@ using MUnique.OpenMU.DataModel.Entities;
 public class CastleSiegeContext : IEventStateProvider
 {
     private readonly IGameContext _gameContext;
+    private readonly System.Collections.Concurrent.ConcurrentDictionary<Player, byte> _siegeMapPlayers = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CastleSiegeContext"/> class.
@@ -29,6 +30,7 @@ public class CastleSiegeContext : IEventStateProvider
         this._gameContext = gameContext;
         this.Configuration = configuration;
         this.Schedule = new CastleSiegeSchedule(configuration.StateSchedule);
+        this.NpcController = new CastleSiegeNpcController(this);
     }
 
     /// <summary>
@@ -80,6 +82,11 @@ public class CastleSiegeContext : IEventStateProvider
     /// Gets the active Castle Siege NPCs.
     /// </summary>
     public List<CastleSiegeNpcRuntime> ActiveNpcs { get; } = new();
+
+    /// <summary>
+    /// Gets the controller for Castle Siege NPC lifecycle and lookup operations.
+    /// </summary>
+    public CastleSiegeNpcController NpcController { get; }
 
     /// <summary>
     /// Gets or sets the player which currently operates the Crown.
@@ -172,6 +179,7 @@ public class CastleSiegeContext : IEventStateProvider
     {
         this.SiegeData = await this.LoadDataAsync().ConfigureAwait(false)
             ?? throw new InvalidOperationException("The persistent Castle Siege state does not exist.");
+        this.NpcController.InitializePersistentStructures();
         await this.LoadRegistrationsAsync().ConfigureAwait(false);
     }
 
@@ -203,6 +211,7 @@ public class CastleSiegeContext : IEventStateProvider
             return;
         }
 
+        this.NpcController.SynchronizeNpcStates();
         var persistedNpcs = this.ActiveNpcs
             .Where(npc => npc.Definition.IsPersistedToDatabase)
             .ToList();
@@ -212,7 +221,6 @@ public class CastleSiegeContext : IEventStateProvider
         }
 
         var statesToSave = persistedNpcs
-            .Where(npc => npc.IsAlive)
             .Select(npc => npc.PersistedState!)
             .ToDictionary(GetNpcKey);
 
@@ -256,6 +264,46 @@ public class CastleSiegeContext : IEventStateProvider
 
         await context.SaveChangesAsync().ConfigureAwait(false);
         this.RegisteredGuilds.Clear();
+    }
+
+    /// <summary>
+    /// Tracks a player after a map entry operation.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="map">The entered map.</param>
+    internal void TrackPlayer(Player player, GameMap map)
+    {
+        if (this.Configuration.CastleSiegeMapDefinition?.Number == map.Definition.Number)
+        {
+            this._siegeMapPlayers[player] = 0;
+        }
+        else
+        {
+            this._siegeMapPlayers.TryRemove(player, out _);
+        }
+    }
+
+    /// <summary>
+    /// Stops tracking a player after a map exit operation.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    internal void UntrackPlayer(Player player)
+    {
+        this._siegeMapPlayers.TryRemove(player, out _);
+    }
+
+    /// <summary>
+    /// Executes an action concurrently for players currently on the Castle Siege map.
+    /// </summary>
+    /// <param name="action">The action to execute.</param>
+    /// <returns>A task that represents the asynchronous fan-out operation.</returns>
+    internal async ValueTask ForEachSiegePlayerAsync(Func<Player, Task> action)
+    {
+        var mapNumber = this.Configuration.CastleSiegeMapDefinition?.Number;
+        var actions = this._siegeMapPlayers.Keys
+            .Where(player => player.CurrentMap?.Definition.Number == mapNumber)
+            .Select(action);
+        await Task.WhenAll(actions).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -334,9 +382,11 @@ public class CastleSiegeContext : IEventStateProvider
     {
         this.SiegeData = await this.LoadDataAsync().ConfigureAwait(false)
             ?? await this.CreateDataAsync().ConfigureAwait(false);
+        this.NpcController.InitializePersistentStructures();
         await this.LoadRegistrationsAsync().ConfigureAwait(false);
         var period = this.Schedule.GetCurrentEventPeriod(utcNow);
         this.SetPeriod(period);
+        await this.InitializeSiegeMapPlayersAsync().ConfigureAwait(false);
         this.NextNpcSaveUtc = utcNow.AddMinutes(2);
         this.IsInitialized = true;
         return period;
@@ -390,6 +440,23 @@ public class CastleSiegeContext : IEventStateProvider
     private static (short MonsterNumber, byte InstanceId) GetNpcKey(CastleSiegeNpcState state)
     {
         return (state.MonsterNumber, state.InstanceId);
+    }
+
+    private async ValueTask InitializeSiegeMapPlayersAsync()
+    {
+        this._siegeMapPlayers.Clear();
+        if (this.Configuration.CastleSiegeMapDefinition is not { } siegeMapDefinition)
+        {
+            return;
+        }
+
+        foreach (var player in await this._gameContext.GetPlayersAsync().ConfigureAwait(false))
+        {
+            if (player.CurrentMap?.Definition.Number == siegeMapDefinition.Number)
+            {
+                this._siegeMapPlayers[player] = 0;
+            }
+        }
     }
 
     private async ValueTask<CastleSiegeData?> LoadDataAsync()
