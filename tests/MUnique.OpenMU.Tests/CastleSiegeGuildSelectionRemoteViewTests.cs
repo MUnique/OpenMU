@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.CastleSiege;
 using MUnique.OpenMU.GameServer.RemoteView.CastleSiege;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
@@ -17,6 +18,25 @@ using PacketJoinSide = MUnique.OpenMU.Network.Packets.ServerToClient.CastleSiege
 [TestFixture]
 public class CastleSiegeGuildSelectionRemoteViewTests
 {
+    /// <summary>
+    /// Verifies that a join-side notification is ignored after the player disconnected.
+    /// </summary>
+    [Test]
+    public async ValueTask IgnoreJoinSideNotificationAfterDisconnectAsync()
+    {
+        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        await player.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
+        await player.DisconnectAsync().ConfigureAwait(false);
+        var outputLengthAfterDisconnect = output.Length;
+        Assert.That(player.Connection, Is.Null);
+
+        await new CastleSiegeJoinSidePlugIn(player)
+            .ShowJoinSideAsync(DataJoinSide.Attack1)
+            .ConfigureAwait(false);
+
+        Assert.That(output.Length, Is.EqualTo(outputLengthAfterDisconnect));
+    }
+
     /// <summary>
     /// Verifies join-side, registration-list and selected-guild-list packets.
     /// </summary>

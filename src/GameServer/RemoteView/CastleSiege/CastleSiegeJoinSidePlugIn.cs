@@ -29,5 +29,5 @@ public class CastleSiegeJoinSidePlugIn : ICastleSiegeJoinSidePlugIn
 
     /// <inheritdoc />
     public ValueTask ShowJoinSideAsync(JoinSide side)
-        => this._player.Connection.SendCastleSiegeJoinSideNotificationAsync((CastleSiegeJoinSide)side);
+        => this._player.Connection?.SendCastleSiegeJoinSideNotificationAsync((CastleSiegeJoinSide)side) ?? default;
 }

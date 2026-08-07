@@ -18,8 +18,6 @@ using MUnique.OpenMU.GameLogic.Views.CastleSiege;
 /// </remarks>
 public class CastleSiegeContext : IEventStateProvider
 {
-    private const short LifeStoneMonsterNumber = 278;
-
     private static readonly TimeSpan JoinSideEffectDuration = TimeSpan.FromDays(7);
 
     private readonly IGameContext _gameContext;
@@ -191,9 +189,8 @@ public class CastleSiegeContext : IEventStateProvider
     /// <summary>
     /// Assigns the current Castle Siege side to all online players on the Castle Siege map.
     /// </summary>
-    /// <param name="killLifeStones">Whether active Life Stones should be removed.</param>
     /// <returns>A task that represents the asynchronous synchronization operation.</returns>
-    public async ValueTask SetPlayerJoinSideAsync(bool killLifeStones)
+    public async ValueTask SetPlayerJoinSideAsync()
     {
         var mapNumber = this.Configuration.CastleSiegeMapDefinition?.Number;
         if (mapNumber is null)
@@ -236,11 +233,6 @@ public class CastleSiegeContext : IEventStateProvider
         foreach (var player in this._notifiedPlayerJoinSides.Keys.Where(player => !activePlayers.Contains(player)))
         {
             this._notifiedPlayerJoinSides.TryRemove(player, out _);
-        }
-
-        if (killLifeStones)
-        {
-            await this.KillLifeStonesAsync().ConfigureAwait(false);
         }
     }
 
@@ -747,21 +739,5 @@ public class CastleSiegeContext : IEventStateProvider
         persistedEntry.Value.GuildId = guildStatus.GuildId;
         this.FinalGuildList[guildStatus.GuildId] = persistedEntry.Value;
         return persistedEntry.Value.Side;
-    }
-
-    private async ValueTask KillLifeStonesAsync()
-    {
-        foreach (var lifeStone in this.ActiveNpcs.Where(
-                     npc => npc.IsAlive
-                            && npc.Definition.MonsterDefinition?.Number == LifeStoneMonsterNumber))
-        {
-            if (lifeStone.SpawnedInstance?.CurrentMap is { } map)
-            {
-                await map.RemoveAsync(lifeStone.SpawnedInstance).ConfigureAwait(false);
-            }
-
-            lifeStone.IsAlive = false;
-            lifeStone.SpawnedInstance = null;
-        }
     }
 }

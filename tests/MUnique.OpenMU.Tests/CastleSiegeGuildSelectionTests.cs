@@ -111,7 +111,7 @@ public class CastleSiegeGuildSelectionTests
         var player = await CreateSiegePlayerAsync(fixture, ReconnectedAlphaGuildId, "Fighter").ConfigureAwait(false);
         var view = player.ViewPlugIns.GetPlugIn<ICastleSiegeJoinSidePlugIn>()!;
 
-        await fixture.Context.SetPlayerJoinSideAsync(false).ConfigureAwait(false);
+        await fixture.Context.SetPlayerJoinSideAsync().ConfigureAwait(false);
         Mock.Get(view).Verify(
             plugIn => plugIn.ShowJoinSideAsync(CastleSiegeJoinSide.Attack1),
             Times.Once);
@@ -147,7 +147,7 @@ public class CastleSiegeGuildSelectionTests
             Direction = Direction.South,
         }).ConfigureAwait(false);
         await player.ClientReadyAfterMapChangeAsync().ConfigureAwait(false);
-        await fixture.Context.SetPlayerJoinSideAsync(false).ConfigureAwait(false);
+        await fixture.Context.SetPlayerJoinSideAsync().ConfigureAwait(false);
         Assert.Multiple(() =>
         {
             Assert.That(fixture.Context.GetPlayerJoinSide(player), Is.EqualTo(CastleSiegeJoinSide.None));

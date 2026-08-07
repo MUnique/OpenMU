@@ -82,7 +82,7 @@ public class GuildServer : IGuildServer
         catch (Exception ex)
         {
             this._logger.LogError(ex, "Unexpected error when retrieving a runtime guild identifier.");
-            return 0;
+            throw;
         }
     }
 
