@@ -147,8 +147,8 @@ public sealed class CastleSiegeNpcController
     {
         IEnumerable<CastleSiegeUpgradeDefinition> definitions = runtime.Definition.MonsterDefinition?.Number switch
         {
-            CastleSiegeGate.MonsterNumber => this._context.Configuration.GateLifeUpgrades,
-            CastleSiegeStatue.MonsterNumber => this._context.Configuration.StatueLifeUpgrades,
+            var number when number == CastleSiegeGate.MonsterNumber => this._context.Configuration.GateLifeUpgrades,
+            var number when number == CastleSiegeStatue.MonsterNumber => this._context.Configuration.StatueLifeUpgrades,
             _ => [],
         };
         return definitions.FirstOrDefault(definition => definition.Level == runtime.PersistedState?.LifeLevel)?.Value ?? 0;
@@ -235,8 +235,9 @@ public sealed class CastleSiegeNpcController
 
     private static bool IsMachine(CastleSiegeNpcDefinition definition)
     {
-        return definition.MonsterDefinition?.Number
-            is CastleSiegeMachine.AttackMonsterNumber or CastleSiegeMachine.DefenseMonsterNumber;
+        var monsterNumber = definition.MonsterDefinition?.Number;
+        return monsterNumber == CastleSiegeMachine.AttackMonsterNumber
+               || monsterNumber == CastleSiegeMachine.DefenseMonsterNumber;
     }
 
     private static async ValueTask RemoveConfiguredDuplicateAsync(GameMap map, CastleSiegeNpcRuntime runtime)
@@ -275,7 +276,8 @@ public sealed class CastleSiegeNpcController
 
     private List<CastleSiegeNpcRuntime> GetDefenseStructures(short monsterNumber)
     {
-        if (monsterNumber is not (CastleSiegeGate.MonsterNumber or CastleSiegeStatue.MonsterNumber))
+        if (monsterNumber != CastleSiegeGate.MonsterNumber
+            && monsterNumber != CastleSiegeStatue.MonsterNumber)
         {
             return [];
         }
@@ -347,8 +349,8 @@ public sealed class CastleSiegeNpcController
     {
         var upgrades = monsterNumber switch
         {
-            CastleSiegeGate.MonsterNumber => this._context.Configuration.GateLifeUpgrades,
-            CastleSiegeStatue.MonsterNumber => this._context.Configuration.StatueLifeUpgrades,
+            var number when number == CastleSiegeGate.MonsterNumber => this._context.Configuration.GateLifeUpgrades,
+            var number when number == CastleSiegeStatue.MonsterNumber => this._context.Configuration.StatueLifeUpgrades,
             _ => throw new ArgumentOutOfRangeException(nameof(monsterNumber), monsterNumber, "Not a persistent Castle Siege structure."),
         };
         return upgrades.FirstOrDefault(upgrade => upgrade.Level == 0)?.Value
@@ -400,7 +402,7 @@ public sealed class CastleSiegeNpcController
         var definition = spawnArea.MonsterDefinition!;
         return definition.Number switch
         {
-            CastleSiegeGate.MonsterNumber => new CastleSiegeGate(
+            var number when number == CastleSiegeGate.MonsterNumber => new CastleSiegeGate(
                 spawnArea,
                 definition,
                 map,
@@ -409,7 +411,7 @@ public sealed class CastleSiegeNpcController
                 new CastleSiegeGateIntelligence(),
                 this._context.GameContext.DropGenerator,
                 this._context.GameContext.PlugInManager),
-            CastleSiegeStatue.MonsterNumber => new CastleSiegeStatue(
+            var number when number == CastleSiegeStatue.MonsterNumber => new CastleSiegeStatue(
                 spawnArea,
                 definition,
                 map,
@@ -418,34 +420,35 @@ public sealed class CastleSiegeNpcController
                 new CastleSiegeStatueIntelligence(),
                 this._context.GameContext.DropGenerator,
                 this._context.GameContext.PlugInManager),
-            CastleSiegeCrown.MonsterNumber => new CastleSiegeCrown(
+            var number when number == CastleSiegeCrown.MonsterNumber => new CastleSiegeCrown(
                 spawnArea,
                 definition,
                 map,
                 runtime,
                 new CastleSiegeCrownIntelligence(this._context)),
-            CastleSiegeSwitch.FirstMonsterNumber => new CastleSiegeSwitch(
+            var number when number == CastleSiegeSwitch.FirstMonsterNumber => new CastleSiegeSwitch(
                 spawnArea,
                 definition,
                 map,
                 runtime,
                 new CastleSiegeSwitchIntelligence(this._context),
                 0),
-            CastleSiegeSwitch.SecondMonsterNumber => new CastleSiegeSwitch(
+            var number when number == CastleSiegeSwitch.SecondMonsterNumber => new CastleSiegeSwitch(
                 spawnArea,
                 definition,
                 map,
                 runtime,
                 new CastleSiegeSwitchIntelligence(this._context),
                 1),
-            CastleSiegeLever.MonsterNumber => new CastleSiegeLever(
+            var number when number == CastleSiegeLever.MonsterNumber => new CastleSiegeLever(
                 spawnArea,
                 definition,
                 map,
                 this._context,
                 runtime,
                 new CastleSiegeLeverIntelligence()),
-            CastleSiegeMachine.AttackMonsterNumber or CastleSiegeMachine.DefenseMonsterNumber => new CastleSiegeMachine(
+            var number when number == CastleSiegeMachine.AttackMonsterNumber
+                            || number == CastleSiegeMachine.DefenseMonsterNumber => new CastleSiegeMachine(
                 spawnArea,
                 definition,
                 map,

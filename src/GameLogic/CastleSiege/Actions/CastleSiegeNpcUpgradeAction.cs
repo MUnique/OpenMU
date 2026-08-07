@@ -128,6 +128,10 @@ public static class CastleSiegeNpcUpgradeAction
                 var adjustedHealth = (long)state.CurrentHp + newMaximumHealth - oldMaximumHealth;
                 state.CurrentHp = (int)Math.Clamp(adjustedHealth, 0L, newMaximumHealth);
             }
+            else
+            {
+                // Defense and regeneration upgrades do not alter the persisted health of an unspawned structure.
+            }
 
             await context.SaveNpcStatesAsync().ConfigureAwait(false);
             return CastleSiegeNpcOperationResult.Success;
@@ -145,11 +149,16 @@ public static class CastleSiegeNpcUpgradeAction
     {
         return (runtime.Definition.MonsterDefinition?.Number, upgradeType) switch
         {
-            (CastleSiegeGate.MonsterNumber, CastleSiegeUpgradeType.Defense) => configuration.GateDefenseUpgrades,
-            (CastleSiegeGate.MonsterNumber, CastleSiegeUpgradeType.Life) => configuration.GateLifeUpgrades,
-            (CastleSiegeStatue.MonsterNumber, CastleSiegeUpgradeType.Defense) => configuration.StatueDefenseUpgrades,
-            (CastleSiegeStatue.MonsterNumber, CastleSiegeUpgradeType.Life) => configuration.StatueLifeUpgrades,
-            (CastleSiegeStatue.MonsterNumber, CastleSiegeUpgradeType.Regen) => configuration.StatueRegenUpgrades,
+            var (number, type) when number == CastleSiegeGate.MonsterNumber
+                                    && type == CastleSiegeUpgradeType.Defense => configuration.GateDefenseUpgrades,
+            var (number, type) when number == CastleSiegeGate.MonsterNumber
+                                    && type == CastleSiegeUpgradeType.Life => configuration.GateLifeUpgrades,
+            var (number, type) when number == CastleSiegeStatue.MonsterNumber
+                                    && type == CastleSiegeUpgradeType.Defense => configuration.StatueDefenseUpgrades,
+            var (number, type) when number == CastleSiegeStatue.MonsterNumber
+                                    && type == CastleSiegeUpgradeType.Life => configuration.StatueLifeUpgrades,
+            var (number, type) when number == CastleSiegeStatue.MonsterNumber
+                                    && type == CastleSiegeUpgradeType.Regen => configuration.StatueRegenUpgrades,
             _ => null,
         };
     }

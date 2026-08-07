@@ -12,16 +12,6 @@ using MUnique.OpenMU.GameLogic.CastleSiege.Intelligence;
 public sealed class CastleSiegeSwitch : CastleSiegeNpcBase
 {
     /// <summary>
-    /// The first Crown switch monster number.
-    /// </summary>
-    public const short FirstMonsterNumber = 217;
-
-    /// <summary>
-    /// The second Crown switch monster number.
-    /// </summary>
-    public const short SecondMonsterNumber = 218;
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="CastleSiegeSwitch"/> class.
     /// </summary>
     /// <param name="spawnInfo">The spawn information.</param>
@@ -43,6 +33,16 @@ public sealed class CastleSiegeSwitch : CastleSiegeNpcBase
         ArgumentOutOfRangeException.ThrowIfGreaterThan(switchIndex, 1);
         this.SwitchIndex = switchIndex;
     }
+
+    /// <summary>
+    /// Gets the first Crown switch monster number.
+    /// </summary>
+    public static short FirstMonsterNumber { get; } = 217;
+
+    /// <summary>
+    /// Gets the second Crown switch monster number.
+    /// </summary>
+    public static short SecondMonsterNumber { get; } = 218;
 
     /// <summary>
     /// Gets the zero-based switch index.

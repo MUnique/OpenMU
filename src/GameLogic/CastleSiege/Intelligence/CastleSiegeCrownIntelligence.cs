@@ -30,7 +30,11 @@ public sealed class CastleSiegeCrownIntelligence : CastleSiegeNpcIntelligenceBas
     /// <inheritdoc />
     public override void Start()
     {
-        this._timer ??= new Timer(_ => this.SafeTick(), null, TrackingInterval, TrackingInterval);
+        this._timer ??= new Timer(
+            static state => _ = ((CastleSiegeCrownIntelligence)state!).SafeTickAsync(),
+            this,
+            TrackingInterval,
+            TrackingInterval);
     }
 
     /// <inheritdoc />
@@ -75,8 +79,7 @@ public sealed class CastleSiegeCrownIntelligence : CastleSiegeNpcIntelligenceBas
         this.Pause();
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "All exceptions are caught.")]
-    private async void SafeTick()
+    private async Task SafeTickAsync()
     {
         if (Interlocked.Exchange(ref this._isTicking, 1) != 0)
         {

@@ -12,11 +12,6 @@ using MUnique.OpenMU.GameLogic.CastleSiege.Intelligence;
 public sealed class CastleSiegeLever : CastleSiegeNpcBase
 {
     /// <summary>
-    /// The monster number of gate levers.
-    /// </summary>
-    public const short MonsterNumber = 219;
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="CastleSiegeLever"/> class.
     /// </summary>
     /// <param name="spawnInfo">The spawn information.</param>
@@ -36,6 +31,11 @@ public sealed class CastleSiegeLever : CastleSiegeNpcBase
     {
         this.Context = context;
     }
+
+    /// <summary>
+    /// Gets the monster number of gate levers.
+    /// </summary>
+    public static short MonsterNumber { get; } = 219;
 
     /// <summary>
     /// Gets or sets the gate controlled by this lever.

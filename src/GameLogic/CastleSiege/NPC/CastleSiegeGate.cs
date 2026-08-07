@@ -16,11 +16,6 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 public sealed class CastleSiegeGate : CastleSiegeAttackableNpc
 {
-    /// <summary>
-    /// The monster number of Castle Siege gates.
-    /// </summary>
-    public const short MonsterNumber = 277;
-
     private readonly Dictionary<Point, bool> _originalTerrain = new();
 
     /// <summary>
@@ -46,6 +41,11 @@ public sealed class CastleSiegeGate : CastleSiegeAttackableNpc
         : base(spawnInfo, stats, map, context, runtime, intelligence, dropGenerator, plugInManager)
     {
     }
+
+    /// <summary>
+    /// Gets the monster number of Castle Siege gates.
+    /// </summary>
+    public static short MonsterNumber { get; } = 277;
 
     /// <summary>
     /// Gets the defense upgrade level.
