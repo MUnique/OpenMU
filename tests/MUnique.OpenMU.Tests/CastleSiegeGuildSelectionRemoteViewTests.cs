@@ -24,8 +24,8 @@ public class CastleSiegeGuildSelectionRemoteViewTests
     public async ValueTask SerializeGuildSelectionResponsesAsync()
     {
         var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
-        var registrations = new BasicModel.CastleSiegeGuildRegistration[]
-        {
+        BasicModel.CastleSiegeGuildRegistration[] registrations =
+        [
             new()
             {
                 GuildName = "Alpha",
@@ -38,9 +38,9 @@ public class CastleSiegeGuildSelectionRemoteViewTests
                 Marks = 12,
                 RegistrationOrder = 7,
             },
-        };
-        var guilds = new CastleSiegeGuildParticipant[]
-        {
+        ];
+        CastleSiegeGuildParticipant[] guilds =
+        [
             new()
             {
                 GuildName = "Defend",
@@ -55,7 +55,7 @@ public class CastleSiegeGuildSelectionRemoteViewTests
                 Score = 177,
                 IsAllianceMaster = true,
             },
-        };
+        ];
 
         await new CastleSiegeJoinSidePlugIn(player)
             .ShowJoinSideAsync(DataJoinSide.Attack1)

@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic.CastleSiege;
 
-using System.Collections.Concurrent;
 using System.Threading;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
@@ -24,8 +23,8 @@ public class CastleSiegeContext : IEventStateProvider
     private static readonly TimeSpan JoinSideEffectDuration = TimeSpan.FromDays(7);
 
     private readonly IGameContext _gameContext;
-    private readonly ConcurrentDictionary<Player, CastleSiegeJoinSide> _notifiedPlayerJoinSides = new();
-    private readonly ConcurrentDictionary<Player, byte> _siegeMapPlayers = new();
+    private readonly System.Collections.Concurrent.ConcurrentDictionary<Player, CastleSiegeJoinSide> _notifiedPlayerJoinSides = new();
+    private readonly System.Collections.Concurrent.ConcurrentDictionary<Player, byte> _siegeMapPlayers = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CastleSiegeContext"/> class.
@@ -68,22 +67,22 @@ public class CastleSiegeContext : IEventStateProvider
     /// <summary>
     /// Gets the guild registrations keyed by their persistent guild identifier.
     /// </summary>
-    public ConcurrentDictionary<Guid, CastleSiegeGuildRegistration> RegisteredGuilds { get; } = new();
+    public System.Collections.Concurrent.ConcurrentDictionary<Guid, CastleSiegeGuildRegistration> RegisteredGuilds { get; } = new();
 
     /// <summary>
     /// Gets the selected guilds keyed by their runtime guild identifier.
     /// </summary>
-    public ConcurrentDictionary<uint, CastleSiegeGuildParticipant> FinalGuildList { get; } = new();
+    public System.Collections.Concurrent.ConcurrentDictionary<uint, CastleSiegeGuildParticipant> FinalGuildList { get; } = new();
 
     /// <summary>
     /// Gets the assigned join sides keyed by persistent character identifier.
     /// </summary>
-    public ConcurrentDictionary<Guid, CastleSiegeJoinSide> PlayerJoinSides { get; } = new();
+    public System.Collections.Concurrent.ConcurrentDictionary<Guid, CastleSiegeJoinSide> PlayerJoinSides { get; } = new();
 
     /// <summary>
     /// Gets the participating characters keyed by their persistent character identifier.
     /// </summary>
-    public ConcurrentDictionary<Guid, CastleSiegeParticipant> ParticipantTracking { get; } = new();
+    public System.Collections.Concurrent.ConcurrentDictionary<Guid, CastleSiegeParticipant> ParticipantTracking { get; } = new();
 
     /// <summary>
     /// Gets or sets the runtime identifier of the guild which most recently captured the Crown.
