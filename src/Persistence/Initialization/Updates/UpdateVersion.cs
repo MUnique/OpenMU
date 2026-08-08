@@ -518,4 +518,9 @@ public enum UpdateVersion
     /// The version of the <see cref="ConfigureCastleSiegeRegistrationUpdatePlugIn"/>.
     /// </summary>
     ConfigureCastleSiegeRegistration = 102,
+
+    /// <summary>
+    /// The version of the <see cref="ConfigureCastleSiegeParticipationUpdatePlugIn"/>.
+    /// </summary>
+    ConfigureCastleSiegeParticipation = 103,
 }

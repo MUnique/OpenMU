@@ -71,6 +71,14 @@ public class GuildServer : IGuildServer
     }
 
     /// <inheritdoc/>
+    public async ValueTask<uint> GetGuildIdAsync(Guid guildId)
+    {
+        return await this.GetOrCreateGuildContainerAsync(guildId).ConfigureAwait(false) is { } guild
+            ? guild.Id
+            : 0;
+    }
+
+    /// <inheritdoc/>
     public ValueTask<Guid?> GetPersistentGuildIdAsync(uint guildId)
     {
         return ValueTask.FromResult(
@@ -103,11 +111,12 @@ public class GuildServer : IGuildServer
     }
 
     /// <inheritdoc />
-    public async ValueTask IncreaseGuildScoreAsync(uint guildId)
+    public async ValueTask IncreaseGuildScoreAsync(uint guildId, int amount)
     {
-        if (this._guildDictionary.TryGetValue(guildId, out var guildContainer))
+        if (amount > 0
+            && this._guildDictionary.TryGetValue(guildId, out var guildContainer))
         {
-            guildContainer.Guild.Score++;
+            guildContainer.Guild.Score += amount;
             await guildContainer.DatabaseContext.SaveChangesAsync().ConfigureAwait(false);
         }
     }
@@ -437,10 +446,24 @@ public class GuildServer : IGuildServer
             return ImmutableList<AllianceGuildEntry>.Empty;
         }
 
-        return this._guildDictionary.Values
-            .Where(g => GetAllianceMasterGuid(g.Guild) == masterGuid)
-            .Select(g => new AllianceGuildEntry(g.Id, g.Guild.Name ?? string.Empty, g.Guild.Members.Count, g.Guild.Logo))
-            .ToImmutableList();
+        using var context = this._persistenceContextProvider.CreateNewGuildContext();
+        var persistentGuilds = await context.GetAlliancesAsync(masterGuid).ConfigureAwait(false);
+        var result = ImmutableList.CreateBuilder<AllianceGuildEntry>();
+        foreach (var persistentGuild in persistentGuilds)
+        {
+            if (await this.GetOrCreateGuildContainerAsync(persistentGuild.Id).ConfigureAwait(false) is not { } runtimeGuild)
+            {
+                continue;
+            }
+
+            result.Add(new(
+                runtimeGuild.Id,
+                persistentGuild.Name ?? string.Empty,
+                persistentGuild.Members.Count,
+                persistentGuild.Logo));
+        }
+
+        return result.ToImmutable();
     }
 
     /// <inheritdoc />

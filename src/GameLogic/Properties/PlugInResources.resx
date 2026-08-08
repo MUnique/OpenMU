@@ -129,6 +129,12 @@
   <data name="CastleSiegePlugIn_Description" xml:space="preserve">
     <value>Drives the weekly Castle Siege state cycle.</value>
   </data>
+  <data name="CastleSiegePendingRewardPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege Pending Reward Delivery</value>
+  </data>
+  <data name="CastleSiegePendingRewardPlugIn_Description" xml:space="preserve">
+    <value>Delivers queued Castle Siege participant rewards when a character enters the game.</value>
+  </data>
   <data name="MuHelperFeaturePlugIn_Name" xml:space="preserve">
     <value>MU Helper Feature</value>
   </data>

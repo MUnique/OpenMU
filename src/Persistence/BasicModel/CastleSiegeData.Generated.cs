@@ -43,6 +43,27 @@ public partial class CastleSiegeData : MUnique.OpenMU.DataModel.Entities.CastleS
         }
     }
 
+    /// <summary>
+    /// Gets the raw collection of <see cref="Guilds" />.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonPropertyName("guilds")]
+    public ICollection<CastleSiegeGuild> RawGuilds { get; } = new List<CastleSiegeGuild>();
+
+    /// <inheritdoc/>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override ICollection<MUnique.OpenMU.DataModel.Entities.CastleSiegeGuild> Guilds
+    {
+        get => base.Guilds ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Entities.CastleSiegeGuild, CastleSiegeGuild>(this.RawGuilds);
+        protected set
+        {
+            this.Guilds.Clear();
+            foreach (var item in value)
+            {
+                this.Guilds.Add(item);
+            }
+        }
+    }
+
 
     /// <inheritdoc/>
     public override bool Equals(object obj)

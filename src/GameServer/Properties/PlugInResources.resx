@@ -2049,6 +2049,36 @@
   <data name="CastleSiegeRegistrationStatePlugIn_Description" xml:space="preserve">
     <value>Sends Castle Siege registration state to the game client.</value>
   </data>
+  <data name="CastleSiegeGuildListHandlerPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege Guild List Handler</value>
+  </data>
+  <data name="CastleSiegeGuildListHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles requests for the selected Castle Siege guild list.</value>
+  </data>
+  <data name="CastleSiegeRegisteredGuildListHandlerPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege Registered Guild List Handler</value>
+  </data>
+  <data name="CastleSiegeRegisteredGuildListHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles requests for the current Castle Siege guild registrations.</value>
+  </data>
+  <data name="CastleSiegeGuildListPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege Guild List View</value>
+  </data>
+  <data name="CastleSiegeGuildListPlugIn_Description" xml:space="preserve">
+    <value>Sends the selected Castle Siege guild list to the game client.</value>
+  </data>
+  <data name="CastleSiegeRegisteredGuildListPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege Registered Guild List View</value>
+  </data>
+  <data name="CastleSiegeRegisteredGuildListPlugIn_Description" xml:space="preserve">
+    <value>Sends the current Castle Siege guild registrations to the game client.</value>
+  </data>
+  <data name="CastleSiegeJoinSidePlugIn_Name" xml:space="preserve">
+    <value>Castle Siege Join Side View</value>
+  </data>
+  <data name="CastleSiegeJoinSidePlugIn_Description" xml:space="preserve">
+    <value>Sends a player's assigned Castle Siege side to the game client.</value>
+  </data>
   <data name="CharacterKeyConfigurationPacketHandlerPlugIn_Name" xml:space="preserve">
     <value>Character - Key Configuration</value>
   </data>

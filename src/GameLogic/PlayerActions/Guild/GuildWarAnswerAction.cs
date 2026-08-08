@@ -71,7 +71,7 @@ public class GuildWarAnswerAction
                 if (player.GameContext is IGameServerContext gameContext && score.Winners.HasValue)
                 {
                     var winner = score.Winners == player.GuildWarContext.Team ? player.GuildStatus!.GuildId : requester.GuildStatus!.GuildId;
-                    await gameContext.GuildServer.IncreaseGuildScoreAsync(winner).ConfigureAwait(false);
+                    await gameContext.GuildServer.IncreaseGuildScoreAsync(winner, 1).ConfigureAwait(false);
                 }
             }
             catch
