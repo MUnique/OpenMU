@@ -210,11 +210,15 @@ public class GuildServer : IGuildServer
     }
 
     /// <inheritdoc />
-    public async ValueTask IncreaseGuildScoreAsync(uint guildId)
+    public async ValueTask IncreaseGuildScoreAsync(uint guildId, int amount)
     {
         try
         {
-            await this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.IncreaseGuildScoreAsync), guildId).ConfigureAwait(false);
+            await this._daprClient.InvokeMethodAsync(
+                    this._targetAppId,
+                    nameof(this.IncreaseGuildScoreAsync),
+                    (GuildId: guildId, Amount: amount))
+                .ConfigureAwait(false);
         }
         catch (Exception ex)
         {

@@ -134,6 +134,17 @@ public class MagicEffectsList : AsyncDisposable
         return this.ActiveEffects.Values.FirstOrDefault(e => e.Definition.SubType == subType);
     }
 
+    /// <summary>
+    /// Tries to get an active effect by its identifier.
+    /// </summary>
+    /// <param name="effectId">The effect identifier.</param>
+    /// <returns>The active effect, if found.</returns>
+    public async ValueTask<MagicEffect?> TryGetActiveEffectAsync(short effectId)
+    {
+        using var l = await this._addLock.LockAsync();
+        return this.ActiveEffects.TryGetValue(effectId, out var effect) ? effect : null;
+    }
+
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore()
     {

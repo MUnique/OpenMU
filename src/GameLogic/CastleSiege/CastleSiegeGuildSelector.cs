@@ -240,13 +240,13 @@ public static class CastleSiegeGuildSelector
                    + (int)(onlineGuildMaster.Attributes?[Stats.MasterLevel] ?? 0);
         }
 
-        using var persistenceContext = context.GameContext.PersistenceContextProvider.CreateNewTypedContext(
-            typeof(Character),
-            false,
-            context.GameContext.Configuration);
-        var character = (await persistenceContext.GetAsync<Character>().ConfigureAwait(false))
-            .FirstOrDefault(candidate =>
-                string.Equals(candidate.Name, guildMasterName, StringComparison.OrdinalIgnoreCase));
+        using var persistenceContext = context.GameContext.PersistenceContextProvider
+            .CreateNewPlayerContext(context.GameContext.Configuration);
+        var account = await persistenceContext
+            .GetAccountByCharacterNameAsync(guildMasterName)
+            .ConfigureAwait(false);
+        var character = account?.Characters.FirstOrDefault(candidate =>
+            string.Equals(candidate.Name, guildMasterName, StringComparison.OrdinalIgnoreCase));
         if (character is null)
         {
             return 0;

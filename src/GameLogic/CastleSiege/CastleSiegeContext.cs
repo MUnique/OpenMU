@@ -218,13 +218,6 @@ public class CastleSiegeContext : IEventStateProvider
                 continue;
             }
 
-            if (player.PlayerState.CurrentState != PlayerState.EnteredWorld)
-            {
-                this.PlayerJoinSides.TryRemove(character.Id, out _);
-                this._notifiedPlayerJoinSides.TryRemove(player, out _);
-                continue;
-            }
-
             if (player.CurrentMap?.Definition.Number != mapNumber)
             {
                 await this.ClearPlayerJoinSideAsync(player).ConfigureAwait(false);
@@ -321,7 +314,7 @@ public class CastleSiegeContext : IEventStateProvider
         }
 
         this.NpcController.SynchronizeNpcStates();
-        var persistedNpcs = this.ActiveNpcs
+        var persistedNpcs = this.NpcController.GetRuntimeSnapshot()
             .Where(npc => npc.Definition.IsPersistedToDatabase)
             .ToList();
         if (persistedNpcs.Count == 0 || persistedNpcs.Any(npc => npc.PersistedState is null))
@@ -423,7 +416,6 @@ public class CastleSiegeContext : IEventStateProvider
     internal async ValueTask SynchronizePlayerJoinSideAsync(Player player)
     {
         if (player.SelectedCharacter is not { } character
-            || player.PlayerState.CurrentState != PlayerState.EnteredWorld
             || this.Configuration.CastleSiegeMapDefinition?.Number != player.CurrentMap?.Definition.Number)
         {
             return;
@@ -625,15 +617,19 @@ public class CastleSiegeContext : IEventStateProvider
         foreach (var effectNumber in Enum.GetValues<CastleSiegeMagicEffectNumber>())
         {
             if (effectNumber != expectedEffectNumber
-                && player.MagicEffectList.ActiveEffects.TryGetValue((short)effectNumber, out var effect))
+                && await player.MagicEffectList.TryGetActiveEffectAsync((short)effectNumber).ConfigureAwait(false) is { } effect)
             {
                 await effect.DisposeAsync().ConfigureAwait(false);
             }
         }
 
         if (expectedEffectNumber is not { } expected
-            || player.MagicEffectList.ActiveEffects.ContainsKey((short)expected)
-            || player.GameContext.Configuration.MagicEffects.FirstOrDefault(
+            || await player.MagicEffectList.TryGetActiveEffectAsync((short)expected).ConfigureAwait(false) is not null)
+        {
+            return;
+        }
+
+        if (player.GameContext.Configuration.MagicEffects.FirstOrDefault(
                 effect => effect.Number == (short)expected) is not { } effectDefinition)
         {
             return;

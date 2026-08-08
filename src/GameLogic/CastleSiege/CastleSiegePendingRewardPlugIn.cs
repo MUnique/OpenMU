@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.GameLogic.CastleSiege;
 
 using System.Runtime.InteropServices;
-using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
@@ -28,15 +27,9 @@ public class CastleSiegePendingRewardPlugIn : IPlayerStateChangedPlugIn
             return;
         }
 
-        using var persistenceContext = player.GameContext.PersistenceContextProvider.CreateNewTypedContext(
-            typeof(CastleSiegePendingReward),
-            false,
-            player.GameContext.Configuration);
-        var pendingRewards = (await persistenceContext
-                .GetAsync<CastleSiegePendingReward>()
-                .ConfigureAwait(false))
-            .Where(reward => reward.CharacterId == character.Id)
-            .ToList();
+        var pendingRewards = await player.PersistenceContext
+            .GetPendingCastleSiegeRewardsAsync(character.Id)
+            .ConfigureAwait(false);
         var deliveredAny = false;
         foreach (var pendingReward in pendingRewards)
         {
@@ -50,13 +43,14 @@ public class CastleSiegePendingRewardPlugIn : IPlayerStateChangedPlugIn
                 continue;
             }
 
-            await persistenceContext.DeleteAsync(pendingReward).ConfigureAwait(false);
+            await player.PersistenceContext.DeleteAsync(pendingReward).ConfigureAwait(false);
             deliveredAny = true;
         }
 
         if (deliveredAny)
         {
-            await persistenceContext.SaveChangesAsync().ConfigureAwait(false);
+            // The item creation and pending-row deletion are committed together by the player's context.
+            await player.SaveProgressAsync().ConfigureAwait(false);
         }
     }
 }

@@ -174,18 +174,41 @@ public class CastleSiegeGuildSelectionTests
                 Does.Contain((short)CastleSiegeMagicEffectNumber.Attack1));
         });
 
+        Assert.That(
+            await player.PlayerState.TryAdvanceToAsync(PlayerState.NpcDialogOpened).ConfigureAwait(false),
+            Is.True);
+        await fixture.Context.SetPlayerJoinSideAsync().ConfigureAwait(false);
+        Assert.That(fixture.Context.GetPlayerJoinSide(player), Is.EqualTo(CastleSiegeJoinSide.Attack1));
+        Mock.Get(view).Verify(
+            plugIn => plugIn.ShowJoinSideAsync(CastleSiegeJoinSide.Attack1),
+            Times.Once);
+        Assert.That(
+            await player.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false),
+            Is.True);
+
         fixture.Context.CurrentState = CastleSiegeState.Start;
         var firstUpdateUtc = fixture.InitializationTimeUtc;
         await CastleSiegeParticipantTracker.TrackAsync(fixture.Context, firstUpdateUtc).ConfigureAwait(false);
         await CastleSiegeParticipantTracker.TrackAsync(fixture.Context, firstUpdateUtc.AddSeconds(17)).ConfigureAwait(false);
+        CastleSiegeParticipantTracker.StartTracking(fixture.Context, player, firstUpdateUtc.AddSeconds(23));
 
         var participant = fixture.Context.ParticipantTracking[player.SelectedCharacter!.Id];
         Assert.Multiple(() =>
         {
             Assert.That(participant.CharacterName, Is.EqualTo("Fighter"));
             Assert.That(participant.GuildId, Is.EqualTo(ReconnectedAlphaGuildId));
-            Assert.That(participant.ParticipationTime, Is.EqualTo(TimeSpan.FromSeconds(17)));
+            Assert.That(participant.ParticipationTime, Is.EqualTo(TimeSpan.FromSeconds(23)));
         });
+
+        CastleSiegeParticipantTracker.StopTracking(fixture.Context, player, firstUpdateUtc.AddSeconds(25));
+        CastleSiegeParticipantTracker.StartTracking(fixture.Context, player, firstUpdateUtc.AddSeconds(100));
+        await CastleSiegeParticipantTracker.TrackAsync(
+                fixture.Context,
+                firstUpdateUtc.AddSeconds(105))
+            .ConfigureAwait(false);
+        Assert.That(
+            fixture.Context.ParticipantTracking[player.SelectedCharacter.Id].ParticipationTime,
+            Is.EqualTo(TimeSpan.FromSeconds(30)));
 
         await player.WarpToAsync(new ExitGate
         {
@@ -216,7 +239,7 @@ public class CastleSiegeGuildSelectionTests
         var fixture = await CreateFixtureAsync().ConfigureAwait(false);
         await CastleSiegeGuildSelector.SelectGuildsAsync(fixture.Context).ConfigureAwait(false);
         var player = await CreateSiegePlayerAsync(fixture, AlphaGuildId, "Winner").ConfigureAwait(false);
-        fixture.Context.SiegeData.OwnerGuildId = fixture.AlphaPersistentGuildId;
+        fixture.Context.MiddleOwnerGuildId = AlphaGuildId;
         fixture.Context.ParticipantTracking[player.SelectedCharacter!.Id] = new CastleSiegeParticipant
         {
             CharacterId = player.SelectedCharacter.Id,
@@ -251,11 +274,42 @@ public class CastleSiegeGuildSelectionTests
         }
 
         fixture.GuildServer.Verify(
-            server => server.IncreaseGuildScoreAsync(AlphaGuildId),
-            Times.Exactly(fixture.CastleSiegeConfiguration.GuildScoreCastleSiege));
+            server => server.IncreaseGuildScoreAsync(
+                AlphaGuildId,
+                fixture.CastleSiegeConfiguration.GuildScoreCastleSiege),
+            Times.Once);
         fixture.GuildServer.Verify(
-            server => server.IncreaseGuildScoreAsync(AlphaAllianceGuildId),
-            Times.Exactly(fixture.CastleSiegeConfiguration.GuildScoreCastleSiegeMembers));
+            server => server.IncreaseGuildScoreAsync(
+                AlphaAllianceGuildId,
+                fixture.CastleSiegeConfiguration.GuildScoreCastleSiegeMembers),
+            Times.Once);
+    }
+
+    /// <summary>
+    /// Verifies that overlapping player objects during a reconnect do not abort reward delivery.
+    /// </summary>
+    [Test]
+    public async ValueTask RewardsTolerateOverlappingReconnectInstancesAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        await CastleSiegeGuildSelector.SelectGuildsAsync(fixture.Context).ConfigureAwait(false);
+        var firstPlayer = await CreateSiegePlayerAsync(fixture, AlphaGuildId, "ReconnectA").ConfigureAwait(false);
+        var secondPlayer = await CreateSiegePlayerAsync(fixture, AlphaGuildId, "ReconnectB").ConfigureAwait(false);
+        secondPlayer.SelectedCharacter!.Id = firstPlayer.SelectedCharacter!.Id;
+        fixture.Context.MiddleOwnerGuildId = AlphaGuildId;
+        fixture.Context.ParticipantTracking[firstPlayer.SelectedCharacter.Id] = new CastleSiegeParticipant
+        {
+            CharacterId = firstPlayer.SelectedCharacter.Id,
+            CharacterName = firstPlayer.SelectedCharacter.Name,
+            GuildId = AlphaGuildId,
+            ParticipationTime = TimeSpan.FromSeconds(fixture.CastleSiegeConfiguration.ParticipantRewardMinSeconds),
+        };
+
+        await CastleSiegeParticipantTracker.AwardRewardsAsync(fixture.Context).ConfigureAwait(false);
+
+        var deliveredRewards = firstPlayer.Inventory!.Items.Count(item => item.Definition == fixture.RewardItemDefinition)
+                               + secondPlayer.Inventory!.Items.Count(item => item.Definition == fixture.RewardItemDefinition);
+        Assert.That(deliveredRewards, Is.EqualTo(1));
     }
 
     /// <summary>
@@ -421,6 +475,9 @@ public class CastleSiegeGuildSelectionTests
             alphaGuildMaster.Name = "AlphaGM";
             alphaGuildMaster.RawAttributes.Add(new BasicModel.StatAttribute(Stats.Level, 400));
             alphaGuildMaster.RawAttributes.Add(new BasicModel.StatAttribute(Stats.MasterLevel, 100));
+            var alphaAccount = persistenceContext.CreateNew<BasicModel.Account>();
+            alphaAccount.LoginName = "alpha-account";
+            alphaAccount.Characters.Add(alphaGuildMaster);
             var offlineCharacter = persistenceContext.CreateNew<BasicModel.Character>();
             offlineCharacter.Name = "Offline";
             offlineCharacterId = offlineCharacter.Id;
@@ -490,7 +547,7 @@ public class CastleSiegeGuildSelectionTests
             .Returns<uint>(guildId => new ValueTask<IImmutableList<AllianceGuildEntry>>(
                 alliances.GetValueOrDefault(guildId, ImmutableList<AllianceGuildEntry>.Empty)));
         guildServer
-            .Setup(server => server.IncreaseGuildScoreAsync(It.IsAny<uint>()))
+            .Setup(server => server.IncreaseGuildScoreAsync(It.IsAny<uint>(), It.IsAny<int>()))
             .Returns(ValueTask.CompletedTask);
 
         var mapInitializer = new MapInitializer(

@@ -33,4 +33,9 @@ public class CastleSiegeParticipant
     /// Gets or sets the UTC time of the latest participation update.
     /// </summary>
     internal DateTime LastUpdateUtc { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the current participation interval is active.
+    /// </summary>
+    internal bool IsTracking { get; set; }
 }

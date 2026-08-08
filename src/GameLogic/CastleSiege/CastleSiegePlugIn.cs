@@ -77,19 +77,11 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
             return;
         }
 
-        await context.ExecutionLock.WaitAsync().ConfigureAwait(false);
-        try
-        {
-            CastleSiegeParticipantTracker.StopTracking(
-                context,
-                player,
-                this._timeProvider.GetUtcNow().UtcDateTime);
-            await context.ClearPlayerJoinSideAsync(player).ConfigureAwait(false);
-        }
-        finally
-        {
-            context.ExecutionLock.Release();
-        }
+        CastleSiegeParticipantTracker.StopTracking(
+            context,
+            player,
+            this._timeProvider.GetUtcNow().UtcDateTime);
+        await context.ClearPlayerJoinSideAsync(player).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -229,25 +221,15 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
             return;
         }
 
-        await context.ExecutionLock.WaitAsync().ConfigureAwait(false);
-        try
+        await context.NpcController.SynchronizePlayerAsync(player).ConfigureAwait(false);
+        if (context.CurrentState is CastleSiegeState.Ready or CastleSiegeState.Start
+            && context.Configuration.CastleSiegeMapDefinition?.Number == player.CurrentMap?.Definition.Number)
         {
-            if (context.CurrentState is not (CastleSiegeState.Ready or CastleSiegeState.Start)
-                || context.Configuration.CastleSiegeMapDefinition?.Number != player.CurrentMap?.Definition.Number)
-            {
-                return;
-            }
-
-            await context.NpcController.SynchronizePlayerAsync(player).ConfigureAwait(false);
             await context.SynchronizePlayerJoinSideAsync(player).ConfigureAwait(false);
             CastleSiegeParticipantTracker.StartTracking(
                 context,
                 player,
                 this._timeProvider.GetUtcNow().UtcDateTime);
-        }
-        finally
-        {
-            context.ExecutionLock.Release();
         }
     }
 

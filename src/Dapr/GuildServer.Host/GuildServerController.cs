@@ -185,12 +185,12 @@ public class GuildServerController : ControllerBase
     }
 
     /// <summary>
-    /// Increases the guild score by one.
+    /// Increases the guild score by the specified amount.
     /// </summary>
-    /// <param name="guildId">The identifier of the guild.</param>
+    /// <param name="scoreIncrease">The guild identifier and score amount.</param>
     [HttpPost(nameof(IGuildServer.IncreaseGuildScoreAsync))]
-    public ValueTask IncreaseGuildScoreAsync([FromBody] uint guildId)
+    public ValueTask IncreaseGuildScoreAsync([FromBody] (uint GuildId, int Amount) scoreIncrease)
     {
-        return this._guildServer.IncreaseGuildScoreAsync(guildId);
+        return this._guildServer.IncreaseGuildScoreAsync(scoreIncrease.GuildId, scoreIncrease.Amount);
     }
 }

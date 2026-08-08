@@ -48,7 +48,8 @@ public static class CastleSiegeParticipantTracker
             .ToList();
         var onlinePlayers = (await context.GameContext.GetPlayersAsync().ConfigureAwait(false))
             .Where(player => player.SelectedCharacter is not null)
-            .ToDictionary(player => player.SelectedCharacter!.Id);
+            .GroupBy(player => player.SelectedCharacter!.Id)
+            .ToDictionary(group => group.Key, group => group.First());
 
         if (context.Configuration.RewardItemDefinition is { } rewardDefinition)
         {
@@ -69,16 +70,14 @@ public static class CastleSiegeParticipantTracker
         }
 
         if (context.GameContext is not IGameServerContext gameServerContext
-            || context.SiegeData.OwnerGuildId is not { } ownerGuildId
-            || context.FinalGuildList.Values.FirstOrDefault(
-                guild => guild.PersistentGuildId == ownerGuildId) is not { } ownerGuild)
+            || GetWinningGuild(context) is not { } ownerGuild)
         {
             return;
         }
 
         foreach (var guild in context.FinalGuildList.Values.Where(guild => guild.Side == ownerGuild.Side))
         {
-            var score = guild.PersistentGuildId == ownerGuildId
+            var score = guild.PersistentGuildId == ownerGuild.PersistentGuildId
                 ? context.Configuration.GuildScoreCastleSiege
                 : context.Configuration.GuildScoreCastleSiegeMembers;
             if (score <= 0)
@@ -94,10 +93,7 @@ public static class CastleSiegeParticipantTracker
                 continue;
             }
 
-            for (var point = 0; point < score; point++)
-            {
-                await gameServerContext.GuildServer.IncreaseGuildScoreAsync(runtimeGuildId).ConfigureAwait(false);
-            }
+            await gameServerContext.GuildServer.IncreaseGuildScoreAsync(runtimeGuildId, score).ConfigureAwait(false);
         }
     }
 
@@ -111,7 +107,7 @@ public static class CastleSiegeParticipantTracker
     {
         if (context.CurrentState == CastleSiegeState.Start)
         {
-            UpdateParticipant(context, player, utcNow, false, false);
+            UpdateParticipant(context, player, utcNow, true, false);
         }
     }
 
@@ -125,7 +121,7 @@ public static class CastleSiegeParticipantTracker
     {
         if (context.CurrentState == CastleSiegeState.Start)
         {
-            UpdateParticipant(context, player, utcNow, true, true);
+            UpdateParticipant(context, player, utcNow, false, true);
         }
     }
 
@@ -133,7 +129,7 @@ public static class CastleSiegeParticipantTracker
         CastleSiegeContext context,
         Player player,
         DateTime utcNow,
-        bool creditElapsedTime,
+        bool isTracking,
         bool allowPlayerOutsideSiegeMap)
     {
         if ((!allowPlayerOutsideSiegeMap
@@ -153,18 +149,37 @@ public static class CastleSiegeParticipantTracker
                 CharacterName = character.Name,
                 GuildId = guildStatus.GuildId,
                 LastUpdateUtc = utcNow,
+                IsTracking = isTracking,
             },
             (_, participant) =>
             {
-                participant.CharacterName = character.Name;
-                participant.GuildId = guildStatus.GuildId;
-                if (creditElapsedTime && utcNow > participant.LastUpdateUtc)
+                var participationTime = participant.ParticipationTime;
+                if (participant.IsTracking && utcNow > participant.LastUpdateUtc)
                 {
-                    participant.ParticipationTime += utcNow - participant.LastUpdateUtc;
+                    participationTime += utcNow - participant.LastUpdateUtc;
                 }
 
-                participant.LastUpdateUtc = utcNow;
-                return participant;
+                return new CastleSiegeParticipant
+                {
+                    CharacterId = character.Id,
+                    CharacterName = character.Name,
+                    GuildId = guildStatus.GuildId,
+                    ParticipationTime = participationTime,
+                    LastUpdateUtc = utcNow,
+                    IsTracking = isTracking,
+                };
             });
+    }
+
+    private static CastleSiegeGuildParticipant? GetWinningGuild(CastleSiegeContext context)
+    {
+        if (context.MiddleOwnerGuildId is { } runtimeGuildId)
+        {
+            return context.FinalGuildList.GetValueOrDefault(runtimeGuildId);
+        }
+
+        return context.SiegeData.OwnerGuildId is { } persistentGuildId
+            ? context.FinalGuildList.Values.FirstOrDefault(guild => guild.PersistentGuildId == persistentGuildId)
+            : null;
     }
 }

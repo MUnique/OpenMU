@@ -195,10 +195,11 @@ public interface IGuildServer
     ValueTask<GuildPosition> GetGuildPositionAsync(Guid characterId);
 
     /// <summary>
-    /// Increases the guild score by one.
+    /// Increases the guild score by the specified amount.
     /// </summary>
     /// <param name="guildId">The identifier of the guild.</param>
-    ValueTask IncreaseGuildScoreAsync(uint guildId);
+    /// <param name="amount">The score amount to add.</param>
+    ValueTask IncreaseGuildScoreAsync(uint guildId, int amount);
 
     /// <summary>
     /// Creates an alliance between the master guild and the target guild.
