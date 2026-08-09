@@ -8,8 +8,6 @@ using System;
 using System.Globalization;
 using System.Threading;
 using MUnique.OpenMU.AttributeSystem;
-using MUnique.OpenMU.DataModel.Attributes;
-using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.GuildWar;
 using MUnique.OpenMU.GameLogic.MiniGames;
@@ -21,7 +19,6 @@ using MUnique.OpenMU.GameLogic.PlayerActions.Items;
 using MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 using MUnique.OpenMU.GameLogic.PlayerActions.Trade;
 using MUnique.OpenMU.GameLogic.PlugIns;
-using MUnique.OpenMU.GameLogic.Properties;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.GameLogic.Views.Guild;
@@ -43,7 +40,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 {
     private const double WalkMovementSpeed = 12.0;
 
-    private static readonly MagicEffectDefinition GMEffect = new GMMagicEffectDefinition
+    private static readonly MagicEffectDefinition GMEffect = new GameMasterMagicEffectDefinition
     {
         InformObservers = true,
         Name = "GM MARK",
@@ -71,7 +68,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     private readonly Walker _walker;
 
-    private readonly AppearanceDataAdapter _appearanceData;
+    private readonly PlayerAppearanceData _appearanceData;
 
     private readonly ObserverToWorldViewAdapter _observerToWorldViewAdapter;
 
@@ -109,7 +106,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this._walker = new Walker(this, this.GetStepDelay);
 
         this.MagicEffectList = new MagicEffectsList(this);
-        this._appearanceData = new AppearanceDataAdapter(this);
+        this._appearanceData = new PlayerAppearanceData(this);
         this.PlayerState.StateChanged += async args => await (this.GameContext.PlugInManager.GetPlugInPoint<IPlayerStateChangedPlugIn>()?.PlayerStateChangedAsync(this, args.PreviousState, args.CurrentStateState) ?? ValueTask.CompletedTask).ConfigureAwait(false);
         this.PlayerState.StateChanges += async args => await (this.GameContext.PlugInManager.GetPlugInPoint<IPlayerStateChangingPlugIn>()?.PlayerStateChangingAsync(this, args) ?? ValueTask.CompletedTask).ConfigureAwait(false);
         this._observerToWorldViewAdapter = new ObserverToWorldViewAdapter(this, this.InfoRange);
@@ -651,84 +648,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         await this.OnDeathAsync(null).ConfigureAwait(false);
     }
 
-    /// <summary>
-    /// Determines whether the self defense is active for the specified attacker.
-    /// </summary>
-    /// <param name="attacker">The attacker.</param>
-    /// <returns>
-    ///   <c>true</c> if the self defense is active for the specified attacker; otherwise, <c>false</c>.
-    /// </returns>
-    public bool IsSelfDefenseActive(Player attacker)
-    {
-        if (this.GameContext.SelfDefenseState.TryGetValue((attacker, this), out var timeout))
-        {
-            return timeout > DateTime.UtcNow;
-        }
-
-        return false;
-    }
-
-    /// <summary>
-    /// Determines whether the self-defense is active for any attacker.
-    /// </summary>
-    /// <returns>
-    ///   <c>true</c> if any self-defense is active; otherwise, <c>false</c>.
-    /// </returns>
-    public bool IsAnySelfDefenseActive()
-    {
-        var selfDefenses = this.GameContext.SelfDefenseState.Keys.Where(c => c.Attacker == this).ToList();
-        return selfDefenses.Any(sd =>
-            this.GameContext.SelfDefenseState.TryGetValue(sd, out var timeout)
-            && timeout >= DateTime.UtcNow);
-    }
-
-    /// <summary>
-    /// Gets the localized message.
-    /// </summary>
-    /// <param name="resourceName">Name of the resource.</param>
-    /// <param name="formatArguments">The format arguments.</param>
-    /// <returns>The localized message.</returns>
-    public string GetLocalizedMessage(string resourceName, params ReadOnlySpan<object?> formatArguments)
-    {
-        if (formatArguments.Length > 0)
-        {
-            return string.Format(PlayerMessage.ResourceManager.GetString(resourceName, this.Culture) ?? string.Empty, formatArguments);
-        }
-
-        return PlayerMessage.ResourceManager.GetString(resourceName, this.Culture) ?? string.Empty;
-    }
-
-    /// <summary>
-    /// Easier way to show a localized blue message to the player.
-    /// </summary>
-    /// <param name="messageKey">The message resource key.</param>
-    /// <param name="arguments">The parameters for the message.</param>
-    public ValueTask ShowLocalizedBlueMessageAsync(string messageKey, params ReadOnlySpan<object?> arguments)
-    {
-        var message = this.GetLocalizedMessage(messageKey, arguments);
-        return this.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal));
-    }
-
-    /// <summary>
-    /// Easier way to show a localized golden message to the player.
-    /// </summary>
-    /// <param name="messageKey">The message resource key.</param>
-    /// <param name="arguments">The parameters for the message.</param>
-    public ValueTask ShowLocalizedGoldenMessageAsync(string messageKey, params ReadOnlySpan<object?> arguments)
-    {
-        var message = this.GetLocalizedMessage(messageKey, arguments);
-        return this.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.GoldenCenter));
-    }
-
-    /// <summary>
-    /// Easier way to show a blue message to the player.
-    /// </summary>
-    /// <param name="message">The message resource key.</param>
-    public ValueTask ShowBlueMessageAsync(string message)
-    {
-        return this.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal));
-    }
-
     /// <inheritdoc/>
     public async ValueTask<HitInfo?> AttackByAsync(IAttacker attacker, SkillEntry? skill, bool isCombo, double damageFactor = 1.0, bool? isFinalStreakHit = null)
     {
@@ -946,160 +865,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// Resets the appearance cache.
     /// </summary>
     public void OnAppearanceChanged() => this._appearanceData.RaiseAppearanceChanged();
-
-    /// <summary>
-    /// Determines whether the player complies with the requirements of the specified item.
-    /// </summary>
-    /// <param name="item">The item.</param>
-    /// <returns><c>True</c>, if the player complies with the requirements of the specified item; Otherwise, <c>false</c>.</returns>
-    public bool CompliesRequirements(Item item)
-    {
-        item.ThrowNotInitializedProperty(item.Definition is null, nameof(item.Definition));
-
-        foreach (var requirement in item.Definition.Requirements.Select(item.GetRequirement))
-        {
-            if (this.Attributes![requirement.Attr] < requirement.Value)
-            {
-                return false;
-            }
-        }
-
-        return item.Definition.QualifiedCharacters.Contains(this.SelectedCharacter!.CharacterClass!);
-    }
-
-    /// <summary>
-    /// Tries to remove the money from the player inventory.
-    /// </summary>
-    /// <param name="value">The value that should be removed.</param>
-    /// <returns><c>True</c>, if the player inventory had enough money to remove; Otherwise, <c>false</c>.</returns>
-    public bool TryRemoveMoney(int value)
-    {
-        if (this.Money < value)
-        {
-            return false;
-        }
-
-        this.Money = checked(this.Money - value);
-        return true;
-    }
-
-    /// <summary>
-    /// Tries to deposit the money from the player inventory.
-    /// </summary>
-    /// <param name="value">The value that should be retrieved from the vault.</param>
-    /// <returns><c>True</c>, if the player inventory had enough money to move; Otherwise, <c>false</c>.</returns>
-    public bool TryDepositVaultMoney(int value)
-    {
-        if (this.Vault is null)
-        {
-            return false;
-        }
-
-        if (this.Vault.ItemStorage.Money + value > this.GameContext?.Configuration?.MaximumVaultMoney)
-        {
-            return false;
-        }
-
-        if (this.TryRemoveMoney(value))
-        {
-            return this.Vault.TryAddMoney(value);
-        }
-
-        return false;
-    }
-
-    /// <summary>
-    /// Tries to take the money from the vault.
-    /// </summary>
-    /// <param name="value">The value that should be retrieved from the vault.</param>
-    /// <returns><c>True</c>, if the vault had enough money to move and player inventory isn't maximum; Otherwise, <c>false</c>.</returns>
-    public bool TryTakeVaultMoney(int value)
-    {
-        if (this.Vault is null)
-        {
-            return false;
-        }
-
-        if (this.Money + value > this.GameContext?.Configuration?.MaximumInventoryMoney)
-        {
-            return false;
-        }
-
-        if (this.Vault.TryRemoveMoney(value))
-        {
-            return this.TryAddMoney(value);
-        }
-
-        return false;
-    }
-
-    /// <summary>
-    /// Tries to add the money from the player inventory.
-    /// </summary>
-    /// <param name="value">The value that should be added.</param>
-    /// <returns><c>True</c>, if the player inventory had space to add money; Otherwise, <c>false</c>.</returns>
-    public virtual bool TryAddMoney(int value)
-    {
-        if (this.Money + value > this.GameContext?.Configuration?.MaximumInventoryMoney)
-        {
-            return false;
-        }
-
-        if (this.Money + value < 0)
-        {
-            return false;
-        }
-
-        this.Money = checked(this.Money + value);
-        return true;
-    }
-
-    /// <summary>
-    /// Adds the invisible effect.
-    /// </summary>
-    public async ValueTask AddInvisibleEffectAsync()
-    {
-        var invisibleEffect = this.GameContext.Configuration.MagicEffects.FirstOrDefault(e => e.PowerUpDefinitions.Any(e => e.TargetAttribute == Stats.IsInvisible));
-        if (invisibleEffect is null)
-        {
-            this.Logger.LogError("Invisible effect not found!");
-        }
-        else
-        {
-            var (duration, powerUps) = this.CreateMagicEffectPowerUp(invisibleEffect);
-            var magicEffect = new MagicEffect(TimeSpan.FromSeconds(duration.Value), invisibleEffect, powerUps.Select(p => new MagicEffect.ElementWithTarget(p.BuffPowerUp, p.Target)).ToArray());
-            await this.MagicEffectList.AddEffectAsync(magicEffect).ConfigureAwait(false);
-
-            if (this._currentMap is { } currentMap)
-            {
-                await currentMap.RespawnAsync(this).ConfigureAwait(false);
-            }
-        }
-    }
-
-    /// <summary>
-    /// Removes the invisible effect.
-    /// </summary>
-    public async ValueTask RemoveInvisibleEffectAsync()
-    {
-        var invisibleEffect = this.GameContext.Configuration.MagicEffects.FirstOrDefault(e => e.PowerUpDefinitions.Any(e => e.TargetAttribute == Stats.IsInvisible));
-        if (invisibleEffect is null)
-        {
-            return;
-        }
-
-        var activeEffect = this.MagicEffectList.ActiveEffects.Values.FirstOrDefault(e => e.Definition == invisibleEffect);
-        if (activeEffect is null)
-        {
-            return;
-        }
-
-        await activeEffect.DisposeAsync().ConfigureAwait(false);
-        if (this._currentMap is { } currentMap)
-        {
-            await currentMap.RespawnAsync(this).ConfigureAwait(false);
-        }
-    }
 
     /// <summary>
     /// Moves the player to the specified gate.
@@ -1586,150 +1351,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
-    /// Creates the magic effect power up for the given skill entry.
-    /// </summary>
-    /// <param name="skillEntry">The skill entry.</param>
-    public void CreateMagicEffectPowerUp(SkillEntry skillEntry)
-    {
-        skillEntry.ThrowNotInitializedProperty(skillEntry.Skill is null, nameof(skillEntry.Skill));
-
-        var skill = skillEntry.Skill;
-
-        if (skill.MagicEffectDef?.PowerUpDefinitions.Any(d => d.Boost is null) ?? true)
-        {
-            throw new InvalidOperationException($"Skill {skill.Name} ({skill.Number}) has no magic effect definition or is without a PowerUpDefinition.");
-        }
-
-        if (skill.MagicEffectDef.Duration is null)
-        {
-            throw new InvalidOperationException($"Skill {skill.Name} ({skill.Number}) has no duration in MagicEffectDef.");
-        }
-
-        var result = new (AttributeDefinition Target, IElement BuffPowerUp)[skill.MagicEffectDef.PowerUpDefinitions.Count];
-        var resultPvp = new (AttributeDefinition Target, IElement BuffPowerUp)[skill.MagicEffectDef.PowerUpDefinitionsPvp.Count];
-        var durationElement = this.Attributes!.CreateDurationElement(skill.MagicEffectDef.Duration);
-        var durationElementPvp = skill.MagicEffectDef.DurationPvp is { } durationPvp ? this.Attributes!.CreateDurationElement(durationPvp) : durationElement;
-        var chanceElement = skill.MagicEffectDef.Chance is { } chance ? this.Attributes!.CreateChanceElement(chance) : new ConstantElement(1.0f);
-        var chanceElementPvp = skill.MagicEffectDef.ChancePvp is { } chancePvp ? this.Attributes!.CreateChanceElement(chancePvp) : chanceElement;
-        AddSkillPowersToResult(skill.MagicEffectDef.PowerUpDefinitions, ref result);
-        AddSkillPowersToResult(skill.MagicEffectDef.PowerUpDefinitionsPvp, ref resultPvp);
-        skillEntry.PowerUpDuration = durationElement;
-        skillEntry.PowerUpDurationPvp = durationElementPvp;
-        skillEntry.PowerUpChance = chanceElement;
-        skillEntry.PowerUpChancePvp = chanceElementPvp;
-        skillEntry.PowerUps = result;
-        skillEntry.PowerUpsPvp = resultPvp.Count() > 0 ? resultPvp : result;
-
-        if (skillEntry.EnsureSkillAttributes(this.Attributes!) is { } skillAttributes
-            && skillAttributes[Stats.SleepStrBonusChance] is float bonusChance
-            && bonusChance > 0)
-        {
-            skillEntry.PowerUpChance = new CombinedElement(skillEntry.PowerUpChance, new ConstantElement(bonusChance));
-            skillEntry.PowerUpChancePvp = new CombinedElement(skillEntry.PowerUpChancePvp, new ConstantElement(bonusChance));
-        }
-
-        void AddSkillPowersToResult(ICollection<PowerUpDefinition> powerUps, ref (AttributeDefinition Target, IElement BuffPowerUp)[] result)
-        {
-            if (powerUps.Count() == 0)
-            {
-                return;
-            }
-
-            int i = 0;
-            var durationExtended = false;
-            foreach (var powerUpDef in powerUps)
-            {
-                IElement powerUp = this.Attributes!.CreateElement(powerUpDef);
-                if (skillEntry.Level > 0)
-                {
-                    foreach (var masterSkillEntry in GetMasterSkillEntries(skillEntry))
-                    {
-                        var extendsDuration = masterSkillEntry.Skill?.MasterDefinition?.ExtendsDuration ?? false;
-                        if (extendsDuration && !durationExtended)
-                        {
-                            var value = masterSkillEntry.CalculateValue();
-                            if (value < 1)
-                            {
-                                value *= 100;
-                            }
-
-                            durationElement = new CombinedElement(durationElement, new ConstantElement(value));
-                            durationElementPvp = new CombinedElement(durationElementPvp, new ConstantElement(value));
-                        }
-
-                        if (masterSkillEntry.Skill?.MasterDefinition?.TargetAttribute is not null)
-                        {
-                            powerUp = AppedMasterSkillPowerUp(masterSkillEntry, powerUpDef, powerUp);
-                        }
-                    }
-
-                    // After the first iteration all possible duration extensions have been applied
-                    durationExtended = true;
-                }
-
-                result[i] = (powerUpDef.TargetAttribute!, powerUp);
-                i++;
-            }
-        }
-
-        IEnumerable<SkillEntry> GetMasterSkillEntries(SkillEntry masterSkillEntry)
-        {
-            yield return masterSkillEntry;
-
-            foreach (var masterSkill in skillEntry.Skill.GetBaseSkills(true))
-            {
-                yield return this.SkillList!.GetSkill((ushort)masterSkill.Number)!;
-            }
-        }
-
-        IElement AppedMasterSkillPowerUp(SkillEntry masterSkillEntry, PowerUpDefinition powerUpDef, IElement powerUp)
-        {
-            var masterSkillDefinition = masterSkillEntry.Skill!.MasterDefinition!;
-
-            if (masterSkillDefinition.TargetAttribute == powerUpDef.TargetAttribute
-                && masterSkillDefinition.Aggregation == powerUp.AggregateType)
-            {
-                var additionalValue = new SimpleElement(masterSkillEntry.CalculateValue(), masterSkillDefinition.Aggregation);
-                powerUp = new CombinedElement(powerUp, additionalValue);
-            }
-
-            return powerUp;
-        }
-    }
-
-    /// <summary>
-    /// Creates the magic effect power up for the given definition.
-    /// </summary>
-    /// <param name="magicEffectDefinition">The definition for a magic effect.</param>
-    /// <returns>A tuple containing the duration element and the power-up elements.</returns>
-    public (IElement DurationInSeconds, (AttributeDefinition Target, IElement BuffPowerUp)[] PowerUps) CreateMagicEffectPowerUp(MagicEffectDefinition magicEffectDefinition)
-    {
-        ArgumentNullException.ThrowIfNull(magicEffectDefinition);
-
-        if (magicEffectDefinition.PowerUpDefinitions.Any(d => d.Boost is null))
-        {
-            throw new InvalidOperationException($"Magic effect definition {magicEffectDefinition.Name} ({magicEffectDefinition.Number}) is without a PowerUpDefinition.");
-        }
-
-        if (magicEffectDefinition.Duration is null)
-        {
-            throw new InvalidOperationException($"Magic effect definition {magicEffectDefinition.Name} ({magicEffectDefinition.Number}) has no duration.");
-        }
-
-        int i = 0;
-        var result = new (AttributeDefinition Target, IElement BuffPowerUp)[magicEffectDefinition.PowerUpDefinitions.Count];
-        foreach (var powerUpDef in magicEffectDefinition.PowerUpDefinitions)
-        {
-            IElement powerUp = this.Attributes!.CreateElement(powerUpDef);
-
-            result[i] = (powerUpDef.TargetAttribute!, powerUp);
-            i++;
-        }
-
-        return (this.Attributes!.CreateDurationElement(magicEffectDefinition.Duration), result);
-    }
-
-    /// <summary>
     /// Creates a summoned monster for the player.
     /// </summary>
     /// <param name="definition">The definition.</param>
@@ -1792,18 +1413,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     {
         this._petCommandManager?.Dispose();
         this._petCommandManager = null;
-    }
-
-    /// <summary>
-    /// Destroys an item of the <see cref="Inventory"/>.
-    /// </summary>
-    /// <param name="item">The item.</param>
-    public async ValueTask DestroyInventoryItemAsync(Item item)
-    {
-        await this.Inventory!.RemoveItemAsync(item).ConfigureAwait(false);
-        await this.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
-        await this.InvokeViewPlugInAsync<IItemRemovedPlugIn>(p => p.RemoveItemAsync(item.ItemSlot)).ConfigureAwait(false);
-        this.GameContext.PlugInManager.GetPlugInPoint<IItemDestroyedPlugIn>()?.ItemDestroyed(item);
     }
 
     /// <inheritdoc/>
@@ -2751,34 +2360,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         await openStoreAction.RestoreAfterEnterWorldAsync(this, this.IsPlayerStoreOpeningAfterEnterSupported).ConfigureAwait(false);
     }
 
-    private void LogInvalidVaultItems()
-    {
-        var invalidItems = this.Account?.Vault?.Items.Where(i => i.Definition is null);
-        if (invalidItems is null)
-        {
-            return;
-        }
-
-        foreach (var item in invalidItems)
-        {
-            this.Logger.LogWarning("Account {name} has item without definition in vault, Slot: {slot}, ID: {id}", this.Account?.LoginName, item.ItemSlot, item.GetId());
-        }
-    }
-
-    private void LogInvalidInventoryItems()
-    {
-        var invalidItems = this.SelectedCharacter?.Inventory?.Items.Where(i => i.Definition is null);
-        if (invalidItems is null)
-        {
-            return;
-        }
-
-        foreach (var item in invalidItems)
-        {
-            this.Logger.LogWarning("Character {name} has item without definition in inventory, Slot: {slot}, ID: {id}", this.SelectedCharacter?.Name, item.ItemSlot, item.GetId());
-        }
-    }
-
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
     private async void OnTransformationSkinChanged(object? sender, EventArgs args)
     {
@@ -3026,73 +2607,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         {
             var cancelAction = new TradeCancelAction();
             await cancelAction.CancelTradeAsync(this).ConfigureAwait(false);
-        }
-    }
-
-    /// <summary>
-    /// A <see cref="MagicEffectDefinition"/> used to apply the GM mark
-    /// to a <see cref="Player"/> with <see cref="CharacterStatus.GameMaster"/> status.
-    /// </summary>
-    private protected sealed class GMMagicEffectDefinition : MagicEffectDefinition
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GMMagicEffectDefinition"/> class
-        /// with an empty power-up definitions list.
-        /// </summary>
-        public GMMagicEffectDefinition()
-        {
-            this.PowerUpDefinitions = new List<PowerUpDefinition>(0);
-        }
-    }
-
-    private sealed class TemporaryItemStorage : ItemStorage
-    {
-        public TemporaryItemStorage()
-        {
-            this.Items = new List<Item>();
-        }
-    }
-
-    private class AppearanceDataAdapter : IAppearanceData
-    {
-        private readonly Player _player;
-        private bool? _fullAncientSetEquipped;
-
-        public AppearanceDataAdapter(Player player)
-        {
-            this._player = player;
-        }
-
-        public event EventHandler? AppearanceChanged;
-
-        public CharacterClass? CharacterClass => this._player.SelectedCharacter?.CharacterClass;
-
-        public CharacterStatus CharacterStatus => this._player.SelectedCharacter?.CharacterStatus ?? default;
-
-        public CharacterPose Pose => this._player.SelectedCharacter?.Pose ?? default;
-
-        public bool FullAncientSetEquipped => (this._fullAncientSetEquipped ??= this._player.SelectedCharacter?.HasFullAncientSetEquipped()) ?? false;
-
-        public IEnumerable<ItemAppearance> EquippedItems
-        {
-            get
-            {
-                if (this._player.Inventory != null)
-                {
-                    return this._player.Inventory.EquippedItems.Select(item => item.GetAppearance());
-                }
-
-                return Enumerable.Empty<ItemAppearance>();
-            }
-        }
-
-        /// <summary>
-        /// Raises the <see cref="AppearanceChanged"/> event.
-        /// </summary>
-        public void RaiseAppearanceChanged()
-        {
-            this._fullAncientSetEquipped = null;
-            this.AppearanceChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 }
