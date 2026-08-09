@@ -133,14 +133,78 @@ pattern for plugin points that need to produce a value
 
 ## 4. Proposed new plugin points
 
+### 4.0 First: use the state machine we already have
+
+`IPlayerStateChangedPlugIn` and `IPlayerStateChangingPlugIn` already exist and are
+wired in the `Player` constructor (`Player.cs:113-114`). Four plugins already use
+them, with `ShowMessageToAllWhenPlayerEnteredWorldPlugIn` establishing the idiom
+for "the player just entered the world":
+
+```csharp
+if (previousState != PlayerState.CharacterSelection || currentState != PlayerState.EnteredWorld) return;
+```
+
+**Consequence for this plan: no new "entered world" plugin point is needed.**
+The tail of `OnPlayerEnteredWorldAsync` (GM mark, MU Helper configuration, player
+store restore, pet behavior reset) becomes ordinary `IPlayerStateChangedPlugIn`
+implementations. Same for the pre-map view initialization, which can hook
+`IPlayerStateChangingPlugIn` (it fires immediately before `EnteredWorld` is set) —
+though see the caveats below before moving that block at all.
+
+For **map changes** the existing point does not fire today, but it *should*, and
+making it do so is cheaper and better than a new point:
+
+* `PlayerState.ChangingMap` is declared (`PlayerState.cs:181`) and **never used
+  anywhere**. It is also unreachable: no other state lists it in
+  `PossibleTransitions`.
+* `ClientReadyAfterMapChangeAsync` calls `TryAdvanceToAsync(EnteredWorld)` while
+  the player usually *is* already in `EnteredWorld`. Since
+  `EnteredWorld.PossibleTransitions` does not contain `EnteredWorld`,
+  `TryAdvanceToAsync` returns `false` and **no event is raised** — a warp is
+  invisible to the state plugins. (Respawn after death is the exception:
+  `Dead → EnteredWorld` is a legal transition and does fire.)
+* `WarpToAsync` does not touch the state machine at all.
+
+So the task is: set `ChangingMap` in `WarpToAsync`/`RespawnAtAsync`, advance back
+to `EnteredWorld` in `ClientReadyAfterMapChangeAsync`, and add the missing
+transitions (`EnteredWorld → ChangingMap`, `Dead → ChangingMap`,
+`ChangingMap → EnteredWorld`). This gives entered/left map to every plugin for
+free — and, via `IPlayerStateChangingPlugIn`, makes map changes **cancelable**,
+which mini games, castle siege and duels can use.
+
+Four things to keep in mind when leaning on the state machine:
+
+1. **~41 call sites guard on `CurrentState == PlayerState.EnteredWorld`** (item
+   consumption, guild actions, resets, bots, the periodic save). Once
+   `ChangingMap` exists, they all reject actions during a warp. That is almost
+   certainly the correct behavior, but it is a behavior change and belongs in its
+   own commit with its own test, not smuggled into a move.
+2. **The state machine lock is not reentrant.** `TryAdvanceToAsync` holds
+   `StateMachine._asyncLock` while awaiting both events, so a plugin that
+   triggers another transition **on the same player** deadlocks. Anything moved
+   into a state plugin must be checked for this (trade, NPC dialog and store
+   states are the candidates).
+3. **The event fires before `CurrentMap.AddAsync`** in the enter-world flow, so
+   logic that must run once the player is actually on the map either stays in
+   code or needs the call site moved.
+4. **The state does not say which map.** Map-bound power-ups therefore still
+   belong on `IObjectAddedToMapPlugIn`/`IObjectRemovedFromMapPlugIn`, which pass
+   the `GameMap` and already fire for players.
+
+A related pre-existing bug found while checking this: `LogoutAction`
+(`LogoutType.BackToCharacterSelection`) advances to `PlayerState.Authenticated`,
+which is *not* in `EnteredWorld.PossibleTransitions` — the transition silently
+fails and the player stays in `EnteredWorld`. This must be fixed before "leaving
+the game" can be observed via the state machine at all.
+
+### 4.1 Points that are actually new
+
 All of these live in `src/GameLogic/PlugIns/`, need a fresh `Guid` and a
 `[PlugInPoint]` attribute, following `IAttackableGotKilledPlugIn` as the template.
 
 | # | Interface | Signature | Logic that moves there |
 |---|---|---|---|
-| P1 | `IPlayerEnteringWorldPlugIn` | `ValueTask PlayerEnteringWorldAsync(Player player)` | the view-initialization block of `OnPlayerEnteredWorldAsync` (2717-2722): stats, inventory list, skill list, key config, quest state |
-| P2 | `IPlayerEnteredWorldPlugIn` | `ValueTask PlayerEnteredWorldAsync(Player player)` | the tail of `OnPlayerEnteredWorldAsync` (2733-2751): rotation update, pet behavior reset, MU Helper config, GM mark effect, player store restore |
-| P3 | `IPlayerLeavingGamePlugIn` | `ValueTask PlayerLeavingGameAsync(Player player)` | `RemoveFromGameAsync` steps (1840-1856): party leave-temporarily, safezone move, temporary storage restore, `OpenedNpc` reset |
+| P3 | `IPlayerLeavingGamePlugIn` | `ValueTask PlayerLeavingGameAsync(Player player)` | `RemoveFromGameAsync` steps (1840-1856): party leave-temporarily, safezone move, temporary storage restore, `OpenedNpc` reset. **Only if** the `LogoutAction` state bug above is not fixed — with it fixed, `IPlayerStateChangedPlugIn` covers this too, and P3 is dropped |
 | P4 | `IPlayerSpawnGateSelectionPlugIn` | `ValueTask SelectSpawnGateAsync(Player player, SpawnGateSelectionArgs args)` | the duel and guild-war-soccer branches of `GetSpawnGateOfCurrentMapAsync` (2409-2428); later also mini games and castle siege |
 | P5 | `IExperienceCalculationPlugIn` | `ValueTask CalculateExperienceAsync(Player player, ExperienceCalculationArgs args)` | the multiplier chain in `CalculateExpAfterKill` (1271-1288): map multiplier, bonus rate, random min/max multipliers |
 | P6 | `IPlayerGainedExperiencePlugIn` | `ValueTask PlayerGainedExperienceAsync(Player player, int experience, IAttackable? killedObject, ExperienceType type)` | `AddPetExperienceAsync` (2953-3020) becomes `PetExperiencePlugIn`; also the natural hook for statistics/events |
@@ -154,6 +218,8 @@ Existing plugin points that should absorb logic instead of new ones being added:
 
 | Existing point | Logic that moves there |
 |---|---|
+| `IPlayerStateChangedPlugIn` | the tail of `OnPlayerEnteredWorldAsync` (2733-2751) → `GameMasterMarkPlugIn`, `MuHelperConfigurationPlugIn`, `RestorePlayerStorePlugIn`, `ResetPetBehaviorPlugIn`; after §4.0 is implemented, also everything reacting to entering/leaving a map |
+| `IPlayerStateChangingPlugIn` | veto hooks for map changes (mini game / castle siege / duel restrictions) once `ChangingMap` is wired up |
 | `IAttackableGotKilledPlugIn` | `AfterKilledPlayerAsync` (1962-2012) → `PlayerKillerStatePlugIn`; the death→respawn flow inside `OnDeathAsync` (2547-2580) → `RespawnAfterDeathPlugIn` (with the CTS in the per-player state bag); `RespawnOfDuelPartnerIfInDuelAsync` (2598) → `DuelPartnerRespawnPlugIn` |
 | `IAttackableGotHitPlugIn` | damage reflection (2484-2524), the defensive durability decrease (2872-2929), `FullyRecoverHealthAfterHitChance`/sleep-clearing (769-783). **Note:** the interface method is currently synchronous (`void AttackableGotHit`), so it needs an async sibling method before these can move |
 | `IObjectAddedToMapPlugIn` / `IObjectRemovedFromMapPlugIn` | the map `CharacterPowerUpDefinitions` handling in `RaisePlayerEnteredMap` (2632-2654). These points already fire for players (`GameContext.cs:219-226`) |
@@ -205,9 +271,11 @@ New plugin implementations created by the moves above (all in
 * `MapCharacterPowerUpPlugIn` — map-bound power-ups via the map plugin points.
 * `IntervalRegenerationPlugIn`, `HeroStateRecoveryPlugIn`.
 * `GameMasterMarkPlugIn`, `MuHelperConfigurationPlugIn`, `RestorePlayerStorePlugIn`,
-  `InitialViewUpdatePlugIn` — the enter-world steps (P1/P2).
+  `ResetPetBehaviorPlugIn` — the enter-world steps, on the **existing**
+  `IPlayerStateChangedPlugIn` (§4.0).
 * `PartyLeaveTemporarilyPlugIn`, `MoveToSafezoneOnLeavePlugIn`,
-  `RestoreTemporaryStorageItemsPlugIn` — the leave-game steps (P3).
+  `RestoreTemporaryStorageItemsPlugIn` — the leave-game steps (P3, or
+  `IPlayerStateChangedPlugIn` once the `LogoutAction` transition is fixed).
 * `DuelSpawnGatePlugIn`, `SoccerSpawnGatePlugIn` — spawn gate selection (P4).
 * `RavenCommandManagerFactoryPlugIn` — the pet factory TODO (P10).
 
@@ -231,12 +299,13 @@ Each phase is independently mergeable and leaves the build green.
 | Phase | Content | Risk | Player.cs after |
 |---|---|---|---|
 | **0** | Characterization tests (see §7); plugin ordering (3.1a); per-player state bag (3.1b); args-object convention (3.1c) | low | 3,098 |
+| **0b** | State machine repair (§4.0): wire `ChangingMap` into warp/respawn, add the missing transitions, fix the `LogoutAction` transition. Own commit, own tests — this is a behavior change, not a move | medium | 3,098 |
 | **1** | §5.1 extension-method moves + nested class files | very low | ~2,600 |
 | **2** | `PlayerMovement`, `PlayerPersistence`, `PlayerSummon`, `PlayerStorages` components | low | ~2,150 |
 | **3** | `PlayerExperience` + P5/P6/P7 + `PetExperiencePlugIn` | medium | ~1,850 |
 | **4** | `PlayerMapTransitions` + P4 spawn gate plugins | medium | ~1,550 |
 | **5** | `PlayerCombat` + `AttackableNpcBase` dedup + P8 and the `IAttackableGotHit`/`GotKilled` plugins (PK state, respawn, reflection, durability) | **high** | ~1,150 |
-| **6** | Enter-world / leave-game: P1, P2, P3 + `PlayerAttributeHost` + P9 regeneration | medium-high | ~900 |
+| **6** | Enter-world / leave-game moved onto `IPlayerStateChangedPlugIn` (+ P3 if needed) + `PlayerAttributeHost` + P9 regeneration | medium-high | ~900 |
 | **7** | §5.4 property consolidation, final cleanup of `virtual` members nobody overrides | low | ~700-800 |
 
 Phase 5 is the one to schedule carefully: combat touches PvP, duels, mini games
@@ -276,8 +345,15 @@ per-hit and per-kill paths add an iteration over the plugin proxy list.
    the admin panel. Only *policy* should move; mechanism stays in components.
    Open question: should there be a "not deactivatable" marker (the mirror image
    of `IDisabledByDefault`) for plugins like `RespawnAfterDeathPlugIn`?
-2. **Ordering.** The enter-world view sequence is client-observable. If 3.1(a) is
-   rejected, phase 6 must use several narrow plugin points instead of one.
+2. **Ordering.** The enter-world view sequence is client-observable, and
+   `IPlayerStateChangedPlugIn` implementations are as unordered as any other
+   plugin. If 3.1(a) is rejected, the ordered part of the sequence stays in a
+   component and only the order-independent steps (GM mark, MU Helper config,
+   store restore) become plugins.
+2b. **State machine repair is a behavior change.** Introducing `ChangingMap`
+   makes ~41 `CurrentState == EnteredWorld` guards reject actions during a warp,
+   and it makes map changes cancelable by plugins. Both are desirable, both need
+   deciding explicitly. Also mind the non-reentrant state machine lock (§4.0).
 3. **`IAttackableGotHitPlugIn` is synchronous.** Adding an async method to the
    interface is a (source-)breaking change for external plugins — decide between
    extending the interface and adding a sibling point.
