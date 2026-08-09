@@ -34,7 +34,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     TaxStore = table.Column<byte>(type: "smallint", nullable: false),
                     TaxHunt = table.Column<int>(type: "integer", nullable: false),
                     IsHuntZoneEnabled = table.Column<bool>(type: "boolean", nullable: false),
-                    TributeMoney = table.Column<long>(type: "bigint", nullable: false)
+                    TributeMoney = table.Column<long>(type: "bigint", nullable: false),
                 },
                 constraints: table =>
                 {
@@ -53,7 +53,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     DefenseLevel = table.Column<byte>(type: "smallint", nullable: false),
                     RegenLevel = table.Column<byte>(type: "smallint", nullable: false),
                     LifeLevel = table.Column<byte>(type: "smallint", nullable: false),
-                    CurrentHp = table.Column<int>(type: "integer", nullable: false)
+                    CurrentHp = table.Column<int>(type: "integer", nullable: false),
                 },
                 constraints: table =>
                 {
@@ -87,7 +87,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     GuildScoreCastleSiege = table.Column<int>(type: "integer", nullable: false),
                     GuildScoreCastleSiegeMembers = table.Column<int>(type: "integer", nullable: false),
                     GateBuyPrice = table.Column<int>(type: "integer", nullable: false),
-                    StatueBuyPrice = table.Column<int>(type: "integer", nullable: false)
+                    StatueBuyPrice = table.Column<int>(type: "integer", nullable: false),
                 },
                 constraints: table =>
                 {
@@ -125,7 +125,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     DefaultSide = table.Column<byte>(type: "smallint", nullable: false),
                     SpawnX = table.Column<byte>(type: "smallint", nullable: false),
                     SpawnY = table.Column<byte>(type: "smallint", nullable: false),
-                    Direction = table.Column<int>(type: "integer", nullable: false)
+                    Direction = table.Column<int>(type: "integer", nullable: false),
                 },
                 constraints: table =>
                 {
@@ -155,7 +155,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     State = table.Column<byte>(type: "smallint", nullable: false),
                     DayOfWeek = table.Column<int>(type: "integer", nullable: false),
                     Hour = table.Column<byte>(type: "smallint", nullable: false),
-                    Minute = table.Column<byte>(type: "smallint", nullable: false)
+                    Minute = table.Column<byte>(type: "smallint", nullable: false),
                 },
                 constraints: table =>
                 {
@@ -183,7 +183,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     Level = table.Column<byte>(type: "smallint", nullable: false),
                     RequiredJewelOfGuardianCount = table.Column<int>(type: "integer", nullable: false),
                     RequiredZen = table.Column<int>(type: "integer", nullable: false),
-                    Value = table.Column<int>(type: "integer", nullable: false)
+                    Value = table.Column<int>(type: "integer", nullable: false),
                 },
                 constraints: table =>
                 {
@@ -236,7 +236,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     X1 = table.Column<byte>(type: "smallint", nullable: false),
                     Y1 = table.Column<byte>(type: "smallint", nullable: false),
                     X2 = table.Column<byte>(type: "smallint", nullable: false),
-                    Y2 = table.Column<byte>(type: "smallint", nullable: false)
+                    Y2 = table.Column<byte>(type: "smallint", nullable: false),
                 },
                 constraints: table =>
                 {

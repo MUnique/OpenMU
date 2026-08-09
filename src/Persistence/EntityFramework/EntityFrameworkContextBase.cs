@@ -92,69 +92,6 @@ internal class EntityFrameworkContextBase : IContext
         }
     }
 
-    /// <summary>
-    /// Determines whether the exception is a transient conflict caused by a concurrent entity mutation
-    /// racing this save, and is therefore worth retrying.
-    /// </summary>
-    /// <param name="exception">The exception thrown by the save.</param>
-    /// <returns><c>true</c> if the save should be retried.</returns>
-    private static bool IsTransientConcurrencyConflict(Exception exception)
-    {
-        // A concurrent entity mutation racing this save corrupts the change tracker mid-enumeration.
-        // Depending on exactly where change detection was, it surfaces as one of several types - a
-        // modified collection (InvalidOperationException), a transiently-null internal key
-        // (ArgumentNullException/NullReferenceException), or an out-of-range index. All are transient:
-        // the racing mutation is a single quick operation, so a bounded retry lands on a stable moment.
-        // A genuinely persistent error of the same type is not masked - it rethrows once the retries
-        // are exhausted. The deterministic serialization (per-player persistence lock) is the primary
-        // guard; this retry only needs to absorb the rare, bursty sources that lock isn't held for.
-        return exception is DbUpdateConcurrencyException
-            or InvalidOperationException
-            or ArgumentNullException
-            or NullReferenceException
-            or IndexOutOfRangeException
-            or KeyNotFoundException;
-    }
-
-    private async ValueTask<bool> SaveChangesCoreAsync(CancellationToken cancellationToken)
-    {
-        using var l = await this._lock.LockAsync();
-
-        // when we have a change publisher attached, we want to get the changed entries before accepting them.
-        // Otherwise, we can accept them.
-        var acceptChanges = true;
-
-        object? sender = null;
-        SavedChangesEventArgs? args = null;
-        if (this._changeListener is { })
-        {
-            this.Context.SavedChanges += OnSavedChanges;
-            acceptChanges = false;
-        }
-
-        try
-        {
-            await this.Context.SaveChangesAsync(acceptChanges, cancellationToken).ConfigureAwait(false);
-
-            if (args is not null)
-            {
-                await this.OnSavedChangesAsync(sender, args).ConfigureAwait(false);
-            }
-        }
-        finally
-        {
-            this.Context.SavedChanges -= OnSavedChanges;
-        }
-
-        return true;
-
-        void OnSavedChanges(object? s, SavedChangesEventArgs e)
-        {
-            sender = s;
-            args = e;
-        }
-    }
-
     /// <inheritdoc />
     public IDisposable SuspendChangeNotifications()
     {
@@ -321,6 +258,69 @@ internal class EntityFrameworkContextBase : IContext
         }
 
         this.Context.Dispose();
+    }
+
+    /// <summary>
+    /// Determines whether the exception is a transient conflict caused by a concurrent entity mutation
+    /// racing this save, and is therefore worth retrying.
+    /// </summary>
+    /// <param name="exception">The exception thrown by the save.</param>
+    /// <returns><c>true</c> if the save should be retried.</returns>
+    private static bool IsTransientConcurrencyConflict(Exception exception)
+    {
+        // A concurrent entity mutation racing this save corrupts the change tracker mid-enumeration.
+        // Depending on exactly where change detection was, it surfaces as one of several types - a
+        // modified collection (InvalidOperationException), a transiently-null internal key
+        // (ArgumentNullException/NullReferenceException), or an out-of-range index. All are transient:
+        // the racing mutation is a single quick operation, so a bounded retry lands on a stable moment.
+        // A genuinely persistent error of the same type is not masked - it rethrows once the retries
+        // are exhausted. The deterministic serialization (per-player persistence lock) is the primary
+        // guard; this retry only needs to absorb the rare, bursty sources that lock isn't held for.
+        return exception is DbUpdateConcurrencyException
+            or InvalidOperationException
+            or ArgumentNullException
+            or NullReferenceException
+            or IndexOutOfRangeException
+            or KeyNotFoundException;
+    }
+
+    private async ValueTask<bool> SaveChangesCoreAsync(CancellationToken cancellationToken)
+    {
+        using var l = await this._lock.LockAsync();
+
+        // when we have a change publisher attached, we want to get the changed entries before accepting them.
+        // Otherwise, we can accept them.
+        var acceptChanges = true;
+
+        object? sender = null;
+        SavedChangesEventArgs? args = null;
+        if (this._changeListener is { })
+        {
+            this.Context.SavedChanges += OnSavedChanges;
+            acceptChanges = false;
+        }
+
+        try
+        {
+            await this.Context.SaveChangesAsync(acceptChanges, cancellationToken).ConfigureAwait(false);
+
+            if (args is not null)
+            {
+                await this.OnSavedChangesAsync(sender, args).ConfigureAwait(false);
+            }
+        }
+        finally
+        {
+            this.Context.SavedChanges -= OnSavedChanges;
+        }
+
+        return true;
+
+        void OnSavedChanges(object? s, SavedChangesEventArgs e)
+        {
+            sender = s;
+            args = e;
+        }
     }
 
     private bool DetachInternal(object item)

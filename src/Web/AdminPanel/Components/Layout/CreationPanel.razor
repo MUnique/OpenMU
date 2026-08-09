@@ -8,7 +8,7 @@
 
 @implements IDisposable
 @inject CreationPanelService Panel
-@inject Blazored.Toast.Services.IToastService ToastService
+@inject IToastService ToastService
 
 @if (this.Panel.Current is { } session)
 {
