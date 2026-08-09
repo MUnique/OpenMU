@@ -883,6 +883,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         if (!this.PlayerState.CurrentState.IsDisconnectedOrFinished())
         {
+            await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.ChangingMap).ConfigureAwait(false);
             await this.InvokeViewPlugInAsync<IMapChangePlugIn>(p => p.MapChangeAsync()).ConfigureAwait(false);
         }
 
@@ -928,6 +929,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         else
         {
             this.CurrentMap = null; // Will be set again, when the client acknowledged the map change by F3 12 packet.
+            await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.ChangingMap).ConfigureAwait(false);
             await this.InvokeViewPlugInAsync<IMapChangePlugIn>(p => p.MapChangeAsync()).ConfigureAwait(false);
 
             // after this, the Client will send us a F3 12 packet, to tell us it loaded
