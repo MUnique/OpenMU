@@ -59,13 +59,15 @@ Concrete smells worth calling out, because they drive the design below:
    `IsPlayerStoreOpeningAfterEnterSupported`. These four extension points stay.
    (`TryAddMoney` and `RespawnAtAsync` are `virtual` but nobody overrides them —
    they can lose `virtual` when they move.)
-2. **Source compatibility for runtime-compiled plugins.** OpenMU compiles custom
-   plugins from source at server start (see `PlugIns/Readme.md`). Any member we
-   turn into an extension method must live in the **same namespace**
-   (`MUnique.OpenMU.GameLogic`), otherwise third-party plugin sources stop
-   compiling for want of a `using`. With that rule, `player.Foo()` call sites are
-   unaffected — this is why extension methods are the cheapest tool here
-   (`ShowLocalizedBlueMessageAsync` alone has ~208 call sites).
+2. **Source compatibility is a convenience here, not a hard rule.** Breaking
+   changes are acceptable at this stage of the project (§8.3), so this is only
+   about avoiding pointless churn. OpenMU compiles custom plugins from source at
+   server start (see `PlugIns/Readme.md`); keeping every extension class in the
+   **same namespace** (`MUnique.OpenMU.GameLogic`) means `player.Foo()` call
+   sites — inside the repository and in third-party plugin sources — keep
+   compiling without a new `using`. That is free, and it is why extension methods
+   are the cheapest tool here (`ShowLocalizedBlueMessageAsync` alone has ~208
+   call sites).
 3. **The persistence lock contract** documented at `Player.cs:1885-1910` must
    survive verbatim: re-entrancy per async flow, and no cross-player lock
    acquisition ordering cycles. `tests/MUnique.OpenMU.Tests/PersistenceLockTest.cs`
@@ -95,9 +97,14 @@ Concrete smells worth calling out, because they drive the design below:
 | **Feature context object** | groups of properties that only make sense together (`TradeContext`, `GuildRequestContext`) | touches call sites |
 
 Rule of thumb used throughout this plan: **policy → plugin, mechanism → component,
-pure function → extension method.** Do not extract mechanism into plugins just
-because it is possible: everything that becomes a plugin can be deactivated by an
-admin, and deactivating "apply damage to health" is not a feature.
+pure function → extension method.**
+
+Deactivation is explicitly *not* a reason to hold back (decided, see §8.1): an
+admin who switches off `PlayerKillerStatePlugIn` to replace it with their own is
+using the plugin system as intended. So when in doubt between a plugin and a
+component, take the plugin. Mechanism still stays in components — not because
+deactivating it would be dangerous, but because a plugin point that nobody will
+ever implement differently is just indirection.
 
 ### 3.1 Three infrastructure gaps to close first
 
@@ -221,9 +228,32 @@ Existing plugin points that should absorb logic instead of new ones being added:
 | `IPlayerStateChangedPlugIn` | the tail of `OnPlayerEnteredWorldAsync` (2733-2751) → `GameMasterMarkPlugIn`, `MuHelperConfigurationPlugIn`, `RestorePlayerStorePlugIn`, `ResetPetBehaviorPlugIn`; after §4.0 is implemented, also everything reacting to entering/leaving a map |
 | `IPlayerStateChangingPlugIn` | veto hooks for map changes (mini game / castle siege / duel restrictions) once `ChangingMap` is wired up |
 | `IAttackableGotKilledPlugIn` | `AfterKilledPlayerAsync` (1962-2012) → `PlayerKillerStatePlugIn`; the death→respawn flow inside `OnDeathAsync` (2547-2580) → `RespawnAfterDeathPlugIn` (with the CTS in the per-player state bag); `RespawnOfDuelPartnerIfInDuelAsync` (2598) → `DuelPartnerRespawnPlugIn` |
-| `IAttackableGotHitPlugIn` | damage reflection (2484-2524), the defensive durability decrease (2872-2929), `FullyRecoverHealthAfterHitChance`/sleep-clearing (769-783). **Note:** the interface method is currently synchronous (`void AttackableGotHit`), so it needs an async sibling method before these can move |
+| `IAttackableGotHitPlugIn` | damage reflection (2484-2524), the defensive durability decrease (2872-2929), `FullyRecoverHealthAfterHitChance`/sleep-clearing (769-783). The method becomes `ValueTask AttackableGotHitAsync(...)` — see §4.2 |
 | `IObjectAddedToMapPlugIn` / `IObjectRemovedFromMapPlugIn` | the map `CharacterPowerUpDefinitions` handling in `RaisePlayerEnteredMap` (2632-2654). These points already fire for players (`GameContext.cs:219-226`) |
 | `IPeriodicTaskPlugIn` | nothing new — P9 keeps the separate recovery interval |
+
+### 4.2 Making existing plugin points async
+
+Decided (§8.3): existing plugin interfaces may be changed rather than duplicated
+with async siblings. The points on this refactoring's path that are still
+synchronous:
+
+| Point | Current signature | Change |
+|---|---|---|
+| `IAttackableGotHitPlugIn` | `void AttackableGotHit(...)` | → `ValueTask AttackableGotHitAsync(...)`. Required: reflection and durability both await view plugins. Call site `Player.cs:2470` |
+| `ICharacterLevelUpPlugIn` | `void CharacterLeveledUp(Player)` | → `ValueTask CharacterLeveledUpAsync(Player)`, so P7 (master level up) can mirror it and level-up plugins can talk to the view. Call site `Player.cs:2145` |
+| `IItemDestroyedPlugIn` | `void ItemDestroyed(Item)` | → async; the only call site (`Player.cs:1806`) is already async |
+| `ICharacterCreatedPlugIn` | `void CharacterCreated(...)` | → async; call site `Player.cs:2696` is already async |
+
+One exception: **`IAttackableMovedPlugIn.AttackableMoved` stays synchronous.** It
+is invoked from the `Position` and `CurrentMap` property setters
+(`Player.cs:329,413`), which cannot await. Making it async means turning
+`Position` into a method — a much larger change that should be decided on its own
+merits, not as a side effect of this refactoring.
+
+The remaining synchronous points (`IItemConsumedPlugIn`, `IItemMovingPlugIn`,
+`IChatMessageReceivedPlugIn`, …) are outside this refactoring's path. If a
+consistency sweep is wanted, it belongs in its own PR.
 
 ## 5. Extraction plan per cluster
 
@@ -341,10 +371,12 @@ per-hit and per-kill paths add an iteration over the plugin proxy list.
 
 ## 8. Risks and open questions
 
-1. **Deactivatable core behavior.** Every extracted plugin can be switched off in
-   the admin panel. Only *policy* should move; mechanism stays in components.
-   Open question: should there be a "not deactivatable" marker (the mirror image
-   of `IDisabledByDefault`) for plugins like `RespawnAfterDeathPlugIn`?
+1. **Deactivatable core behavior — decided: accepted, no marker.** Every
+   extracted plugin can be switched off in the admin panel, including
+   `RespawnAfterDeathPlugIn`. That is the point of the plugin system: an admin who
+   deactivates one is expected to know what they are doing, possibly because they
+   reimplemented it in a plugin of their own. No "not deactivatable" marker will
+   be introduced. Consequence for this plan: extract generously (§3).
 2. **Ordering.** The enter-world view sequence is client-observable, and
    `IPlayerStateChangedPlugIn` implementations are as unordered as any other
    plugin. If 3.1(a) is rejected, the ordered part of the sequence stays in a
@@ -354,9 +386,12 @@ per-hit and per-kill paths add an iteration over the plugin proxy list.
    makes ~41 `CurrentState == EnteredWorld` guards reject actions during a warp,
    and it makes map changes cancelable by plugins. Both are desirable, both need
    deciding explicitly. Also mind the non-reentrant state machine lock (§4.0).
-3. **`IAttackableGotHitPlugIn` is synchronous.** Adding an async method to the
-   interface is a (source-)breaking change for external plugins — decide between
-   extending the interface and adding a sibling point.
+3. **Synchronous plugin points — decided: change the signatures.** Breaking
+   changes to plugin interfaces are acceptable at this stage of the project, so
+   `IAttackableGotHitPlugIn` and friends get async signatures instead of async
+   sibling points (§4.2). External plugins implementing them need a one-line
+   update. The one point that stays synchronous is
+   `IAttackableMovedPlugIn`, for the property-setter reason given in §4.2.
 4. **Existing installations.** Extracted plugins are active by default when no
    configuration row exists, so behavior is preserved. If they should be
    toggleable in the admin panel for existing databases, add an
