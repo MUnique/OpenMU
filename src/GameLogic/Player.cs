@@ -1668,8 +1668,14 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         for (var index = 0; index < steps.Length; index++)
         {
             var target = steps[index].To;
-            if (!terrain.WalkMap[target.X, target.Y])
+            if (target.X >= terrain.WalkMap.GetLength(0)
+                || target.Y >= terrain.WalkMap.GetLength(1)
+                || !terrain.WalkMap[target.X, target.Y])
             {
+                // Treat an out-of-bounds step as non-walkable instead of indexing past
+                // the terrain grid. With today's byte-sized coordinates on a 256x256 grid
+                // this is unreachable, but it keeps the client-supplied path from indexing
+                // the map out of range once coordinate widths change.
                 return index;
             }
         }
