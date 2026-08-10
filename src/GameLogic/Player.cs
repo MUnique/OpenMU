@@ -949,6 +949,16 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.ThrowNotInitializedProperty(this.SelectedCharacter is null, nameof(this.SelectedCharacter));
         this.SelectedCharacter.ThrowNotInitializedProperty(this.SelectedCharacter.CurrentMap is null, nameof(this.SelectedCharacter.CurrentMap));
 
+        if (this.CurrentMap is not null)
+        {
+            // Guard against a repeated F3 12 (client ready after map change) packet:
+            // during a regular map change CurrentMap is set to null and only assigned
+            // here, so a non-null value means this handler already ran for the current
+            // map change. Without this, a duplicate packet would add the player (and its
+            // summon) to the map a second time.
+            return;
+        }
+
         if (this.CurrentMiniGame is { } currentMiniGame)
         {
             this.CurrentMap = currentMiniGame.Map;
