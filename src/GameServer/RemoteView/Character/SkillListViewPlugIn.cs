@@ -47,7 +47,7 @@ public class SkillListViewPlugIn : ISkillListViewPlugIn
     private const short BeastUppercutStrengSkillId = 552;
     private const short BeastUppercutMasterySkillId = 555;
 
-    private readonly Dictionary<short, short[]> _weaponSkillReplacements = new()
+    private static readonly Dictionary<short, short[]> _weaponSkillReplacements = new()
     {
         { FallingSlashSkillId, [FallingSlashStrengSkillId] },
         { LungeSkillId, [LungeStrengSkillId] },
@@ -93,7 +93,7 @@ public class SkillListViewPlugIn : ISkillListViewPlugIn
             return;
         }
 
-        if (this._weaponSkillReplacements.TryGetValue(skill.Number, out var replacementSkills)
+        if (_weaponSkillReplacements.TryGetValue(skill.Number, out var replacementSkills)
             && this.SkillList.Any(s => s is not null && replacementSkills.Contains(s.Number)))
         {
             return;

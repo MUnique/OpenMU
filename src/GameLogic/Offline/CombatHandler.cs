@@ -369,7 +369,7 @@ public sealed class CombatHandler
             return 1f;
         }
 
-        var defenseRate = attributes[Stats.DefenseRatePvm];
+        var defenseRate = AttackableExtensions.GetDefenseRatePvm(player);
         var hitChance = defenseRate < monsterAttackRate ? 1f - (defenseRate / monsterAttackRate) : 0.03f;
         return Math.Clamp(hitChance, minimumAssumedHitChance, 1f);
     }

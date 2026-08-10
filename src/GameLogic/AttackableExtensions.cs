@@ -675,6 +675,16 @@ public static class AttackableExtensions
         return skillAttributes;
     }
 
+    /// <summary>
+    /// Gets the total effective defense rate for PvM (Player versus Monster) encounters.
+    /// </summary>
+    /// <param name="defender">The defender.</param>
+    /// <returns>The defense rate.</returns>
+    public static float GetDefenseRatePvm(this IAttackable defender)
+    {
+        return defender.Attributes[Stats.DefenseRatePvm] + defender.Attributes[Stats.IncreaseBlockBonus];
+    }
+
     private static bool IsAttackSuccessfulTo(this IAttacker attacker, IAttackable defender)
     {
         var hitChance = attacker.GetHitChanceTo(defender);
@@ -692,7 +702,7 @@ public static class AttackableExtensions
         }
         else
         {
-            defenseRate = defender.Attributes[Stats.DefenseRatePvm] + defender.Attributes[Stats.IncreaseBlockBonus];
+            defenseRate = defender.GetDefenseRatePvm();
             attackRate = attacker.Attributes[Stats.AttackRatePvm];
         }
 
@@ -717,7 +727,7 @@ public static class AttackableExtensions
 
     private static bool Overrates(this IAttackable defender, IAttacker attacker)
     {
-        return defender.Attributes[Stats.DefenseRatePvm] > attacker.Attributes[Stats.AttackRatePvm];
+        return defender.GetDefenseRatePvm() > attacker.Attributes[Stats.AttackRatePvm];
     }
 
     private static int GetDamage(this SkillEntry skillEntry, IAttacker attacker)
