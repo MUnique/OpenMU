@@ -1388,24 +1388,34 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return;
         }
 
-        var canWalkToTarget = currentMap.Terrain.WalkMap[target.X, target.Y];
-        if (canWalkToTarget)
+        var requestedTarget = target;
+        var walkableStepCount = GetWalkableStepCount(currentMap.Terrain, steps.Span);
+        if (walkableStepCount == 0)
         {
-            this.Logger.LogDebug("WalkToAsync: Player is walking to {0}", target);
-
-            var token = await this._walker.InitializeWalkToAsync(target, steps).ConfigureAwait(false);
-            await currentMap.MoveAsync(this, target, this._moveLock, MoveType.Walk).ConfigureAwait(false);
-            await this._walker.StartWalkAsync(token).ConfigureAwait(false);
-
-            this.Logger.LogDebug("WalkToAsync: Observer Count: {0}", this.Observers.Count);
-        }
-        else
-        {
-            this.Logger.LogWarning("WalkToAsync: Player requested to walk to {0}, but it's not an allowed target", target);
-
-            // We'll send the current coordinates back to the client, so it doesn't appear in the invalid coordinates.
+            this.Logger.LogDebug(
+                "WalkToAsync: Player requested to walk to {0}, but the first path step is blocked. Resynchronizing client.",
+                requestedTarget);
             await this.InvokeViewPlugInAsync<IObjectMovedPlugIn>(p => p.ObjectMovedAsync(this, MoveType.Instant)).ConfigureAwait(false);
+            return;
         }
+
+        if (walkableStepCount < steps.Length)
+        {
+            steps = steps[..walkableStepCount];
+            target = steps.Span[^1].To;
+            this.Logger.LogDebug(
+                "WalkToAsync: Truncated path from {0} to the last reachable position {1} because a later step is blocked.",
+                requestedTarget,
+                target);
+        }
+
+        this.Logger.LogDebug("WalkToAsync: Player is walking to {0}", target);
+
+        var token = await this._walker.InitializeWalkToAsync(target, steps).ConfigureAwait(false);
+        await currentMap.MoveAsync(this, target, this._moveLock, MoveType.Walk).ConfigureAwait(false);
+        await this._walker.StartWalkAsync(token).ConfigureAwait(false);
+
+        this.Logger.LogDebug("WalkToAsync: Observer Count: {0}", this.Observers.Count);
     }
 
     /// <inheritdoc />
@@ -2045,6 +2055,20 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     protected virtual ICustomPlugInContainer<IViewPlugIn> CreateViewPlugInContainer()
     {
         throw new NotImplementedException("CreateViewPlugInContainer must be overwritten in derived classes.");
+    }
+
+    private static int GetWalkableStepCount(GameMapTerrain terrain, ReadOnlySpan<WalkingStep> steps)
+    {
+        for (var index = 0; index < steps.Length; index++)
+        {
+            var target = steps[index].To;
+            if (!terrain.WalkMap[target.X, target.Y])
+            {
+                return index;
+            }
+        }
+
+        return steps.Length;
     }
 
     private async ValueTask AddMasterExperienceCoreAsync(int experience, IAttackable? killedObject)

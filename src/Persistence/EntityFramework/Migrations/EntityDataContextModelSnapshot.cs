@@ -404,6 +404,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<int>("GateBuyPrice")
                         .HasColumnType("integer");
 
+                    b.Property<int>("GateRepairCostPerHealthPoint")
+                        .HasColumnType("integer");
+
                     b.Property<int>("GuildScoreCastleSiege")
                         .HasColumnType("integer");
 
@@ -431,10 +434,24 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasColumnType("integer")
                         .HasDefaultValue(20);
 
+                    b.Property<int>("RepairCostPerUpgradeLevel")
+                        .HasColumnType("integer");
+
                     b.Property<Guid?>("RewardItemDefinitionId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("SignOfLordItemDefinitionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<byte>("SignOfLordItemLevel")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("smallint")
+                        .HasDefaultValue((byte)3);
+
                     b.Property<int>("StatueBuyPrice")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("StatueRepairCostPerHealthPoint")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
@@ -450,6 +467,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasIndex("LandOfTrialsMapDefinitionId");
 
                     b.HasIndex("RewardItemDefinitionId");
+
+                    b.HasIndex("SignOfLordItemDefinitionId");
 
                     b.ToTable("CastleSiegeConfiguration", "config");
                 });
@@ -3994,6 +4013,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasForeignKey("RewardItemDefinitionId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition", "RawSignOfLordItemDefinition")
+                        .WithMany()
+                        .HasForeignKey("SignOfLordItemDefinitionId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("RawAttackRespawnArea");
 
                     b.Navigation("RawCastleSiegeMapDefinition");
@@ -4003,6 +4027,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Navigation("RawLandOfTrialsMapDefinition");
 
                     b.Navigation("RawRewardItemDefinition");
+
+                    b.Navigation("RawSignOfLordItemDefinition");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeData", b =>

@@ -204,8 +204,15 @@ internal class TestInitializationWithEfCore
             Assert.That(configuration.MaxAttackingGuilds, Is.EqualTo(3));
             Assert.That(configuration.GateBuyPrice, Is.EqualTo(9_500_000));
             Assert.That(configuration.StatueBuyPrice, Is.EqualTo(4_500_000));
+            Assert.That(configuration.GateRepairCostPerHealthPoint, Is.EqualTo(5));
+            Assert.That(configuration.StatueRepairCostPerHealthPoint, Is.EqualTo(3));
+            Assert.That(configuration.RepairCostPerUpgradeLevel, Is.EqualTo(1_000_000));
             Assert.That(configuration.CastleSiegeMapDefinition?.Number, Is.EqualTo(30));
             Assert.That(configuration.LandOfTrialsMapDefinition?.Number, Is.EqualTo(31));
+            Assert.That(configuration.SignOfLordItemDefinition?.Group, Is.EqualTo(14));
+            Assert.That(configuration.SignOfLordItemDefinition?.Number, Is.EqualTo(21));
+            Assert.That(configuration.SignOfLordItemDefinition?.MaximumItemLevel, Is.GreaterThanOrEqualTo(3));
+            Assert.That(configuration.SignOfLordItemLevel, Is.EqualTo(3));
             Assert.That(configuration.DefenseRespawnArea, Is.Not.Null);
             Assert.That(configuration.AttackRespawnArea, Is.Not.Null);
         });
@@ -324,6 +331,47 @@ internal class TestInitializationWithEfCore
 
         Assert.That(gameConfiguration.CastleSiegeConfiguration, Is.Not.Null);
         Assert.That(await context.GetAsync<CastleSiegeData>().ConfigureAwait(false), Has.Exactly(1).Items);
+
+        var configuration = gameConfiguration.CastleSiegeConfiguration!;
+        var signOfLord = gameConfiguration.Items.Single(item => item.Group == 14 && item.Number == 21);
+        configuration.SignOfLordItemDefinition = null;
+        configuration.SignOfLordItemLevel = 0;
+        signOfLord.MaximumItemLevel = 0;
+
+        var registrationUpdate = new ConfigureCastleSiegeRegistrationUpdatePlugIn();
+        await registrationUpdate.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await registrationUpdate.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(configuration.SignOfLordItemDefinition, Is.SameAs(signOfLord));
+            Assert.That(configuration.SignOfLordItemLevel, Is.EqualTo(3));
+            Assert.That(signOfLord.MaximumItemLevel, Is.EqualTo(3));
+        });
+
+        var customSignOfLord = gameConfiguration.Items.First(item => item != signOfLord);
+        configuration.SignOfLordItemDefinition = customSignOfLord;
+        configuration.SignOfLordItemLevel = 1;
+        await registrationUpdate.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        Assert.Multiple(() =>
+        {
+            Assert.That(configuration.SignOfLordItemDefinition, Is.SameAs(customSignOfLord));
+            Assert.That(configuration.SignOfLordItemLevel, Is.EqualTo(1));
+        });
+
+        gameConfiguration.Items.Remove(signOfLord);
+        configuration.SignOfLordItemDefinition = null;
+        configuration.SignOfLordItemLevel = 0;
+        await registrationUpdate.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        Assert.Multiple(() =>
+        {
+            Assert.That(configuration.SignOfLordItemDefinition, Is.Null);
+            Assert.That(configuration.SignOfLordItemLevel, Is.Zero);
+        });
+
+        gameConfiguration.Items.Add(signOfLord);
+        configuration.SignOfLordItemDefinition = signOfLord;
+        configuration.SignOfLordItemLevel = 3;
     }
 
     private void AssertUpgrades(

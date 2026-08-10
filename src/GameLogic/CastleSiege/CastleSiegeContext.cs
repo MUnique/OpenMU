@@ -11,9 +11,14 @@ using MUnique.OpenMU.DataModel.Entities;
 /// <summary>
 /// Holds the runtime state of Castle Siege for one game context.
 /// </summary>
+/// <remarks>
+/// Runtime registrations and <see cref="ExecutionLock"/> are scoped to this game context. Deployments which run
+/// multiple game-server processes require external coordination when registrations are changed concurrently.
+/// </remarks>
 public class CastleSiegeContext : IEventStateProvider
 {
     private readonly IGameContext _gameContext;
+    private readonly System.Collections.Concurrent.ConcurrentDictionary<Player, byte> _siegeMapPlayers = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CastleSiegeContext"/> class.
@@ -25,6 +30,7 @@ public class CastleSiegeContext : IEventStateProvider
         this._gameContext = gameContext;
         this.Configuration = configuration;
         this.Schedule = new CastleSiegeSchedule(configuration.StateSchedule);
+        this.NpcController = new CastleSiegeNpcController(this);
     }
 
     /// <summary>
@@ -76,6 +82,11 @@ public class CastleSiegeContext : IEventStateProvider
     /// Gets the active Castle Siege NPCs.
     /// </summary>
     public List<CastleSiegeNpcRuntime> ActiveNpcs { get; } = new();
+
+    /// <summary>
+    /// Gets the controller for Castle Siege NPC lifecycle and lookup operations.
+    /// </summary>
+    public CastleSiegeNpcController NpcController { get; }
 
     /// <summary>
     /// Gets or sets the player which currently operates the Crown.
@@ -168,6 +179,7 @@ public class CastleSiegeContext : IEventStateProvider
     {
         this.SiegeData = await this.LoadDataAsync().ConfigureAwait(false)
             ?? throw new InvalidOperationException("The persistent Castle Siege state does not exist.");
+        this.NpcController.InitializePersistentStructures();
         await this.LoadRegistrationsAsync().ConfigureAwait(false);
     }
 
@@ -199,6 +211,7 @@ public class CastleSiegeContext : IEventStateProvider
             return;
         }
 
+        this.NpcController.SynchronizeNpcStates();
         var persistedNpcs = this.ActiveNpcs
             .Where(npc => npc.Definition.IsPersistedToDatabase)
             .ToList();
@@ -208,7 +221,6 @@ public class CastleSiegeContext : IEventStateProvider
         }
 
         var statesToSave = persistedNpcs
-            .Where(npc => npc.IsAlive)
             .Select(npc => npc.PersistedState!)
             .ToDictionary(GetNpcKey);
 
@@ -255,6 +267,113 @@ public class CastleSiegeContext : IEventStateProvider
     }
 
     /// <summary>
+    /// Tracks a player after a map entry operation.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="map">The entered map.</param>
+    internal void TrackPlayer(Player player, GameMap map)
+    {
+        if (this.Configuration.CastleSiegeMapDefinition?.Number == map.Definition.Number)
+        {
+            this._siegeMapPlayers[player] = 0;
+        }
+        else
+        {
+            this._siegeMapPlayers.TryRemove(player, out _);
+        }
+    }
+
+    /// <summary>
+    /// Stops tracking a player after a map exit operation.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    internal void UntrackPlayer(Player player)
+    {
+        this._siegeMapPlayers.TryRemove(player, out _);
+    }
+
+    /// <summary>
+    /// Executes an action concurrently for players currently on the Castle Siege map.
+    /// </summary>
+    /// <param name="action">The action to execute.</param>
+    /// <returns>A task that represents the asynchronous fan-out operation.</returns>
+    internal async ValueTask ForEachSiegePlayerAsync(Func<Player, Task> action)
+    {
+        var mapNumber = this.Configuration.CastleSiegeMapDefinition?.Number;
+        var actions = this._siegeMapPlayers.Keys
+            .Where(player => player.CurrentMap?.Definition.Number == mapNumber)
+            .Select(action);
+        await Task.WhenAll(actions).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Creates and persists a guild registration.
+    /// </summary>
+    /// <param name="guildId">The persistent guild identifier.</param>
+    /// <param name="guildName">The guild name.</param>
+    /// <returns>The created registration.</returns>
+    internal async ValueTask<CastleSiegeGuildRegistration> AddRegistrationAsync(Guid guildId, string guildName)
+    {
+        using var context = this._gameContext.PersistenceContextProvider.CreateNewTypedContext(
+            typeof(CastleSiegeGuildRegistration),
+            false,
+            this._gameContext.Configuration);
+        var registration = context.CreateNew<CastleSiegeGuildRegistration>();
+        registration.GuildId = guildId;
+        registration.GuildName = guildName;
+
+        // Registration orders stay monotonic for one cycle and are intentionally not compacted after unregistration.
+        registration.RegistrationOrder = this.RegisteredGuilds.IsEmpty
+            ? 1
+            : this.RegisteredGuilds.Values.Max(entry => entry.RegistrationOrder) + 1;
+        await context.SaveChangesAsync().ConfigureAwait(false);
+        this.RegisteredGuilds[guildId] = registration;
+        return registration;
+    }
+
+    /// <summary>
+    /// Deletes a persisted guild registration.
+    /// </summary>
+    /// <param name="registration">The registration.</param>
+    internal async ValueTask RemoveRegistrationAsync(CastleSiegeGuildRegistration registration)
+    {
+        using var context = this._gameContext.PersistenceContextProvider.CreateNewTypedContext(
+            typeof(CastleSiegeGuildRegistration),
+            false,
+            this._gameContext.Configuration);
+        if (await context.GetByIdAsync<CastleSiegeGuildRegistration>(registration.Id).ConfigureAwait(false) is { } persistentRegistration)
+        {
+            await context.DeleteAsync(persistentRegistration).ConfigureAwait(false);
+            await context.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        this.RegisteredGuilds.TryRemove(registration.GuildId, out _);
+    }
+
+    /// <summary>
+    /// Increments and persists the submitted mark count.
+    /// </summary>
+    /// <param name="registration">The registration.</param>
+    /// <returns>The updated mark count, or <see langword="null"/> if the registration no longer exists.</returns>
+    internal async ValueTask<int?> IncrementMarksAsync(CastleSiegeGuildRegistration registration)
+    {
+        using var context = this._gameContext.PersistenceContextProvider.CreateNewTypedContext(
+            typeof(CastleSiegeGuildRegistration),
+            false,
+            this._gameContext.Configuration);
+        if (await context.GetByIdAsync<CastleSiegeGuildRegistration>(registration.Id).ConfigureAwait(false) is not { } persistentRegistration)
+        {
+            this.RegisteredGuilds.TryRemove(registration.GuildId, out _);
+            return null;
+        }
+
+        persistentRegistration.Marks++;
+        await context.SaveChangesAsync().ConfigureAwait(false);
+        registration.Marks = persistentRegistration.Marks;
+        return registration.Marks;
+    }
+
+    /// <summary>
     /// Initializes the context at the state which contains <paramref name="utcNow"/>.
     /// </summary>
     /// <param name="utcNow">The current UTC time.</param>
@@ -263,9 +382,11 @@ public class CastleSiegeContext : IEventStateProvider
     {
         this.SiegeData = await this.LoadDataAsync().ConfigureAwait(false)
             ?? await this.CreateDataAsync().ConfigureAwait(false);
+        this.NpcController.InitializePersistentStructures();
         await this.LoadRegistrationsAsync().ConfigureAwait(false);
         var period = this.Schedule.GetCurrentEventPeriod(utcNow);
         this.SetPeriod(period);
+        await this.InitializeSiegeMapPlayersAsync().ConfigureAwait(false);
         this.NextNpcSaveUtc = utcNow.AddMinutes(2);
         this.IsInitialized = true;
         return period;
@@ -319,6 +440,23 @@ public class CastleSiegeContext : IEventStateProvider
     private static (short MonsterNumber, byte InstanceId) GetNpcKey(CastleSiegeNpcState state)
     {
         return (state.MonsterNumber, state.InstanceId);
+    }
+
+    private async ValueTask InitializeSiegeMapPlayersAsync()
+    {
+        this._siegeMapPlayers.Clear();
+        if (this.Configuration.CastleSiegeMapDefinition is not { } siegeMapDefinition)
+        {
+            return;
+        }
+
+        foreach (var player in await this._gameContext.GetPlayersAsync().ConfigureAwait(false))
+        {
+            if (player.CurrentMap?.Definition.Number == siegeMapDefinition.Number)
+            {
+                this._siegeMapPlayers[player] = 0;
+            }
+        }
     }
 
     private async ValueTask<CastleSiegeData?> LoadDataAsync()

@@ -22,6 +22,7 @@ internal static class CastleSiegeExtensions
         builder.Property(configuration => configuration.CrownHoldTimeSeconds).HasDefaultValue(30);
         builder.Property(configuration => configuration.RegisterMinLevel).HasDefaultValue(200);
         builder.Property(configuration => configuration.RegisterMinMembers).HasDefaultValue(20);
+        builder.Property(configuration => configuration.SignOfLordItemLevel).HasDefaultValue((byte)3);
         builder.Property(configuration => configuration.MaxAttackingGuilds).HasDefaultValue(3);
 
         builder.HasOne(configuration => configuration.RawCastleSiegeMapDefinition)
@@ -31,6 +32,9 @@ internal static class CastleSiegeExtensions
             .WithMany()
             .OnDelete(DeleteBehavior.Restrict);
         builder.HasOne(configuration => configuration.RawRewardItemDefinition)
+            .WithMany()
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(configuration => configuration.RawSignOfLordItemDefinition)
             .WithMany()
             .OnDelete(DeleteBehavior.Restrict);
     }
