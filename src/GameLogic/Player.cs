@@ -951,11 +951,14 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         if (this.CurrentMap is not null)
         {
-            // Guard against a repeated F3 12 (client ready after map change) packet:
-            // during a regular map change CurrentMap is set to null and only assigned
-            // here, so a non-null value means this handler already ran for the current
-            // map change. Without this, a duplicate packet would add the player (and its
-            // summon) to the map a second time.
+            // Guard against a repeated F3 12 (client ready after map change) packet.
+            // A map change usually leaves CurrentMap null until this handler assigns it,
+            // so a non-null value means the handler already ran. The exception is the
+            // IRespawnAfterDeathPlugIn branch of RespawnAtAsync, which assigns CurrentMap
+            // and adds the player itself; a trailing packet is redundant there as well.
+            // Without this guard, a duplicate packet adds the player (and its summon) to
+            // the area of interest a second time, which the bucket does not deduplicate.
+            this.Logger.LogWarning("Ignoring client-ready packet: player {0} is already on map {1}.", this, this.CurrentMap);
             return;
         }
 
