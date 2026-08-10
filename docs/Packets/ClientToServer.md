@@ -156,6 +156,7 @@
   * [C1 D2 0B - CashShopStorageItemConsumeRequest (by client)](C1-D2-0B-CashShopStorageItemConsumeRequest_by-client.md)
   * [C1 D2 13 - CashShopEventItemListRequest (by client)](C1-D2-13-CashShopEventItemListRequest_by-client.md)
   * [C1 D4 - WalkRequest (by client)](C1-D4-WalkRequest_by-client.md)
+  * [C1 D5 - WalkRequestGlobal (by client)](C1-D5-WalkRequestGlobal_by-client.md)
   * [C3 DB - AreaSkillHit (by client)](C3-DB-AreaSkillHit_by-client.md)
   * [C1 E1 - GuildRoleAssignRequest (by client)](C1-E1-GuildRoleAssignRequest_by-client.md)
   * [C1 E2 - GuildTypeChangeRequest (by client)](C1-E2-GuildTypeChangeRequest_by-client.md)

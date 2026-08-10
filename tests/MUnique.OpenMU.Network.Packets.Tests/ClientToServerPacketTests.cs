@@ -1,4 +1,4 @@
-// <copyright file="ClientToServerPacketTests.cs" company="MUnique">
+﻿// <copyright file="ClientToServerPacketTests.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -1791,6 +1791,22 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the packet size calculation for WalkRequestGlobal.
+    /// </summary>
+    [Test]
+    public void WalkRequestGlobal_PacketSizeValidation()
+    {
+        // Variable-length packet validation
+        // Test GetRequiredSize method with sample data
+        const int testBinaryLength = 10;
+        var calculatedSize = WalkRequestGlobalRef.GetRequiredSize(testBinaryLength);
+        var expectedMinSize = testBinaryLength + 8;
+        
+        Assert.That(calculatedSize, Is.GreaterThanOrEqualTo(expectedMinSize), 
+            "GetRequiredSize calculation incorrect for binary field");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for WalkRequest075.
     /// </summary>
     [Test]
@@ -2821,12 +2837,12 @@ public class PacketStructureTests
         // Fixed-length packet validation
         const int expectedLength = 12;
         var actualLength = RemoveAllianceGuildRequestRef.Length;
-
-        Assert.That(actualLength, Is.EqualTo(expectedLength),
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
             "Packet length mismatch: declared length does not match calculated size");
-
+        
         // Validate field 'GuildName' boundary
-        Assert.That(4 + 8, Is.LessThanOrEqualTo(expectedLength),
+        Assert.That(4 + 8, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'GuildName' exceeds packet boundary");
     }
 
