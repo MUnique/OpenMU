@@ -515,6 +515,7 @@ public enum UpdateVersion
     /// </summary>
     FinishSummonerMasterTree = 101,
 
+    /// <summary>
     /// The version of the <see cref="ConfigureCastleSiegeRegistrationUpdatePlugIn"/>.
     /// </summary>
     ConfigureCastleSiegeRegistration = 102,
