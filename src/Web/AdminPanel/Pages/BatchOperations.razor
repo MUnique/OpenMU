@@ -8,9 +8,8 @@
 
 <h1>Operaciones por lote</h1>
 <p class="text-muted">
-    Cockpit de MU Nueva Era para modificar configuración nativa de OpenMU por reglas.
-    Todas las operaciones muestran una vista previa antes de guardar y la última operación
-    aplicada puede revertirse mientras permanezcas en esta pantalla.
+    Cockpit de MU Nueva Era para modificar configuración nativa de OpenMU por reglas. Las operaciones por lote muestran una vista previa antes de guardar.
+    El editor directo de cajas aplica al confirmar y permite deshacer la última operación mientras permanezcas en esta pantalla.
 </p>
 
 @if (this._isLoading)
@@ -335,9 +334,97 @@
     </div>
 </div>
 
+<div class="card mb-4 border-primary">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <strong>5. Editor directo de cajas y grupos de drop</strong>
+        <span class="badge text-bg-primary">sin vista previa</span>
+    </div>
+    <div class="card-body">
+        <p class="text-muted">
+            Agrega, quita o reemplaza el contenido de una caja usando filtros por categoria, set, 380,
+            Excellent, Ancient, sockets, alas o armas. La edicion se guarda al pulsar el boton y la ultima
+            operacion se puede deshacer desde el panel superior.
+        </p>
+        <div class="alert alert-warning py-2">
+            Usa <strong>Agregar</strong> para ampliar una caja de forma segura. <strong>Reemplazar</strong>
+            elimina primero todos sus items actuales.
+        </div>
+        <div class="row g-3">
+            <div class="col-lg-5">
+                <label class="form-label">Caja o grupo de drop de items</label>
+                <select class="form-select" @bind="this._contentDropGroupId">
+                    <option value="">Seleccionar caja...</option>
+                    @foreach (var group in this._dropContentGroups)
+                    {
+                        <option value="@group.GetId()">@group.Description (@group.PossibleItems.Count items)</option>
+                    }
+                </select>
+            </div>
+            <div class="col-lg-3">
+                <label class="form-label">Accion</label>
+                <select class="form-select" @bind="this._contentAction">
+                    <option value="add">Agregar coincidencias</option>
+                    <option value="remove">Quitar coincidencias</option>
+                    <option value="replace">Reemplazar todo</option>
+                </select>
+            </div>
+            <div class="col-lg-4">
+                <label class="form-label">Categoria</label>
+                <select class="form-select" @bind="this._contentCategory">
+                    <option value="@DropGroupItemCategory.Any">Nombre / grupo</option>
+                    <option value="@DropGroupItemCategory.Set">Set seleccionado</option>
+                    <option value="@DropGroupItemCategory.Guardian380">Items 380</option>
+                    <option value="@DropGroupItemCategory.Excellent">Excellent posible</option>
+                    <option value="@DropGroupItemCategory.Ancient">Ancient posible</option>
+                    <option value="@DropGroupItemCategory.Socket">Con sockets</option>
+                    <option value="@DropGroupItemCategory.Weapons">Armas</option>
+                    <option value="@DropGroupItemCategory.Armor">Armaduras</option>
+                    <option value="@DropGroupItemCategory.Wings">Alas</option>
+                </select>
+            </div>
+            <div class="col-lg-5">
+                <label class="form-label">Nombre contiene</label>
+                <input class="form-control" @bind="this._contentFilter" @bind:event="oninput" placeholder="Dragon, Kundun, Bone..." />
+            </div>
+            <div class="col-lg-2">
+                <label class="form-label">Grupo (0-15)</label>
+                <input class="form-control" type="number" min="0" max="15" @bind="this._contentGroup" />
+            </div>
+            <div class="col-lg-5">
+                <label class="form-label">Set</label>
+                <select class="form-select" disabled="@(this._contentCategory != DropGroupItemCategory.Set)" @bind="this._contentSetId">
+                    <option value="">Seleccionar set...</option>
+                    @foreach (var set in this._itemSets)
+                    {
+                        <option value="@set.GetId()">@set.Name</option>
+                    }
+                </select>
+            </div>
+        </div>
+        @{ var matchingContentItems = this.GetMatchingContentItems(); }
+        <div class="mt-3 p-3 rounded border bg-body-tertiary">
+            <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap">
+                <strong>@matchingContentItems.Count coincidencias</strong>
+                <span class="text-muted small">Se aplicara directamente sobre la caja elegida.</span>
+            </div>
+            @if (matchingContentItems.Count > 0)
+            {
+                <div class="small text-muted mt-2">@string.Join(" · ", matchingContentItems.Take(18).Select(item => $"{item.Name} G{item.Group}/#{item.Number}"))</div>
+            }
+        </div>
+        <div class="form-check mt-3">
+            <input id="confirmDropContentEdit" class="form-check-input" type="checkbox" @bind="this._contentConfirmed" />
+            <label class="form-check-label" for="confirmDropContentEdit">Confirmo la edicion directa de esta caja</label>
+        </div>
+        <div class="mt-3">
+            <button class="btn btn-primary" disabled="@this._isApplying" @onclick="this.ApplyDropContentBatchAsync">Aplicar edicion directa</button>
+        </div>
+    </div>
+</div>
+
 <div class="card mb-4">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <strong>5. Plantillas de tiendas</strong>
+        <strong>6. Plantillas de tiendas</strong>
         <NavLink class="btn btn-outline-primary btn-sm" href="merchant-cockpit">Abrir Merchant Cockpit</NavLink>
     </div>
     <div class="card-body">

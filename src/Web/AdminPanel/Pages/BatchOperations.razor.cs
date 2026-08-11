@@ -35,6 +35,8 @@ public partial class BatchOperations : ComponentBase, IAsyncDisposable
     private List<MonsterDefinition> _monsters = [];
     private List<ItemDefinition> _items = [];
     private List<DropItemGroup> _dropGroups = [];
+    private List<ItemDropItemGroup> _dropContentGroups = [];
+    private List<ItemSetGroup> _itemSets = [];
     private List<DropChanceEdit> _dropChanceEdits = [];
     private List<MonsterDefinition> _merchants = [];
 
@@ -60,6 +62,14 @@ public partial class BatchOperations : ComponentBase, IAsyncDisposable
     private int? _newItemMaximumDropLevel;
     private bool _setDropsFromMonsters;
     private bool _newDropsFromMonsters = true;
+
+    private Guid? _contentDropGroupId;
+    private string _contentAction = "add";
+    private string _contentFilter = string.Empty;
+    private int? _contentGroup;
+    private Guid? _contentSetId;
+    private DropGroupItemCategory _contentCategory = DropGroupItemCategory.Any;
+    private bool _contentConfirmed;
 
     private Guid? _sourceMerchantId;
 
@@ -136,6 +146,14 @@ public partial class BatchOperations : ComponentBase, IAsyncDisposable
             this._dropGroups = this.DataSource.GetAll<DropItemGroup>()
                 .OrderBy(g => g.ItemType)
                 .ThenBy(g => g.Description.ToString())
+                .ToList();
+
+            this._dropContentGroups = this.DataSource.GetAll<ItemDropItemGroup>()
+                .OrderBy(g => g.Description.ToString())
+                .ToList();
+
+            this._itemSets = this.DataSource.GetAll<ItemSetGroup>()
+                .OrderBy(set => set.Name.ToString())
                 .ToList();
 
             this._merchants = this.DataSource.GetAll<MonsterDefinition>()
@@ -641,6 +659,106 @@ public partial class BatchOperations : ComponentBase, IAsyncDisposable
         }, $"{targets.Count} items procesados.").ConfigureAwait(true);
     }
 
+    private ItemDropItemGroup? GetSelectedContentDropGroup()
+        => this._contentDropGroupId.HasValue
+            ? this._dropContentGroups.FirstOrDefault(group => group.GetId() == this._contentDropGroupId.Value)
+            : null;
+
+    private IReadOnlyList<ItemDefinition> GetMatchingContentItems()
+        => DropGroupItemSelector.Filter(
+            this._items,
+            this._contentFilter,
+            this._contentGroup,
+            this._contentSetId,
+            this._contentCategory);
+
+    private async Task ApplyDropContentBatchAsync()
+    {
+        if (this._gameContext is null)
+        {
+            return;
+        }
+
+        var group = this.GetSelectedContentDropGroup();
+        if (group is null)
+        {
+            this.ToastService.ShowError("Selecciona una caja o grupo de drop de items.");
+            return;
+        }
+
+        if (!this._contentConfirmed)
+        {
+            this.ToastService.ShowError("Marca la confirmación para aplicar la edición directa.");
+            return;
+        }
+
+        var targets = this.GetMatchingContentItems();
+        if (targets.Count == 0)
+        {
+            this.ToastService.ShowError("Los filtros no encontraron items.");
+            return;
+        }
+
+        if (this._contentAction is not ("add" or "remove" or "replace"))
+        {
+            this.ToastService.ShowError("La acción seleccionada no es válida.");
+            return;
+        }
+
+        var original = group.PossibleItems.ToList();
+        await this.RunApplyAsync(async () =>
+        {
+            if (this._contentAction == "replace")
+            {
+                foreach (var item in group.PossibleItems.ToList())
+                {
+                    group.PossibleItems.Remove(item);
+                }
+            }
+
+            var targetIds = targets.Select(item => item.GetId()).ToHashSet();
+            if (this._contentAction is "add" or "replace")
+            {
+                var existingIds = group.PossibleItems.Select(item => item.GetId()).ToHashSet();
+                foreach (var item in targets.Where(item => !existingIds.Contains(item.GetId())))
+                {
+                    group.PossibleItems.Add(item);
+                }
+            }
+            else
+            {
+                foreach (var item in group.PossibleItems.Where(item => targetIds.Contains(item.GetId())).ToList())
+                {
+                    group.PossibleItems.Remove(item);
+                }
+            }
+
+            await this.SaveGameContextAsync().ConfigureAwait(true);
+            this._contentConfirmed = false;
+            var action = this._contentAction switch
+            {
+                "add" => "agregados",
+                "remove" => "quitados",
+                _ => "reemplazados",
+            };
+            var message = $"{targets.Count} items {action} en {group.Description}.";
+            this.SetPreview("Edición directa aplicada", [], message);
+            this._undoAction = async () =>
+            {
+                foreach (var item in group.PossibleItems.ToList())
+                {
+                    group.PossibleItems.Remove(item);
+                }
+
+                foreach (var item in original)
+                {
+                    group.PossibleItems.Add(item);
+                }
+
+                await this.SaveGameContextAsync().ConfigureAwait(true);
+            };
+        }, $"{targets.Count} items modificados en {group.Description}. Puedes deshacer la última operación.").ConfigureAwait(true);
+    }
     private void PreviewMerchantClone()
     {
         var source = this.GetSourceMerchant();
