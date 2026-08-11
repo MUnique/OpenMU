@@ -269,43 +269,7 @@ public class FinishRageFighterMasterTreePlugIn : UpdatePlugInBase
         magicEffect.Number = (byte)MagicEffectNumber.IncreaseBlockPowerUp;
         magicEffect.Name = "Increase Block Power Up Skill Effect";
 
-        var increaseBlockEffect = gameConfiguration.MagicEffects.First(e => e.Number == (short)MagicEffectNumber.IncreaseBlock);
-        magicEffect.InformObservers = increaseBlockEffect.InformObservers;
-        magicEffect.SubType = increaseBlockEffect.SubType;
-        magicEffect.SendDuration = increaseBlockEffect.SendDuration;
-        magicEffect.StopByDeath = increaseBlockEffect.StopByDeath;
-        magicEffect.Duration = context.CreateNew<PowerUpDefinitionValue>();
-        magicEffect.Duration.ConstantValue.Value = increaseBlockEffect.Duration!.ConstantValue.Value;
-        magicEffect.Duration.MaximumValue = increaseBlockEffect.Duration.MaximumValue;
-
-        foreach (var durationRelatedValue in increaseBlockEffect.Duration.RelatedValues)
-        {
-            var durationRelatedValueCopy = context.CreateNew<AttributeRelationship>();
-            durationRelatedValueCopy.InputAttribute = durationRelatedValue.InputAttribute!.GetPersistent(gameConfiguration);
-            durationRelatedValueCopy.InputOperator = durationRelatedValue.InputOperator;
-            durationRelatedValueCopy.InputOperand = durationRelatedValue.InputOperand;
-            magicEffect.Duration.RelatedValues.Add(durationRelatedValueCopy);
-        }
-
-        foreach (var powerUp in increaseBlockEffect.PowerUpDefinitions)
-        {
-            var powerUpCopy = context.CreateNew<PowerUpDefinition>();
-            magicEffect.PowerUpDefinitions.Add(powerUpCopy);
-            powerUpCopy.TargetAttribute = powerUp.TargetAttribute!.GetPersistent(gameConfiguration);
-            powerUpCopy.Boost = context.CreateNew<PowerUpDefinitionValue>();
-            powerUpCopy.Boost.ConstantValue.Value = powerUp.Boost!.ConstantValue.Value;
-            powerUpCopy.Boost.ConstantValue.AggregateType = powerUp.Boost.ConstantValue.AggregateType;
-            powerUpCopy.Boost.MaximumValue = powerUp.Boost.MaximumValue;
-
-            foreach (var boostRelatedValue in powerUp.Boost.RelatedValues)
-            {
-                var boostRelatedValueCopy = context.CreateNew<AttributeRelationship>();
-                boostRelatedValueCopy.InputAttribute = boostRelatedValue.InputAttribute!.GetPersistent(gameConfiguration);
-                boostRelatedValueCopy.InputOperator = boostRelatedValue.InputOperator;
-                boostRelatedValueCopy.InputOperand = boostRelatedValue.InputOperand;
-                powerUpCopy.Boost.RelatedValues.Add(boostRelatedValueCopy);
-            }
-        }
+        this.CopyMagicEffectValues(context, gameConfiguration, magicEffect, (short)MagicEffectNumber.IncreaseBlock);
 
         var increaseBlockPowerUp = context.CreateNew<PowerUpDefinition>();
         magicEffect.PowerUpDefinitions.Add(increaseBlockPowerUp);
@@ -324,43 +288,7 @@ public class FinishRageFighterMasterTreePlugIn : UpdatePlugInBase
         magicEffect.Number = (byte)MagicEffectNumber.IncreaseBlockMastery;
         magicEffect.Name = "Increase Block Mastery Skill Effect";
 
-        var increaseBlockPowerUpEffect = gameConfiguration.MagicEffects.First(e => e.Number == (short)MagicEffectNumber.IncreaseBlockPowerUp);
-        magicEffect.InformObservers = increaseBlockPowerUpEffect.InformObservers;
-        magicEffect.SubType = increaseBlockPowerUpEffect.SubType;
-        magicEffect.SendDuration = increaseBlockPowerUpEffect.SendDuration;
-        magicEffect.StopByDeath = increaseBlockPowerUpEffect.StopByDeath;
-        magicEffect.Duration = context.CreateNew<PowerUpDefinitionValue>();
-        magicEffect.Duration.ConstantValue.Value = increaseBlockPowerUpEffect.Duration!.ConstantValue.Value;
-        magicEffect.Duration.MaximumValue = increaseBlockPowerUpEffect.Duration.MaximumValue;
-
-        foreach (var durationRelatedValue in increaseBlockPowerUpEffect.Duration.RelatedValues)
-        {
-            var durationRelatedValueCopy = context.CreateNew<AttributeRelationship>();
-            durationRelatedValueCopy.InputAttribute = durationRelatedValue.InputAttribute!.GetPersistent(gameConfiguration);
-            durationRelatedValueCopy.InputOperator = durationRelatedValue.InputOperator;
-            durationRelatedValueCopy.InputOperand = durationRelatedValue.InputOperand;
-            magicEffect.Duration.RelatedValues.Add(durationRelatedValueCopy);
-        }
-
-        foreach (var powerUp in increaseBlockPowerUpEffect.PowerUpDefinitions)
-        {
-            var powerUpCopy = context.CreateNew<PowerUpDefinition>();
-            magicEffect.PowerUpDefinitions.Add(powerUpCopy);
-            powerUpCopy.TargetAttribute = powerUp.TargetAttribute!.GetPersistent(gameConfiguration);
-            powerUpCopy.Boost = context.CreateNew<PowerUpDefinitionValue>();
-            powerUpCopy.Boost.ConstantValue.Value = powerUp.Boost!.ConstantValue.Value;
-            powerUpCopy.Boost.ConstantValue.AggregateType = powerUp.Boost.ConstantValue.AggregateType;
-            powerUpCopy.Boost.MaximumValue = powerUp.Boost.MaximumValue;
-
-            foreach (var boostRelatedValue in powerUp.Boost.RelatedValues)
-            {
-                var boostRelatedValueCopy = context.CreateNew<AttributeRelationship>();
-                boostRelatedValueCopy.InputAttribute = boostRelatedValue.InputAttribute!.GetPersistent(gameConfiguration);
-                boostRelatedValueCopy.InputOperator = boostRelatedValue.InputOperator;
-                boostRelatedValueCopy.InputOperand = boostRelatedValue.InputOperand;
-                powerUpCopy.Boost.RelatedValues.Add(boostRelatedValueCopy);
-            }
-        }
+        this.CopyMagicEffectValues(context, gameConfiguration, magicEffect, (short)MagicEffectNumber.IncreaseBlockPowerUp);
 
         var defensePowerUp = context.CreateNew<PowerUpDefinition>();
         magicEffect.PowerUpDefinitions.Add(defensePowerUp);
@@ -379,28 +307,37 @@ public class FinishRageFighterMasterTreePlugIn : UpdatePlugInBase
         magicEffect.Number = (byte)MagicEffectNumber.IncreaseHealthStrengthener;
         magicEffect.Name = "Increase Health Strengthener Skill Effect";
 
-        var increaseHealthEffect = gameConfiguration.MagicEffects.First(e => e.Number == (short)MagicEffectNumber.IncreaseHealth);
-        magicEffect.InformObservers = increaseHealthEffect.InformObservers;
-        magicEffect.SubType = increaseHealthEffect.SubType;
-        magicEffect.SendDuration = increaseHealthEffect.SendDuration;
-        magicEffect.StopByDeath = increaseHealthEffect.StopByDeath;
-        magicEffect.Duration = context.CreateNew<PowerUpDefinitionValue>();
-        magicEffect.Duration.ConstantValue.Value = increaseHealthEffect.Duration!.ConstantValue.Value;
-        magicEffect.Duration.MaximumValue = increaseHealthEffect.Duration.MaximumValue;
+        this.CopyMagicEffectValues(context, gameConfiguration, magicEffect, (short)MagicEffectNumber.IncreaseHealth);
 
-        foreach (var durationRelatedValue in increaseHealthEffect.Duration.RelatedValues)
+        return magicEffect;
+    }
+
+    private MagicEffectDefinition CopyMagicEffectValues(IContext context, GameConfiguration gameConfiguration, MagicEffectDefinition targetMagicEffect, short sourceMagicEffectNumber)
+    {
+        var sourceMagicEffect = gameConfiguration.MagicEffects.First(e => e.Number == sourceMagicEffectNumber);
+        targetMagicEffect.InformObservers = sourceMagicEffect.InformObservers;
+        targetMagicEffect.SubType = sourceMagicEffect.SubType;
+        targetMagicEffect.SendDuration = sourceMagicEffect.SendDuration;
+        targetMagicEffect.StopByDeath = sourceMagicEffect.StopByDeath;
+        targetMagicEffect.Duration = context.CreateNew<PowerUpDefinitionValue>();
+        targetMagicEffect.Duration.ConstantValue.Value = sourceMagicEffect.Duration!.ConstantValue.Value;
+        targetMagicEffect.Duration.ConstantValue.AggregateType = sourceMagicEffect.Duration.ConstantValue.AggregateType;
+        targetMagicEffect.Duration.MaximumValue = sourceMagicEffect.Duration.MaximumValue;
+
+        foreach (var durationRelatedValue in sourceMagicEffect.Duration.RelatedValues)
         {
             var durationRelatedValueCopy = context.CreateNew<AttributeRelationship>();
             durationRelatedValueCopy.InputAttribute = durationRelatedValue.InputAttribute!.GetPersistent(gameConfiguration);
             durationRelatedValueCopy.InputOperator = durationRelatedValue.InputOperator;
             durationRelatedValueCopy.InputOperand = durationRelatedValue.InputOperand;
-            magicEffect.Duration.RelatedValues.Add(durationRelatedValueCopy);
+            durationRelatedValueCopy.AggregateType = durationRelatedValue.AggregateType;
+            targetMagicEffect.Duration.RelatedValues.Add(durationRelatedValueCopy);
         }
 
-        foreach (var powerUp in increaseHealthEffect.PowerUpDefinitions)
+        foreach (var powerUp in sourceMagicEffect.PowerUpDefinitions)
         {
             var powerUpCopy = context.CreateNew<PowerUpDefinition>();
-            magicEffect.PowerUpDefinitions.Add(powerUpCopy);
+            targetMagicEffect.PowerUpDefinitions.Add(powerUpCopy);
             powerUpCopy.TargetAttribute = powerUp.TargetAttribute!.GetPersistent(gameConfiguration);
             powerUpCopy.Boost = context.CreateNew<PowerUpDefinitionValue>();
             powerUpCopy.Boost.ConstantValue.Value = powerUp.Boost!.ConstantValue.Value;
@@ -413,10 +350,11 @@ public class FinishRageFighterMasterTreePlugIn : UpdatePlugInBase
                 boostRelatedValueCopy.InputAttribute = boostRelatedValue.InputAttribute!.GetPersistent(gameConfiguration);
                 boostRelatedValueCopy.InputOperator = boostRelatedValue.InputOperator;
                 boostRelatedValueCopy.InputOperand = boostRelatedValue.InputOperand;
+                boostRelatedValueCopy.AggregateType = boostRelatedValue.AggregateType;
                 powerUpCopy.Boost.RelatedValues.Add(boostRelatedValueCopy);
             }
         }
 
-        return magicEffect;
+        return targetMagicEffect;
     }
 }
