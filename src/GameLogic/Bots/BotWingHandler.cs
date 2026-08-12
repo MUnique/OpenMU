@@ -72,7 +72,7 @@ internal static class BotWingHandler
         if (inventory.GetItem(InventoryConstants.WingsSlot) is { } outgrown)
         {
             await player.DestroyInventoryItemAsync(outgrown).ConfigureAwait(false);
-            player.Logger.LogInformation("Bot '{Name}' discarded its outgrown wings '{Wings}'.", player.Name, outgrown);
+            player.Logger.LogDebug("Bot '{Name}' discarded its outgrown wings '{Wings}'.", player.Name, outgrown);
         }
 
         // Directly into the wing slot: the planner already guarantees the class qualification and
@@ -87,7 +87,7 @@ internal static class BotWingHandler
             return;
         }
 
-        player.Logger.LogInformation("Bot '{Name}' earned its tier {Tier} wings: '{Wings}'.", player.Name, plan.Tier, wings);
+        player.Logger.LogDebug("Bot '{Name}' earned its tier {Tier} wings: '{Wings}'.", player.Name, plan.Tier, wings);
 
         try
         {

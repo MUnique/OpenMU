@@ -603,7 +603,7 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
             if (offline.SelectRandom() is { Login: not null } candidate
                 && await state.Manager.SpawnBotAsync(gameContext, candidate.Login, candidate.Slot).ConfigureAwait(false))
             {
-                logger.LogInformation("Bot presence rotation: +1 (online {Online}/{Target} of {Total}).", online + 1, targetOnline, totalPopulation);
+                logger.LogDebug("Bot presence rotation: +1 (online {Online}/{Target} of {Total}).", online + 1, targetOnline, totalPopulation);
             }
         }
         else if (online > targetOnline)
@@ -611,7 +611,7 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
             var stopped = await state.Manager.StopRandomBotAsync().ConfigureAwait(false);
             if (stopped is not null)
             {
-                logger.LogInformation("Bot presence rotation: -1 '{Name}' (online {Online}/{Target} of {Total}).", stopped, online - 1, targetOnline, totalPopulation);
+                logger.LogDebug("Bot presence rotation: -1 '{Name}' (online {Online}/{Target} of {Total}).", stopped, online - 1, targetOnline, totalPopulation);
             }
         }
     }
