@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
@@ -25,39 +26,6 @@ public class SkillListViewPlugIn : ISkillListViewPlugIn
     private const short ForceSkillId = 60;
     private const short ForceWaveSkillId = 66;
     private const short ForceWaveStrengSkillId = 509;
-
-    private const short FallingSlashSkillId = 19;
-    private const short FallingSlashStrengSkillId = 328;
-    private const short LungeSkillId = 20;
-    private const short LungeStrengSkillId = 329;
-    private const short CycloneSkillId = 22;
-    private const short CycloneStrengSkillId = 326;
-    private const short CycloneStrengDuelMasterSkillId = 479;
-    private const short SlashSkillId = 23;
-    private const short SlashStrengSkillId = 327;
-    private const short TripleShotSkillId = 24;
-    private const short TripleShotStrengSkillId = 414;
-    private const short TripleShotMasterySkillId = 418;
-    private const short PowerSlashSkillId = 56;
-    private const short PowerSlashStrengSkillId = 482;
-    private const short KillingBlowSkillId = 260;
-    private const short KillingBlowStrengSkillId = 551;
-    private const short KillingBlowMasterySkillId = 554;
-    private const short BeastUppercutSkillId = 261;
-    private const short BeastUppercutStrengSkillId = 552;
-    private const short BeastUppercutMasterySkillId = 555;
-
-    private static readonly Dictionary<short, short[]> _weaponSkillReplacements = new()
-    {
-        { FallingSlashSkillId, [FallingSlashStrengSkillId] },
-        { LungeSkillId, [LungeStrengSkillId] },
-        { CycloneSkillId, [CycloneStrengSkillId, CycloneStrengDuelMasterSkillId] },
-        { SlashSkillId, [SlashStrengSkillId] },
-        { TripleShotSkillId, [TripleShotStrengSkillId, TripleShotMasterySkillId] },
-        { PowerSlashSkillId, [PowerSlashStrengSkillId] },
-        { KillingBlowSkillId, [KillingBlowStrengSkillId, KillingBlowMasterySkillId] },
-        { BeastUppercutSkillId, [BeastUppercutStrengSkillId, BeastUppercutMasterySkillId] },
-    };
 
     private readonly RemotePlayer _player;
 
@@ -93,8 +61,7 @@ public class SkillListViewPlugIn : ISkillListViewPlugIn
             return;
         }
 
-        if (_weaponSkillReplacements.TryGetValue(skill.Number, out var replacementSkills)
-            && this.SkillList.Any(s => s is not null && replacementSkills.Contains(s.Number)))
+        if (this.SkillList.Any(s => s?.GetBaseSkill() == skill))
         {
             return;
         }
