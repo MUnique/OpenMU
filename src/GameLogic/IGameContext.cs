@@ -58,6 +58,12 @@ public interface IGameContext
     GameConfiguration Configuration { get; }
 
     /// <summary>
+    /// Gets or sets the server time zone used to interpret the time-of-day entries of periodic
+    /// event schedules (e.g. invasions, Blood Castle, Devil Square). Defaults to <see cref="TimeZoneInfo.Utc"/>.
+    /// </summary>
+    TimeZoneInfo ServerTimeZone { get; set; }
+
+    /// <summary>
     /// Gets the experience table. Index is the player level, value the needed experience to reach that level.
     /// </summary>
     long[] ExperienceTable { get; }

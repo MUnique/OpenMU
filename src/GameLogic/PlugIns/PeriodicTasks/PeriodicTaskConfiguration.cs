@@ -62,15 +62,20 @@ public class PeriodicTaskConfiguration
     /// <summary>
     /// Check if current time is OK for starting an invasion.
     /// </summary>
+    /// <param name="serverTimeZone">
+    /// The server time zone used to interpret the <see cref="Timetable"/> times of day.
+    /// Pass <see cref="TimeZoneInfo.Utc"/> to keep the previous UTC-based behavior.
+    /// </param>
     /// <returns>Returns true if the invasion can be started.</returns>
-    public virtual bool IsItTimeToStart()
+    public virtual bool IsItTimeToStart(TimeZoneInfo serverTimeZone)
     {
         if (this.Timetable.Count == 0)
         {
             return false;
         }
 
-        var nowTime = TimeOnly.FromDateTime(DateTime.UtcNow);
+        var nowLocal = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, serverTimeZone);
+        var nowTime = TimeOnly.FromDateTime(nowLocal);
         var earlier = nowTime.Add(TimeSpan.FromSeconds(-5));
 
         // For example, p = 00:00. Check that time between 00:00:00 and 00:00:05
