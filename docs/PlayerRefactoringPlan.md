@@ -1,9 +1,12 @@
 # Refactoring plan: breaking up the `Player` class
 
-**Status:** proposal / not implemented yet
-**Subject:** `src/GameLogic/Player.cs` (3,098 lines, ~150 members)
+**Status:** in progress — phases 0b and 1 are done, see §6
+**Subject:** `src/GameLogic/Player.cs` (3,098 lines and ~150 members when this
+plan was written; 2,614 after phase 1)
 
 ## 1. Diagnosis
+
+All line references below are the ones of the original 3,098 line file.
 
 `Player` is currently ten classes in a trench coat. It implements 11 interfaces
 (`IBucketMapObserver`, `IAttackable`, `IAttacker`, `ITrader`, `IPartyMember`,
@@ -172,20 +175,21 @@ making it do so is cheaper and better than a new point:
   `Dead → EnteredWorld` is a legal transition and does fire.)
 * `WarpToAsync` does not touch the state machine at all.
 
-So the task is: set `ChangingMap` in `WarpToAsync`/`RespawnAtAsync`, advance back
-to `EnteredWorld` in `ClientReadyAfterMapChangeAsync`, and add the missing
-transitions (`EnteredWorld → ChangingMap`, `Dead → ChangingMap`,
-`ChangingMap → EnteredWorld`). This gives entered/left map to every plugin for
-free — and, via `IPlayerStateChangingPlugIn`, makes map changes **cancelable**,
+**Implemented in phase 0b:** `WarpToAsync` and `RespawnAtAsync` now advance to
+`ChangingMap`, `ClientReadyAfterMapChangeAsync` advances back to `EnteredWorld`,
+and the missing transitions (`EnteredWorld`, `Dead` and `NpcDialogOpened` →
+`ChangingMap`) are declared. Map changes are therefore observable through
+`IPlayerStateChangedPlugIn` and — via `IPlayerStateChangingPlugIn` — **cancelable**,
 which mini games, castle siege and duels can use.
 
 Four things to keep in mind when leaning on the state machine:
 
 1. **~41 call sites guard on `CurrentState == PlayerState.EnteredWorld`** (item
-   consumption, guild actions, resets, bots, the periodic save). Once
-   `ChangingMap` exists, they all reject actions during a warp. That is almost
-   certainly the correct behavior, but it is a behavior change and belongs in its
-   own commit with its own test, not smuggled into a move.
+   consumption, guild actions, resets, bots, the periodic save). They now reject
+   actions while the client loads a map, which is the intended behavior: all of
+   them are entry checks of player-initiated actions, and none of them runs after
+   a warp inside the same flow. The periodic save skips such a player for one
+   interval, and the bots skip one AI tick.
 2. **The state machine lock is not reentrant.** `TryAdvanceToAsync` holds
    `StateMachine._asyncLock` while awaiting both events, so a plugin that
    triggers another transition **on the same player** deadlocks. Anything moved
@@ -198,11 +202,15 @@ Four things to keep in mind when leaning on the state machine:
    belong on `IObjectAddedToMapPlugIn`/`IObjectRemovedFromMapPlugIn`, which pass
    the `GameMap` and already fire for players.
 
-A related pre-existing bug found while checking this: `LogoutAction`
-(`LogoutType.BackToCharacterSelection`) advances to `PlayerState.Authenticated`,
-which is *not* in `EnteredWorld.PossibleTransitions` — the transition silently
-fails and the player stays in `EnteredWorld`. This must be fixed before "leaving
-the game" can be observed via the state machine at all.
+A related pre-existing bug, found while checking this and fixed in phase 0b:
+`LogoutAction` (`LogoutType.BackToCharacterSelection`) advances to
+`PlayerState.Authenticated`, which was in no in-game state's
+`PossibleTransitions` — the transition failed silently and the player stayed in
+`EnteredWorld` without a selected character. It worked by accident only because
+`RequestCharacterListAction` accepts `EnteredWorld → CharacterSelection`; coming
+from an opened NPC dialog or from the dead state, the player could not get back
+to the character selection at all. Every in-game state may now advance to
+`Authenticated`.
 
 ### 4.1 Points that are actually new
 
@@ -329,8 +337,8 @@ Each phase is independently mergeable and leaves the build green.
 | Phase | Content | Risk | Player.cs after |
 |---|---|---|---|
 | **0** | Characterization tests (see §7); plugin ordering (3.1a); per-player state bag (3.1b); args-object convention (3.1c) | low | 3,098 |
-| **0b** | State machine repair (§4.0): wire `ChangingMap` into warp/respawn, add the missing transitions, fix the `LogoutAction` transition. Own commit, own tests — this is a behavior change, not a move | medium | 3,098 |
-| **1** | §5.1 extension-method moves + nested class files | very low | ~2,600 |
+| **0b** | ✔ done — State machine repair (§4.0): `ChangingMap` wired into warp/respawn, missing transitions added, `LogoutAction` transition fixed. Behavior change, own tests | medium | 2,614 |
+| **1** | ✔ done — §5.1 extension-method moves + nested class files | very low | 2,612 |
 | **2** | `PlayerMovement`, `PlayerPersistence`, `PlayerSummon`, `PlayerStorages` components | low | ~2,150 |
 | **3** | `PlayerExperience` + P5/P6/P7 + `PetExperiencePlugIn` | medium | ~1,850 |
 | **4** | `PlayerMapTransitions` + P4 spawn gate plugins | medium | ~1,550 |
