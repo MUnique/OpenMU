@@ -123,6 +123,9 @@ public class GameContext : AsyncDisposable, IGameContext
     public GameConfiguration Configuration { get; }
 
     /// <inheritdoc/>
+    public TimeZoneInfo ServerTimeZone { get; set; } = TimeZoneInfo.Utc;
+
+    /// <inheritdoc/>
     public long[] ExperienceTable { get; private set; }
 
     /// <inheritdoc/>
