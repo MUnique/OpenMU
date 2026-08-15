@@ -239,5 +239,14 @@ namespace MUnique.OpenMU.Web.Map.Properties {
                 return ResourceManager.GetString("Following", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select player on map.
+        /// </summary>
+        public static string SelectPlayer {
+            get {
+                return ResourceManager.GetString("SelectPlayer", resourceCulture);
+            }
+        }
     }
 }

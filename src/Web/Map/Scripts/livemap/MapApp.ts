@@ -19,6 +19,7 @@ export class MapApp {
     private isDisposing: boolean = false;
     private isDisposed: boolean = false;
     private resizeEventListener: () => void;
+    private readonly onPickObjectHandler: (data: ObjectData) => void;
 
     constructor(
         stats: Stats,
@@ -28,6 +29,7 @@ export class MapApp {
         onPickObjectHandler: (data: ObjectData) => void) {
         this.stats = stats;
         this.container = mapContainer;
+        this.onPickObjectHandler = onPickObjectHandler;
         this.renderer = new THREE.WebGLRenderer({ antialias: false });
         this.scene = new THREE.Scene();
         this.world = new World(serverId, mapId);
@@ -67,6 +69,22 @@ export class MapApp {
 
     public highlightByName(playerName: string): boolean {
         return this.world.highlightPlayerByName(playerName);
+    }
+
+    /**
+     * Selects the object with the specified id, as if it was clicked on the map.
+     * @param objectId - The id of the object to select.
+     * @returns True if the object was found and selected, false otherwise.
+     */
+    public selectObject(objectId: number): boolean {
+        const data = this.world.getObjectById(objectId)?.data as ObjectData | undefined;
+        if (data === undefined) {
+            return false;
+        }
+
+        this.onObjectPicked(data);
+        this.onPickObjectHandler(data);
+        return true;
     }
 
     public dispose(): void {

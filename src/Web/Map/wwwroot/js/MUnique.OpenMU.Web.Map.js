@@ -941,6 +941,7 @@ System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], func
                     this.isDisposed = false;
                     this.stats = stats;
                     this.container = mapContainer;
+                    this.onPickObjectHandler = onPickObjectHandler;
                     this.renderer = new THREE.WebGLRenderer({ antialias: false });
                     this.scene = new THREE.Scene();
                     this.world = new World_1.World(serverId, mapId);
@@ -971,6 +972,16 @@ System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], func
                 }
                 MapApp.prototype.highlightByName = function (playerName) {
                     return this.world.highlightPlayerByName(playerName);
+                };
+                MapApp.prototype.selectObject = function (objectId) {
+                    var _a;
+                    var data = (_a = this.world.getObjectById(objectId)) === null || _a === void 0 ? void 0 : _a.data;
+                    if (data === undefined) {
+                        return false;
+                    }
+                    this.onObjectPicked(data);
+                    this.onPickObjectHandler(data);
+                    return true;
                 };
                 MapApp.prototype.dispose = function () {
                     if (this.isDisposing || this.isDisposed) {

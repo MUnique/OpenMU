@@ -11,17 +11,18 @@
     @if (this._controller is { })
     {
         <div class="livemap-players">
-            <div>
-                <MapPlayerList MapController="@this._controller" FollowedPlayerName="@FollowedPlayerName" OnFollowPlayer="@OnFollowPlayer"/>
-            </div>
             <div id="selected_info" style="display: none;" class="card mt-2 shadow-sm">
                 <div class="card-body py-2 px-3">
                     <h6 class="card-title mb-1 text-truncate" id="objectData_name"></h6>
                     <div class="d-flex align-items-center">
                         <small class="text-muted me-3"><i class="oi oi-person me-1"></i>ID: <span id="objectData_id"></span></small>
-                        <small class="text-muted"><i class="oi oi-map-marker me-1"></i>Position: (<span id="objectData_x"></span>, <span id="objectData_y"></span>)</small>
+                        <small class="text-muted me-3"><i class="oi oi-map-marker me-1"></i>Position: (<span id="objectData_x"></span>, <span id="objectData_y"></span>)</small>
+                        <small class="text-muted" id="objectData_level_container" style="display: none;"><i class="oi oi-bar-chart me-1"></i>Level: <span id="objectData_level"></span></small>
                     </div>
                 </div>
+            </div>
+            <div>
+                <MapPlayerList MapController="@this._controller" FollowedPlayerName="@FollowedPlayerName" OnFollowPlayer="@OnFollowPlayer" OnSelectPlayer="@SelectPlayerAsync"/>
             </div>
         </div>
     }
@@ -59,6 +60,9 @@
     [Parameter]
     public EventCallback<string?> OnFollowPlayer { get; set; }
 
+    [Inject]
+    private IJSRuntime JsRuntime { get; set; } = null!;
+
     private IMapController? _controller;
 
     private AsyncLazy<IMapController>? _lazyController;
@@ -73,6 +77,18 @@
             return this._controller;
         });
         base.OnInitialized();
+    }
+
+    private async Task SelectPlayerAsync(int objectId)
+    {
+        try
+        {
+            await this.JsRuntime.InvokeVoidAsync("SelectMapObject", this.Server.Id, this.MapId, objectId).ConfigureAwait(false);
+        }
+        catch
+        {
+            // The player may not be loaded into the Three.js scene yet.
+        }
     }
 
     /// <inheritdoc />
