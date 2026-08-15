@@ -1,4 +1,4 @@
-﻿// <copyright file="ClientToServerPacketsRef.cs" company="MUnique">
+// <copyright file="ClientToServerPacketsRef.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -3985,18 +3985,18 @@ public readonly ref struct CastleSiegeTaxChangeRequestRef
     public C1HeaderWithSubCodeRef Header => new (this._data);
 
     /// <summary>
-    /// Gets or sets 0=Undefined, 1=ChaosMachine, 2 = Normal, 3 = EntranceFeeLandOfTrials
+    /// Gets or sets the tax type.
     /// </summary>
-    public byte TaxType
+    public CastleSiegeTaxType TaxType
     {
-        get => this._data[4];
-        set => this._data[4] = value;
+        get => (CastleSiegeTaxType)this._data[4];
+        set => this._data[4] = (byte)value;
     }
 
     /// <summary>
-    /// Gets or sets the tax rate.
+    /// Gets or sets the percentage rate for shop and Chaos Machine taxes, or the entrance fee amount for the hunting zone.
     /// </summary>
-    public uint TaxRate
+    public uint TaxValue
     {
         get => ReadUInt32BigEndian(this._data[5..]);
         set => WriteUInt32BigEndian(this._data[5..], value);
@@ -4166,9 +4166,9 @@ public readonly ref struct ToggleCastleGateRequestRef
     public C1HeaderWithSubCodeRef Header => new (this._data);
 
     /// <summary>
-    /// Gets or sets the close state.
+    /// Gets or sets the is open.
     /// </summary>
-    public bool CloseState
+    public bool IsOpen
     {
         get => this._data[4..].GetBoolean();
         set => this._data[4..].SetBoolean(value);
@@ -4288,12 +4288,12 @@ public readonly ref struct CastleGuildCommandRef
     }
 
     /// <summary>
-    /// Gets or sets 0 = Attack, 1 = Defend, 2 = Wait
+    /// Gets or sets the command.
     /// </summary>
-    public byte Command
+    public CastleSiegeGuildCommandType Command
     {
-        get => this._data[7];
-        set => this._data[7] = value;
+        get => (CastleSiegeGuildCommandType)this._data[7];
+        set => this._data[7] = (byte)value;
     }
 
     /// <summary>
@@ -12444,8 +12444,8 @@ public readonly ref struct RemoveAllianceGuildRequestRef
     /// </summary>
     public string GuildName
     {
-        get => this._data.ExtractString(4, this._data.Length - 4, System.Text.Encoding.UTF8);
-        set => this._data.Slice(4).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.ExtractString(4, 8, System.Text.Encoding.UTF8);
+        set => this._data.Slice(4, 8).WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
@@ -12461,18 +12461,6 @@ public readonly ref struct RemoveAllianceGuildRequestRef
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
     public static implicit operator Span<byte>(RemoveAllianceGuildRequestRef packet) => packet._data; 
-
-    /// <summary>
-    /// Calculates the size of the packet for the specified field content.
-    /// </summary>
-    /// <param name="content">The content of the variable 'GuildName' field from which the size will be calculated.</param>
-    public static int GetRequiredSize(string content) => System.Text.Encoding.UTF8.GetByteCount(content) + 1 + 4;
-
-    /// <summary>
-    /// Calculates the size of the packet for the specified field content.
-    /// </summary>
-    /// <param name="contentLength">The content length in bytes of the variable 'GuildName' field from which the size will be calculated.</param>
-    public static int GetRequiredSize(int contentLength) => contentLength + 1 + 4;
 }
 
 
@@ -17317,4 +17305,81 @@ public readonly ref struct DuelChannelQuitRequestRef
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
     public static implicit operator Span<byte>(DuelChannelQuitRequestRef packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the client when: A client which supports a user interface for chat commands requests the list of commands which are available to the player. It's usually sent after the character entered the game world.
+/// Causes reaction on server side: The server sends an AvailableChatCommand message for each available chat command.
+/// </summary>
+public readonly ref struct ChatCommandListRequestRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ChatCommandListRequestRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public ChatCommandListRequestRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ChatCommandListRequestRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private ChatCommandListRequestRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xF5;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x00;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 4;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="ChatCommandListRequest"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator ChatCommandListRequestRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="ChatCommandListRequest"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(ChatCommandListRequestRef packet) => packet._data; 
 }

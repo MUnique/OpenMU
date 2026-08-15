@@ -127,6 +127,12 @@ or behind a firewall) and you want to use it within your computer or private net
 	<data name="SystemConfiguration_ReadConsoleInput_Name" xml:space="preserve">
 		<value>Read console input</value>
 	</data>
+	<data name="SystemConfiguration_TimeZoneId_Name" xml:space="preserve">
+		<value>Server time zone</value>
+	</data>
+	<data name="SystemConfiguration_TimeZoneId_Description" xml:space="preserve">
+		<value>The time zone id used to interpret the times of periodic event schedules (e.g. invasions, Blood Castle, Devil Square). IANA ids are recommended, for example 'Europe/Warsaw'. When empty, UTC is used.</value>
+	</data>
 	<data name="SystemConfiguration_Name" xml:space="preserve">
 		<value>System Configuration</value>
 	</data>

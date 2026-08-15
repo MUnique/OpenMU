@@ -61,6 +61,6 @@ public class ChatServerContainer : ServerContainerBase
     protected override async Task StartListenersAsync(CancellationToken cancellationToken)
     {
         // listeners are always started...
-        await this._chatServer.StartAsync(cancellationToken);
+        await this._chatServer.StartAsync(cancellationToken).ConfigureAwait(false);
     }
 }

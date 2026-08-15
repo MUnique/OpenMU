@@ -133,7 +133,7 @@ internal static class BotResetHandler
             character.LevelUpPoints += resetProgression.PointsForReset;
         }
 
-        player.Logger.LogInformation(
+        player.Logger.LogDebug(
             "Bot '{Name}' performed reset {ResetCount} and got {Points} points to invest.",
             player.Name,
             resetProgression.NextResetCount,

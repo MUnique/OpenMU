@@ -76,6 +76,18 @@ public partial class SystemConfiguration
         ResourceType = typeof(Resources))]
     public bool ReadConsoleInput { get; set; }
 
+    /// <summary>
+    /// Gets or sets the time zone id used to interpret the time-of-day entries of the periodic
+    /// event schedules (e.g. invasions, Blood Castle, Devil Square). IANA ids are recommended
+    /// (for example "Europe/Warsaw"); when empty or unresolvable, UTC is used.
+    /// </summary>
+    [Display(
+        Order = 6,
+        Name = nameof(Resources.SystemConfiguration_TimeZoneId_Name),
+        Description = nameof(Resources.SystemConfiguration_TimeZoneId_Description),
+        ResourceType = typeof(Resources))]
+    public string? TimeZoneId { get; set; }
+
     /// <inheritdoc />
     public override string ToString()
     {

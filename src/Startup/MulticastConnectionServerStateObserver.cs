@@ -73,7 +73,7 @@ internal class MulticastConnectionServerStateObserver : IGameServerStateObserver
 
     private class MemorizingObserver : IGameServerStateObserver
     {
-        public ConcurrentDictionary<ushort, (ServerInfo, IPEndPoint)> ServerInfos { get; } = new();
+        public ConcurrentDictionary<ushort, (ServerInfo ServerInfo, IPEndPoint EndPoint)> ServerInfos { get; } = new();
 
         public void RegisterGameServer(ServerInfo gameServer, IPEndPoint publicEndPoint)
         {
@@ -89,7 +89,7 @@ internal class MulticastConnectionServerStateObserver : IGameServerStateObserver
         {
             if (this.ServerInfos.TryGetValue(serverId, out var tuple))
             {
-                tuple.Item1.CurrentConnections = currentConnections;
+                tuple.ServerInfo.CurrentConnections = currentConnections;
             }
         }
     }

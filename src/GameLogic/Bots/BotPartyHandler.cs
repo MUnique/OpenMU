@@ -11,22 +11,13 @@ using MUnique.OpenMU.GameLogic.Offline;
 /// <see cref="BotMuHelperSettings.AutoAcceptAnyone"/>): the invitation is accepted after a short
 /// human-like delay, and the bot then follows the leader like any party member (see the follow logic
 /// in <see cref="BotNavigator"/>) until it gets bored and politely leaves. Safeguards keep it
-/// believable and abuse-free: no grouping across an absurd level gap, no acceptance while the bot is
-/// on an errand (shopping trip) or has unfinished business (revenge), and the invitation is
-/// re-validated when the delay has passed - the inviter may have joined another party or left.
+/// believable and abuse-free: no acceptance while the bot is on an errand (shopping trip) or has
+/// unfinished business (revenge), and the invitation is re-validated when the delay has passed - the
+/// inviter may have joined another party or left. There is no level gate, matching OpenMU's own party
+/// action: it is the player who invites, and the bot leaves again once it gets bored.
 /// </summary>
 internal static class BotPartyHandler
 {
-    /// <summary>
-    /// The maximum difference of the reset-aware effective level (see
-    /// <see cref="BotResetHandler.GetEffectiveLevel"/>) between the bot and the inviter. Within one
-    /// reset worth of levels plus some slack, hunting together still makes sense for both; grouping a
-    /// fresh character with a 15-resets veteran would only be a power-leveling service. On servers
-    /// without the reset feature the plain levels always lie within this bound, matching OpenMU's own
-    /// party action, which has no level gate at all.
-    /// </summary>
-    private const int MaxEffectiveLevelGap = 500;
-
     /// <summary>Lower bound of the human-like delay before the bot answers an invitation.</summary>
     private static readonly TimeSpan MinAcceptDelay = TimeSpan.FromSeconds(2);
 
@@ -67,7 +58,7 @@ internal static class BotPartyHandler
             return false;
         }
 
-        if (!IsRequesterEligible(bot, requester))
+        if (!IsRequesterEligible(requester))
         {
             return false;
         }
@@ -82,7 +73,7 @@ internal static class BotPartyHandler
 
         // The same feedback a human invitee's request flow gives, so the inviter knows it went out.
         await requester.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.RequestedPlayerForParty), bot.Name).ConfigureAwait(false);
-        bot.Logger.LogInformation("Bot '{Name}' accepts the party invitation of '{Requester}' in {Delay}.", bot.Name, requester.Name, delay);
+        bot.Logger.LogDebug("Bot '{Name}' accepts the party invitation of '{Requester}' in {Delay}.", bot.Name, requester.Name, delay);
         return true;
     }
 
@@ -115,7 +106,7 @@ internal static class BotPartyHandler
             if (DateTime.UtcNow >= bot.PartyBoredomAtUtc)
             {
                 bot.PartyBoredomAtUtc = null;
-                bot.Logger.LogInformation("Bot '{Name}' got bored and leaves its party.", bot.Name);
+                bot.Logger.LogDebug("Bot '{Name}' got bored and leaves its party.", bot.Name);
                 await party.KickMySelfAsync(bot).ConfigureAwait(false);
             }
         }
@@ -141,16 +132,16 @@ internal static class BotPartyHandler
     {
         // Re-validate: between the invitation and this answer, the bot may have joined a human's party
         // and the inviter may have died, left the game or joined another party.
-        if (HasHumanCompanion(bot) || !IsRequesterEligible(bot, requester))
+        if (HasHumanCompanion(bot) || !IsRequesterEligible(requester))
         {
-            bot.Logger.LogInformation("Bot '{Name}' dropped the party invitation of '{Requester}' - the situation changed.", bot.Name, requester.Name);
+            bot.Logger.LogDebug("Bot '{Name}' dropped the party invitation of '{Requester}' - the situation changed.", bot.Name, requester.Name);
             return;
         }
 
         await LeaveBotPartyAsync(bot).ConfigureAwait(false);
         if (bot.Party is not null)
         {
-            bot.Logger.LogInformation("Bot '{Name}' could not leave its bot party for '{Requester}'.", bot.Name, requester.Name);
+            bot.Logger.LogDebug("Bot '{Name}' could not leave its bot party for '{Requester}'.", bot.Name, requester.Name);
             return;
         }
 
@@ -176,7 +167,7 @@ internal static class BotPartyHandler
 
         if (success)
         {
-            bot.Logger.LogInformation("Bot '{Name}' joined the party of '{Requester}'.", bot.Name, requester.Name);
+            bot.Logger.LogDebug("Bot '{Name}' joined the party of '{Requester}'.", bot.Name, requester.Name);
         }
     }
 
@@ -197,7 +188,7 @@ internal static class BotPartyHandler
 
         if (Equals(party.PartyMaster, bot))
         {
-            bot.Logger.LogInformation("Bot '{Name}' breaks up its bot party to join a player.", bot.Name);
+            bot.Logger.LogDebug("Bot '{Name}' breaks up its bot party to join a player.", bot.Name);
             foreach (var member in party.PartyList.ToList())
             {
                 await party.KickMySelfAsync(member).ConfigureAwait(false);
@@ -209,14 +200,8 @@ internal static class BotPartyHandler
         await party.KickMySelfAsync(bot).ConfigureAwait(false);
     }
 
-    private static bool IsRequesterEligible(OfflinePlayer bot, Player requester)
+    private static bool IsRequesterEligible(Player requester)
     {
-        if (!requester.IsAlive || requester.PlayerState.CurrentState != PlayerState.EnteredWorld)
-        {
-            return false;
-        }
-
-        var levelGap = Math.Abs(BotResetHandler.GetEffectiveLevel(bot) - BotResetHandler.GetEffectiveLevel(requester));
-        return levelGap <= MaxEffectiveLevelGap;
+        return requester.IsAlive && requester.PlayerState.CurrentState == PlayerState.EnteredWorld;
     }
 }

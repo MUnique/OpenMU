@@ -32,35 +32,7 @@ public class WizardryEnhanceStrengthenerEffectInitializer : InitializerBase
         magicEffect.Number = (byte)MagicEffectNumber.WizEnhanceStrengthener;
         magicEffect.Name = "Wizardry Enhance Strengthener Skill Effect";
 
-        var wizardryEnhanceEffect = this.GameConfiguration.MagicEffects.First(e => e.Number == (short)MagicEffectNumber.WizEnhance);
-        magicEffect.InformObservers = wizardryEnhanceEffect.InformObservers;
-        magicEffect.SubType = wizardryEnhanceEffect.SubType;
-        magicEffect.SendDuration = wizardryEnhanceEffect.SendDuration;
-        magicEffect.StopByDeath = wizardryEnhanceEffect.StopByDeath;
-        magicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
-        magicEffect.Duration.ConstantValue.Value = wizardryEnhanceEffect.Duration!.ConstantValue.Value;
-        magicEffect.Duration.MaximumValue = wizardryEnhanceEffect.Duration.MaximumValue;
-
-        foreach (var powerUp in wizardryEnhanceEffect.PowerUpDefinitions)
-        {
-            var powerUpCopy = this.Context.CreateNew<PowerUpDefinition>();
-            magicEffect.PowerUpDefinitions.Add(powerUpCopy);
-            powerUpCopy.TargetAttribute = powerUp.TargetAttribute!.GetPersistent(this.GameConfiguration);
-            powerUpCopy.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-            powerUpCopy.Boost.ConstantValue.Value = powerUp.Boost!.ConstantValue.Value;
-            powerUpCopy.Boost.ConstantValue.AggregateType = powerUp.Boost.ConstantValue.AggregateType;
-            powerUpCopy.Boost.MaximumValue = powerUp.Boost.MaximumValue;
-
-            foreach (var boostRelatedValue in powerUp.Boost.RelatedValues)
-            {
-                var boostRelatedValueCopy = this.Context.CreateNew<AttributeRelationship>();
-                boostRelatedValueCopy.InputAttribute = boostRelatedValue.InputAttribute!.GetPersistent(this.GameConfiguration);
-                boostRelatedValueCopy.InputOperator = boostRelatedValue.InputOperator;
-                boostRelatedValueCopy.InputOperand = boostRelatedValue.InputOperand;
-                boostRelatedValueCopy.AggregateType = boostRelatedValue.AggregateType;
-                powerUpCopy.Boost.RelatedValues.Add(boostRelatedValueCopy);
-            }
-        }
+        this.CopyMagicEffectValues(magicEffect, (short)MagicEffectNumber.WizEnhance);
 
         var maxDmgPowerUp = this.Context.CreateNew<PowerUpDefinition>();
         magicEffect.PowerUpDefinitions.Add(maxDmgPowerUp);

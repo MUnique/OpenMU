@@ -201,8 +201,8 @@ public sealed class Party : AsyncDisposable
     /// </summary>
     /// <param name="killedObject">The object that was killed.</param>
     /// <param name="killer">The killer who is a party member.</param>
-    /// <returns>The total experience distributed.</returns>
-    public async ValueTask<int> DistributeExperienceAfterKillAsync(IAttackable killedObject, IObservable killer)
+    /// <returns>The experience which each party member gained, with all experience rates applied.</returns>
+    public async ValueTask<IReadOnlyList<ExperienceShare>> DistributeExperienceAfterKillAsync(IAttackable killedObject, IObservable killer)
     {
         using var l = await this._distributionLock.LockAsync();
         try
@@ -220,34 +220,15 @@ public sealed class Party : AsyncDisposable
     /// </summary>
     /// <param name="killed">The object that was killed.</param>
     /// <param name="killer">The killer who is a party member.</param>
-    /// <param name="amount">The amount of money to distribute.</param>
-    public async ValueTask DistributeMoneyAfterKillAsync(IAttackable killed, IPartyMember killer, uint amount)
+    /// <param name="shares">The part of the money which is reserved for each party member.</param>
+    public ValueTask DistributeMoneyAfterKillAsync(IAttackable killed, IPartyMember killer, IReadOnlyList<MoneyShare> shares)
     {
-        using var l = await this._distributionLock.LockAsync();
-        try
-        {
-            this._logger.LogDebug("Distributing money after killing {name}", killed.GetName());
-            this._distributionList.AddRange(
-                this._partyMembers.OfType<Player>()
-                    .Where(p => p.CurrentMap == killer.CurrentMap
-                                && !p.IsAtSafezone()
-                                && p.Attributes is { }));
-
-            if (this._distributionList.Count == 0)
-            {
-                return;
-            }
-
-            var moneyPart = amount / this._distributionList.Count;
-            foreach (var player in this._distributionList)
-            {
-                player.TryAddMoney((int)(moneyPart * player.Attributes![Stats.MoneyAmountRate]));
-            }
-        }
-        finally
-        {
-            this._distributionList.Clear();
-        }
+        // No lock is taken here: unlike the experience distribution, this no longer touches the shared
+        // _distributionList, and paying out the pre-computed shares is consistent with the lock-free
+        // pick up path in DroppedMoney.
+        this._logger.LogDebug("Distributing money after killing {name}", killed.GetName());
+        _ = MoneyDistribution.TryPayShares(shares, player => this.IsEligibleForMoney(player, killer));
+        return ValueTask.CompletedTask;
     }
 
     /// <summary>
@@ -285,6 +266,20 @@ public sealed class Party : AsyncDisposable
         {
             this._distributionList.Clear();
         }
+    }
+
+    /// <summary>
+    /// Determines whether the player may receive a part of a money drop of the party.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="killer">The killer who is a party member.</param>
+    /// <returns><c>True</c>, if the player may receive money; Otherwise, <c>false</c>.</returns>
+    internal bool IsEligibleForMoney(Player player, IPartyMember killer)
+    {
+        return this._partyMembers.Contains(player)
+               && player.CurrentMap == killer.CurrentMap
+               && !player.IsAtSafezone()
+               && player.Attributes is { };
     }
 
     /// <inheritdoc/>
@@ -340,7 +335,7 @@ public sealed class Party : AsyncDisposable
         base.Dispose(disposing);
     }
 
-    private static (int Total, float PerLevel) CalculatePartyExperience(List<Player> recipients, IAttackable killed)
+    private static float CalculatePartyExperiencePerLevel(List<Player> recipients, IAttackable killed)
     {
         var memberCount = recipients.Count;
         var totalLevel = recipients.Sum(p => (int)p.Attributes![Stats.TotalLevel]);
@@ -355,9 +350,8 @@ public sealed class Party : AsyncDisposable
         var randomMinMultiplier = attributes[Stats.RandomExperienceMinMultiplier];
         var randomMaxMultiplier = attributes[Stats.RandomExperienceMaxMultiplier];
         var totalExperience = CalculateTotalExperience(totalBaseExperience, randomMinMultiplier, randomMaxMultiplier);
-        var perLevel = (float)totalExperience / totalLevel;
 
-        return (totalExperience, perLevel);
+        return (float)totalExperience / totalLevel;
     }
 
     private static int CalculateTotalExperience(double totalBaseExperience, float randomMinMultiplier, float randomMaxMultiplier)
@@ -377,7 +371,7 @@ public sealed class Party : AsyncDisposable
         return (int)totalBaseExperience;
     }
 
-    private static async ValueTask AwardExperienceAsync(Player player, float perLevel, IAttackable killed)
+    private static async ValueTask<int> AwardExperienceAsync(Player player, float perLevel, IAttackable killed)
     {
         var attributes = player.Attributes!;
         var isAtMaxLevel = (short)attributes[Stats.Level] == player.GameContext.Configuration.MaximumLevel;
@@ -391,20 +385,23 @@ public sealed class Party : AsyncDisposable
                             * (attributes[Stats.MasterExperienceRate] + attributes[Stats.BonusExperienceRate]));
 
             await player.AddMasterExperienceAsync(exp, killed).ConfigureAwait(false);
+            return exp;
         }
-        else if (!isAtMaxLevel)
-        {
-            var exp = (int)(perLevel
-                            * attributes[Stats.Level]
-                            * player.GameContext.ExperienceRate
-                            * (attributes[Stats.ExperienceRate] + attributes[Stats.BonusExperienceRate]));
 
-            await player.AddExperienceAsync(exp, killed).ConfigureAwait(false);
-        }
-        else
+        var normalExperience = (int)(perLevel
+                                     * attributes[Stats.Level]
+                                     * player.GameContext.ExperienceRate
+                                     * (attributes[Stats.ExperienceRate] + attributes[Stats.BonusExperienceRate]));
+
+        if (!isAtMaxLevel)
         {
-            // Player is at max level but has not completed master quest. No experience awarded.
+            await player.AddExperienceAsync(normalExperience, killed).ConfigureAwait(false);
         }
+
+        // At the maximum level without the master quest no experience is awarded, but the amount is
+        // still returned: the money drop is derived from it, and a solo kill returns it as well
+        // (see Player.AddExpAfterKillAsync), so such a member must not end up without any money.
+        return normalExperience;
     }
 
     private async ValueTask ExitPartyAsync(IPartyMember member, byte index)
@@ -466,11 +463,11 @@ public sealed class Party : AsyncDisposable
         }
     }
 
-    private async ValueTask<int> InternalDistributeExperienceAfterKillAsync(IAttackable killedObject, IObservable killer)
+    private async ValueTask<IReadOnlyList<ExperienceShare>> InternalDistributeExperienceAfterKillAsync(IAttackable killedObject, IObservable killer)
     {
         if (killedObject.IsSummonedMonster)
         {
-            return 0;
+            return [];
         }
 
         using (await killer.ObserverLock.ReaderLockAsync().ConfigureAwait(false))
@@ -483,17 +480,20 @@ public sealed class Party : AsyncDisposable
 
         if (this._distributionList.Count == 0)
         {
-            return 0;
+            return [];
         }
 
-        var (total, perLevel) = CalculatePartyExperience(this._distributionList, killedObject);
+        var perLevel = CalculatePartyExperiencePerLevel(this._distributionList, killedObject);
 
+        // The shares are copied into their own list, because _distributionList is reused and cleared by the caller.
+        var shares = new List<ExperienceShare>(this._distributionList.Count);
         foreach (var player in this._distributionList)
         {
-            await AwardExperienceAsync(player, perLevel, killedObject).ConfigureAwait(false);
+            var experience = await AwardExperienceAsync(player, perLevel, killedObject).ConfigureAwait(false);
+            shares.Add(new ExperienceShare(player, experience));
         }
 
-        return total;
+        return shares;
     }
 
     private async ValueTask UpdateNearbyCountAsync()

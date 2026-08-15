@@ -98,7 +98,7 @@ public class BotSkillProgressionPlugIn : ICharacterLevelUpPlugIn
         }
 
         character.CharacterClass = evolvedClass;
-        player.Logger.LogInformation(
+        player.Logger.LogDebug(
             "Bot '{Name}' evolved into {Class} at level {Level}.",
             player.Name,
             evolvedClass.Name,
@@ -168,7 +168,7 @@ public class BotSkillProgressionPlugIn : ICharacterLevelUpPlugIn
             }
 
             await skillList.AddLearnedSkillAsync(skill).ConfigureAwait(false);
-            player.Logger.LogInformation("Bot '{Name}' learned '{Skill}' at level {Level}.", player.Name, skill.Name, player.Level);
+            player.Logger.LogDebug("Bot '{Name}' learned '{Skill}' at level {Level}.", player.Name, skill.Name, player.Level);
         }
     }
 }

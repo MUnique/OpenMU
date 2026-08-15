@@ -36,8 +36,7 @@ public class AreaSkillAttackAction
     public async ValueTask AttackAsync(Player player, ushort extraTargetId, ushort skillId, Point targetAreaCenter, byte rotation, bool hitImplicitlyForExplicitSkill = false)
     {
         var skillEntry = player.SkillList?.GetSkill(skillId);
-        var skill = skillEntry?.Skill;
-        if (skill is null || skill.SkillType == SkillType.PassiveBoost)
+        if (skillEntry?.Skill is not { } skill || skill.SkillType == SkillType.PassiveBoost)
         {
             return;
         }
@@ -55,7 +54,7 @@ public class AreaSkillAttackAction
             }
         }
 
-        if (!await player.TryConsumeForSkillAsync(skill).ConfigureAwait(false))
+        if (!await player.TryConsumeForSkillAsync(skillEntry).ConfigureAwait(false))
         {
             return;
         }

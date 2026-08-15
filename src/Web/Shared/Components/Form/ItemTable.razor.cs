@@ -7,13 +7,13 @@ namespace MUnique.OpenMU.Web.Shared.Components.Form;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
-using MUnique.OpenMU.Web.Shared.Components.Modal;
 using Microsoft.AspNetCore.Components;
 using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Composition;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.Shared;
 using MUnique.OpenMU.Web.Shared.Components.Form.Modal;
+using MUnique.OpenMU.Web.Shared.Components.Modal;
 
 /// <summary>
 /// A component that shows a collection of <typeparamref name="TItem"/> in a table.

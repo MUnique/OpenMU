@@ -114,6 +114,39 @@ public class ExperienceRateSplitTest
     }
 
     /// <summary>
+    /// Verifies that a party member at the maximum level without the master quest still gets a
+    /// money basis. It gains no experience, but the money drop is derived from that value, and a
+    /// solo kill returns it too - so returning zero would leave it without any zen in a party.
+    /// </summary>
+    [Test]
+    public async ValueTask MaxLevelMemberWithoutMasterQuestStillHasMoneyBasisAsync()
+    {
+        var context = this.CreateGameServerContext(
+            normalExperienceRate: 1.0f,
+            globalMasterExperienceRate: 1.0f,
+            maximumLevel: 3,
+            maximumMasterLevel: 200);
+
+        var maxedPlayer = await this.CreatePlayerAsync(context, level: 3, totalLevel: 3, isMasterClass: false).ConfigureAwait(false);
+        var levelingPlayer = await this.CreatePlayerAsync(context, level: 2, totalLevel: 2, isMasterClass: false).ConfigureAwait(false);
+
+        var party = new Party(new PartyManager(5, new NullLogger<Party>()), 5, new NullLogger<Party>());
+        await party.AddAsync(maxedPlayer).ConfigureAwait(false);
+        await party.AddAsync(levelingPlayer).ConfigureAwait(false);
+        await maxedPlayer.AddObserverAsync(levelingPlayer).ConfigureAwait(false);
+
+        var killedObject = CreateKilledObject(level: 5);
+        var shares = await party.DistributeExperienceAfterKillAsync(killedObject.Object, maxedPlayer).ConfigureAwait(false);
+
+        var maxedShare = shares.First(s => s.Player == maxedPlayer);
+        Assert.That(maxedShare.Experience, Is.GreaterThan(0));
+
+        // It still must not actually gain any experience.
+        Assert.That(maxedPlayer.SelectedCharacter!.Experience, Is.EqualTo(0));
+        Assert.That(maxedPlayer.SelectedCharacter.MasterExperience, Is.EqualTo(0));
+    }
+
+    /// <summary>
     /// Verifies that concurrent normal experience gains cannot exceed the maximum level.
     /// </summary>
     [Test]

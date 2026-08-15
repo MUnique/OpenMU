@@ -1,10 +1,14 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿// <copyright file="20260712014203_AddBuff.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
 
 #nullable disable
 
 namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 {
+    using System;
+    using Microsoft.EntityFrameworkCore.Migrations;
+
     /// <inheritdoc />
     public partial class AddBuff : Migration
     {
@@ -20,7 +24,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     MagicEffectDefinitionId = table.Column<Guid>(type: "uuid", nullable: true),
                     MonsterDefinitionId = table.Column<Guid>(type: "uuid", nullable: true),
                     MinimumLevel = table.Column<int>(type: "integer", nullable: true),
-                    MaximumLevel = table.Column<int>(type: "integer", nullable: true)
+                    MaximumLevel = table.Column<int>(type: "integer", nullable: true),
                 },
                 constraints: table =>
                 {

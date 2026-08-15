@@ -14,7 +14,7 @@ using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// Feature plugin which spawns and maintains server-side bots.
+/// Feature plugin that spawns and maintains server-side bots.
 /// Appears in the "Feature Plugins" section of the admin panel next to the MU Helper and reset features.
 /// </summary>
 [PlugIn]
@@ -124,6 +124,26 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
             // logged); the maintenance pass takes over from here.
             Interlocked.Exchange(ref state.StartupState, (int)StartupPhase.Done);
         }
+    }
+
+    /// <inheritdoc />
+    public void ForceStart()
+    {
+        foreach (var state in this._states.Values)
+        {
+            state.NextRunUtc = DateTime.UtcNow;
+        }
+    }
+
+    /// <inheritdoc />
+    public object CreateDefaultConfig()
+    {
+        return CreateDefaultConfiguration();
+    }
+
+    private static BotConfiguration CreateDefaultConfiguration()
+    {
+        return new BotConfiguration();
     }
 
     /// <summary>
@@ -347,26 +367,6 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
         {
             logger.LogError(ex, "Failed to form bot parties.");
         }
-    }
-
-    /// <inheritdoc />
-    public void ForceStart()
-    {
-        foreach (var state in this._states.Values)
-        {
-            state.NextRunUtc = DateTime.UtcNow;
-        }
-    }
-
-    /// <inheritdoc />
-    public object CreateDefaultConfig()
-    {
-        return CreateDefaultConfiguration();
-    }
-
-    private static BotConfiguration CreateDefaultConfiguration()
-    {
-        return new BotConfiguration();
     }
 
     /// <summary>
@@ -603,7 +603,7 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
             if (offline.SelectRandom() is { Login: not null } candidate
                 && await state.Manager.SpawnBotAsync(gameContext, candidate.Login, candidate.Slot).ConfigureAwait(false))
             {
-                logger.LogInformation("Bot presence rotation: +1 (online {Online}/{Target} of {Total}).", online + 1, targetOnline, totalPopulation);
+                logger.LogDebug("Bot presence rotation: +1 (online {Online}/{Target} of {Total}).", online + 1, targetOnline, totalPopulation);
             }
         }
         else if (online > targetOnline)
@@ -611,7 +611,7 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
             var stopped = await state.Manager.StopRandomBotAsync().ConfigureAwait(false);
             if (stopped is not null)
             {
-                logger.LogInformation("Bot presence rotation: -1 '{Name}' (online {Online}/{Target} of {Total}).", stopped, online - 1, targetOnline, totalPopulation);
+                logger.LogDebug("Bot presence rotation: -1 '{Name}' (online {Online}/{Target} of {Total}).", stopped, online - 1, targetOnline, totalPopulation);
             }
         }
     }

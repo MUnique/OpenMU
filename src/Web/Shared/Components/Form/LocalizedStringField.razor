@@ -13,7 +13,7 @@
 
   @foreach (var culture in this.LocalizationOptions.Value.SupportedUICultures)
   {
-    <div class="mb-1">
+    <div class="mb-1 localized-value">
       <input id="@(MUnique.OpenMU.Interfaces.LocalizedString.NeutralLanguageCode == culture.TwoLetterISOLanguageName ? this.FieldIdentifier.FieldName : this.FieldIdentifier.FieldName + "_" + culture.TwoLetterISOLanguageName)"
              class="@(this.GetInputClass(culture))"
              value="@GetValueForCulture(culture)"

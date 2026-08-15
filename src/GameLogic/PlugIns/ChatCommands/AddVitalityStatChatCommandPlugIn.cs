@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.Arguments;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -15,7 +16,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("370CE86C-E382-4E0F-93F4-AD75FA079129")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.AddVitalityStatChatCommandPlugIn_Name), Description = nameof(PlugInResources.AddVitalityStatChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
-[ChatCommandHelp(Command, null, MinimumStatus)]
+[ChatCommandHelp(Command, typeof(AddSingleStatChatCommandArgs), MinimumStatus)]
 public class AddVitalityStatChatCommandPlugIn : AddStatChatCommandPlugIn, IDisabledByDefault
 {
     private const string Command = "/addvit";

@@ -1,4 +1,4 @@
-﻿// <copyright file="ServerToClientPackets.cs" company="MUnique">
+// <copyright file="ServerToClientPackets.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -30671,6 +30671,4600 @@ public readonly struct MapEventState
     /// <returns>The packet as byte span.</returns>
     public static implicit operator Memory<byte>(MapEventState packet) => packet._data; 
 }
+
+
+/// <summary>
+/// Is sent by the server when: After the client requested the list of available chat commands. One message is sent for each command which is available to the player.
+/// Causes reaction on client side: The client adds the command to its list of known commands, so that it can offer them to the player without requiring him to know or type them.
+/// </summary>
+public readonly struct AvailableChatCommand
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AvailableChatCommand"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public AvailableChatCommand(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AvailableChatCommand"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private AvailableChatCommand(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xF5;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x01;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the index of this command within the list, starting at 0.
+    /// </summary>
+    public byte Index
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the total number of commands which are available to the player, so that the client knows when it received all of them.
+    /// </summary>
+    public byte Count
+    {
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the character status which is required to execute the command.
+    /// </summary>
+    public CharacterStatus MinimumCharacterStatus
+    {
+        get => (CharacterStatus)this._data.Span[7];
+        set => this._data.Span[7] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the parameter count.
+    /// </summary>
+    public byte ParameterCount
+    {
+        get => this._data.Span[8];
+        set => this._data.Span[8] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the command including its slash, e.g. '/item'.
+    /// </summary>
+    public string Command
+    {
+        get => this._data.Span.ExtractString(9, 32, System.Text.Encoding.UTF8);
+        set => this._data.Slice(9, 32).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the name of the command, in the language of the player.
+    /// </summary>
+    public string Name
+    {
+        get => this._data.Span.ExtractString(41, 48, System.Text.Encoding.UTF8);
+        set => this._data.Slice(41, 48).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the description of the command, in the language of the player.
+    /// </summary>
+    public string Description
+    {
+        get => this._data.Span.ExtractString(89, 256, System.Text.Encoding.UTF8);
+        set => this._data.Slice(89, 256).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets the <see cref="ChatCommandParameter"/> of the specified index.
+    /// </summary>
+        public ChatCommandParameter this[int index] => new (this._data.Slice(345 + index * ChatCommandParameter.Length));
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="AvailableChatCommand"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator AvailableChatCommand(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="AvailableChatCommand"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(AvailableChatCommand packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="ChatCommandParameter"/>.
+    /// </summary>
+    /// <param name="parametersCount">The count of <see cref="ChatCommandParameter"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int parametersCount) => parametersCount * ChatCommandParameter.Length + 345;
+
+
+/// <summary>
+/// Describes one parameter of a chat command, so that a user interface can offer an input for it..
+/// </summary>
+public readonly struct ChatCommandParameter
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ChatCommandParameter"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public ChatCommandParameter(Memory<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 102;
+
+    /// <summary>
+    /// Gets or sets defines if the parameter has to be specified to execute the command.
+    /// </summary>
+    public bool IsRequired
+    {
+        get => this._data.Span.GetBoolean();
+        set => this._data.Span.SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the kind of value which is expected, so that a fitting input can be shown.
+    /// </summary>
+    public ChatCommandParameterType Type
+    {
+        get => (ChatCommandParameterType)this._data.Span[1];
+        set => this._data.Span[1] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the name.
+    /// </summary>
+    public string Name
+    {
+        get => this._data.Span.ExtractString(2, 32, System.Text.Encoding.UTF8);
+        set => this._data.Slice(2, 32).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the short name which is used in the 'shortName=value' notation. It's empty when the parameter can only be passed by its position.
+    /// </summary>
+    public string ShortName
+    {
+        get => this._data.Span.ExtractString(34, 20, System.Text.Encoding.UTF8);
+        set => this._data.Slice(34, 20).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the accepted values, separated by a pipe. It's empty when the parameter isn't limited to a set of values.
+    /// </summary>
+    public string ValidValues
+    {
+        get => this._data.Span.ExtractString(54, 48, System.Text.Encoding.UTF8);
+        set => this._data.Slice(54, 48).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+}
+}
+
+
+/// <summary>
+/// Is sent by the server when: The player receives the result of registering Rena or Event Chips at the Golden Archer NPC.
+/// Causes reaction on client side: The client updates the Golden Archer interface with total registered count and remaining count in inventory.
+/// </summary>
+public readonly struct EventChipRegistrationResult
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EventChipRegistrationResult"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public EventChipRegistrationResult(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EventChipRegistrationResult"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private EventChipRegistrationResult(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0x94;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 10;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1Header Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public byte Result
+    {
+        get => this._data.Span[3];
+        set => this._data.Span[3] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the registered count.
+    /// </summary>
+    public uint RegisteredCount
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[4..]);
+        set => WriteUInt32LittleEndian(this._data.Span[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the remaining inventory count.
+    /// </summary>
+    public ushort RemainingInventoryCount
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[8..]);
+        set => WriteUInt16LittleEndian(this._data.Span[8..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="EventChipRegistrationResult"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator EventChipRegistrationResult(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="EventChipRegistrationResult"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(EventChipRegistrationResult packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: After the player requested the current castle siege status from a castle siege npc.
+/// Causes reaction on client side: The client shows the castle siege status.
+/// </summary>
+public readonly struct CastleSiegeStatusResponse
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeStatusResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeStatusResponse(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeStatusResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CastleSiegeStatusResponse(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xB2;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x00;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 46;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public byte Result
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the state.
+    /// </summary>
+    public CastleSiegeState State
+    {
+        get => (CastleSiegeState)this._data.Span[5];
+        set => this._data.Span[5] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the start year.
+    /// </summary>
+    public ushort StartYear
+    {
+        get => ReadUInt16BigEndian(this._data.Span[6..]);
+        set => WriteUInt16BigEndian(this._data.Span[6..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the start month.
+    /// </summary>
+    public byte StartMonth
+    {
+        get => this._data.Span[8];
+        set => this._data.Span[8] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the start day.
+    /// </summary>
+    public byte StartDay
+    {
+        get => this._data.Span[9];
+        set => this._data.Span[9] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the start hour.
+    /// </summary>
+    public byte StartHour
+    {
+        get => this._data.Span[10];
+        set => this._data.Span[10] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the start minute.
+    /// </summary>
+    public byte StartMinute
+    {
+        get => this._data.Span[11];
+        set => this._data.Span[11] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the end year.
+    /// </summary>
+    public ushort EndYear
+    {
+        get => ReadUInt16BigEndian(this._data.Span[12..]);
+        set => WriteUInt16BigEndian(this._data.Span[12..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the end month.
+    /// </summary>
+    public byte EndMonth
+    {
+        get => this._data.Span[14];
+        set => this._data.Span[14] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the end day.
+    /// </summary>
+    public byte EndDay
+    {
+        get => this._data.Span[15];
+        set => this._data.Span[15] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the end hour.
+    /// </summary>
+    public byte EndHour
+    {
+        get => this._data.Span[16];
+        set => this._data.Span[16] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the end minute.
+    /// </summary>
+    public byte EndMinute
+    {
+        get => this._data.Span[17];
+        set => this._data.Span[17] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the siege start year.
+    /// </summary>
+    public ushort SiegeStartYear
+    {
+        get => ReadUInt16BigEndian(this._data.Span[18..]);
+        set => WriteUInt16BigEndian(this._data.Span[18..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the siege start month.
+    /// </summary>
+    public byte SiegeStartMonth
+    {
+        get => this._data.Span[20];
+        set => this._data.Span[20] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the siege start day.
+    /// </summary>
+    public byte SiegeStartDay
+    {
+        get => this._data.Span[21];
+        set => this._data.Span[21] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the siege start hour.
+    /// </summary>
+    public byte SiegeStartHour
+    {
+        get => this._data.Span[22];
+        set => this._data.Span[22] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the siege start minute.
+    /// </summary>
+    public byte SiegeStartMinute
+    {
+        get => this._data.Span[23];
+        set => this._data.Span[23] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the guild name.
+    /// </summary>
+    public string GuildName
+    {
+        get => this._data.Span.ExtractString(24, 8, System.Text.Encoding.UTF8);
+        set => this._data.Slice(24, 8).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the guild master name.
+    /// </summary>
+    public string GuildMasterName
+    {
+        get => this._data.Span.ExtractString(32, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(32, 10).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the remaining time.
+    /// </summary>
+    public uint RemainingTime
+    {
+        get => ReadUInt32BigEndian(this._data.Span[42..]);
+        set => WriteUInt32BigEndian(this._data.Span[42..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeStatusResponse"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CastleSiegeStatusResponse(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CastleSiegeStatusResponse"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CastleSiegeStatusResponse packet) => packet._data;
+}
+
+
+/// <summary>
+/// Is sent by the server when: After the player requested to register his guild for the next castle siege.
+/// Causes reaction on client side: The client shows the result of the registration attempt.
+/// </summary>
+public readonly struct CastleSiegeRegistrationResponse
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeRegistrationResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeRegistrationResponse(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeRegistrationResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CastleSiegeRegistrationResponse(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xB2;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x01;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 13;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public byte Result
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the guild name.
+    /// </summary>
+    public string GuildName
+    {
+        get => this._data.Span.ExtractString(5, 8, System.Text.Encoding.UTF8);
+        set => this._data.Slice(5, 8).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeRegistrationResponse"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CastleSiegeRegistrationResponse(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CastleSiegeRegistrationResponse"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CastleSiegeRegistrationResponse packet) => packet._data;
+}
+
+
+/// <summary>
+/// Is sent by the server when: After the player requested to un-register his guild from the next castle siege.
+/// Causes reaction on client side: The client shows the result of the un-registration attempt.
+/// </summary>
+public readonly struct CastleSiegeUnregisterResponse
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeUnregisterResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeUnregisterResponse(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeUnregisterResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CastleSiegeUnregisterResponse(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xB2;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x02;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 14;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public byte Result
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the is giving up.
+    /// </summary>
+    public bool IsGivingUp
+    {
+        get => this._data.Span[5..].GetBoolean();
+        set => this._data.Span[5..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the guild name.
+    /// </summary>
+    public string GuildName
+    {
+        get => this._data.Span.ExtractString(6, 8, System.Text.Encoding.UTF8);
+        set => this._data.Slice(6, 8).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeUnregisterResponse"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CastleSiegeUnregisterResponse(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CastleSiegeUnregisterResponse"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CastleSiegeUnregisterResponse packet) => packet._data;
+}
+
+
+/// <summary>
+/// Is sent by the server when: After the player requested the current registration state of his guild.
+/// Causes reaction on client side: The client shows the current registration state including the number of submitted guild marks.
+/// </summary>
+public readonly struct CastleSiegeRegistrationStateResponse
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeRegistrationStateResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeRegistrationStateResponse(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeRegistrationStateResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CastleSiegeRegistrationStateResponse(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xB2;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x03;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 19;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public byte Result
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the guild name.
+    /// </summary>
+    public string GuildName
+    {
+        get => this._data.Span.ExtractString(5, 8, System.Text.Encoding.UTF8);
+        set => this._data.Slice(5, 8).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the guild mark count.
+    /// </summary>
+    public uint GuildMarkCount
+    {
+        get => ReadUInt32BigEndian(this._data.Span[13..]);
+        set => WriteUInt32BigEndian(this._data.Span[13..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the is giving up.
+    /// </summary>
+    public bool IsGivingUp
+    {
+        get => this._data.Span[17..].GetBoolean();
+        set => this._data.Span[17..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the registration rank.
+    /// </summary>
+    public byte RegistrationRank
+    {
+        get => this._data.Span[18];
+        set => this._data.Span[18] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeRegistrationStateResponse"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CastleSiegeRegistrationStateResponse(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CastleSiegeRegistrationStateResponse"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CastleSiegeRegistrationStateResponse packet) => packet._data;
+}
+
+
+/// <summary>
+/// Is sent by the server when: After the player submitted a guild mark for the castle siege registration.
+/// Causes reaction on client side: The client shows the updated guild mark count.
+/// </summary>
+public readonly struct CastleSiegeMarkRegistrationResponse
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeMarkRegistrationResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeMarkRegistrationResponse(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeMarkRegistrationResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CastleSiegeMarkRegistrationResponse(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xB2;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x04;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 17;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public byte Result
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the guild name.
+    /// </summary>
+    public string GuildName
+    {
+        get => this._data.Span.ExtractString(5, 8, System.Text.Encoding.UTF8);
+        set => this._data.Slice(5, 8).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the guild mark count.
+    /// </summary>
+    public uint GuildMarkCount
+    {
+        get => ReadUInt32BigEndian(this._data.Span[13..]);
+        set => WriteUInt32BigEndian(this._data.Span[13..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeMarkRegistrationResponse"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CastleSiegeMarkRegistrationResponse(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CastleSiegeMarkRegistrationResponse"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CastleSiegeMarkRegistrationResponse packet) => packet._data;
+}
+
+
+/// <summary>
+/// Is sent by the server when: After the player requested to buy a castle siege defense structure (gate or statue).
+/// Causes reaction on client side: The client shows the result of the buy request.
+/// </summary>
+public readonly struct CastleSiegeDefenseBuyResponse
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeDefenseBuyResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeDefenseBuyResponse(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeDefenseBuyResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CastleSiegeDefenseBuyResponse(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xB2;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x05;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 13;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public byte Result
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the npc number.
+    /// </summary>
+    public uint NpcNumber
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[5..]);
+        set => WriteUInt32LittleEndian(this._data.Span[5..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the npc index.
+    /// </summary>
+    public uint NpcIndex
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[9..]);
+        set => WriteUInt32LittleEndian(this._data.Span[9..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeDefenseBuyResponse"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CastleSiegeDefenseBuyResponse(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CastleSiegeDefenseBuyResponse"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CastleSiegeDefenseBuyResponse packet) => packet._data;
+}
+
+
+/// <summary>
+/// Is sent by the server when: After the player requested to repair a castle siege defense structure (gate or statue).
+/// Causes reaction on client side: The client shows the result of the repair request.
+/// </summary>
+public readonly struct CastleSiegeDefenseRepairResponse
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeDefenseRepairResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeDefenseRepairResponse(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeDefenseRepairResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CastleSiegeDefenseRepairResponse(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xB2;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x06;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 21;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public byte Result
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the npc number.
+    /// </summary>
+    public uint NpcNumber
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[5..]);
+        set => WriteUInt32LittleEndian(this._data.Span[5..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the npc index.
+    /// </summary>
+    public uint NpcIndex
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[9..]);
+        set => WriteUInt32LittleEndian(this._data.Span[9..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the current hp.
+    /// </summary>
+    public uint CurrentHp
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[13..]);
+        set => WriteUInt32LittleEndian(this._data.Span[13..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the max hp.
+    /// </summary>
+    public uint MaxHp
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[17..]);
+        set => WriteUInt32LittleEndian(this._data.Span[17..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeDefenseRepairResponse"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CastleSiegeDefenseRepairResponse(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CastleSiegeDefenseRepairResponse"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CastleSiegeDefenseRepairResponse packet) => packet._data;
+}
+
+
+/// <summary>
+/// Is sent by the server when: After the player requested to upgrade a castle siege defense structure (gate or statue).
+/// Causes reaction on client side: The client shows the result of the upgrade request and the new upgrade values.
+/// </summary>
+public readonly struct CastleSiegeDefenseUpgradeResponse
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeDefenseUpgradeResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeDefenseUpgradeResponse(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeDefenseUpgradeResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CastleSiegeDefenseUpgradeResponse(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xB2;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x07;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 21;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public byte Result
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the npc number.
+    /// </summary>
+    public uint NpcNumber
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[5..]);
+        set => WriteUInt32LittleEndian(this._data.Span[5..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the npc index.
+    /// </summary>
+    public uint NpcIndex
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[9..]);
+        set => WriteUInt32LittleEndian(this._data.Span[9..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the npc upgrade type.
+    /// </summary>
+    public uint NpcUpgradeType
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[13..]);
+        set => WriteUInt32LittleEndian(this._data.Span[13..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the npc upgrade value.
+    /// </summary>
+    public uint NpcUpgradeValue
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[17..]);
+        set => WriteUInt32LittleEndian(this._data.Span[17..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeDefenseUpgradeResponse"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CastleSiegeDefenseUpgradeResponse(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CastleSiegeDefenseUpgradeResponse"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CastleSiegeDefenseUpgradeResponse packet) => packet._data;
+}
+
+
+/// <summary>
+/// Is sent by the server when: After the guild master opened the castle npc to manage the castle taxes.
+/// Causes reaction on client side: The client shows the current tax configuration and treasury amount.
+/// </summary>
+public readonly struct CastleSiegeTaxInfoResponse
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeTaxInfoResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeTaxInfoResponse(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeTaxInfoResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CastleSiegeTaxInfoResponse(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xB2;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x08;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 15;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public byte Result
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the tax rate chaos machine.
+    /// </summary>
+    public byte TaxRateChaosMachine
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the tax rate normal.
+    /// </summary>
+    public byte TaxRateNormal
+    {
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the treasury.
+    /// </summary>
+    public ulong Treasury
+    {
+        get => ReadUInt64BigEndian(this._data.Span[7..]);
+        set => WriteUInt64BigEndian(this._data.Span[7..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeTaxInfoResponse"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CastleSiegeTaxInfoResponse(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CastleSiegeTaxInfoResponse"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CastleSiegeTaxInfoResponse packet) => packet._data;
+}
+
+
+/// <summary>
+/// Is sent by the server when: After the guild master changed the tax rate.
+/// Causes reaction on client side: The client shows the result of the tax rate change.
+/// </summary>
+public readonly struct CastleSiegeTaxChangeResponse
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeTaxChangeResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeTaxChangeResponse(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeTaxChangeResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CastleSiegeTaxChangeResponse(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xB2;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x09;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 10;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public byte Result
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the tax type.
+    /// </summary>
+    public CastleSiegeTaxType TaxType
+    {
+        get => (CastleSiegeTaxType)this._data.Span[5];
+        set => this._data.Span[5] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the percentage rate for shop and Chaos Machine taxes, or the entrance fee amount for the hunting zone.
+    /// </summary>
+    public uint TaxValue
+    {
+        get => ReadUInt32BigEndian(this._data.Span[6..]);
+        set => WriteUInt32BigEndian(this._data.Span[6..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeTaxChangeResponse"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CastleSiegeTaxChangeResponse(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CastleSiegeTaxChangeResponse"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CastleSiegeTaxChangeResponse packet) => packet._data;
+}
+
+
+/// <summary>
+/// Is sent by the server when: After the guild master requested to withdraw tax money from the castle treasury.
+/// Causes reaction on client side: The client shows the result of the withdrawal and the withdrawn amount.
+/// </summary>
+public readonly struct CastleSiegeTributeWithdrawResponse
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeTributeWithdrawResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeTributeWithdrawResponse(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeTributeWithdrawResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CastleSiegeTributeWithdrawResponse(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xB2;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x10;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 13;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public byte Result
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the money.
+    /// </summary>
+    public ulong Money
+    {
+        get => ReadUInt64BigEndian(this._data.Span[5..]);
+        set => WriteUInt64BigEndian(this._data.Span[5..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeTributeWithdrawResponse"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CastleSiegeTributeWithdrawResponse(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CastleSiegeTributeWithdrawResponse"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CastleSiegeTributeWithdrawResponse packet) => packet._data;
+}
+
+
+/// <summary>
+/// Is sent by the server when: After a player talks to the lever of a castle gate.
+/// Causes reaction on client side: The client opens the gate operation interface when access is allowed.
+/// </summary>
+public readonly struct CastleSiegeGateInterfaceResponse
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeGateInterfaceResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeGateInterfaceResponse(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeGateInterfaceResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CastleSiegeGateInterfaceResponse(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xB2;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x11;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 7;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public byte Result
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the gate index.
+    /// </summary>
+    public ushort GateIndex
+    {
+        get => ReadUInt16BigEndian(this._data.Span[5..]);
+        set => WriteUInt16BigEndian(this._data.Span[5..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeGateInterfaceResponse"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CastleSiegeGateInterfaceResponse(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CastleSiegeGateInterfaceResponse"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CastleSiegeGateInterfaceResponse packet) => packet._data;
+}
+
+
+/// <summary>
+/// Is sent by the server when: After a guild member of the castle owner requested to toggle a castle gate.
+/// Causes reaction on client side: The client shows the result of the gate toggle operation.
+/// </summary>
+public readonly struct CastleSiegeGateOperateResponse
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeGateOperateResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeGateOperateResponse(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeGateOperateResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CastleSiegeGateOperateResponse(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xB2;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x12;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 8;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public byte Result
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the is open.
+    /// </summary>
+    public bool IsOpen
+    {
+        get => this._data.Span[5..].GetBoolean();
+        set => this._data.Span[5..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the gate index.
+    /// </summary>
+    public ushort GateIndex
+    {
+        get => ReadUInt16BigEndian(this._data.Span[6..]);
+        set => WriteUInt16BigEndian(this._data.Span[6..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeGateOperateResponse"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CastleSiegeGateOperateResponse(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CastleSiegeGateOperateResponse"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CastleSiegeGateOperateResponse packet) => packet._data;
+}
+
+
+/// <summary>
+/// Is sent by the server when: A castle gate is opened or closed.
+/// Causes reaction on client side: The client updates the castle gate animation and collision state.
+/// </summary>
+public readonly struct CastleSiegeGateStateNotification
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeGateStateNotification"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeGateStateNotification(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeGateStateNotification"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CastleSiegeGateStateNotification(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xB2;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x13;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 7;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the is open.
+    /// </summary>
+    public bool IsOpen
+    {
+        get => this._data.Span[4..].GetBoolean();
+        set => this._data.Span[4..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the gate index.
+    /// </summary>
+    public ushort GateIndex
+    {
+        get => ReadUInt16BigEndian(this._data.Span[5..]);
+        set => WriteUInt16BigEndian(this._data.Span[5..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeGateStateNotification"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CastleSiegeGateStateNotification(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CastleSiegeGateStateNotification"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CastleSiegeGateStateNotification packet) => packet._data;
+}
+
+
+/// <summary>
+/// Is sent by the server when: A player starts or stops occupying a castle crown switch.
+/// Causes reaction on client side: The client updates the crown switch interaction state.
+/// </summary>
+public readonly struct CastleSiegeCrownSwitchState
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeCrownSwitchState"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeCrownSwitchState(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeCrownSwitchState"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CastleSiegeCrownSwitchState(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xB2;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x14;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 9;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the switch index.
+    /// </summary>
+    public ushort SwitchIndex
+    {
+        get => ReadUInt16BigEndian(this._data.Span[4..]);
+        set => WriteUInt16BigEndian(this._data.Span[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the player index.
+    /// </summary>
+    public ushort PlayerIndex
+    {
+        get => ReadUInt16BigEndian(this._data.Span[6..]);
+        set => WriteUInt16BigEndian(this._data.Span[6..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the state.
+    /// </summary>
+    public CastleSiegeCrownSwitchStateType State
+    {
+        get => (CastleSiegeCrownSwitchStateType)this._data.Span[8];
+        set => this._data.Span[8] = (byte)value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeCrownSwitchState"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CastleSiegeCrownSwitchState(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CastleSiegeCrownSwitchState"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CastleSiegeCrownSwitchState packet) => packet._data;
+}
+
+
+/// <summary>
+/// Is sent by the server when: The server updates the access state of the castle crown during the siege.
+/// Causes reaction on client side: The client updates the crown access state and accumulated time display.
+/// </summary>
+public readonly struct CastleSiegeCrownAccessState
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeCrownAccessState"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeCrownAccessState(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeCrownAccessState"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CastleSiegeCrownAccessState(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xB2;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x15;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 9;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the state.
+    /// </summary>
+    public CastleSiegeCrownAccessStateType State
+    {
+        get => (CastleSiegeCrownAccessStateType)this._data.Span[4];
+        set => this._data.Span[4] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the accumulated time ms.
+    /// </summary>
+    public uint AccumulatedTimeMs
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[5..]);
+        set => WriteUInt32LittleEndian(this._data.Span[5..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeCrownAccessState"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CastleSiegeCrownAccessState(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CastleSiegeCrownAccessState"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CastleSiegeCrownAccessState packet) => packet._data;
+}
+
+
+/// <summary>
+/// Is sent by the server when: The server updates the state of the castle crown during the siege.
+/// Causes reaction on client side: The client updates the crown state display.
+/// </summary>
+public readonly struct CastleSiegeCrownStateUpdate
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeCrownStateUpdate"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeCrownStateUpdate(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeCrownStateUpdate"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CastleSiegeCrownStateUpdate(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xB2;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x16;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 5;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the state.
+    /// </summary>
+    public CastleSiegeCrownState State
+    {
+        get => (CastleSiegeCrownState)this._data.Span[4];
+        set => this._data.Span[4] = (byte)value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeCrownStateUpdate"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CastleSiegeCrownStateUpdate(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CastleSiegeCrownStateUpdate"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CastleSiegeCrownStateUpdate packet) => packet._data;
+}
+
+
+/// <summary>
+/// Is sent by the server when: The server notifies all players that the castle siege battle has started or ended.
+/// Causes reaction on client side: The client updates the siege state accordingly.
+/// </summary>
+public readonly struct CastleSiegeBattleStartEnd
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeBattleStartEnd"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeBattleStartEnd(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeBattleStartEnd"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CastleSiegeBattleStartEnd(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xB2;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x17;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 5;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the is started.
+    /// </summary>
+    public bool IsStarted
+    {
+        get => this._data.Span[4..].GetBoolean();
+        set => this._data.Span[4..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeBattleStartEnd"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CastleSiegeBattleStartEnd(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CastleSiegeBattleStartEnd"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CastleSiegeBattleStartEnd packet) => packet._data;
+}
+
+
+/// <summary>
+/// Is sent by the server when: A guild starts accessing the crown or successfully takes ownership of the castle.
+/// Causes reaction on client side: The client announces the crown access or castle ownership change.
+/// </summary>
+public readonly struct CastleSiegeBattleProcess
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeBattleProcess"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeBattleProcess(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeBattleProcess"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CastleSiegeBattleProcess(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xB2;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x18;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 13;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the state.
+    /// </summary>
+    public CastleSiegeBattleProcessState State
+    {
+        get => (CastleSiegeBattleProcessState)this._data.Span[4];
+        set => this._data.Span[4] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the guild name.
+    /// </summary>
+    public string GuildName
+    {
+        get => this._data.Span.ExtractString(5, 8, System.Text.Encoding.UTF8);
+        set => this._data.Slice(5, 8).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeBattleProcess"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CastleSiegeBattleProcess(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CastleSiegeBattleProcess"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CastleSiegeBattleProcess packet) => packet._data;
+}
+
+
+/// <summary>
+/// Is sent by the server when: The server notifies the player of which siege side (attacker/defender) they are on.
+/// Causes reaction on client side: The client updates the player regiment and Castle Siege mini-map accordingly.
+/// </summary>
+public readonly struct CastleSiegeJoinSideNotification
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeJoinSideNotification"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeJoinSideNotification(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeJoinSideNotification"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CastleSiegeJoinSideNotification(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xB2;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x19;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 5;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the side.
+    /// </summary>
+    public CastleSiegeJoinSide Side
+    {
+        get => (CastleSiegeJoinSide)this._data.Span[4];
+        set => this._data.Span[4] = (byte)value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeJoinSideNotification"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CastleSiegeJoinSideNotification(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CastleSiegeJoinSideNotification"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CastleSiegeJoinSideNotification packet) => packet._data;
+}
+
+
+/// <summary>
+/// Is sent by the server when: The castle owner changes a server-wide chaos machine or store tax rate.
+/// Causes reaction on client side: The client updates the applicable tax rate.
+/// </summary>
+public readonly struct CastleSiegeTaxRateNotification
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeTaxRateNotification"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeTaxRateNotification(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeTaxRateNotification"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CastleSiegeTaxRateNotification(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xB2;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x1A;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 6;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the tax type.
+    /// </summary>
+    public CastleSiegeTaxType TaxType
+    {
+        get => (CastleSiegeTaxType)this._data.Span[4];
+        set => this._data.Span[4] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the tax rate.
+    /// </summary>
+    public byte TaxRate
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeTaxRateNotification"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CastleSiegeTaxRateNotification(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CastleSiegeTaxRateNotification"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CastleSiegeTaxRateNotification packet) => packet._data;
+}
+
+
+/// <summary>
+/// Is sent by the server when: The server responds to a Castle Siege mini-map request.
+/// Causes reaction on client side: The client opens the mini map when the request was accepted.
+/// </summary>
+public readonly struct CastleSiegeMiniMapResponse
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeMiniMapResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeMiniMapResponse(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeMiniMapResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CastleSiegeMiniMapResponse(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xB2;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x1B;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 5;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result code. The client currently ignores it; historically documented values are not yet verified.
+    /// </summary>
+    public byte Result
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeMiniMapResponse"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CastleSiegeMiniMapResponse(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CastleSiegeMiniMapResponse"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CastleSiegeMiniMapResponse packet) => packet._data;
+}
+
+
+/// <summary>
+/// Is sent by the server when: An alliance master sends a command during the Castle Siege battle.
+/// Causes reaction on client side: The client shows the command on the mini map.
+/// </summary>
+public readonly struct CastleSiegeGuildCommand
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeGuildCommand"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeGuildCommand(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeGuildCommand"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CastleSiegeGuildCommand(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xB2;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x1D;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 8;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets team number from 0 to 7.
+    /// </summary>
+    public byte Team
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the position x.
+    /// </summary>
+    public byte PositionX
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the position y.
+    /// </summary>
+    public byte PositionY
+    {
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the command.
+    /// </summary>
+    public CastleSiegeGuildCommandType Command
+    {
+        get => (CastleSiegeGuildCommandType)this._data.Span[7];
+        set => this._data.Span[7] = (byte)value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeGuildCommand"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CastleSiegeGuildCommand(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CastleSiegeGuildCommand"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CastleSiegeGuildCommand packet) => packet._data;
+}
+
+
+/// <summary>
+/// Is sent by the server when: The server sends the remaining Castle Siege battle time.
+/// Causes reaction on client side: The client updates the Castle Siege battle timer.
+/// </summary>
+public readonly struct CastleSiegeRemainingTime
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeRemainingTime"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeRemainingTime(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeRemainingTime"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CastleSiegeRemainingTime(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xB2;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x1E;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 6;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the hour.
+    /// </summary>
+    public byte Hour
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the minute.
+    /// </summary>
+    public byte Minute
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeRemainingTime"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CastleSiegeRemainingTime(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CastleSiegeRemainingTime"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CastleSiegeRemainingTime packet) => packet._data;
+}
+
+
+/// <summary>
+/// Is sent by the server when: The castle owner requests to change public access to the Castle Siege hunting zone.
+/// Causes reaction on client side: The client updates the hunting-zone access setting or shows an error.
+/// </summary>
+public readonly struct CastleSiegeHuntingZoneEntranceSettingResponse
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeHuntingZoneEntranceSettingResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeHuntingZoneEntranceSettingResponse(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeHuntingZoneEntranceSettingResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CastleSiegeHuntingZoneEntranceSettingResponse(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xB2;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x1F;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 6;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public byte Result
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the is public.
+    /// </summary>
+    public bool IsPublic
+    {
+        get => this._data.Span[5..].GetBoolean();
+        set => this._data.Span[5..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeHuntingZoneEntranceSettingResponse"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CastleSiegeHuntingZoneEntranceSettingResponse(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CastleSiegeHuntingZoneEntranceSettingResponse"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CastleSiegeHuntingZoneEntranceSettingResponse packet) => packet._data;
+}
+
+
+/// <summary>
+/// Is sent by the server when: The server sends information about a Castle Siege crown switch.
+/// Causes reaction on client side: The client updates the crown switch occupation display.
+/// </summary>
+public readonly struct CastleSiegeSwitchInfo
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeSwitchInfo"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeSwitchInfo(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeSwitchInfo"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CastleSiegeSwitchInfo(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xB2;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x20;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 27;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the switch index.
+    /// </summary>
+    public ushort SwitchIndex
+    {
+        get => ReadUInt16BigEndian(this._data.Span[4..]);
+        set => WriteUInt16BigEndian(this._data.Span[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the is occupied.
+    /// </summary>
+    public bool IsOccupied
+    {
+        get => this._data.Span[6..].GetBoolean();
+        set => this._data.Span[6..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the join side.
+    /// </summary>
+    public CastleSiegeJoinSide JoinSide
+    {
+        get => (CastleSiegeJoinSide)this._data.Span[7];
+        set => this._data.Span[7] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the guild name.
+    /// </summary>
+    public string GuildName
+    {
+        get => this._data.Span.ExtractString(8, 8, System.Text.Encoding.UTF8);
+        set => this._data.Slice(8, 8).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the user name.
+    /// </summary>
+    public string UserName
+    {
+        get => this._data.Span.ExtractString(16, 11, System.Text.Encoding.UTF8);
+        set => this._data.Slice(16, 11).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeSwitchInfo"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CastleSiegeSwitchInfo(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CastleSiegeSwitchInfo"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CastleSiegeSwitchInfo packet) => packet._data;
+}
+
+
+/// <summary>
+/// Is sent by the server when: After the guild master requested the list of all castle siege statues and gates.
+/// Causes reaction on client side: The client shows the list of castle siege NPCs with their current status.
+/// </summary>
+public readonly struct CastleSiegeNpcList
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeNpcList"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeNpcList(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeNpcList"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CastleSiegeNpcList(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)data.Length;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xB3;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2Header Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public byte Result
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the npc count.
+    /// </summary>
+    public uint NpcCount
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[5..]);
+        set => WriteUInt32LittleEndian(this._data.Span[5..], value);
+    }
+
+    /// <summary>
+    /// Gets the <see cref="CastleSiegeNpcInfo"/> of the specified index.
+    /// </summary>
+        public CastleSiegeNpcInfo this[int index] => new (this._data.Slice(9 + index * CastleSiegeNpcInfo.Length));
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeNpcList"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CastleSiegeNpcList(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CastleSiegeNpcList"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CastleSiegeNpcList packet) => packet._data;
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="CastleSiegeNpcInfo"/>.
+    /// </summary>
+    /// <param name="npcListCount">The count of <see cref="CastleSiegeNpcInfo"/> from which the size will be calculated.</param>
+
+    public static int GetRequiredSize(int npcListCount) => npcListCount * CastleSiegeNpcInfo.Length + 9;
+
+
+/// <summary>
+/// Information about one castle siege NPC (gate or statue)..
+/// </summary>
+public readonly struct CastleSiegeNpcInfo
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeNpcInfo"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeNpcInfo(Memory<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 27;
+
+    /// <summary>
+    /// Gets or sets the npc number.
+    /// </summary>
+    public uint NpcNumber
+    {
+        get => ReadUInt32LittleEndian(this._data.Span);
+        set => WriteUInt32LittleEndian(this._data.Span, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the npc index.
+    /// </summary>
+    public uint NpcIndex
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[4..]);
+        set => WriteUInt32LittleEndian(this._data.Span[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the defense upgrade level.
+    /// </summary>
+    public uint DefenseUpgradeLevel
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[8..]);
+        set => WriteUInt32LittleEndian(this._data.Span[8..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the regeneration level.
+    /// </summary>
+    public uint RegenerationLevel
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[12..]);
+        set => WriteUInt32LittleEndian(this._data.Span[12..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the max hp.
+    /// </summary>
+    public uint MaxHp
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[16..]);
+        set => WriteUInt32LittleEndian(this._data.Span[16..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the current hp.
+    /// </summary>
+    public uint CurrentHp
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[20..]);
+        set => WriteUInt32LittleEndian(this._data.Span[20..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the position x.
+    /// </summary>
+    public byte PositionX
+    {
+        get => this._data.Span[24];
+        set => this._data.Span[24] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the position y.
+    /// </summary>
+    public byte PositionY
+    {
+        get => this._data.Span[25];
+        set => this._data.Span[25] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the is alive.
+    /// </summary>
+    public bool IsAlive
+    {
+        get => this._data.Span[26..].GetBoolean();
+        set => this._data.Span[26..].SetBoolean(value);
+    }
+}
+}
+
+
+/// <summary>
+/// Is sent by the server when: After the guild master requested the list of guilds registered for the next siege.
+/// Causes reaction on client side: The client shows the list of registered guilds and their mark counts.
+/// </summary>
+public readonly struct CastleSiegeRegisteredGuildList
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeRegisteredGuildList"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeRegisteredGuildList(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeRegisteredGuildList"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CastleSiegeRegisteredGuildList(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)data.Length;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xB4;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2Header Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public byte Result
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the guild count.
+    /// </summary>
+    public uint GuildCount
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[5..]);
+        set => WriteUInt32LittleEndian(this._data.Span[5..], value);
+    }
+
+    /// <summary>
+    /// Gets the <see cref="RegisteredGuildEntry"/> of the specified index.
+    /// </summary>
+        public RegisteredGuildEntry this[int index] => new (this._data.Slice(9 + index * RegisteredGuildEntry.Length));
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeRegisteredGuildList"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CastleSiegeRegisteredGuildList(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CastleSiegeRegisteredGuildList"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CastleSiegeRegisteredGuildList packet) => packet._data;
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="RegisteredGuildEntry"/>.
+    /// </summary>
+    /// <param name="guildsCount">The count of <see cref="RegisteredGuildEntry"/> from which the size will be calculated.</param>
+
+    public static int GetRequiredSize(int guildsCount) => guildsCount * RegisteredGuildEntry.Length + 9;
+
+
+/// <summary>
+/// Information about one guild registered for the next castle siege..
+/// </summary>
+public readonly struct RegisteredGuildEntry
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RegisteredGuildEntry"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public RegisteredGuildEntry(Memory<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 14;
+
+    /// <summary>
+    /// Gets or sets the guild name.
+    /// </summary>
+    public string GuildName
+    {
+        get => this._data.Span.ExtractString(0, 8, System.Text.Encoding.UTF8);
+        set => this._data.Slice(0, 8).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the guild mark count.
+    /// </summary>
+    public uint GuildMarkCount
+    {
+        get => ReadUInt32BigEndian(this._data.Span[8..]);
+        set => WriteUInt32BigEndian(this._data.Span[8..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the is giving up.
+    /// </summary>
+    public bool IsGivingUp
+    {
+        get => this._data.Span[12..].GetBoolean();
+        set => this._data.Span[12..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the sequence number.
+    /// </summary>
+    public byte SequenceNumber
+    {
+        get => this._data.Span[13];
+        set => this._data.Span[13] = value;
+    }
+}
+}
+
+
+/// <summary>
+/// Is sent by the server when: After the guild master requested the list of all guilds in the current castle siege.
+/// Causes reaction on client side: The client shows the list of guilds participating in the castle siege.
+/// </summary>
+public readonly struct CastleSiegeGuildList
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeGuildList"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeGuildList(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeGuildList"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CastleSiegeGuildList(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)data.Length;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xB5;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2Header Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public byte Result
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the guild count.
+    /// </summary>
+    public uint GuildCount
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[5..]);
+        set => WriteUInt32LittleEndian(this._data.Span[5..], value);
+    }
+
+    /// <summary>
+    /// Gets the <see cref="CastleSiegeGuildEntry"/> of the specified index.
+    /// </summary>
+        public CastleSiegeGuildEntry this[int index] => new (this._data.Slice(9 + index * CastleSiegeGuildEntry.Length));
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeGuildList"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CastleSiegeGuildList(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CastleSiegeGuildList"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CastleSiegeGuildList packet) => packet._data;
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="CastleSiegeGuildEntry"/>.
+    /// </summary>
+    /// <param name="guildsCount">The count of <see cref="CastleSiegeGuildEntry"/> from which the size will be calculated.</param>
+
+    public static int GetRequiredSize(int guildsCount) => guildsCount * CastleSiegeGuildEntry.Length + 9;
+
+
+/// <summary>
+/// Information about one guild in the castle siege..
+/// </summary>
+public readonly struct CastleSiegeGuildEntry
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeGuildEntry"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeGuildEntry(Memory<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 14;
+
+    /// <summary>
+    /// Gets or sets the side.
+    /// </summary>
+    public CastleSiegeJoinSide Side
+    {
+        get => (CastleSiegeJoinSide)this._data.Span[0];
+        set => this._data.Span[0] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the is involved.
+    /// </summary>
+    public bool IsInvolved
+    {
+        get => this._data.Span[1..].GetBoolean();
+        set => this._data.Span[1..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the guild name.
+    /// </summary>
+    public string GuildName
+    {
+        get => this._data.Span.ExtractString(2, 8, System.Text.Encoding.UTF8);
+        set => this._data.Slice(2, 8).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the score.
+    /// </summary>
+    public uint Score
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[10..]);
+        set => WriteUInt32LittleEndian(this._data.Span[10..], value);
+    }
+}
+}
+
+
+/// <summary>
+/// Is sent by the server when: The server sends same-side player positions to a Castle Siege mini-map requester.
+/// Causes reaction on client side: The client updates the mini map with the player positions.
+/// </summary>
+public readonly struct CastleSiegeMiniMapPlayerPositions
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeMiniMapPlayerPositions"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeMiniMapPlayerPositions(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeMiniMapPlayerPositions"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CastleSiegeMiniMapPlayerPositions(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)data.Length;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xB6;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2Header Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the player count.
+    /// </summary>
+    public uint PlayerCount
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[4..]);
+        set => WriteUInt32LittleEndian(this._data.Span[4..], value);
+    }
+
+    /// <summary>
+    /// Gets the <see cref="MiniMapPlayerPosition"/> of the specified index.
+    /// </summary>
+        public MiniMapPlayerPosition this[int index] => new (this._data.Slice(8 + index * MiniMapPlayerPosition.Length));
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeMiniMapPlayerPositions"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CastleSiegeMiniMapPlayerPositions(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CastleSiegeMiniMapPlayerPositions"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CastleSiegeMiniMapPlayerPositions packet) => packet._data;
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="MiniMapPlayerPosition"/>.
+    /// </summary>
+    /// <param name="playersCount">The count of <see cref="MiniMapPlayerPosition"/> from which the size will be calculated.</param>
+
+    public static int GetRequiredSize(int playersCount) => playersCount * MiniMapPlayerPosition.Length + 8;
+
+
+/// <summary>
+/// The position of one player on the mini map..
+/// </summary>
+public readonly struct MiniMapPlayerPosition
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MiniMapPlayerPosition"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public MiniMapPlayerPosition(Memory<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 2;
+
+    /// <summary>
+    /// Gets or sets the position x.
+    /// </summary>
+    public byte PositionX
+    {
+        get => this._data.Span[0];
+        set => this._data.Span[0] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the position y.
+    /// </summary>
+    public byte PositionY
+    {
+        get => this._data.Span[1];
+        set => this._data.Span[1] = value;
+    }
+}
+}
+
+
+/// <summary>
+/// Is sent by the server when: The server sends the siege machine interface to a player who is operating the machine.
+/// Causes reaction on client side: The client shows the siege machine operation interface.
+/// </summary>
+public readonly struct CastleSiegeMachineInterface
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeMachineInterface"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeMachineInterface(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeMachineInterface"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CastleSiegeMachineInterface(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xB7;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x00;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 8;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public byte Result
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the machine type.
+    /// </summary>
+    public CastleSiegeMachineType MachineType
+    {
+        get => (CastleSiegeMachineType)this._data.Span[5];
+        set => this._data.Span[5] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the npc index.
+    /// </summary>
+    public ushort NpcIndex
+    {
+        get => ReadUInt16BigEndian(this._data.Span[6..]);
+        set => WriteUInt16BigEndian(this._data.Span[6..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeMachineInterface"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CastleSiegeMachineInterface(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CastleSiegeMachineInterface"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CastleSiegeMachineInterface packet) => packet._data;
+}
+
+
+/// <summary>
+/// Is sent by the server when: After the player fired a siege machine (catapult).
+/// Causes reaction on client side: The client shows the catapult animation toward the target area.
+/// </summary>
+public readonly struct CastleSiegeMachineUseResult
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeMachineUseResult"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeMachineUseResult(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeMachineUseResult"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CastleSiegeMachineUseResult(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xB7;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x01;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 10;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public byte Result
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the npc index.
+    /// </summary>
+    public ushort NpcIndex
+    {
+        get => ReadUInt16BigEndian(this._data.Span[5..]);
+        set => WriteUInt16BigEndian(this._data.Span[5..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the machine type.
+    /// </summary>
+    public CastleSiegeMachineType MachineType
+    {
+        get => (CastleSiegeMachineType)this._data.Span[7];
+        set => this._data.Span[7] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the target x.
+    /// </summary>
+    public byte TargetX
+    {
+        get => this._data.Span[8];
+        set => this._data.Span[8] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the target y.
+    /// </summary>
+    public byte TargetY
+    {
+        get => this._data.Span[9];
+        set => this._data.Span[9] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeMachineUseResult"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CastleSiegeMachineUseResult(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CastleSiegeMachineUseResult"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CastleSiegeMachineUseResult packet) => packet._data;
+}
+
+
+/// <summary>
+/// Is sent by the server when: The server notifies the player of the impact region of a siege machine.
+/// Causes reaction on client side: The client shows the impact area effect.
+/// </summary>
+public readonly struct CastleSiegeMachineRegionNotify
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeMachineRegionNotify"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeMachineRegionNotify(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeMachineRegionNotify"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CastleSiegeMachineRegionNotify(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xB7;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x02;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 7;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the machine type.
+    /// </summary>
+    public CastleSiegeMachineType MachineType
+    {
+        get => (CastleSiegeMachineType)this._data.Span[4];
+        set => this._data.Span[4] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the target x.
+    /// </summary>
+    public byte TargetX
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the target y.
+    /// </summary>
+    public byte TargetY
+    {
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeMachineRegionNotify"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CastleSiegeMachineRegionNotify(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CastleSiegeMachineRegionNotify"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CastleSiegeMachineRegionNotify packet) => packet._data;
+}
+
+
+/// <summary>
+/// Is sent by the server when: The creation stage of a Castle Siege Life Stone advances.
+/// Causes reaction on client side: The client updates the Life Stone construction animation.
+/// </summary>
+public readonly struct CastleSiegeLifeStoneBuildTime
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeLifeStoneBuildTime"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeLifeStoneBuildTime(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeLifeStoneBuildTime"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CastleSiegeLifeStoneBuildTime(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xB9;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x01;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 7;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the npc index.
+    /// </summary>
+    public ushort NpcIndex
+    {
+        get => ReadUInt16BigEndian(this._data.Span[4..]);
+        set => WriteUInt16BigEndian(this._data.Span[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the creation stage of the Life Stone.
+    /// </summary>
+    public byte BuildTime
+    {
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeLifeStoneBuildTime"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CastleSiegeLifeStoneBuildTime(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CastleSiegeLifeStoneBuildTime"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CastleSiegeLifeStoneBuildTime packet) => packet._data;
+}
+
+
+/// <summary>
+/// Is sent by the server when: After the client requested the guild logo of the current castle owner.
+/// Causes reaction on client side: The client shows the castle owner guild logo.
+/// </summary>
+public readonly struct CastleSiegeOwnerLogo
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeOwnerLogo"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeOwnerLogo(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeOwnerLogo"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CastleSiegeOwnerLogo(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xB9;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x02;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 36;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the logo.
+    /// </summary>
+    public Span<byte> Logo
+    {
+        get => this._data.Slice(4, 32).Span;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeOwnerLogo"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CastleSiegeOwnerLogo(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CastleSiegeOwnerLogo"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CastleSiegeOwnerLogo packet) => packet._data;
+}
+
+
+/// <summary>
+/// Is sent by the server when: The server sends information about the hunting zone guard configuration.
+/// Causes reaction on client side: The client shows the hunting zone entrance configuration.
+/// </summary>
+public readonly struct CastleSiegeHuntingZoneGuardInfo
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeHuntingZoneGuardInfo"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeHuntingZoneGuardInfo(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeHuntingZoneGuardInfo"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CastleSiegeHuntingZoneGuardInfo(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xB9;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x03;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 18;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public byte Result
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the is enabled.
+    /// </summary>
+    public bool IsEnabled
+    {
+        get => this._data.Span[5..].GetBoolean();
+        set => this._data.Span[5..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the current price.
+    /// </summary>
+    public uint CurrentPrice
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[6..]);
+        set => WriteUInt32LittleEndian(this._data.Span[6..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the max price.
+    /// </summary>
+    public uint MaxPrice
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[10..]);
+        set => WriteUInt32LittleEndian(this._data.Span[10..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the unit price.
+    /// </summary>
+    public uint UnitPrice
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[14..]);
+        set => WriteUInt32LittleEndian(this._data.Span[14..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeHuntingZoneGuardInfo"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CastleSiegeHuntingZoneGuardInfo(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CastleSiegeHuntingZoneGuardInfo"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CastleSiegeHuntingZoneGuardInfo packet) => packet._data;
+}
+
+
+/// <summary>
+/// Is sent by the server when: A player requests to enter the Castle Siege hunting zone.
+/// Causes reaction on client side: The client closes the dialog on success or shows an error.
+/// </summary>
+public readonly struct CastleSiegeHuntingZoneEnterResponse
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeHuntingZoneEnterResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeHuntingZoneEnterResponse(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeHuntingZoneEnterResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CastleSiegeHuntingZoneEnterResponse(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xB9;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x05;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 5;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public byte Result
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeHuntingZoneEnterResponse"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CastleSiegeHuntingZoneEnterResponse(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CastleSiegeHuntingZoneEnterResponse"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CastleSiegeHuntingZoneEnterResponse packet) => packet._data;
+}
+
+
+/// <summary>
+/// Is sent by the server when: The server sends alive gate and Guardian Statue positions to a Castle Siege mini-map requester.
+/// Causes reaction on client side: The client updates the mini map with the siege-NPC positions.
+/// </summary>
+public readonly struct CastleSiegeMiniMapNpcPositions
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeMiniMapNpcPositions"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeMiniMapNpcPositions(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeMiniMapNpcPositions"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CastleSiegeMiniMapNpcPositions(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)data.Length;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xBB;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2Header Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the npc count.
+    /// </summary>
+    public byte NpcCount
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets the <see cref="MiniMapNpcPosition"/> of the specified index.
+    /// </summary>
+        public MiniMapNpcPosition this[int index] => new (this._data.Slice(5 + index * MiniMapNpcPosition.Length));
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeMiniMapNpcPositions"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CastleSiegeMiniMapNpcPositions(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CastleSiegeMiniMapNpcPositions"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CastleSiegeMiniMapNpcPositions packet) => packet._data;
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="MiniMapNpcPosition"/>.
+    /// </summary>
+    /// <param name="npcsCount">The count of <see cref="MiniMapNpcPosition"/> from which the size will be calculated.</param>
+
+    public static int GetRequiredSize(int npcsCount) => npcsCount * MiniMapNpcPosition.Length + 5;
+
+
+/// <summary>
+/// The position of one siege NPC on the mini map..
+/// </summary>
+public readonly struct MiniMapNpcPosition
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MiniMapNpcPosition"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public MiniMapNpcPosition(Memory<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 3;
+
+    /// <summary>
+    /// Gets or sets the npc type.
+    /// </summary>
+    public CastleSiegeMiniMapNpcType NpcType
+    {
+        get => (CastleSiegeMiniMapNpcType)this._data.Span[0];
+        set => this._data.Span[0] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the position x.
+    /// </summary>
+    public byte PositionX
+    {
+        get => this._data.Span[1];
+        set => this._data.Span[1] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the position y.
+    /// </summary>
+    public byte PositionY
+    {
+        get => this._data.Span[2];
+        set => this._data.Span[2] = value;
+    }
+}
+}
     /// <summary>
     /// Defines the role of a guild member.
     /// </summary>
@@ -31235,5 +35829,281 @@ public readonly struct MapEventState
         /// White color.
         /// </summary>
             White = 7,
+    }
+
+    /// <summary>
+    /// The kind of value which a chat command parameter expects.
+    /// </summary>
+    public enum ChatCommandParameterType
+    {
+        /// <summary>
+        /// The parameter expects a text.
+        /// </summary>
+            Text = 0,
+
+        /// <summary>
+        /// The parameter expects a number.
+        /// </summary>
+            Number = 1,
+
+        /// <summary>
+        /// The parameter expects a 0 or a 1.
+        /// </summary>
+            Boolean = 2,
+    }
+
+    /// <summary>
+    /// Defines the scheduled state of the Castle Siege event.
+    /// </summary>
+    public enum CastleSiegeState
+    {
+        /// <summary>
+        /// The first idle period.
+        /// </summary>
+            Idle1 = 0,
+
+        /// <summary>
+        /// Guild registration is open.
+        /// </summary>
+            RegisterGuild = 1,
+
+        /// <summary>
+        /// The second idle period.
+        /// </summary>
+            Idle2 = 2,
+
+        /// <summary>
+        /// Sign of Lord registration is open.
+        /// </summary>
+            RegisterMark = 3,
+
+        /// <summary>
+        /// The third idle period.
+        /// </summary>
+            Idle3 = 4,
+
+        /// <summary>
+        /// The selected participants are announced.
+        /// </summary>
+            Notify = 5,
+
+        /// <summary>
+        /// The event is preparing to start.
+        /// </summary>
+            Ready = 6,
+
+        /// <summary>
+        /// The siege battle is running.
+        /// </summary>
+            Start = 7,
+
+        /// <summary>
+        /// The siege battle has ended.
+        /// </summary>
+            End = 8,
+
+        /// <summary>
+        /// The current siege cycle is ending.
+        /// </summary>
+            EndCycle = 9,
+    }
+
+    /// <summary>
+    /// Defines the castle tax or fee being changed.
+    /// </summary>
+    public enum CastleSiegeTaxType
+    {
+        /// <summary>
+        /// No tax type is selected.
+        /// </summary>
+            Undefined = 0,
+
+        /// <summary>
+        /// The Chaos Machine tax rate.
+        /// </summary>
+            ChaosMachine = 1,
+
+        /// <summary>
+        /// The NPC store tax rate.
+        /// </summary>
+            Store = 2,
+
+        /// <summary>
+        /// The hunting-zone entrance fee.
+        /// </summary>
+            HuntingZoneEntranceFee = 3,
+    }
+
+    /// <summary>
+    /// Defines the interaction state of a crown switch.
+    /// </summary>
+    public enum CastleSiegeCrownSwitchStateType
+    {
+        /// <summary>
+        /// The switch is not occupied.
+        /// </summary>
+            Released = 0,
+
+        /// <summary>
+        /// The current player occupies the switch.
+        /// </summary>
+            OccupiedByCurrentPlayer = 1,
+
+        /// <summary>
+        /// Another player occupies the switch.
+        /// </summary>
+            OccupiedByOtherPlayer = 2,
+    }
+
+    /// <summary>
+    /// Defines the result or progress state of a crown-access attempt.
+    /// </summary>
+    public enum CastleSiegeCrownAccessStateType
+    {
+        /// <summary>
+        /// Crown registration has started.
+        /// </summary>
+            Started = 0,
+
+        /// <summary>
+        /// Crown registration succeeded.
+        /// </summary>
+            Succeeded = 1,
+
+        /// <summary>
+        /// Crown registration failed.
+        /// </summary>
+            Failed = 2,
+
+        /// <summary>
+        /// Another player is accessing the crown.
+        /// </summary>
+            OccupiedByOtherPlayer = 3,
+
+        /// <summary>
+        /// A player from another siege side is accessing the crown.
+        /// </summary>
+            OccupiedByOtherSide = 4,
+    }
+
+    /// <summary>
+    /// Defines the availability of the castle crown.
+    /// </summary>
+    public enum CastleSiegeCrownState
+    {
+        /// <summary>
+        /// The crown is accessible.
+        /// </summary>
+            Accessible = 0,
+
+        /// <summary>
+        /// The crown is protected.
+        /// </summary>
+            Protected = 1,
+
+        /// <summary>
+        /// A guild successfully registered the crown.
+        /// </summary>
+            RegistrationSucceeded = 2,
+    }
+
+    /// <summary>
+    /// Defines a public Castle Siege battle-process announcement.
+    /// </summary>
+    public enum CastleSiegeBattleProcessState
+    {
+        /// <summary>
+        /// A guild started registering the crown.
+        /// </summary>
+            CrownRegistrationStarted = 0,
+
+        /// <summary>
+        /// A guild successfully registered the crown.
+        /// </summary>
+            CrownRegistrationSucceeded = 1,
+    }
+
+    /// <summary>
+    /// Defines a participant's side in the Castle Siege battle.
+    /// </summary>
+    public enum CastleSiegeJoinSide
+    {
+        /// <summary>
+        /// The participant does not belong to a siege side.
+        /// </summary>
+            None = 0,
+
+        /// <summary>
+        /// The defending alliance.
+        /// </summary>
+            Defense = 1,
+
+        /// <summary>
+        /// The first attacking alliance.
+        /// </summary>
+            Attack1 = 2,
+
+        /// <summary>
+        /// The second attacking alliance.
+        /// </summary>
+            Attack2 = 3,
+
+        /// <summary>
+        /// The third attacking alliance.
+        /// </summary>
+            Attack3 = 4,
+    }
+
+    /// <summary>
+    /// Defines a command placed on the Castle Siege mini-map.
+    /// </summary>
+    public enum CastleSiegeGuildCommandType
+    {
+        /// <summary>
+        /// Orders the team to attack.
+        /// </summary>
+            Attack = 0,
+
+        /// <summary>
+        /// Orders the team to defend.
+        /// </summary>
+            Defend = 1,
+
+        /// <summary>
+        /// Orders the team to wait.
+        /// </summary>
+            Wait = 2,
+    }
+
+    /// <summary>
+    /// Defines the side-specific Castle Siege catapult type.
+    /// </summary>
+    public enum CastleSiegeMachineType
+    {
+        /// <summary>
+        /// The attacking-side catapult.
+        /// </summary>
+            Attack = 1,
+
+        /// <summary>
+        /// The defending-side catapult.
+        /// </summary>
+            Defense = 2,
+    }
+
+    /// <summary>
+    /// Defines a Castle Siege NPC shown on the mini-map.
+    /// </summary>
+    public enum CastleSiegeMiniMapNpcType
+    {
+        /// <summary>
+        /// A castle gate.
+        /// </summary>
+            Gate = 0,
+
+        /// <summary>
+        /// A Guardian Statue.
+        /// </summary>
+            GuardianStatue = 1,
     }
 

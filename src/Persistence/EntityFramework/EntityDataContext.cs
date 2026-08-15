@@ -21,6 +21,16 @@ public class EntityDataContext : ExtendedTypeContext
     /// </summary>
     internal GameConfiguration? CurrentGameConfiguration { get; set; }
 
+    /// <summary>
+    /// Gets the persistent Castle Siege state.
+    /// </summary>
+    internal DbSet<CastleSiegeData> CastleSiegeData => this.Set<CastleSiegeData>();
+
+    /// <summary>
+    /// Gets the Castle Siege guild registrations.
+    /// </summary>
+    internal DbSet<CastleSiegeGuildRegistration> CastleSiegeGuildRegistrations => this.Set<CastleSiegeGuildRegistration>();
+
     /// <inheritdoc/>
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -58,6 +68,11 @@ public class EntityDataContext : ExtendedTypeContext
         modelBuilder.Entity<Account>().Apply();
         modelBuilder.Entity<Character>().Apply();
         modelBuilder.Entity<CharacterClass>().Apply();
+        modelBuilder.Entity<CastleSiegeConfiguration>().Apply();
+        modelBuilder.Entity<CastleSiegeData>().Apply();
+        modelBuilder.Entity<CastleSiegeGuildRegistration>().Apply();
+        modelBuilder.Entity<CastleSiegeNpcDefinition>().Apply();
+        modelBuilder.Entity<CastleSiegeNpcState>().Apply();
         modelBuilder.Entity<DropItemGroup>().Apply();
         modelBuilder.Entity<ExitGate>().Apply();
         modelBuilder.Entity<GameConfiguration>().Apply();

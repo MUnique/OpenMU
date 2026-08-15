@@ -217,5 +217,23 @@ namespace MUnique.OpenMU.DataModel.Properties {
                 return ResourceManager.GetString("SystemConfiguration_ReadConsoleInput_Name", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Server time zone.
+        /// </summary>
+        public static string SystemConfiguration_TimeZoneId_Name {
+            get {
+                return ResourceManager.GetString("SystemConfiguration_TimeZoneId_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The time zone id used to interpret the times of periodic event schedules (e.g. invasions, Blood Castle, Devil Square). IANA ids are recommended, for example &apos;Europe/Warsaw&apos;. When empty, UTC is used..
+        /// </summary>
+        public static string SystemConfiguration_TimeZoneId_Description {
+            get {
+                return ResourceManager.GetString("SystemConfiguration_TimeZoneId_Description", resourceCulture);
+            }
+        }
     }
 }

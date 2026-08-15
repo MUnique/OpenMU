@@ -231,22 +231,6 @@ public sealed class CombatHandler
     }
 
     /// <summary>
-    /// The number of net hits the bot may take to kill the monster (see <see cref="MaxHitsToKill"/>),
-    /// stretched by <see cref="MasterHitBudgetFactor"/> for a mastered bot fighting a monster which
-    /// actually pays it master experience (see <see cref="MasterHitBudgetFactor"/>).
-    /// </summary>
-    private static int GetHitBudget(Player player, int monsterLevel)
-    {
-        var configuration = player.GameContext.Configuration;
-        var isMastered = player.SelectedCharacter?.CharacterClass?.IsMasterClass == true
-                         && (player.Attributes?[Stats.Level] ?? 0) >= configuration.MaximumLevel;
-
-        return isMastered && monsterLevel >= configuration.MinimumMonsterLevelForMasterExperience
-            ? MaxHitsToKill * MasterHitBudgetFactor
-            : MaxHitsToKill;
-    }
-
-    /// <summary>
     /// Decrements the skill cooldown counter by one tick.
     /// </summary>
     public void DecrementCooldown()
@@ -385,7 +369,7 @@ public sealed class CombatHandler
             return 1f;
         }
 
-        var defenseRate = attributes[Stats.DefenseRatePvm];
+        var defenseRate = AttackableExtensions.GetDefenseRatePvm(player);
         var hitChance = defenseRate < monsterAttackRate ? 1f - (defenseRate / monsterAttackRate) : 0.03f;
         return Math.Clamp(hitChance, minimumAssumedHitChance, 1f);
     }
@@ -435,6 +419,22 @@ public sealed class CombatHandler
         }
 
         return Math.Max(physical, Math.Max(wizardry, curse)) + skillDamage;
+    }
+
+    /// <summary>
+    /// The number of net hits the bot may take to kill the monster (see <see cref="MaxHitsToKill"/>),
+    /// stretched by <see cref="MasterHitBudgetFactor"/> for a mastered bot fighting a monster which
+    /// actually pays it master experience (see <see cref="MasterHitBudgetFactor"/>).
+    /// </summary>
+    private static int GetHitBudget(Player player, int monsterLevel)
+    {
+        var configuration = player.GameContext.Configuration;
+        var isMastered = player.SelectedCharacter?.CharacterClass?.IsMasterClass == true
+                         && (player.Attributes?[Stats.Level] ?? 0) >= configuration.MaximumLevel;
+
+        return isMastered && monsterLevel >= configuration.MinimumMonsterLevelForMasterExperience
+            ? MaxHitsToKill * MasterHitBudgetFactor
+            : MaxHitsToKill;
     }
 
     private async ValueTask ExecuteAttackAsync(IAttackable target)
@@ -921,7 +921,7 @@ public sealed class CombatHandler
 
         foreach (var requirement in skill.ConsumeRequirements)
         {
-            int required = this._player.GetRequiredValue(requirement);
+            int required = this._player.GetRequiredValue(requirement, skillEntry);
             if (this._player.Attributes[requirement.Attribute] < required)
             {
                 return false;

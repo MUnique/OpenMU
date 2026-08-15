@@ -122,7 +122,7 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
         }
 
         var dataSource = new GameConfigurationDataSource(this._loggerFactory.CreateLogger<GameConfigurationDataSource>(), this._persistenceContextProvider);
-        await dataSource.GetOwnerAsync(this.GameConfiguration.GetId());
+        await dataSource.GetOwnerAsync(this.GameConfiguration.GetId()).ConfigureAwait(false);
         var referenceHandler = new ByDataSourceReferenceHandler(dataSource);
         var serviceContainer = new ServiceContainer();
         serviceContainer.AddService(typeof(IPersistenceContextProvider), this._persistenceContextProvider);

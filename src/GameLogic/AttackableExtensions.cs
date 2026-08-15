@@ -563,9 +563,9 @@ public static class AttackableExtensions
     /// </summary>
     /// <param name="attacker">The attacker.</param>
     /// <param name="attributeRequirement">The attribute requirement, e.g. of a skill.</param>
-    /// <param name="addExtraManaCost">If set to <c>true</c>, <see cref="Stats.SkillExtraManaCost"/> applies.</param>
+    /// <param name="skillEntry">The skill entry, if there is one.</param>
     /// <returns>The required value.</returns>
-    public static int GetRequiredValue(this IAttacker attacker, AttributeRequirement attributeRequirement, bool addExtraManaCost = false)
+    public static int GetRequiredValue(this IAttacker attacker, AttributeRequirement attributeRequirement, SkillEntry? skillEntry = null)
     {
         var modifier = 1.0f;
         if (ReductionModifiers.TryGetValue(
@@ -576,9 +576,17 @@ public static class AttackableExtensions
         }
 
         var extraCost = 0;
-        if (addExtraManaCost && attributeRequirement.Attribute == Stats.CurrentMana)
+        if (attributeRequirement.Attribute == Stats.CurrentMana)
         {
-            extraCost = (int)attacker.Attributes[Stats.SkillExtraManaCost];
+            if (skillEntry?.Level > 0)
+            {
+                extraCost += (int)(attributeRequirement.MinimumValue * MasterSkillExtensions.CalculateManaRateValue(skillEntry.Level));
+            }
+
+            if (skillEntry?.EnsureSkillAttributes(attacker.Attributes) is { } skillAttributes)
+            {
+                extraCost += (int)skillAttributes[Stats.SkillExtraManaCost];
+            }
         }
 
         return (int)((attributeRequirement.MinimumValue + extraCost) * modifier);
@@ -628,78 +636,13 @@ public static class AttackableExtensions
         await attackable.MagicEffectList.AddEffectAsync(magicEffect).ConfigureAwait(false);
     }
 
-    private static bool IsAttackSuccessfulTo(this IAttacker attacker, IAttackable defender)
-    {
-        var hitChance = attacker.GetHitChanceTo(defender);
-        return Rand.NextRandomBool(hitChance);
-    }
-
-    private static float GetHitChanceTo(this IAttacker attacker, IAttackable defender)
-    {
-        float defenseRate;
-        float attackRate;
-        if (defender is Player && attacker is Player)
-        {
-            defenseRate = defender.Attributes[Stats.DefenseRatePvp];
-            attackRate = attacker.Attributes[Stats.AttackRatePvp];
-        }
-        else
-        {
-            defenseRate = defender.Attributes[Stats.DefenseRatePvm];
-            attackRate = attacker.Attributes[Stats.AttackRatePvm];
-        }
-
-        float hitChance = 0.03f;
-        if (defenseRate < attackRate)
-        {
-            hitChance = 1.0f - (defenseRate / attackRate);
-        }
-
-        return hitChance;
-    }
-
-    private static AttributeDefinition GetDefenseAttribute(this IAttackable defender, IAttacker attacker)
-    {
-        if (attacker is Player or AttackerSurrogate && defender is Player)
-        {
-            return Stats.DefensePvp;
-        }
-
-        return Stats.DefensePvm;
-    }
-
-    private static bool Overrates(this IAttackable defender, IAttacker attacker)
-    {
-        return defender.Attributes[Stats.DefenseRatePvm] > attacker.Attributes[Stats.AttackRatePvm];
-    }
-
-    private static int GetDamage(this SkillEntry skillEntry, IAttacker attacker)
-    {
-        skillEntry.ThrowNotInitializedProperty(skillEntry.Skill is null, nameof(skillEntry.Skill));
-        var skill = skillEntry.Skill;
-
-        var result = skill.AttackDamage;
-        if (attacker is Player { } player && skill.MasterDefinition is { } masterDefinition)
-        {
-            if (masterDefinition.TargetAttribute is null)
-            {
-                result += (int)skillEntry.CalculateValue();
-            }
-
-            foreach (var masterSkill in skill.GetBaseSkills(true))
-            {
-                if (masterSkill.MasterDefinition!.TargetAttribute is null
-                    && player.SkillList!.GetSkill((ushort)masterSkill.Number) is { } masterSkillEntry)
-                {
-                    result += (int)masterSkillEntry.CalculateValue();
-                }
-            }
-        }
-
-        return result;
-    }
-
-    private static IAttributeSystem? EnsureSkillAttributes(this SkillEntry skillEntry, IAttributeSystem attackerSystem)
+    /// <summary>
+    /// Ensures the skill attributes of the specified skill entry are set up.
+    /// </summary>
+    /// <param name="skillEntry">The skill entry.</param>
+    /// <param name="attackerSystem">The attacker's attribute system.</param>
+    /// <returns>The skill attributes.</returns>
+    public static IAttributeSystem? EnsureSkillAttributes(this SkillEntry skillEntry, IAttributeSystem attackerSystem)
     {
         var skillAttributes = skillEntry.Attributes;
         if (skillAttributes is not null)
@@ -730,6 +673,87 @@ public static class AttackableExtensions
         }
 
         return skillAttributes;
+    }
+
+    /// <summary>
+    /// Gets the total effective defense rate for PvM (Player versus Monster) encounters.
+    /// </summary>
+    /// <param name="defender">The defender.</param>
+    /// <returns>The defense rate.</returns>
+    public static float GetDefenseRatePvm(this IAttackable defender)
+    {
+        return defender.Attributes[Stats.DefenseRatePvm] + defender.Attributes[Stats.IncreaseBlockBonus];
+    }
+
+    private static bool IsAttackSuccessfulTo(this IAttacker attacker, IAttackable defender)
+    {
+        var hitChance = attacker.GetHitChanceTo(defender);
+        return Rand.NextRandomBool(hitChance);
+    }
+
+    private static float GetHitChanceTo(this IAttacker attacker, IAttackable defender)
+    {
+        float defenseRate;
+        float attackRate;
+        if (defender is Player && attacker is Player)
+        {
+            defenseRate = defender.Attributes[Stats.DefenseRatePvp];
+            attackRate = attacker.Attributes[Stats.AttackRatePvp];
+        }
+        else
+        {
+            defenseRate = defender.GetDefenseRatePvm();
+            attackRate = attacker.Attributes[Stats.AttackRatePvm];
+        }
+
+        float hitChance = 0.03f;
+        if (defenseRate < attackRate)
+        {
+            hitChance = 1.0f - (defenseRate / attackRate);
+        }
+
+        return hitChance;
+    }
+
+    private static AttributeDefinition GetDefenseAttribute(this IAttackable defender, IAttacker attacker)
+    {
+        if (attacker is Player or AttackerSurrogate && defender is Player)
+        {
+            return Stats.DefensePvp;
+        }
+
+        return Stats.DefensePvm;
+    }
+
+    private static bool Overrates(this IAttackable defender, IAttacker attacker)
+    {
+        return defender.GetDefenseRatePvm() > attacker.Attributes[Stats.AttackRatePvm];
+    }
+
+    private static int GetDamage(this SkillEntry skillEntry, IAttacker attacker)
+    {
+        skillEntry.ThrowNotInitializedProperty(skillEntry.Skill is null, nameof(skillEntry.Skill));
+        var skill = skillEntry.Skill;
+
+        var result = skill.AttackDamage;
+        if (attacker is Player { } player && skill.MasterDefinition is { } masterDefinition)
+        {
+            if (masterDefinition.TargetAttribute is null)
+            {
+                result += (int)skillEntry.CalculateValue();
+            }
+
+            foreach (var masterSkill in skill.GetBaseSkills(true))
+            {
+                if (masterSkill.MasterDefinition!.TargetAttribute is null
+                    && player.SkillList!.GetSkill((ushort)masterSkill.Number) is { } masterSkillEntry)
+                {
+                    result += (int)masterSkillEntry.CalculateValue();
+                }
+            }
+        }
+
+        return result;
     }
 
     private static void GetSkillDmg(this IAttacker attacker, SkillEntry? skillEntry, out int skillMinimumDamage, out int skillMaximumDamage, out DamageType damageType, out bool isSummonerSkill)
@@ -956,19 +980,14 @@ public static class AttackableExtensions
         {
             int bonusDamage = 0;
 
-            // Always two-handed.
             if (attacker.Attributes[Stats.IsSpearEquipped] > 0)
             {
                 bonusDamage = (int)attacker.Attributes[Stats.SpearBonusDamage];
             }
-
-            // Impossible to double wield.
             else if (attacker.Attributes[Stats.IsScepterEquipped] > 0)
             {
                 bonusDamage = (int)attacker.Attributes[Stats.ScepterStrBonusDamage];
             }
-
-            // Impossible to double wield.
             else if (attacker.Attributes[Stats.IsGloveWeaponEquipped] > 0)
             {
                 bonusDamage = (int)attacker.Attributes[Stats.GloveWeaponBonusDamage];

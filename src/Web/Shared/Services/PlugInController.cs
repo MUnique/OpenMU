@@ -1,4 +1,4 @@
-// <copyright file="PlugInController.cs" company="MUnique">
+﻿// <copyright file="PlugInController.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -6,11 +6,11 @@ namespace MUnique.OpenMU.Web.Shared.Services;
 
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
-using MUnique.OpenMU.Web.Shared.Components.Modal;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
 using MUnique.OpenMU.Web.Shared.Components.Form.Modal;
+using MUnique.OpenMU.Web.Shared.Components.Modal;
 using MUnique.OpenMU.Web.Shared.Models;
 
 /// <summary>
@@ -184,7 +184,7 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
     }
 
     /// <summary>
-    /// Shows the custom plug in configuration in a modal dialog.
+    /// Shows the custom plugin configuration in a modal dialog.
     /// </summary>
     /// <param name="item">The item.</param>
     public async Task ShowPlugInConfigAsync(PlugInConfigurationViewItem item)
@@ -223,34 +223,14 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
         }
     }
 
-    private static IEnumerable<Type> GetPluginTypes()
-    {
-        return AppDomain.CurrentDomain.GetAssemblies().SelectMany(assembly =>
-        {
-            try
-            {
-                return assembly.DefinedTypes.Where(type => type.GetCustomAttribute<PlugInAttribute>() != null);
-            }
-            catch (ReflectionTypeLoadException)
-            {
-                return Enumerable.Empty<Type>();
-            }
-        });
-    }
-
-    private static string GetPlugInName(Type plugInType)
-    {
-        return plugInType.GetCustomAttribute<DisplayAttribute>()?.GetName() ?? plugInType.Name;
-    }
-
-    private static Type? GetPlugInExtensionPointType(Type plugInType)
-    {
-        var plugInPoint = plugInType.GetInterfaces().FirstOrDefault(i => i.GetCustomAttribute<PlugInPointAttribute>() != null);
-        var customPlugInContainer = plugInType.GetInterfaces().FirstOrDefault(i => i.GetCustomAttribute<CustomPlugInContainerAttribute>() != null);
-        return plugInPoint ?? customPlugInContainer;
-    }
-
-    private static PlugInConfigurationViewItem BuildConfigurationDto(Type plugInType, GameConfiguration gameConfiguration, PlugInConfiguration plugInConfiguration)
+    /// <summary>
+    /// Builds the view item of a plugin configuration.
+    /// </summary>
+    /// <param name="plugInType">Type of the plugin.</param>
+    /// <param name="gameConfiguration">The game configuration to which the plugin configuration belongs.</param>
+    /// <param name="plugInConfiguration">The plugin configuration.</param>
+    /// <returns>The view item of the plugin configuration.</returns>
+    internal static PlugInConfigurationViewItem BuildConfigurationDto(Type plugInType, GameConfiguration gameConfiguration, PlugInConfiguration plugInConfiguration)
     {
         var plugInAttribute = plugInType.GetCustomAttribute<DisplayAttribute>();
         var plugInPoint = plugInType.GetInterfaces().FirstOrDefault(i => i.GetCustomAttribute<PlugInPointAttribute>() != null)?.GetCustomAttribute<PlugInPointAttribute>();
@@ -288,6 +268,33 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
         }
 
         return viewItem;
+    }
+
+    private static IEnumerable<Type> GetPluginTypes()
+    {
+        return AppDomain.CurrentDomain.GetAssemblies().SelectMany(assembly =>
+        {
+            try
+            {
+                return assembly.DefinedTypes.Where(type => type.GetCustomAttribute<PlugInAttribute>() != null);
+            }
+            catch (ReflectionTypeLoadException)
+            {
+                return Enumerable.Empty<Type>();
+            }
+        });
+    }
+
+    private static string GetPlugInName(Type plugInType)
+    {
+        return plugInType.GetCustomAttribute<DisplayAttribute>()?.GetName() ?? plugInType.Name;
+    }
+
+    private static Type? GetPlugInExtensionPointType(Type plugInType)
+    {
+        var plugInPoint = plugInType.GetInterfaces().FirstOrDefault(i => i.GetCustomAttribute<PlugInPointAttribute>() != null);
+        var customPlugInContainer = plugInType.GetInterfaces().FirstOrDefault(i => i.GetCustomAttribute<CustomPlugInContainerAttribute>() != null);
+        return plugInPoint ?? customPlugInContainer;
     }
 
     private IEnumerable<PlugInConfigurationViewItem> GetPluginsOfConfig(int offset, Dictionary<Guid, Type> allPlugIns, GameConfiguration gameConfig, int rest)

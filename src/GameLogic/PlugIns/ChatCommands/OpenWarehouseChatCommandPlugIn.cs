@@ -19,7 +19,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("62027B6B-D8E7-4DDB-A16B-7070D1BC4A56")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.OpenWarehouseChatCommandPlugIn_Name), Description = nameof(PlugInResources.OpenWarehouseChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
-[ChatCommandHelp(Command, "Opens the warehouse.", null)]
+[ChatCommandHelp(Command, "Opens the warehouse.", typeof(Arguments))]
 public class OpenWarehouseChatCommandPlugIn : ChatCommandPlugInBase<OpenWarehouseChatCommandPlugIn.Arguments>, ISupportCustomConfiguration<OpenWarehouseChatCommandPlugIn.OpenWarehouseChatCommandConfiguration>, ISupportDefaultCustomConfiguration, IDisabledByDefault
 {
     private const string Command = "/openware";

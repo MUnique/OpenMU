@@ -44,22 +44,25 @@ public class BotPartyHandlerTest
     }
 
     /// <summary>
-    /// An inviter whose effective level is too far from the bot's is declined - the group would only
-    /// be a power-leveling service.
+    /// There is no level gate (matching OpenMU's own party action): a bot accepts an inviter of any
+    /// level, since it is the player who invites and the bot leaves again once it gets bored. The
+    /// inviter here is a maxed veteran (character level 400 plus the master level cap of 200, i.e. the
+    /// ceiling of the Season 6 seed) inviting a low-level bot - the widest gap a stock server produces.
     /// </summary>
     [Test]
-    public async ValueTask RejectsTooLargeLevelGapAsync()
+    public async ValueTask AcceptsInviteRegardlessOfLevelGapAsync()
     {
         var gameContext = GameContextTestHelper.CreateGameContext();
         var bot = await CreateBotAsync(gameContext, "Bot").ConfigureAwait(false);
         var requester = await CreateHumanAsync(gameContext, "Human").ConfigureAwait(false);
-        requester.Attributes![Stats.Level] = 700;
+        requester.Attributes![Stats.Level] = 400;
+        requester.Attributes![Stats.MasterLevel] = 200;
 
         var scheduled = await BotPartyHandler.TryScheduleAcceptAsync(bot, requester, TimeSpan.Zero).ConfigureAwait(false);
 
-        Assert.That(scheduled, Is.False);
-        Assert.That(bot.PendingPartyInvite, Is.Null);
-        Assert.That(bot.LastPartyRequester, Is.Null);
+        Assert.That(scheduled, Is.True);
+        Assert.That(bot.PendingPartyInvite, Is.Not.Null);
+        Assert.That(bot.LastPartyRequester, Is.SameAs(requester));
     }
 
     /// <summary>

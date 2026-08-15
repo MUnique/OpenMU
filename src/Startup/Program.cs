@@ -48,6 +48,12 @@ internal sealed class Program : IDisposable
     private static bool _confirmExit;
     private static SystemConfiguration? _systemConfiguration;
 
+    /// <summary>
+    /// Gets the resolved server time zone (from <see cref="SystemConfiguration.TimeZoneId"/>),
+    /// used to interpret the times of periodic event schedules. Defaults to <see cref="TimeZoneInfo.Utc"/>.
+    /// </summary>
+    internal static TimeZoneInfo ServerTimeZone { get; private set; } = TimeZoneInfo.Utc;
+
     private readonly IDictionary<int, IGameServer> _gameServers = new Dictionary<int, IGameServer>();
     private readonly IList<IManageableServer> _servers = new List<IManageableServer>();
     private readonly Serilog.ILogger _logger;
@@ -496,7 +502,7 @@ internal sealed class Program : IDisposable
         }
         else if (!await contextProvider.IsDatabaseUpToDateAsync().ConfigureAwait(false))
         {
-            if (_systemConfiguration?.AutoUpdateSchema is true || await contextProvider.ShouldDoAutoSchemaUpdateAsync())
+            if (_systemConfiguration?.AutoUpdateSchema is true || await contextProvider.ShouldDoAutoSchemaUpdateAsync().ConfigureAwait(false))
             {
                 Console.WriteLine("The database schema needs to be updated before the server can be started. Updating...");
                 await contextProvider.ApplyAllPendingUpdatesAsync().ConfigureAwait(false);
@@ -533,6 +539,27 @@ internal sealed class Program : IDisposable
         if (config != null)
         {
             _systemConfiguration = config;
+        }
+
+        ServerTimeZone = this.ResolveServerTimeZone(_systemConfiguration?.TimeZoneId);
+    }
+
+    private TimeZoneInfo ResolveServerTimeZone(string? timeZoneId)
+    {
+        if (string.IsNullOrWhiteSpace(timeZoneId))
+        {
+            return TimeZoneInfo.Utc;
+        }
+
+        try
+        {
+            // FindSystemTimeZoneById accepts both IANA and Windows ids on all platforms since .NET 6 (ICU).
+            return TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
+        }
+        catch (Exception ex) when (ex is TimeZoneNotFoundException or InvalidTimeZoneException)
+        {
+            this._logger.Warning(ex, "Could not resolve configured server time zone '{TimeZoneId}'. Falling back to UTC.", timeZoneId);
+            return TimeZoneInfo.Utc;
         }
     }
 

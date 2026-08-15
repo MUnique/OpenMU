@@ -148,6 +148,16 @@ public class Stats
     public static AttributeDefinition Resets { get; } = new(new Guid("89A891A7-F9F9-4AB5-AF36-12056E53A5F7"), "Resets", "Reset quantity of current character");
 
     /// <summary>
+    /// Gets the registered renas / items attribute definition.
+    /// </summary>
+    public static AttributeDefinition RegisteredRenas { get; } = new(new Guid("45B1C2A3-3E4F-5A6B-7C8D-9E0F1A2B3C4D"), "Registered Renas", "Progress towards next item registration reward");
+
+    /// <summary>
+    /// Gets the total registered renas / items attribute definition.
+    /// </summary>
+    public static AttributeDefinition TotalRegisteredRenas { get; } = new(new Guid("56C2D3B4-4F5A-6B7C-8D9E-0F1A2B3C4D5E"), "Total Registered Renas", "Total registered items (all-time counter)");
+
+    /// <summary>
     /// Gets the zen amount rate attribute definition.
     /// </summary>
     public static AttributeDefinition MoneyAmountRate { get; } = new(new Guid("D84D1A5C-3A56-4CB9-8DD4-158AFD4D1EDB"), "Money Drop Amount Rate", "Defines a multiplier for the amount of a money drop.");
@@ -700,6 +710,16 @@ public class Stats
     public static AttributeDefinition PollutionBonusDmg { get; } = new(new Guid("9B7AF584-DB59-4770-BCE9-1B5131BBDE38"), "Pollution Bonus Damage (MST)", "The pollution skill (book of lagle) bonus damage, which rises with lightning tome strengthener and is added at a late stage.");
 
     /// <summary>
+    /// Gets the sleep strengthener MST bonus chance.
+    /// </summary>
+    public static AttributeDefinition SleepStrBonusChance { get; } = new(new Guid("3F9E2A7B-41C8-4D2E-9B0F-6A1C8D5E7B3F"), "Sleep Strengthener Bonus Chance (MST)", string.Empty);
+
+    /// <summary>
+    /// Gets the drain life strengthener MST bonus healing.
+    /// </summary>
+    public static AttributeDefinition DrainLifeStrBonusHealing { get; } = new(new Guid("5B1AA436-2CF9-4A45-AACA-5B1AA4362CF9"), "Drain Life Strengthener Bonus Healing (MST)", string.Empty);
+
+    /// <summary>
     /// Gets the is a scepter equipped.
     /// </summary>
     public static AttributeDefinition IsScepterEquipped { get; } = new(new Guid("8650DE3B-BE11-458E-B352-4046CE264402"), "Is Scepter Equipped", string.Empty);
@@ -733,6 +753,17 @@ public class Stats
     /// Gets the glove weapon MST bonus damage.
     /// </summary>
     public static AttributeDefinition GloveWeaponBonusDamage { get; } = new(new Guid("F9CB1174-0184-4F21-B71D-AFC7359BC594"), "Glove Weapon Bonus Damage (MST)", string.Empty);
+
+    /// <summary>
+    /// Gets the rage fighter's increase block (defense rate) buff bonus.
+    /// </summary>
+    /// <remarks>It only adds to PvM defense rate (<see cref="DefenseRatePvm"/>).</remarks>
+    public static AttributeDefinition IncreaseBlockBonus { get; } = new(new Guid("8F2D1A7C-4E6B-4A9D-B1F3-5C7E8A2D9F0B"), "Increase Block Bonus", string.Empty);
+
+    /// <summary>
+    /// Gets the glove weapon mastery double damage MST chance attribute definition.
+    /// </summary>
+    public static AttributeDefinition GloveWeaponMasteryDoubleDamageChance { get; } = new(new Guid("B7C2E1A9-5F4D-4B3A-8C6E-2D1F9A7B4C5E"), "Glove Weapon Mastery Double Damage Chance (MST)", string.Empty);
 
     /// <summary>
     /// Gets the summoned monster health increase, percentage.
@@ -786,7 +817,8 @@ public class Stats
     /// <see cref="AggregateType.Multiplicate"/> values include:
     ///     <see cref="DefenseIncreaseWithEquippedShield"/>.
     /// <see cref="AggregateType.AddFinal"/> values include:
-    ///     MST bonus defense with shield (shield strengthener); MST dark horse strengthener; Jack O'Lantern Cry bonus (halved); Berserker defense reduction.
+    ///     MST bonus defense with shield (shield strengthener); MST dark horse strengthener; Jack O'Lantern Cry bonus (halved); Berserker defense reduction;
+    ///     Defense Success Rate Increase Mastery (increase block) defense bonus.
     /// </remarks>
     public static AttributeDefinition DefenseFinal { get; } = new(new Guid("0888AD48-0CC8-47CA-B6A3-99F3771AA5FC"), "Final Defense", string.Empty);
 
@@ -922,7 +954,7 @@ public class Stats
     /// <summary>
     /// Gets the berserker proficiency buff damage multiplier MST attribute definition.
     /// </summary>
-    /// <remarks>Increases with MST berserker proficiency. Applies on <see cref="DamageType.Curse"/> and <see cref="DamageType.Wizardry"/> skills.</remarks>
+    /// <remarks>Increases with MST berserker proficiency. Applies on <see cref="DamageType.Curse"/> (once) and <see cref="DamageType.Wizardry"/> (twice) skills.</remarks>
     public static AttributeDefinition BerserkerProficiencyMultiplier { get; } = new(new Guid("55124C97-6EF3-4C46-AEC9-D01C11BE18A4"), "Berserker Proficiency Multiplier (MST)", "The berserker proficiency damage multiplier which is added to the wizardry multiplier but also by itself is multiplied by the wizardry/curse final damage and added to it.");
 
     /// <summary>

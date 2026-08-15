@@ -16,5 +16,5 @@ The castle gate is getting opened or closed.
 | 1 | 1 |    Byte   |   7   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xB2  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x12  | Packet header - sub packet type identifier |
-| 4 | 1 | Boolean |  | CloseState |
+| 4 | 1 | Boolean |  | IsOpen |
 | 5 | 2 | ShortBigEndian |  | GateId |

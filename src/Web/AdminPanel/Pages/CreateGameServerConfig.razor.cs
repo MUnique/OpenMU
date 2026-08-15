@@ -6,13 +6,13 @@ namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 
 using System.ComponentModel.DataAnnotations;
 using System.Threading;
-using Blazored.Toast.Services;
 using Microsoft.AspNetCore.Components;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
 using MUnique.OpenMU.Web.Shared.Components.Modal;
+using MUnique.OpenMU.Web.Shared.Components.Toast;
 using MUnique.OpenMU.Web.Shared.Services;
 
 /// <summary>
@@ -143,7 +143,7 @@ public partial class CreateGameServerConfig : ComponentBase, IAsyncDisposable
         result.Description = this._viewModel.Description;
         result.PvpEnabled = this._viewModel.PvpEnabled;
         result.ExperienceRate = this._viewModel.ExperienceRate;
-        result.GameConfiguration = await this.DataSource.GetOwnerAsync();
+        result.GameConfiguration = await this.DataSource.GetOwnerAsync().ConfigureAwait(false);
         result.ServerConfiguration = this._viewModel.ServerConfiguration!;
 
         var endpoint = context.CreateNew<GameServerEndpoint>();

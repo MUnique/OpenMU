@@ -1,11 +1,10 @@
-// <copyright file="Startup.cs" company="MUnique">
+﻿// <copyright file="Startup.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
 namespace MUnique.OpenMU.Web.AdminPanel;
 
 using System.IO;
-using Blazored.Toast;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -61,7 +60,7 @@ public class Startup
             .ConfigureApplicationPartManager(setup =>
                 setup.FeatureProviders.Add(new GenericControllerFeatureProvider()));
 
-        services.AddBlazoredToast();
+        services.AddToasts();
         services.AddScoped<ModalService>();
         services.AddScoped<IModalService>(sp => sp.GetRequiredService<ModalService>());
 
@@ -73,6 +72,8 @@ public class Startup
 
         services.AddScoped<PlugInController>();
         services.AddScoped<IDataService<PlugInConfigurationViewItem>>(serviceProvider => serviceProvider.GetService<PlugInController>()!);
+        services.AddScoped<ChatCommandController>();
+        services.AddScoped<IDataService<ChatCommandViewItem>>(serviceProvider => serviceProvider.GetService<ChatCommandController>()!);
         services.AddScoped<CreationPanelService>();
 
         services.AddScoped<IChangeNotificationService, ChangeNotificationService>();

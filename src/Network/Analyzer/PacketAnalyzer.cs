@@ -83,7 +83,7 @@ public sealed class PacketAnalyzer : IDisposable
     /// </summary>
     /// <param name="packet">The packet.</param>
     /// <returns>The formatted string with the extracted information.</returns>
-    public (string, PacketDefinition?) ExtractShortInformation(Packet packet)
+    public (string Data, PacketDefinition? Definition) ExtractShortInformation(Packet packet)
     {
         var definitions = packet.ToServer ? this._clientPacketDefinitions : this._serverPacketDefinitions;
         var definition = this.DeterminePacketDefinition(packet);

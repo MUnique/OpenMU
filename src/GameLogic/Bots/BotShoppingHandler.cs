@@ -138,16 +138,17 @@ internal static class BotShoppingHandler
             .FirstOrDefault(n => n.Definition is { ObjectKind: NpcObjectKind.PassiveNpc, MerchantStore.Items.Count: > 0 });
         if (merchant is null || player.Inventory is not { } inventory)
         {
-            // Not silent: exactly this case hid the wandering-merchant bug (a configured but
-            // unspawned merchant) for a long time.
-            player.Logger.LogInformation("Bot '{Name}' found no merchant near {Position} and gives up the trip.", player.Name, merchantPosition);
+            // Kept as a diagnostic: this exact case (a configured but unspawned merchant) hid the
+            // wandering-merchant bug for a long time. At Debug it stays out of the default log but
+            // surfaces the moment bot logging is turned up.
+            player.Logger.LogDebug("Bot '{Name}' found no merchant near {Position} and gives up the trip.", player.Name, merchantPosition);
             return false;
         }
 
         await TalkAction.TalkToNpcAsync(player, merchant).ConfigureAwait(false);
         if (player.OpenedNpc is null)
         {
-            player.Logger.LogInformation("Bot '{Name}' could not open the dialog of '{Merchant}'.", player.Name, merchant.Definition.Designation);
+            player.Logger.LogDebug("Bot '{Name}' could not open the dialog of '{Merchant}'.", player.Name, merchant.Definition.Designation);
             return false;
         }
 
@@ -170,10 +171,10 @@ internal static class BotShoppingHandler
             var (soldLate, discarded) = await ClearUnsoldAsync(player, inventory, unsold).ConfigureAwait(false);
             sold += soldLate;
 
-            // Logged even for a 0/0 visit: an audit must be able to tell "went and had nothing to
-            // do" from a silently failed trip. Every counter reports what REALLY happened - a sale
-            // which the money limit refused is not a sale.
-            player.Logger.LogInformation(
+            // Logged even for a 0/0 visit: at Debug this is the bot's per-trip audit trail, telling
+            // "went and had nothing to do" apart from a silently failed trip. Every counter reports
+            // what REALLY happened - a sale which the money limit refused is not a sale.
+            player.Logger.LogDebug(
                 "Bot '{Name}' traded with '{Merchant}': sold {Sold} item(s), discarded {Discarded}, repaired {Repaired}, bought {Potions} potion stack(s) and {Jewels} jewel(s), {Money} zen left.",
                 player.Name,
                 merchant.Definition.Designation,
@@ -314,7 +315,7 @@ internal static class BotShoppingHandler
 
         if (discarded > 0)
         {
-            player.Logger.LogInformation(
+            player.Logger.LogDebug(
                 "Bot '{Name}' destroyed {Count} item(s) it could not sell: its money is at the maximum of {Maximum}.",
                 player.Name,
                 discarded,

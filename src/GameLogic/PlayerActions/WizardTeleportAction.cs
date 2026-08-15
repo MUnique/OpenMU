@@ -35,12 +35,13 @@ public class WizardTeleportAction
         //  - During castle siege, can't teleport over the non-destroyed gates (simple y-axis check)
         if (!player.IsAtSafezone()
             && player.IsActive()
-            && player.SkillList?.GetSkill(TeleportSkillId) is { Skill: { } skill }
+            && player.SkillList?.GetSkill(TeleportSkillId) is { } skillEntry
+            && skillEntry.Skill is { } skill
             && player.CurrentMap!.Terrain.WalkMap[target.X, target.Y]
             && !player.CurrentMap.Terrain.SafezoneMap[target.X, target.Y]
             && player.IsInRange(target, skill.Range)
             && CanPlayerBeTeleported(player)
-            && await player.TryConsumeForSkillAsync(skill).ConfigureAwait(false))
+            && await player.TryConsumeForSkillAsync(skillEntry).ConfigureAwait(false))
         {
             _ = Task.Run(() => player.TeleportAsync(target, skill));
         }
@@ -60,7 +61,8 @@ public class WizardTeleportAction
     {
         if (!player.IsAtSafezone()
             && player.IsActive()
-            && player.SkillList?.GetSkill(TeleportTargetSkillId) is { Skill: { } skill }
+            && player.SkillList?.GetSkill(TeleportTargetSkillId) is { } skillEntry
+            && skillEntry.Skill is { } skill
             && player.Party is not null
             && player.CurrentMap!.Terrain.WalkMap[target.X, target.Y]
             && !player.CurrentMap.Terrain.SafezoneMap[target.X, target.Y]
@@ -69,7 +71,7 @@ public class WizardTeleportAction
             && targetPlayer.IsActive()
             && CanPlayerBeTeleported(targetPlayer)
             && targetPlayer.IsInRange(target, skill.Range + 1)
-            && await player.TryConsumeForSkillAsync(skill).ConfigureAwait(false))
+            && await player.TryConsumeForSkillAsync(skillEntry).ConfigureAwait(false))
         {
             _ = Task.Run(() => targetPlayer.TeleportAsync(target, skill));
         }

@@ -32,32 +32,32 @@ public class IncreaseHealthEffectInitializer : InitializerBase
         magicEffect.Number = (byte)MagicEffectNumber.IncreaseHealth;
         magicEffect.Name = "Increase Health Skill Effect";
         magicEffect.InformObservers = true;
+        magicEffect.SubType = 73;
         magicEffect.SendDuration = false;
         magicEffect.StopByDeath = true;
-
         magicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.Duration.ConstantValue.Value = 60f;
+        magicEffect.Duration.MaximumValue = 180f;
 
         var durationPerEnergy = this.Context.CreateNew<AttributeRelationship>();
         durationPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
         durationPerEnergy.InputOperator = InputOperator.Multiply;
-        durationPerEnergy.InputOperand = 1f / 10f; // 10 energy adds 1 second duration
+        durationPerEnergy.InputOperand = 1f / 5f; // 5 energy adds 1 second duration
         magicEffect.Duration.RelatedValues.Add(durationPerEnergy);
 
+        // The buff gives 16.8 + (energy / 10) vitality
         var powerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
         magicEffect.PowerUpDefinitions.Add(powerUpDefinition);
         powerUpDefinition.TargetAttribute = Stats.TotalVitality.GetPersistent(this.GameConfiguration);
+        powerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        powerUpDefinition.Boost.ConstantValue.Value = 16.8f;  // The parchment requires 132 energy => base value = 30
+        powerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.AddFinal;
+        powerUpDefinition.Boost.MaximumValue = 200f;
 
-        // one per 10 energy
         var boostPerEnergy = this.Context.CreateNew<AttributeRelationship>();
         boostPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
         boostPerEnergy.InputOperator = InputOperator.Multiply;
-        boostPerEnergy.InputOperand = 1f / 10f;
-
-        powerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-        powerUpDefinition.Boost.ConstantValue.Value = 16f;
-        powerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.AddFinal;
-        powerUpDefinition.Boost.MaximumValue = 200f;
+        boostPerEnergy.InputOperand = 1f / 10f; // one vitality per 10 energy
         powerUpDefinition.Boost.RelatedValues.Add(boostPerEnergy);
     }
 }

@@ -98,7 +98,7 @@ internal static class BotMasterHandler
 
         var masterClass = BotProgression.GetMasterEvolutionTarget(character.CharacterClass!)!;
         character.CharacterClass = masterClass;
-        player.Logger.LogInformation(
+        player.Logger.LogDebug(
             "Bot '{Name}' evolved into master class {Class} at level {Level}.",
             player.Name,
             masterClass.Name,
@@ -153,7 +153,7 @@ internal static class BotMasterHandler
                 break;
             }
 
-            player.Logger.LogInformation(
+            player.Logger.LogDebug(
                 "Bot '{Name}' invested {Points} master point(s) into '{Skill}'.",
                 player.Name,
                 pointsBefore - character.MasterLevelUpPoints,

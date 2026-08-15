@@ -46,6 +46,17 @@ public sealed class ModalService : IModalService, IDisposable
         return reference;
     }
 
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        if (this._state is { } state)
+        {
+            state.Reference.TrySetResult(ModalResult.Cancel());
+        }
+
+        this._state = null;
+    }
+
     /// <summary>
     /// Dismisses the currently active modal.
     /// </summary>
@@ -60,22 +71,20 @@ public sealed class ModalService : IModalService, IDisposable
         this.StateChanged?.Invoke();
     }
 
-    /// <inheritdoc />
-    public void Dispose()
-    {
-        if (this._state is { } state)
-        {
-            state.Reference.TrySetResult(ModalResult.Cancel());
-        }
-
-        this._state = null;
-    }
-
     /// <summary>
     /// Holds the full state of an active modal.
     /// </summary>
     internal sealed class ModalState
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ModalState"/> class.
+        /// </summary>
+        /// <param name="componentType">Type of the component.</param>
+        /// <param name="title">The modal title.</param>
+        /// <param name="parameters">The modal parameters.</param>
+        /// <param name="options">The modal options.</param>
+        /// <param name="instance">The modal instance.</param>
+        /// <param name="reference">The modal reference.</param>
         internal ModalState(
             Type componentType,
             string title,

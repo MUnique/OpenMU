@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.Arguments;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -15,7 +16,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("43156A52-03EE-42C0-88BF-CA9665DC8E1E")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.AddAgilityStatChatCommandPlugIn_Name), Description = nameof(PlugInResources.AddAgilityStatChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
-[ChatCommandHelp(Command, null, MinimumStatus)]
+[ChatCommandHelp(Command, typeof(AddSingleStatChatCommandArgs), MinimumStatus)]
 public class AddAgilityStatChatCommandPlugIn : AddStatChatCommandPlugIn, IDisabledByDefault
 {
     private const string Command = "/addagi";

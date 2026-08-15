@@ -494,4 +494,34 @@ public enum UpdateVersion
     /// The version of the <see cref="FinishElfMasterTreePlugIn"/>.
     /// </summary>
     FinishElfMasterTree = 97,
+
+    /// <summary>
+    /// The version of the <see cref="AddItemRegistrationAttributesUpdatePlugIn"/>.
+    /// </summary>
+    AddItemRegistrationAttributes = 98,
+
+    /// <summary>
+    /// The version of the <see cref="AddRenaItemUpdatePlugIn"/>.
+    /// </summary>
+    AddRenaItem = 99,
+
+    /// <summary>
+    /// The version of the <see cref="AddCastleSiegeDataUpdatePlugIn"/>.
+    /// </summary>
+    AddCastleSiegeData = 100,
+
+    /// <summary>
+    /// The version of the <see cref="FinishSummonerMasterTreePlugIn"/>.
+    /// </summary>
+    FinishSummonerMasterTree = 101,
+
+    /// <summary>
+    /// The version of the <see cref="ConfigureCastleSiegeRegistrationUpdatePlugIn"/>.
+    /// </summary>
+    ConfigureCastleSiegeRegistration = 102,
+
+    /// <summary>
+    /// The version of the <see cref="FinishRageFighterMasterTreePlugIn"/>.
+    /// </summary>
+    FinishRageFighterMasterTree = 103,
 }

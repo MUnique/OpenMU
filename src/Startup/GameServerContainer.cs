@@ -122,7 +122,7 @@ public sealed class GameServerContainer : ServerContainerBase, IGameServerInstan
     /// <inheritdoc />
     protected override async ValueTask BeforeStartAsync(bool onDatabaseInit, CancellationToken cancellationToken)
     {
-        await base.BeforeStartAsync(onDatabaseInit, cancellationToken);
+        await base.BeforeStartAsync(onDatabaseInit, cancellationToken).ConfigureAwait(false);
         if (!onDatabaseInit)
         {
             (this._persistenceContextProvider as IMigratableDatabaseContextProvider)?.ResetCache();
@@ -167,6 +167,7 @@ public sealed class GameServerContainer : ServerContainerBase, IGameServerInstan
     {
         using var loggerScope = this._logger.BeginScope("GameServer: {0}", gameServerDefinition.ServerID);
         var gameServer = new GameServer(gameServerDefinition, this._guildServer, this._eventPublisher, this._loginServer, this._persistenceContextProvider, this._friendServer, this._loggerFactory, this._plugInManager, this._changeMediator);
+        gameServer.Context.ServerTimeZone = Program.ServerTimeZone;
         foreach (var endpoint in gameServerDefinition.Endpoints)
         {
             gameServer.AddListener(new DefaultTcpGameServerListener(endpoint, gameServer.CreateServerInfo(), gameServer.Context, this._connectServerContainer.GetObserver(endpoint.Client!), this._ipResolver, this._loggerFactory));

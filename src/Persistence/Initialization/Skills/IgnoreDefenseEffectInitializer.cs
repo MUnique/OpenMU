@@ -34,29 +34,29 @@ public class IgnoreDefenseEffectInitializer : InitializerBase
         magicEffect.InformObservers = true;
         magicEffect.SendDuration = false;
         magicEffect.StopByDeath = true;
-
         magicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.Duration.ConstantValue.Value = 60f;
+        magicEffect.Duration.MaximumValue = 180f;
 
         var durationPerEnergy = this.Context.CreateNew<AttributeRelationship>();
         durationPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
         durationPerEnergy.InputOperator = InputOperator.Multiply;
-        durationPerEnergy.InputOperand = 1f / 10f; // 10 energy adds 1 second duration
+        durationPerEnergy.InputOperand = 1f / 5f; // 5 energy adds 1 second duration
         magicEffect.Duration.RelatedValues.Add(durationPerEnergy);
 
+        // The buff gives -1.04% + (energy / 100)% defense ignore chance
         var powerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
         magicEffect.PowerUpDefinitions.Add(powerUpDefinition);
         powerUpDefinition.TargetAttribute = Stats.DefenseIgnoreChance.GetPersistent(this.GameConfiguration);
+        powerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        powerUpDefinition.Boost.ConstantValue.Value = -0.0104f; // The parchment requires 404 energy => base value = 0.03
+        powerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.AddFinal;
+        powerUpDefinition.Boost.MaximumValue = 0.1f;
 
-        // 0.01 per 100 energy
         var boostPerEnergy = this.Context.CreateNew<AttributeRelationship>();
         boostPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
         boostPerEnergy.InputOperator = InputOperator.Multiply;
-        boostPerEnergy.InputOperand = 0.01f / 100f;
-
-        powerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-        powerUpDefinition.Boost.ConstantValue.Value = 0f;
-        powerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.AddFinal;
+        boostPerEnergy.InputOperand = 0.01f / 100f; // 1% per 100 energy
         powerUpDefinition.Boost.RelatedValues.Add(boostPerEnergy);
     }
 }
