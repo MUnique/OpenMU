@@ -87,7 +87,7 @@ public sealed class BotManager
 
             BotSkillProgressionPlugIn.CatchUpPendingProgress(bot);
 
-            bot.Logger.LogInformation("Bot started for account '{LoginName}', character '{Character}'.", loginName, character.Name);
+            bot.Logger.LogDebug("Bot started for account '{LoginName}', character '{Character}'.", loginName, character.Name);
             return true;
         }
         catch (Exception ex)
@@ -272,7 +272,7 @@ public sealed class BotManager
                     }
                 }
 
-                leader.Logger.LogInformation(
+                leader.Logger.LogDebug(
                     "Formed bot party of {Count} around '{Leader}' (level {Level}).",
                     members.Count,
                     leader.Name,

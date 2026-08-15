@@ -153,7 +153,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     ILogger ILoggerOwner.Logger => this.Logger;
 
     /// <inheritdoc />
-    public ILogger<Player> Logger { get; }
+    public ILogger<Player> Logger { get; protected set; }
 
     /// <inheritdoc />
     public bool CanWalkOnSafezone => true;

@@ -650,7 +650,7 @@ internal sealed class BotNavigator : AsyncDisposable
                     // No way to the merchant from here - give up this trip and don't retry every
                     // check interval (an unreachable merchant stays unreachable for a while; a bot
                     // retrying twice a minute wastes its hunting time on futile marches).
-                    this._player.Logger.LogInformation("Bot '{Name}' gives up its shopping trip: no route to the merchant at {Target}.", this._player.Name, target);
+                    this._player.Logger.LogDebug("Bot '{Name}' gives up its shopping trip: no route to the merchant at {Target}.", this._player.Name, target);
                     this._shoppingTarget = null;
                     this._player.IsOnShoppingTrip = false;
                     this._nextShoppingCheckUtc = NextShoppingCheckUtc();
@@ -696,7 +696,7 @@ internal sealed class BotNavigator : AsyncDisposable
                 this._hasDestination = false;
                 this._lastWarpUtc = DateTime.UtcNow;
                 this._nextShoppingCheckUtc = DateTime.UtcNow; // start the trip on the new map right away
-                this._player.Logger.LogInformation("Bot '{Name}' warps home to {Map} for a shopping trip - no merchant on its map.", this._player.Name, homeMap.Name);
+                this._player.Logger.LogDebug("Bot '{Name}' warps home to {Map} for a shopping trip - no merchant on its map.", this._player.Name, homeMap.Name);
                 await this._player.WarpToAsync(homeGate).ConfigureAwait(false);
                 return true;
             }
@@ -716,7 +716,7 @@ internal sealed class BotNavigator : AsyncDisposable
 
         this._shoppingTarget = merchantPosition;
         this._player.IsOnShoppingTrip = true;
-        this._player.Logger.LogInformation("Bot '{Name}' heads to the merchant for a shopping trip.", this._player.Name);
+        this._player.Logger.LogDebug("Bot '{Name}' heads to the merchant for a shopping trip.", this._player.Name);
         return true;
     }
 
@@ -913,7 +913,7 @@ internal sealed class BotNavigator : AsyncDisposable
                 // behind unreachable or sneak in through a back door, the bot leaves the group.
                 if (this._player.Party is { } party)
                 {
-                    this._player.Logger.LogInformation(
+                    this._player.Logger.LogDebug(
                         "Bot {Character} leaves its party: it cannot legally follow '{Leader}' to map {Map}.",
                         this._player.Name,
                         leader.Name,
@@ -944,7 +944,7 @@ internal sealed class BotNavigator : AsyncDisposable
                 this._lastWarpUtc = DateTime.UtcNow;
                 this._hasDestination = false;
                 this._travelPath = null;
-                this._player.Logger.LogInformation(
+                this._player.Logger.LogDebug(
                     "Bot {Character} following party leader {Leader} to map {Map}.",
                     this._player.Name,
                     leader.Name,
@@ -1119,7 +1119,7 @@ internal sealed class BotNavigator : AsyncDisposable
         this._lastWarpUtc = DateTime.UtcNow;
         this._hasDestination = false;
         this._travelPath = null;
-        this._player.Logger.LogInformation(
+        this._player.Logger.LogDebug(
             "Bot {Character} (level {Level}) warping to map {Map} (monsters ~{MonsterLevel}, fare {Fare} zen).",
             this._player.Name,
             botLevel,
@@ -1245,7 +1245,7 @@ internal sealed class BotNavigator : AsyncDisposable
 
         this._destination = ground;
         this._hasDestination = true;
-        this._player.Logger.LogInformation(
+        this._player.Logger.LogDebug(
             "Bot {Character} (level {Level}) heading to hunting ground {Ground} (monster level ~{MonsterLevel}).",
             this._player.Name,
             this.GetBotLevel(),

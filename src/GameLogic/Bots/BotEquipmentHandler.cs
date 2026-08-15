@@ -114,7 +114,7 @@ internal static class BotEquipmentHandler
             return false;
         }
 
-        player.Logger.LogInformation(
+        player.Logger.LogDebug(
             "Bot '{Name}' equipped '{New}'{Replaced}.",
             player.Name,
             item,
