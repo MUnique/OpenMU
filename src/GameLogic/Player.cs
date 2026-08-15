@@ -38,8 +38,6 @@ using Nito.AsyncEx;
 /// </summary>
 public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacker, ITrader, IPartyMember, IRotatable, IHasBucketInformation, ISupportWalk, IMovable, ILoggerOwner<Player>
 {
-    private const double WalkMovementSpeed = 12.0;
-
     private static readonly MagicEffectDefinition GMEffect = new GameMasterMagicEffectDefinition
     {
         InformObservers = true,
@@ -48,7 +46,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         StopByDeath = false,
     };
 
-    private readonly AsyncLock _moveLock = new();
     private readonly AsyncLock _experienceLock = new();
 
     /// <summary>
@@ -56,17 +53,13 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// disconnect progress saves, which run on an independent timer flow. See
     /// <see cref="RunPersistenceExclusiveAsync{T}"/>.
     /// </summary>
-    private readonly AsyncLock _persistenceLock = new();
+    private readonly PlayerPersistence _persistence;
 
-    /// <summary>
-    /// Tracks, per asynchronous flow, whether <see cref="_persistenceLock"/> is already held, so the
-    /// lock can be re-entered (Nito's <see cref="AsyncLock"/> is not reentrant). It is an instance
-    /// field on purpose: reentrancy must be tracked per player, so a flow holding player A's lock
-    /// still acquires player B's lock (e.g. during a trade) instead of wrongly skipping it.
-    /// </summary>
-    private readonly AsyncLocal<bool> _persistenceLockHeld = new();
+    private readonly PlayerMovement _movement;
 
-    private readonly Walker _walker;
+    private readonly PlayerSummon _summon;
+
+    private readonly PlayerStorages _storages;
 
     private readonly PlayerAppearanceData _appearanceData;
 
@@ -103,7 +96,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.GameContext = gameContext;
         this.Logger = gameContext.LoggerFactory.CreateLogger<Player>();
         this.PersistenceContext = this.GameContext.PersistenceContextProvider.CreateNewPlayerContext(gameContext.Configuration);
-        this._walker = new Walker(this, this.GetStepDelay);
+        this._persistence = new PlayerPersistence(this);
+        this._movement = new PlayerMovement(this);
+        this._summon = new PlayerSummon(this);
+        this._storages = new PlayerStorages(this);
 
         this.MagicEffectList = new MagicEffectsList(this);
         this._appearanceData = new PlayerAppearanceData(this);
@@ -159,13 +155,13 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public bool CanWalkOnSafezone => true;
 
     /// <inheritdoc />
-    public bool IsWalking => this._walker.CurrentTarget != default;
+    public bool IsWalking => this._movement.IsWalking;
 
     /// <inheritdoc />
-    public TimeSpan StepDelay => this.GetStepDelay(null);
+    public TimeSpan StepDelay => this._movement.StepDelay;
 
     /// <inheritdoc />
-    public Point WalkTarget => this._walker.CurrentTarget;
+    public Point WalkTarget => this._movement.WalkTarget;
 
     /// <summary>
     /// Gets a value indicating whether this instance is invisible to other players.
@@ -373,7 +369,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <summary>
     /// Gets the player summon.
     /// </summary>
-    public (Monster, INpcIntelligence)? Summon { get; private set; }
+    public (Monster, INpcIntelligence)? Summon => this._summon.Current;
 
     /// <inheritdoc/>
     public GuildMemberStatus? GuildStatus { get; set; }
@@ -437,15 +433,20 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public ICustomPlugInContainer<IViewPlugIn> ViewPlugIns => this._viewPlugIns ??= this.CreateViewPlugInContainer();
 
     /// <inheritdoc/>
-    public IInventoryStorage? Inventory { get; private set; }
+    public IInventoryStorage? Inventory => this._storages.Inventory;
 
     /// <inheritdoc/>
-    public IStorage? TemporaryStorage { get; private set; }
+    public IStorage? TemporaryStorage => this._storages.TemporaryStorage;
 
     /// <summary>
     /// Gets or sets the vault.
     /// </summary>
-    public IStorage? Vault { get; set; }
+    public IStorage? Vault
+    {
+        get => this._storages.Vault;
+
+        set => this._storages.Vault = value;
+    }
 
     /// <summary>
     /// Gets or sets a value indicating whether the vault of the player is currently locked by a pin.
@@ -455,10 +456,15 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <summary>
     /// Gets the shop storage.
     /// </summary>
-    public IShopStorage? ShopStorage { get; private set; }
+    public IShopStorage? ShopStorage => this._storages.ShopStorage;
 
     /// <inheritdoc/>
-    public BackupItemStorage? BackupInventory { get; set; }
+    public BackupItemStorage? BackupInventory
+    {
+        get => this._storages.BackupInventory;
+
+        set => this._storages.BackupInventory = value;
+    }
 
     /// <summary>
     /// Gets or sets the deserialized MU Helper player settings.
@@ -767,7 +773,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         {
             await (this.SkillCancelTokenSource?.CancelAsync() ?? Task.CompletedTask).ConfigureAwait(false);
 
-            await this._walker.StopAsync().ConfigureAwait(false);
+            await this._movement.StopWalkingAsync().ConfigureAwait(false);
 
             if (this.GameContext.PlugInManager.GetPlugInPoint<ISpeedHackCheatCheckPlugIn>() is { } speedCheck)
             {
@@ -793,7 +799,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 this.Position = previous;
                 if (this.CurrentMap is { } map)
                 {
-                    await map.MoveAsync(this, target, this._moveLock, MoveType.Teleport).ConfigureAwait(false);
+                    await this._movement.MoveOnMapAsync(map, target, MoveType.Teleport).ConfigureAwait(false);
                 }
             }
         }
@@ -822,7 +828,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         {
             await (this.SkillCancelTokenSource?.CancelAsync() ?? Task.CompletedTask).ConfigureAwait(false);
 
-            await this._walker.StopAsync().ConfigureAwait(false);
+            await this._movement.StopWalkingAsync().ConfigureAwait(false);
 
             await this.ForEachWorldObserverAsync<IObjectsOutOfScopePlugIn>(p => p.ObjectsOutOfScopeAsync(this.GetAsEnumerable()), false).ConfigureAwait(false);
 
@@ -969,11 +975,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             await this.WarpToSafezoneAsync().ConfigureAwait(false);
         }
 
-        if (this.Summon?.Item1 is { IsAlive: true } summon)
-        {
-            await this.CurrentMap.AddAsync(summon).ConfigureAwait(false);
-            summon.OnSpawn();
-        }
+        await this._summon.AddToMapAsync(this.CurrentMap).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1081,118 +1083,23 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// Moves the player to the specified coordinate.
     /// </summary>
     /// <param name="target">The target.</param>
-    public async ValueTask MoveAsync(Point target)
-    {
-        this.Logger.LogDebug("MoveAsync: Player is moving to {0}", target);
-        await this._walker.StopAsync().ConfigureAwait(false);
-        if (this.GameContext.PlugInManager.GetPlugInPoint<ISpeedHackCheatCheckPlugIn>() is { } speedCheck)
-        {
-            await speedCheck.ResetMovementStateAsync(this).ConfigureAwait(false);
-        }
-
-        await this.CurrentMap!.MoveAsync(this, target, this._moveLock, MoveType.Instant).ConfigureAwait(false);
-        this.Logger.LogDebug("MoveAsync: Observer Count: {0}", this.Observers.Count);
-    }
+    public ValueTask MoveAsync(Point target) => this._movement.MoveAsync(target);
 
     /// <summary>
     /// Walks to the specified target coordinates using the specified steps.
     /// </summary>
     /// <param name="target">The target.</param>
     /// <param name="steps">The steps.</param>
-    public async ValueTask WalkToAsync(Point target, Memory<WalkingStep> steps)
-    {
-        var currentMap = this.CurrentMap;
-        if (currentMap == null)
-        {
-            return;
-        }
-
-        if (this.Attributes is not { } attributes)
-        {
-            return;
-        }
-
-        if (attributes[Stats.IsFrozen] > 0 || attributes[Stats.IsStunned] > 0 || attributes[Stats.IsAsleep] > 0)
-        {
-            return;
-        }
-
-        if (steps.IsEmpty)
-        {
-            return;
-        }
-
-        await this._walker.StopAsync().ConfigureAwait(false);
-
-        var startPoint = steps.Span[0].From;
-
-        var config = this.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()?.Configuration;
-        int maxAllowedWalkStartOffset = config?.MaxAllowedWalkStartOffset ?? 5;
-
-        var speedCheck = this.GameContext.PlugInManager.GetPlugInPoint<ISpeedHackCheatCheckPlugIn>();
-        if (speedCheck is { })
-        {
-            var eventArgs = new SpeedHackCheckEventArgs();
-            await speedCheck.WalkCheatCheckAsync(this, steps, eventArgs).ConfigureAwait(false);
-            if (eventArgs.IsCheatDetected)
-            {
-                return;
-            }
-        }
-
-        var currentPosition = this.Position;
-        var startOffset = startPoint.EuclideanDistanceTo(currentPosition);
-        if (startOffset > maxAllowedWalkStartOffset)
-        {
-            this.Logger.LogWarning("WalkToAsync: Player requested to walk from {0}, but it's currently at {1} (offset {2} > {3}). Resynchronizing client.", startPoint, currentPosition, startOffset, maxAllowedWalkStartOffset);
-            if (speedCheck is { })
-            {
-                await speedCheck.ResetMovementStateAsync(this).ConfigureAwait(false);
-            }
-
-            // Send current position back to the client, so that it can re-synchronize (rubberband).
-            await this.InvokeViewPlugInAsync<IObjectMovedPlugIn>(p => p.ObjectMovedAsync(this, MoveType.Instant)).ConfigureAwait(false);
-            return;
-        }
-
-        var requestedTarget = target;
-        var walkableStepCount = GetWalkableStepCount(currentMap.Terrain, steps.Span);
-        if (walkableStepCount == 0)
-        {
-            this.Logger.LogDebug(
-                "WalkToAsync: Player requested to walk to {0}, but the first path step is blocked. Resynchronizing client.",
-                requestedTarget);
-            await this.InvokeViewPlugInAsync<IObjectMovedPlugIn>(p => p.ObjectMovedAsync(this, MoveType.Instant)).ConfigureAwait(false);
-            return;
-        }
-
-        if (walkableStepCount < steps.Length)
-        {
-            steps = steps[..walkableStepCount];
-            target = steps.Span[^1].To;
-            this.Logger.LogDebug(
-                "WalkToAsync: Truncated path from {0} to the last reachable position {1} because a later step is blocked.",
-                requestedTarget,
-                target);
-        }
-
-        this.Logger.LogDebug("WalkToAsync: Player is walking to {0}", target);
-
-        var token = await this._walker.InitializeWalkToAsync(target, steps).ConfigureAwait(false);
-        await currentMap.MoveAsync(this, target, this._moveLock, MoveType.Walk).ConfigureAwait(false);
-        await this._walker.StartWalkAsync(token).ConfigureAwait(false);
-
-        this.Logger.LogDebug("WalkToAsync: Observer Count: {0}", this.Observers.Count);
-    }
+    public ValueTask WalkToAsync(Point target, Memory<WalkingStep> steps) => this._movement.WalkToAsync(target, steps);
 
     /// <inheritdoc />
-    public ValueTask<int> GetDirectionsAsync(Memory<Direction> directions) => this._walker.GetDirectionsAsync(directions);
+    public ValueTask<int> GetDirectionsAsync(Memory<Direction> directions) => this._movement.GetDirectionsAsync(directions);
 
     /// <inheritdoc />
-    public ValueTask<int> GetStepsAsync(Memory<WalkingStep> steps) => this._walker.GetStepsAsync(steps);
+    public ValueTask<int> GetStepsAsync(Memory<WalkingStep> steps) => this._movement.GetStepsAsync(steps);
 
     /// <inheritdoc />
-    public ValueTask StopWalkingAsync() => this._walker.StopAsync();
+    public ValueTask StopWalkingAsync() => this._movement.StopWalkingAsync();
 
     /// <summary>
     /// Regenerates the attributes specified in <see cref="Stats.IntervalRegenerationAttributes"/>.
@@ -1357,56 +1264,17 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// </summary>
     /// <param name="definition">The definition.</param>
     /// <exception cref="InvalidOperationException">Can't add the player summon for a player which isn't spawned yet.</exception>
-    public async ValueTask CreateSummonedMonsterAsync(MonsterDefinition definition)
-    {
-        if (this.CurrentMap is not { } gameMap)
-        {
-            throw new InvalidOperationException("Can't add a summon for a player which isn't spawned yet.");
-        }
-
-        var area = new MonsterSpawnArea
-        {
-            GameMap = gameMap.Definition,
-            MonsterDefinition = definition,
-            SpawnTrigger = SpawnTrigger.OnceAtEventStart,
-            Quantity = 1,
-            X1 = (byte)Math.Max(this.Position.X - 3, byte.MinValue),
-            X2 = (byte)Math.Min(this.Position.X + 3, byte.MaxValue),
-            Y1 = (byte)Math.Max(this.Position.Y - 3, byte.MinValue),
-            Y2 = (byte)Math.Min(this.Position.Y + 3, byte.MaxValue),
-        };
-        var intelligence = new SummonedMonsterIntelligence(this);
-        var monster = new Monster(area, definition, gameMap, NullDropGenerator.Instance, intelligence, this.GameContext.PlugInManager, this.GameContext.PathFinderPool);
-        area.MaximumHealthOverride = (int)monster.Attributes[Stats.MaximumHealth];
-        area.MaximumHealthOverride += (int)(monster.Attributes[Stats.MaximumHealth] * this.Attributes?[Stats.SummonedMonsterHealthIncrease] ?? 0);
-
-        this.Summon = (monster, intelligence);
-        monster.Initialize();
-        await gameMap.AddAsync(monster).ConfigureAwait(false);
-        monster.OnSpawn();
-    }
+    public ValueTask CreateSummonedMonsterAsync(MonsterDefinition definition) => this._summon.CreateAsync(definition);
 
     /// <summary>
     /// Notifies the player object that the summoned monster died.
     /// </summary>
-    public void SummonDied()
-    {
-        this.Summon = null;
-    }
+    public void SummonDied() => this._summon.OnDied();
 
     /// <summary>
     /// Removes the player summon.
     /// </summary>
-    public async ValueTask RemoveSummonAsync()
-    {
-        if (this.Summon is { } summon)
-        {
-            // remove summon, if exists
-            await summon.Item1.CurrentMap.RemoveAsync(summon.Item1).ConfigureAwait(false);
-            summon.Item1.Dispose();
-            this.SummonDied();
-        }
-    }
+    public ValueTask RemoveSummonAsync() => this._summon.RemoveAsync();
 
     /// <summary>
     /// Removes the pet command manager.
@@ -1459,7 +1327,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         await this.RemoveFromCurrentMapAsync().ConfigureAwait(false);
 
-        await this.RestoreTemporaryStorageItemsAsync().ConfigureAwait(false);
+        await this._storages.RestoreTemporaryStorageItemsAsync().ConfigureAwait(false);
 
         this.OpenedNpc = null;
 
@@ -1481,89 +1349,30 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>Success of the save operation.</returns>
-    public async ValueTask<bool> SaveProgressAsync(CancellationToken cancellationToken = default)
-    {
-        if (this.IsTemplatePlayer)
-        {
-            return true;
-        }
-
-        return await this.RunPersistenceExclusiveAsync(
-            () => this.PersistenceContext.SaveChangesAsync(cancellationToken),
-            cancellationToken).ConfigureAwait(false);
-    }
+    public ValueTask<bool> SaveProgressAsync(CancellationToken cancellationToken = default)
+        => this._persistence.SaveProgressAsync(cancellationToken);
 
     /// <summary>
     /// Runs the given operation while holding this player's persistence lock, so that context
     /// mutations and progress saves for the player never run concurrently.
+    /// See <see cref="PlayerPersistence"/> for the rationale and the lock ordering invariant.
     /// </summary>
-    /// <remarks>
-    /// The periodic progress save (<see cref="PlugIns.PeriodicSaveProgressPlugIn"/>) runs on an
-    /// independent timer flow. Action handlers mutate tracked entities with plain field/collection
-    /// writes (e.g. crafting toggling <c>item.ItemOptions</c>) which bypass the persistence context's
-    /// own lock; if such a mutation runs while <see cref="IContext.SaveChangesAsync"/> enumerates the
-    /// change tracker, the save throws (collection-modified / DbUpdateConcurrency) and every following
-    /// save fails too, so the whole session is lost on relog. Serializing the packet handler funnel
-    /// and the save against each other closes that window. The lock is re-entrant per asynchronous
-    /// flow, so an inline save inside an already-serialized handler does not deadlock.
-    /// <para>
-    /// Invariant: never acquire another player's persistence lock (via their
-    /// <see cref="SaveProgressAsync"/> or <see cref="RunPersistenceExclusiveAsync{T}"/>) from inside a
-    /// packet handler, which already holds this player's lock, unless a global lock order is enforced.
-    /// Today only the trade accept does a cross-player save, and it cannot form a cycle because a trade
-    /// has a single accepting side (so the A-then-B acquisition order has no concurrent B-then-A
-    /// counterpart). A second cross-player caller with the opposite order could deadlock.
-    /// </para>
-    /// </remarks>
     /// <typeparam name="T">The result type of the operation.</typeparam>
     /// <param name="operation">The operation to run exclusively.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The result of the operation.</returns>
-    public async ValueTask<T> RunPersistenceExclusiveAsync<T>(Func<ValueTask<T>> operation, CancellationToken cancellationToken = default)
-    {
-        if (this._persistenceLockHeld.Value)
-        {
-            return await operation().ConfigureAwait(false);
-        }
-
-        using var l = await this._persistenceLock.LockAsync(cancellationToken).ConfigureAwait(false);
-        this._persistenceLockHeld.Value = true;
-        try
-        {
-            return await operation().ConfigureAwait(false);
-        }
-        finally
-        {
-            this._persistenceLockHeld.Value = false;
-        }
-    }
+    public ValueTask<T> RunPersistenceExclusiveAsync<T>(Func<ValueTask<T>> operation, CancellationToken cancellationToken = default)
+        => this._persistence.RunExclusiveAsync(operation, cancellationToken);
 
     /// <summary>
     /// Runs the given operation while holding this player's persistence lock.
-    /// See <see cref="RunPersistenceExclusiveAsync{T}"/> for the rationale.
+    /// See <see cref="PlayerPersistence"/> for the rationale.
     /// </summary>
     /// <param name="operation">The operation to run exclusively.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A value task which completes when the operation completed.</returns>
-    public async ValueTask RunPersistenceExclusiveAsync(Func<ValueTask> operation, CancellationToken cancellationToken = default)
-    {
-        if (this._persistenceLockHeld.Value)
-        {
-            await operation().ConfigureAwait(false);
-            return;
-        }
-
-        using var l = await this._persistenceLock.LockAsync(cancellationToken).ConfigureAwait(false);
-        this._persistenceLockHeld.Value = true;
-        try
-        {
-            await operation().ConfigureAwait(false);
-        }
-        finally
-        {
-            this._persistenceLockHeld.Value = false;
-        }
-    }
+    public ValueTask RunPersistenceExclusiveAsync(Func<ValueTask> operation, CancellationToken cancellationToken = default)
+        => this._persistence.RunExclusiveAsync(operation, cancellationToken);
 
     /// <summary>
     /// Is called after the player killed a <see cref="Player"/>.
@@ -1635,7 +1444,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         await this.RemoveFromCurrentMapAsync().ConfigureAwait(false);
         await this._observerToWorldViewAdapter.ClearObservingObjectsListAsync().ConfigureAwait(false);
         this._observerToWorldViewAdapter.Dispose();
-        this._walker.Dispose();
+        this._movement.Dispose();
         await this.MagicEffectList.DisposeAsync().ConfigureAwait(false);
         this._respawnAfterDeathCts?.Dispose();
         (this._viewPlugIns as IDisposable)?.Dispose();
@@ -1663,20 +1472,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     protected virtual ICustomPlugInContainer<IViewPlugIn> CreateViewPlugInContainer()
     {
         throw new NotImplementedException("CreateViewPlugInContainer must be overwritten in derived classes.");
-    }
-
-    private static int GetWalkableStepCount(GameMapTerrain terrain, ReadOnlySpan<WalkingStep> steps)
-    {
-        for (var index = 0; index < steps.Length; index++)
-        {
-            var target = steps[index].To;
-            if (!terrain.WalkMap[target.X, target.Y])
-            {
-                return index;
-            }
-        }
-
-        return steps.Length;
     }
 
     private async ValueTask AddMasterExperienceCoreAsync(int experience, IAttackable? killedObject)
@@ -1816,12 +1611,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         this.IsAlive = false;
         this.IsTeleporting = false;
-        await this._walker.StopAsync().ConfigureAwait(false);
+        await this._movement.StopWalkingAsync().ConfigureAwait(false);
         await this._observerToWorldViewAdapter.ClearObservingObjectsListAsync().ConfigureAwait(false);
-        if (this.Summon?.Item1 is { IsAlive: true } summon)
-        {
-            await currentMap.RemoveAsync(summon).ConfigureAwait(false);
-        }
+        await this._summon.RemoveFromMapAsync(currentMap).ConfigureAwait(false);
 
         return true;
     }
@@ -1838,11 +1630,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             await speedCheck.ResetMovementStateAsync(this).ConfigureAwait(false);
         }
 
-        if (this.Summon?.Item1 is { IsAlive: true } summon)
-        {
-            summon.Position = gate.GetRandomPoint();
-            summon.Rotation = gate.Direction;
-        }
+        this._summon.PlaceAtGate(gate);
     }
 
     private async ValueTask RemoveFromCurrentMapAsync()
@@ -1851,86 +1639,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         {
             await map.RemoveAsync(this).ConfigureAwait(false);
             this._currentMap = null;
-        }
-    }
-
-    /// <summary>
-    /// Restores the temporary storage items placed in an NPC or trade dialog when player is disconnected.
-    /// </summary>
-    private async ValueTask RestoreTemporaryStorageItemsAsync()
-    {
-        try
-        {
-            if (this.Inventory is not { } inventory)
-            {
-                return;
-            }
-
-            if (this.BackupInventory is { } backupInventory)
-            {
-                inventory.Clear();
-                backupInventory.RestoreItemStates();
-                foreach (var item in backupInventory.Items)
-                {
-                    try
-                    {
-                        if (!await inventory.AddItemAsync(item.ItemSlot, item).ConfigureAwait(false)
-                            && !await inventory.AddItemAsync(item).ConfigureAwait(false))
-                        {
-                            this.Logger.LogError("Failed to restore item {item} from backup inventory of player {player}.", item, this.Name);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        this.Logger.LogError(ex, "Error restoring item {item} from backup inventory of player {player}.", item, this.Name);
-                    }
-                }
-
-                inventory.ItemStorage.Money = backupInventory.Money;
-                this.BackupInventory = null;
-                this.TemporaryStorage = null;
-                return;
-            }
-
-            if (this.TemporaryStorage is not { ItemStorage.Items.Count: > 0 } temporaryStorage)
-            {
-                // Nothing to restore.
-                return;
-            }
-
-            var count = temporaryStorage.ItemStorage.Items.Count;
-            this.Logger.LogInformation("Returning {count} items from temporary storage to inventory for player {player}", count, this.Name);
-
-            if (await inventory.TryTakeAllAsync(temporaryStorage).ConfigureAwait(false))
-            {
-                this.Logger.LogInformation("Returned {count} items from temporary storage to inventory for player {player}", count, this.Name);
-                this.TemporaryStorage = null;
-                return;
-            }
-
-            // We should never get so far, since the space is checked before doing anything with the temporary storage.
-            // Log this critical situation - items may be lost if fallback also fails
-            var items = temporaryStorage.Items.ToList();
-            this.Logger.LogError(
-                "CRITICAL: Could not return {count} items from temporary storage to inventory due to full inventory. Attempting fallback. Items: {items}",
-                items.Count,
-                string.Join(", ", items.Select(i => $"{i.Definition?.Name.ValueInNeutralLanguage ?? "Unknown"}(Slot:{i.ItemSlot})")));
-
-            // Try one more time to force-add items individually using the captured list
-            foreach (var item in items)
-            {
-                await this.TemporaryStorage.RemoveItemAsync(item).ConfigureAwait(false);
-                if (!await this.Inventory.AddItemAsync(item).ConfigureAwait(false))
-                {
-                    this.Logger.LogError("Failed to return item {item} to inventory. Item is lost. id: {itemid}", item, item.GetId());
-                }
-            }
-
-            this.TemporaryStorage = null;
-        }
-        catch (Exception ex)
-        {
-            this.Logger.LogError(ex, "Error returning items from temporary storage to inventory");
         }
     }
 
@@ -1963,51 +1671,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                     : (int)TimeSpan.FromHours(1).TotalSeconds;
             }
         }
-    }
-
-    /// <summary>
-    /// Gets the step delay depending on the equipped items and current movement effects.
-    /// </summary>
-    /// <param name="step">The walking step for which the delay is calculated.</param>
-    /// <returns>The current step delay, depending on equipped items.</returns>
-    private TimeSpan GetStepDelay(WalkingStep? step)
-    {
-        const double referenceFrameTimeMilliseconds = 40.0;
-        const double terrainScale = 100.0;
-
-        var speed = this.GetClientMovementSpeed(step?.From);
-        var tileDistance = step is { } walkingStep ? walkingStep.From.EuclideanDistanceTo(walkingStep.To) : 1.0;
-        var movementMilliseconds = terrainScale * Math.Max(1.0, tileDistance) / speed * referenceFrameTimeMilliseconds;
-
-        return TimeSpan.FromMilliseconds(movementMilliseconds);
-    }
-
-    private double GetClientMovementSpeed(Point? position = null)
-    {
-        if (this.IsInClientSafezone(position))
-        {
-            return this.ApplyMovementSpeedFactor(WalkMovementSpeed);
-        }
-
-        var speedAttribute = this.Attributes?[Stats.IsUnderwater] > 0
-            ? Stats.MovementSpeedUnderwater
-            : Stats.MovementSpeed;
-        var speed = this.Attributes?[speedAttribute] ?? 0;
-
-        return this.ApplyMovementSpeedFactor(Math.Max(WalkMovementSpeed, speed));
-    }
-
-    private double ApplyMovementSpeedFactor(double speed)
-    {
-        var movementSpeedFactor = this.Attributes?[Stats.MovementSpeedFactor] ?? 1.0;
-
-        return speed * (movementSpeedFactor > 0 ? movementSpeedFactor : 1.0);
-    }
-
-    private bool IsInClientSafezone(Point? position = null)
-    {
-        var checkedPosition = position ?? this.Position;
-        return this.CurrentMap?.Terrain.SafezoneMap[checkedPosition.X, checkedPosition.Y] ?? false;
     }
 
     private async ValueTask<ExitGate> GetSpawnGateOfCurrentMapAsync()
@@ -2047,7 +1710,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     private async ValueTask HitAsync(HitInfo hitInfo, IAttacker attacker, Skill? skill, bool? isFinalStreakHit = null)
     {
-        this.Summon?.Item2.RegisterHit(attacker);
+        this._summon.RegisterHit(attacker);
         var healthDamage = hitInfo.HealthDamage;
         int oversd = (int)(this.Attributes![Stats.CurrentShield] - hitInfo.ShieldDamage);
         if (oversd < 0)
@@ -2142,7 +1805,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return;
         }
 
-        await this._walker.StopAsync().ConfigureAwait(false);
+        await this._movement.StopWalkingAsync().ConfigureAwait(false);
         this.IsAlive = false;
         this._respawnAfterDeathCts = new CancellationTokenSource();
         await this.ForEachWorldObserverAsync<IObjectGotKilledPlugIn>(p => p.ObjectGotKilledAsync(this, killer), true).ConfigureAwait(false);
@@ -2166,12 +1829,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                     return;
                 }
 
-                if (this.Summon?.Item1 is { } summon)
-                {
-                    await summon.CurrentMap.RemoveAsync(summon).ConfigureAwait(false);
-                    summon.Dispose();
-                    this.Summon = null;
-                }
+                await this._summon.RemoveAsync().ConfigureAwait(false);
 
                 await this.MagicEffectList.ClearEffectsAfterDeathAsync().ConfigureAwait(false);
                 this.SetReclaimableAttributesToMaximum();
@@ -2314,10 +1972,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.Attributes[Stats.NearbyPartyMemberCount] = 0;
         this.LogInvalidInventoryItems();
 
-        this.Inventory = new InventoryStorage(this, this.GameContext);
-        this.ShopStorage = new ShopStorage(selectedCharacter);
-        this.TemporaryStorage = new Storage(InventoryConstants.TemporaryStorageSize, new TemporaryItemStorage());
-        this.Vault = null; // vault storage is getting set when vault npc is opened.
+        this._storages.CreateForCharacter(selectedCharacter);
         this.SkillList = new SkillList(this);
         this.SetReclaimableAttributesBeforeEnterGame();
         if (this.DetermineComboDefinition() is { } comboDefinition)
