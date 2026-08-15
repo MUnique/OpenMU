@@ -1,4 +1,4 @@
-// <copyright file="TargetedSkillDefaultPlugin.cs" company="MUnique">
+﻿// <copyright file="TargetedSkillDefaultPlugin.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -66,8 +66,7 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
         }
 
         var skillEntry = player.SkillList?.GetSkill(skillId);
-        var skill = skillEntry?.Skill;
-        if (skill is null || skill.SkillType == SkillType.PassiveBoost)
+        if (skillEntry?.Skill is not { } skill || skill.SkillType == SkillType.PassiveBoost)
         {
             return;
         }
@@ -126,7 +125,7 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
         }
 
         // enough mana, ag etc?
-        if (!await player.TryConsumeForSkillAsync(skill).ConfigureAwait(false))
+        if (!await player.TryConsumeForSkillAsync(skillEntry).ConfigureAwait(false))
         {
             return;
         }

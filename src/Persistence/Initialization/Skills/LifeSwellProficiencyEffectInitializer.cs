@@ -32,42 +32,7 @@ public class LifeSwellProficiencyEffectInitializer : InitializerBase
         magicEffect.Number = (byte)MagicEffectNumber.GreaterFortitudeProficiency;
         magicEffect.Name = "Life Swell Proficiency Skill Effect";
 
-        var lifeSwellEffect = this.GameConfiguration.MagicEffects.First(e => e.Number == (short)MagicEffectNumber.GreaterFortitude);
-        magicEffect.InformObservers = lifeSwellEffect.InformObservers;
-        magicEffect.SubType = lifeSwellEffect.SubType;
-        magicEffect.SendDuration = lifeSwellEffect.SendDuration;
-        magicEffect.StopByDeath = lifeSwellEffect.StopByDeath;
-        magicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
-        magicEffect.Duration.ConstantValue.Value = lifeSwellEffect.Duration!.ConstantValue.Value;
-        magicEffect.Duration.MaximumValue = lifeSwellEffect.Duration.MaximumValue;
-
-        foreach (var durationRelatedValue in lifeSwellEffect.Duration.RelatedValues)
-        {
-            var durationRelatedValueCopy = this.Context.CreateNew<AttributeRelationship>();
-            durationRelatedValueCopy.InputAttribute = durationRelatedValue.InputAttribute!.GetPersistent(this.GameConfiguration);
-            durationRelatedValueCopy.InputOperator = durationRelatedValue.InputOperator;
-            durationRelatedValueCopy.InputOperand = durationRelatedValue.InputOperand;
-            magicEffect.Duration.RelatedValues.Add(durationRelatedValueCopy);
-        }
-
-        foreach (var powerUp in lifeSwellEffect.PowerUpDefinitions)
-        {
-            var powerUpCopy = this.Context.CreateNew<PowerUpDefinition>();
-            magicEffect.PowerUpDefinitions.Add(powerUpCopy);
-            powerUpCopy.TargetAttribute = powerUp.TargetAttribute!.GetPersistent(this.GameConfiguration);
-            powerUpCopy.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-            powerUpCopy.Boost.ConstantValue.Value = powerUp.Boost!.ConstantValue.Value;
-            powerUpCopy.Boost.MaximumValue = powerUp.Boost.MaximumValue;
-
-            foreach (var boostRelatedValue in powerUp.Boost.RelatedValues)
-            {
-                var boostRelatedValueCopy = this.Context.CreateNew<AttributeRelationship>();
-                boostRelatedValueCopy.InputAttribute = boostRelatedValue.InputAttribute!.GetPersistent(this.GameConfiguration);
-                boostRelatedValueCopy.InputOperator = boostRelatedValue.InputOperator;
-                boostRelatedValueCopy.InputOperand = boostRelatedValue.InputOperand;
-                powerUpCopy.Boost.RelatedValues.Add(boostRelatedValueCopy);
-            }
-        }
+        this.CopyMagicEffectValues(magicEffect, (short)MagicEffectNumber.GreaterFortitude);
 
         // one percent per party member in view
         var boostPerPartyMember = this.Context.CreateNew<AttributeRelationship>();

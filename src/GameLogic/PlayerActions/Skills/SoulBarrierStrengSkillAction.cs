@@ -28,8 +28,7 @@ public class SoulBarrierStrengSkillAction : TargetedSkillDefaultPlugin
     public override async ValueTask PerformSkillAsync(Player player, IAttackable target, ushort skillId)
     {
         var skillEntry = player.SkillList!.GetSkill(skillId);
-        var skill = skillEntry?.Skill;
-        if (skill is null)
+        if (skillEntry?.Skill is not { } skill)
         {
             return;
         }
@@ -68,7 +67,7 @@ public class SoulBarrierStrengSkillAction : TargetedSkillDefaultPlugin
             return;
         }
 
-        if (!await player.TryConsumeForSkillAsync(skill).ConfigureAwait(false))
+        if (!await player.TryConsumeForSkillAsync(skillEntry).ConfigureAwait(false))
         {
             return;
         }
