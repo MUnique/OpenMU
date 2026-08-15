@@ -292,7 +292,8 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
                 // Generate the persistent bot population if it is not there yet (idempotent). Only this
                 // server does it - see BotServerPartition.IsGenerator; the others find the accounts once
                 // they exist and retry the spawns of their own share meanwhile.
-                var created = await generator.EnsureBotsAsync(configuration.NumberOfAccounts, configuration.MaxCharactersPerAccount).ConfigureAwait(false);
+                var profile = BotStartupProfile.For(configuration.StartAsFreshCharacters);
+                var created = await generator.EnsureBotsAsync(configuration.NumberOfAccounts, configuration.MaxCharactersPerAccount, profile).ConfigureAwait(false);
                 if (created > 0)
                 {
                     logger.LogInformation("Generated {Created} new bot account(s).", created);

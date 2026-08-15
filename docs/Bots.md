@@ -65,6 +65,12 @@ The *Bots* feature plugin, in the "Feature Plugins" section of the admin panel:
 - **`Bots pay reset costs`** — whether bots pay the configured zen and item
   costs for their resets. Off by default: they take no part in the economy those
   costs are balanced for.
+- **`Start as fresh characters`** — newly generated bots start like freshly
+  created player characters: at level 1 with level-0 starter equipment, no reset
+  history and only the skills their level-1 stats allow, instead of with a
+  random level and upgraded gear. Only affects bots which are generated from now
+  on - an existing population keeps its state until it is regenerated (see
+  `Reset bots`).
 - **`Jewel stock per kind`** — how many Jewels of Bless, Soul and Life a bot
   keeps of each kind. Above it, it stops picking them up and sells what it
   already carries. Depends on the server's drop rates: on high rates a small
