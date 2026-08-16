@@ -148,12 +148,14 @@ refuses such a cast silently, so a character which kept trying would simply stan
 there — buffing something that never takes effect, and never getting as far as
 attacking.
 
-Level-up points follow a per-class build modelled on what players actually play:
-an agility/shield meta on reset servers, guide-style builds on classic ones,
-chosen automatically by whether the reset feature is configured. Classes with
-two viable archetypes (a warrior or a wizard Magic Gladiator, a pure or an
-energy Blade Knight) roll one per bot, and a stat which hits a server's maximum
-overflows into the rest of the build.
+Level-up points follow a per-class build from the community stat guides,
+independent of the server type: the class decides the stats, and on reset
+servers the vitality a character actually receives is capped at a modest,
+per-bot target — shield and agility-based defense tank there, while classic
+servers keep the guide's plain vitality percentage. Classes with two viable
+archetypes (a warrior or a wizard Magic Gladiator, a pure or an energy Blade
+Knight, an archer or a supporter Elf) roll one per bot, and a stat which hits a
+server's maximum overflows into the rest of the build.
 
 Bots evolve like players do. The second-generation class change happens at level
 200 — the same assignment the class-change quest performs — and the master class

@@ -283,9 +283,8 @@ internal sealed class BotGenerator
     /// Spends the character's level-up points, so a high-level bot actually has high-level stats.
     /// Without this a generated level-80 bot would fight with level-1 base stats (tiny health and
     /// damage) and die instantly. The split follows the class build in <see cref="BotProgression"/>
-    /// for the server's meta profile (reset vs classic) - the same split the bot keeps using for
-    /// points it earns at runtime - and respects each stat's configured maximum (fun servers) as
-    /// well as the bot's personal vitality target on reset-meta servers.
+    /// - the same split the bot keeps using for points it earns at runtime - and respects each stat's
+    /// configured maximum (fun servers) as well as the bot's personal vitality target on reset-meta servers.
     /// </summary>
     private static void DistributeStatPoints(Character character, CharacterClass characterClass, bool resetMeta)
     {
@@ -295,7 +294,7 @@ internal sealed class BotGenerator
             return;
         }
 
-        var weights = BotProgression.GetStatWeights(characterClass, character.Name, resetMeta);
+        var weights = BotProgression.GetStatWeights(characterClass, character.Name);
         var vitalityTarget = resetMeta ? BotProgression.GetVitalityTarget(character.Name) : (int?)null;
 
         long CapacityOf(AttributeDefinition stat)
@@ -430,7 +429,7 @@ internal sealed class BotGenerator
 
         character.Inventory = context.CreateNew<ItemStorage>();
         character.Inventory.Money = StartMoney;
-        this.EquipStarterGear(context, character, resetConfiguration is not null, starterItemLevel);
+        this.EquipStarterGear(context, character, starterItemLevel);
 
         account.Characters.Add(character);
     }
@@ -457,9 +456,10 @@ internal sealed class BotGenerator
         }
 
         var learnedNumbers = new HashSet<short>(character.LearnedSkills.Select(s => s.Skill!.Number));
+        var itemGrantedSkillNumbers = BotProgression.GetItemGrantedSkillNumbers(this._gameContext.Configuration);
         foreach (var skill in this._gameContext.Configuration.Skills)
         {
-            if (!BotProgression.IsBotLearnableSkill(skill)
+            if (!BotProgression.IsBotLearnableSkill(skill, itemGrantedSkillNumbers)
                 || !skill.QualifiedCharacters.Contains(characterClass)
                 || !BotProgression.MeetsRequirements(skill, GetValue)
                 || !learnedNumbers.Add(skill.Number))
@@ -481,9 +481,8 @@ internal sealed class BotGenerator
     /// </summary>
     /// <param name="context">The persistence context.</param>
     /// <param name="character">The character to equip.</param>
-    /// <param name="resetMeta">Whether the reset-server meta profile applies.</param>
     /// <param name="starterItemLevel">The upgrade level of the starter items (level 0 for fresh characters).</param>
-    private void EquipStarterGear(IPlayerContext context, Character character, bool resetMeta, byte starterItemLevel)
+    private void EquipStarterGear(IPlayerContext context, Character character, byte starterItemLevel)
     {
         var inventory = character.Inventory!;
         var characterClass = character.CharacterClass!;
@@ -498,7 +497,7 @@ internal sealed class BotGenerator
         // The Small Axe is qualified for almost every class, so without this filter casters and archers would
         // all end up with one.
         bool IsPreferredWeapon(ItemDefinition definition)
-            => BotProgression.IsPreferredWeaponGroup(characterClass, character.Name, resetMeta, (byte)definition.Group);
+            => BotProgression.IsPreferredWeaponGroup(characterClass, character.Name, (byte)definition.Group);
 
         // Ammunition shares the bow group (Bolt/Arrows have DropLevel 0), so without this filter every
         // archer would get a bolt stack as its "weapon" and end up punching with its fists.

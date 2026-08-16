@@ -250,8 +250,7 @@ internal static class BotEquipmentHandler
             return true;
         }
 
-        var resetMeta = BotResetHandler.GetResetConfiguration(player.GameContext) is not null;
-        return BotProgression.IsPreferredWeaponGroup(characterClass, player.SelectedCharacter!.Name, resetMeta, (byte)definition.Group);
+        return BotProgression.IsPreferredWeaponGroup(characterClass, player.SelectedCharacter!.Name, (byte)definition.Group);
     }
 
     /// <summary>

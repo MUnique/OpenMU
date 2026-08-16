@@ -47,12 +47,6 @@ internal static class BotProgression
     private const byte FistMasterNumber = 25;
 
     /// <summary>
-    /// The share of each invested batch that goes into vitality on reset-meta servers, until the bot's
-    /// personal <see cref="GetVitalityTarget"/> is reached (out of a nominal weight total of ~100).
-    /// </summary>
-    private const int ResetMetaVitalityWeight = 5;
-
-    /// <summary>
     /// The base classes which evolve into a second-generation class at <see cref="ClassEvolutionLevel"/>:
     /// Dark Wizard, Dark Knight, Fairy Elf and Summoner. The Magic Gladiator, Dark Lord and Rage Fighter
     /// have no second generation - their next class is the level-400 master evolution, out of bot scope.
@@ -68,20 +62,28 @@ internal static class BotProgression
     private static readonly short[] ExcludedBuffSkillNumbers = [18, 219, 221, 222];
 
     /// <summary>
-    /// The skills which the game only activates on the castle siege map. Nothing in the skill data marks
-    /// them, but the client does not let a player cast them anywhere else, so a bot hunting with one is a
-    /// bot doing something no player can do. They are also the strongest numbers each class has - they are
-    /// meant to be - which is exactly why a "pick the strongest" rule walks straight into them: a Dark
-    /// Knight fought with Crescent Moon Slash, every elf with Starfall and every Rage Fighter with Charge.
-    /// (44 Crescent Moon Slash, 45 Lance, 46 Starfall, 57 Spiral Slash, 73 Mana Rays, 74 Fire Blast,
-    /// 269 Charge - the same set the client refuses outside a siege.)
-    /// The second group are the skills of the siege roles - the guild's battle masters and its master -
-    /// which are handed out for the siege and are not attacks at all: 67 Stun, 68 Cancel Stun,
-    /// 69 Swell Mana, 70 Invisibility, 71 Cancel Invisibility, 72 Abolish Magic. Stun in particular is
-    /// indistinguishable from a real attack skill by its data alone: like Twisting Slash and Power Slash
-    /// it is an area skill with no damage of its own and a single hit.
+    /// The skills the game only activates on the castle siege map: the client refuses to cast them
+    /// anywhere else, so a hunting bot using one does something no player can do. They are also the
+    /// strongest numbers each class has - which is exactly why a "pick the strongest" rule walked into
+    /// them - and the initialization marks them "active in castle siege" (see the character-created
+    /// skill plugins) while handing them to every created character, so each player has them when a
+    /// siege begins. The second group are the siege role skills - Stun, Cancel Stun, Swell Mana,
+    /// Invisibility, Cancel Invisibility and Abolish Magic - which are not attacks at all; Stun in
+    /// particular is an area skill with no damage and a single hit, so only its number sets it apart.
     /// </summary>
-    private static readonly short[] CastleSiegeOnlySkillNumbers = [44, 45, 46, 57, 67, 68, 69, 70, 71, 72, 73, 74, 269];
+    private static readonly short[] CastleSiegeOnlySkillNumbers = [44, 46, 57, 73, 74, 67, 68, 69, 70, 71, 72, 269];
+
+    /// <summary>
+    /// Skills a player only ever gets from an item - an orb or scroll consumed in the learnables
+    /// handler (see <c>LearnablesConsumeHandlerPlugIn</c>), or a weapon or pet carrying the skill. The
+    /// gate lives on that item (its level and stat requirements), not on the skill, so
+    /// <see cref="MeetsRequirements"/> finds nothing to check and would hand them out for free. A bot
+    /// never consumes orbs, and it only gets a weapon or pet skill by equipping the item - which the
+    /// server handles on its own - so none of these is ever learned. <see cref="GetItemGrantedSkillNumbers"/>
+    /// collects every such skill the configuration grants through an item; the numbers here are the ones
+    /// whose granting item is not modeled in the configuration at all, so they stay excluded too.
+    /// </summary>
+    private static readonly short[] ItemOrWeaponBoundSkillNumbers = [270];
 
     /// <summary>
     /// Gets the class the character evolves into at <see cref="ClassEvolutionLevel"/>, or null when the
@@ -113,26 +115,21 @@ internal static class BotProgression
     }
 
     /// <summary>
-    /// How a bot invests its stat points, per class and per bot, in one of two meta profiles chosen
-    /// by the server type (see <see cref="BotResetHandler.GetResetConfiguration"/> at the call sites):
-    /// <list type="bullet">
-    /// <item><b>Reset meta</b> (reset feature enabled) - modeled on the actual endgame characters of a
-    /// reset server: everything goes into the class's combat stats (shield and agility-based defense do
-    /// the tanking there), vitality only receives a token share until the bot's personal
-    /// <see cref="GetVitalityTarget"/> is reached (enforce via <see cref="SplitPoints"/> capacities).</item>
-    /// <item><b>Classic meta</b> (no reset feature) - the builds of community stat guides for classic
-    /// servers, where point pools are small and vitality is a plain percentage of the build.</item>
-    /// </list>
-    /// Where a class has two established builds (knight agility/PK, gladiator warrior/mage, elf
-    /// archer/supporter), each bot picks one deterministically from its character name, so the
-    /// population is diverse but every bot keeps the same build across sessions and re-invests
-    /// consistently after each reset. The first entry is always the build's primary stat - it absorbs
-    /// rounding remainders and overflow from capped stats.
+    /// How a bot invests its stat points, per class and per bot, following the builds of community
+    /// stat guides: the class decides the stats, and where a class has two established builds
+    /// (knight agility/PK, gladiator warrior/mage, elf archer/supporter) each bot picks one
+    /// deterministically from its character name, so the population is diverse but every bot keeps
+    /// the same build across sessions and re-invests consistently after each reset. The first entry
+    /// is always the build's primary stat - it absorbs rounding remainders and overflow from capped
+    /// stats.
+    /// The weights are the same on every server; only the vitality a bot actually receives differs -
+    /// the callers cap it at the bot's personal <see cref="GetVitalityTarget"/> on reset servers
+    /// (shield and agility-based defense tank there, so vitality is left near its base), while classic
+    /// servers keep the guide's plain vitality percentage.
     /// </summary>
     /// <param name="characterClass">The character class.</param>
     /// <param name="characterName">The character name; decides the build variant for two-build classes.</param>
-    /// <param name="resetMeta">Whether the reset-server meta profile applies.</param>
-    public static IReadOnlyList<(AttributeDefinition Stat, int Weight)> GetStatWeights(CharacterClass characterClass, string characterName, bool resetMeta)
+    public static IReadOnlyList<(AttributeDefinition Stat, int Weight)> GetStatWeights(CharacterClass characterClass, string characterName)
     {
         // Stable across processes (string.GetHashCode is randomized per run, which would re-spec
         // the bot on every server restart).
@@ -142,33 +139,6 @@ internal static class BotProgression
         var agi = Stats.BaseAgility;
         var ene = Stats.BaseEnergy;
         var cmd = Stats.BaseLeadership;
-
-        if (resetMeta)
-        {
-            const int v = ResetMetaVitalityWeight;
-            return characterClass.Number switch
-            {
-                DarkKnightNumber or BladeKnightNumber or BladeMasterNumber => variant == 0
-                    ? new[] { (str, 59), (agi, 39), (ene, 2), (vit, v) }
-                    : new[] { (str, 52), (agi, 35), (ene, 13), (vit, v) },
-                DarkWizardNumber or SoulMasterNumber or GrandMasterNumber =>
-                    new[] { (ene, 49), (agi, 47), (str, 4), (vit, v) },
-                FairyElfNumber or MuseElfNumber or HighElfNumber =>
-                    new[] { (agi, 67), (ene, 27), (str, 6), (vit, v) },
-                MagicGladiatorNumber or DuelMasterNumber => variant == 0
-                    ? new[] { (str, 57), (agi, 26), (ene, 17), (vit, v) }
-                    : new[] { (ene, 66), (agi, 18), (str, 16), (vit, v) },
-                DarkLordNumber or LordEmperorNumber =>
-                    new[] { (str, 54), (cmd, 23), (agi, 18), (ene, 5), (vit, v) },
-                SummonerNumber or BloodySummonerNumber or DimensionMasterNumber =>
-                    new[] { (ene, 70), (agi, 18), (str, 12), (vit, v) },
-                RageFighterNumber or FistMasterNumber =>
-                    new[] { (str, 64), (agi, 18), (ene, 18), (vit, v) },
-                _ when GetMainDamageStat(characterClass) == str =>
-                    new[] { (str, 60), (agi, 35), (vit, v) },
-                _ => new[] { (GetMainDamageStat(characterClass), 65), (agi, 30), (vit, v) },
-            };
-        }
 
         return characterClass.Number switch
         {
@@ -296,12 +266,25 @@ internal static class BotProgression
     }
 
     /// <summary>
+    /// Collects the skills the configuration hands out through items - an orb or scroll consumed to
+    /// learn it (see <c>LearnablesConsumeHandlerPlugIn</c>), or a weapon or pet carrying the skill.
+    /// Such a skill is only ever free if it also carries requirements of its own (e.g. Rageful Blow,
+    /// which is granted by an orb yet demands level 170), which <see cref="MeetsRequirements"/> then
+    /// gates; a skill without requirements of its own is gated by the item alone and never learned.
+    /// </summary>
+    /// <param name="gameConfiguration">The game configuration which defines the items.</param>
+    /// <returns>The numbers of all skills which are granted by an item.</returns>
+    public static IReadOnlySet<short> GetItemGrantedSkillNumbers(GameConfiguration gameConfiguration)
+        => gameConfiguration.Items.Where(item => item.Skill is not null).Select(item => item.Skill!.Number).ToHashSet();
+
+    /// <summary>
     /// Determines whether the skill is one a bot may learn: an actual attack skill, or a self/party
     /// buff or heal with a magic effect (which the offline buff/heal handlers know how to cast).
     /// Passive boosts, event skills, enemy debuffs and utility skills are left out.
     /// </summary>
     /// <param name="skill">The skill to check.</param>
-    public static bool IsBotLearnableSkill(Skill skill)
+    /// <param name="itemGrantedSkillNumbers">The skills granted through items, see <see cref="GetItemGrantedSkillNumbers"/>.</param>
+    public static bool IsBotLearnableSkill(Skill skill, IReadOnlySet<short> itemGrantedSkillNumbers)
     {
         if (skill.MasterDefinition is not null)
         {
@@ -310,7 +293,9 @@ internal static class BotProgression
             return false;
         }
 
-        if (CastleSiegeOnlySkillNumbers.Contains(skill.Number))
+        if (CastleSiegeOnlySkillNumbers.Contains(skill.Number)
+            || ItemOrWeaponBoundSkillNumbers.Contains(skill.Number)
+            || (itemGrantedSkillNumbers.Contains(skill.Number) && skill.Requirements is not { Count: > 0 }))
         {
             return false;
         }
@@ -318,10 +303,9 @@ internal static class BotProgression
         if (IsAttackSkill(skill))
         {
             // Worth learning if it adds damage of its own, hits more than once, or hits more than one
-            // target. Judging by AttackDamage alone locked a Rage Fighter out of its entire arsenal:
-            // Killing Blow, Chain Drive, Dragon Roar and Phoenix Shot all carry a flat bonus of zero and
-            // four hits instead, because their damage comes from the weapon - which is also how the
-            // server pays them out.
+            // target. Judging by AttackDamage alone would lock a Rage Fighter out of Chain Drive and
+            // Dragon Roar, which carry a flat bonus of zero and four hits instead, because their damage
+            // comes from the weapon - which is also how the server pays them out.
             return skill.AttackDamage > 0
                    || skill.NumberOfHitsPerAttack > 1
                    || IsAreaSkill(skill);
@@ -451,9 +435,8 @@ internal static class BotProgression
     /// </summary>
     /// <param name="characterClass">The character class.</param>
     /// <param name="characterName">The character name; decides the build variant, see <see cref="GetStatWeights"/>.</param>
-    /// <param name="resetMeta">Whether the reset-server meta profile applies.</param>
     /// <param name="itemGroup">The item group of the weapon.</param>
-    public static bool IsPreferredWeaponGroup(CharacterClass characterClass, string characterName, bool resetMeta, byte itemGroup)
+    public static bool IsPreferredWeaponGroup(CharacterClass characterClass, string characterName, byte itemGroup)
     {
         const byte maxMeleeGroup = 3;
         const byte bowGroup = 4;
@@ -473,7 +456,7 @@ internal static class BotProgression
 
         // The build's primary stat (the first weight, see GetStatWeights) tells a caster from a fighter;
         // the class fallback covers classes without an energy build of their own.
-        var primaryStat = GetStatWeights(characterClass, characterName, resetMeta)[0].Stat;
+        var primaryStat = GetStatWeights(characterClass, characterName)[0].Stat;
         if (primaryStat == Stats.BaseEnergy || energy > strength)
         {
             return itemGroup == staffGroup;

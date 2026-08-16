@@ -342,10 +342,6 @@ internal static class BotMasterHandler
         }
 
         return player.SelectedCharacter is { CharacterClass: { } characterClass } character
-               && BotProgression.IsPreferredWeaponGroup(
-                   characterClass,
-                   character.Name,
-                   BotResetHandler.GetResetConfiguration(player.GameContext) is not null,
-                   weaponGroup);
+               && BotProgression.IsPreferredWeaponGroup(characterClass, character.Name, weaponGroup);
     }
 }
