@@ -71,7 +71,7 @@ internal static class BotProgression
     /// Invisibility, Cancel Invisibility and Abolish Magic - which are not attacks at all; Stun in
     /// particular is an area skill with no damage and a single hit, so only its number sets it apart.
     /// </summary>
-    private static readonly short[] CastleSiegeOnlySkillNumbers = [44, 46, 57, 73, 74, 67, 68, 69, 70, 71, 72, 269];
+    private static readonly short[] CastleSiegeOnlySkillNumbers = [44, 45, 46, 57, 67, 68, 69, 70, 71, 72, 73, 74, 269];
 
     /// <summary>
     /// Skills a player only ever gets from an item - an orb or scroll consumed in the learnables

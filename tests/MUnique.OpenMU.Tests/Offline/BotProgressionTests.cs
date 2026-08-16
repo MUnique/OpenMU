@@ -158,6 +158,7 @@ public class BotProgressionTests
     /// </summary>
     /// <param name="skillNumber">The number of a siege-marked attack skill.</param>
     [TestCase((short)44, "Crescent Moon Slash")]
+    [TestCase((short)45, "Lance")]
     [TestCase((short)46, "Starfall")]
     [TestCase((short)57, "Spiral Slash")]
     [TestCase((short)73, "Mana Rays")]
@@ -200,26 +201,6 @@ public class BotProgressionTests
         };
 
         Assert.That(BotProgression.IsBotLearnableSkill(skill, NoItemGrantedSkills), Is.False);
-    }
-
-    /// <summary>
-    /// Tests that the skills the initialization grants as ordinary starting skills are learnable - they
-    /// are not marked as castle-siege-only, so a bot may learn and use them.
-    /// </summary>
-    /// <param name="skillNumber">The number of a starting skill.</param>
-    [TestCase((short)45, "Lance")]
-    public void IsBotLearnableSkill_StartingSkill_ReturnsTrue(short skillNumber, string name)
-    {
-        var skill = new Skill
-        {
-            Number = skillNumber,
-            Name = name,
-            SkillType = SkillType.DirectHit,
-            AttackDamage = 90,
-            NumberOfHitsPerAttack = 1,
-        };
-
-        Assert.That(BotProgression.IsBotLearnableSkill(skill, NoItemGrantedSkills), Is.True);
     }
 
     private sealed class SkillWithRequirements : Skill
