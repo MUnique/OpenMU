@@ -46,7 +46,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         StopByDeath = false,
     };
 
-    private readonly AsyncLock _experienceLock = new();
+    private readonly PlayerExperience _experience;
 
     /// <summary>
     /// Serializes context mutations done by this player's action handlers against the periodic and
@@ -97,6 +97,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.Logger = gameContext.LoggerFactory.CreateLogger<Player>();
         this.PersistenceContext = this.GameContext.PersistenceContextProvider.CreateNewPlayerContext(gameContext.Configuration);
         this._persistence = new PlayerPersistence(this);
+        this._experience = new PlayerExperience(this);
         this._movement = new PlayerMovement(this);
         this._summon = new PlayerSummon(this);
         this._storages = new PlayerStorages(this);
@@ -996,101 +997,28 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// </summary>
     /// <param name="killedObject">The killed object.</param>
     /// <returns>The gained experience.</returns>
-    public async ValueTask<int> AddExpAfterKillAsync(IAttackable killedObject)
-    {
-        if (this.SelectedCharacter?.CharacterClass is not { } characterClass)
-        {
-            return 0;
-        }
-
-        var experience = this.CalculateExpAfterKill(killedObject);
-        if (experience == 0)
-        {
-            return 0;
-        }
-
-        var currentLevel = (short)this.Attributes![Stats.Level];
-        var isMaxLevel = currentLevel == this.GameContext.Configuration.MaximumLevel;
-        var isAddMasterExperience = characterClass.IsMasterClass && isMaxLevel;
-
-        if (isAddMasterExperience)
-        {
-            await this.AddMasterExperienceAsync(experience, killedObject).ConfigureAwait(false);
-        }
-        else
-        {
-            await this.AddExperienceAsync(experience, killedObject).ConfigureAwait(false);
-        }
-
-        await this.AddPetExperienceAsync(experience).ConfigureAwait(false);
-
-        return experience;
-    }
+    public ValueTask<int> AddExpAfterKillAsync(IAttackable killedObject) => this._experience.AddAfterKillAsync(killedObject);
 
     /// <summary>
     /// Calculates the amount of experience gained after a kill, without applying it to the character.
     /// </summary>
     /// <param name="killedObject">The killed monster.</param>
     /// <returns>The calculated experience amount.</returns>
-    public int CalculateExpAfterKill(IAttackable killedObject)
-    {
-        if (this.SelectedCharacter?.CharacterClass is not { } characterClass)
-        {
-            return 0;
-        }
-
-        if (this.Attributes is not { } attributes)
-        {
-            return 0;
-        }
-
-        var currentLevel = (short)attributes[Stats.Level];
-        var isMaxLevel = currentLevel == this.GameContext.Configuration.MaximumLevel;
-        var isAddMasterExperience = characterClass.IsMasterClass && isMaxLevel;
-        var expRateAttribute = isAddMasterExperience ? Stats.MasterExperienceRate : Stats.ExperienceRate;
-        var gameRate = isAddMasterExperience ? this.GameContext.MasterExperienceRate : this.GameContext.ExperienceRate;
-
-        var experience = killedObject.CalculateBaseExperience(attributes[Stats.TotalLevel]);
-        experience *= gameRate;
-        experience *= attributes[expRateAttribute] + attributes[Stats.BonusExperienceRate];
-        experience *= this.CurrentMap?.Definition.ExpMultiplier ?? 1;
-
-        var minMultiplier = attributes[Stats.RandomExperienceMinMultiplier];
-        var maxMultiplier = attributes[Stats.RandomExperienceMaxMultiplier];
-        if (minMultiplier > 0 && maxMultiplier > 0)
-        {
-            var minimumExperience = (int)(experience * minMultiplier);
-            var maximumExperience = (int)(experience * maxMultiplier);
-            if (minimumExperience < maximumExperience)
-            {
-                return Rand.NextInt(minimumExperience, maximumExperience);
-            }
-        }
-
-        return (int)experience;
-    }
+    public ValueTask<int> CalculateExpAfterKillAsync(IAttackable killedObject) => this._experience.CalculateAfterKillAsync(killedObject);
 
     /// <summary>
     /// Adds the master experience to the current character.
     /// </summary>
     /// <param name="experience">The experience that should be added.</param>
     /// <param name="killedObject">The killed object that caused the experience gain.</param>
-    public async ValueTask AddMasterExperienceAsync(int experience, IAttackable? killedObject)
-    {
-        using var d = await this._experienceLock.LockAsync().ConfigureAwait(false);
-        await this.AddMasterExperienceCoreAsync(experience, killedObject).ConfigureAwait(false);
-    }
+    public ValueTask AddMasterExperienceAsync(int experience, IAttackable? killedObject) => this._experience.AddMasterExperienceAsync(experience, killedObject);
 
     /// <summary>
     /// Adds the experience to the current character.
     /// </summary>
     /// <param name="experience">The experience that should be added.</param>
     /// <param name="killedObject">The killed object that caused the experience gain.</param>
-    public async ValueTask AddExperienceAsync(int experience, IAttackable? killedObject)
-    {
-        using var d = await this._experienceLock.LockAsync().ConfigureAwait(false);
-        await this.AddExperienceCoreAsync(experience, killedObject).ConfigureAwait(false);
-    }
+    public ValueTask AddExperienceAsync(int experience, IAttackable? killedObject) => this._experience.AddExperienceAsync(experience, killedObject);
 
     /// <summary>
     /// Moves the player to the specified coordinate.
@@ -1488,95 +1416,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     protected virtual ICustomPlugInContainer<IViewPlugIn> CreateViewPlugInContainer()
     {
         throw new NotImplementedException("CreateViewPlugInContainer must be overwritten in derived classes.");
-    }
-
-    private async ValueTask AddMasterExperienceCoreAsync(int experience, IAttackable? killedObject)
-    {
-        if (this.Attributes![Stats.MasterLevel] >= this.GameContext.Configuration.MaximumMasterLevel)
-        {
-            await this.InvokeViewPlugInAsync<IAddExperiencePlugIn>(p => p.AddExperienceAsync(0, killedObject, ExperienceType.MaxMasterLevelReached)).ConfigureAwait(false);
-            return;
-        }
-
-        if (killedObject is not null && killedObject.Attributes[Stats.Level] < this.GameContext.Configuration.MinimumMonsterLevelForMasterExperience)
-        {
-            await this.InvokeViewPlugInAsync<IAddExperiencePlugIn>(p => p.AddExperienceAsync(0, killedObject, ExperienceType.MonsterLevelTooLowForMasterExperience)).ConfigureAwait(false);
-            return;
-        }
-
-        long exp = experience;
-
-        bool lvlup = false;
-        var expTable = this.GameContext.MasterExperienceTable;
-        if (expTable[(int)this.Attributes[Stats.MasterLevel] + 1] - this.SelectedCharacter!.MasterExperience < exp)
-        {
-            exp = expTable[(int)this.Attributes[Stats.MasterLevel] + 1] - this.SelectedCharacter.MasterExperience;
-            lvlup = true;
-        }
-
-        this.SelectedCharacter.MasterExperience += exp;
-
-        await this.InvokeViewPlugInAsync<IAddExperiencePlugIn>(p => p.AddExperienceAsync((int)exp, killedObject, ExperienceType.Master)).ConfigureAwait(false);
-
-        if (lvlup)
-        {
-            this.Attributes[Stats.MasterLevel]++;
-            this.SelectedCharacter.MasterLevelUpPoints += (int)this.Attributes[Stats.MasterPointsPerLevelUp];
-            this.SetReclaimableAttributesToMaximum();
-            this.Logger.LogDebug("Character {0} leveled up to master level {1}", this.SelectedCharacter.Name, this.Attributes[Stats.MasterLevel]);
-            await this.InvokeViewPlugInAsync<IUpdateLevelPlugIn>(p => p.UpdateMasterLevelAsync()).ConfigureAwait(false);
-            await this.ForEachWorldObserverAsync<IShowEffectPlugIn>(p => p.ShowEffectAsync(this, IShowEffectPlugIn.EffectType.LevelUp), true).ConfigureAwait(false);
-        }
-    }
-
-    private async ValueTask AddExperienceCoreAsync(int experience, IAttackable? killedObject)
-    {
-        var remainingExperience = experience;
-        while (remainingExperience > 0)
-        {
-            if (this.Attributes![Stats.Level] >= this.GameContext.Configuration.MaximumLevel)
-            {
-                await this.InvokeViewPlugInAsync<IAddExperiencePlugIn>(p => p.AddExperienceAsync(0, killedObject, ExperienceType.MaxLevelReached)).ConfigureAwait(false);
-                return;
-            }
-
-            long gainedExperience = remainingExperience;
-            bool isLevelUp = false;
-            var expTable = this.GameContext.ExperienceTable;
-            var expForNextLevel = expTable[(int)this.Attributes[Stats.Level] + 1];
-            if (expForNextLevel - this.SelectedCharacter!.Experience < gainedExperience)
-            {
-                gainedExperience = expForNextLevel - this.SelectedCharacter.Experience;
-                isLevelUp = true;
-            }
-
-            this.SelectedCharacter.Experience += gainedExperience;
-
-            await this.InvokeViewPlugInAsync<IAddExperiencePlugIn>(p => p.AddExperienceAsync((int)gainedExperience, killedObject, ExperienceType.Normal)).ConfigureAwait(false);
-
-            if (!isLevelUp)
-            {
-                return;
-            }
-
-            this.Attributes[Stats.Level]++;
-            this.SelectedCharacter.LevelUpPoints += (int)this.Attributes[Stats.PointsPerLevelUp];
-            this.SetReclaimableAttributesToMaximum();
-            this.Logger.LogDebug("Character {0} leveled up to {1}", this.SelectedCharacter.Name, this.Attributes[Stats.Level]);
-
-            this.GameContext.PlugInManager.GetPlugInPoint<ICharacterLevelUpPlugIn>()?.CharacterLeveledUp(this);
-
-            await this.InvokeViewPlugInAsync<IUpdateLevelPlugIn>(p => p.UpdateLevelAsync()).ConfigureAwait(false);
-            await this.ForEachWorldObserverAsync<IShowEffectPlugIn>(p => p.ShowEffectAsync(this, IShowEffectPlugIn.EffectType.LevelUp), true).ConfigureAwait(false);
-
-            remainingExperience -= (int)gainedExperience;
-            if (remainingExperience <= 0
-                || this.Attributes[Stats.Level] >= this.GameContext.Configuration.MaximumLevel
-                || this.GameContext.Configuration.PreventExperienceOverflow)
-            {
-                return;
-            }
-        }
     }
 
     /// <summary>
@@ -2060,7 +1899,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.Attributes[Stats.CurrentHealth] = Math.Min(this.Attributes[Stats.CurrentHealth], this.Attributes[Stats.MaximumHealth]);
     }
 
-    private void SetReclaimableAttributesToMaximum()
+    /// <summary>
+    /// Sets the current values of the regeneration attributes to their maximum values.
+    /// </summary>
+    internal void SetReclaimableAttributesToMaximum()
     {
         foreach (var regeneration in Stats.IntervalRegenerationAttributes)
         {
@@ -2201,75 +2043,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 pet.PetExperience = (int)Math.Max((int)(pet.PetExperience * 0.9), minimumExp);
                 await this.ResetPetBehaviorAsync().ConfigureAwait(false);
             }
-        }
-    }
-
-    private async ValueTask AddPetExperienceAsync(double gainedExperience)
-    {
-        async ValueTask AddExpToPetAsync(Item pet, double experience)
-        {
-            pet.PetExperience += (int)experience;
-
-            while (pet.PetExperience >= pet.Definition!.GetExperienceOfPetLevel((byte)(pet.Level + 1), pet.Definition!.MaximumItemLevel)
-                   && (!pet.IsDarkRaven() || pet.GetDarkRavenLeadershipRequirement(pet.Level + 1) <= this.Attributes![Stats.TotalLeadership]))
-            {
-                pet.Level++;
-                this.Attributes!.ItemPowerUps[pet] = this.Attributes.ItemPowerUps[pet]
-                    .Append(new PowerUpWrapper(
-                        new SimpleElement(1, AggregateType.AddRaw),
-                        pet.IsDarkRaven() ? Stats.RavenLevel : Stats.HorseLevel,
-                        this.Attributes)).ToList();
-
-                await this.InvokeViewPlugInAsync<IPetInfoViewPlugIn>(p => p.ShowPetInfoAsync(pet, pet.ItemSlot, PetStorageLocation.InventoryPetSlot)).ConfigureAwait(false);
-            }
-        }
-
-        Item? GetTrainablePet(byte inventorySlot)
-        {
-            var pet = this.Inventory?.GetItem(inventorySlot);
-            if (pet is not null
-                && pet.Definition is not null
-                && pet.Definition.PetExperienceFormula is not null
-                && pet.Definition.MaximumItemLevel > 0
-                && pet.Durability > 0
-                && pet.Level < pet.Definition.MaximumItemLevel)
-            {
-                return pet;
-            }
-
-            return null;
-        }
-
-        const double petShare = 0.2;
-        Item? movePet = GetTrainablePet(InventoryConstants.PetSlot);
-        Item? attackPet = GetTrainablePet(InventoryConstants.RightHandSlot);
-
-        if (movePet is null && attackPet is null)
-        {
-            return;
-        }
-
-        var petExperience = (int)(gainedExperience * petShare);
-
-        if (movePet is not null && attackPet is not null)
-        {
-            // Both are there, so each gains just the half.
-            petExperience /= 2;
-        }
-
-        if (petExperience < 1)
-        {
-            return;
-        }
-
-        if (movePet is { })
-        {
-            await AddExpToPetAsync(movePet, petExperience).ConfigureAwait(false);
-        }
-
-        if (attackPet is { })
-        {
-            await AddExpToPetAsync(attackPet, petExperience).ConfigureAwait(false);
         }
     }
 

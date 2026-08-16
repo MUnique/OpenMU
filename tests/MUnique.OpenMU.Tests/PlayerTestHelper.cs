@@ -80,6 +80,7 @@ public static class PlayerTestHelper
             new List<StatAttributeDefinition>
             {
                 new (Stats.Level, 0, false),
+                new (Stats.MasterLevel, 0, false),
                 new (Stats.BaseStrength, 28, true),
                 new (Stats.BaseAgility, 20, true),
                 new (Stats.BaseVitality, 25, true),
