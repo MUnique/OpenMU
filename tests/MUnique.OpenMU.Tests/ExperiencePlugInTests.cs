@@ -104,6 +104,7 @@ public class ExperiencePlugInTests
 
         await player.AddMasterExperienceAsync((int)requiredExperience, null).ConfigureAwait(false);
 
+        Assert.That((int)player.Attributes![Stats.MasterLevel], Is.EqualTo(1));
         Assert.That(player.SelectedCharacter!.MasterExperience, Is.EqualTo(player.GameContext.MasterExperienceTable[1]));
         Assert.That(plugIn.LevelUpCount, Is.EqualTo(1));
     }
