@@ -977,6 +977,11 @@ System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], func
                     var _a;
                     var data = (_a = this.world.getObjectById(objectId)) === null || _a === void 0 ? void 0 : _a.data;
                     if (data === undefined) {
+                        this.onObjectPicked(null);
+                        var info = document.getElementById("selected_info");
+                        if (info) {
+                            info.style.display = "none";
+                        }
                         return false;
                     }
                     this.onObjectPicked(data);

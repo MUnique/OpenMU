@@ -1,4 +1,4 @@
-﻿// <copyright file="LocateableExtensions.cs" company="MUnique">
+// <copyright file="LocateableExtensions.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -34,12 +34,8 @@ public static class LocateableExtensions
         };
     }
 
-    private static int GetLevel(ILocateable locateable) => locateable switch
-    {
-        Player player => player.Level,
-        IAttackable attackable => (int)attackable.Attributes[Stats.Level],
-        _ => 0,
-    };
+    private static int GetLevel(ILocateable locateable) =>
+        (int)((locateable as IAttackable)?.Attributes?[Stats.Level] ?? 0);
 
     private static int GetMasterLevel(ILocateable locateable) =>
         (int)((locateable as Player)?.Attributes?[Stats.MasterLevel] ?? 0);

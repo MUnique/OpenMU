@@ -1,4 +1,4 @@
-﻿import * as THREE from "three";
+import * as THREE from "three";
 import TWEEN from "tween";
 import { WorldObjectPicker } from "./WorldObjectPicker";
 import { World } from "./World";
@@ -79,6 +79,14 @@ export class MapApp {
     public selectObject(objectId: number): boolean {
         const data = this.world.getObjectById(objectId)?.data as ObjectData | undefined;
         if (data === undefined) {
+            // The object isn't in the scene yet. Clear any stale selection so the
+            // previously highlighted object doesn't appear to still be selected.
+            this.onObjectPicked(null);
+            const info = document.getElementById("selected_info");
+            if (info) {
+                info.style.display = "none";
+            }
+
             return false;
         }
 

@@ -1,5 +1,6 @@
-﻿@using Nito.AsyncEx
+﻿@using Microsoft.Extensions.Logging
 @using MUnique.OpenMU.Web.Map.Properties
+@using Nito.AsyncEx
 
 @implements IAsyncDisposable
 @implements IDisposable
@@ -60,8 +61,17 @@
     [Parameter]
     public EventCallback<string?> OnFollowPlayer { get; set; }
 
+    /// <summary>
+    /// Gets or sets the JS runtime.
+    /// </summary>
     [Inject]
     private IJSRuntime JsRuntime { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the logger.
+    /// </summary>
+    [Inject]
+    private ILogger<Map> Logger { get; set; } = null!;
 
     private IMapController? _controller;
 
@@ -85,9 +95,13 @@
         {
             await this.JsRuntime.InvokeVoidAsync("SelectMapObject", this.Server.Id, this.MapId, objectId).ConfigureAwait(false);
         }
-        catch
+        catch (JSDisconnectedException)
         {
-            // The player may not be loaded into the Three.js scene yet.
+            // The circuit was torn down while the call was in flight; ignore.
+        }
+        catch (JSException ex)
+        {
+            this.Logger.LogDebug(ex, "Unexpected JS interop error while selecting map object {ObjectId}.", objectId);
         }
     }
 
