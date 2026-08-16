@@ -28,7 +28,7 @@ internal static class BotBuffHandler
     /// <summary>
     /// The configured buff offers (which dialog NPC grants which buff), computed once per game configuration:
     /// this data does not change at runtime, so re-scanning every configured monster for every bot on every
-    /// check would be pure waste. Weakly keyed by configuration, so a configuration which gets garbage-
+    /// check would be pure waste. Weakly keyed by configuration, so a configuration which gets garbage
     /// collected (e.g. a thrown-away test context) is dropped together with its cached offers.
     /// </summary>
     private static readonly ConditionalWeakTable<GameConfiguration, BuffOffer[]> BuffOffersByConfiguration = new();
@@ -78,69 +78,6 @@ internal static class BotBuffHandler
     }
 
     /// <summary>
-    /// Gets the buff offers the given game configuration defines, computing them once per configuration.
-    /// </summary>
-    /// <param name="configuration">The game configuration.</param>
-    /// <returns>The buff offers.</returns>
-    private static BuffOffer[] GetBuffOffers(GameConfiguration configuration)
-    {
-        return BuffOffersByConfiguration.GetValue(configuration, static c => CreateBuffOffers(c).ToArray());
-    }
-
-    /// <summary>
-    /// Enumerates the buff offers of a configuration, dropping every buff which could not be applied to a
-    /// character anyway (see <see cref="IsApplicable"/>). The filter is configuration-static and therefore
-    /// folded into the cache instead of being repeated per bot per check.
-    /// </summary>
-    /// <param name="configuration">The game configuration.</param>
-    /// <returns>An enumeration of the applicable buff offers.</returns>
-    private static IEnumerable<BuffOffer> CreateBuffOffers(GameConfiguration configuration)
-    {
-        foreach (var monster in configuration.Monsters.Where(IsBuffNpc))
-        {
-            foreach (var buff in monster.Buffs)
-            {
-                if (IsApplicable(buff) is not { } effectDef)
-                {
-                    continue;
-                }
-
-                yield return new BuffOffer(monster, buff, effectDef);
-            }
-        }
-    }
-
-    /// <summary>
-    /// Determines whether the given buff could be applied to a character at all, matching the acceptance
-    /// criteria of <see cref="NpcBuffRequestAction"/>: the effect needs a duration and at least one power-up
-    /// which targets an attribute. Returns the (non-null) effect definition in that case.
-    /// </summary>
-    /// <param name="buff">The buff.</param>
-    /// <returns>The effect definition, or null, if the buff can not be applied.</returns>
-    private static MagicEffectDefinition? IsApplicable(Buff buff)
-    {
-        if (buff.MagicEffectDefinition is not { Duration: not null } effectDef)
-        {
-            return null;
-        }
-
-        // A buff with no duration can not be applied.
-        if (effectDef.Duration?.ConstantValue.Value <= 0)
-        {
-            return null;
-        }
-
-        return effectDef.PowerUpDefinitions.Any(def => def.Boost is not null && def.TargetAttribute is not null)
-            ? effectDef
-            : null;
-    }
-
-    /// <summary>
-    /// A single configured buff offer: the dialog NPC, the buff itself and its (non-null) effect definition.
-    /// </summary>
-    private sealed record BuffOffer(MonsterDefinition Npc, Buff Buff, MagicEffectDefinition EffectDefinition);
-
-    /// <summary>
     /// Determines whether the player is already under the given magic effect.
     /// </summary>
     /// <param name="player">The bot player.</param>
@@ -154,15 +91,15 @@ internal static class BotBuffHandler
         }
 
         // Eager snapshot, like the other readers of ActiveEffects (see MagicEffectsList): the list is
-        // mutated by the effect expiry timers, and a lazy enumeration from this (unsynchronized)
-        // helper tick raced them regularly at scale. A torn read simply counts as "active"; the next
-        // tick then skips the trip for a moment and re-evaluates.
+        // mutated by the effect expiry timers, and a lazy enumeration from this helper tick raced them regularly at scale.
+        // A torn read simply counts as "active"; the next tick then skips the trip for a moment and re-evaluates.
         try
         {
             return effects.Values.ToArray().Any(e => e?.Definition == effectDef);
         }
-        catch (Exception)
+        catch (InvalidOperationException ex)
         {
+            player.Logger.LogDebug(ex, "Bot '{Name}' encountered a concurrent modification while inspecting active effects.", player.Name);
             return true;
         }
     }
@@ -232,4 +169,67 @@ internal static class BotBuffHandler
 
         return true;
     }
+
+    /// <summary>
+    /// Gets the buff offers the given game configuration defines, computing them once per configuration.
+    /// </summary>
+    /// <param name="configuration">The game configuration.</param>
+    /// <returns>The buff offers.</returns>
+    private static BuffOffer[] GetBuffOffers(GameConfiguration configuration)
+    {
+        return BuffOffersByConfiguration.GetValue(configuration, static c => CreateBuffOffers(c).ToArray());
+    }
+
+    /// <summary>
+    /// Enumerates the buff offers of a configuration, dropping every buff which could not be applied to a
+    /// character anyway (see <see cref="IsApplicable"/>). The filter is configuration-static and therefore
+    /// folded into the cache instead of being repeated per bot per check.
+    /// </summary>
+    /// <param name="configuration">The game configuration.</param>
+    /// <returns>An enumeration of the applicable buff offers.</returns>
+    private static IEnumerable<BuffOffer> CreateBuffOffers(GameConfiguration configuration)
+    {
+        foreach (var monster in configuration.Monsters.Where(IsBuffNpc))
+        {
+            foreach (var buff in monster.Buffs)
+            {
+                if (IsApplicable(buff) is not { } effectDef)
+                {
+                    continue;
+                }
+
+                yield return new BuffOffer(monster, buff, effectDef);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Determines whether the given buff could be applied to a character at all, matching the acceptance
+    /// criteria of <see cref="NpcBuffRequestAction"/>: the effect needs a duration and at least one power-up
+    /// which targets an attribute. Returns the (non-null) effect definition in that case.
+    /// </summary>
+    /// <param name="buff">The buff.</param>
+    /// <returns>The effect definition, or null, if the buff can not be applied.</returns>
+    private static MagicEffectDefinition? IsApplicable(Buff buff)
+    {
+        if (buff.MagicEffectDefinition is not { Duration: not null } effectDef)
+        {
+            return null;
+        }
+
+        // A buff with no duration can not be applied.
+        if (effectDef.Duration?.ConstantValue.Value <= 0)
+        {
+            return null;
+        }
+
+        return effectDef.PowerUpDefinitions.Any(def => def.Boost is not null && def.TargetAttribute is not null)
+            ? effectDef
+            : null;
+    }
+
+    /// <summary>
+    /// A single configured buff offer: the dialog NPC, the buff itself and its (non-null) effect definition.
+    /// </summary>
+    private sealed record BuffOffer(MonsterDefinition Npc, Buff Buff, MagicEffectDefinition EffectDefinition);
 }

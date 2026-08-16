@@ -747,6 +747,7 @@ internal sealed class BotNavigator : AsyncDisposable
                 return true;
             }
 
+            this._nextShoppingCheckUtc = NextShoppingCheckUtc();
             return false;
         }
 
@@ -840,8 +841,7 @@ internal sealed class BotNavigator : AsyncDisposable
             // No buff NPC lives on this map at all. Like a player pulling a town scroll, the bot warps
             // to its class hometown, where the buff is offered; the better-map logic takes it back
             // hunting afterward.
-            if (this.TryGetHomeEscapeGate(out var homeGate, out var homeMap, out _)
-                && homeGate.Map != map.Definition)
+            if (this.TryGetHomeEscapeGate(out var homeGate, out var homeMap, out _))
             {
                 this._travelPath = null;
                 this._hasDestination = false;
@@ -852,6 +852,7 @@ internal sealed class BotNavigator : AsyncDisposable
                 return true;
             }
 
+            this._nextBuffCheckUtc = NextBuffCheckUtc();
             return false;
         }
 
