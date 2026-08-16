@@ -152,6 +152,13 @@ public class OfflinePlayer : Player
     internal bool IsOnShoppingTrip { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the bot is currently walking to a buff NPC to claim the
+    /// free buff it offers (e.g. the Elf Soldier), maintained by <see cref="Bots.BotNavigator"/>.
+    /// While on an errand the bot declines party invitations, like a busy player would.
+    /// </summary>
+    internal bool IsOnBuffTrip { get; set; }
+
+    /// <summary>
     /// Gets a value indicating whether a revenge against a player killer is pending or armed - the
     /// bot has unfinished business and is in no mood to group up.
     /// </summary>

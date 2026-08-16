@@ -52,7 +52,7 @@ internal static class BotPartyHandler
             return false;
         }
 
-        if (bot.IsOnShoppingTrip || bot.HasRevengeIntent || bot.CurrentMiniGame is not null)
+        if (bot.IsOnShoppingTrip || bot.IsOnBuffTrip || bot.HasRevengeIntent || bot.CurrentMiniGame is not null)
         {
             // Busy - a player in the middle of an errand, a grudge or an event would not group up either.
             return false;

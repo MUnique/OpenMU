@@ -62,6 +62,12 @@ internal sealed class BotNavigator : AsyncDisposable
     private const double ShoppingSpread = 0.4;
 
     /// <summary>
+    /// Share of the buff check interval the next check is spread over, so bots don't all walk to the
+    /// buff NPC at once. See <see cref="NextBuffCheckUtc"/>.
+    /// </summary>
+    private const double BuffSpread = 0.4;
+
+    /// <summary>
     /// How far the bot looks for an actual live monster to home in on. MU spawn areas span most of the map
     /// (e.g. Lorencia's are ~86x233 / ~105x68 tiles) with only a few dozen monsters each, so their monsters
     /// sit ~20 tiles apart. Walking to a random tile inside such an area almost never lands within the 6-tile
@@ -163,6 +169,18 @@ internal sealed class BotNavigator : AsyncDisposable
     /// <summary>Cooldown after a shopping trip before considering the next one.</summary>
     private static readonly TimeSpan ShoppingCooldown = TimeSpan.FromMinutes(10);
 
+    /// <summary>
+    /// How often the bot re-evaluates whether it should claim a buff NPC's free buff: a level-eligible
+    /// bot could claim it right away, so the check re-fires quickly while the buff has not yet been applied.
+    /// </summary>
+    private static readonly TimeSpan BuffCheckInterval = TimeSpan.FromSeconds(30);
+
+    /// <summary>
+    /// Cooldown after a buff trip before considering the next one, so bots which just got the buff
+    /// (and level-eligible ones which could not claim it) don't re-walk to the NPC every check interval.
+    /// </summary>
+    private static readonly TimeSpan BuffCooldown = TimeSpan.FromMinutes(10);
+
     /// <summary>Minimum time between two cross-map warps, so a bot does not bounce between maps (a real player does not hop maps every minute either).</summary>
     private static readonly TimeSpan WarpCooldown = TimeSpan.FromMinutes(3);
 
@@ -237,6 +255,15 @@ internal sealed class BotNavigator : AsyncDisposable
     private int _travelPathIndex;
     private Point _travelPathTarget;
     private Point? _shoppingTarget;
+
+    /// <summary>Target position of the current buff trip, or null, if there is none.</summary>
+    private Point? _buffTarget;
+
+    /// <summary>
+    /// When the bot considers a buff trip again. Like the shopping check, the first one is spread over the
+    /// cooldown (not "now"), so bots don't all march to the Elf Soldier at once.
+    /// </summary>
+    private DateTime _nextBuffCheckUtc = DateTime.UtcNow + (BuffCooldown * Rand.NextDouble());
 
     /// <summary>
     /// When this bot looks at its supplies again. Bots come up with the server, so starting them all at
@@ -348,6 +375,17 @@ internal sealed class BotNavigator : AsyncDisposable
     {
         var spread = 1 + (((Rand.NextDouble() * 2) - 1) * ShoppingSpread);
         return DateTime.UtcNow + (ShoppingCooldown * spread);
+    }
+
+    /// <summary>
+    /// Returns the time of the next buff consideration, spread around <see cref="BuffCooldown"/> so that bots
+    /// which just went to the buff NPC together don't line up there again.
+    /// </summary>
+    /// <returns>The time of the next buff consideration.</returns>
+    private static DateTime NextBuffCheckUtc()
+    {
+        var spread = 1 + (((Rand.NextDouble() * 2) - 1) * BuffSpread);
+        return DateTime.UtcNow + (BuffCooldown * spread);
     }
 
     private static int GroundDistance(MonsterSpawnArea area, Point from)
@@ -522,6 +560,14 @@ internal sealed class BotNavigator : AsyncDisposable
         // so it completes even for party members - the follow logic below would otherwise pull them
         // back to the leader mid-trade.
         if (await this.TryShoppingAsync(map, inSafezone, cancellationToken).ConfigureAwait(false))
+        {
+            return;
+        }
+
+        // A buff trip (claiming the free defense/damage buff a dialog NPC like the Elf Soldier offers)
+        // is an errand like shopping - it also completes even for party members, and does not mix with
+        // the follow logic below pulling the bot back to the leader mid-visit.
+        if (await this.TryBuffTripAsync(map, inSafezone, cancellationToken).ConfigureAwait(false))
         {
             return;
         }
@@ -701,6 +747,7 @@ internal sealed class BotNavigator : AsyncDisposable
                 return true;
             }
 
+            this._nextShoppingCheckUtc = NextShoppingCheckUtc();
             return false;
         }
 
@@ -731,6 +778,109 @@ internal sealed class BotNavigator : AsyncDisposable
         {
             await BotJewelHandler.TryUpgradeGearAsync(this._player).ConfigureAwait(false);
         }
+    }
+
+    /// <summary>
+    /// Drives a buff trip: when the server has a dialog NPC offering a buff the bot qualifies for (the
+    /// Elf Soldier grants fresh characters a defense and a damage buff, but exists only in Season Six
+    /// data), the bot heads to it - warping to the map's safezone first when out in the field, like
+    /// using a town portal - walks up to it and claims the buff like a real player would. Without data
+    /// to configure the NPC the check simply never fires, so this is a no-op on earlier seasons.
+    /// </summary>
+    /// <param name="map">The current map.</param>
+    /// <param name="inSafezone">Indicates whether the bot currently is in the safezone of the map.</param>
+    /// <param name="cancellationToken">The token which aborts the travel wait on shutdown.</param>
+    /// <returns>True, if the buff trip consumed this tick.</returns>
+    private async ValueTask<bool> TryBuffTripAsync(GameMap map, bool inSafezone, CancellationToken cancellationToken)
+    {
+        if (this._buffTarget is { } target)
+        {
+            if (this._player.GetDistanceTo(target) > MerchantTalkRange)
+            {
+                if (!await this.TravelTowardAsync(map, target, cancellationToken).ConfigureAwait(false))
+                {
+                    // No way to the buff NPC from here - give up this trip and don't retry every
+                    // check interval: an unreachable NPC stays unreachable for a while, and a bot
+                    // retrying twice a minute wastes its hunting time on futile marches.
+                    this._player.Logger.LogDebug("Bot '{Name}' gives up its buff trip: no route to the buff NPC at {Target}.", this._player.Name, target);
+                    this._buffTarget = null;
+                    this._player.IsOnBuffTrip = false;
+                    this._nextBuffCheckUtc = NextBuffCheckUtc();
+                }
+
+                return true;
+            }
+
+            // The dialog itself runs in the MU Helper tick, not here: it pauses the combat AI on the
+            // next tick and applies the effect to the character, a player-state mutation which must run
+            // where all other bot mutations run (see PendingBotActions).
+            this._player.PendingBotActions.Enqueue(() => this.ClaimBuffAsync(map, target));
+
+            this._buffTarget = null;
+            this._player.IsOnBuffTrip = false;
+            this._nextBuffCheckUtc = NextBuffCheckUtc();
+            this._lastMoveUtc = DateTime.UtcNow; // standing at the buff NPC is not "stuck"
+            return true;
+        }
+
+        if (DateTime.UtcNow < this._nextBuffCheckUtc)
+        {
+            return false;
+        }
+
+        this._nextBuffCheckUtc = DateTime.UtcNow + BuffCheckInterval;
+        if (BotBuffHandler.TryGetApplicableBuff(this._player) is null)
+        {
+            // No buff dialog NPC configured (data without an Elf Soldier) or the bot does not qualify
+            // (already buffed, or outside the buff's level range): a no-op on such servers.
+            return false;
+        }
+
+        if (BotBuffHandler.FindBuffNpcPosition(this._player, map) is not { } buffNpcPosition)
+        {
+            // No buff NPC lives on this map at all. Like a player pulling a town scroll, the bot warps
+            // to its class hometown, where the buff is offered; the better-map logic takes it back
+            // hunting afterward.
+            if (this.TryGetHomeEscapeGate(out var homeGate, out var homeMap, out _))
+            {
+                this._travelPath = null;
+                this._hasDestination = false;
+                this._lastWarpUtc = DateTime.UtcNow;
+                this._nextBuffCheckUtc = DateTime.UtcNow; // start the trip on the new map right away
+                this._player.Logger.LogDebug("Bot '{Name}' warps home to {Map} for its buff - no buff NPC on its map.", this._player.Name, homeMap.Name);
+                await this._player.WarpToAsync(homeGate).ConfigureAwait(false);
+                return true;
+            }
+
+            this._nextBuffCheckUtc = NextBuffCheckUtc();
+            return false;
+        }
+
+        // Buff NPCs stand in town (in or near the safezone): when out in the field, warp to the map's
+        // safezone first (like using a town portal scroll), then walk over to the NPC.
+        if (!inSafezone
+            && map.Definition.ExitGates.Where(g => g.IsSpawnGate).SelectRandom() is { } townGate)
+        {
+            this._travelPath = null;
+            this._hasDestination = false;
+            await this._player.WarpToAsync(townGate).ConfigureAwait(false);
+        }
+
+        this._buffTarget = buffNpcPosition;
+        this._player.IsOnBuffTrip = true;
+        this._player.Logger.LogDebug("Bot '{Name}' heads to the buff NPC for its free buff.", this._player.Name);
+        return true;
+    }
+
+    /// <summary>
+    /// Claims the buff at the buff NPC, as it runs inside the MU Helper tick: open the dialog, request
+    /// the buff, close the dialog - the player-like visit, see <see cref="BotBuffHandler.TryRequestBuffAsync"/>.
+    /// </summary>
+    /// <param name="map">The current map.</param>
+    /// <param name="buffNpcPosition">The position of the buff NPC.</param>
+    private async ValueTask ClaimBuffAsync(GameMap map, Point buffNpcPosition)
+    {
+        await BotBuffHandler.TryRequestBuffAsync(this._player, map, buffNpcPosition).ConfigureAwait(false);
     }
 
     /// <summary>

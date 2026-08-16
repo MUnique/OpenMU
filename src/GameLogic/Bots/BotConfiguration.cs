@@ -41,6 +41,16 @@ public class BotConfiguration
     public bool PurgeBots { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether newly generated bot characters start as fresh
+    /// characters, the way a player who just created one does: at level 1 with level-0 starter
+    /// equipment, no reset history and only the skills its level-1 stats allow. This only affects
+    /// characters which are generated from now on - an existing bot population keeps its state
+    /// until it is regenerated (<see cref="ResetBots"/>).
+    /// </summary>
+    [Display(Name = "Start as fresh characters", Description = "Newly generated bots start at level 1 with level-0 starter equipment, like a freshly created player character, instead of with a random level, reset history and upgraded gear.")]
+    public bool StartAsFreshCharacters { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether the bot population rotates its presence over the day:
     /// fewer bots are online at night, most in the evening, with bots smoothly logging in and out -
     /// like a real player base, instead of the same characters being online 24/7.
