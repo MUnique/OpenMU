@@ -24,6 +24,16 @@ function CreateMap(serverId, mapId, containerId, appId) {
                     document.getElementById("objectData_id").textContent = data.id;
                     document.getElementById("objectData_x").textContent = data.x;
                     document.getElementById("objectData_y").textContent = data.y;
+                    const levelContainer = document.getElementById("objectData_level_container");
+                    const levelElement = document.getElementById("objectData_level");
+                    if (levelContainer && levelElement) {
+                        if (data.level) {
+                            levelContainer.style.display = "inline";
+                            levelElement.textContent = data.level + (data.masterLevel ? " (+" + data.masterLevel + " master)" : "");
+                        } else {
+                            levelContainer.style.display = "none";
+                        }
+                    }
                 }
             });
             window[appId] = window.mapApps[serverId][mapId];
@@ -52,6 +62,14 @@ function HighlightFollowedPlayer(serverId, mapId, playerName) {
     var app = window.mapApps && window.mapApps[serverId] && window.mapApps[serverId][mapId];
     if (app && app.highlightByName) {
         return app.highlightByName(playerName);
+    }
+    return false;
+}
+
+function SelectMapObject(serverId, mapId, objectId) {
+    var app = window.mapApps && window.mapApps[serverId] && window.mapApps[serverId][mapId];
+    if (app && app.selectObject) {
+        return app.selectObject(objectId);
     }
     return false;
 }
