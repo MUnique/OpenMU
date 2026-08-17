@@ -13,10 +13,16 @@
         <NavLink class="dropdown-item" href="@($"edit-config/{typeof(GameConfiguration).FullName}/{this.GameConfigurationId}/hide-collections")" @onclick="() => NavigationHistory.Clear()">@Resources.General</NavLink>
         <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(MonsterDefinition).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.Monsters</NavLink>
         <NavLink class="dropdown-item" href="@($"merchants/")" @onclick="() => NavigationHistory.Clear()">@Resources.MerchantStores</NavLink>
+        <NavLink class="dropdown-item" href="merchant-cockpit" @onclick="() => NavigationHistory.Clear()">
+            <span class="oi oi-cart" aria-hidden="true"></span> Merchant Cockpit
+        </NavLink>
         <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(CharacterClass).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.CharacterClasses</NavLink>
         <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(Skill).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.Skills</NavLink>
         <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(ItemDefinition).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.Items</NavLink>
         <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(DropItemGroup).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.DropItemGroups</NavLink>
+        <NavLink class="dropdown-item" href="batch-operations" @onclick="() => NavigationHistory.Clear()">
+            <span class="oi oi-cog" aria-hidden="true"></span> Operaciones por lote
+        </NavLink>
         <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(GameMapDefinition).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.GameMaps</NavLink>
         <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(MiniGameDefinition).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.MiniGames</NavLink>
         <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(WarpInfo).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.WarpList</NavLink>

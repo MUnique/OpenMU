@@ -31,6 +31,12 @@ public partial class GameServerDefinition
     public float ExperienceRate { get; set; }
 
     /// <summary>
+    /// Gets or sets the Zen/money multiplier for the specific server.
+    /// This is applied in addition to the character/global MoneyAmountRate.
+    /// </summary>
+    public float MoneyRate { get; set; } = 1.0f;
+
+    /// <summary>
     /// Gets or sets a value indicating whether PVP is enabled on this server.
     /// </summary>
     public bool PvpEnabled { get; set; } = true;
