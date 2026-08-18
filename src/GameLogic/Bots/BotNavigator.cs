@@ -464,7 +464,7 @@ internal sealed class BotNavigator : AsyncDisposable
         }
 
         // Party bookkeeping: answer a pending invitation from a player once its human-like delay
-        // passed, and leave a party with a human again when the bot got bored (see BotPartyHandler).
+        // passed (see BotPartyHandler).
         await BotPartyHandler.ProcessAsync(this._player).ConfigureAwait(false);
 
         // Make sure the bot always carries healing and mana potions. Without them, the offline handlers
@@ -949,10 +949,6 @@ internal sealed class BotNavigator : AsyncDisposable
         // Fight from wherever the bot stands; the combat handler engages the targets around it.
         this._player.HuntingOrigin = this._player.Position;
 
-        // The party boredom timer must not run down (let alone fire) mid-event; the window
-        // restarts once the event is over.
-        this._player.PartyBoredomAtUtc = null;
-
         if (this._player.IsWalking)
         {
             return;
@@ -1151,8 +1147,8 @@ internal sealed class BotNavigator : AsyncDisposable
         if (BotPartyHandler.HasHumanCompanion(this._player))
         {
             // Not in the middle of a hunting session with a player: the reset would wipe the bot's
-            // strength and teleport it home, deserting the group. It resets right after the party
-            // ends (the boredom timer of BotPartyHandler bounds how long that takes).
+            // strength and teleport it home, deserting the group. It resets once the party with the
+            // human companion ends.
             return false;
         }
 

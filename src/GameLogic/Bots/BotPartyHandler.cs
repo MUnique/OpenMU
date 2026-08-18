@@ -10,11 +10,14 @@ using MUnique.OpenMU.GameLogic.Offline;
 /// Lets a server-side bot party up with players who invite it (enabled by
 /// <see cref="BotMuHelperSettings.AutoAcceptAnyone"/>): the invitation is accepted after a short
 /// human-like delay, and the bot then follows the leader like any party member (see the follow logic
-/// in <see cref="BotNavigator"/>) until it gets bored and politely leaves. Safeguards keep it
-/// believable and abuse-free: no acceptance while the bot is on an errand (shopping trip) or has
-/// unfinished business (revenge), and the invitation is re-validated when the delay has passed - the
-/// inviter may have joined another party or left. There is no level gate, matching OpenMU's own party
-/// action: it is the player who invites, and the bot leaves again once it gets bored.
+/// in <see cref="BotNavigator"/>). A bot stays in the party with its human companion for as long as
+/// the party exists - a player who groups a bot keeps a companion for the whole session, and the bot
+/// only leaves on the engine's own terms (the party disbands, it is kicked, or it can no longer
+/// legally follow the leader to another map). Safeguards keep it believable and abuse-free: no
+/// acceptance while the bot is on an errand (shopping trip) or has unfinished business (revenge), and
+/// the invitation is re-validated when the delay has passed - the inviter may have joined another
+/// party or left. There is no level gate, matching OpenMU's own party action: it is the player who
+/// invites.
 /// </summary>
 internal static class BotPartyHandler
 {
@@ -23,16 +26,6 @@ internal static class BotPartyHandler
 
     /// <summary>Upper bound of the human-like delay before the bot answers an invitation.</summary>
     private static readonly TimeSpan MaxAcceptDelay = TimeSpan.FromSeconds(5);
-
-    /// <summary>
-    /// Lower bound of the time the bot stays in a party with a human before it gets bored and leaves.
-    /// A player who groups a bot gets a companion for a decent hunting session, but not a permanent
-    /// follower - the bot has its own goals (its resets, its shopping, its own pace).
-    /// </summary>
-    private static readonly TimeSpan MinPartyDuration = TimeSpan.FromMinutes(10);
-
-    /// <summary>Upper bound of the time the bot stays in a party with a human, see <see cref="MinPartyDuration"/>.</summary>
-    private static readonly TimeSpan MaxPartyDuration = TimeSpan.FromMinutes(20);
 
     /// <summary>
     /// Schedules the acceptance of a party invitation to a bot, if the bot is available for it.
@@ -79,9 +72,7 @@ internal static class BotPartyHandler
 
     /// <summary>
     /// Drives the bot's party behavior; called from the bot's regular evaluation tick. Answers a
-    /// pending invitation once its delay passed, and leaves the party again when the bot got bored
-    /// of grouping with a human (bot-only parties are exempt - they are managed by the hourly
-    /// re-formation of <see cref="BotManager"/>).
+    /// pending invitation once its delay passed.
     /// </summary>
     /// <param name="bot">The bot.</param>
     internal static async ValueTask ProcessAsync(OfflinePlayer bot)
@@ -97,22 +88,6 @@ internal static class BotPartyHandler
             {
                 bot.LastPartyRequester = null;
             }
-        }
-
-        if (bot.Party is { } party && HasHumanCompanion(bot))
-        {
-            bot.PartyBoredomAtUtc ??= DateTime.UtcNow + MinPartyDuration
-                + TimeSpan.FromSeconds(Rand.NextInt(0, (int)(MaxPartyDuration - MinPartyDuration).TotalSeconds + 1));
-            if (DateTime.UtcNow >= bot.PartyBoredomAtUtc)
-            {
-                bot.PartyBoredomAtUtc = null;
-                bot.Logger.LogDebug("Bot '{Name}' got bored and leaves its party.", bot.Name);
-                await party.KickMySelfAsync(bot).ConfigureAwait(false);
-            }
-        }
-        else
-        {
-            bot.PartyBoredomAtUtc = null;
         }
     }
 

@@ -13,7 +13,7 @@ using MUnique.OpenMU.GameLogic.PlayerActions.Party;
 
 /// <summary>
 /// Tests <see cref="BotPartyHandler"/> - how a server-side bot answers party invitations from
-/// players and when it leaves the party again.
+/// players and how long it stays in a party.
 /// </summary>
 [TestFixture]
 public class BotPartyHandlerTest
@@ -45,7 +45,7 @@ public class BotPartyHandlerTest
 
     /// <summary>
     /// There is no level gate (matching OpenMU's own party action): a bot accepts an inviter of any
-    /// level, since it is the player who invites and the bot leaves again once it gets bored. The
+    /// level, since it is the player who invites and the bot stays with the party once it joined. The
     /// inviter here is a maxed veteran (character level 400 plus the master level cap of 200, i.e. the
     /// ceiling of the Season 6 seed) inviting a low-level bot - the widest gap a stock server produces.
     /// </summary>
@@ -125,10 +125,12 @@ public class BotPartyHandlerTest
     }
 
     /// <summary>
-    /// After its rolled party time is up, the bot gets bored of the party with a human and leaves.
+    /// The bot stays in a party with a human instead of leaving on its own: a player who groups a
+    /// bot keeps a companion for the whole session, and the bot only leaves on the engine's own
+    /// terms (party disbands, kicked, or it cannot legally follow the leader anymore).
     /// </summary>
     [Test]
-    public async ValueTask LeavesPartyWithHumanWhenBoredAsync()
+    public async ValueTask StaysInPartyWithHumanAsync()
     {
         var gameContext = GameContextTestHelper.CreateGameContext();
         var bot = await CreateBotAsync(gameContext, "Bot").ConfigureAwait(false);
@@ -137,16 +139,15 @@ public class BotPartyHandlerTest
         await party.AddAsync(requester).ConfigureAwait(false);
         await party.AddAsync(bot).ConfigureAwait(false);
 
-        bot.PartyBoredomAtUtc = DateTime.UtcNow - TimeSpan.FromSeconds(1);
         await BotPartyHandler.ProcessAsync(bot).ConfigureAwait(false);
 
-        Assert.That(bot.Party, Is.Null);
-        Assert.That(bot.PartyBoredomAtUtc, Is.Null);
+        Assert.That(bot.Party, Is.SameAs(party));
+        Assert.That(requester.Party, Is.SameAs(party));
     }
 
     /// <summary>
-    /// Bot-only parties are managed by the hourly re-formation instead - no boredom timer runs, and
-    /// the bot stays with its group.
+    /// Bot-only parties are managed by the hourly re-formation (see <see cref="BotManager"/>), and a
+    /// bot never leaves such a party on its own - it stays with its group.
     /// </summary>
     [Test]
     public async ValueTask StaysInBotOnlyPartyAsync()
@@ -158,11 +159,9 @@ public class BotPartyHandlerTest
         await party.AddAsync(otherBot).ConfigureAwait(false);
         await party.AddAsync(bot).ConfigureAwait(false);
 
-        bot.PartyBoredomAtUtc = DateTime.UtcNow - TimeSpan.FromSeconds(1);
         await BotPartyHandler.ProcessAsync(bot).ConfigureAwait(false);
 
         Assert.That(bot.Party, Is.SameAs(party));
-        Assert.That(bot.PartyBoredomAtUtc, Is.Null);
     }
 
     /// <summary>
