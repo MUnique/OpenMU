@@ -61,8 +61,13 @@ public class AttributeRelationshipElement : SimpleElement
 
     private float GetAndCacheValue()
     {
-        this._cachedValue = this.CalculateValue();
-        return this._cachedValue.Value;
+        // Return the freshly computed value rather than re-reading the field: a concurrent ElementChanged
+        // (e.g. from an input attribute whose element is removed when a magic effect expires) can reset
+        // _cachedValue to null between the assignment and the read, which would make _cachedValue.Value
+        // throw an InvalidOperationException.
+        var value = this.CalculateValue();
+        this._cachedValue = value;
+        return value;
     }
 
     private float CalculateValue()

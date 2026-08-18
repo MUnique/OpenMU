@@ -195,4 +195,113 @@ public class ComposableAttributeTests
         this._composableAttribute.RemoveElement(element);
         Assert.That(eventCalled, Is.True);
     }
+
+    /// <summary>
+    /// Tests that reading <see cref="ComposableAttribute.Value"/> on one thread while elements are
+    /// added and removed on another thread does not throw. This is a regression test for the race
+    /// condition where a magic effect expiring on a timer thread removed an element while the value was
+    /// being recalculated, exposing a <c>null</c> list slot to the enumeration and throwing a
+    /// <see cref="NullReferenceException"/> (or an <see cref="InvalidOperationException"/>).
+    /// </summary>
+    /// <returns>The task representing the asynchronous test.</returns>
+    [Test]
+    public async Task ConcurrentAddRemoveWhileReadingValueDoesNotThrow()
+    {
+        const int cycles = 20000;
+        foreach (var seed in Enumerable.Range(1, 64))
+        {
+            this._composableAttribute.AddElement(new SimpleElement { Value = seed, AggregateType = AggregateType.AddRaw });
+        }
+
+        Exception? readerError = null;
+
+        var writer = Task.Run(() =>
+        {
+            for (var i = 0; i < cycles; i++)
+            {
+                // Each cycle mutates the element list twice and invalidates the cached value, mirroring
+                // a magic effect that is applied and then expires on a background thread.
+                var element = new SimpleElement { Value = 1, AggregateType = AggregateType.AddRaw };
+                this._composableAttribute.AddElement(element);
+                this._composableAttribute.RemoveElement(element);
+            }
+        });
+
+        var reader = Task.Run(() =>
+        {
+            try
+            {
+                while (!writer.IsCompleted)
+                {
+                    // The concurrent cache invalidation forces a recompute, which enumerates the list.
+                    _ = this._composableAttribute.Value;
+                }
+            }
+            catch (Exception ex)
+            {
+                readerError = ex;
+            }
+        });
+
+        await Task.WhenAll(writer, reader).ConfigureAwait(false);
+
+        // The fix guarantees crash-freedom, not value coherency: the value cache stays best-effort under
+        // concurrency (a stale or torn read corrects itself on the next recalculation), so this test only
+        // asserts that the concurrent reads never threw.
+        Assert.That(readerError, Is.Null, $"Reading the value concurrently threw: {readerError}");
+    }
+
+    /// <summary>
+    /// Tests that recalculating a parent attribute concurrently with mutations of a child attribute it
+    /// depends on neither throws nor deadlocks. The parent's value is computed from an
+    /// <see cref="AttributeRelationshipElement"/> that wraps the child attribute, so a recalculation
+    /// walks into the child while the child's elements are being added and removed on another thread.
+    /// This reproduces the nested variant of the race that surfaced through
+    /// <see cref="AttributeRelationshipElement"/> in the field, and it fails with a timeout instead of
+    /// hanging should the locking ever deadlock.
+    /// </summary>
+    /// <returns>The task representing the asynchronous test.</returns>
+    [Test]
+    public async Task ConcurrentRecalculationOfDependentAttributesDoesNotDeadlock()
+    {
+        const int cycles = 50000;
+        var childDefinition = new AttributeDefinition(new Guid("7C2E4C1B-2C0A-4E7A-9C9E-1B0D3F5A6E77"), "Child attribute", "Child attribute");
+        var child = new ComposableAttribute(childDefinition);
+        child.AddElement(new ConstantElement(10));
+
+        // The parent reads the child attribute as an input element, so recalculating the parent recurses
+        // into the child while the child is mutated concurrently.
+        this._composableAttribute.AddElement(new AttributeRelationshipElement(new IElement[] { child }, new ConstantElement(0), InputOperator.Add));
+
+        Exception? error = null;
+
+        var writer = Task.Run(() =>
+        {
+            for (var i = 0; i < cycles; i++)
+            {
+                var element = new SimpleElement { Value = 1, AggregateType = AggregateType.AddRaw };
+                child.AddElement(element);
+                child.RemoveElement(element);
+            }
+        });
+
+        var reader = Task.Run(() =>
+        {
+            try
+            {
+                while (!writer.IsCompleted)
+                {
+                    _ = this._composableAttribute.Value;
+                }
+            }
+            catch (Exception ex)
+            {
+                error = ex;
+            }
+        });
+
+        await Task.WhenAll(writer, reader).WaitAsync(TimeSpan.FromSeconds(30)).ConfigureAwait(false);
+
+        Assert.That(error, Is.Null, $"Reading the dependent value concurrently threw: {error}");
+    }
 }
