@@ -358,7 +358,7 @@ internal static class BotJewelHandler
         var consumed = inventory.GetItem(jewelSlot) != jewel;
         if (consumed)
         {
-            player.Logger.LogInformation(
+            player.Logger.LogDebug(
                 "Bot '{Name}' used '{Jewel}' on '{Item}': level {Before} -> {After}.",
                 player.Name,
                 jewel.Definition?.Name,

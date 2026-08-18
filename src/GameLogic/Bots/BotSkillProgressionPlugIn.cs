@@ -98,7 +98,7 @@ public class BotSkillProgressionPlugIn : ICharacterLevelUpPlugIn
         }
 
         character.CharacterClass = evolvedClass;
-        player.Logger.LogInformation(
+        player.Logger.LogDebug(
             "Bot '{Name}' evolved into {Class} at level {Level}.",
             player.Name,
             evolvedClass.Name,
@@ -116,7 +116,7 @@ public class BotSkillProgressionPlugIn : ICharacterLevelUpPlugIn
         }
 
         var resetMeta = BotResetHandler.GetResetConfiguration(player.GameContext) is not null;
-        var weights = BotProgression.GetStatWeights(characterClass, character.Name, resetMeta);
+        var weights = BotProgression.GetStatWeights(characterClass, character.Name);
         var vitalityTarget = resetMeta ? BotProgression.GetVitalityTarget(character.Name) : (int?)null;
 
         // Mirrors the capacity checks of the stat-increase action (a stat's configured maximum on fun
@@ -157,9 +157,10 @@ public class BotSkillProgressionPlugIn : ICharacterLevelUpPlugIn
 
         float? GetValue(AttributeDefinition attribute) => player.Attributes?[attribute];
 
+        var itemGrantedSkillNumbers = BotProgression.GetItemGrantedSkillNumbers(player.GameContext.Configuration);
         foreach (var skill in player.GameContext.Configuration.Skills)
         {
-            if (!BotProgression.IsBotLearnableSkill(skill)
+            if (!BotProgression.IsBotLearnableSkill(skill, itemGrantedSkillNumbers)
                 || !skill.QualifiedCharacters.Contains(characterClass)
                 || skillList.ContainsSkill((ushort)skill.Number)
                 || !BotProgression.MeetsRequirements(skill, GetValue))
@@ -168,7 +169,7 @@ public class BotSkillProgressionPlugIn : ICharacterLevelUpPlugIn
             }
 
             await skillList.AddLearnedSkillAsync(skill).ConfigureAwait(false);
-            player.Logger.LogInformation("Bot '{Name}' learned '{Skill}' at level {Level}.", player.Name, skill.Name, player.Level);
+            player.Logger.LogDebug("Bot '{Name}' learned '{Skill}' at level {Level}.", player.Name, skill.Name, player.Level);
         }
     }
 }

@@ -126,7 +126,7 @@ internal static class BotMiniGameHandler
         {
             // Like a player who cannot join the run: the bot says goodbye and goes back to its
             // own hunting life instead of waiting at the gate.
-            bot.Logger.LogInformation(
+            bot.Logger.LogDebug(
                 "Bot '{Name}' cannot follow '{Leader}' into {Event} ({Reason}) and leaves the party.",
                 bot.Name,
                 leader.Name,
@@ -150,7 +150,7 @@ internal static class BotMiniGameHandler
         {
             // Full or already closed - not the bot's fault; it stays in the party and waits for
             // the leader outside, hunting normally.
-            bot.Logger.LogInformation(
+            bot.Logger.LogDebug(
                 "Bot '{Name}' could not follow '{Leader}' into {Event}: {Result}.",
                 bot.Name,
                 leader.Name,
@@ -168,7 +168,7 @@ internal static class BotMiniGameHandler
         await bot.MagicEffectList.ClearEffectsAfterDeathAsync().ConfigureAwait(false);
         await bot.RemoveSummonAsync().ConfigureAwait(false);
         await bot.WarpToAsync(entrance).ConfigureAwait(false);
-        bot.Logger.LogInformation(
+        bot.Logger.LogDebug(
             "Bot '{Name}' follows '{Leader}' into {Event}.",
             bot.Name,
             leader.Name,

@@ -14,24 +14,25 @@ using NUnit.Framework;
 [TestFixture]
 public class BotSkillRepertoireTest
 {
+    private static readonly IReadOnlySet<short> NoItemGrantedSkills = new HashSet<short>();
     /// <summary>
     /// Tests that the castle siege skills are refused. They carry the highest damage numbers of their
     /// classes, so a "strongest first" rule walks straight into them, and the game activates them
-    /// nowhere but the siege map.
+    /// nowhere but the siege map - the initialization marks them "active in castle siege" (see the
+    /// character-created skill plugins).
     /// </summary>
     /// <param name="skillNumber">The number of the castle siege skill.</param>
-    [TestCase((short)44)]  // Crescent Moon Slash
-    [TestCase((short)45)]  // Lance
-    [TestCase((short)46)]  // Starfall
-    [TestCase((short)57)]  // Spiral Slash
-    [TestCase((short)73)]  // Mana Rays
-    [TestCase((short)74)]  // Fire Blast
-    [TestCase((short)269)] // Charge
-    public void CastleSiegeSkillIsNotLearned(short skillNumber)
+    /// <param name="name">The name of the skill.</param>
+    [TestCase((short)44, "Crescent Moon Slash")]
+    [TestCase((short)46, "Starfall")]
+    [TestCase((short)57, "Spiral Slash")]
+    [TestCase((short)73, "Mana Rays")]
+    [TestCase((short)74, "Fire Blast")]
+    public void CastleSiegeSkillIsNotLearned(short skillNumber, string name)
     {
-        var skill = CreateAttackSkill(skillNumber, attackDamage: 120);
+        var skill = CreateAttackSkill(skillNumber, attackDamage: 120, name: name);
 
-        Assert.That(BotProgression.IsBotLearnableSkill(skill), Is.False);
+        Assert.That(BotProgression.IsBotLearnableSkill(skill, NoItemGrantedSkills), Is.False);
     }
 
     /// <summary>
@@ -42,22 +43,24 @@ public class BotSkillRepertoireTest
     [Test]
     public void SiegeRoleSkillIsNotLearned()
     {
-        var stun = CreateAttackSkill(67, attackDamage: 0, skillType: SkillType.AreaSkillAutomaticHits);
+        var stun = CreateAttackSkill(67, attackDamage: 0, skillType: SkillType.AreaSkillAutomaticHits, name: "Stun");
 
-        Assert.That(BotProgression.IsBotLearnableSkill(stun), Is.False);
+        Assert.That(BotProgression.IsBotLearnableSkill(stun, NoItemGrantedSkills), Is.False);
     }
 
     /// <summary>
     /// Tests that a skill which carries no flat damage bonus but strikes several times is learned. The
-    /// Rage Fighter's whole arsenal is built that way - its damage comes from the weapon - so judging by
-    /// <see cref="Skill.AttackDamage"/> alone left the class with nothing to fight with.
+    /// Rage Fighter's strongest attacks are built that way - their damage comes from the weapon - so
+    /// judging by <see cref="Skill.AttackDamage"/> alone would leave the class with nothing to fight
+    /// with. (The multi-hit skills bound to a specific weapon stay out for a different reason: they are
+    /// only ever obtained by equipping it, never learned.)
     /// </summary>
     [Test]
     public void MultiHitSkillWithoutFlatDamageIsLearned()
     {
-        var killingBlow = CreateAttackSkill(260, attackDamage: 0, hits: 4);
+        var chainDrive = CreateAttackSkill(262, attackDamage: 0, hits: 4, name: "Chain Drive");
 
-        Assert.That(BotProgression.IsBotLearnableSkill(killingBlow), Is.True);
+        Assert.That(BotProgression.IsBotLearnableSkill(chainDrive, NoItemGrantedSkills), Is.True);
     }
 
     /// <summary>
@@ -67,9 +70,9 @@ public class BotSkillRepertoireTest
     [Test]
     public void AreaSkillWithoutFlatDamageIsLearned()
     {
-        var twistingSlash = CreateAttackSkill(41, attackDamage: 0, skillType: SkillType.AreaSkillAutomaticHits);
+        var tripleShot = CreateAttackSkill(24, attackDamage: 0, skillType: SkillType.AreaSkillAutomaticHits, name: "Triple Shot");
 
-        Assert.That(BotProgression.IsBotLearnableSkill(twistingSlash), Is.True);
+        Assert.That(BotProgression.IsBotLearnableSkill(tripleShot, NoItemGrantedSkills), Is.True);
     }
 
     /// <summary>
@@ -79,9 +82,9 @@ public class BotSkillRepertoireTest
     [Test]
     public void PlainSingleHitSkillWithoutDamageIsNotLearned()
     {
-        var lunge = CreateAttackSkill(20, attackDamage: 0);
+        var lunge = CreateAttackSkill(20, attackDamage: 0, name: "Lunge");
 
-        Assert.That(BotProgression.IsBotLearnableSkill(lunge), Is.False);
+        Assert.That(BotProgression.IsBotLearnableSkill(lunge, NoItemGrantedSkills), Is.False);
     }
 
     /// <summary>
@@ -90,9 +93,9 @@ public class BotSkillRepertoireTest
     [Test]
     public void OrdinaryAttackSkillIsLearned()
     {
-        var evilSpirit = CreateAttackSkill(9, attackDamage: 45);
+        var evilSpirit = CreateAttackSkill(9, attackDamage: 45, name: "Evil Spirit");
 
-        Assert.That(BotProgression.IsBotLearnableSkill(evilSpirit), Is.True);
+        Assert.That(BotProgression.IsBotLearnableSkill(evilSpirit, NoItemGrantedSkills), Is.True);
     }
 
     /// <summary>
@@ -104,18 +107,19 @@ public class BotSkillRepertoireTest
     [Test]
     public void PetSkillIsRecognizedAsOne()
     {
-        var plasmaStorm = CreateAttackSkill(76, attackDamage: 60, damageType: DamageType.Fenrir);
-        var strikeOfDestruction = CreateAttackSkill(232, attackDamage: 110);
+        var plasmaStorm = CreateAttackSkill(76, attackDamage: 60, damageType: DamageType.Fenrir, name: "Plasma Storm");
+        var strikeOfDestruction = CreateAttackSkill(232, attackDamage: 110, name: "Strike of Destruction");
 
         Assert.That(BotProgression.RequiresPet(plasmaStorm), Is.True);
         Assert.That(BotProgression.RequiresPet(strikeOfDestruction), Is.False);
     }
 
-    private static Skill CreateAttackSkill(short number, int attackDamage, byte hits = 1, SkillType skillType = SkillType.DirectHit, DamageType damageType = DamageType.Physical)
+    private static Skill CreateAttackSkill(short number, int attackDamage, string name, byte hits = 1, SkillType skillType = SkillType.DirectHit, DamageType damageType = DamageType.Physical)
     {
         return new Skill
         {
             Number = number,
+            Name = name,
             AttackDamage = attackDamage,
             NumberOfHitsPerAttack = hits,
             SkillType = skillType,

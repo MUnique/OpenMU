@@ -3849,6 +3849,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<bool>("ReadConsoleInput")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("TimeZoneId")
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.ToTable("SystemConfiguration", "config");

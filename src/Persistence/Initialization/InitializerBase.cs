@@ -9,6 +9,7 @@ using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
+using MUnique.OpenMU.Persistence.Initialization.Skills;
 
 /// <summary>
 /// Base class for an <see cref="IInitializer"/>.
@@ -205,5 +206,57 @@ public abstract class InitializerBase : IInitializer
         var id = GuidHelper.CreateGuid<DropItemGroup>(4);
         var jewelsItemDrop = this.GameConfiguration.DropItemGroups.First(x => x.GetId() == id);
         jewelsItemDrop.PossibleItems.Add(item);
+    }
+
+    /// <summary>
+    /// Populates the <paramref name="targetMagicEffect"/> with all values from the source <see cref="MagicEffectDefinition"/> corresponding to <paramref name="sourceMagicEffectNumber"/>.
+    /// </summary>
+    /// <param name="targetMagicEffect">The target magic effect.</param>
+    /// <param name="sourceMagicEffectNumber">The source magic effect number (<see cref="MagicEffectNumber"/>).</param>
+    /// <returns>The target magic effect with copied values.</returns>
+    protected MagicEffectDefinition CopyMagicEffectValues(MagicEffectDefinition targetMagicEffect, short sourceMagicEffectNumber)
+    {
+        var sourceMagicEffect = this.GameConfiguration.MagicEffects.First(e => e.Number == sourceMagicEffectNumber);
+        targetMagicEffect.InformObservers = sourceMagicEffect.InformObservers;
+        targetMagicEffect.SubType = sourceMagicEffect.SubType;
+        targetMagicEffect.SendDuration = sourceMagicEffect.SendDuration;
+        targetMagicEffect.StopByDeath = sourceMagicEffect.StopByDeath;
+        targetMagicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
+        targetMagicEffect.Duration.ConstantValue.Value = sourceMagicEffect.Duration!.ConstantValue.Value;
+        targetMagicEffect.Duration.ConstantValue.AggregateType = sourceMagicEffect.Duration.ConstantValue.AggregateType;
+        targetMagicEffect.Duration.MaximumValue = sourceMagicEffect.Duration.MaximumValue;
+
+        foreach (var durationRelatedValue in sourceMagicEffect.Duration.RelatedValues)
+        {
+            var durationRelatedValueCopy = this.Context.CreateNew<AttributeRelationship>();
+            durationRelatedValueCopy.InputAttribute = durationRelatedValue.InputAttribute!.GetPersistent(this.GameConfiguration);
+            durationRelatedValueCopy.InputOperator = durationRelatedValue.InputOperator;
+            durationRelatedValueCopy.InputOperand = durationRelatedValue.InputOperand;
+            durationRelatedValueCopy.AggregateType = durationRelatedValue.AggregateType;
+            targetMagicEffect.Duration.RelatedValues.Add(durationRelatedValueCopy);
+        }
+
+        foreach (var powerUp in sourceMagicEffect.PowerUpDefinitions)
+        {
+            var powerUpCopy = this.Context.CreateNew<PowerUpDefinition>();
+            targetMagicEffect.PowerUpDefinitions.Add(powerUpCopy);
+            powerUpCopy.TargetAttribute = powerUp.TargetAttribute!.GetPersistent(this.GameConfiguration);
+            powerUpCopy.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+            powerUpCopy.Boost.ConstantValue.Value = powerUp.Boost!.ConstantValue.Value;
+            powerUpCopy.Boost.ConstantValue.AggregateType = powerUp.Boost.ConstantValue.AggregateType;
+            powerUpCopy.Boost.MaximumValue = powerUp.Boost.MaximumValue;
+
+            foreach (var boostRelatedValue in powerUp.Boost.RelatedValues)
+            {
+                var boostRelatedValueCopy = this.Context.CreateNew<AttributeRelationship>();
+                boostRelatedValueCopy.InputAttribute = boostRelatedValue.InputAttribute!.GetPersistent(this.GameConfiguration);
+                boostRelatedValueCopy.InputOperator = boostRelatedValue.InputOperator;
+                boostRelatedValueCopy.InputOperand = boostRelatedValue.InputOperand;
+                boostRelatedValueCopy.AggregateType = boostRelatedValue.AggregateType;
+                powerUpCopy.Boost.RelatedValues.Add(boostRelatedValueCopy);
+            }
+        }
+
+        return targetMagicEffect;
     }
 }

@@ -39,25 +39,7 @@ internal sealed class BotGenerator
     /// </summary>
     private const int BotPasswordWorkFactor = 4;
 
-    private const int MinLevel = 10;
-
-    /// <summary>
-    /// The highest generated level. High enough that the upper maps (Tarkan, Aida, Kanturu, ...) get a
-    /// resident bot population and that some bots start beyond the class evolution level
-    /// (<see cref="BotProgression.ClassEvolutionLevel"/>) - those are created as their second-generation
-    /// class right away, like a player who did the class quest long ago.
-    /// </summary>
-    private const int MaxLevel = 250;
-
-    /// <summary>
-    /// Skew of the level distribution: values above 1 make low and mid levels more common than high
-    /// ones, like a real server's population pyramid (an even spread would feel top-heavy).
-    /// </summary>
-    private const double LevelSkew = 1.6;
     private const int StartMoney = 100000;
-
-    /// <summary>Upgrade level (+6) of the starter gear, giving fresh bots a survival buffer until they can warp.</summary>
-    private const byte StarterItemLevel = 6;
 
     /// <summary>Number of inventory extensions (each 4 rows of 8 slots) a bot gets, so loot does not clog its backpack.</summary>
     private const int BotInventoryExtensions = 4;
@@ -108,9 +90,10 @@ internal sealed class BotGenerator
     /// </summary>
     /// <param name="numberOfAccounts">The desired number of bot accounts.</param>
     /// <param name="charactersPerAccount">The desired number of characters per account.</param>
+    /// <param name="profile">The startup profile of the generated characters (fresh or veteran).</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The number of accounts that were newly created.</returns>
-    public async ValueTask<int> EnsureBotsAsync(int numberOfAccounts, int charactersPerAccount, CancellationToken cancellationToken = default)
+    public async ValueTask<int> EnsureBotsAsync(int numberOfAccounts, int charactersPerAccount, BotStartupProfile profile, CancellationToken cancellationToken = default)
     {
         var creatableClasses = this._gameContext.Configuration.CharacterClasses
             .Where(c => c is { CanGetCreated: true, HomeMap: not null })
@@ -127,8 +110,8 @@ internal sealed class BotGenerator
             BotConfiguration.MaxCharactersPerAccountLimit);
 
         var experienceTable = this._gameContext.ExperienceTable;
-        var maxLevel = Math.Min(MaxLevel, experienceTable.Length - 1);
-        var minLevel = Math.Clamp(MinLevel, 1, maxLevel);
+        var maxLevel = Math.Min(profile.MaxLevel, experienceTable.Length - 1);
+        var minLevel = Math.Clamp(profile.MinLevel, 1, maxLevel);
 
         // On servers with the reset feature the existing population has resets, so freshly generated
         // bots get a random reset history too - a visitor should meet believable veterans (even TOP,
@@ -165,10 +148,10 @@ internal sealed class BotGenerator
             for (byte slot = 0; slot < perAccount; slot++)
             {
                 var characterClass = classQueue.Count > 0 ? classQueue.Dequeue() : creatableClasses.SelectRandom()!;
-                var level = minLevel + (int)((maxLevel - minLevel) * Math.Pow(Rand.NextInt(0, 1001) / 1000.0, LevelSkew));
-                var seededResets = maxSeededResets > 0 ? Rand.NextInt(0, maxSeededResets + 1) : 0;
+                var level = profile.GetStartLevel(minLevel, maxLevel);
+                var seededResets = profile.GetSeededResets(maxSeededResets);
                 var name = await this._nameGenerator.GenerateUniqueAsync(context, reservedNames, cancellationToken).ConfigureAwait(false);
-                this.CreateCharacter(context, account, name, characterClass, level, slot, experienceTable, seededResets, resetConfiguration);
+                this.CreateCharacter(context, account, name, characterClass, level, slot, experienceTable, seededResets, profile.StarterItemLevel, resetConfiguration);
             }
 
             // Save per account so a single failure does not roll back already generated accounts,
@@ -300,9 +283,8 @@ internal sealed class BotGenerator
     /// Spends the character's level-up points, so a high-level bot actually has high-level stats.
     /// Without this a generated level-80 bot would fight with level-1 base stats (tiny health and
     /// damage) and die instantly. The split follows the class build in <see cref="BotProgression"/>
-    /// for the server's meta profile (reset vs classic) - the same split the bot keeps using for
-    /// points it earns at runtime - and respects each stat's configured maximum (fun servers) as
-    /// well as the bot's personal vitality target on reset-meta servers.
+    /// - the same split the bot keeps using for points it earns at runtime - and respects each stat's
+    /// configured maximum (fun servers) as well as the bot's personal vitality target on reset-meta servers.
     /// </summary>
     private static void DistributeStatPoints(Character character, CharacterClass characterClass, bool resetMeta)
     {
@@ -312,7 +294,7 @@ internal sealed class BotGenerator
             return;
         }
 
-        var weights = BotProgression.GetStatWeights(characterClass, character.Name, resetMeta);
+        var weights = BotProgression.GetStatWeights(characterClass, character.Name);
         var vitalityTarget = resetMeta ? BotProgression.GetVitalityTarget(character.Name) : (int?)null;
 
         long CapacityOf(AttributeDefinition stat)
@@ -388,7 +370,7 @@ internal sealed class BotGenerator
         return resetPoints + firstCyclePoints + laterCyclesPoints + currentCyclePoints;
     }
 
-    private void CreateCharacter(IPlayerContext context, Account account, string name, CharacterClass characterClass, int level, byte slot, long[] experienceTable, int seededResets, ResetConfiguration? resetConfiguration)
+    private void CreateCharacter(IPlayerContext context, Account account, string name, CharacterClass characterClass, int level, byte slot, long[] experienceTable, int seededResets, byte starterItemLevel, ResetConfiguration? resetConfiguration)
     {
         // A character generated beyond the class evolution level was created as its second-generation
         // class right away - like a player who completed the class quest long ago. Everything downstream
@@ -447,7 +429,7 @@ internal sealed class BotGenerator
 
         character.Inventory = context.CreateNew<ItemStorage>();
         character.Inventory.Money = StartMoney;
-        this.EquipStarterGear(context, character, resetConfiguration is not null);
+        this.EquipStarterGear(context, character, starterItemLevel);
 
         account.Characters.Add(character);
     }
@@ -474,9 +456,10 @@ internal sealed class BotGenerator
         }
 
         var learnedNumbers = new HashSet<short>(character.LearnedSkills.Select(s => s.Skill!.Number));
+        var itemGrantedSkillNumbers = BotProgression.GetItemGrantedSkillNumbers(this._gameContext.Configuration);
         foreach (var skill in this._gameContext.Configuration.Skills)
         {
-            if (!BotProgression.IsBotLearnableSkill(skill)
+            if (!BotProgression.IsBotLearnableSkill(skill, itemGrantedSkillNumbers)
                 || !skill.QualifiedCharacters.Contains(characterClass)
                 || !BotProgression.MeetsRequirements(skill, GetValue)
                 || !learnedNumbers.Add(skill.Number))
@@ -496,7 +479,10 @@ internal sealed class BotGenerator
     /// account gear), so it is not naked and punching with its fists. The item level scales modestly
     /// with the bot level for a bit more defense/damage without raising the equip requirements too high.
     /// </summary>
-    private void EquipStarterGear(IPlayerContext context, Character character, bool resetMeta)
+    /// <param name="context">The persistence context.</param>
+    /// <param name="character">The character to equip.</param>
+    /// <param name="starterItemLevel">The upgrade level of the starter items (level 0 for fresh characters).</param>
+    private void EquipStarterGear(IPlayerContext context, Character character, byte starterItemLevel)
     {
         var inventory = character.Inventory!;
         var characterClass = character.CharacterClass!;
@@ -511,7 +497,7 @@ internal sealed class BotGenerator
         // The Small Axe is qualified for almost every class, so without this filter casters and archers would
         // all end up with one.
         bool IsPreferredWeapon(ItemDefinition definition)
-            => BotProgression.IsPreferredWeaponGroup(characterClass, character.Name, resetMeta, (byte)definition.Group);
+            => BotProgression.IsPreferredWeaponGroup(characterClass, character.Name, (byte)definition.Group);
 
         // Ammunition shares the bow group (Bolt/Arrows have DropLevel 0), so without this filter every
         // archer would get a bolt stack as its "weapon" and end up punching with its fists.
@@ -526,12 +512,12 @@ internal sealed class BotGenerator
             if (weapon.Group == BowGroup)
             {
                 // Bows need ammunition; the arrows go into the left hand.
-                this.AddEquippedItem(context, inventory, characterClass, InventoryConstants.RightHandSlot, weapon);
+                this.AddEquippedItem(context, inventory, characterClass, InventoryConstants.RightHandSlot, weapon, starterItemLevel);
                 this.AddAmmunition(context, inventory);
             }
             else
             {
-                this.AddEquippedItem(context, inventory, characterClass, InventoryConstants.LeftHandSlot, weapon);
+                this.AddEquippedItem(context, inventory, characterClass, InventoryConstants.LeftHandSlot, weapon, starterItemLevel);
             }
         }
 
@@ -546,11 +532,11 @@ internal sealed class BotGenerator
                 continue;
             }
 
-            this.EquipArmorPiece(context, inventory, characterClass, InventoryConstants.HelmSlot, 7, set);
-            this.EquipArmorPiece(context, inventory, characterClass, InventoryConstants.ArmorSlot, 8, set);
-            this.EquipArmorPiece(context, inventory, characterClass, InventoryConstants.PantsSlot, 9, set);
-            this.EquipArmorPiece(context, inventory, characterClass, InventoryConstants.GlovesSlot, 10, set);
-            this.EquipArmorPiece(context, inventory, characterClass, InventoryConstants.BootsSlot, 11, set);
+            this.EquipArmorPiece(context, inventory, characterClass, InventoryConstants.HelmSlot, 7, set, starterItemLevel);
+            this.EquipArmorPiece(context, inventory, characterClass, InventoryConstants.ArmorSlot, 8, set, starterItemLevel);
+            this.EquipArmorPiece(context, inventory, characterClass, InventoryConstants.PantsSlot, 9, set, starterItemLevel);
+            this.EquipArmorPiece(context, inventory, characterClass, InventoryConstants.GlovesSlot, 10, set, starterItemLevel);
+            this.EquipArmorPiece(context, inventory, characterClass, InventoryConstants.BootsSlot, 11, set, starterItemLevel);
             break;
         }
 
@@ -586,7 +572,7 @@ internal sealed class BotGenerator
         inventory.Items.Add(item);
     }
 
-    private void EquipArmorPiece(IPlayerContext context, ItemStorage inventory, CharacterClass characterClass, byte slot, int group, int number)
+    private void EquipArmorPiece(IPlayerContext context, ItemStorage inventory, CharacterClass characterClass, byte slot, int group, int number, byte starterItemLevel)
     {
         var definition = this._gameContext.Configuration.Items.FirstOrDefault(d => d.Group == group && d.Number == number);
         if (definition is null || !definition.QualifiedCharacters.Contains(characterClass))
@@ -594,10 +580,10 @@ internal sealed class BotGenerator
             return;
         }
 
-        this.AddEquippedItem(context, inventory, characterClass, slot, definition);
+        this.AddEquippedItem(context, inventory, characterClass, slot, definition, starterItemLevel);
     }
 
-    private void AddEquippedItem(IPlayerContext context, ItemStorage inventory, CharacterClass characterClass, byte slot, ItemDefinition definition)
+    private void AddEquippedItem(IPlayerContext context, ItemStorage inventory, CharacterClass characterClass, byte slot, ItemDefinition definition, byte starterItemLevel)
     {
         if (!definition.QualifiedCharacters.Contains(characterClass))
         {
@@ -606,7 +592,7 @@ internal sealed class BotGenerator
 
         var item = context.CreateNew<Item>();
         item.Definition = definition;
-        item.Level = StarterItemLevel;
+        item.Level = starterItemLevel;
         item.Durability = definition.Durability;
         item.ItemSlot = slot;
         inventory.Items.Add(item);

@@ -1,0 +1,80 @@
+@using System.ComponentModel.DataAnnotations
+@using System.Diagnostics.CodeAnalysis
+@inherits NotifyableInputBase<string>
+
+    <div class="mb-3">
+        <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
+        <input @bind="CurrentValueAsString" id="@this.FieldIdentifier.FieldName" class="form-control @CssClass" list="server-time-zone-ids" autocomplete="off" placeholder="UTC" />
+        @if (TimeZoneIds.Count > 0)
+        {
+            <datalist id="server-time-zone-ids">
+                @foreach (var id in TimeZoneIds)
+                {
+                    <option value="@id"></option>
+                }
+            </datalist>
+        }
+        <ValidationMessage For=@this.ValueExpression />
+    </div>
+
+@code {
+
+    /// <summary>
+    /// The suggested time zone ids, normalized to IANA so they look the same regardless of the host operating system.
+    /// </summary>
+    private static readonly IReadOnlyList<string> TimeZoneIds = GetSuggestibleTimeZoneIds();
+
+    /// <summary>
+    /// Gets or sets the label which should be displayed. If it's not explicitly provided, the component shows the
+    /// Name defined in the <see cref="DisplayAttribute"/>. If there is no Name in a <see cref="DisplayAttribute"/>, it shows the property name instead.
+    /// </summary>
+    [Parameter]
+    public string? Label { get; set; }
+
+    /// <inheritdoc />
+    protected override bool TryParseValueFromString(string? value, [MaybeNullWhen(false)] out string result, [NotNullWhen(false)] out string? validationErrorMessage)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            // An empty value means UTC. This keeps the previous behavior for servers which never configured a time zone.
+            result = string.Empty;
+            validationErrorMessage = null;
+            return true;
+        }
+
+        var trimmed = value.Trim();
+        try
+        {
+            // Accepts IANA ids on every platform and Windows ids as well, because .NET maps them via ICU.
+            _ = TimeZoneInfo.FindSystemTimeZoneById(trimmed);
+            result = trimmed;
+            validationErrorMessage = null;
+            return true;
+        }
+        catch (Exception ex) when (ex is TimeZoneNotFoundException or InvalidTimeZoneException)
+        {
+            result = value;
+            validationErrorMessage = $"Unknown time zone id '{trimmed}'. Leave empty for UTC or pick a suggestion, e.g. Europe/Warsaw.";
+            return false;
+        }
+    }
+
+    private static IReadOnlyList<string> GetSuggestibleTimeZoneIds()
+    {
+        try
+        {
+            return TimeZoneInfo.GetSystemTimeZones()
+                .Select(tz => tz.HasIanaId
+                    ? tz.Id
+                    : TimeZoneInfo.TryConvertWindowsIdToIanaId(tz.Id, out var ianaId) ? ianaId! : tz.Id)
+                .Distinct()
+                .OrderBy(id => id, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+        }
+        catch
+        {
+            // Without time zone data the field simply degrades to a plain text input; resolution still falls back to UTC.
+            return Array.Empty<string>();
+        }
+    }
+}

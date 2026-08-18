@@ -505,6 +505,7 @@ public enum UpdateVersion
     /// </summary>
     AddRenaItem = 99,
 
+    /// <summary>
     /// The version of the <see cref="AddCastleSiegeDataUpdatePlugIn"/>.
     /// </summary>
     AddCastleSiegeData = 100,
@@ -520,7 +521,12 @@ public enum UpdateVersion
     ConfigureCastleSiegeRegistration = 102,
 
     /// <summary>
+    /// The version of the <see cref="FinishRageFighterMasterTreePlugIn"/>.
+    /// </summary>
+    FinishRageFighterMasterTree = 103,
+
+    /// <summary>
     /// The version of the <see cref="ConfigureCastleSiegeParticipationUpdatePlugIn"/>.
     /// </summary>
-    ConfigureCastleSiegeParticipation = 103,
+    ConfigureCastleSiegeParticipation = 104,
 }

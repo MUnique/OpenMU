@@ -8,8 +8,6 @@ using System;
 using System.Globalization;
 using System.Threading;
 using MUnique.OpenMU.AttributeSystem;
-using MUnique.OpenMU.DataModel.Attributes;
-using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.GuildWar;
 using MUnique.OpenMU.GameLogic.MiniGames;
@@ -21,7 +19,6 @@ using MUnique.OpenMU.GameLogic.PlayerActions.Items;
 using MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 using MUnique.OpenMU.GameLogic.PlayerActions.Trade;
 using MUnique.OpenMU.GameLogic.PlugIns;
-using MUnique.OpenMU.GameLogic.Properties;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.GameLogic.Views.Guild;
@@ -41,9 +38,7 @@ using Nito.AsyncEx;
 /// </summary>
 public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacker, ITrader, IPartyMember, IRotatable, IHasBucketInformation, ISupportWalk, IMovable, ILoggerOwner<Player>
 {
-    private const double WalkMovementSpeed = 12.0;
-
-    private static readonly MagicEffectDefinition GMEffect = new GMMagicEffectDefinition
+    private static readonly MagicEffectDefinition GMEffect = new GameMasterMagicEffectDefinition
     {
         InformObservers = true,
         Name = "GM MARK",
@@ -51,27 +46,22 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         StopByDeath = false,
     };
 
-    private readonly AsyncLock _moveLock = new();
-    private readonly AsyncLock _experienceLock = new();
+    private readonly PlayerExperience _experience;
 
     /// <summary>
     /// Serializes context mutations done by this player's action handlers against the periodic and
     /// disconnect progress saves, which run on an independent timer flow. See
     /// <see cref="RunPersistenceExclusiveAsync{T}"/>.
     /// </summary>
-    private readonly AsyncLock _persistenceLock = new();
+    private readonly PlayerPersistence _persistence;
 
-    /// <summary>
-    /// Tracks, per asynchronous flow, whether <see cref="_persistenceLock"/> is already held, so the
-    /// lock can be re-entered (Nito's <see cref="AsyncLock"/> is not reentrant). It is an instance
-    /// field on purpose: reentrancy must be tracked per player, so a flow holding player A's lock
-    /// still acquires player B's lock (e.g. during a trade) instead of wrongly skipping it.
-    /// </summary>
-    private readonly AsyncLocal<bool> _persistenceLockHeld = new();
+    private readonly PlayerMovement _movement;
 
-    private readonly Walker _walker;
+    private readonly PlayerSummon _summon;
 
-    private readonly AppearanceDataAdapter _appearanceData;
+    private readonly PlayerStorages _storages;
+
+    private readonly PlayerAppearanceData _appearanceData;
 
     private readonly ObserverToWorldViewAdapter _observerToWorldViewAdapter;
 
@@ -106,10 +96,14 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.GameContext = gameContext;
         this.Logger = gameContext.LoggerFactory.CreateLogger<Player>();
         this.PersistenceContext = this.GameContext.PersistenceContextProvider.CreateNewPlayerContext(gameContext.Configuration);
-        this._walker = new Walker(this, this.GetStepDelay);
+        this._persistence = new PlayerPersistence(this);
+        this._experience = new PlayerExperience(this);
+        this._movement = new PlayerMovement(this);
+        this._summon = new PlayerSummon(this);
+        this._storages = new PlayerStorages(this);
 
         this.MagicEffectList = new MagicEffectsList(this);
-        this._appearanceData = new AppearanceDataAdapter(this);
+        this._appearanceData = new PlayerAppearanceData(this);
         this.PlayerState.StateChanged += async args => await (this.GameContext.PlugInManager.GetPlugInPoint<IPlayerStateChangedPlugIn>()?.PlayerStateChangedAsync(this, args.PreviousState, args.CurrentStateState) ?? ValueTask.CompletedTask).ConfigureAwait(false);
         this.PlayerState.StateChanges += async args => await (this.GameContext.PlugInManager.GetPlugInPoint<IPlayerStateChangingPlugIn>()?.PlayerStateChangingAsync(this, args) ?? ValueTask.CompletedTask).ConfigureAwait(false);
         this._observerToWorldViewAdapter = new ObserverToWorldViewAdapter(this, this.InfoRange);
@@ -156,19 +150,19 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     ILogger ILoggerOwner.Logger => this.Logger;
 
     /// <inheritdoc />
-    public ILogger<Player> Logger { get; }
+    public ILogger<Player> Logger { get; protected set; }
 
     /// <inheritdoc />
     public bool CanWalkOnSafezone => true;
 
     /// <inheritdoc />
-    public bool IsWalking => this._walker.CurrentTarget != default;
+    public bool IsWalking => this._movement.IsWalking;
 
     /// <inheritdoc />
-    public TimeSpan StepDelay => this.GetStepDelay(null);
+    public TimeSpan StepDelay => this._movement.StepDelay;
 
     /// <inheritdoc />
-    public Point WalkTarget => this._walker.CurrentTarget;
+    public Point WalkTarget => this._movement.WalkTarget;
 
     /// <summary>
     /// Gets a value indicating whether this instance is invisible to other players.
@@ -376,7 +370,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <summary>
     /// Gets the player summon.
     /// </summary>
-    public (Monster, INpcIntelligence)? Summon { get; private set; }
+    public (Monster, INpcIntelligence)? Summon => this._summon.Current;
 
     /// <inheritdoc/>
     public GuildMemberStatus? GuildStatus { get; set; }
@@ -440,15 +434,20 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public ICustomPlugInContainer<IViewPlugIn> ViewPlugIns => this._viewPlugIns ??= this.CreateViewPlugInContainer();
 
     /// <inheritdoc/>
-    public IInventoryStorage? Inventory { get; private set; }
+    public IInventoryStorage? Inventory => this._storages.Inventory;
 
     /// <inheritdoc/>
-    public IStorage? TemporaryStorage { get; private set; }
+    public IStorage? TemporaryStorage => this._storages.TemporaryStorage;
 
     /// <summary>
     /// Gets or sets the vault.
     /// </summary>
-    public IStorage? Vault { get; set; }
+    public IStorage? Vault
+    {
+        get => this._storages.Vault;
+
+        set => this._storages.Vault = value;
+    }
 
     /// <summary>
     /// Gets or sets a value indicating whether the vault of the player is currently locked by a pin.
@@ -458,10 +457,15 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <summary>
     /// Gets the shop storage.
     /// </summary>
-    public IShopStorage? ShopStorage { get; private set; }
+    public IShopStorage? ShopStorage => this._storages.ShopStorage;
 
     /// <inheritdoc/>
-    public BackupItemStorage? BackupInventory { get; set; }
+    public BackupItemStorage? BackupInventory
+    {
+        get => this._storages.BackupInventory;
+
+        set => this._storages.BackupInventory = value;
+    }
 
     /// <summary>
     /// Gets or sets the deserialized MU Helper player settings.
@@ -651,84 +655,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         await this.OnDeathAsync(null).ConfigureAwait(false);
     }
 
-    /// <summary>
-    /// Determines whether the self defense is active for the specified attacker.
-    /// </summary>
-    /// <param name="attacker">The attacker.</param>
-    /// <returns>
-    ///   <c>true</c> if the self defense is active for the specified attacker; otherwise, <c>false</c>.
-    /// </returns>
-    public bool IsSelfDefenseActive(Player attacker)
-    {
-        if (this.GameContext.SelfDefenseState.TryGetValue((attacker, this), out var timeout))
-        {
-            return timeout > DateTime.UtcNow;
-        }
-
-        return false;
-    }
-
-    /// <summary>
-    /// Determines whether the self-defense is active for any attacker.
-    /// </summary>
-    /// <returns>
-    ///   <c>true</c> if any self-defense is active; otherwise, <c>false</c>.
-    /// </returns>
-    public bool IsAnySelfDefenseActive()
-    {
-        var selfDefenses = this.GameContext.SelfDefenseState.Keys.Where(c => c.Attacker == this).ToList();
-        return selfDefenses.Any(sd =>
-            this.GameContext.SelfDefenseState.TryGetValue(sd, out var timeout)
-            && timeout >= DateTime.UtcNow);
-    }
-
-    /// <summary>
-    /// Gets the localized message.
-    /// </summary>
-    /// <param name="resourceName">Name of the resource.</param>
-    /// <param name="formatArguments">The format arguments.</param>
-    /// <returns>The localized message.</returns>
-    public string GetLocalizedMessage(string resourceName, params ReadOnlySpan<object?> formatArguments)
-    {
-        if (formatArguments.Length > 0)
-        {
-            return string.Format(PlayerMessage.ResourceManager.GetString(resourceName, this.Culture) ?? string.Empty, formatArguments);
-        }
-
-        return PlayerMessage.ResourceManager.GetString(resourceName, this.Culture) ?? string.Empty;
-    }
-
-    /// <summary>
-    /// Easier way to show a localized blue message to the player.
-    /// </summary>
-    /// <param name="messageKey">The message resource key.</param>
-    /// <param name="arguments">The parameters for the message.</param>
-    public ValueTask ShowLocalizedBlueMessageAsync(string messageKey, params ReadOnlySpan<object?> arguments)
-    {
-        var message = this.GetLocalizedMessage(messageKey, arguments);
-        return this.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal));
-    }
-
-    /// <summary>
-    /// Easier way to show a localized golden message to the player.
-    /// </summary>
-    /// <param name="messageKey">The message resource key.</param>
-    /// <param name="arguments">The parameters for the message.</param>
-    public ValueTask ShowLocalizedGoldenMessageAsync(string messageKey, params ReadOnlySpan<object?> arguments)
-    {
-        var message = this.GetLocalizedMessage(messageKey, arguments);
-        return this.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.GoldenCenter));
-    }
-
-    /// <summary>
-    /// Easier way to show a blue message to the player.
-    /// </summary>
-    /// <param name="message">The message resource key.</param>
-    public ValueTask ShowBlueMessageAsync(string message)
-    {
-        return this.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal));
-    }
-
     /// <inheritdoc/>
     public async ValueTask<HitInfo?> AttackByAsync(IAttacker attacker, SkillEntry? skill, bool isCombo, double damageFactor = 1.0, bool? isFinalStreakHit = null)
     {
@@ -848,7 +774,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         {
             await (this.SkillCancelTokenSource?.CancelAsync() ?? Task.CompletedTask).ConfigureAwait(false);
 
-            await this._walker.StopAsync().ConfigureAwait(false);
+            await this._movement.StopWalkingAsync().ConfigureAwait(false);
 
             if (this.GameContext.PlugInManager.GetPlugInPoint<ISpeedHackCheatCheckPlugIn>() is { } speedCheck)
             {
@@ -874,7 +800,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 this.Position = previous;
                 if (this.CurrentMap is { } map)
                 {
-                    await map.MoveAsync(this, target, this._moveLock, MoveType.Teleport).ConfigureAwait(false);
+                    await this._movement.MoveOnMapAsync(map, target, MoveType.Teleport).ConfigureAwait(false);
                 }
             }
         }
@@ -903,7 +829,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         {
             await (this.SkillCancelTokenSource?.CancelAsync() ?? Task.CompletedTask).ConfigureAwait(false);
 
-            await this._walker.StopAsync().ConfigureAwait(false);
+            await this._movement.StopWalkingAsync().ConfigureAwait(false);
 
             await this.ForEachWorldObserverAsync<IObjectsOutOfScopePlugIn>(p => p.ObjectsOutOfScopeAsync(this.GetAsEnumerable()), false).ConfigureAwait(false);
 
@@ -948,160 +874,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public void OnAppearanceChanged() => this._appearanceData.RaiseAppearanceChanged();
 
     /// <summary>
-    /// Determines whether the player complies with the requirements of the specified item.
-    /// </summary>
-    /// <param name="item">The item.</param>
-    /// <returns><c>True</c>, if the player complies with the requirements of the specified item; Otherwise, <c>false</c>.</returns>
-    public bool CompliesRequirements(Item item)
-    {
-        item.ThrowNotInitializedProperty(item.Definition is null, nameof(item.Definition));
-
-        foreach (var requirement in item.Definition.Requirements.Select(item.GetRequirement))
-        {
-            if (this.Attributes![requirement.Attr] < requirement.Value)
-            {
-                return false;
-            }
-        }
-
-        return item.Definition.QualifiedCharacters.Contains(this.SelectedCharacter!.CharacterClass!);
-    }
-
-    /// <summary>
-    /// Tries to remove the money from the player inventory.
-    /// </summary>
-    /// <param name="value">The value that should be removed.</param>
-    /// <returns><c>True</c>, if the player inventory had enough money to remove; Otherwise, <c>false</c>.</returns>
-    public bool TryRemoveMoney(int value)
-    {
-        if (this.Money < value)
-        {
-            return false;
-        }
-
-        this.Money = checked(this.Money - value);
-        return true;
-    }
-
-    /// <summary>
-    /// Tries to deposit the money from the player inventory.
-    /// </summary>
-    /// <param name="value">The value that should be retrieved from the vault.</param>
-    /// <returns><c>True</c>, if the player inventory had enough money to move; Otherwise, <c>false</c>.</returns>
-    public bool TryDepositVaultMoney(int value)
-    {
-        if (this.Vault is null)
-        {
-            return false;
-        }
-
-        if (this.Vault.ItemStorage.Money + value > this.GameContext?.Configuration?.MaximumVaultMoney)
-        {
-            return false;
-        }
-
-        if (this.TryRemoveMoney(value))
-        {
-            return this.Vault.TryAddMoney(value);
-        }
-
-        return false;
-    }
-
-    /// <summary>
-    /// Tries to take the money from the vault.
-    /// </summary>
-    /// <param name="value">The value that should be retrieved from the vault.</param>
-    /// <returns><c>True</c>, if the vault had enough money to move and player inventory isn't maximum; Otherwise, <c>false</c>.</returns>
-    public bool TryTakeVaultMoney(int value)
-    {
-        if (this.Vault is null)
-        {
-            return false;
-        }
-
-        if (this.Money + value > this.GameContext?.Configuration?.MaximumInventoryMoney)
-        {
-            return false;
-        }
-
-        if (this.Vault.TryRemoveMoney(value))
-        {
-            return this.TryAddMoney(value);
-        }
-
-        return false;
-    }
-
-    /// <summary>
-    /// Tries to add the money from the player inventory.
-    /// </summary>
-    /// <param name="value">The value that should be added.</param>
-    /// <returns><c>True</c>, if the player inventory had space to add money; Otherwise, <c>false</c>.</returns>
-    public virtual bool TryAddMoney(int value)
-    {
-        if (this.Money + value > this.GameContext?.Configuration?.MaximumInventoryMoney)
-        {
-            return false;
-        }
-
-        if (this.Money + value < 0)
-        {
-            return false;
-        }
-
-        this.Money = checked(this.Money + value);
-        return true;
-    }
-
-    /// <summary>
-    /// Adds the invisible effect.
-    /// </summary>
-    public async ValueTask AddInvisibleEffectAsync()
-    {
-        var invisibleEffect = this.GameContext.Configuration.MagicEffects.FirstOrDefault(e => e.PowerUpDefinitions.Any(e => e.TargetAttribute == Stats.IsInvisible));
-        if (invisibleEffect is null)
-        {
-            this.Logger.LogError("Invisible effect not found!");
-        }
-        else
-        {
-            var (duration, powerUps) = this.CreateMagicEffectPowerUp(invisibleEffect);
-            var magicEffect = new MagicEffect(TimeSpan.FromSeconds(duration.Value), invisibleEffect, powerUps.Select(p => new MagicEffect.ElementWithTarget(p.BuffPowerUp, p.Target)).ToArray());
-            await this.MagicEffectList.AddEffectAsync(magicEffect).ConfigureAwait(false);
-
-            if (this._currentMap is { } currentMap)
-            {
-                await currentMap.RespawnAsync(this).ConfigureAwait(false);
-            }
-        }
-    }
-
-    /// <summary>
-    /// Removes the invisible effect.
-    /// </summary>
-    public async ValueTask RemoveInvisibleEffectAsync()
-    {
-        var invisibleEffect = this.GameContext.Configuration.MagicEffects.FirstOrDefault(e => e.PowerUpDefinitions.Any(e => e.TargetAttribute == Stats.IsInvisible));
-        if (invisibleEffect is null)
-        {
-            return;
-        }
-
-        var activeEffect = this.MagicEffectList.ActiveEffects.Values.FirstOrDefault(e => e.Definition == invisibleEffect);
-        if (activeEffect is null)
-        {
-            return;
-        }
-
-        await activeEffect.DisposeAsync().ConfigureAwait(false);
-        if (this._currentMap is { } currentMap)
-        {
-            await currentMap.RespawnAsync(this).ConfigureAwait(false);
-        }
-    }
-
-    /// <summary>
     /// Moves the player to the specified gate.
     /// </summary>
     /// <param name="gate">The gate to which the player should be moved.</param>
@@ -1118,6 +890,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         if (!this.PlayerState.CurrentState.IsDisconnectedOrFinished())
         {
+            await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.ChangingMap).ConfigureAwait(false);
             await this.InvokeViewPlugInAsync<IMapChangePlugIn>(p => p.MapChangeAsync()).ConfigureAwait(false);
         }
 
@@ -1163,6 +936,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         else
         {
             this.CurrentMap = null; // Will be set again, when the client acknowledged the map change by F3 12 packet.
+            await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.ChangingMap).ConfigureAwait(false);
             await this.InvokeViewPlugInAsync<IMapChangePlugIn>(p => p.MapChangeAsync()).ConfigureAwait(false);
 
             // after this, the Client will send us a F3 12 packet, to tell us it loaded
@@ -1184,6 +958,19 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.ThrowNotInitializedProperty(this.SelectedCharacter is null, nameof(this.SelectedCharacter));
         this.SelectedCharacter.ThrowNotInitializedProperty(this.SelectedCharacter.CurrentMap is null, nameof(this.SelectedCharacter.CurrentMap));
 
+        if (this.CurrentMap is not null)
+        {
+            // Guard against a repeated F3 12 (client ready after map change) packet.
+            // A map change usually leaves CurrentMap null until this handler assigns it,
+            // so a non-null value means the handler already ran. The exception is the
+            // IRespawnAfterDeathPlugIn branch of RespawnAtAsync, which assigns CurrentMap
+            // and adds the player itself; a trailing packet is redundant there as well.
+            // Without this guard, a duplicate packet adds the player (and its summon) to
+            // the area of interest a second time, which the bucket does not deduplicate.
+            this.Logger.LogWarning("Ignoring client-ready packet: player {0} is already on map {1}.", this, this.CurrentMap);
+            return;
+        }
+
         if (this.CurrentMiniGame is { } currentMiniGame)
         {
             this.CurrentMap = currentMiniGame.Map;
@@ -1202,11 +989,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             await this.WarpToSafezoneAsync().ConfigureAwait(false);
         }
 
-        if (this.Summon?.Item1 is { IsAlive: true } summon)
-        {
-            await this.CurrentMap.AddAsync(summon).ConfigureAwait(false);
-            summon.OnSpawn();
-        }
+        await this._summon.AddToMapAsync(this.CurrentMap).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1214,218 +997,50 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// </summary>
     /// <param name="killedObject">The killed object.</param>
     /// <returns>The gained experience.</returns>
-    public async ValueTask<int> AddExpAfterKillAsync(IAttackable killedObject)
-    {
-        if (this.SelectedCharacter?.CharacterClass is not { } characterClass)
-        {
-            return 0;
-        }
-
-        var experience = this.CalculateExpAfterKill(killedObject);
-        if (experience == 0)
-        {
-            return 0;
-        }
-
-        var currentLevel = (short)this.Attributes![Stats.Level];
-        var isMaxLevel = currentLevel == this.GameContext.Configuration.MaximumLevel;
-        var isAddMasterExperience = characterClass.IsMasterClass && isMaxLevel;
-
-        if (isAddMasterExperience)
-        {
-            await this.AddMasterExperienceAsync(experience, killedObject).ConfigureAwait(false);
-        }
-        else
-        {
-            await this.AddExperienceAsync(experience, killedObject).ConfigureAwait(false);
-        }
-
-        await this.AddPetExperienceAsync(experience).ConfigureAwait(false);
-
-        return experience;
-    }
+    public ValueTask<int> AddExpAfterKillAsync(IAttackable killedObject) => this._experience.AddAfterKillAsync(killedObject);
 
     /// <summary>
     /// Calculates the amount of experience gained after a kill, without applying it to the character.
     /// </summary>
     /// <param name="killedObject">The killed monster.</param>
     /// <returns>The calculated experience amount.</returns>
-    public int CalculateExpAfterKill(IAttackable killedObject)
-    {
-        if (this.SelectedCharacter?.CharacterClass is not { } characterClass)
-        {
-            return 0;
-        }
-
-        if (this.Attributes is not { } attributes)
-        {
-            return 0;
-        }
-
-        var currentLevel = (short)attributes[Stats.Level];
-        var isMaxLevel = currentLevel == this.GameContext.Configuration.MaximumLevel;
-        var isAddMasterExperience = characterClass.IsMasterClass && isMaxLevel;
-        var expRateAttribute = isAddMasterExperience ? Stats.MasterExperienceRate : Stats.ExperienceRate;
-        var gameRate = isAddMasterExperience ? this.GameContext.MasterExperienceRate : this.GameContext.ExperienceRate;
-
-        var experience = killedObject.CalculateBaseExperience(attributes[Stats.TotalLevel]);
-        experience *= gameRate;
-        experience *= attributes[expRateAttribute] + attributes[Stats.BonusExperienceRate];
-        experience *= this.CurrentMap?.Definition.ExpMultiplier ?? 1;
-
-        var minMultiplier = attributes[Stats.RandomExperienceMinMultiplier];
-        var maxMultiplier = attributes[Stats.RandomExperienceMaxMultiplier];
-        if (minMultiplier > 0 && maxMultiplier > 0)
-        {
-            var minimumExperience = (int)(experience * minMultiplier);
-            var maximumExperience = (int)(experience * maxMultiplier);
-            if (minimumExperience < maximumExperience)
-            {
-                return Rand.NextInt(minimumExperience, maximumExperience);
-            }
-        }
-
-        return (int)experience;
-    }
+    public ValueTask<int> CalculateExpAfterKillAsync(IAttackable killedObject) => this._experience.CalculateAfterKillAsync(killedObject);
 
     /// <summary>
     /// Adds the master experience to the current character.
     /// </summary>
     /// <param name="experience">The experience that should be added.</param>
     /// <param name="killedObject">The killed object that caused the experience gain.</param>
-    public async ValueTask AddMasterExperienceAsync(int experience, IAttackable? killedObject)
-    {
-        using var d = await this._experienceLock.LockAsync().ConfigureAwait(false);
-        await this.AddMasterExperienceCoreAsync(experience, killedObject).ConfigureAwait(false);
-    }
+    public ValueTask AddMasterExperienceAsync(int experience, IAttackable? killedObject) => this._experience.AddMasterExperienceAsync(experience, killedObject);
 
     /// <summary>
     /// Adds the experience to the current character.
     /// </summary>
     /// <param name="experience">The experience that should be added.</param>
     /// <param name="killedObject">The killed object that caused the experience gain.</param>
-    public async ValueTask AddExperienceAsync(int experience, IAttackable? killedObject)
-    {
-        using var d = await this._experienceLock.LockAsync().ConfigureAwait(false);
-        await this.AddExperienceCoreAsync(experience, killedObject).ConfigureAwait(false);
-    }
+    public ValueTask AddExperienceAsync(int experience, IAttackable? killedObject) => this._experience.AddExperienceAsync(experience, killedObject);
 
     /// <summary>
     /// Moves the player to the specified coordinate.
     /// </summary>
     /// <param name="target">The target.</param>
-    public async ValueTask MoveAsync(Point target)
-    {
-        this.Logger.LogDebug("MoveAsync: Player is moving to {0}", target);
-        await this._walker.StopAsync().ConfigureAwait(false);
-        if (this.GameContext.PlugInManager.GetPlugInPoint<ISpeedHackCheatCheckPlugIn>() is { } speedCheck)
-        {
-            await speedCheck.ResetMovementStateAsync(this).ConfigureAwait(false);
-        }
-
-        await this.CurrentMap!.MoveAsync(this, target, this._moveLock, MoveType.Instant).ConfigureAwait(false);
-        this.Logger.LogDebug("MoveAsync: Observer Count: {0}", this.Observers.Count);
-    }
+    public ValueTask MoveAsync(Point target) => this._movement.MoveAsync(target);
 
     /// <summary>
     /// Walks to the specified target coordinates using the specified steps.
     /// </summary>
     /// <param name="target">The target.</param>
     /// <param name="steps">The steps.</param>
-    public async ValueTask WalkToAsync(Point target, Memory<WalkingStep> steps)
-    {
-        var currentMap = this.CurrentMap;
-        if (currentMap == null)
-        {
-            return;
-        }
-
-        if (this.Attributes is not { } attributes)
-        {
-            return;
-        }
-
-        if (attributes[Stats.IsFrozen] > 0 || attributes[Stats.IsStunned] > 0 || attributes[Stats.IsAsleep] > 0)
-        {
-            return;
-        }
-
-        if (steps.IsEmpty)
-        {
-            return;
-        }
-
-        await this._walker.StopAsync().ConfigureAwait(false);
-
-        var startPoint = steps.Span[0].From;
-
-        var config = this.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()?.Configuration;
-        int maxAllowedWalkStartOffset = config?.MaxAllowedWalkStartOffset ?? 5;
-
-        var speedCheck = this.GameContext.PlugInManager.GetPlugInPoint<ISpeedHackCheatCheckPlugIn>();
-        if (speedCheck is { })
-        {
-            var eventArgs = new SpeedHackCheckEventArgs();
-            await speedCheck.WalkCheatCheckAsync(this, steps, eventArgs).ConfigureAwait(false);
-            if (eventArgs.IsCheatDetected)
-            {
-                return;
-            }
-        }
-
-        var currentPosition = this.Position;
-        var startOffset = startPoint.EuclideanDistanceTo(currentPosition);
-        if (startOffset > maxAllowedWalkStartOffset)
-        {
-            this.Logger.LogWarning("WalkToAsync: Player requested to walk from {0}, but it's currently at {1} (offset {2} > {3}). Resynchronizing client.", startPoint, currentPosition, startOffset, maxAllowedWalkStartOffset);
-            if (speedCheck is { })
-            {
-                await speedCheck.ResetMovementStateAsync(this).ConfigureAwait(false);
-            }
-
-            // Send current position back to the client, so that it can re-synchronize (rubberband).
-            await this.InvokeViewPlugInAsync<IObjectMovedPlugIn>(p => p.ObjectMovedAsync(this, MoveType.Instant)).ConfigureAwait(false);
-            return;
-        }
-
-        var requestedTarget = target;
-        var walkableStepCount = GetWalkableStepCount(currentMap.Terrain, steps.Span);
-        if (walkableStepCount == 0)
-        {
-            this.Logger.LogDebug(
-                "WalkToAsync: Player requested to walk to {0}, but the first path step is blocked. Resynchronizing client.",
-                requestedTarget);
-            await this.InvokeViewPlugInAsync<IObjectMovedPlugIn>(p => p.ObjectMovedAsync(this, MoveType.Instant)).ConfigureAwait(false);
-            return;
-        }
-
-        if (walkableStepCount < steps.Length)
-        {
-            steps = steps[..walkableStepCount];
-            target = steps.Span[^1].To;
-            this.Logger.LogDebug(
-                "WalkToAsync: Truncated path from {0} to the last reachable position {1} because a later step is blocked.",
-                requestedTarget,
-                target);
-        }
-
-        this.Logger.LogDebug("WalkToAsync: Player is walking to {0}", target);
-
-        var token = await this._walker.InitializeWalkToAsync(target, steps).ConfigureAwait(false);
-        await currentMap.MoveAsync(this, target, this._moveLock, MoveType.Walk).ConfigureAwait(false);
-        await this._walker.StartWalkAsync(token).ConfigureAwait(false);
-
-        this.Logger.LogDebug("WalkToAsync: Observer Count: {0}", this.Observers.Count);
-    }
+    public ValueTask WalkToAsync(Point target, Memory<WalkingStep> steps) => this._movement.WalkToAsync(target, steps);
 
     /// <inheritdoc />
-    public ValueTask<int> GetDirectionsAsync(Memory<Direction> directions) => this._walker.GetDirectionsAsync(directions);
+    public ValueTask<int> GetDirectionsAsync(Memory<Direction> directions) => this._movement.GetDirectionsAsync(directions);
 
     /// <inheritdoc />
-    public ValueTask<int> GetStepsAsync(Memory<WalkingStep> steps) => this._walker.GetStepsAsync(steps);
+    public ValueTask<int> GetStepsAsync(Memory<WalkingStep> steps) => this._movement.GetStepsAsync(steps);
 
     /// <inheritdoc />
-    public ValueTask StopWalkingAsync() => this._walker.StopAsync();
+    public ValueTask StopWalkingAsync() => this._movement.StopWalkingAsync();
 
     /// <summary>
     /// Regenerates the attributes specified in <see cref="Stats.IntervalRegenerationAttributes"/>.
@@ -1558,175 +1173,34 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <summary>
     /// Tries to consume the <see cref="Skill.ConsumeRequirements"/> of a skill.
     /// </summary>
-    /// <param name="skill">The skill which should get performed.</param>
+    /// <param name="skillEntry">The skill entry of the skill which should get performed.</param>
     /// <returns>
     ///     <c>True</c>, if the <see cref="Skill.ConsumeRequirements"/> and <see cref="Skill.Requirements"/>
     ///     are being met, and the <see cref="Skill.ConsumeRequirements"/> have been consumed; Otherwise, <c>false</c>.
     /// </returns>
-    public async ValueTask<bool> TryConsumeForSkillAsync(Skill skill)
+    public async ValueTask<bool> TryConsumeForSkillAsync(SkillEntry skillEntry)
     {
+        if (skillEntry.Skill is not { } skill)
+        {
+            return false;
+        }
+
         if (skill.Requirements.Any(r => r.MinimumValue > this.Attributes![r.Attribute]))
         {
             return false;
         }
 
-        var addExtraManaCost = this.Attributes![Stats.AmmunitionConsumptionRate] == 0
-            && skill.SkillType is SkillType.DirectHit or SkillType.AreaSkillAutomaticHits;
-        if (skill.ConsumeRequirements.Any(r => this.GetRequiredValue(r, addExtraManaCost) > this.Attributes![r.Attribute]))
+        if (skill.ConsumeRequirements.Any(r => this.GetRequiredValue(r, skillEntry) > this.Attributes![r.Attribute]))
         {
             return false;
         }
 
         foreach (var requirement in skill.ConsumeRequirements)
         {
-            this.Attributes![requirement.Attribute] -= this.GetRequiredValue(requirement, addExtraManaCost);
+            this.Attributes![requirement.Attribute] -= this.GetRequiredValue(requirement, skillEntry);
         }
 
         return true;
-    }
-
-    /// <summary>
-    /// Creates the magic effect power up for the given skill entry.
-    /// </summary>
-    /// <param name="skillEntry">The skill entry.</param>
-    public void CreateMagicEffectPowerUp(SkillEntry skillEntry)
-    {
-        skillEntry.ThrowNotInitializedProperty(skillEntry.Skill is null, nameof(skillEntry.Skill));
-
-        var skill = skillEntry.Skill;
-
-        if (skill.MagicEffectDef?.PowerUpDefinitions.Any(d => d.Boost is null) ?? true)
-        {
-            throw new InvalidOperationException($"Skill {skill.Name} ({skill.Number}) has no magic effect definition or is without a PowerUpDefinition.");
-        }
-
-        if (skill.MagicEffectDef.Duration is null)
-        {
-            throw new InvalidOperationException($"Skill {skill.Name} ({skill.Number}) has no duration in MagicEffectDef.");
-        }
-
-        var result = new (AttributeDefinition Target, IElement BuffPowerUp)[skill.MagicEffectDef.PowerUpDefinitions.Count];
-        var resultPvp = new (AttributeDefinition Target, IElement BuffPowerUp)[skill.MagicEffectDef.PowerUpDefinitionsPvp.Count];
-        var durationElement = this.Attributes!.CreateDurationElement(skill.MagicEffectDef.Duration);
-        var durationElementPvp = skill.MagicEffectDef.DurationPvp is { } durationPvp ? this.Attributes!.CreateDurationElement(durationPvp) : durationElement;
-        var chanceElement = skill.MagicEffectDef.Chance is { } chance ? this.Attributes!.CreateChanceElement(chance) : new ConstantElement(1.0f);
-        var chanceElementPvp = skill.MagicEffectDef.ChancePvp is { } chancePvp ? this.Attributes!.CreateChanceElement(chancePvp) : chanceElement;
-        AddSkillPowersToResult(skill.MagicEffectDef.PowerUpDefinitions, ref result);
-        AddSkillPowersToResult(skill.MagicEffectDef.PowerUpDefinitionsPvp, ref resultPvp);
-        skillEntry.PowerUpDuration = durationElement;
-        skillEntry.PowerUpDurationPvp = durationElementPvp;
-        skillEntry.PowerUpChance = chanceElement;
-        skillEntry.PowerUpChancePvp = chanceElementPvp;
-        skillEntry.PowerUps = result;
-        skillEntry.PowerUpsPvp = resultPvp.Count() > 0 ? resultPvp : result;
-
-        if (skillEntry.EnsureSkillAttributes(this.Attributes!) is { } skillAttributes
-            && skillAttributes[Stats.SleepStrBonusChance] is float bonusChance
-            && bonusChance > 0)
-        {
-            skillEntry.PowerUpChance = new CombinedElement(skillEntry.PowerUpChance, new ConstantElement(bonusChance));
-            skillEntry.PowerUpChancePvp = new CombinedElement(skillEntry.PowerUpChancePvp, new ConstantElement(bonusChance));
-        }
-
-        void AddSkillPowersToResult(ICollection<PowerUpDefinition> powerUps, ref (AttributeDefinition Target, IElement BuffPowerUp)[] result)
-        {
-            if (powerUps.Count() == 0)
-            {
-                return;
-            }
-
-            int i = 0;
-            var durationExtended = false;
-            foreach (var powerUpDef in powerUps)
-            {
-                IElement powerUp = this.Attributes!.CreateElement(powerUpDef);
-                if (skillEntry.Level > 0)
-                {
-                    foreach (var masterSkillEntry in GetMasterSkillEntries(skillEntry))
-                    {
-                        var extendsDuration = masterSkillEntry.Skill?.MasterDefinition?.ExtendsDuration ?? false;
-                        if (extendsDuration && !durationExtended)
-                        {
-                            var value = masterSkillEntry.CalculateValue();
-                            if (value < 1)
-                            {
-                                value *= 100;
-                            }
-
-                            durationElement = new CombinedElement(durationElement, new ConstantElement(value));
-                            durationElementPvp = new CombinedElement(durationElementPvp, new ConstantElement(value));
-                        }
-
-                        if (masterSkillEntry.Skill?.MasterDefinition?.TargetAttribute is not null)
-                        {
-                            powerUp = AppedMasterSkillPowerUp(masterSkillEntry, powerUpDef, powerUp);
-                        }
-                    }
-
-                    // After the first iteration all possible duration extensions have been applied
-                    durationExtended = true;
-                }
-
-                result[i] = (powerUpDef.TargetAttribute!, powerUp);
-                i++;
-            }
-        }
-
-        IEnumerable<SkillEntry> GetMasterSkillEntries(SkillEntry masterSkillEntry)
-        {
-            yield return masterSkillEntry;
-
-            foreach (var masterSkill in skillEntry.Skill.GetBaseSkills(true))
-            {
-                yield return this.SkillList!.GetSkill((ushort)masterSkill.Number)!;
-            }
-        }
-
-        IElement AppedMasterSkillPowerUp(SkillEntry masterSkillEntry, PowerUpDefinition powerUpDef, IElement powerUp)
-        {
-            var masterSkillDefinition = masterSkillEntry.Skill!.MasterDefinition!;
-
-            if (masterSkillDefinition.TargetAttribute == powerUpDef.TargetAttribute
-                && masterSkillDefinition.Aggregation == powerUp.AggregateType)
-            {
-                var additionalValue = new SimpleElement(masterSkillEntry.CalculateValue(), masterSkillDefinition.Aggregation);
-                powerUp = new CombinedElement(powerUp, additionalValue);
-            }
-
-            return powerUp;
-        }
-    }
-
-    /// <summary>
-    /// Creates the magic effect power up for the given definition.
-    /// </summary>
-    /// <param name="magicEffectDefinition">The definition for a magic effect.</param>
-    /// <returns>A tuple containing the duration element and the power-up elements.</returns>
-    public (IElement DurationInSeconds, (AttributeDefinition Target, IElement BuffPowerUp)[] PowerUps) CreateMagicEffectPowerUp(MagicEffectDefinition magicEffectDefinition)
-    {
-        ArgumentNullException.ThrowIfNull(magicEffectDefinition);
-
-        if (magicEffectDefinition.PowerUpDefinitions.Any(d => d.Boost is null))
-        {
-            throw new InvalidOperationException($"Magic effect definition {magicEffectDefinition.Name} ({magicEffectDefinition.Number}) is without a PowerUpDefinition.");
-        }
-
-        if (magicEffectDefinition.Duration is null)
-        {
-            throw new InvalidOperationException($"Magic effect definition {magicEffectDefinition.Name} ({magicEffectDefinition.Number}) has no duration.");
-        }
-
-        int i = 0;
-        var result = new (AttributeDefinition Target, IElement BuffPowerUp)[magicEffectDefinition.PowerUpDefinitions.Count];
-        foreach (var powerUpDef in magicEffectDefinition.PowerUpDefinitions)
-        {
-            IElement powerUp = this.Attributes!.CreateElement(powerUpDef);
-
-            result[i] = (powerUpDef.TargetAttribute!, powerUp);
-            i++;
-        }
-
-        return (this.Attributes!.CreateDurationElement(magicEffectDefinition.Duration), result);
     }
 
     /// <summary>
@@ -1734,56 +1208,17 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// </summary>
     /// <param name="definition">The definition.</param>
     /// <exception cref="InvalidOperationException">Can't add the player summon for a player which isn't spawned yet.</exception>
-    public async ValueTask CreateSummonedMonsterAsync(MonsterDefinition definition)
-    {
-        if (this.CurrentMap is not { } gameMap)
-        {
-            throw new InvalidOperationException("Can't add a summon for a player which isn't spawned yet.");
-        }
-
-        var area = new MonsterSpawnArea
-        {
-            GameMap = gameMap.Definition,
-            MonsterDefinition = definition,
-            SpawnTrigger = SpawnTrigger.OnceAtEventStart,
-            Quantity = 1,
-            X1 = (byte)Math.Max(this.Position.X - 3, byte.MinValue),
-            X2 = (byte)Math.Min(this.Position.X + 3, byte.MaxValue),
-            Y1 = (byte)Math.Max(this.Position.Y - 3, byte.MinValue),
-            Y2 = (byte)Math.Min(this.Position.Y + 3, byte.MaxValue),
-        };
-        var intelligence = new SummonedMonsterIntelligence(this);
-        var monster = new Monster(area, definition, gameMap, NullDropGenerator.Instance, intelligence, this.GameContext.PlugInManager, this.GameContext.PathFinderPool);
-        area.MaximumHealthOverride = (int)monster.Attributes[Stats.MaximumHealth];
-        area.MaximumHealthOverride += (int)(monster.Attributes[Stats.MaximumHealth] * this.Attributes?[Stats.SummonedMonsterHealthIncrease] ?? 0);
-
-        this.Summon = (monster, intelligence);
-        monster.Initialize();
-        await gameMap.AddAsync(monster).ConfigureAwait(false);
-        monster.OnSpawn();
-    }
+    public ValueTask CreateSummonedMonsterAsync(MonsterDefinition definition) => this._summon.CreateAsync(definition);
 
     /// <summary>
     /// Notifies the player object that the summoned monster died.
     /// </summary>
-    public void SummonDied()
-    {
-        this.Summon = null;
-    }
+    public void SummonDied() => this._summon.OnDied();
 
     /// <summary>
     /// Removes the player summon.
     /// </summary>
-    public async ValueTask RemoveSummonAsync()
-    {
-        if (this.Summon is { } summon)
-        {
-            // remove summon, if exists
-            await summon.Item1.CurrentMap.RemoveAsync(summon.Item1).ConfigureAwait(false);
-            summon.Item1.Dispose();
-            this.SummonDied();
-        }
-    }
+    public ValueTask RemoveSummonAsync() => this._summon.RemoveAsync();
 
     /// <summary>
     /// Removes the pet command manager.
@@ -1792,18 +1227,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     {
         this._petCommandManager?.Dispose();
         this._petCommandManager = null;
-    }
-
-    /// <summary>
-    /// Destroys an item of the <see cref="Inventory"/>.
-    /// </summary>
-    /// <param name="item">The item.</param>
-    public async ValueTask DestroyInventoryItemAsync(Item item)
-    {
-        await this.Inventory!.RemoveItemAsync(item).ConfigureAwait(false);
-        await this.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
-        await this.InvokeViewPlugInAsync<IItemRemovedPlugIn>(p => p.RemoveItemAsync(item.ItemSlot)).ConfigureAwait(false);
-        this.GameContext.PlugInManager.GetPlugInPoint<IItemDestroyedPlugIn>()?.ItemDestroyed(item);
     }
 
     /// <inheritdoc/>
@@ -1848,7 +1271,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         await this.RemoveFromCurrentMapAsync().ConfigureAwait(false);
 
-        await this.RestoreTemporaryStorageItemsAsync().ConfigureAwait(false);
+        await this._storages.RestoreTemporaryStorageItemsAsync().ConfigureAwait(false);
 
         this.OpenedNpc = null;
 
@@ -1870,89 +1293,30 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>Success of the save operation.</returns>
-    public async ValueTask<bool> SaveProgressAsync(CancellationToken cancellationToken = default)
-    {
-        if (this.IsTemplatePlayer)
-        {
-            return true;
-        }
-
-        return await this.RunPersistenceExclusiveAsync(
-            () => this.PersistenceContext.SaveChangesAsync(cancellationToken),
-            cancellationToken).ConfigureAwait(false);
-    }
+    public ValueTask<bool> SaveProgressAsync(CancellationToken cancellationToken = default)
+        => this._persistence.SaveProgressAsync(cancellationToken);
 
     /// <summary>
     /// Runs the given operation while holding this player's persistence lock, so that context
     /// mutations and progress saves for the player never run concurrently.
+    /// See <see cref="PlayerPersistence"/> for the rationale and the lock ordering invariant.
     /// </summary>
-    /// <remarks>
-    /// The periodic progress save (<see cref="PlugIns.PeriodicSaveProgressPlugIn"/>) runs on an
-    /// independent timer flow. Action handlers mutate tracked entities with plain field/collection
-    /// writes (e.g. crafting toggling <c>item.ItemOptions</c>) which bypass the persistence context's
-    /// own lock; if such a mutation runs while <see cref="IContext.SaveChangesAsync"/> enumerates the
-    /// change tracker, the save throws (collection-modified / DbUpdateConcurrency) and every following
-    /// save fails too, so the whole session is lost on relog. Serializing the packet handler funnel
-    /// and the save against each other closes that window. The lock is re-entrant per asynchronous
-    /// flow, so an inline save inside an already-serialized handler does not deadlock.
-    /// <para>
-    /// Invariant: never acquire another player's persistence lock (via their
-    /// <see cref="SaveProgressAsync"/> or <see cref="RunPersistenceExclusiveAsync{T}"/>) from inside a
-    /// packet handler, which already holds this player's lock, unless a global lock order is enforced.
-    /// Today only the trade accept does a cross-player save, and it cannot form a cycle because a trade
-    /// has a single accepting side (so the A-then-B acquisition order has no concurrent B-then-A
-    /// counterpart). A second cross-player caller with the opposite order could deadlock.
-    /// </para>
-    /// </remarks>
     /// <typeparam name="T">The result type of the operation.</typeparam>
     /// <param name="operation">The operation to run exclusively.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The result of the operation.</returns>
-    public async ValueTask<T> RunPersistenceExclusiveAsync<T>(Func<ValueTask<T>> operation, CancellationToken cancellationToken = default)
-    {
-        if (this._persistenceLockHeld.Value)
-        {
-            return await operation().ConfigureAwait(false);
-        }
-
-        using var l = await this._persistenceLock.LockAsync(cancellationToken).ConfigureAwait(false);
-        this._persistenceLockHeld.Value = true;
-        try
-        {
-            return await operation().ConfigureAwait(false);
-        }
-        finally
-        {
-            this._persistenceLockHeld.Value = false;
-        }
-    }
+    public ValueTask<T> RunPersistenceExclusiveAsync<T>(Func<ValueTask<T>> operation, CancellationToken cancellationToken = default)
+        => this._persistence.RunExclusiveAsync(operation, cancellationToken);
 
     /// <summary>
     /// Runs the given operation while holding this player's persistence lock.
-    /// See <see cref="RunPersistenceExclusiveAsync{T}"/> for the rationale.
+    /// See <see cref="PlayerPersistence"/> for the rationale.
     /// </summary>
     /// <param name="operation">The operation to run exclusively.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A value task which completes when the operation completed.</returns>
-    public async ValueTask RunPersistenceExclusiveAsync(Func<ValueTask> operation, CancellationToken cancellationToken = default)
-    {
-        if (this._persistenceLockHeld.Value)
-        {
-            await operation().ConfigureAwait(false);
-            return;
-        }
-
-        using var l = await this._persistenceLock.LockAsync(cancellationToken).ConfigureAwait(false);
-        this._persistenceLockHeld.Value = true;
-        try
-        {
-            await operation().ConfigureAwait(false);
-        }
-        finally
-        {
-            this._persistenceLockHeld.Value = false;
-        }
-    }
+    public ValueTask RunPersistenceExclusiveAsync(Func<ValueTask> operation, CancellationToken cancellationToken = default)
+        => this._persistence.RunExclusiveAsync(operation, cancellationToken);
 
     /// <summary>
     /// Is called after the player killed a <see cref="Player"/>.
@@ -2024,7 +1388,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         await this.RemoveFromCurrentMapAsync().ConfigureAwait(false);
         await this._observerToWorldViewAdapter.ClearObservingObjectsListAsync().ConfigureAwait(false);
         this._observerToWorldViewAdapter.Dispose();
-        this._walker.Dispose();
+        this._movement.Dispose();
         await this.MagicEffectList.DisposeAsync().ConfigureAwait(false);
         this._respawnAfterDeathCts?.Dispose();
         (this._viewPlugIns as IDisposable)?.Dispose();
@@ -2052,109 +1416,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     protected virtual ICustomPlugInContainer<IViewPlugIn> CreateViewPlugInContainer()
     {
         throw new NotImplementedException("CreateViewPlugInContainer must be overwritten in derived classes.");
-    }
-
-    private static int GetWalkableStepCount(GameMapTerrain terrain, ReadOnlySpan<WalkingStep> steps)
-    {
-        for (var index = 0; index < steps.Length; index++)
-        {
-            var target = steps[index].To;
-            if (!terrain.WalkMap[target.X, target.Y])
-            {
-                return index;
-            }
-        }
-
-        return steps.Length;
-    }
-
-    private async ValueTask AddMasterExperienceCoreAsync(int experience, IAttackable? killedObject)
-    {
-        if (this.Attributes![Stats.MasterLevel] >= this.GameContext.Configuration.MaximumMasterLevel)
-        {
-            await this.InvokeViewPlugInAsync<IAddExperiencePlugIn>(p => p.AddExperienceAsync(0, killedObject, ExperienceType.MaxMasterLevelReached)).ConfigureAwait(false);
-            return;
-        }
-
-        if (killedObject is not null && killedObject.Attributes[Stats.Level] < this.GameContext.Configuration.MinimumMonsterLevelForMasterExperience)
-        {
-            await this.InvokeViewPlugInAsync<IAddExperiencePlugIn>(p => p.AddExperienceAsync(0, killedObject, ExperienceType.MonsterLevelTooLowForMasterExperience)).ConfigureAwait(false);
-            return;
-        }
-
-        long exp = experience;
-
-        bool lvlup = false;
-        var expTable = this.GameContext.MasterExperienceTable;
-        if (expTable[(int)this.Attributes[Stats.MasterLevel] + 1] - this.SelectedCharacter!.MasterExperience < exp)
-        {
-            exp = expTable[(int)this.Attributes[Stats.MasterLevel] + 1] - this.SelectedCharacter.MasterExperience;
-            lvlup = true;
-        }
-
-        this.SelectedCharacter.MasterExperience += exp;
-
-        await this.InvokeViewPlugInAsync<IAddExperiencePlugIn>(p => p.AddExperienceAsync((int)exp, killedObject, ExperienceType.Master)).ConfigureAwait(false);
-
-        if (lvlup)
-        {
-            this.Attributes[Stats.MasterLevel]++;
-            this.SelectedCharacter.MasterLevelUpPoints += (int)this.Attributes[Stats.MasterPointsPerLevelUp];
-            this.SetReclaimableAttributesToMaximum();
-            this.Logger.LogDebug("Character {0} leveled up to master level {1}", this.SelectedCharacter.Name, this.Attributes[Stats.MasterLevel]);
-            await this.InvokeViewPlugInAsync<IUpdateLevelPlugIn>(p => p.UpdateMasterLevelAsync()).ConfigureAwait(false);
-            await this.ForEachWorldObserverAsync<IShowEffectPlugIn>(p => p.ShowEffectAsync(this, IShowEffectPlugIn.EffectType.LevelUp), true).ConfigureAwait(false);
-        }
-    }
-
-    private async ValueTask AddExperienceCoreAsync(int experience, IAttackable? killedObject)
-    {
-        var remainingExperience = experience;
-        while (remainingExperience > 0)
-        {
-            if (this.Attributes![Stats.Level] >= this.GameContext.Configuration.MaximumLevel)
-            {
-                await this.InvokeViewPlugInAsync<IAddExperiencePlugIn>(p => p.AddExperienceAsync(0, killedObject, ExperienceType.MaxLevelReached)).ConfigureAwait(false);
-                return;
-            }
-
-            long gainedExperience = remainingExperience;
-            bool isLevelUp = false;
-            var expTable = this.GameContext.ExperienceTable;
-            var expForNextLevel = expTable[(int)this.Attributes[Stats.Level] + 1];
-            if (expForNextLevel - this.SelectedCharacter!.Experience < gainedExperience)
-            {
-                gainedExperience = expForNextLevel - this.SelectedCharacter.Experience;
-                isLevelUp = true;
-            }
-
-            this.SelectedCharacter.Experience += gainedExperience;
-
-            await this.InvokeViewPlugInAsync<IAddExperiencePlugIn>(p => p.AddExperienceAsync((int)gainedExperience, killedObject, ExperienceType.Normal)).ConfigureAwait(false);
-
-            if (!isLevelUp)
-            {
-                return;
-            }
-
-            this.Attributes[Stats.Level]++;
-            this.SelectedCharacter.LevelUpPoints += (int)this.Attributes[Stats.PointsPerLevelUp];
-            this.SetReclaimableAttributesToMaximum();
-            this.Logger.LogDebug("Character {0} leveled up to {1}", this.SelectedCharacter.Name, this.Attributes[Stats.Level]);
-
-            this.GameContext.PlugInManager.GetPlugInPoint<ICharacterLevelUpPlugIn>()?.CharacterLeveledUp(this);
-
-            await this.InvokeViewPlugInAsync<IUpdateLevelPlugIn>(p => p.UpdateLevelAsync()).ConfigureAwait(false);
-            await this.ForEachWorldObserverAsync<IShowEffectPlugIn>(p => p.ShowEffectAsync(this, IShowEffectPlugIn.EffectType.LevelUp), true).ConfigureAwait(false);
-
-            remainingExperience -= (int)gainedExperience;
-            if (remainingExperience <= 0
-                || this.Attributes[Stats.Level] >= this.GameContext.Configuration.MaximumLevel
-                || this.GameContext.Configuration.PreventExperienceOverflow)
-            {
-                return;
-            }
-        }
     }
 
     /// <summary>
@@ -2205,12 +1466,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         this.IsAlive = false;
         this.IsTeleporting = false;
-        await this._walker.StopAsync().ConfigureAwait(false);
+        await this._movement.StopWalkingAsync().ConfigureAwait(false);
         await this._observerToWorldViewAdapter.ClearObservingObjectsListAsync().ConfigureAwait(false);
-        if (this.Summon?.Item1 is { IsAlive: true } summon)
-        {
-            await currentMap.RemoveAsync(summon).ConfigureAwait(false);
-        }
+        await this._summon.RemoveFromMapAsync(currentMap).ConfigureAwait(false);
 
         return true;
     }
@@ -2227,11 +1485,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             await speedCheck.ResetMovementStateAsync(this).ConfigureAwait(false);
         }
 
-        if (this.Summon?.Item1 is { IsAlive: true } summon)
-        {
-            summon.Position = gate.GetRandomPoint();
-            summon.Rotation = gate.Direction;
-        }
+        this._summon.PlaceAtGate(gate);
     }
 
     private async ValueTask RemoveFromCurrentMapAsync()
@@ -2240,86 +1494,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         {
             await map.RemoveAsync(this).ConfigureAwait(false);
             this._currentMap = null;
-        }
-    }
-
-    /// <summary>
-    /// Restores the temporary storage items placed in an NPC or trade dialog when player is disconnected.
-    /// </summary>
-    private async ValueTask RestoreTemporaryStorageItemsAsync()
-    {
-        try
-        {
-            if (this.Inventory is not { } inventory)
-            {
-                return;
-            }
-
-            if (this.BackupInventory is { } backupInventory)
-            {
-                inventory.Clear();
-                backupInventory.RestoreItemStates();
-                foreach (var item in backupInventory.Items)
-                {
-                    try
-                    {
-                        if (!await inventory.AddItemAsync(item.ItemSlot, item).ConfigureAwait(false)
-                            && !await inventory.AddItemAsync(item).ConfigureAwait(false))
-                        {
-                            this.Logger.LogError("Failed to restore item {item} from backup inventory of player {player}.", item, this.Name);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        this.Logger.LogError(ex, "Error restoring item {item} from backup inventory of player {player}.", item, this.Name);
-                    }
-                }
-
-                inventory.ItemStorage.Money = backupInventory.Money;
-                this.BackupInventory = null;
-                this.TemporaryStorage = null;
-                return;
-            }
-
-            if (this.TemporaryStorage is not { ItemStorage.Items.Count: > 0 } temporaryStorage)
-            {
-                // Nothing to restore.
-                return;
-            }
-
-            var count = temporaryStorage.ItemStorage.Items.Count;
-            this.Logger.LogInformation("Returning {count} items from temporary storage to inventory for player {player}", count, this.Name);
-
-            if (await inventory.TryTakeAllAsync(temporaryStorage).ConfigureAwait(false))
-            {
-                this.Logger.LogInformation("Returned {count} items from temporary storage to inventory for player {player}", count, this.Name);
-                this.TemporaryStorage = null;
-                return;
-            }
-
-            // We should never get so far, since the space is checked before doing anything with the temporary storage.
-            // Log this critical situation - items may be lost if fallback also fails
-            var items = temporaryStorage.Items.ToList();
-            this.Logger.LogError(
-                "CRITICAL: Could not return {count} items from temporary storage to inventory due to full inventory. Attempting fallback. Items: {items}",
-                items.Count,
-                string.Join(", ", items.Select(i => $"{i.Definition?.Name.ValueInNeutralLanguage ?? "Unknown"}(Slot:{i.ItemSlot})")));
-
-            // Try one more time to force-add items individually using the captured list
-            foreach (var item in items)
-            {
-                await this.TemporaryStorage.RemoveItemAsync(item).ConfigureAwait(false);
-                if (!await this.Inventory.AddItemAsync(item).ConfigureAwait(false))
-                {
-                    this.Logger.LogError("Failed to return item {item} to inventory. Item is lost. id: {itemid}", item, item.GetId());
-                }
-            }
-
-            this.TemporaryStorage = null;
-        }
-        catch (Exception ex)
-        {
-            this.Logger.LogError(ex, "Error returning items from temporary storage to inventory");
         }
     }
 
@@ -2352,51 +1526,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                     : (int)TimeSpan.FromHours(1).TotalSeconds;
             }
         }
-    }
-
-    /// <summary>
-    /// Gets the step delay depending on the equipped items and current movement effects.
-    /// </summary>
-    /// <param name="step">The walking step for which the delay is calculated.</param>
-    /// <returns>The current step delay, depending on equipped items.</returns>
-    private TimeSpan GetStepDelay(WalkingStep? step)
-    {
-        const double referenceFrameTimeMilliseconds = 40.0;
-        const double terrainScale = 100.0;
-
-        var speed = this.GetClientMovementSpeed(step?.From);
-        var tileDistance = step is { } walkingStep ? walkingStep.From.EuclideanDistanceTo(walkingStep.To) : 1.0;
-        var movementMilliseconds = terrainScale * Math.Max(1.0, tileDistance) / speed * referenceFrameTimeMilliseconds;
-
-        return TimeSpan.FromMilliseconds(movementMilliseconds);
-    }
-
-    private double GetClientMovementSpeed(Point? position = null)
-    {
-        if (this.IsInClientSafezone(position))
-        {
-            return this.ApplyMovementSpeedFactor(WalkMovementSpeed);
-        }
-
-        var speedAttribute = this.Attributes?[Stats.IsUnderwater] > 0
-            ? Stats.MovementSpeedUnderwater
-            : Stats.MovementSpeed;
-        var speed = this.Attributes?[speedAttribute] ?? 0;
-
-        return this.ApplyMovementSpeedFactor(Math.Max(WalkMovementSpeed, speed));
-    }
-
-    private double ApplyMovementSpeedFactor(double speed)
-    {
-        var movementSpeedFactor = this.Attributes?[Stats.MovementSpeedFactor] ?? 1.0;
-
-        return speed * (movementSpeedFactor > 0 ? movementSpeedFactor : 1.0);
-    }
-
-    private bool IsInClientSafezone(Point? position = null)
-    {
-        var checkedPosition = position ?? this.Position;
-        return this.CurrentMap?.Terrain.SafezoneMap[checkedPosition.X, checkedPosition.Y] ?? false;
     }
 
     private async ValueTask<ExitGate> GetSpawnGateOfCurrentMapAsync()
@@ -2436,7 +1565,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     private async ValueTask HitAsync(HitInfo hitInfo, IAttacker attacker, Skill? skill, bool? isFinalStreakHit = null)
     {
-        this.Summon?.Item2.RegisterHit(attacker);
+        this._summon.RegisterHit(attacker);
         var healthDamage = hitInfo.HealthDamage;
         int oversd = (int)(this.Attributes![Stats.CurrentShield] - hitInfo.ShieldDamage);
         if (oversd < 0)
@@ -2531,7 +1660,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return;
         }
 
-        await this._walker.StopAsync().ConfigureAwait(false);
+        await this._movement.StopWalkingAsync().ConfigureAwait(false);
         this.IsAlive = false;
         this._respawnAfterDeathCts = new CancellationTokenSource();
         await this.ForEachWorldObserverAsync<IObjectGotKilledPlugIn>(p => p.ObjectGotKilledAsync(this, killer), true).ConfigureAwait(false);
@@ -2555,12 +1684,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                     return;
                 }
 
-                if (this.Summon?.Item1 is { } summon)
-                {
-                    await summon.CurrentMap.RemoveAsync(summon).ConfigureAwait(false);
-                    summon.Dispose();
-                    this.Summon = null;
-                }
+                await this._summon.RemoveAsync().ConfigureAwait(false);
 
                 await this.MagicEffectList.ClearEffectsAfterDeathAsync().ConfigureAwait(false);
                 this.SetReclaimableAttributesToMaximum();
@@ -2703,10 +1827,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.Attributes[Stats.NearbyPartyMemberCount] = 0;
         this.LogInvalidInventoryItems();
 
-        this.Inventory = new InventoryStorage(this, this.GameContext);
-        this.ShopStorage = new ShopStorage(selectedCharacter);
-        this.TemporaryStorage = new Storage(InventoryConstants.TemporaryStorageSize, new TemporaryItemStorage());
-        this.Vault = null; // vault storage is getting set when vault npc is opened.
+        this._storages.CreateForCharacter(selectedCharacter);
         this.SkillList = new SkillList(this);
         this.SetReclaimableAttributesBeforeEnterGame();
         if (this.DetermineComboDefinition() is { } comboDefinition)
@@ -2751,34 +1872,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         await openStoreAction.RestoreAfterEnterWorldAsync(this, this.IsPlayerStoreOpeningAfterEnterSupported).ConfigureAwait(false);
     }
 
-    private void LogInvalidVaultItems()
-    {
-        var invalidItems = this.Account?.Vault?.Items.Where(i => i.Definition is null);
-        if (invalidItems is null)
-        {
-            return;
-        }
-
-        foreach (var item in invalidItems)
-        {
-            this.Logger.LogWarning("Account {name} has item without definition in vault, Slot: {slot}, ID: {id}", this.Account?.LoginName, item.ItemSlot, item.GetId());
-        }
-    }
-
-    private void LogInvalidInventoryItems()
-    {
-        var invalidItems = this.SelectedCharacter?.Inventory?.Items.Where(i => i.Definition is null);
-        if (invalidItems is null)
-        {
-            return;
-        }
-
-        foreach (var item in invalidItems)
-        {
-            this.Logger.LogWarning("Character {name} has item without definition in inventory, Slot: {slot}, ID: {id}", this.SelectedCharacter?.Name, item.ItemSlot, item.GetId());
-        }
-    }
-
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
     private async void OnTransformationSkinChanged(object? sender, EventArgs args)
     {
@@ -2806,7 +1899,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.Attributes[Stats.CurrentHealth] = Math.Min(this.Attributes[Stats.CurrentHealth], this.Attributes[Stats.MaximumHealth]);
     }
 
-    private void SetReclaimableAttributesToMaximum()
+    /// <summary>
+    /// Sets the current values of the regeneration attributes to their maximum values.
+    /// </summary>
+    internal void SetReclaimableAttributesToMaximum()
     {
         foreach (var regeneration in Stats.IntervalRegenerationAttributes)
         {
@@ -2950,75 +2046,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
     }
 
-    private async ValueTask AddPetExperienceAsync(double gainedExperience)
-    {
-        async ValueTask AddExpToPetAsync(Item pet, double experience)
-        {
-            pet.PetExperience += (int)experience;
-
-            while (pet.PetExperience >= pet.Definition!.GetExperienceOfPetLevel((byte)(pet.Level + 1), pet.Definition!.MaximumItemLevel)
-                   && (!pet.IsDarkRaven() || pet.GetDarkRavenLeadershipRequirement(pet.Level + 1) <= this.Attributes![Stats.TotalLeadership]))
-            {
-                pet.Level++;
-                this.Attributes!.ItemPowerUps[pet] = this.Attributes.ItemPowerUps[pet]
-                    .Append(new PowerUpWrapper(
-                        new SimpleElement(1, AggregateType.AddRaw),
-                        pet.IsDarkRaven() ? Stats.RavenLevel : Stats.HorseLevel,
-                        this.Attributes)).ToList();
-
-                await this.InvokeViewPlugInAsync<IPetInfoViewPlugIn>(p => p.ShowPetInfoAsync(pet, pet.ItemSlot, PetStorageLocation.InventoryPetSlot)).ConfigureAwait(false);
-            }
-        }
-
-        Item? GetTrainablePet(byte inventorySlot)
-        {
-            var pet = this.Inventory?.GetItem(inventorySlot);
-            if (pet is not null
-                && pet.Definition is not null
-                && pet.Definition.PetExperienceFormula is not null
-                && pet.Definition.MaximumItemLevel > 0
-                && pet.Durability > 0
-                && pet.Level < pet.Definition.MaximumItemLevel)
-            {
-                return pet;
-            }
-
-            return null;
-        }
-
-        const double petShare = 0.2;
-        Item? movePet = GetTrainablePet(InventoryConstants.PetSlot);
-        Item? attackPet = GetTrainablePet(InventoryConstants.RightHandSlot);
-
-        if (movePet is null && attackPet is null)
-        {
-            return;
-        }
-
-        var petExperience = (int)(gainedExperience * petShare);
-
-        if (movePet is not null && attackPet is not null)
-        {
-            // Both are there, so each gains just the half.
-            petExperience /= 2;
-        }
-
-        if (petExperience < 1)
-        {
-            return;
-        }
-
-        if (movePet is { })
-        {
-            await AddExpToPetAsync(movePet, petExperience).ConfigureAwait(false);
-        }
-
-        if (attackPet is { })
-        {
-            await AddExpToPetAsync(attackPet, petExperience).ConfigureAwait(false);
-        }
-    }
-
     private async ValueTask CloseTradeIfNeededAsync()
     {
         if (this.PlayerState.CurrentState == GameLogic.PlayerState.TradeButtonPressed
@@ -3026,73 +2053,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         {
             var cancelAction = new TradeCancelAction();
             await cancelAction.CancelTradeAsync(this).ConfigureAwait(false);
-        }
-    }
-
-    /// <summary>
-    /// A <see cref="MagicEffectDefinition"/> used to apply the GM mark
-    /// to a <see cref="Player"/> with <see cref="CharacterStatus.GameMaster"/> status.
-    /// </summary>
-    private protected sealed class GMMagicEffectDefinition : MagicEffectDefinition
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GMMagicEffectDefinition"/> class
-        /// with an empty power-up definitions list.
-        /// </summary>
-        public GMMagicEffectDefinition()
-        {
-            this.PowerUpDefinitions = new List<PowerUpDefinition>(0);
-        }
-    }
-
-    private sealed class TemporaryItemStorage : ItemStorage
-    {
-        public TemporaryItemStorage()
-        {
-            this.Items = new List<Item>();
-        }
-    }
-
-    private class AppearanceDataAdapter : IAppearanceData
-    {
-        private readonly Player _player;
-        private bool? _fullAncientSetEquipped;
-
-        public AppearanceDataAdapter(Player player)
-        {
-            this._player = player;
-        }
-
-        public event EventHandler? AppearanceChanged;
-
-        public CharacterClass? CharacterClass => this._player.SelectedCharacter?.CharacterClass;
-
-        public CharacterStatus CharacterStatus => this._player.SelectedCharacter?.CharacterStatus ?? default;
-
-        public CharacterPose Pose => this._player.SelectedCharacter?.Pose ?? default;
-
-        public bool FullAncientSetEquipped => (this._fullAncientSetEquipped ??= this._player.SelectedCharacter?.HasFullAncientSetEquipped()) ?? false;
-
-        public IEnumerable<ItemAppearance> EquippedItems
-        {
-            get
-            {
-                if (this._player.Inventory != null)
-                {
-                    return this._player.Inventory.EquippedItems.Select(item => item.GetAppearance());
-                }
-
-                return Enumerable.Empty<ItemAppearance>();
-            }
-        }
-
-        /// <summary>
-        /// Raises the <see cref="AppearanceChanged"/> event.
-        /// </summary>
-        public void RaiseAppearanceChanged()
-        {
-            this._fullAncientSetEquipped = null;
-            this.AppearanceChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 }

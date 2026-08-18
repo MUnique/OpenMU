@@ -31,6 +31,7 @@ public class AutoFields : ComponentBase
     static AutoFields()
     {
         Builders.Add(new PasswordHashFieldBuilder());
+        Builders.Add(new TimeZoneIdFieldBuilder());
         Builders.Add(new TextFieldBuilder());
         Builders.Add(new LocalizedStringFieldBuilder());
         Builders.Add(new NumberFieldBuilder<long>());

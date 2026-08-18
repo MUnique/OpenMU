@@ -35,6 +35,10 @@ public sealed class BotPlayer : OfflinePlayer
     public BotPlayer(IGameContext gameContext)
         : base(gameContext)
     {
+        // File the bot's log entries under its own runtime category
+        // (MUnique.OpenMU.GameLogic.Bots.BotPlayer), so a single Serilog MinimumLevel.Override can
+        // silence or surface bot logging without touching real players, who keep the base Player category.
+        this.Logger = new RuntimeCategoryLogger<Player>(gameContext.LoggerFactory, this);
     }
 
     /// <inheritdoc />

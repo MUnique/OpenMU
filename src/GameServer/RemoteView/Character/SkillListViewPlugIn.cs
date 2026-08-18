@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
@@ -22,16 +23,9 @@ using MUnique.OpenMU.PlugIns;
 [MinimumClient(3, 0, ClientLanguage.Invariant)]
 public class SkillListViewPlugIn : ISkillListViewPlugIn
 {
-    private const short Explosion79SkillId = 79;
     private const short ForceSkillId = 60;
     private const short ForceWaveSkillId = 66;
     private const short ForceWaveStrengSkillId = 509;
-    private const short KillingBlowSkillId = 260;
-    private const short BeastUppercutSkillId = 261;
-    private const short KillingBlowStrengSkillId = 551;
-    private const short BeastUppercutStrengSkillId = 552;
-    private const short KillingBlowMasterySkillId = 554;
-    private const short BeastUppercutMasterySkillId = 555;
 
     private readonly RemotePlayer _player;
 
@@ -67,14 +61,7 @@ public class SkillListViewPlugIn : ISkillListViewPlugIn
             return;
         }
 
-        if (skill.Number == KillingBlowSkillId
-            && this.SkillList.Any(s => s?.Number == KillingBlowStrengSkillId || s?.Number == KillingBlowMasterySkillId))
-        {
-            return;
-        }
-
-        if (skill.Number == BeastUppercutSkillId
-            && this.SkillList.Any(s => s?.Number == BeastUppercutStrengSkillId || s?.Number == BeastUppercutMasterySkillId))
+        if (this.SkillList.Any(s => s?.GetBaseSkill() == skill))
         {
             return;
         }
@@ -161,13 +148,13 @@ public class SkillListViewPlugIn : ISkillListViewPlugIn
     protected void BuildSkillList()
     {
         this.SkillList.Clear();
-        var skills = this._player.SkillList!.Skills.ToList();
+        var skills = this._player.SkillList!.Skills.OrderBy(s => s.Skill?.Number).ToList();
 
         var replacedSkills = skills.Select(entry => entry.Skill?.MasterDefinition?.ReplacedSkill).Where(skill => skill != null);
         skills.RemoveAll(s => replacedSkills.Contains(s.Skill));
         skills.RemoveAll(s => s.Skill?.SkillType == SkillType.PassiveBoost);
 
-        skills.RemoveAll(s => s.Skill?.Number == ForceWaveSkillId || s.Skill?.Number == Explosion79SkillId);
+        skills.RemoveAll(s => s.Skill?.Number == ForceWaveSkillId);
         if (skills.Any(s => s.Skill?.Number == ForceWaveStrengSkillId))
         {
             skills.RemoveAll(s => s.Skill?.Number == ForceSkillId);

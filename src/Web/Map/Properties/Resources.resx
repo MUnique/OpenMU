@@ -177,4 +177,7 @@
   <data name="Following" xml:space="preserve">
     <value>Following</value>
   </data>
+  <data name="SelectPlayer" xml:space="preserve">
+    <value>Select player on map</value>
+  </data>
 </root>

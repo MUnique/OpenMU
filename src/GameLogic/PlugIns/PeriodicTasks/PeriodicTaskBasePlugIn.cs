@@ -135,7 +135,7 @@ public abstract class PeriodicTaskBasePlugIn<TConfiguration, TState> : IPeriodic
     /// </returns>
     protected virtual bool IsItTimeToStart(IGameContext gameContext)
     {
-        return this._isStartForced || (this.Configuration?.IsItTimeToStart() ?? false);
+        return this._isStartForced || (this.Configuration?.IsItTimeToStart(gameContext.ServerTimeZone) ?? false);
     }
 
     /// <summary>
