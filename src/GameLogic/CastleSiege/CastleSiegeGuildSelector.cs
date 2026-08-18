@@ -117,7 +117,7 @@ public static class CastleSiegeGuildSelector
             }
 
             var side = (CastleSiegeJoinSide)((byte)CastleSiegeJoinSide.Attack1 + attackSideIndex);
-            await AddGuildAndAllianceAsync(
+            if (await AddGuildAndAllianceAsync(
                     context,
                     gameServerContext,
                     candidate.RuntimeGuildId,
@@ -125,8 +125,10 @@ public static class CastleSiegeGuildSelector
                     candidate.Registration.GuildName,
                     side,
                     candidate.Score)
-                .ConfigureAwait(false);
-            attackSideIndex++;
+                .ConfigureAwait(false))
+            {
+                attackSideIndex++;
+            }
         }
 
         await context.SaveFinalGuildListAsync().ConfigureAwait(false);
@@ -176,7 +178,7 @@ public static class CastleSiegeGuildSelector
             .ConfigureAwait(false);
     }
 
-    private static async ValueTask AddGuildAndAllianceAsync(
+    private static async ValueTask<bool> AddGuildAndAllianceAsync(
         CastleSiegeContext context,
         IGameServerContext gameServerContext,
         uint masterGuildId,
@@ -188,9 +190,7 @@ public static class CastleSiegeGuildSelector
         var allianceGuilds = await gameServerContext.GuildServer
             .GetAllianceGuildsAsync(masterGuildId)
             .ConfigureAwait(false);
-        if (allianceGuilds.Count == 0)
-        {
-            context.FinalGuildList.TryAdd(
+        if (!context.FinalGuildList.TryAdd(
                 masterGuildId,
                 CreateParticipant(
                     masterGuildId,
@@ -198,23 +198,21 @@ public static class CastleSiegeGuildSelector
                     masterGuildName,
                     side,
                     score,
-                    true));
-            return;
+                    true)))
+        {
+            return false;
         }
 
-        foreach (var allianceGuild in allianceGuilds)
+        foreach (var allianceGuild in allianceGuilds.Where(guild => guild.Id != masterGuildId))
         {
-            var persistentGuildId = allianceGuild.Id == masterGuildId
-                ? persistentMasterGuildId
-                : await gameServerContext.GuildServer
-                    .GetPersistentGuildIdAsync(allianceGuild.Id)
-                    .ConfigureAwait(false);
+            var persistentGuildId = await gameServerContext.GuildServer
+                .GetPersistentGuildIdAsync(allianceGuild.Id)
+                .ConfigureAwait(false);
             if (persistentGuildId is null)
             {
                 continue;
             }
 
-            var isAllianceMaster = allianceGuild.Id == masterGuildId;
             context.FinalGuildList.TryAdd(
                 allianceGuild.Id,
                 CreateParticipant(
@@ -222,9 +220,11 @@ public static class CastleSiegeGuildSelector
                     persistentGuildId.Value,
                     allianceGuild.GuildName,
                     side,
-                    isAllianceMaster ? score : 0,
-                    isAllianceMaster));
+                    0,
+                    false));
         }
+
+        return true;
     }
 
     private static async ValueTask<int> GetCombinedLevelAsync(CastleSiegeContext context, string? guildMasterName)

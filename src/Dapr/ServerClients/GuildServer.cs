@@ -217,7 +217,7 @@ public class GuildServer : IGuildServer
             await this._daprClient.InvokeMethodAsync(
                     this._targetAppId,
                     nameof(this.IncreaseGuildScoreAsync),
-                    (GuildId: guildId, Amount: amount))
+                    new GuildScoreIncreaseArguments(guildId, amount))
                 .ConfigureAwait(false);
         }
         catch (Exception ex)

@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.CastleSiege;
 
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.Persistence;
 
 /// <summary>
@@ -31,6 +32,9 @@ internal static class CastleSiegeRewardDelivery
         item.Durability = item.IsStackable() ? 1 : rewardDefinition.Durability;
         if (await player.Inventory.AddItemAsync(item).ConfigureAwait(false))
         {
+            await player.InvokeViewPlugInAsync<IItemAppearPlugIn>(
+                    plugIn => plugIn.ItemAppearAsync(item))
+                .ConfigureAwait(false);
             return true;
         }
 
@@ -42,21 +46,30 @@ internal static class CastleSiegeRewardDelivery
     /// Queues a reward for delivery when the character next enters the game.
     /// </summary>
     /// <param name="gameContext">The game context.</param>
-    /// <param name="characterId">The persistent character identifier.</param>
+    /// <param name="characterIds">The persistent character identifiers.</param>
     /// <param name="rewardDefinition">The reward item definition.</param>
     /// <returns>A task that represents the asynchronous queue operation.</returns>
     internal static async ValueTask QueueAsync(
         IGameContext gameContext,
-        Guid characterId,
+        IReadOnlyCollection<Guid> characterIds,
         ItemDefinition rewardDefinition)
     {
+        if (characterIds.Count == 0)
+        {
+            return;
+        }
+
         using var persistenceContext = gameContext.PersistenceContextProvider.CreateNewTypedContext(
             typeof(CastleSiegePendingReward),
             false,
             gameContext.Configuration);
-        var pendingReward = persistenceContext.CreateNew<CastleSiegePendingReward>();
-        pendingReward.CharacterId = characterId;
-        pendingReward.ItemDefinitionId = rewardDefinition.GetId();
+        foreach (var characterId in characterIds)
+        {
+            var pendingReward = persistenceContext.CreateNew<CastleSiegePendingReward>();
+            pendingReward.CharacterId = characterId;
+            pendingReward.ItemDefinitionId = rewardDefinition.GetId();
+        }
+
         await persistenceContext.SaveChangesAsync().ConfigureAwait(false);
     }
 }

@@ -14,6 +14,7 @@ using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.CastleSiege;
 using MUnique.OpenMU.GameLogic.Views.CastleSiege;
+using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.GameServer;
 using MUnique.OpenMU.GameServer.MessageHandler.CastleSiege;
 using MUnique.OpenMU.Interfaces;
@@ -97,6 +98,34 @@ public class CastleSiegeGuildSelectionTests
             Assert.That(restartedContext.FinalGuildList, Has.Count.EqualTo(6));
             Assert.That(restartedContext.FinalGuildList[AlphaGuildId].Side, Is.EqualTo(CastleSiegeJoinSide.Attack1));
             Assert.That(restartedContext.FinalGuildList[CharlieGuildId].Side, Is.EqualTo(CastleSiegeJoinSide.Attack2));
+        });
+    }
+
+    /// <summary>
+    /// Verifies that an incomplete alliance response cannot consume an empty attacking side.
+    /// </summary>
+    [Test]
+    public async ValueTask SelectionAddsAllianceMasterWhenAllianceResponseOmitsItAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        fixture.GuildServer
+            .Setup(server => server.GetAllianceGuildsAsync(AlphaGuildId))
+            .ReturnsAsync([
+                new AllianceGuildEntry(
+                    AlphaAllianceGuildId,
+                    "AlphaAl",
+                    1,
+                    Memory<byte>.Empty),
+            ]);
+
+        await CastleSiegeGuildSelector.SelectGuildsAsync(fixture.Context).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(fixture.Context.FinalGuildList[AlphaGuildId].Side, Is.EqualTo(CastleSiegeJoinSide.Attack1));
+            Assert.That(fixture.Context.FinalGuildList[AlphaGuildId].IsAllianceMaster, Is.True);
+            Assert.That(fixture.Context.FinalGuildList[AlphaAllianceGuildId].Side, Is.EqualTo(CastleSiegeJoinSide.Attack1));
+            Assert.That(fixture.Context.FinalGuildList[CharlieGuildId].Side, Is.EqualTo(CastleSiegeJoinSide.Attack2));
         });
     }
 
@@ -200,7 +229,32 @@ public class CastleSiegeGuildSelectionTests
             Assert.That(participant.ParticipationTime, Is.EqualTo(TimeSpan.FromSeconds(23)));
         });
 
+        fixture.Context.UntrackPlayer(player);
+        await player.WarpToAsync(new ExitGate
+        {
+            Map = fixture.NormalMap,
+            X1 = 1,
+            X2 = 1,
+            Y1 = 1,
+            Y2 = 1,
+            Direction = Direction.South,
+        }).ConfigureAwait(false);
+        await player.ClientReadyAfterMapChangeAsync().ConfigureAwait(false);
         CastleSiegeParticipantTracker.StopTracking(fixture.Context, player, firstUpdateUtc.AddSeconds(25));
+        CastleSiegeParticipantTracker.StartTracking(fixture.Context, player, firstUpdateUtc.AddSeconds(100));
+
+        await player.WarpToAsync(new ExitGate
+        {
+            Map = fixture.CastleSiegeMap,
+            X1 = 1,
+            X2 = 1,
+            Y1 = 1,
+            Y2 = 1,
+            Direction = Direction.South,
+        }).ConfigureAwait(false);
+        await player.ClientReadyAfterMapChangeAsync().ConfigureAwait(false);
+        fixture.Context.TrackPlayer(player, player.CurrentMap!);
+        await fixture.Context.SynchronizePlayerJoinSideAsync(player).ConfigureAwait(false);
         CastleSiegeParticipantTracker.StartTracking(fixture.Context, player, firstUpdateUtc.AddSeconds(100));
         await CastleSiegeParticipantTracker.TrackAsync(
                 fixture.Context,
@@ -210,6 +264,7 @@ public class CastleSiegeGuildSelectionTests
             fixture.Context.ParticipantTracking[player.SelectedCharacter.Id].ParticipationTime,
             Is.EqualTo(TimeSpan.FromSeconds(30)));
 
+        fixture.Context.UntrackPlayer(player);
         await player.WarpToAsync(new ExitGate
         {
             Map = fixture.NormalMap,
@@ -239,6 +294,7 @@ public class CastleSiegeGuildSelectionTests
         var fixture = await CreateFixtureAsync().ConfigureAwait(false);
         await CastleSiegeGuildSelector.SelectGuildsAsync(fixture.Context).ConfigureAwait(false);
         var player = await CreateSiegePlayerAsync(fixture, AlphaGuildId, "Winner").ConfigureAwait(false);
+        var itemAppearView = player.ViewPlugIns.GetPlugIn<IItemAppearPlugIn>()!;
         fixture.Context.MiddleOwnerGuildId = AlphaGuildId;
         fixture.Context.ParticipantTracking[player.SelectedCharacter!.Id] = new CastleSiegeParticipant
         {
@@ -260,6 +316,9 @@ public class CastleSiegeGuildSelectionTests
         Assert.That(
             player.Inventory!.Items.Count(item => item.Definition == fixture.RewardItemDefinition),
             Is.EqualTo(1));
+        Mock.Get(itemAppearView).Verify(
+            plugIn => plugIn.ItemAppearAsync(It.Is<Item>(item => item.Definition == fixture.RewardItemDefinition)),
+            Times.Once);
         using (var persistenceContext = fixture.PersistenceContextProvider.CreateNewTypedContext(
                    typeof(CastleSiegePendingReward),
                    false,
@@ -283,6 +342,22 @@ public class CastleSiegeGuildSelectionTests
                 AlphaAllianceGuildId,
                 fixture.CastleSiegeConfiguration.GuildScoreCastleSiegeMembers),
             Times.Once);
+    }
+
+    /// <summary>
+    /// Verifies that the previous owner is not credited when this phase has not recorded a Crown capture.
+    /// </summary>
+    [Test]
+    public async ValueTask RewardsDoNotCreditPreviousOwnerBeforeCrownCaptureAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        await CastleSiegeGuildSelector.SelectGuildsAsync(fixture.Context).ConfigureAwait(false);
+
+        await CastleSiegeParticipantTracker.AwardRewardsAsync(fixture.Context).ConfigureAwait(false);
+
+        fixture.GuildServer.Verify(
+            server => server.IncreaseGuildScoreAsync(It.IsAny<uint>(), It.IsAny<int>()),
+            Times.Never);
     }
 
     /// <summary>
@@ -320,8 +395,9 @@ public class CastleSiegeGuildSelectionTests
     {
         var fixture = await CreateFixtureAsync().ConfigureAwait(false);
         var player = await CreateSiegePlayerAsync(fixture, AlphaGuildId, "Returning").ConfigureAwait(false);
+        var itemAppearView = player.ViewPlugIns.GetPlugIn<IItemAppearPlugIn>()!;
         await CastleSiegeRewardDelivery
-            .QueueAsync(fixture.GameServerContext, player.SelectedCharacter!.Id, fixture.RewardItemDefinition)
+            .QueueAsync(fixture.GameServerContext, [player.SelectedCharacter!.Id], fixture.RewardItemDefinition)
             .ConfigureAwait(false);
 
         await new CastleSiegePendingRewardPlugIn()
@@ -331,12 +407,47 @@ public class CastleSiegeGuildSelectionTests
         Assert.That(
             player.Inventory!.Items.Count(item => item.Definition == fixture.RewardItemDefinition),
             Is.EqualTo(1));
+        Mock.Get(itemAppearView).Verify(
+            plugIn => plugIn.ItemAppearAsync(It.Is<Item>(item => item.Definition == fixture.RewardItemDefinition)),
+            Times.Once);
         using var persistenceContext = fixture.PersistenceContextProvider.CreateNewTypedContext(
             typeof(CastleSiegePendingReward),
             false,
             fixture.GameConfiguration);
         Assert.That(
             await persistenceContext.GetAsync<CastleSiegePendingReward>().ConfigureAwait(false),
+            Is.Empty);
+    }
+
+    /// <summary>
+    /// Verifies that an irrecoverable pending reward is removed instead of retried on every login.
+    /// </summary>
+    [Test]
+    public async ValueTask PendingRewardWithUnknownItemDefinitionIsDiscardedAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var player = await CreateSiegePlayerAsync(fixture, AlphaGuildId, "InvalidReward").ConfigureAwait(false);
+        using (var persistenceContext = fixture.PersistenceContextProvider.CreateNewTypedContext(
+                   typeof(CastleSiegePendingReward),
+                   false,
+                   fixture.GameConfiguration))
+        {
+            var pendingReward = persistenceContext.CreateNew<CastleSiegePendingReward>();
+            pendingReward.CharacterId = player.SelectedCharacter!.Id;
+            pendingReward.ItemDefinitionId = Guid.NewGuid();
+            await persistenceContext.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        await new CastleSiegePendingRewardPlugIn()
+            .PlayerStateChangedAsync(player, PlayerState.CharacterSelection, PlayerState.EnteredWorld)
+            .ConfigureAwait(false);
+
+        using var verificationContext = fixture.PersistenceContextProvider.CreateNewTypedContext(
+            typeof(CastleSiegePendingReward),
+            false,
+            fixture.GameConfiguration);
+        Assert.That(
+            await verificationContext.GetAsync<CastleSiegePendingReward>().ConfigureAwait(false),
             Is.Empty);
     }
 
@@ -373,6 +484,7 @@ public class CastleSiegeGuildSelectionTests
             Direction = Direction.South,
         }).ConfigureAwait(false);
         await player.ClientReadyAfterMapChangeAsync().ConfigureAwait(false);
+        fixture.Context.TrackPlayer(player, player.CurrentMap!);
         return player;
     }
 

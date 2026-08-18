@@ -446,6 +446,21 @@ public class GuildServer : IGuildServer
             return ImmutableList<AllianceGuildEntry>.Empty;
         }
 
+        var runtimeGuilds = this._guildDictionary.Values
+            .Where(guild => GetAllianceMasterGuid(guild.Guild) == masterGuid)
+            .Select(guild => new AllianceGuildEntry(
+                guild.Id,
+                guild.Guild.Name ?? string.Empty,
+                guild.Guild.Members.Count,
+                guild.Guild.Logo))
+            .ToImmutableList();
+        if (!runtimeGuilds.IsEmpty)
+        {
+            return runtimeGuilds;
+        }
+
+        // Loading one alliance guild normally materializes the complete alliance. The database fallback
+        // covers a cold or incomplete runtime cache without adding a round-trip to the alliance-chat path.
         using var context = this._persistenceContextProvider.CreateNewGuildContext();
         var persistentGuilds = await context.GetAlliancesAsync(masterGuid).ConfigureAwait(false);
         var result = ImmutableList.CreateBuilder<AllianceGuildEntry>();

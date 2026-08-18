@@ -135,14 +135,13 @@ public class MagicEffectsList : AsyncDisposable
     }
 
     /// <summary>
-    /// Tries to get an active effect by its identifier.
+    /// Gets a snapshot of the active effects.
     /// </summary>
-    /// <param name="effectId">The effect identifier.</param>
-    /// <returns>The active effect, if found.</returns>
-    public async ValueTask<MagicEffect?> TryGetActiveEffectAsync(short effectId)
+    /// <returns>The active effects at the time the snapshot was taken.</returns>
+    public async ValueTask<IReadOnlyList<MagicEffect>> GetActiveEffectsSnapshotAsync()
     {
         using var l = await this._addLock.LockAsync();
-        return this.ActiveEffects.TryGetValue(effectId, out var effect) ? effect : null;
+        return this.ActiveEffects.Values.ToList();
     }
 
     /// <inheritdoc />

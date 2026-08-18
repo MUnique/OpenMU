@@ -20,18 +20,13 @@ public static class CastleSiegeParticipantTracker
     public static async ValueTask TrackAsync(CastleSiegeContext context, DateTime utcNow)
     {
         if (context.CurrentState != CastleSiegeState.Start
-            || context.Configuration.CastleSiegeMapDefinition is not { } mapDefinition)
+            || context.Configuration.CastleSiegeMapDefinition is null)
         {
             return;
         }
 
-        foreach (var player in await context.GameContext.GetPlayersAsync().ConfigureAwait(false))
+        foreach (var player in context.GetSiegePlayers())
         {
-            if (player.CurrentMap?.Definition.Number != mapDefinition.Number)
-            {
-                continue;
-            }
-
             UpdateParticipant(context, player, utcNow, true, false);
         }
     }
@@ -40,6 +35,10 @@ public static class CastleSiegeParticipantTracker
     /// Awards eligible participants and increases the winning alliance's guild scores.
     /// </summary>
     /// <param name="context">The Castle Siege context.</param>
+    /// <remarks>
+    /// Guild-score awarding follows the current single-game-server Castle Siege deployment model.
+    /// A future multi-server event coordinator must invoke the shared guild-score award exactly once.
+    /// </remarks>
     /// <returns>A task that represents the asynchronous reward operation.</returns>
     public static async ValueTask AwardRewardsAsync(CastleSiegeContext context)
     {
@@ -53,6 +52,7 @@ public static class CastleSiegeParticipantTracker
 
         if (context.Configuration.RewardItemDefinition is { } rewardDefinition)
         {
+            var queuedCharacterIds = new List<Guid>();
             foreach (var participant in eligibleParticipants)
             {
                 if (onlinePlayers.TryGetValue(participant.CharacterId, out var player)
@@ -63,8 +63,13 @@ public static class CastleSiegeParticipantTracker
                     continue;
                 }
 
+                queuedCharacterIds.Add(participant.CharacterId);
+            }
+
+            if (queuedCharacterIds.Count > 0)
+            {
                 await CastleSiegeRewardDelivery
-                    .QueueAsync(context.GameContext, participant.CharacterId, rewardDefinition)
+                    .QueueAsync(context.GameContext, queuedCharacterIds, rewardDefinition)
                     .ConfigureAwait(false);
             }
         }
@@ -136,7 +141,9 @@ public static class CastleSiegeParticipantTracker
              && player.CurrentMap?.Definition.Number != context.Configuration.CastleSiegeMapDefinition?.Number)
             || player.SelectedCharacter is not { } character
             || player.GuildStatus is not { } guildStatus
-            || context.GetPlayerJoinSide(player) == CastleSiegeJoinSide.None)
+            || (allowPlayerOutsideSiegeMap
+                ? context.GetTrackedPlayerJoinSide(player)
+                : context.GetPlayerJoinSide(player)) == CastleSiegeJoinSide.None)
         {
             return;
         }
@@ -173,13 +180,8 @@ public static class CastleSiegeParticipantTracker
 
     private static CastleSiegeGuildParticipant? GetWinningGuild(CastleSiegeContext context)
     {
-        if (context.MiddleOwnerGuildId is { } runtimeGuildId)
-        {
-            return context.FinalGuildList.GetValueOrDefault(runtimeGuildId);
-        }
-
-        return context.SiegeData.OwnerGuildId is { } persistentGuildId
-            ? context.FinalGuildList.Values.FirstOrDefault(guild => guild.PersistentGuildId == persistentGuildId)
+        return context.MiddleOwnerGuildId is { } runtimeGuildId
+            ? context.FinalGuildList.GetValueOrDefault(runtimeGuildId)
             : null;
     }
 }

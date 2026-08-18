@@ -30,13 +30,23 @@ public class CastleSiegePendingRewardPlugIn : IPlayerStateChangedPlugIn
         var pendingRewards = await player.PersistenceContext
             .GetPendingCastleSiegeRewardsAsync(character.Id)
             .ConfigureAwait(false);
-        var deliveredAny = false;
+        var hasChanges = false;
         foreach (var pendingReward in pendingRewards)
         {
             var rewardDefinition = player.GameContext.Configuration.Items
                 .FirstOrDefault(item => item.GetId() == pendingReward.ItemDefinitionId);
-            if (rewardDefinition is null
-                || !await CastleSiegeRewardDelivery
+            if (rewardDefinition is null)
+            {
+                player.Logger.LogWarning(
+                    "Discarding Castle Siege reward {RewardId} because item definition {ItemDefinitionId} is unavailable.",
+                    pendingReward.Id,
+                    pendingReward.ItemDefinitionId);
+                await player.PersistenceContext.DeleteAsync(pendingReward).ConfigureAwait(false);
+                hasChanges = true;
+                continue;
+            }
+
+            if (!await CastleSiegeRewardDelivery
                     .TryAddToInventoryAsync(player, rewardDefinition)
                     .ConfigureAwait(false))
             {
@@ -44,10 +54,10 @@ public class CastleSiegePendingRewardPlugIn : IPlayerStateChangedPlugIn
             }
 
             await player.PersistenceContext.DeleteAsync(pendingReward).ConfigureAwait(false);
-            deliveredAny = true;
+            hasChanges = true;
         }
 
-        if (deliveredAny)
+        if (hasChanges)
         {
             // The item creation and pending-row deletion are committed together by the player's context.
             await player.SaveProgressAsync().ConfigureAwait(false);

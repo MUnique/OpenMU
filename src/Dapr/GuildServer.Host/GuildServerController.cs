@@ -189,7 +189,7 @@ public class GuildServerController : ControllerBase
     /// </summary>
     /// <param name="scoreIncrease">The guild identifier and score amount.</param>
     [HttpPost(nameof(IGuildServer.IncreaseGuildScoreAsync))]
-    public ValueTask IncreaseGuildScoreAsync([FromBody] (uint GuildId, int Amount) scoreIncrease)
+    public ValueTask IncreaseGuildScoreAsync([FromBody] GuildScoreIncreaseArguments scoreIncrease)
     {
         return this._guildServer.IncreaseGuildScoreAsync(scoreIncrease.GuildId, scoreIncrease.Amount);
     }
