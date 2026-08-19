@@ -237,8 +237,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         set
         {
-            var character = this._selectedCharacter;
-            if (character is null || character.Pose == this.Pose)
+            if (this._selectedCharacter is not { } character || character.Pose == value)
             {
                 return;
             }
@@ -1061,15 +1060,15 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 if (r.CurrentAttribute == Stats.CurrentShield && !this.IsAtSafezone() &&
                     attributes[Stats.ShieldRecoveryEverywhere] < 1)
                 {
-                    // Shield recovery is only possible at safe-zone, except the character has a specific attribute which has the effect that it's recovered everywhere.
-                    // This attribute is usually provided by level 380 armor and a Guardian Option.
+                    // Shield recovery is only possible at safe-zone, except if the character has Stats.ShieldRecoveryEverywhere.
+                    // This attribute is usually provided by a level 380 armor with a Guardian Option.
                     continue;
                 }
 
                 attributes[r.CurrentAttribute] = Math.Min(
                     attributes[r.CurrentAttribute] +
-                    ((attributes[r.MaximumAttribute] * attributes[r.RegenerationMultiplier]) +
-                     attributes[r.AbsoluteAttribute]),
+                        ((attributes[r.MaximumAttribute] * attributes[r.RegenerationMultiplier]) +
+                        attributes[r.AbsoluteAttribute]),
                     attributes[r.MaximumAttribute]);
             }
 
