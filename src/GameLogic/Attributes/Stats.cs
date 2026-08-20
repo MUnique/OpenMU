@@ -1442,7 +1442,7 @@ public class Stats
     /// <summary>
     /// Gets the <see cref="IsResting"/> attribute which defines if the character is sitting, leaning or hanging.
     /// </summary>
-    public static AttributeDefinition IsResting { get; } = new(new Guid("7A4E2D9F-B1C3-48F5-9D2E-1A6F8C3E5B7D"), "Flag, if the character is resting (sitting, leaning or hanging)", "Characters resting recover additional health.")
+    public static AttributeDefinition IsResting { get; } = new(new Guid("7A4E2D9F-B1C3-48F5-9D2E-1A6F8C3E5B7D"), "Flag, if the character is resting (sitting, leaning or hanging)", "Characters resting recover additional health and mana.")
     {
         MaximumValue = 1,
     };
