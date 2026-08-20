@@ -137,9 +137,7 @@ internal partial class CharacterClassInitialization : InitializerBase
 
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.DefenseDecrement, -1, Stats.InnovationDefDecrement));
 
-        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.HealthRecoveryMultiplier, 0.03f, Stats.IsRecovering));
-        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.ManaRecoveryMultiplier, 0.037f, Stats.IsRecovering));
-        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.IsRecovering, Stats.IsResting, Stats.IsInSafezone, InputOperator.Maximum));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.HealthRecoveryMultiplier, 0.03f, Stats.IsResting));
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.AbilityRecoveryAbsolute, 3, Stats.IsInSafezone));
 
         if (this.UseClassicPvp)
