@@ -24,7 +24,6 @@ using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.GameLogic.Views.Guild;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.GameLogic.Views.MuHelper;
-using MUnique.OpenMU.GameLogic.Views.Pet;
 using MUnique.OpenMU.GameLogic.Views.Quest;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Interfaces;
@@ -1048,8 +1047,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     {
         try
         {
-            var attributes = this.Attributes;
-            if (attributes is null)
+            if (this.Attributes is not { } attributes)
             {
                 return;
             }

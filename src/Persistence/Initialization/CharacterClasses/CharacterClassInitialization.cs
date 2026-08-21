@@ -146,11 +146,6 @@ internal partial class CharacterClassInitialization : InitializerBase
             attributeRelationships.Add(this.CreateAttributeRelationship(Stats.DefenseRatePvp, 1, Stats.DefenseRatePvm));
             attributeRelationships.Add(this.CreateAttributeRelationship(Stats.AttackRatePvp, 1, Stats.AttackRatePvm));
         }
-        else
-        {
-            attributeRelationships.Add(this.CreateAttributeRelationship(Stats.ShieldRecoveryMultiplier, 100, Stats.IsInSafezone));
-            attributeRelationships.Add(this.CreateAttributeRelationship(Stats.ShieldRecoveryMultiplier, 0.000008f, Stats.IsInSafezone, aggregateType: AggregateType.Multiplicate)); // (0.2 * 3)/(30 * 100 * 25)
-        }
 
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.MaximumGuildSize, 0.1f, Stats.Level));
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.CanFly, 1, Stats.IsDinorantEquipped));
@@ -178,6 +173,12 @@ internal partial class CharacterClassInitialization : InitializerBase
         {
             baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.MasterPointsPerLevelUp));
             baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.MasterExperienceRate));
+        }
+
+        if (!this.UseClassicPvp)
+        {
+            baseAttributeValues.Add(this.CreateConstValueAttribute(100, Stats.ShieldRecoveryMultiplier));
+            baseAttributeValues.Add(this.CreateConstValueAttribute(0.000008f, Stats.ShieldRecoveryMultiplier, AggregateType.Multiplicate)); // (0.2 * 3)/(30 * 100 * 25)
         }
     }
 
