@@ -253,8 +253,9 @@ whole session. A living player takes precedence over the bot's own company
 — a bot hunting with other bots leaves them for the inviter, and breaks that bot
 party up if it was leading it, so a player never has to guess which bot happens
 to be free. In a party the bot follows its leader and defers a due reset, leaving
-only on the engine's own terms: when the party disbands, when it is kicked, or
-when the leader enters a map it may not access.
+only on the engine's own terms: when the party disbands, when it is kicked,
+when the leader enters a map it may not access, or before the bot's own logout (the
+presence rotation or a fault restart stops it).
 
 A bot fights back when a player attacks it, but only as far as the game's own
 PvP rules allow: inside the active self-defense window, or against a player

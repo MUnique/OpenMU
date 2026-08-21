@@ -165,6 +165,55 @@ public class BotPartyHandlerTest
     }
 
     /// <summary>
+    /// When the player who grouped the bot disconnects, the engine swaps them for an offline snapshot
+    /// to keep the slot reserved. The bot must not leave immediately - it waits out the grace period,
+    /// so a quick reconnect (or the player starting off-level) does not strand or churn the party.
+    /// </summary>
+    [Test]
+    public async ValueTask StaysInPartyDuringGracePeriodAfterHumanDisconnectsAsync()
+    {
+        var gameContext = GameContextTestHelper.CreateGameContext();
+        var bot = await CreateBotAsync(gameContext, "Bot").ConfigureAwait(false);
+        var requester = await CreateHumanAsync(gameContext, "Human").ConfigureAwait(false);
+        var party = gameContext.PartyManager.CreateParty();
+        await party.AddAsync(requester).ConfigureAwait(false);
+        await party.AddAsync(bot).ConfigureAwait(false);
+
+        // The human disconnects: the engine keeps the slot by replacing them with an offline snapshot.
+        await party.LeaveTemporarilyAsync(requester).ConfigureAwait(false);
+
+        await BotPartyHandler.ProcessAsync(bot).ConfigureAwait(false);
+
+        Assert.That(bot.Party, Is.SameAs(party));
+    }
+
+    /// <summary>
+    /// Once the human who grouped the bot has been gone for longer than the grace period - and is
+    /// neither reconnected nor off-leveling - the bot leaves the dead party so it returns to the
+    /// party-less pool the hourly re-formation draws from, instead of being stranded forever.
+    /// </summary>
+    [Test]
+    public async ValueTask LeavesPartyAfterGracePeriodWhenHumanStaysGoneAsync()
+    {
+        var gameContext = GameContextTestHelper.CreateGameContext();
+        var bot = await CreateBotAsync(gameContext, "Bot").ConfigureAwait(false);
+        var requester = await CreateHumanAsync(gameContext, "Human").ConfigureAwait(false);
+        var party = gameContext.PartyManager.CreateParty();
+        await party.AddAsync(requester).ConfigureAwait(false);
+        await party.AddAsync(bot).ConfigureAwait(false);
+
+        await party.LeaveTemporarilyAsync(requester).ConfigureAwait(false);
+
+        // Simulate the human having been gone past the grace period.
+        var master = (OfflinePartyMember)party.PartyMaster!;
+        master.DisconnectedAtUtc = DateTime.UtcNow - TimeSpan.FromMinutes(11);
+
+        await BotPartyHandler.ProcessAsync(bot).ConfigureAwait(false);
+
+        Assert.That(bot.Party, Is.Null);
+    }
+
+    /// <summary>
     /// The full wiring: a party request through the regular request action reaches the bot via the
     /// <see cref="GameLogic.MuHelper.PartyRequestHandler"/> criteria and schedules the delayed answer.
     /// </summary>

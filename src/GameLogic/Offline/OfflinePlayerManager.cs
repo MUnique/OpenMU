@@ -72,7 +72,7 @@ public sealed class OfflinePlayerManager
     }
 
     /// <summary>
-    /// Stops and removes the offline session for the given account, if one exists.
+    /// Stops and removes the offline session for the given account if one exists.
     /// </summary>
     /// <param name="loginName">The account login name.</param>
     public async ValueTask StopAsync(string loginName)
@@ -97,6 +97,13 @@ public sealed class OfflinePlayerManager
             await offlinePlayer.DisposeAsync().ConfigureAwait(false);
         }
     }
+
+    /// <summary>
+    /// Returns whether the named character is currently off-leveling.
+    /// </summary>
+    /// <param name="characterName">The character name.</param>
+    public bool IsOffLeveling(string characterName) =>
+        this._activePlayers.Values.Any(p => string.Equals(p.Name, characterName, StringComparison.OrdinalIgnoreCase));
 
     /// <summary>
     /// Returns whether an offline player session is currently active for <paramref name="loginName"/>.
