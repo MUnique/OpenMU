@@ -9,16 +9,32 @@ namespace MUnique.OpenMU.AttributeSystem;
 /// </summary>
 public class ComposableAttribute : BaseAttribute, IComposableAttribute
 {
-    private readonly IList<IElement> _elementList;
-
     /// <summary>
-    /// Synchronizes access to <see cref="_elementList"/>. Elements are usually added on the game logic
-    /// thread, but they can also be removed from a thread pool thread when a magic effect expires on its
-    /// timer, while a value recalculation may be enumerating the list at the same time. Without this lock
-    /// the concurrent <see cref="List{T}.Remove"/> can transiently expose a <c>null</c> slot to the
-    /// enumeration in <see cref="GetAndCacheValue"/>, causing a <see cref="NullReferenceException"/>.
+    /// Serializes the copy-on-write mutations of <see cref="_elements"/>, the element subscription
+    /// changes and the <see cref="_version"/> bump. Elements are usually added on the game logic thread,
+    /// but they can also be removed from a thread pool thread when a magic effect expires on its timer,
+    /// while a value recalculation is aggregating at the same time. The cached fast path of
+    /// <see cref="Value"/> and the <see cref="Elements"/> getter are lock-free (a single volatile read of
+    /// <see cref="_elements"/>); on a cache miss, <see cref="GetAndCacheValue"/> takes this lock only
+    /// briefly to capture a consistent (snapshot, version) pair and again to write the cache, and does the
+    /// aggregation itself outside the lock on the immutable snapshot.
     /// </summary>
     private readonly object _elementLock = new();
+
+    /// <summary>
+    /// The elements this attribute is composed of. Treated as immutable: mutations replace the whole
+    /// array under <see cref="_elementLock"/> (copy-on-write), so a reader that captured the reference
+    /// can keep enumerating it safely while another thread adds or removes an element.
+    /// </summary>
+    private volatile IElement[] _elements = [];
+
+    /// <summary>
+    /// Incremented under <see cref="_elementLock"/> on every structural change or cache invalidation.
+    /// <see cref="GetAndCacheValue"/> captures it before aggregating and only writes the result back into
+    /// <see cref="_cachedValue"/> when it is still unchanged, so a recalculation that raced a concurrent
+    /// removal cannot latch a stale value into the cache.
+    /// </summary>
+    private long _version;
 
     private float? _maximumValue;
 
@@ -33,25 +49,16 @@ public class ComposableAttribute : BaseAttribute, IComposableAttribute
     public ComposableAttribute(AttributeDefinition definition, AggregateType aggregateType = AggregateType.AddRaw, float? maximumValue = null)
         : base(definition, aggregateType)
     {
-        this._elementList = new List<IElement>();
         this._maximumValue = maximumValue;
     }
 
     /// <inheritdoc/>
     /// <remarks>
-    /// Returns a snapshot of the current elements, detached from the internal list on purpose, so the
-    /// caller can enumerate it safely even while elements are concurrently added or removed.
+    /// Returns the current copy-on-write snapshot of the elements. It is detached from later mutations on
+    /// purpose, so the caller can enumerate it safely even while elements are concurrently added or
+    /// removed; a previously obtained sequence will not reflect subsequent changes.
     /// </remarks>
-    public IEnumerable<IElement> Elements
-    {
-        get
-        {
-            lock (this._elementLock)
-            {
-                return this._elementList.ToArray();
-            }
-        }
-    }
+    public IEnumerable<IElement> Elements => this._elements;
 
     /// <inheritdoc/>
     public override float Value => this._cachedValue ?? this.GetAndCacheValue();
@@ -61,10 +68,14 @@ public class ComposableAttribute : BaseAttribute, IComposableAttribute
     {
         lock (this._elementLock)
         {
-            this._elementList.Add(element);
+            this._elements = [.. this._elements, element];
+
+            // Subscribing inside the lock keeps a concurrent Add/Remove of the same element from
+            // interleaving into a live subscription on an element that is no longer in the list. It does
+            // not call into user code, so it is safe to hold the lock across it.
+            element.ValueChanged += this.ElementChanged;
         }
 
-        element.ValueChanged += this.ElementChanged;
         this.ElementChanged(element, EventArgs.Empty);
 
         return this;
@@ -76,35 +87,51 @@ public class ComposableAttribute : BaseAttribute, IComposableAttribute
         bool removed;
         lock (this._elementLock)
         {
-            removed = this._elementList.Remove(element);
+            var index = Array.IndexOf(this._elements, element);
+            removed = index >= 0;
+            if (removed)
+            {
+                var newElements = new IElement[this._elements.Length - 1];
+                Array.Copy(this._elements, 0, newElements, 0, index);
+                Array.Copy(this._elements, index + 1, newElements, index, this._elements.Length - index - 1);
+                this._elements = newElements;
+                element.ValueChanged -= this.ElementChanged;
+            }
         }
 
         if (removed)
         {
-            element.ValueChanged -= this.ElementChanged;
             this.ElementChanged(element, EventArgs.Empty);
         }
     }
 
     private float GetAndCacheValue()
     {
-        // Enumerate a snapshot taken under the lock, so a concurrent AddElement/RemoveElement (e.g. an
-        // expiring magic effect on a timer thread) cannot expose a torn list - the transiently null slot
-        // that would otherwise be dereferenced here and throw a NullReferenceException. The aggregation
-        // itself runs outside the lock on purpose: reading an element's value recurses into other
-        // attributes, and holding the lock across that traversal would invite lock-ordering issues and
-        // lengthen contention. The value cache stays best-effort - an occasional stale or torn read
-        // corrects itself on the next recalculation - which matches the pre-existing behavior.
+        // Aggregate a copy-on-write snapshot, so a concurrent AddElement/RemoveElement (e.g. an expiring
+        // magic effect on a timer thread) cannot tear the list. The version captured alongside the
+        // snapshot guards the cache write below: if anything changed the composition or invalidated the
+        // cache while this recomputation was running, the freshly computed value is still returned to this
+        // caller, but it is not written back - otherwise the lost update would latch a stale value into
+        // _cachedValue until some unrelated element change happened to invalidate it again.
         IElement[] elements;
+        long versionAtStart;
         lock (this._elementLock)
         {
-            if (this._elementList.Count == 0)
+            elements = this._elements;
+            versionAtStart = this._version;
+        }
+
+        if (elements.Length == 0)
+        {
+            lock (this._elementLock)
             {
-                this._cachedValue = 0;
-                return 0;
+                if (this._version == versionAtStart)
+                {
+                    this._cachedValue = 0;
+                }
             }
 
-            elements = this._elementList.ToArray();
+            return 0;
         }
 
         var rawValues = elements.Where(e => e.AggregateType == AggregateType.AddRaw).Sum(e => e.Value);
@@ -129,14 +156,25 @@ public class ComposableAttribute : BaseAttribute, IComposableAttribute
             newValue = Math.Min(this.Definition.MaximumValue.Value, newValue);
         }
 
-        this._cachedValue = newValue;
+        lock (this._elementLock)
+        {
+            if (this._version == versionAtStart)
+            {
+                this._cachedValue = newValue;
+            }
+        }
 
         return newValue;
     }
 
     private void ElementChanged(object? sender, EventArgs eventArgs)
     {
-        this._cachedValue = null;
+        lock (this._elementLock)
+        {
+            this._version++;
+            this._cachedValue = null;
+        }
+
         this.RaiseValueChanged();
     }
 }

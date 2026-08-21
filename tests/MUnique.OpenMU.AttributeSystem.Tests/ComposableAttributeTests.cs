@@ -243,12 +243,35 @@ public class ComposableAttributeTests
             }
         });
 
-        await Task.WhenAll(writer, reader).ConfigureAwait(false);
+        await Task.WhenAll(writer, reader).WaitAsync(TimeSpan.FromSeconds(30)).ConfigureAwait(false);
 
-        // The fix guarantees crash-freedom, not value coherency: the value cache stays best-effort under
-        // concurrency (a stale or torn read corrects itself on the next recalculation), so this test only
-        // asserts that the concurrent reads never threw.
+        // This test asserts crash-freedom under concurrency; it fails with a timeout instead of hanging
+        // should the locking ever deadlock. Cache coherency (that a removal is never latched as a stale
+        // value) is covered deterministically by ConcurrentRemovalDuringReadDoesNotLatchStaleValue.
         Assert.That(readerError, Is.Null, $"Reading the value concurrently threw: {readerError}");
+    }
+
+    /// <summary>
+    /// Tests that a removal happening while the value is being recalculated is not latched into the cache
+    /// as a stale value. The reentrant element removes another element mid-aggregation - the same lost
+    /// update the version guard in <see cref="ComposableAttribute"/> closes - so without the guard the
+    /// pre-removal value would stick on every subsequent read until an unrelated change invalidated it.
+    /// </summary>
+    [Test]
+    public void ConcurrentRemovalDuringReadDoesNotLatchStaleValue()
+    {
+        var buff = new SimpleElement { Value = 100, AggregateType = AggregateType.AddRaw };
+        this._composableAttribute.AddElement(buff);
+
+        // Removes the buff the first time its value is read during aggregation, deterministically
+        // reproducing "an element is removed on another thread while the value is being computed".
+        this._composableAttribute.AddElement(new ReentrantElement(() => this._composableAttribute.RemoveElement(buff)));
+
+        // Triggers the aggregation during which the buff removes itself.
+        _ = this._composableAttribute.Value;
+
+        // The buff is gone, so the very next read must reflect that (0), not the pre-removal 100.
+        Assert.That(this._composableAttribute.Value, Is.EqualTo(0));
     }
 
     /// <summary>
@@ -303,5 +326,37 @@ public class ComposableAttributeTests
         await Task.WhenAll(writer, reader).WaitAsync(TimeSpan.FromSeconds(30)).ConfigureAwait(false);
 
         Assert.That(error, Is.Null, $"Reading the dependent value concurrently threw: {error}");
+    }
+
+    /// <summary>
+    /// An element that runs a one-shot side effect the first time its <see cref="Value"/> is read, used to
+    /// deterministically mutate the composition while it is being aggregated.
+    /// </summary>
+    private sealed class ReentrantElement : IElement
+    {
+        private readonly Action _onFirstRead;
+        private bool _fired;
+
+        public ReentrantElement(Action onFirstRead) => this._onFirstRead = onFirstRead;
+
+#pragma warning disable CS0067 // required by IElement; this test element never raises it
+        public event EventHandler? ValueChanged;
+#pragma warning restore CS0067
+
+        public AggregateType AggregateType => AggregateType.AddRaw;
+
+        public float Value
+        {
+            get
+            {
+                if (!this._fired)
+                {
+                    this._fired = true;
+                    this._onFirstRead();
+                }
+
+                return 0;
+            }
+        }
     }
 }
