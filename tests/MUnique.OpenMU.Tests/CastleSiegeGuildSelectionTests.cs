@@ -74,6 +74,7 @@ public class CastleSiegeGuildSelectionTests
             Assert.That(fixture.Context.FinalGuildList[CharlieGuildId].Side, Is.EqualTo(CastleSiegeJoinSide.Attack2));
             Assert.That(fixture.Context.FinalGuildList[BravoGuildId].Side, Is.EqualTo(CastleSiegeJoinSide.Attack3));
             Assert.That(fixture.Context.FinalGuildList, Does.Not.ContainKey(DeltaGuildId));
+            Assert.That(fixture.Context.MiddleOwnerGuildId, Is.EqualTo(DefenseGuildId));
         });
         fixture.GuildServer.Verify(
             server => server.GetGuildIdByNameAsync(It.IsAny<string>()),
@@ -98,6 +99,7 @@ public class CastleSiegeGuildSelectionTests
             Assert.That(restartedContext.FinalGuildList, Has.Count.EqualTo(6));
             Assert.That(restartedContext.FinalGuildList[AlphaGuildId].Side, Is.EqualTo(CastleSiegeJoinSide.Attack1));
             Assert.That(restartedContext.FinalGuildList[CharlieGuildId].Side, Is.EqualTo(CastleSiegeJoinSide.Attack2));
+            Assert.That(restartedContext.MiddleOwnerGuildId, Is.EqualTo(DefenseGuildId));
         });
     }
 
@@ -345,10 +347,10 @@ public class CastleSiegeGuildSelectionTests
     }
 
     /// <summary>
-    /// Verifies that the previous owner is not credited when this phase has not recorded a Crown capture.
+    /// Verifies that the defending owner is credited when no attacking guild captures the Crown.
     /// </summary>
     [Test]
-    public async ValueTask RewardsDoNotCreditPreviousOwnerBeforeCrownCaptureAsync()
+    public async ValueTask RewardsCreditDefendingOwnerWithoutCrownCaptureAsync()
     {
         var fixture = await CreateFixtureAsync().ConfigureAwait(false);
         await CastleSiegeGuildSelector.SelectGuildsAsync(fixture.Context).ConfigureAwait(false);
@@ -356,8 +358,15 @@ public class CastleSiegeGuildSelectionTests
         await CastleSiegeParticipantTracker.AwardRewardsAsync(fixture.Context).ConfigureAwait(false);
 
         fixture.GuildServer.Verify(
-            server => server.IncreaseGuildScoreAsync(It.IsAny<uint>(), It.IsAny<int>()),
-            Times.Never);
+            server => server.IncreaseGuildScoreAsync(
+                DefenseGuildId,
+                fixture.CastleSiegeConfiguration.GuildScoreCastleSiege),
+            Times.Once);
+        fixture.GuildServer.Verify(
+            server => server.IncreaseGuildScoreAsync(
+                DefenseAllianceGuildId,
+                fixture.CastleSiegeConfiguration.GuildScoreCastleSiegeMembers),
+            Times.Once);
     }
 
     /// <summary>

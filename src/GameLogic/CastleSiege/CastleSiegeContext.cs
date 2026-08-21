@@ -83,7 +83,7 @@ public class CastleSiegeContext : IEventStateProvider
     public System.Collections.Concurrent.ConcurrentDictionary<Guid, CastleSiegeParticipant> ParticipantTracking { get; } = new();
 
     /// <summary>
-    /// Gets or sets the runtime identifier of the guild which most recently captured the Crown.
+    /// Gets or sets the runtime identifier of the guild which currently owns the castle during the battle.
     /// </summary>
     public uint? MiddleOwnerGuildId { get; set; }
 
@@ -376,6 +376,17 @@ public class CastleSiegeContext : IEventStateProvider
     internal void UntrackPlayer(Player player)
     {
         this._siegeMapPlayers.TryRemove(player, out _);
+    }
+
+    /// <summary>
+    /// Initializes the current battle owner from the selected defending alliance.
+    /// A later Crown capture replaces this value with the attacking guild identifier.
+    /// </summary>
+    internal void InitializeBattleOwner()
+    {
+        this.MiddleOwnerGuildId = this.FinalGuildList.Values
+            .FirstOrDefault(guild => guild.Side == CastleSiegeJoinSide.Defense && guild.IsAllianceMaster)
+            ?.GuildId;
     }
 
     /// <summary>
@@ -731,6 +742,8 @@ public class CastleSiegeContext : IEventStateProvider
                 IsAllianceMaster = guild.IsAllianceMaster,
             };
         }
+
+        this.InitializeBattleOwner();
     }
 
     private async ValueTask<CastleSiegeJoinSide> ResolvePlayerJoinSideAsync(Player player)

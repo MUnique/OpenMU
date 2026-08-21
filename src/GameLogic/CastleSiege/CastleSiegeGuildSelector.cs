@@ -131,6 +131,7 @@ public static class CastleSiegeGuildSelector
             }
         }
 
+        context.InitializeBattleOwner();
         await context.SaveFinalGuildListAsync().ConfigureAwait(false);
     }
 
