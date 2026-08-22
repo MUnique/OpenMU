@@ -1119,8 +1119,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
                 attributes[r.CurrentAttribute] = Math.Min(
                     attributes[r.CurrentAttribute] +
-                        (((attributes[r.MaximumAttribute] * attributes[r.RegenerationMultiplier]) +
-                        attributes[r.AbsoluteAttribute]) * multiplier),
+                        (((attributes[r.MaximumAttribute] * attributes[r.RegenerationMultiplier]) + attributes[r.AbsoluteAttribute]) * multiplier),
                     attributes[r.MaximumAttribute]);
             }
 

@@ -153,7 +153,7 @@ internal partial class CharacterClassInitialization : InitializerBase
 
     private void AddCommonBaseAttributeValues(ICollection<ConstValueAttribute> baseAttributeValues, bool isMaster)
     {
-        baseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 27.5f, Stats.ManaRecoveryMultiplier));
+        baseAttributeValues.Add(this.CreateConstValueAttribute(0.037f, Stats.ManaRecoveryMultiplier));
         baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.DamageReceiveDecrement));
         baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.AttackDamageIncrease));
         baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.ExperienceRate));
