@@ -17,6 +17,9 @@ public interface IComposableAttribute : IAttribute
 {
     /// <summary>
     /// Gets the elements, of which this attribute is calculated.
+    /// Implementations may return a detached snapshot rather than a live view, so that the sequence can
+    /// be enumerated safely while elements are concurrently added or removed. Callers must therefore not
+    /// expect to observe later additions or removals through a sequence obtained from a previous access.
     /// </summary>
     IEnumerable<IElement> Elements { get; }
 
