@@ -74,6 +74,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     private DateTime _lastRegenerate = DateTime.UtcNow;
 
+    private DateTime _lastShieldRegenerateStop = DateTime.UtcNow;
+
     private GameMap? _currentMap;
 
     private IDisposable? _accountLoggingScope;
@@ -1043,7 +1045,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <summary>
     /// Regenerates the attributes specified in <see cref="Stats.IntervalRegenerationAttributes"/>.
     /// </summary>
-    public async Task RegenerateAsync()
+    /// <param name="isRestingCycle">If set to <c>true</c>, health and mana will be regenerated exclusively due to the player being in a resting state.</param>
+    /// <remarks>
+    /// All regenerations are subservient to <see cref="GameConfiguration.RecoveryInterval"/>, which has a default value of 3 seconds.
+    /// Here we apply a compensation multiplier to mimic the original different regen rates, thus maintaining game design and configurabilty.
+    /// </remarks>
+    public async Task RegenerateAsync(bool isRestingCycle = false)
     {
         try
         {
@@ -1052,21 +1059,68 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 return;
             }
 
-            foreach (var r in Stats.IntervalRegenerationAttributes.Where(r =>
-                         attributes[r.RegenerationMultiplier] > 0 || attributes[r.AbsoluteAttribute] > 0))
+            var targetRegenerationAttributes = Stats.IntervalRegenerationAttributes.Where(r =>
+                         attributes[r.RegenerationMultiplier] > 0 || attributes[r.AbsoluteAttribute] > 0);
+            if (isRestingCycle)
             {
-                if (r.CurrentAttribute == Stats.CurrentShield && !this.IsAtSafezone() &&
-                    attributes[Stats.ShieldRecoveryEverywhere] < 1)
+                targetRegenerationAttributes = targetRegenerationAttributes.Where(r =>
+                         r.CurrentAttribute == Stats.CurrentHealth || r.CurrentAttribute == Stats.CurrentMana);
+            }
+
+            foreach (var r in targetRegenerationAttributes)
+            {
+                float multiplier;
+                if (r.CurrentAttribute == Stats.CurrentShield)
                 {
-                    // Shield recovery is only possible at safe-zone, except if the character has Stats.ShieldRecoveryEverywhere.
-                    // This attribute is usually provided by a level 380 armor with a Guardian Option.
-                    continue;
+                    if ((!this.IsAtSafezone() && attributes[Stats.ShieldRecoveryEverywhere] < 1)
+                        || attributes[r.CurrentAttribute] == attributes[r.MaximumAttribute])
+                    {
+                        // Shield recovery is only possible at safe-zone, except if the character has Stats.ShieldRecoveryEverywhere.
+                        // This attribute is usually provided by a level 380 armor with a Guardian Option.
+                        this._lastShieldRegenerateStop = DateTime.UtcNow;
+                        continue;
+                    }
+
+                    var secondsSinceLastShieldRegenerate = (int)Math.Round(DateTime.UtcNow.Subtract(this._lastShieldRegenerateStop).TotalSeconds);
+                    switch (secondsSinceLastShieldRegenerate)
+                    {
+                        case >= 25:
+                            multiplier = 3;
+                            break;
+                        case >= 15:
+                            multiplier = 2.5f;
+                            break;
+                        case >= 10:
+                            multiplier = 2;
+                            break;
+                        default:
+                            continue;
+                    }
+
+                    // Originally shield is recovered every second (after the 10s wait period).
+                    multiplier *= 3;
+                }
+                else if (r.CurrentAttribute == Stats.CurrentHealth && !isRestingCycle)
+                {
+                    if (attributes[Stats.IsResting] > 0)
+                    {
+                        // We only regen health on the quicker resting cycle (for mana both cycles apply).
+                        continue;
+                    }
+
+                    // Originally, health is recovered every 7s
+                    multiplier = 3f / 7f;
+                }
+                else
+                {
+                    // Originally, mana and ability are recovered every 3s (the default recovery interval).
+                    multiplier = 1;
                 }
 
                 attributes[r.CurrentAttribute] = Math.Min(
                     attributes[r.CurrentAttribute] +
-                        ((attributes[r.MaximumAttribute] * attributes[r.RegenerationMultiplier]) +
-                        attributes[r.AbsoluteAttribute]),
+                        (((attributes[r.MaximumAttribute] * attributes[r.RegenerationMultiplier]) +
+                        attributes[r.AbsoluteAttribute]) * multiplier),
                     attributes[r.MaximumAttribute]);
             }
 

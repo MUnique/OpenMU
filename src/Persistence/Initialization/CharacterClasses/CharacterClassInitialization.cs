@@ -178,7 +178,7 @@ internal partial class CharacterClassInitialization : InitializerBase
         if (!this.UseClassicPvp)
         {
             baseAttributeValues.Add(this.CreateConstValueAttribute(100, Stats.ShieldRecoveryMultiplier));
-            baseAttributeValues.Add(this.CreateConstValueAttribute(0.000008f, Stats.ShieldRecoveryMultiplier, AggregateType.Multiplicate)); // (0.2 * 3)/(30 * 100 * 25)
+            baseAttributeValues.Add(this.CreateConstValueAttribute(1f / 75000, Stats.ShieldRecoveryMultiplier, AggregateType.Multiplicate)); // 1 / (30 * 100 * 25)
         }
     }
 
