@@ -24,6 +24,12 @@ internal sealed class PlayerMapTransitions
     private readonly PlayerSummon _summon;
 
     /// <summary>
+    /// Whether a <see cref="RecoverFromBlockedSpawnAsync"/> is currently in progress, so that a
+    /// nested one does not warp again. See there for why that recursion is fatal.
+    /// </summary>
+    private bool _isRecoveringFromBlockedSpawn;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="PlayerMapTransitions"/> class.
     /// </summary>
     /// <param name="player">The player.</param>
@@ -244,10 +250,10 @@ internal sealed class PlayerMapTransitions
         player.IsAlive = true;
 
         await player.CurrentMap!.AddAsync(player).ConfigureAwait(false);
-        if (!player.CurrentMap.Terrain.WalkMap[player.SelectedCharacter.PositionX, player.SelectedCharacter.PositionY])
+        if (!player.CurrentMap.Terrain.WalkMap[player.SelectedCharacter.PositionX, player.SelectedCharacter.PositionY]
+            && await this.RecoverFromBlockedSpawnAsync().ConfigureAwait(false))
         {
             // The warp starts another map change, which adds the summon again when it completed.
-            await this.WarpToSafezoneAsync().ConfigureAwait(false);
             return;
         }
 
@@ -341,5 +347,60 @@ internal sealed class PlayerMapTransitions
         await this._movement.ResetMovementStateAsync().ConfigureAwait(false);
 
         this._summon.PlaceAtGate(gate);
+    }
+
+    /// <summary>
+    /// Recovers a player which was placed on a non-walkable tile, by warping it to its safezone.
+    /// That warp re-enters <see cref="ClientReadyAfterMapChangeAsync"/>: for a player with a game
+    /// client the re-entry arrives later and on a fresh stack, with its F3 12 packet - but a
+    /// connection-less player (an <see cref="Offline.OfflinePlayer"/>, i.e. a bot) gets it inline
+    /// from <see cref="Offline.OfflineMapChangePlugIn"/>. Since <see cref="PlaceAtGateAsync"/>
+    /// rolls the position within the gate only once and never retries, a safezone spawn gate
+    /// without a single walkable tile recursed until the stack overflowed - taking the whole game
+    /// server process down with it. The recovery therefore warps at most once per such re-entry: a
+    /// nested attempt places the player on a walkable tile of the map it already stands on instead.
+    /// This bounds the recursion, which is what took the process down. It does not bound the case of
+    /// a player with a game client, whose re-entry arrives on a later, fresh stack with this flag
+    /// already reset - such a player can still be warped back and forth between two blocked gates,
+    /// exactly as before, which is a stuck client rather than a dead server.
+    /// </summary>
+    /// <returns>True, if the player was warped; false, if it was placed on this map instead.</returns>
+    private async ValueTask<bool> RecoverFromBlockedSpawnAsync()
+    {
+        var player = this._player;
+        if (!this._isRecoveringFromBlockedSpawn)
+        {
+            this._isRecoveringFromBlockedSpawn = true;
+            try
+            {
+                await this.WarpToSafezoneAsync().ConfigureAwait(false);
+                return true;
+            }
+            finally
+            {
+                this._isRecoveringFromBlockedSpawn = false;
+            }
+        }
+
+        if (player.CurrentMap is not { } map)
+        {
+            return false;
+        }
+
+        // No warp here - warping is exactly what would recurse. The terrain of the map we stand on
+        // is already parsed, so we just step to a tile we can actually stand on.
+        // Not RandomWalkableCoordinate: that samples the monster spawn points, which exclude every
+        // safezone tile by construction - it would drop a player who is being recovered into a
+        // hunting ground, and report failure on a map which is nothing but safezone.
+        var target = map.Terrain.GetWalkableCoordinate(map.SafeZoneSpawnGate) ?? map.Terrain.AnyWalkableCoordinate;
+        if (target is not { } point)
+        {
+            player.Logger.LogError("Map {0} has no walkable tile at all - player {1} stays on a blocked one.", map, player);
+            return false;
+        }
+
+        player.Logger.LogWarning("Spawn gate of map {0} is blocked - placing player {1} at {2} instead of warping again.", map, player, point);
+        await player.MoveAsync(point).ConfigureAwait(false);
+        return false;
     }
 }
