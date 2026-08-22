@@ -98,6 +98,13 @@ internal partial class ConstValueAttribute
         get => base.Value;
         set => base.Value = value;
     }
+
+    /// <inheritdoc />
+    public new AggregateType AggregateType
+    {
+        get => base.AggregateType;
+        set => base.AggregateType = value;
+    }
 }
 
 /// <summary>

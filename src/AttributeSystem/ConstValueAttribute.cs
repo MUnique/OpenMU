@@ -16,10 +16,12 @@ public class ConstValueAttribute : IAttribute
     /// </summary>
     /// <param name="value">The value.</param>
     /// <param name="definition">The definition.</param>
-    public ConstValueAttribute(float value, AttributeDefinition definition)
+    /// <param name="aggregateType">The aggregate type.</param>
+    public ConstValueAttribute(float value, AttributeDefinition definition, AggregateType aggregateType = AggregateType.AddRaw)
     {
         this.Value = value;
         this._definition = definition;
+        this.AggregateType = aggregateType;
     }
 
     /// <summary>
@@ -57,11 +59,11 @@ public class ConstValueAttribute : IAttribute
     public float Value { get; protected set; }
 
     /// <inheritdoc/>
-    public AggregateType AggregateType => AggregateType.AddRaw;
+    public AggregateType AggregateType { get; protected set; }
 
     /// <inheritdoc/>
     public override string ToString()
     {
-        return $"{this.Definition.Designation}: {this.Value}";
+        return $"{this.Definition.Designation}: {this.Value} ({this.AggregateType})";
     }
 }
