@@ -79,7 +79,8 @@ internal static class BotPartyHandler
 
     /// <summary>
     /// Drives the bot's party behavior; called from the bot's regular evaluation tick. Answers a
-    /// pending invitation once its delay passed.
+    /// pending invitation once its delay passed, and walks the bot out of a dead party once the
+    /// disconnect grace period has elapsed.
     /// </summary>
     /// <param name="bot">The bot.</param>
     /// <param name="utcNow">Overrides the current time used for the grace-period check (used by tests).</param>
@@ -100,28 +101,36 @@ internal static class BotPartyHandler
             }
         }
 
-        // No live human is left in the party: every human slot still present is an offline snapshot.
-        // Wait out the grace period (they may reconnect or be off-leveling) before leaving.
-        // This is independent of who currently holds the
-        // master slot, since mastership moves to a live bot when the previous master leaves properly -
-        // a bot-only party carries no such snapshot, since bots kick themselves before stopping.
+        // No live human is left in the party: every human slot still present is an offline snapshot,
+        // kept by the engine to reserve the spot for reconnection. Wait out the grace period (they may
+        // reconnect or be off-leveling) before leaving. This is independent of who currently holds the
+        // master slot, since mastership moves to a live bot when the previous master leaves properly.
+        // A bot-only party carries no such snapshot, since bots kick themselves before stopping - which
+        // is also the common case this loop must stay cheap for, so it avoids allocating an iterator or
+        // sorting the list just to find out there is nothing to find.
         if (bot.Party is { } party && !HasHumanCompanion(bot))
         {
-            var mostRecentlyDisconnectedHuman = party.PartyList
-                .OfType<OfflinePartyMember>()
-                .OrderByDescending(member => member.DisconnectedAtUtc)
-                .FirstOrDefault();
+            DateTime? mostRecentDisconnect = null;
+            string? mostRecentlyDisconnectedMemberName = null;
+            foreach (var member in party.PartyList)
+            {
+                if (member is OfflinePartyMember snapshot
+                    && (mostRecentDisconnect is null || snapshot.DisconnectedAtUtc > mostRecentDisconnect))
+                {
+                    mostRecentDisconnect = snapshot.DisconnectedAtUtc;
+                    mostRecentlyDisconnectedMemberName = snapshot.Name;
+                }
+            }
 
-            if (mostRecentlyDisconnectedHuman is null
-                || now - mostRecentlyDisconnectedHuman.DisconnectedAtUtc < PartyDisconnectGracePeriod)
+            if (mostRecentDisconnect is null || now - mostRecentDisconnect < PartyDisconnectGracePeriod)
             {
                 return;
             }
 
             bot.Logger.LogDebug(
-                "Bot '{Name}' leaves the party of the disconnected player '{Master}'.",
+                "Bot '{Name}' leaves the party of the disconnected player '{Player}'.",
                 bot.Name,
-                mostRecentlyDisconnectedHuman.Name);
+                mostRecentlyDisconnectedMemberName);
             await party.KickMySelfAsync(bot).ConfigureAwait(false);
         }
     }
