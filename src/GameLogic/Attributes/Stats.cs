@@ -1437,15 +1437,12 @@ public class Stats
     /// <summary>
     /// Gets the <see cref="IsInSafezone"/> attribute which defines if the character is located in a safezone of a game map.
     /// </summary>
-    public static AttributeDefinition IsInSafezone { get; } = new(new Guid("82044DF9-F528-4AD6-9AAA-6FEAA4C786E7"), "Flag, if the character is located in a safezone of a game map", "Characters at the safezone recover additional shield and ability.");
+    public static AttributeDefinition IsInSafezone { get; } = new(new Guid("82044DF9-F528-4AD6-9AAA-6FEAA4C786E7"), "Flag, if the character is located in a safezone of a game map", "Characters at the safezone recover shield and additional ability.");
 
     /// <summary>
     /// Gets the <see cref="IsResting"/> attribute which defines if the character is sitting, leaning or hanging.
     /// </summary>
     public static AttributeDefinition IsResting { get; } = new(new Guid("7A4E2D9F-B1C3-48F5-9D2E-1A6F8C3E5B7D"), "Flag, if the character is resting (sitting, leaning or hanging)", "Characters resting recover additional health and mana.")
-    {
-        MaximumValue = 1,
-    };
 
     /// <summary>
     /// Gets the <see cref="IsUnderwater"/> attribute which defines if the character is located on an underwater game map.

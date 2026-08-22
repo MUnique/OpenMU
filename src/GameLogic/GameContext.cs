@@ -87,7 +87,7 @@ public class GameContext : AsyncDisposable, IGameContext
             this.ItemPowerUpFactory = new ItemPowerUpFactory(loggerFactory.CreateLogger<ItemPowerUpFactory>());
             this.PartyManager = new PartyManager(configuration.MaximumPartySize, loggerFactory.CreateLogger<Party>());
             this._recoverTimer = new Timer(this.RecoverTimerElapsed, null, this.Configuration.RecoveryInterval, this.Configuration.RecoveryInterval);
-            this._restingRecoveryInterval = (int)Math.Round(this.Configuration.RecoveryInterval * (1 + (2f / 3)));  // Originally, resting recovery interval is 5s
+            this._restingRecoveryInterval = (int)Math.Round(this.Configuration.RecoveryInterval * 5f / 3);  // Originally, resting recovery interval is 5s
             this._restingRecoverTimer = new Timer(this.RecoverTimerElapsed, true, this._restingRecoveryInterval, this._restingRecoveryInterval);
             this._tasksTimer = new Timer(this.ExecutePeriodicTasks, null, 1000, 1000);
             this.FeaturePlugIns = new FeaturePlugInContainer(this.PlugInManager);
