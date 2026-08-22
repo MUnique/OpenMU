@@ -524,4 +524,9 @@ public enum UpdateVersion
     /// The version of the <see cref="FinishRageFighterMasterTreePlugIn"/>.
     /// </summary>
     FinishRageFighterMasterTree = 103,
+
+    /// <summary>
+    /// The version of the <see cref="ConfigureCastleSiegeParticipationUpdatePlugIn"/>.
+    /// </summary>
+    ConfigureCastleSiegeParticipation = 104,
 }
