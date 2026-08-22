@@ -72,7 +72,7 @@ public sealed class OfflinePlayerManager
     }
 
     /// <summary>
-    /// Stops and removes the offline session for the given account, if one exists.
+    /// Stops and removes the offline session for the given account if one exists.
     /// </summary>
     /// <param name="loginName">The account login name.</param>
     public async ValueTask StopAsync(string loginName)

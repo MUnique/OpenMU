@@ -28,7 +28,13 @@ public sealed class OfflinePartyMember : IPartyMember
         this.CurrentMap = player.CurrentMap;
         this.Position = player.Position;
         this.Logger = player?.Logger ?? Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
+        this.DisconnectedAtUtc = DateTime.UtcNow;
     }
+
+    /// <summary>
+    /// Gets the member disconnected time.
+    /// </summary>
+    public DateTime DisconnectedAtUtc { get; }
 
     /// <inheritdoc />
     public Party? Party { get; set; }

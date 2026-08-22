@@ -233,7 +233,7 @@ requirement, the player-killer rule). A bot which does not qualify leaves the
 party and goes back to its own life instead of blocking the entry.
 
 Inside, its open-world routine is suspended: no shopping, no map changes, no
-boredom, no grudges. It fights what the event throws at it and keeps up with the
+grudges. It fights what the event throws at it and keeps up with the
 leader. Chaos Castle is a free-for-all, so there the other participants are
 targets like everyone else — and a fight inside leaves no grudge outside. A bot
 which dies respawns in the safezone like a player, which takes it out of the
@@ -248,13 +248,15 @@ experience bonus applies. Parties re-form every hour.
 A player may invite a bot into their own party: it accepts after a human-like
 pause of a few seconds, as long as it is not in the middle of an errand. There is
 no level gate — just like OpenMU's own party action, a bot accepts an inviter of
-any level, since it is the player who invites and the bot leaves once it gets
-bored. A living player takes precedence over the bot's own company
+any level, since it is the player who invites, and once it joins it stays for the
+whole session. A living player takes precedence over the bot's own company
 — a bot hunting with other bots leaves them for the inviter, and breaks that bot
 party up if it was leading it, so a player never has to guess which bot happens
-to be free. In a party the bot follows its leader, defers a due reset, and
-eventually leaves politely: when the leader enters a map it may not access,
-before its own logout, or simply when it gets bored.
+to be free. In a party the bot follows its leader and defers a due reset, leaving
+only on the engine's own terms: when the party disbands, when it is kicked,
+when the leader enters a map it may not access, ten minutes after every human
+companion has disconnected without reconnecting, or before the bot's own logout
+(the presence rotation or a fault restart stops it).
 
 A bot fights back when a player attacks it, but only as far as the game's own
 PvP rules allow: inside the active self-defense window, or against a player

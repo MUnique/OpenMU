@@ -139,12 +139,6 @@ public class OfflinePlayer : Player
     internal Bots.PendingPartyInvite? PendingPartyInvite { get; set; }
 
     /// <summary>
-    /// Gets or sets the time at which the bot gets bored of its current party with a human player
-    /// and politely leaves it (managed by <see cref="Bots.BotPartyHandler"/>).
-    /// </summary>
-    internal DateTime? PartyBoredomAtUtc { get; set; }
-
-    /// <summary>
     /// Gets or sets a value indicating whether the bot is currently on a shopping trip (walking to
     /// or trading with a merchant), maintained by <see cref="Bots.BotNavigator"/>. While on an errand
     /// the bot declines party invitations, like a busy player would.
