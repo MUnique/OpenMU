@@ -34,7 +34,7 @@ public sealed class OfflinePartyMember : IPartyMember
     /// <summary>
     /// Gets the member disconnected time.
     /// </summary>
-    public DateTime DisconnectedAtUtc { get; internal set; }
+    public DateTime DisconnectedAtUtc { get; }
 
     /// <inheritdoc />
     public Party? Party { get; set; }

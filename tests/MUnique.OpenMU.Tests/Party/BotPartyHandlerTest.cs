@@ -205,10 +205,42 @@ public class BotPartyHandlerTest
         await party.LeaveTemporarilyAsync(requester).ConfigureAwait(false);
 
         // Simulate the human having been gone past the grace period.
-        var master = (OfflinePartyMember)party.PartyMaster!;
-        master.DisconnectedAtUtc = DateTime.UtcNow - TimeSpan.FromMinutes(11);
+        var pastGracePeriod = DateTime.UtcNow + TimeSpan.FromMinutes(11);
 
-        await BotPartyHandler.ProcessAsync(bot).ConfigureAwait(false);
+        await BotPartyHandler.ProcessAsync(bot, pastGracePeriod).ConfigureAwait(false);
+
+        Assert.That(bot.Party, Is.Null);
+    }
+
+    /// <summary>
+    /// Mastership moves off the disconnected human when a live member leaves the party properly
+    /// (<see cref="Party"/> hands the master slot to the first remaining member), so a dead party can
+    /// end up with a live bot as master while a human's snapshot is still seated in it. The bot must
+    /// still leave once the grace period elapses - keying off the master's type instead of whether any
+    /// human snapshot remains would let this shape through.
+    /// </summary>
+    [Test]
+    public async ValueTask LeavesPartyWhenMasterIsBotButHumanSnapshotRemainsAsync()
+    {
+        var gameContext = GameContextTestHelper.CreateGameContext();
+        var master = await CreateHumanAsync(gameContext, "Master").ConfigureAwait(false);
+        var bot = await CreateBotAsync(gameContext, "Bot").ConfigureAwait(false);
+        var other = await CreateHumanAsync(gameContext, "Other").ConfigureAwait(false);
+        var party = gameContext.PartyManager.CreateParty();
+        await party.AddAsync(master).ConfigureAwait(false);
+        await party.AddAsync(bot).ConfigureAwait(false);
+        await party.AddAsync(other).ConfigureAwait(false);
+
+        // The master leaves properly: mastership moves to the first remaining member, the bot.
+        await party.KickMySelfAsync(master).ConfigureAwait(false);
+        Assert.That(party.PartyMaster, Is.SameAs(bot));
+
+        // The remaining human then disconnects, leaving a snapshot behind a live bot master.
+        await party.LeaveTemporarilyAsync(other).ConfigureAwait(false);
+
+        var pastGracePeriod = DateTime.UtcNow + TimeSpan.FromMinutes(11);
+
+        await BotPartyHandler.ProcessAsync(bot, pastGracePeriod).ConfigureAwait(false);
 
         Assert.That(bot.Party, Is.Null);
     }

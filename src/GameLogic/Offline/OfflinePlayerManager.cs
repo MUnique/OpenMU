@@ -99,13 +99,6 @@ public sealed class OfflinePlayerManager
     }
 
     /// <summary>
-    /// Returns whether the named character is currently off-leveling.
-    /// </summary>
-    /// <param name="characterName">The character name.</param>
-    public bool IsOffLeveling(string characterName) =>
-        this._activePlayers.Values.Any(p => string.Equals(p.Name, characterName, StringComparison.OrdinalIgnoreCase));
-
-    /// <summary>
     /// Returns whether an offline player session is currently active for <paramref name="loginName"/>.
     /// </summary>
     /// <param name="loginName">The account login name.</param>

@@ -97,35 +97,6 @@ public class OfflinePlayerManagerTests
     }
 
     /// <summary>
-    /// Tests that <see cref="OfflinePlayerManager.IsOffLeveling"/> returns true once an off-level
-    /// session is active for the character.
-    /// </summary>
-    [Test]
-    public async ValueTask IsOffLeveling_WhenSessionActive_ReturnsTrueAsync()
-    {
-        var manager = new OfflinePlayerManager();
-        var realPlayer = await this.CreatePlayerWithPersistedAccountAsync().ConfigureAwait(false);
-        realPlayer.TryAddMoney(1_000_000);
-        realPlayer.Attributes![Stats.Level] = 100;
-
-        await manager.StartAsync(realPlayer, TestUserLoginName).ConfigureAwait(false);
-
-        Assert.That(manager.IsOffLeveling(TestCharacterName), Is.True);
-    }
-
-    /// <summary>
-    /// Tests that <see cref="OfflinePlayerManager.IsOffLeveling"/> returns false when no off-level
-    /// session exists for the character.
-    /// </summary>
-    [Test]
-    public async ValueTask IsOffLeveling_WhenNoSession_ReturnsFalseAsync()
-    {
-        var manager = new OfflinePlayerManager();
-
-        Assert.That(manager.IsOffLeveling(TestCharacterName), Is.False);
-    }
-
-    /// <summary>
     /// Creates a player whose account is stored in the in-memory repository,
     /// so that <see cref="OfflinePlayer.InitializeAsync"/> can find it.
     /// </summary>
