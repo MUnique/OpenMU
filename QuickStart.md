@@ -1,5 +1,9 @@
 # Quick Start OpenMU
 
+> This guide is also part of the documentation website, which is built from the
+> [docs-website](docs-website) folder and additionally documents the admin panel
+> and the deployment variants in detail.
+
 General requirements:
 
 * Free TCP ports:

@@ -102,6 +102,21 @@ If you want to contribute code, please do the following steps:
 
 Please have a look at the [quick start guide](QuickStart.md).
 
+## Documentation
+
+Besides the markdown files in this repository, the documentation is also
+available as a website, which is built with [Docusaurus](https://docusaurus.io/)
+from the [docs-website](docs-website) folder. Next to the getting started and
+deployment guides, it documents the admin panel page by page.
+
+To run it locally:
+
+```bash
+cd docs-website
+npm install
+npm start
+```
+
 ## Gameplay differences to the original server
 
 This project doesn't have the goal to copy the original MU Online server
