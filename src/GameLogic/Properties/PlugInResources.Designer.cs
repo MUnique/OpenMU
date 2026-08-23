@@ -2770,7 +2770,25 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("StartChaosCastleEventChatCommandPlugIn_Name", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the chat command &apos;/startit&apos;. Starts the illusion temple event at the next possible time..
+        /// </summary>
+        public static string StartIllusionTempleEventChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("StartIllusionTempleEventChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Start Illusion Temple Event Chat Command.
+        /// </summary>
+        public static string StartIllusionTempleEventChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("StartIllusionTempleEventChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Handles the chat command &apos;/startds&apos;. Starts the devil square event at the next possible time..
         /// </summary>
