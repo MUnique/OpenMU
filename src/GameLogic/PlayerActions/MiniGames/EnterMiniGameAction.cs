@@ -11,6 +11,7 @@ using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore;
 using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
+using MUnique.OpenMU.GameLogic.Views.NPC;
 
 /// <summary>
 /// Player action which implements entering a mini game.
@@ -39,6 +40,7 @@ public class EnterMiniGameAction
             || (miniGameDefinition.RequiresMasterClass && !player.SelectedCharacter.CharacterClass.IsMasterClass)
             || player.CurrentMiniGame is not null)
         {
+            await ShowRefusalAsync(player, $"You can't enter this event.").ConfigureAwait(false);
             await player.InvokeViewPlugInAsync<IShowMiniGameEnterResultPlugIn>(p => p.ShowResultAsync(miniGameType, EnterResult.Failed)).ConfigureAwait(false);
             return;
         }
@@ -50,36 +52,42 @@ public class EnterMiniGameAction
         var requiresMasterLevel = miniGameDefinition.RequiresMasterClass;
         if (characterLevel < minLevel || (requiresMasterLevel && player.SelectedCharacter?.CharacterClass?.IsMasterClass is not true))
         {
+            await ShowRefusalAsync(player, $"Your level is too low. You need to be at least level {minLevel} to enter this event.").ConfigureAwait(false);
             await player.InvokeViewPlugInAsync<IShowMiniGameEnterResultPlugIn>(p => p.ShowResultAsync(miniGameType, EnterResult.CharacterLevelTooLow)).ConfigureAwait(false);
             return;
         }
 
         if (characterLevel > maxLevel)
         {
+            await ShowRefusalAsync(player, $"Your level is too high. You need to be at most level {maxLevel} to enter this event.").ConfigureAwait(false);
             await player.InvokeViewPlugInAsync<IShowMiniGameEnterResultPlugIn>(p => p.ShowResultAsync(miniGameType, EnterResult.CharacterLevelTooHigh)).ConfigureAwait(false);
             return;
         }
 
         if (!this.CheckTicketItem(miniGameDefinition, player, gameTicketInventoryIndex, out var ticketItem))
         {
+            await ShowRefusalAsync(player, $"You need a ticket to enter this event.").ConfigureAwait(false);
             await player.InvokeViewPlugInAsync<IShowMiniGameEnterResultPlugIn>(p => p.ShowResultAsync(miniGameType, EnterResult.Failed)).ConfigureAwait(false);
             return;
         }
 
         if (!this.CheckEntranceFee(miniGameDefinition, player, out var entranceFee))
         {
+            await ShowRefusalAsync(player, $"You need {miniGameDefinition.EntranceFee} zen to enter this event.").ConfigureAwait(false);
             await player.InvokeViewPlugInAsync<IShowMiniGameEnterResultPlugIn>(p => p.ShowResultAsync(miniGameType, EnterResult.NotEnoughMoney)).ConfigureAwait(false);
             return;
         }
 
         if (!this.CheckPlayerKillState(miniGameDefinition, player))
         {
+            await ShowRefusalAsync(player, $"Killers can`t enter!").ConfigureAwait(false);
             await player.InvokeViewPlugInAsync<IShowMiniGameEnterResultPlugIn>(p => p.ShowResultAsync(miniGameType, EnterResult.PlayerKillerCantEnter)).ConfigureAwait(false);
             return;
         }
 
         if (player.GuildWarContext is { State: GuildWarState.Started or GuildWarState.Requested })
         {
+            await ShowRefusalAsync(player, "You can't enter this event during a guild war.").ConfigureAwait(false);
             await player.InvokeViewPlugInAsync<IShowMiniGameEnterResultPlugIn>(p => p.ShowResultAsync(miniGameType, EnterResult.Failed)).ConfigureAwait(false);
             return;
         }
@@ -91,6 +99,7 @@ public class EnterMiniGameAction
             if (miniGameStrategy is not null
                 && await miniGameStrategy.GetDurationUntilNextStartAsync(player.GameContext, miniGameDefinition).ConfigureAwait(false) != TimeSpan.Zero)
             {
+                await ShowRefusalAsync(player, $"{miniGameDefinition.Name} is not open right now.").ConfigureAwait(false);
                 await player.InvokeViewPlugInAsync<IShowMiniGameEnterResultPlugIn>(p => p.ShowResultAsync(miniGameType, EnterResult.NotOpen)).ConfigureAwait(false);
                 return;
             }
@@ -137,6 +146,26 @@ public class EnterMiniGameAction
         else
         {
             await player.InvokeViewPlugInAsync<IShowMiniGameEnterResultPlugIn>(p => p.ShowResultAsync(miniGameType, enterResult)).ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Shows the reason why the player can't enter the mini game. The client only knows a fixed set of
+    /// refusal codes per event, and they don't cover every case the server checks - so the reason is
+    /// told in plain words, by the npc the player is talking to, or as a system message when the entry
+    /// was requested without an open npc dialog.
+    /// </summary>
+    /// <param name="player">The player which tried to enter.</param>
+    /// <param name="reason">The reason, in plain words.</param>
+    private static async ValueTask ShowRefusalAsync(Player player, string reason)
+    {
+        if (player.OpenedNpc is { } npc)
+        {
+            await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync(reason, npc)).ConfigureAwait(false);
+        }
+        else
+        {
+            await player.ShowBlueMessageAsync(reason).ConfigureAwait(false);
         }
     }
 

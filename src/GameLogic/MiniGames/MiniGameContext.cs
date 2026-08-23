@@ -34,7 +34,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
 
     private readonly ConcurrentDictionary<byte, MiniGameSpawnWave> _currentSpawnWaves = new();
     private readonly List<ChangeEventContext> _remainingEvents = new();
-
+    
     private Stopwatch? _elapsedTimeSinceStart;
 
     /// <summary>
@@ -88,6 +88,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
 
     /// <inheritdoc />
     public bool IsEventRunning => this.State == MiniGameState.Playing;
+    
 
     /// <summary>
     /// Gets the player count.
@@ -137,9 +138,10 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     protected IDropGenerator DropGenerator { get; set; }
 
     /// <summary>
-    /// Gets the minimum player count to start the game.
+    /// Gets the minimum player count to start the game. Reads <see cref="MiniGameDefinition.MinimumPlayerCount"/>
+    /// when it's configured (greater than 0); otherwise falls back to the game type's built-in default.
     /// </summary>
-    protected virtual int MinimumPlayerCount => 1;
+    protected virtual int MinimumPlayerCount => this.Definition.MinimumPlayerCount > 0 ? this.Definition.MinimumPlayerCount : 1;
 
     /// <summary>
     /// Tries to enter the mini game. It will fail, if it's full, of if it's not in an open state.
@@ -201,6 +203,13 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         // Additional checks can be implemented in specific mini games.
         return true;
     }
+
+    /// <summary>
+    /// Gets spown gate
+    /// </summary>
+    /// <param name="player"></param>
+    /// <returns></returns>
+    public virtual ExitGate? GetSpawnGate(Player player) => null;
 
     /// <inheritdoc />
     public override string ToString()
@@ -558,7 +567,13 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         await this.ForEachPlayerAsync(player => player.ShowLocalizedGoldenMessageAsync(messageKey, args).AsTask()).ConfigureAwait(false);
     }
 
-    private async ValueTask<(int BonusScore, int GivenMoney)> GiveRewardAsync(Player player, MiniGameReward reward)
+    /// <summary>
+    /// Gives a single reward to the player.
+    /// </summary>
+    /// <param name="player">The player who should receive the reward.</param>
+    /// <param name="reward">The reward.</param>
+    /// <returns>The bonus score and the given money.</returns>
+    protected async ValueTask<(int BonusScore, int GivenMoney)> GiveRewardAsync(Player player, MiniGameReward reward)
     {
         switch (reward.RewardType)
         {
@@ -740,6 +755,11 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
                     await this.ForEachPlayerAsync(async player => player.TryAddMoney(this.Definition.EntranceFee)).ConfigureAwait(false);
                 }
 
+                // The players who did enter would otherwise be stuck on the event map forever - the
+                // game never starts, so StartAsync/StopAsync/ShutdownGameAsync (which would normally
+                // move them back out) never run either.
+                await this.MovePlayersToSafezoneAsync().ConfigureAwait(false);
+
                 return;
             }
 
@@ -871,7 +891,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         }
     }
 
-    private bool DoesRewardApply(Player player, int playerRank, MiniGameReward reward)
+    protected bool DoesRewardApply(Player player, int playerRank, MiniGameReward reward)
     {
         if (reward.Rank is not null && reward.Rank != playerRank)
         {

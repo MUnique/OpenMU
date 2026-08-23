@@ -246,6 +246,8 @@ internal partial class NpcInitialization : Version095d.NpcInitialization
         }
 
         {
+            // Holds the sacred relic during an illusion temple match. It's not killable in combat -
+            // talking to it while standing close breaks it instantly and drops the relic on the ground.
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 380;
             def.Designation = "Stone Statue";
@@ -294,10 +296,13 @@ internal partial class NpcInitialization : Version095d.NpcInitialization
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 385;
             def.Designation = "Mirage";
+            def.NpcWindow = NpcWindow.IllusionTemple;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
             this.GameConfiguration.Monsters.Add(def);
             def.SetGuid(def.Number);
         }
+
+        this.CreateIllusionSorcererSpirits();
 
         {
             var def = this.Context.CreateNew<MonsterDefinition>();
@@ -1119,6 +1124,60 @@ internal partial class NpcInitialization : Version095d.NpcInitialization
             def.ObjectKind = NpcObjectKind.Statue;
             def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
+        }
+    }
+
+    /// <summary>
+    /// Creates the "Illusion Sorc. Spirit" monsters (386-399) which roam the arena of the six illusion
+    /// temples - killing them grants skill points for the event's special skills. Each temple level uses
+    /// its own set of three (temple 5: two) increasingly stronger variants.
+    /// </summary>
+    private void CreateIllusionSorcererSpirits()
+    {
+        (short Number, int Level, int Hp, int MinDmg, int MaxDmg, int Defense, int AttackRate, int DefenseRate, byte AttackRange, short ViewRange, int MoveDelayMs, int AttackDelayMs)[] spirits =
+        {
+            (386, 65, 7150, 195, 245, 150, 340, 98, 4, 4, 800, 1600),
+            (387, 65, 7150, 215, 265, 170, 380, 110, 4, 4, 800, 1600),
+            (388, 67, 7370, 235, 285, 190, 440, 130, 1, 6, 1600, 2000),
+            (389, 70, 8680, 280, 330, 210, 500, 150, 4, 4, 800, 1600),
+            (390, 70, 8680, 300, 350, 230, 560, 170, 4, 4, 800, 1600),
+            (391, 72, 8928, 320, 370, 250, 640, 200, 1, 6, 1600, 2000),
+            (392, 75, 15000, 375, 395, 280, 460, 150, 4, 4, 800, 1600),
+            (393, 75, 15000, 395, 415, 300, 520, 160, 4, 4, 800, 1600),
+            (394, 77, 15400, 415, 435, 320, 580, 195, 1, 6, 1600, 2000),
+            (395, 80, 19200, 480, 500, 360, 660, 230, 4, 4, 800, 1600),
+            (396, 80, 19200, 500, 520, 380, 720, 260, 4, 4, 800, 1600),
+            (397, 82, 19680, 520, 540, 400, 840, 280, 1, 6, 1600, 2000),
+            (398, 85, 25500, 595, 615, 450, 760, 275, 4, 4, 800, 1600),
+            (399, 85, 25500, 615, 635, 470, 820, 303, 4, 4, 800, 1600),
+        };
+
+        foreach (var spirit in spirits)
+        {
+            var def = this.Context.CreateNew<MonsterDefinition>();
+            def.Number = spirit.Number;
+            def.Designation = "Illusion Sorc. Spirit";
+            def.MoveRange = 3;
+            def.AttackRange = spirit.AttackRange;
+            def.ViewRange = spirit.ViewRange;
+            def.MoveDelay = TimeSpan.FromMilliseconds(spirit.MoveDelayMs);
+            def.AttackDelay = TimeSpan.FromMilliseconds(spirit.AttackDelayMs);
+            def.RespawnDelay = TimeSpan.FromSeconds(10);
+            def.Attribute = 2;
+            def.NumberOfMaximumItemDrops = 1;
+            var attributes = new Dictionary<AttributeDefinition, float>
+            {
+                { Stats.Level, spirit.Level },
+                { Stats.MaximumHealth, spirit.Hp },
+                { Stats.MinimumPhysBaseDmg, spirit.MinDmg },
+                { Stats.MaximumPhysBaseDmg, spirit.MaxDmg },
+                { Stats.DefenseBase, spirit.Defense },
+                { Stats.AttackRatePvm, spirit.AttackRate },
+                { Stats.DefenseRatePvm, spirit.DefenseRate },
+            };
+            def.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            this.GameConfiguration.Monsters.Add(def);
+            def.SetGuid(def.Number);
         }
     }
 }

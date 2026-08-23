@@ -190,7 +190,15 @@ internal sealed class PlayerMapTransitions
         {
             // Older clients use a separate packet for the respawn, while newer don't.
             // It requires a slightly different logic.
-            player.CurrentMap = await player.GameContext.GetMapAsync(player.SelectedCharacter!.CurrentMap!.Number.ToUnsigned()).ConfigureAwait(false) ?? throw new InvalidOperationException("Current map not found.");
+            var targetMapNumber = player.SelectedCharacter!.CurrentMap!.Number;
+
+            // A mini game runs on its own instance of the map, which can't be resolved by the map number -
+            // that one always returns the regular instance. Without this, a player who respawns during a
+            // mini game lands on an empty copy of the map, invisible to the other participants.
+            player.CurrentMap = (player.CurrentMiniGame?.Map is { } miniGameMap && miniGameMap.Definition.Number == targetMapNumber
+                    ? miniGameMap
+                    : await player.GameContext.GetMapAsync(targetMapNumber.ToUnsigned()).ConfigureAwait(false))
+                ?? throw new InvalidOperationException("Current map not found.");
             await respawnPlugIn.RespawnAsync().ConfigureAwait(false);
             await player.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.EnteredWorld).ConfigureAwait(false);
             player.IsAlive = true;

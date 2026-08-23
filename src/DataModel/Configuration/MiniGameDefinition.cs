@@ -62,6 +62,12 @@ public partial class MiniGameDefinition
     public int MaximumPlayerCount { get; set; }
 
     /// <summary>
+    /// Gets or sets the minimum player count which is required for the game to start, and below which
+    /// a running game is aborted early. A value of <c>0</c> means the game type's built-in default applies.
+    /// </summary>
+    public int MinimumPlayerCount { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether to save the score as <see cref="MUnique.OpenMU.DataModel.Statistics.MiniGameRankingEntry"/>.
     /// </summary>
     public bool SaveRankingStatistics { get; set; }

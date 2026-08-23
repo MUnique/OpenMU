@@ -423,6 +423,21 @@
   <data name="TalkingNotImplementedFormat" xml:space="preserve">
     <value>Talking to this NPC ({0}, {1}) is not implemented yet.</value>
   </data>
+  <data name="IllusionTempleRelicPickedUpFormat" xml:space="preserve">
+    <value>{0} has taken the holy relic!</value>
+  </data>
+  <data name="IllusionTempleRelicDroppedFormat" xml:space="preserve">
+    <value>{0} dropped the holy relic!</value>
+  </data>
+  <data name="IllusionTempleScoreFormat" xml:space="preserve">
+    <value>Score - Allied Forces: {0} | Illusion Forces: {1}</value>
+  </data>
+  <data name="IllusionTempleStatueSpawnedMessage" xml:space="preserve">
+    <value>A new sacred relic has appeared!</value>
+  </data>
+  <data name="IllusionTempleBattleStartedMessage" xml:space="preserve">
+    <value>The battle has begun!</value>
+  </data>
   <data name="BloodCastleCrystalStatusDestroyed" xml:space="preserve">
     <value>{0} has destroyed the Crystal Statue!</value>
   </data>

@@ -1508,7 +1508,52 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("TalkingNotImplementedFormat", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to {0} has taken the holy relic!.
+        /// </summary>
+        public static string IllusionTempleRelicPickedUpFormat {
+            get {
+                return ResourceManager.GetString("IllusionTempleRelicPickedUpFormat", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to {0} dropped the holy relic!.
+        /// </summary>
+        public static string IllusionTempleRelicDroppedFormat {
+            get {
+                return ResourceManager.GetString("IllusionTempleRelicDroppedFormat", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Score - Allied Forces: {0} | Illusion Forces: {1}.
+        /// </summary>
+        public static string IllusionTempleScoreFormat {
+            get {
+                return ResourceManager.GetString("IllusionTempleScoreFormat", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to A new sacred relic has appeared!.
+        /// </summary>
+        public static string IllusionTempleStatueSpawnedMessage {
+            get {
+                return ResourceManager.GetString("IllusionTempleStatueSpawnedMessage", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The battle has begun!.
+        /// </summary>
+        public static string IllusionTempleBattleStartedMessage {
+            get {
+                return ResourceManager.GetString("IllusionTempleBattleStartedMessage", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Your account has been temporarily banned by a game master..
         /// </summary>

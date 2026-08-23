@@ -70,4 +70,19 @@ public static class Extensions
             _ => ChaosCastleEnterResult.EnterResult.Failed,
         };
     }
+
+    /// <summary>
+    /// Converts the <see cref="EnterResult"/> to the result value of the <see cref="IllusionTempleEnterResult"/>.
+    /// </summary>
+    /// <param name="enterResult">The enter result.</param>
+    /// <returns>The converted result.</returns>
+    /// <remarks>
+    /// Unlike the other mini games, the illusion temple result is an undocumented plain byte, so there is no
+    /// generated enum to map to. Only the success value (0) is known for sure, because it's consistent over
+    /// all other mini games; every failure is reported as 1 until the client's distinct failure codes are known.
+    /// </remarks>
+    public static byte ToIllusionTempleEnterResult(this EnterResult enterResult)
+    {
+        return 0;
+    }
 }

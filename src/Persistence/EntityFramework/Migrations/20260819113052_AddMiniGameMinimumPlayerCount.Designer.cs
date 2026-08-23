@@ -3,6 +3,7 @@ using System;
 using MUnique.OpenMU.Persistence.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 {
     [DbContext(typeof(EntityDataContext))]
-    partial class EntityDataContextModelSnapshot : ModelSnapshot
+    [Migration("20260819113052_AddMiniGameMinimumPlayerCount")]
+    partial class AddMiniGameMinimumPlayerCount
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -376,405 +379,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasIndex("MonsterDefinitionId");
 
                     b.ToTable("Buff", "config");
-                });
-
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeConfiguration", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("AttackRespawnAreaId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("CastleSiegeMapDefinitionId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("CrownHoldTimeSeconds")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(30);
-
-                    b.Property<Guid?>("DefenseRespawnAreaId")
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("Enabled")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("GateBuyPrice")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("GateRepairCostPerHealthPoint")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("GuildScoreCastleSiege")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("GuildScoreCastleSiegeMembers")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid?>("LandOfTrialsMapDefinitionId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("MaxAttackingGuilds")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(3);
-
-                    b.Property<int>("ParticipantRewardMinSeconds")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("RegisterMinLevel")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(200);
-
-                    b.Property<int>("RegisterMinMembers")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(20);
-
-                    b.Property<int>("RepairCostPerUpgradeLevel")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid?>("RewardItemDefinitionId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("SignOfLordItemDefinitionId")
-                        .HasColumnType("uuid");
-
-                    b.Property<byte>("SignOfLordItemLevel")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("smallint")
-                        .HasDefaultValue((byte)3);
-
-                    b.Property<int>("StatueBuyPrice")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("StatueRepairCostPerHealthPoint")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AttackRespawnAreaId")
-                        .IsUnique();
-
-                    b.HasIndex("CastleSiegeMapDefinitionId");
-
-                    b.HasIndex("DefenseRespawnAreaId")
-                        .IsUnique();
-
-                    b.HasIndex("LandOfTrialsMapDefinitionId");
-
-                    b.HasIndex("RewardItemDefinitionId");
-
-                    b.HasIndex("SignOfLordItemDefinitionId");
-
-                    b.ToTable("CastleSiegeConfiguration", "config");
-                });
-
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeData", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("IsHuntZoneEnabled")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsOccupied")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid?>("OwnerGuildId")
-                        .HasColumnType("uuid");
-
-                    b.Property<byte>("TaxChaos")
-                        .HasColumnType("smallint");
-
-                    b.Property<int>("TaxHunt")
-                        .HasColumnType("integer");
-
-                    b.Property<byte>("TaxStore")
-                        .HasColumnType("smallint");
-
-                    b.Property<long>("TributeMoney")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OwnerGuildId");
-
-                    b.ToTable("CastleSiegeData", "data");
-                });
-
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeGuild", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("CastleSiegeDataId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("GuildId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("GuildName")
-                        .IsRequired()
-                        .HasMaxLength(8)
-                        .HasColumnType("character varying(8)");
-
-                    b.Property<bool>("IsAllianceMaster")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("Score")
-                        .HasColumnType("integer");
-
-                    b.Property<byte>("Side")
-                        .HasColumnType("smallint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CastleSiegeDataId");
-
-                    b.HasIndex("GuildId")
-                        .IsUnique();
-
-                    b.ToTable("CastleSiegeGuild", "data");
-                });
-
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeGuildRegistration", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("GuildId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("GuildName")
-                        .IsRequired()
-                        .HasMaxLength(8)
-                        .HasColumnType("character varying(8)");
-
-                    b.Property<int>("Marks")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("RegistrationOrder")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GuildId")
-                        .IsUnique();
-
-                    b.ToTable("CastleSiegeGuildRegistration", "data");
-                });
-
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeNpcDefinition", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("CastleSiegeConfigurationId")
-                        .HasColumnType("uuid");
-
-                    b.Property<byte>("DefaultSide")
-                        .HasColumnType("smallint");
-
-                    b.Property<int>("Direction")
-                        .HasColumnType("integer");
-
-                    b.Property<byte>("InstanceId")
-                        .HasColumnType("smallint");
-
-                    b.Property<bool>("IsPersistedToDatabase")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("MonsterDefinitionId")
-                        .HasColumnType("uuid");
-
-                    b.Property<byte>("SpawnX")
-                        .HasColumnType("smallint");
-
-                    b.Property<byte>("SpawnY")
-                        .HasColumnType("smallint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CastleSiegeConfigurationId");
-
-                    b.HasIndex("MonsterDefinitionId", "InstanceId");
-
-                    b.ToTable("CastleSiegeNpcDefinition", "config");
-                });
-
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeNpcState", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("CastleSiegeDataId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("CurrentHp")
-                        .HasColumnType("integer");
-
-                    b.Property<byte>("DefenseLevel")
-                        .HasColumnType("smallint");
-
-                    b.Property<byte>("InstanceId")
-                        .HasColumnType("smallint");
-
-                    b.Property<byte>("LifeLevel")
-                        .HasColumnType("smallint");
-
-                    b.Property<short>("MonsterNumber")
-                        .HasColumnType("smallint");
-
-                    b.Property<byte>("RegenLevel")
-                        .HasColumnType("smallint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CastleSiegeDataId");
-
-                    b.HasIndex("MonsterNumber", "InstanceId")
-                        .IsUnique();
-
-                    b.ToTable("CastleSiegeNpcState", "data");
-                });
-
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegePendingReward", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("CharacterId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ItemDefinitionId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CharacterId");
-
-                    b.HasIndex("ItemDefinitionId");
-
-                    b.ToTable("CastleSiegePendingReward", "data");
-                });
-
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeStateScheduleEntry", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("CastleSiegeConfigurationId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("DayOfWeek")
-                        .HasColumnType("integer");
-
-                    b.Property<byte>("Hour")
-                        .HasColumnType("smallint");
-
-                    b.Property<byte>("Minute")
-                        .HasColumnType("smallint");
-
-                    b.Property<byte>("State")
-                        .HasColumnType("smallint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CastleSiegeConfigurationId");
-
-                    b.ToTable("CastleSiegeStateScheduleEntry", "config");
-                });
-
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeUpgradeDefinition", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("CastleSiegeConfigurationId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("CastleSiegeConfigurationId1")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("CastleSiegeConfigurationId2")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("CastleSiegeConfigurationId3")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("CastleSiegeConfigurationId4")
-                        .HasColumnType("uuid");
-
-                    b.Property<byte>("Level")
-                        .HasColumnType("smallint");
-
-                    b.Property<int>("RequiredJewelOfGuardianCount")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("RequiredZen")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Value")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CastleSiegeConfigurationId");
-
-                    b.HasIndex("CastleSiegeConfigurationId1");
-
-                    b.HasIndex("CastleSiegeConfigurationId2");
-
-                    b.HasIndex("CastleSiegeConfigurationId3");
-
-                    b.HasIndex("CastleSiegeConfigurationId4");
-
-                    b.ToTable("CastleSiegeUpgradeDefinition", "config");
-                });
-
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeZoneDefinition", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("CastleSiegeConfigurationId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("CastleSiegeConfigurationId1")
-                        .HasColumnType("uuid");
-
-                    b.Property<byte>("X1")
-                        .HasColumnType("smallint");
-
-                    b.Property<byte>("X2")
-                        .HasColumnType("smallint");
-
-                    b.Property<byte>("Y1")
-                        .HasColumnType("smallint");
-
-                    b.Property<byte>("Y2")
-                        .HasColumnType("smallint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CastleSiegeConfigurationId");
-
-                    b.HasIndex("CastleSiegeConfigurationId1");
-
-                    b.ToTable("CastleSiegeZoneDefinition", "config");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.Character", b =>
@@ -1453,9 +1057,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<bool>("AreaSkillHitsPlayer")
                         .HasColumnType("boolean");
 
-                    b.Property<Guid?>("CastleSiegeConfigurationId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("CharacterNameRegex")
                         .HasColumnType("text");
 
@@ -1546,9 +1147,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasColumnType("boolean");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CastleSiegeConfigurationId")
-                        .IsUnique();
 
                     b.HasIndex("DuelConfigurationId")
                         .IsUnique();
@@ -3852,9 +3450,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<bool>("ReadConsoleInput")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("TimeZoneId")
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.ToTable("SystemConfiguration", "config");
@@ -4047,175 +3642,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("RawMagicEffectDefinition");
-                });
-
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeConfiguration", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeZoneDefinition", "RawAttackRespawnArea")
-                        .WithOne()
-                        .HasForeignKey("MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeConfiguration", "AttackRespawnAreaId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameMapDefinition", "RawCastleSiegeMapDefinition")
-                        .WithMany()
-                        .HasForeignKey("CastleSiegeMapDefinitionId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeZoneDefinition", "RawDefenseRespawnArea")
-                        .WithOne()
-                        .HasForeignKey("MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeConfiguration", "DefenseRespawnAreaId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameMapDefinition", "RawLandOfTrialsMapDefinition")
-                        .WithMany()
-                        .HasForeignKey("LandOfTrialsMapDefinitionId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition", "RawRewardItemDefinition")
-                        .WithMany()
-                        .HasForeignKey("RewardItemDefinitionId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition", "RawSignOfLordItemDefinition")
-                        .WithMany()
-                        .HasForeignKey("SignOfLordItemDefinitionId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("RawAttackRespawnArea");
-
-                    b.Navigation("RawCastleSiegeMapDefinition");
-
-                    b.Navigation("RawDefenseRespawnArea");
-
-                    b.Navigation("RawLandOfTrialsMapDefinition");
-
-                    b.Navigation("RawRewardItemDefinition");
-
-                    b.Navigation("RawSignOfLordItemDefinition");
-                });
-
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeData", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Guild", null)
-                        .WithMany()
-                        .HasForeignKey("OwnerGuildId")
-                        .OnDelete(DeleteBehavior.SetNull);
-                });
-
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeGuild", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeData", null)
-                        .WithMany("RawGuilds")
-                        .HasForeignKey("CastleSiegeDataId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Guild", null)
-                        .WithMany()
-                        .HasForeignKey("GuildId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeGuildRegistration", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Guild", null)
-                        .WithMany()
-                        .HasForeignKey("GuildId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeNpcDefinition", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeConfiguration", null)
-                        .WithMany("RawNpcDefinitions")
-                        .HasForeignKey("CastleSiegeConfigurationId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.MonsterDefinition", "RawMonsterDefinition")
-                        .WithMany()
-                        .HasForeignKey("MonsterDefinitionId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("RawMonsterDefinition");
-                });
-
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeNpcState", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeData", null)
-                        .WithMany("RawNpcStates")
-                        .HasForeignKey("CastleSiegeDataId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegePendingReward", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Character", null)
-                        .WithMany()
-                        .HasForeignKey("CharacterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition", null)
-                        .WithMany()
-                        .HasForeignKey("ItemDefinitionId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeStateScheduleEntry", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeConfiguration", null)
-                        .WithMany("RawStateSchedule")
-                        .HasForeignKey("CastleSiegeConfigurationId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeUpgradeDefinition", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeConfiguration", null)
-                        .WithMany("RawGateDefenseUpgrades")
-                        .HasForeignKey("CastleSiegeConfigurationId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeConfiguration", null)
-                        .WithMany("RawGateLifeUpgrades")
-                        .HasForeignKey("CastleSiegeConfigurationId1")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .HasConstraintName("FK_CastleSiegeUpgradeDefinition_CastleSiegeConfiguration_Cast~1");
-
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeConfiguration", null)
-                        .WithMany("RawStatueDefenseUpgrades")
-                        .HasForeignKey("CastleSiegeConfigurationId2")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .HasConstraintName("FK_CastleSiegeUpgradeDefinition_CastleSiegeConfiguration_Cast~2");
-
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeConfiguration", null)
-                        .WithMany("RawStatueLifeUpgrades")
-                        .HasForeignKey("CastleSiegeConfigurationId3")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .HasConstraintName("FK_CastleSiegeUpgradeDefinition_CastleSiegeConfiguration_Cast~3");
-
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeConfiguration", null)
-                        .WithMany("RawStatueRegenUpgrades")
-                        .HasForeignKey("CastleSiegeConfigurationId4")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .HasConstraintName("FK_CastleSiegeUpgradeDefinition_CastleSiegeConfiguration_Cast~4");
-                });
-
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeZoneDefinition", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeConfiguration", null)
-                        .WithMany("RawAttackMachineZones")
-                        .HasForeignKey("CastleSiegeConfigurationId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeConfiguration", null)
-                        .WithMany("RawDefenseMachineZones")
-                        .HasForeignKey("CastleSiegeConfigurationId1")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .HasConstraintName("FK_CastleSiegeZoneDefinition_CastleSiegeConfiguration_CastleS~1");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.Character", b =>
@@ -4467,17 +3893,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeConfiguration", "RawCastleSiegeConfiguration")
-                        .WithOne()
-                        .HasForeignKey("MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration", "CastleSiegeConfigurationId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.DuelConfiguration", "RawDuelConfiguration")
                         .WithOne()
                         .HasForeignKey("MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration", "DuelConfigurationId")
                         .OnDelete(DeleteBehavior.Cascade);
-
-                    b.Navigation("RawCastleSiegeConfiguration");
 
                     b.Navigation("RawDuelConfiguration");
                 });
@@ -5608,34 +5027,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.AppearanceData", b =>
                 {
                     b.Navigation("RawEquippedItems");
-                });
-
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeConfiguration", b =>
-                {
-                    b.Navigation("RawAttackMachineZones");
-
-                    b.Navigation("RawDefenseMachineZones");
-
-                    b.Navigation("RawGateDefenseUpgrades");
-
-                    b.Navigation("RawGateLifeUpgrades");
-
-                    b.Navigation("RawNpcDefinitions");
-
-                    b.Navigation("RawStateSchedule");
-
-                    b.Navigation("RawStatueDefenseUpgrades");
-
-                    b.Navigation("RawStatueLifeUpgrades");
-
-                    b.Navigation("RawStatueRegenUpgrades");
-                });
-
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeData", b =>
-                {
-                    b.Navigation("RawGuilds");
-
-                    b.Navigation("RawNpcStates");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.Character", b =>

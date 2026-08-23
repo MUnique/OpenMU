@@ -283,6 +283,9 @@ public class GameContext : AsyncDisposable, IGameContext
                 case MiniGameType.BloodCastle:
                     miniGameContext = new BloodCastleContext(miniGameKey, miniGameDefinition, this, this._mapInitializer);
                     break;
+                case MiniGameType.IllusionTemple:
+                    miniGameContext = new IllusionTempleContext(miniGameKey, miniGameDefinition, this, this._mapInitializer);
+                    break;
                 default:
                     miniGameContext = new MiniGameContext(miniGameKey, miniGameDefinition, this, this._mapInitializer);
                     break;
