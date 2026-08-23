@@ -2,16 +2,14 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+namespace MUnique.OpenMU.GameLogic.MiniGames;
+
 using System.Collections.Concurrent;
 using System.Threading;
-using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.Pathfinding;
-using MUnique.OpenMU.Persistence;
-
-namespace MUnique.OpenMU.GameLogic.MiniGames;
 
 /// <summary>
 /// The context of an illusion temple game.

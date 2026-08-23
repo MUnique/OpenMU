@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
@@ -357,6 +358,7 @@ public class IllusionTempleContextTest
     /// input reaches this reflection call), used because the field has no public accessor - exposing
     /// one purely for tests isn't warranted for a single internal implementation detail.
     /// </summary>
+    [SuppressMessage("Security Hotspot", "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields", Justification = "Test-only code reading a private field of a type from this same solution. The member name is a hardcoded literal - no external input reaches this call - and exposing a public accessor purely for tests isn't warranted for an internal implementation detail.")]
     private static Player? GetRelicCarrier(IllusionTempleContext context)
     {
         var field = typeof(IllusionTempleContext).GetField("_relicCarrier", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -385,9 +387,11 @@ public class IllusionTempleContextTest
             var result = await context.TryEnterAsync(player).ConfigureAwait(false);
             Assert.That(result, Is.EqualTo(EnterResult.Success));
 
-            // TryEnterAsync alone doesn't place the player on the event map (that's normally done by
-            // EnterMiniGameAction.WarpToAsync + the client's map-change acknowledgement) - do the same
-            // here, so CurrentMap/CurrentMiniGame are set up exactly like a real client join.
+            // TryEnterAsync alone doesn't place the player on the event map. Mirror what the server
+            // really does on entry: EnterMiniGameAction warps the player to the event's entrance gate,
+            // and the client then acknowledges the map change, which is what actually puts him onto the
+            // mini game's map instance.
+            await player.WarpToAsync(context.Definition.Entrance!).ConfigureAwait(false);
             await player.ClientReadyAfterMapChangeAsync().ConfigureAwait(false);
 
             players.Add(player);
@@ -471,18 +475,19 @@ public class IllusionTempleContextTest
     /// of the reward's drop item group - used to test that a mini game's item reward actually reaches
     /// the player's inventory, without needing a fully configured drop chance/item pool.
     /// </summary>
+    [SuppressMessage("Major Code Smell", "S1172:Unused method parameters should be removed", Justification = "The parameters are required by IDropGenerator; this fake deliberately ignores them and always returns the same item.")]
     private sealed class SingleItemDropGenerator : IDropGenerator
     {
         private readonly ItemDefinition _itemDefinition;
 
         public SingleItemDropGenerator(ItemDefinition itemDefinition) => this._itemDefinition = itemDefinition;
 
-        public ValueTask<(IEnumerable<Item> Items, uint? Money)> GenerateItemDropsAsync(MonsterDefinition _1, int _2, Player _3)
+        public ValueTask<(IEnumerable<Item> Items, uint? Money)> GenerateItemDropsAsync(MonsterDefinition monster, int gainedExperience, Player player)
             => ValueTask.FromResult((Enumerable.Empty<Item>(), default(uint?)));
 
-        public Item? GenerateItemDrop(DropItemGroup _) => new MUnique.OpenMU.Persistence.BasicModel.Item { Definition = this._itemDefinition };
+        public Item? GenerateItemDrop(DropItemGroup group) => new MUnique.OpenMU.Persistence.BasicModel.Item { Definition = this._itemDefinition };
 
-        public (Item? Item, uint? Money, ItemDropEffect DropEffect) GenerateItemDrop(IEnumerable<DropItemGroup> _)
+        public (Item? Item, uint? Money, ItemDropEffect DropEffect) GenerateItemDrop(IEnumerable<DropItemGroup> groups)
             => (new MUnique.OpenMU.Persistence.BasicModel.Item { Definition = this._itemDefinition }, null, ItemDropEffect.Undefined);
     }
 
@@ -559,6 +564,7 @@ public class IllusionTempleContextTest
     /// <paramref name="methodName"/> is always a hardcoded literal from this test file, never external
     /// input.
     /// </summary>
+    [SuppressMessage("Security Hotspot", "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields", Justification = "Test-only code invoking lifecycle hooks of a type from this same solution, bypassing the real-time countdown that normally drives them (see the class remarks). Every method name passed in is a hardcoded literal from this file - no external input reaches this call.")]
     private static MethodInfo? FindMethod(Type type, string methodName)
     {
         for (var current = type; current is not null; current = current.BaseType)
@@ -592,7 +598,9 @@ public class IllusionTempleContextTest
         {
             await task.ConfigureAwait(false);
         }
-
-        // Otherwise the invoked method was synchronous (e.g. "async void") - nothing to await.
+        else
+        {
+            // The invoked method was synchronous (e.g. "async void") - there is nothing to await.
+        }
     }
 }
