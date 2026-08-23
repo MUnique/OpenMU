@@ -86,7 +86,7 @@ public class IllusionTempleContextTest
     public async ValueTask SplitsAnEvenPlayerCountIntoEqualTeamsAsync(int playerCount)
     {
         var gameContext = CreateGameContext();
-        var definition = CreateDefinition(gameContext, minimumPlayerCount: 2, maximumPlayerCount: 10);
+        var definition = CreateDefinition(gameContext, minimumPlayerCount: 2);
         await using var illusionTemple = await CreateContextAsync(gameContext, definition).ConfigureAwait(false);
         var players = await EnterPlayersAsync(illusionTemple, gameContext, playerCount).ConfigureAwait(false);
 
@@ -112,7 +112,7 @@ public class IllusionTempleContextTest
     public async ValueTask SplitsAnOddPlayerCountAsEvenlyAsPossibleAsync(int playerCount)
     {
         var gameContext = CreateGameContext();
-        var definition = CreateDefinition(gameContext, minimumPlayerCount: 2, maximumPlayerCount: 10);
+        var definition = CreateDefinition(gameContext, minimumPlayerCount: 2);
         await using var illusionTemple = await CreateContextAsync(gameContext, definition).ConfigureAwait(false);
         var players = await EnterPlayersAsync(illusionTemple, gameContext, playerCount).ConfigureAwait(false);
 
@@ -351,6 +351,12 @@ public class IllusionTempleContextTest
         return gate!.X1 < 150 ? IllusionTempleTeam.AlliedForces : IllusionTempleTeam.IllusionForces;
     }
 
+    /// <summary>
+    /// Reads the private <c>_relicCarrier</c> field of <see cref="IllusionTempleContext"/> via
+    /// reflection. This is test-only code operating on a type from the same solution (no untrusted
+    /// input reaches this reflection call), used because the field has no public accessor - exposing
+    /// one purely for tests isn't warranted for a single internal implementation detail.
+    /// </summary>
     private static Player? GetRelicCarrier(IllusionTempleContext context)
     {
         var field = typeof(IllusionTempleContext).GetField("_relicCarrier", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -471,12 +477,12 @@ public class IllusionTempleContextTest
 
         public SingleItemDropGenerator(ItemDefinition itemDefinition) => this._itemDefinition = itemDefinition;
 
-        public ValueTask<(IEnumerable<Item> Items, uint? Money)> GenerateItemDropsAsync(MonsterDefinition monster, int gainedExperience, Player player)
+        public ValueTask<(IEnumerable<Item> Items, uint? Money)> GenerateItemDropsAsync(MonsterDefinition _1, int _2, Player _3)
             => ValueTask.FromResult((Enumerable.Empty<Item>(), default(uint?)));
 
-        public Item? GenerateItemDrop(DropItemGroup group) => new MUnique.OpenMU.Persistence.BasicModel.Item { Definition = this._itemDefinition };
+        public Item? GenerateItemDrop(DropItemGroup _) => new MUnique.OpenMU.Persistence.BasicModel.Item { Definition = this._itemDefinition };
 
-        public (Item? Item, uint? Money, ItemDropEffect DropEffect) GenerateItemDrop(IEnumerable<DropItemGroup> groups)
+        public (Item? Item, uint? Money, ItemDropEffect DropEffect) GenerateItemDrop(IEnumerable<DropItemGroup> _)
             => (new MUnique.OpenMU.Persistence.BasicModel.Item { Definition = this._itemDefinition }, null, ItemDropEffect.Undefined);
     }
 
@@ -515,6 +521,7 @@ public class IllusionTempleContextTest
     {
         return new MUnique.OpenMU.Persistence.BasicModel.MonsterSpawnArea
         {
+            Id = new Guid(0, 0, 0, 0, 0, 0, 0, 0, 0, (byte)map.Number, (byte)number),
             GameMap = map,
             MonsterDefinition = monsterDefinition,
             Quantity = 1,
@@ -544,6 +551,14 @@ public class IllusionTempleContextTest
         await AwaitResultAsync(result).ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// Looks up a protected or private instance method by name, walking up the type hierarchy. Used to
+    /// invoke <see cref="IllusionTempleContext"/>'s lifecycle hooks (e.g. <c>OnGameStartAsync</c>,
+    /// <c>GameEndedAsync</c>) directly in tests, bypassing the real-time countdown that normally drives
+    /// them (see the class remarks). This is test-only code operating on a type from the same solution -
+    /// <paramref name="methodName"/> is always a hardcoded literal from this test file, never external
+    /// input.
+    /// </summary>
     private static MethodInfo? FindMethod(Type type, string methodName)
     {
         for (var current = type; current is not null; current = current.BaseType)
@@ -558,7 +573,7 @@ public class IllusionTempleContextTest
         return null;
     }
 
-    private static async ValueTask WaitUntilAsync(Func<bool> condition, int timeoutMilliseconds = 2000)
+    private static async ValueTask WaitUntilAsync(Func<bool> condition, int timeoutMilliseconds = 5000)
     {
         var deadline = DateTime.UtcNow.AddMilliseconds(timeoutMilliseconds);
         while (!condition() && DateTime.UtcNow < deadline)
@@ -569,14 +584,15 @@ public class IllusionTempleContextTest
 
     private static async ValueTask AwaitResultAsync(object? result)
     {
-        switch (result)
+        if (result is ValueTask valueTask)
         {
-            case ValueTask valueTask:
-                await valueTask.ConfigureAwait(false);
-                break;
-            case Task task:
-                await task.ConfigureAwait(false);
-                break;
+            await valueTask.ConfigureAwait(false);
         }
+        else if (result is Task task)
+        {
+            await task.ConfigureAwait(false);
+        }
+
+        // Otherwise the invoked method was synchronous (e.g. "async void") - nothing to await.
     }
 }

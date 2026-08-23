@@ -177,13 +177,13 @@ public sealed class IllusionTempleContext : MiniGameContext
     /// client side and are only removed when the client is told that the battle started. So the players
     /// wait here until the event sends that state, and walk into the arena afterwards.
     /// </remarks>
-    private Point alliedForcesCoordinates = new Point(141, 41);
+    private readonly Point alliedForcesCoordinates = new Point(141, 41);
 
     /// <summary>
     /// The spawn point of the illusion forces, in the chamber at the south eastern corner. It's the
     /// target of the map's spawn gates 154 to 159, one per temple.
     /// </summary>
-    private Point illusionForcesCoordinates = new Point(194, 124);
+    private readonly Point illusionForcesCoordinates = new Point(194, 124);
 
     /// <summary>
     /// Remaning Time of IT
@@ -194,11 +194,6 @@ public sealed class IllusionTempleContext : MiniGameContext
     /// The player who currently carries the holy relic, or <c>null</c> if nobody currently does.
     /// </summary>
     private Player? _relicCarrier;
-
-    /// <summary>
-    /// The currently active stone statue, or <c>null</c> if none is currently spawned.
-    /// </summary>
-    private NonPlayerCharacter? _activeStatue;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="IllusionTempleContext"/> class.
@@ -305,8 +300,6 @@ public sealed class IllusionTempleContext : MiniGameContext
             await statue.DisposeAsync().ConfigureAwait(false);
         }
 
-        this._activeStatue = null;
-
         this._relicCarrier = player;
         await this.ForEachPlayerAsync(p => p.InvokeViewPlugInAsync<IIllusionTempleHolyItemRelicsViewPlugIn>(
             vp => vp.ShowHolyItemRelicsAsync(player.Id, player.Name)).AsTask()).ConfigureAwait(false);
@@ -397,8 +390,6 @@ public sealed class IllusionTempleContext : MiniGameContext
             statue.Initialize();
             await this.Map.AddAsync(statue).ConfigureAwait(false);
             statue.OnSpawn();
-
-            this._activeStatue = statue;
 
             await this.ShowGoldenMessageAsync(nameof(PlayerMessage.IllusionTempleStatueSpawnedMessage)).ConfigureAwait(false);
         }
@@ -930,7 +921,7 @@ public sealed class IllusionTempleContext : MiniGameContext
     private async ValueTask TeleportToStartCoordinatesAsync(IllusionTempleTeam team, Player player)
     {
         var cordinatesAlliedForces = this.alliedForcesCoordinates;
-        var illusionForcesCoordinates = this.illusionForcesCoordinates;
+        var cordinatesIllusionForces = this.illusionForcesCoordinates;
         if (team == IllusionTempleTeam.AlliedForces)
         {
             cordinatesAlliedForces += new Point(1, 0); // every player on differend point (x,y)
@@ -938,8 +929,8 @@ public sealed class IllusionTempleContext : MiniGameContext
         }
         else
         {
-            illusionForcesCoordinates += new Point(1, 0); // every player on differend point (x,y)
-            await player.MoveAsync(illusionForcesCoordinates).ConfigureAwait(false);
+            cordinatesIllusionForces += new Point(1, 0); // every player on differend point (x,y)
+            await player.MoveAsync(cordinatesIllusionForces).ConfigureAwait(false);
         }
     }
 
