@@ -74,8 +74,12 @@ public class IllusionTempleContextTest
 
         await illusionTemple.Map.RemoveAsync(players[0]).ConfigureAwait(false);
 
+        // The leaving player is gone from the event...
         Assert.That(illusionTemple.PlayerCount, Is.LessThan(2));
 
+        // ...and the match is actually finished, rather than continuing with a single participant.
+        await WaitUntilAsync(() => illusionTemple.State != MiniGameState.Playing).ConfigureAwait(false);
+        Assert.That(illusionTemple.State, Is.Not.EqualTo(MiniGameState.Playing));
     }
 
     /// <summary>
@@ -415,8 +419,12 @@ public class IllusionTempleContextTest
 
     private static async ValueTask<IllusionTempleContext> CreateContextAsync(IGameContext gameContext, MiniGameDefinition definition)
     {
-        var context = await gameContext.GetMiniGameAsync(definition, null!).ConfigureAwait(false);
-        return (IllusionTempleContext)context;
+        var context = (IllusionTempleContext)await gameContext.GetMiniGameAsync(definition, null!).ConfigureAwait(false);
+
+        // These tests drive the game start directly - without this, every one of them would sit out the
+        // real preparation countdown before the match begins.
+        context.PreparationDuration = TimeSpan.Zero;
+        return context;
     }
 
     private static MiniGameDefinition CreateDefinition(IGameContext gameContext, int minimumPlayerCount, int maximumPlayerCount = 10, bool includeItemReward = false)
@@ -540,7 +548,9 @@ public class IllusionTempleContextTest
 
     private static IGameContext CreateGameContext(IDropGenerator? dropGenerator = null)
     {
-        return GameContextTestHelper.CreateGameContext(dropGenerator: dropGenerator);
+        // The maximum level has to be set, since experience gain is a no-op above it - the reward tests
+        // wouldn't see any experience otherwise.
+        return GameContextTestHelper.CreateGameContext(dropGenerator: dropGenerator, maximumLevel: 400);
     }
 
     private static async ValueTask InvokePrivateAsync(object target, string methodName, params object?[] args)

@@ -56,6 +56,17 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
     private const short IllusionItemStorageNumber = 384;
 
     /// <summary>
+    /// The lowest NPC number of the obsolete "Cursed Statue" / "Captured Stone Statue" spawns, which
+    /// this update removes from the temple maps.
+    /// </summary>
+    private const short ObsoleteStatueRangeStart = 658;
+
+    /// <summary>
+    /// The highest NPC number of the obsolete "Cursed Statue" / "Captured Stone Statue" spawns.
+    /// </summary>
+    private const short ObsoleteStatueRangeEnd = 668;
+
+    /// <summary>
     /// The lowest NPC number of the roaming "Illusion Sorc. Spirit" arena monsters, across all temples.
     /// </summary>
     private const short ArenaMonsterRangeStart = 386;
@@ -324,6 +335,8 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
                 continue;
             }
 
+            this.RemoveObsoleteStatueSpawns(map);
+
             if (map.MonsterSpawns.Any(spawn => spawn.MonsterDefinition == stoneStatue))
             {
                 continue;
@@ -358,6 +371,24 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
                 var (x, y) = ArenaMonsterPositions[i];
                 this.AddSpawn(context, map, spawnNumber++, monsterDefinition, x, y, SpawnTrigger.AutomaticDuringEvent);
             }
+        }
+    }
+
+    /// <summary>
+    /// Removes the previous "Cursed Statue" / "Captured Stone Statue" spawns (NPC 658 to 668) from a
+    /// temple map. They were placeholders based on the wrong NPC numbers - the event actually uses a
+    /// single "Stone Statue" (380), which is picked at random from a small pool of positions. Leaving
+    /// the old ones in place would litter the arena with statues that have no function.
+    /// </summary>
+    /// <param name="map">The temple map to clean up.</param>
+    private void RemoveObsoleteStatueSpawns(GameMapDefinition map)
+    {
+        var obsoleteSpawns = map.MonsterSpawns
+            .Where(spawn => spawn.MonsterDefinition?.Number is >= ObsoleteStatueRangeStart and <= ObsoleteStatueRangeEnd)
+            .ToList();
+        foreach (var spawn in obsoleteSpawns)
+        {
+            map.MonsterSpawns.Remove(spawn);
         }
     }
 

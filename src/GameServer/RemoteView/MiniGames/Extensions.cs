@@ -83,6 +83,6 @@ public static class Extensions
     /// </remarks>
     public static byte ToIllusionTempleEnterResult(this EnterResult enterResult)
     {
-        return 0;
+        return enterResult == EnterResult.Success ? (byte)0 : (byte)1;
     }
 }

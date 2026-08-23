@@ -19,8 +19,9 @@ public static class GameContextTestHelper
     /// </summary>
     /// <param name="additionalPlugInConfigurations">Additional plugin configurations which should be applied, e.g. to deactivate specific plugins.</param>
     /// <param name="dropGenerator">The drop generator to use, e.g. to test reward item drops. Defaults to <see cref="NullDropGenerator"/>, which never generates anything.</param>
+    /// <param name="maximumLevel">The maximum character level of the configuration. Needs to be greater than 0 for tests which grant experience, since experience gain stops at the maximum level.</param>
     /// <returns>The game context with MuHelperFeaturePlugIn configured.</returns>
-    public static IGameContext CreateGameContext(IEnumerable<PlugInConfiguration>? additionalPlugInConfigurations = null, IDropGenerator? dropGenerator = null)
+    public static IGameContext CreateGameContext(IEnumerable<PlugInConfiguration>? additionalPlugInConfigurations = null, IDropGenerator? dropGenerator = null, short maximumLevel = 0)
     {
         dropGenerator ??= NullDropGenerator.Instance;
         var contextProvider = new InMemoryPersistenceContextProvider();
@@ -34,7 +35,7 @@ public static class GameContextTestHelper
         gameConfig.RecoveryInterval = int.MaxValue;
         gameConfig.MaximumInventoryMoney = int.MaxValue;
         gameConfig.ItemDropDuration = TimeSpan.FromMinutes(1);
-        gameConfig.MaximumLevel = 400;
+        gameConfig.MaximumLevel = maximumLevel;
 
         var mapInitializer = new MapInitializer(gameConfig, new NullLogger<MapInitializer>(), NullDropGenerator.Instance, null);
         var plugInConfigurations = new List<PlugInConfiguration>

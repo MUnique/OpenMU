@@ -435,6 +435,33 @@
   <data name="IllusionTempleStatueSpawnedMessage" xml:space="preserve">
     <value>A new sacred relic has appeared!</value>
   </data>
+  <data name="MiniGameEnterFailed" xml:space="preserve">
+    <value>You can't enter this event.</value>
+  </data>
+  <data name="MiniGameNotConfigured" xml:space="preserve">
+    <value>This event isn't configured on this server and can't be started.</value>
+  </data>
+  <data name="MiniGameCharacterLevelTooLowFormat" xml:space="preserve">
+    <value>Your level is too low. You need to be at least level {0} to enter this event.</value>
+  </data>
+  <data name="MiniGameCharacterLevelTooHighFormat" xml:space="preserve">
+    <value>Your level is too high. You need to be at most level {0} to enter this event.</value>
+  </data>
+  <data name="MiniGameTicketRequired" xml:space="preserve">
+    <value>You need a ticket to enter this event.</value>
+  </data>
+  <data name="MiniGameEntranceFeeRequiredFormat" xml:space="preserve">
+    <value>You need {0} zen to enter this event.</value>
+  </data>
+  <data name="MiniGamePlayerKillersCantEnter" xml:space="preserve">
+    <value>Killers can't enter!</value>
+  </data>
+  <data name="MiniGameNotDuringGuildWar" xml:space="preserve">
+    <value>You can't enter this event during a guild war.</value>
+  </data>
+  <data name="MiniGameNotOpenFormat" xml:space="preserve">
+    <value>{0} is not open right now.</value>
+  </data>
   <data name="IllusionTempleBattleStartedMessage" xml:space="preserve">
     <value>The battle has begun!</value>
   </data>

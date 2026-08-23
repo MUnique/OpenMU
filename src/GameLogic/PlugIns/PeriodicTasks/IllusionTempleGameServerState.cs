@@ -5,7 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 
 /// <summary>
-/// The state of a game server state for a chaos castle event.
+/// The state of a game server for an illusion temple event.
 /// </summary>
 public class IllusionTempleGameServerState : PeriodicTaskGameServerState
 {

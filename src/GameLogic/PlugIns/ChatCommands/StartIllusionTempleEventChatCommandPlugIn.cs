@@ -9,7 +9,7 @@ using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// A chat command plugin which handles the startcc command.
+/// A chat command plugin which handles the startit command.
 /// </summary>
 [Guid("A990270E-B9C6-4445-BBA9-56367A90D42D")]
 [PlugIn]
@@ -28,7 +28,12 @@ public class StartIllusionTempleEventChatCommandPlugIn : IChatCommandPlugIn
     /// <inheritdoc />
     public async ValueTask HandleCommandAsync(Player player, string command)
     {
-        var illusionTemple = player.GameContext.PlugInManager.GetStrategy<MiniGameType, IPeriodicMiniGameStartPlugIn>(MiniGameType.IllusionTemple);
-        illusionTemple?.ForceStart();
+        if (player.GameContext.PlugInManager.GetStrategy<MiniGameType, IPeriodicMiniGameStartPlugIn>(MiniGameType.IllusionTemple) is not { } illusionTemple)
+        {
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MiniGameNotConfigured)).ConfigureAwait(false);
+            return;
+        }
+
+        illusionTemple.ForceStart();
     }
 }

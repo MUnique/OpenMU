@@ -83,21 +83,16 @@ public class TalkNpcAction
                     {
                         switch (player.OpenedNpc.Definition.Number)
                         {
-                            case 380:
-                            // Stone Statue
-                            await illusionTemple.TalkToNpcStoneStatueAsync(player).ConfigureAwait(false);
-                            break;
-                            case 383:
-                            // Alliance Item Storage, or Illusion Item Storage on a client where 384 works.
-                            await illusionTemple.TalkToNpcTeamStorageAsync(player.OpenedNpc.Definition.Number, player).ConfigureAwait(false);
-                            break;
-                            case 384:
-                            // Alliance Item Storage, or Illusion Item Storage on a client where 384 works.
-                            await illusionTemple.TalkToNpcTeamStorageAsync(player.OpenedNpc.Definition.Number, player).ConfigureAwait(false);
-                            break;
+                            case 380: // Stone Statue
+                                await illusionTemple.TalkToNpcStoneStatueAsync(player).ConfigureAwait(false);
+                                break;
+                            case 383: // Alliance Item Storage
+                            case 384: // Illusion Item Storage
+                                await illusionTemple.TalkToNpcTeamStorageAsync(player.OpenedNpc.Definition.Number, player).ConfigureAwait(false);
+                                break;
                             default:
-                            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.TalkingNotImplementedFormat), npcStats.Number, npcStats.Designation).ConfigureAwait(false);
-                            break;
+                                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.TalkingNotImplementedFormat), npcStats.Number, npcStats.Designation).ConfigureAwait(false);
+                                break;
                         }
                     }
                     else

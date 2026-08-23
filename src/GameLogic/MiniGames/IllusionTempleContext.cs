@@ -6,8 +6,10 @@ namespace MUnique.OpenMU.GameLogic.MiniGames;
 
 using System.Collections.Concurrent;
 using System.Threading;
+using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
+using MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.Pathfinding;
 
@@ -53,10 +55,14 @@ public sealed class IllusionTempleContext : MiniGameContext
     private const short StatueNPC = 380;
 
     /// <summary>
-    /// How long the players see the "Preparation" state (still behind the arena barriers) before the
-    /// battle actually starts.
+    /// The item group of the sacred relic ("Cursed Castle Water").
     /// </summary>
-    private static readonly TimeSpan PreparationDuration = TimeSpan.FromSeconds(20);
+    private const byte RelicItemGroup = 14;
+
+    /// <summary>
+    /// The item number of the sacred relic ("Cursed Castle Water").
+    /// </summary>
+    private const short RelicItemNumber = 64;
 
     /// <summary>
     /// How long it takes after a scored point for the next stone statue to spawn - matches the
@@ -217,6 +223,13 @@ public sealed class IllusionTempleContext : MiniGameContext
     /// </summary>
     public IllusionTempleScore Score { get; } = new();
 
+    /// <summary>
+    /// Gets or sets how long the players see the "Preparation" state (still behind the arena barriers)
+    /// before the battle actually starts. Configurable so that tests, which drive the game start
+    /// directly, don't have to wait out the real countdown.
+    /// </summary>
+    public TimeSpan PreparationDuration { get; set; } = TimeSpan.FromSeconds(20);
+
     /// <inheritdoc />
     protected override TimeSpan RemainingTime => this._remainingTime;
 
@@ -229,6 +242,24 @@ public sealed class IllusionTempleContext : MiniGameContext
     protected override Player? Winner => this.Score.LeadingTeam is { } leadingTeam
         ? this._teams.FirstOrDefault(entry => entry.Value == leadingTeam).Key
         : null;
+
+    /// <inheritdoc />
+    /// <remarks>
+    /// This event decides its winners by team, not by party: every member of the leading team won.
+    /// The temporary parties created at game start can't be used for that, because a party is disposed
+    /// as soon as fewer than two of its members remain, which would silently drop the rewards of
+    /// everyone but the first winner.
+    /// </remarks>
+    protected override bool IsWinner(Player player)
+        => this.Score.LeadingTeam is { } leadingTeam
+           && this._teams.TryGetValue(player, out var team)
+           && team == leadingTeam;
+
+    /// <inheritdoc />
+    /// <remarks>
+    /// The winning team takes the role of the winning party here - see <see cref="IsWinner"/>.
+    /// </remarks>
+    protected override bool IsInWinningParty(Player player) => this.IsWinner(player);
 
     /// <inheritdoc />
     /// <remarks>
@@ -265,27 +296,46 @@ public sealed class IllusionTempleContext : MiniGameContext
         };
     }
 
+    /// <inheritdoc />
+    /// <remarks>
+    /// Tells the entering player's client that he's waiting for the match to start, so it can show the
+    /// event's waiting state. This is only sent to him, not to the other participants.
+    /// </remarks>
+    public override async ValueTask<EnterResult> TryEnterAsync(Player player)
+    {
+        var result = await base.TryEnterAsync(player).ConfigureAwait(false);
+        if (result == EnterResult.Success)
+        {
+            await player.InvokeViewPlugInAsync<IIllusionTempleEventStateViewPlugIn>(
+                p => p.ChangeEventStateAsync((byte)this.Definition.GameLevel, IllusionTempleEventStatus.WaitingRoom)).ConfigureAwait(false);
+        }
+
+        return result;
+    }
+
     /// <summary>
     /// Handles a player talking to the stone statue (NPC 380) which holds the sacred relic.
     /// </summary>
     /// <param name="player">The player who talked to the statue.</param>
     public async ValueTask TalkToNpcStoneStatueAsync(Player player)
     {
-        if (this._relicCarrier is not null)
+        // Claim the carrier slot before the first await - otherwise two players talking to the same
+        // statue at the same time could both pass the check and walk away with a relic each.
+        if (Interlocked.CompareExchange(ref this._relicCarrier, player, null) is not null)
         {
             // Somebody already carries the relic - the statue that granted it must already be gone.
             return;
         }
 
-        var cursedCastleWater = player.GameContext.Configuration.Items.First(item => item.Group == 14 && item.Number == 64);
-
         var item = player.PersistenceContext.CreateNew<Item>();
-        item.Definition = cursedCastleWater;
+        item.Definition = player.GameContext.Configuration.Items.First(IsRelicDefinition);
 
-        var invIndex = player.Inventory?.CheckInvSpace(item);
-        if (invIndex is null)
+        if (player.Inventory?.CheckInvSpace(item) is null)
         {
-            await player.ShowBlueMessageAsync("Your Inventory is full!").ConfigureAwait(false);
+            // Hand the claim back, and don't leave the unused item behind as an orphan entity.
+            this._relicCarrier = null;
+            await player.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.InventoryFull)).ConfigureAwait(false);
             return;
         }
 
@@ -298,7 +348,6 @@ public sealed class IllusionTempleContext : MiniGameContext
             await statue.DisposeAsync().ConfigureAwait(false);
         }
 
-        this._relicCarrier = player;
         await this.ForEachPlayerAsync(p => p.InvokeViewPlugInAsync<IIllusionTempleHolyItemRelicsViewPlugIn>(
             vp => vp.ShowHolyItemRelicsAsync(player.Id, player.Name)).AsTask()).ConfigureAwait(false);
     }
@@ -316,7 +365,7 @@ public sealed class IllusionTempleContext : MiniGameContext
             }
 
             var relicItem = player.Inventory?.Items
-            .FirstOrDefault(i => i.Definition?.Group == 14 && i.Definition?.Number == 64);
+            .FirstOrDefault(i => IsRelicDefinition(i.Definition));
 
             if (relicItem is null)
             {
@@ -406,7 +455,7 @@ public sealed class IllusionTempleContext : MiniGameContext
     /// <param name="targetObjectIndex">The map object index of the skill's target, if any.</param>
     public async ValueTask UseSkillAsync(Player player, ushort skillNumber, ushort targetObjectIndex)
     {
-        if (!this._teams.ContainsKey(player))
+        if (!this.IsEventRunning || !player.IsAlive || !this._teams.ContainsKey(player))
         {
             return;
         }
@@ -453,6 +502,7 @@ public sealed class IllusionTempleContext : MiniGameContext
             .ToArray();
         var duration = effectDefinition.Duration?.ConstantValue.Value ?? 15f;
         var magicEffect = new MagicEffect(TimeSpan.FromSeconds(duration), effectDefinition, elements);
+        this.NotifyWhenSkillEffectEnds(magicEffect, OrderOfProtectionSkillNumber, player);
         await player.MagicEffectList.AddEffectAsync(magicEffect).ConfigureAwait(false);
         return true;
     }
@@ -462,7 +512,9 @@ public sealed class IllusionTempleContext : MiniGameContext
     /// </summary>
     private async ValueTask<bool> UseRestraintAsync(Player player, IAttackable? target)
     {
-        if (target is null || target == player || player.GetDistanceTo(target) > SpecialSkillMaximumDistance)
+        if (target is null
+            || !this.IsHostileTarget(player, target)
+            || player.GetDistanceTo(target) > SpecialSkillMaximumDistance)
         {
             return false;
         }
@@ -478,6 +530,7 @@ public sealed class IllusionTempleContext : MiniGameContext
             .ToArray();
         var duration = effectDefinition.Duration?.ConstantValue.Value ?? 15f;
         var magicEffect = new MagicEffect(TimeSpan.FromSeconds(duration), effectDefinition, elements);
+        this.NotifyWhenSkillEffectEnds(magicEffect, RestraintSkillNumber, target);
         await target.MagicEffectList.AddEffectAsync(magicEffect).ConfigureAwait(false);
         return true;
     }
@@ -505,7 +558,9 @@ public sealed class IllusionTempleContext : MiniGameContext
     /// </summary>
     private ValueTask<bool> UseWeakenAsync(Player player, IAttackable? target)
     {
-        if (target is null || target == player || player.GetDistanceTo(target) > SpecialSkillMaximumDistance)
+        if (target is null
+            || !this.IsHostileTarget(player, target)
+            || player.GetDistanceTo(target) > SpecialSkillMaximumDistance)
         {
             return ValueTask.FromResult(false);
         }
@@ -545,7 +600,6 @@ public sealed class IllusionTempleContext : MiniGameContext
         {
             // Adding player to team AlliedForces or IllusionForces
             var player = playersArray[i];
-            player.Party = null;
             var team = i % 2 == 0 ? IllusionTempleTeam.AlliedForces : IllusionTempleTeam.IllusionForces;
             if (!this._teams.TryAdd(player, team))
             {
@@ -567,7 +621,8 @@ public sealed class IllusionTempleContext : MiniGameContext
                     this.Definition.MaximumPlayerCount);
             }
 
-            await this.TeleportToStartCoordinatesAsync(team, player).ConfigureAwait(false);
+            // i / 2 is the player's index within his own team, since the teams alternate.
+            await this.TeleportToStartCoordinatesAsync(team, player, i / 2).ConfigureAwait(false);
         }
 
         await base.OnGameStartAsync(players).ConfigureAwait(false);
@@ -583,7 +638,7 @@ public sealed class IllusionTempleContext : MiniGameContext
 
         try
         {
-            await Task.Delay(PreparationDuration, this.GameEndedToken).ConfigureAwait(false);
+            await Task.Delay(this.PreparationDuration, this.GameEndedToken).ConfigureAwait(false);
         }
         catch (OperationCanceledException)
         {
@@ -692,10 +747,14 @@ public sealed class IllusionTempleContext : MiniGameContext
     /// <inheritdoc />
     /// <remarks>
     /// When the player who left carried the relic (character switch, disconnect or leaving the event
-    /// on purpose), drop it so that it can be picked up again by the remaining participants. The player
-    /// himself is sent back to Devias and removed from his temporary event party, just like a player who
-    /// finishes a match normally in <see cref="GameEndedAsync"/>. If fewer than <see cref="MinimumPlayerCount"/>
-    /// players remain afterwards, the match can't continue and is ended right away.
+    /// on purpose), drop it so that it can be picked up again by the remaining participants, and remove
+    /// him from the event's own bookkeeping. This handler deliberately does not warp the player
+    /// anywhere: it runs from within <see cref="Player.WarpToAsync"/> (which removes the player from his
+    /// current map before placing him at the target gate), so warping again from here would nest the
+    /// warps and leave the player on two maps with duplicate map-change packets. Leaving the event is
+    /// handled by <see cref="ClaimRewardAsync"/> and by the base class's exit handling, both of which
+    /// respect the map's configured safezone. If fewer than <see cref="MinimumPlayerCount"/> players
+    /// remain afterwards, the match can't continue and is ended right away.
     /// </remarks>
     protected override async ValueTask OnObjectRemovedFromMapAsync((GameMap Map, ILocateable Object) args)
     {
@@ -707,16 +766,6 @@ public sealed class IllusionTempleContext : MiniGameContext
             {
                 await party.KickMySelfAsync(player).ConfigureAwait(false);
             }
-
-            var devias = player.GameContext.Configuration.Maps.First(map => map.Number == 2);
-            await player.WarpToAsync(new ExitGate
-            {
-                Map = devias,
-                X1 = 197,
-                Y1 = 35,
-                X2 = 218,
-                Y2 = 50,
-            }).ConfigureAwait(false);
 
             // Otherwise he'd keep showing up as an alive team mate on the mini map of his former team.
             this._teams.TryRemove(player, out _);
@@ -748,7 +797,7 @@ public sealed class IllusionTempleContext : MiniGameContext
         }
 
         var relicItem = player.Inventory?.Items
-            .FirstOrDefault(i => i.Definition?.Group == 14 && i.Definition?.Number == 64);
+            .FirstOrDefault(i => IsRelicDefinition(i.Definition));
 
         if (relicItem is null || player.CurrentMap is not { } map)
         {
@@ -777,8 +826,7 @@ public sealed class IllusionTempleContext : MiniGameContext
         try
         {
             if (this._relicCarrier is not { } carrier
-                || item.Item.Definition?.Group != 14
-                || item.Item.Definition?.Number != 64)
+                || !IsRelicDefinition(item.Item.Definition))
             {
                 return;
             }
@@ -800,8 +848,7 @@ public sealed class IllusionTempleContext : MiniGameContext
     {
         if (this._relicCarrier is null
             && args.DroppedItem is DroppedItem droppedItem
-            && droppedItem.Item.Definition?.Group == 14
-            && droppedItem.Item.Definition?.Number == 64)
+            && IsRelicDefinition(droppedItem.Item.Definition))
         {
             this._relicCarrier = args.Picker;
             await this.ShowGoldenMessageAsync(nameof(PlayerMessage.IllusionTempleRelicPickedUpFormat), args.Picker.Name).ConfigureAwait(false);
@@ -837,15 +884,13 @@ public sealed class IllusionTempleContext : MiniGameContext
     /// <c>IllusionTempleRewardRequest</c> (0xBF05) packet - the client sends it when the player clicks the
     /// "Close" button on the result dialog. Experience has already been granted automatically in
     /// <see cref="GameEndedAsync"/>, so this only grants the remaining reward types (e.g. an item drop)
-    /// to winners, and finally warps the requesting player to Devias - regardless of whether he won,
-    /// lost, or already claimed his reward before.
+    /// to winners, and finally sends the requesting player to the map's configured safezone -
+    /// regardless of whether he won, lost, or already claimed his reward before.
     /// </summary>
     /// <param name="player">The player who claims his reward.</param>
     public async ValueTask ClaimRewardAsync(Player player)
     {
-        if (this._claimedRewards.TryAdd(player, true)
-            && this._teams.TryGetValue(player, out var team)
-            && this.Score.LeadingTeam == team)
+        if (this._claimedRewards.TryAdd(player, true) && this.IsWinner(player))
         {
             var rank = this._winnerRanks.GetValueOrDefault(player, 1);
             var remainingRewards = this.Definition.Rewards.Where(r =>
@@ -857,15 +902,8 @@ public sealed class IllusionTempleContext : MiniGameContext
             }
         }
 
-        var devias = player.GameContext.Configuration.Maps.First(map => map.Number == 2);
-        await player.WarpToAsync(new ExitGate
-        {
-            Map = devias,
-            X1 = 197,
-            Y1 = 35,
-            X2 = 218,
-            Y2 = 50,
-        }).ConfigureAwait(false);
+        await this.RemoveRelicFromInventoryAsync(player).ConfigureAwait(false);
+        await player.WarpToSafezoneAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -880,30 +918,33 @@ public sealed class IllusionTempleContext : MiniGameContext
     /// </remarks>
     protected override async ValueTask GameEndedAsync(ICollection<Player> finishers)
     {
-        if (this.Score.LeadingTeam is { } winningTeam)
+        var remainingSeconds = (int)this.RemainingTime.TotalSeconds;
+        foreach (var winner in finishers.Where(this.IsWinner))
         {
-            var winners = finishers
-                .Where(player => this._teams.TryGetValue(player, out var team) && team == winningTeam)
+            var rank = this._winnerRanks.Count + 1;
+            this._winnerRanks[winner] = rank;
+
+            var experienceRewards = this.Definition.Rewards
+                .Where(r => r.RewardType is MiniGameRewardType.Experience or MiniGameRewardType.ExperiencePerRemainingSeconds
+                            && this.DoesRewardApply(winner, rank, r))
                 .ToList();
 
-            var rank = 0;
-            foreach (var winner in winners)
+            // Mirror what GiveRewardAsync actually grants, so the score board doesn't lie: the
+            // per-second reward type multiplies its amount by the remaining seconds.
+            this._grantedExperience[winner] = experienceRewards.Sum(r => r.RewardType == MiniGameRewardType.ExperiencePerRemainingSeconds
+                ? r.RewardAmount * Math.Max(0, remainingSeconds)
+                : r.RewardAmount);
+
+            foreach (var reward in experienceRewards)
             {
-                rank++;
-                this._winnerRanks[winner] = rank;
-
-                var experienceRewards = this.Definition.Rewards
-                    .Where(r => r.RewardType is MiniGameRewardType.Experience or MiniGameRewardType.ExperiencePerRemainingSeconds
-                                && this.DoesRewardApply(winner, rank, r))
-                    .ToList();
-                this._grantedExperience[winner] = experienceRewards.Sum(r => r.RewardAmount);
-
-                foreach (var reward in experienceRewards)
-                {
-                    await this.GiveRewardAsync(winner, reward).ConfigureAwait(false);
-                }
+                await this.GiveRewardAsync(winner, reward).ConfigureAwait(false);
             }
         }
+
+        // Tell the clients that the match is over, so they close the event interface.
+        var templeNumber = (byte)this.Definition.GameLevel;
+        await this.ForEachPlayerAsync(player => player.InvokeViewPlugInAsync<IIllusionTempleEventStateViewPlugIn>(
+            p => p.ChangeEventStateAsync(templeNumber, IllusionTempleEventStatus.Ended)).AsTask()).ConfigureAwait(false);
 
         // base.GameEndedAsync() shows the score table to every finisher (via ShowScoreAsync), which
         // reads this._teams - so it has to run before anyone leaves the map. Warping a player off this
@@ -916,20 +957,93 @@ public sealed class IllusionTempleContext : MiniGameContext
         await base.GameEndedAsync(finishers).ConfigureAwait(false);
     }
 
-    private async ValueTask TeleportToStartCoordinatesAsync(IllusionTempleTeam team, Player player)
+    /// <summary>
+    /// Determines whether the given target may be hit by one of the caster's offensive special skills:
+    /// it must not be the caster himself, and - if it's another participant - it has to belong to the
+    /// opposing team, so that team mates can't be frozen or drained.
+    /// </summary>
+    /// <param name="player">The caster.</param>
+    /// <param name="target">The target of the skill.</param>
+    /// <returns><c>true</c>, if the target may be hit; otherwise, <c>false</c>.</returns>
+    private bool IsHostileTarget(Player player, IAttackable? target)
     {
-        var cordinatesAlliedForces = this.alliedForcesCoordinates;
-        var cordinatesIllusionForces = this.illusionForcesCoordinates;
-        if (team == IllusionTempleTeam.AlliedForces)
+        if (target is null || ReferenceEquals(target, player))
         {
-            cordinatesAlliedForces += new Point(1, 0); // every player on differend point (x,y)
-            await player.MoveAsync(cordinatesAlliedForces).ConfigureAwait(false);
+            return false;
         }
-        else
+
+        if (target is not Player targetPlayer)
         {
-            cordinatesIllusionForces += new Point(1, 0); // every player on differend point (x,y)
-            await player.MoveAsync(cordinatesIllusionForces).ConfigureAwait(false);
+            // Not a participant (e.g. an arena monster) - always a valid target.
+            return true;
         }
+
+        return this._teams.TryGetValue(player, out var ownTeam)
+               && this._teams.TryGetValue(targetPlayer, out var targetTeam)
+               && ownTeam != targetTeam;
+    }
+
+    /// <summary>
+    /// Announces to all participants that a timed special skill wore off on the given object, so their
+    /// clients can drop the corresponding effect indicator.
+    /// </summary>
+    /// <param name="magicEffect">The magic effect which carries the skill.</param>
+    /// <param name="skillNumber">The number of the special skill.</param>
+    /// <param name="affectedObject">The object the effect was applied to.</param>
+    private void NotifyWhenSkillEffectEnds(MagicEffect magicEffect, ushort skillNumber, IIdentifiable affectedObject)
+    {
+        magicEffect.EffectTimeOut += _ => this.ForEachPlayerAsync(
+            p => p.InvokeViewPlugInAsync<IIllusionTempleSkillEndedViewPlugin>(
+                view => view.ShowSkillEndedAsync(skillNumber, affectedObject.Id)).AsTask());
+    }
+
+    /// <summary>
+    /// Takes the sacred relic away from a player who still has it when he leaves the event, so it
+    /// doesn't stay in his inventory forever - it only exists for the duration of a match.
+    /// </summary>
+    /// <param name="player">The player whose inventory should be cleaned up.</param>
+    private async ValueTask RemoveRelicFromInventoryAsync(Player player)
+    {
+        if (player.Inventory?.Items.FirstOrDefault(i => IsRelicDefinition(i.Definition)) is not { } relicItem)
+        {
+            return;
+        }
+
+        if (ReferenceEquals(this._relicCarrier, player))
+        {
+            this._relicCarrier = null;
+        }
+
+        await player.Inventory.RemoveItemAsync(relicItem).ConfigureAwait(false);
+        await player.PersistenceContext.DeleteAsync(relicItem).ConfigureAwait(false);
+        await player.InvokeViewPlugInAsync<IItemDropResultPlugIn>(p => p.ItemDropResultAsync(relicItem.ItemSlot, true)).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Determines whether the given item definition is the event's sacred relic.
+    /// </summary>
+    /// <param name="itemDefinition">The item definition to check.</param>
+    /// <returns><c>true</c>, if it's the sacred relic; otherwise, <c>false</c>.</returns>
+    private static bool IsRelicDefinition(ItemDefinition? itemDefinition)
+        => itemDefinition is { Group: RelicItemGroup, Number: RelicItemNumber };
+
+    /// <summary>
+    /// Moves a player to his team's starting chamber.
+    /// </summary>
+    /// <param name="team">The team of the player.</param>
+    /// <param name="player">The player to move.</param>
+    /// <param name="indexInTeam">
+    /// The index of the player within his team, used to spread the members over consecutive tiles
+    /// instead of stacking them all on the same spot.
+    /// </param>
+    private async ValueTask TeleportToStartCoordinatesAsync(IllusionTempleTeam team, Player player, int indexInTeam)
+    {
+        var teamStart = team == IllusionTempleTeam.AlliedForces
+            ? this.alliedForcesCoordinates
+            : this.illusionForcesCoordinates;
+
+        var target = new Point((byte)(teamStart.X + indexInTeam), teamStart.Y);
+        await player.MoveAsync(target).ConfigureAwait(false);
     }
 
     private async ValueTask ShowRemainingTimeLoopAsync(CancellationToken cancellationToken)
