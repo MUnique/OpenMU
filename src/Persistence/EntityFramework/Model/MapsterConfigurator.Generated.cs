@@ -47,11 +47,17 @@ public static class MapsterConfigurator
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Entities.CastleSiegeData, MUnique.OpenMU.DataModel.Entities.CastleSiegeData>()
             .Include<CastleSiegeData, BasicModel.CastleSiegeData>();
 
+        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Entities.CastleSiegeGuild, MUnique.OpenMU.DataModel.Entities.CastleSiegeGuild>()
+            .Include<CastleSiegeGuild, BasicModel.CastleSiegeGuild>();
+
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Entities.CastleSiegeGuildRegistration, MUnique.OpenMU.DataModel.Entities.CastleSiegeGuildRegistration>()
             .Include<CastleSiegeGuildRegistration, BasicModel.CastleSiegeGuildRegistration>();
 
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Entities.CastleSiegeNpcState, MUnique.OpenMU.DataModel.Entities.CastleSiegeNpcState>()
             .Include<CastleSiegeNpcState, BasicModel.CastleSiegeNpcState>();
+
+        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Entities.CastleSiegePendingReward, MUnique.OpenMU.DataModel.Entities.CastleSiegePendingReward>()
+            .Include<CastleSiegePendingReward, BasicModel.CastleSiegePendingReward>();
 
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Entities.Character, MUnique.OpenMU.DataModel.Entities.Character>()
             .Include<Character, BasicModel.Character>();

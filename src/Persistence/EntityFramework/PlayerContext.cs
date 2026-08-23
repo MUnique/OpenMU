@@ -133,4 +133,18 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
 
         return null;
     }
+
+    /// <inheritdoc />
+    public async ValueTask<IReadOnlyList<DataModel.Entities.CastleSiegePendingReward>> GetPendingCastleSiegeRewardsAsync(
+        Guid characterId,
+        CancellationToken cancellationToken = default)
+    {
+        using (this.RepositoryProvider.ContextStack.UseContext(this))
+        {
+            return await this.Context.Set<CastleSiegePendingReward>()
+                .Where(reward => reward.CharacterId == characterId)
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+        }
+    }
 }
