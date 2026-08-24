@@ -74,7 +74,13 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     private DateTime _lastRegenerate = DateTime.UtcNow;
 
-    private DateTime _lastShieldRegenerateStop = DateTime.UtcNow;
+    private Dictionary<Stats.Regeneration, DateTime> _lastRegeneration = new()
+    {
+        [Stats.ManaRegeneration] = DateTime.UtcNow,
+        [Stats.HealthRegeneration] = DateTime.UtcNow,
+        [Stats.AbilityRegeneration] = DateTime.UtcNow,
+        [Stats.ShieldRegeneration] = DateTime.UtcNow,
+    };
 
     private GameMap? _currentMap;
 
@@ -1045,12 +1051,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <summary>
     /// Regenerates the attributes specified in <see cref="Stats.IntervalRegenerationAttributes"/>.
     /// </summary>
-    /// <param name="isRestingCycle">If set to <c>true</c>, health and mana will be regenerated exclusively due to the player being in a resting state.</param>
-    /// <remarks>
-    /// All regenerations are subservient to <see cref="GameConfiguration.RecoveryInterval"/>, which has a default value of 3 seconds.
-    /// Here we apply a compensation multiplier to mimic the original different regen rates, thus maintaining game design and configurabilty.
-    /// </remarks>
-    public async Task RegenerateAsync(bool isRestingCycle = false)
+    public async Task RegenerateAsync()
     {
         try
         {
@@ -1059,68 +1060,36 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 return;
             }
 
-            var targetRegenerationAttributes = Stats.IntervalRegenerationAttributes.Where(r =>
-                         attributes[r.RegenerationMultiplier] > 0 || attributes[r.AbsoluteAttribute] > 0);
-            if (isRestingCycle)
+            var now = DateTime.Now;
+            foreach (var r in Stats.IntervalRegenerationAttributes)
             {
-                targetRegenerationAttributes = targetRegenerationAttributes.Where(r =>
-                         r.CurrentAttribute == Stats.CurrentHealth || r.CurrentAttribute == Stats.CurrentMana);
-            }
-
-            foreach (var r in targetRegenerationAttributes)
-            {
-                float multiplier;
-                if (r.CurrentAttribute == Stats.CurrentShield)
+                if ((r.EnablerAttribute is { } enabler && attributes[enabler] < 1)
+                    || (r.HiatusAttribute is { } hiatus && attributes[hiatus] < r.HiatusThreshold))
                 {
-                    if ((!this.IsAtSafezone() && attributes[Stats.ShieldRecoveryEverywhere] < 1)
-                        || attributes[r.CurrentAttribute] == attributes[r.MaximumAttribute])
-                    {
-                        // Shield recovery is only possible at safe-zone, except if the character has Stats.ShieldRecoveryEverywhere.
-                        // This attribute is usually provided by a level 380 armor with a Guardian Option.
-                        this._lastShieldRegenerateStop = DateTime.UtcNow;
-                        continue;
-                    }
-
-                    var secondsSinceLastShieldRegenerate = (int)Math.Round(DateTime.UtcNow.Subtract(this._lastShieldRegenerateStop).TotalSeconds);
-                    switch (secondsSinceLastShieldRegenerate)
-                    {
-                        case >= 25:
-                            multiplier = 3;
-                            break;
-                        case >= 15:
-                            multiplier = 2.5f;
-                            break;
-                        case >= 10:
-                            multiplier = 2;
-                            break;
-                        default:
-                            continue;
-                    }
-
-                    // Originally shield is recovered every second (after the 10s wait period).
-                    multiplier *= 3;
+                    continue;
                 }
-                else if (r.CurrentAttribute == Stats.CurrentHealth && !isRestingCycle)
+
+                var factor = 0f;
+                var interval = r.Interval;
+                if (attributes[Stats.IsResting] > 0)
                 {
-                    if (attributes[Stats.IsResting] > 0)
-                    {
-                        // We only regen health on the quicker resting cycle (for mana both cycles apply).
-                        continue;
-                    }
+                    interval = r.IntervalResting;
 
-                    // Originally, health is recovered every 7s
-                    multiplier = 3f / 7f;
+                    if (r.CurrentAttribute == Stats.CurrentMana)
+                    {
+                        // Mana recovery while resting is on top of regular recovery
+                        factor += (float)((now - this._lastRegeneration[r]) / r.Interval);
+                    }
                 }
-                else
-                {
-                    // Originally, mana and ability are recovered every 3s (the default recovery interval).
-                    multiplier = 1;
-                }
+
+                factor += (float)((now - this._lastRegeneration[r]) / interval);
 
                 attributes[r.CurrentAttribute] = Math.Min(
                     attributes[r.CurrentAttribute] +
-                        (((attributes[r.MaximumAttribute] * attributes[r.RegenerationMultiplier]) + attributes[r.AbsoluteAttribute]) * multiplier),
+                        (((attributes[r.MaximumAttribute] * attributes[r.RegenerationMultiplier]) + attributes[r.AbsoluteAttribute]) * factor),
                     attributes[r.MaximumAttribute]);
+
+                this._lastRegeneration[r] = now;
             }
 
             await this.RegenerateHeroStateAsync().ConfigureAwait(false);
@@ -1178,7 +1147,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             && observingPlayer.Party == this.Party
             && observingPlayer.Attributes is { } attributes)
         {
-            attributes[Stats.NearbyPartyMemberCount]++;
+            attributes[Stats.NearbyPartyMemberCount] += 1;
         }
     }
 
@@ -1192,7 +1161,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             && observingPlayer.Party == this.Party
             && observingPlayer.Attributes is { } attributes)
         {
-            attributes[Stats.NearbyPartyMemberCount]--;
+            attributes[Stats.NearbyPartyMemberCount] -= 1;
         }
     }
 
@@ -1423,6 +1392,17 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this._selectedCharacter.StateRemainingSeconds += (int)TimeSpan.FromHours(1).TotalSeconds;
         this._selectedCharacter.PlayerKillCount += 1;
         await this.ForEachWorldObserverAsync<IUpdateCharacterHeroStatePlugIn>(o => o.UpdateCharacterHeroStateAsync(this), true).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sets the current values of the regeneration attributes to their maximum values.
+    /// </summary>
+    internal void SetReclaimableAttributesToMaximum()
+    {
+        foreach (var regeneration in Stats.IntervalRegenerationAttributes)
+        {
+            this.Attributes![regeneration.CurrentAttribute] = this.Attributes[regeneration.MaximumAttribute];
+        }
     }
 
     /// <inheritdoc />
@@ -1874,7 +1854,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.AddMissingStatAttributes();
 
         this.Attributes = new ItemAwareAttributeSystem(this.Account!, selectedCharacter, this.GameContext.Configuration);
-        this.Attributes[Stats.NearbyPartyMemberCount] = 0;
         this.LogInvalidInventoryItems();
 
         this._storages.CreateForCharacter(selectedCharacter);
@@ -1947,17 +1926,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.Attributes[Stats.CurrentMana] = this.Attributes[Stats.MaximumMana];
         this.Attributes[Stats.CurrentAbility] = this.Attributes[Stats.MaximumAbility] / 2;
         this.Attributes[Stats.CurrentHealth] = Math.Min(this.Attributes[Stats.CurrentHealth], this.Attributes[Stats.MaximumHealth]);
-    }
-
-    /// <summary>
-    /// Sets the current values of the regeneration attributes to their maximum values.
-    /// </summary>
-    internal void SetReclaimableAttributesToMaximum()
-    {
-        foreach (var regeneration in Stats.IntervalRegenerationAttributes)
-        {
-            this.Attributes![regeneration.CurrentAttribute] = this.Attributes[regeneration.MaximumAttribute];
-        }
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]

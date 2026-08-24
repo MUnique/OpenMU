@@ -10,7 +10,7 @@ using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// Updates the <see cref="Stats.IsInSafezone"/> and <see cref="Stats.IsResting"/> attributes.
-/// For example, these can activate or increase shield, ability, health and mana recovery.
+/// For example, these activate or increase shield, ability, health and mana recoveries.
 /// </summary>
 [PlugIn]
 [Display(Name = nameof(PlugInResources.UpdateIsInSafezoneAfterPlayerMoved_Name), Description = nameof(PlugInResources.UpdateIsInSafezoneAfterPlayerMoved_Description), ResourceType = typeof(PlugInResources))]

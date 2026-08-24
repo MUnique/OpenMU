@@ -9,7 +9,6 @@ using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Globalization;
 using System.Threading;
-using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views;
@@ -43,10 +42,6 @@ public class GameContext : AsyncDisposable, IGameContext
     private readonly Dictionary<MiniGameMapKey, MiniGameContext> _miniGames = new();
 
     private readonly Timer _recoverTimer;
-
-    private readonly int _restingRecoveryInterval;
-
-    private readonly Timer _restingRecoverTimer;
 
     private readonly IMapInitializer _mapInitializer;
 
@@ -87,8 +82,6 @@ public class GameContext : AsyncDisposable, IGameContext
             this.ItemPowerUpFactory = new ItemPowerUpFactory(loggerFactory.CreateLogger<ItemPowerUpFactory>());
             this.PartyManager = new PartyManager(configuration.MaximumPartySize, loggerFactory.CreateLogger<Party>());
             this._recoverTimer = new Timer(this.RecoverTimerElapsed, null, this.Configuration.RecoveryInterval, this.Configuration.RecoveryInterval);
-            this._restingRecoveryInterval = (int)Math.Round(this.Configuration.RecoveryInterval * 5f / 3);  // Originally, resting recovery interval is 5s
-            this._restingRecoverTimer = new Timer(this.RecoverTimerElapsed, true, this._restingRecoveryInterval, this._restingRecoveryInterval);
             this._tasksTimer = new Timer(this.ExecutePeriodicTasks, null, 1000, 1000);
             this.FeaturePlugIns = new FeaturePlugInContainer(this.PlugInManager);
             this._configChangeHandlerRegistration = this.ConfigurationChangeMediator.RegisterObject(this.Configuration, this, this.OnGameConfigurationChangeAsync);
@@ -465,7 +458,6 @@ public class GameContext : AsyncDisposable, IGameContext
     {
         this._configChangeHandlerRegistration.Dispose();
         await this._recoverTimer.DisposeAsync().ConfigureAwait(false);
-        await this._restingRecoverTimer.DisposeAsync().ConfigureAwait(false);
         await this._tasksTimer.DisposeAsync().ConfigureAwait(false);
         await base.DisposeAsyncCore().ConfigureAwait(false);
     }
@@ -490,7 +482,6 @@ public class GameContext : AsyncDisposable, IGameContext
 #pragma warning restore CS1998
     {
         this._recoverTimer.Change(gameConfiguration.RecoveryInterval, gameConfiguration.RecoveryInterval);
-        this._restingRecoverTimer.Change(this._restingRecoveryInterval, this._restingRecoveryInterval);
         this.ExperienceTable = CreateExpTable(gameConfiguration.ExperienceFormula ?? DefaultExperienceFormula, gameConfiguration.MaximumLevel);
         this.MasterExperienceTable = CreateExpTable(gameConfiguration.MasterExperienceFormula ?? DefaultMasterExperienceFormula, gameConfiguration.MaximumMasterLevel);
     }
@@ -514,23 +505,13 @@ public class GameContext : AsyncDisposable, IGameContext
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
     private async void RecoverTimerElapsed(object? state)
     {
-        var hasRestingTimerElapsed = (bool?)state ?? false;
-
         try
         {
             await this.ForEachPlayerAsync(player =>
             {
                 if (player.SelectedCharacter != null && !player.PlayerState.CurrentState.IsDisconnectedOrFinished())
                 {
-                    if (!hasRestingTimerElapsed)
-                    {
-                        return player.RegenerateAsync();
-                    }
-
-                    if (player.Attributes?[Stats.IsResting] > 0)
-                    {
-                        return player.RegenerateAsync(true);
-                    }
+                    return player.RegenerateAsync();
                 }
 
                 return Task.CompletedTask;
