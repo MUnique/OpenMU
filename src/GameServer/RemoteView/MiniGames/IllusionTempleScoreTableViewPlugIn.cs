@@ -43,6 +43,12 @@ public class IllusionTempleScoreTableViewPlugIn : IIllusionTempleScoreTableViewP
         {
             var size = IllusionTempleResultRef.GetRequiredSize(results.Count);
             var span = connection.Output.GetSpan(size)[..size];
+
+            // The pipe buffer is reused and isn't zeroed, while each player entry contains three
+            // alignment bytes which are never written. Without clearing, leftovers of previous packets
+            // would go out on the wire and the client would read them as part of the entry.
+            span.Clear();
+
             var message = new IllusionTempleResultRef(span)
             {
                 Team1Points = alliedForcesPoints,
@@ -57,7 +63,7 @@ public class IllusionTempleScoreTableViewPlugIn : IIllusionTempleScoreTableViewP
                 entry.Name = name;
                 entry.MapNumber = mapNumber;
                 entry.Team = (byte)team;
-                entry.Class = characterClass;
+                entry.Class = characterClass.ToIllusionTempleCharacterClass();
                 entry.AddedExperience = (uint)Math.Max(0, addedExperience);
                 i++;
             }

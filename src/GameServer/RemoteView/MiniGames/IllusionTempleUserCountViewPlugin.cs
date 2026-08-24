@@ -35,13 +35,18 @@ public class IllusionTempleUserCountViewPlugIn : IShowIllusionTempleUserCountVie
     /// <inheritdoc />
     public async ValueTask ShowUserCountAsync(IReadOnlyList<int> userCounts)
     {
+        if (this._player.Connection is not { } connection)
+        {
+            return;
+        }
+
         // The packet holds one byte per temple, so a missing or oversized count is reported as the
         // closest value the client can display, instead of throwing or wrapping around.
         byte Count(int index) => index < userCounts.Count
             ? (byte)Math.Clamp(userCounts[index], 0, byte.MaxValue)
             : (byte)0;
 
-        await this._player.Connection.SendIllusionTempleUserCountAsync(
+        await connection.SendIllusionTempleUserCountAsync(
             Count(0),
             Count(1),
             Count(2),

@@ -151,14 +151,21 @@ public class TalkNpcAction
                 await player.InvokeViewPlugInAsync<IOpenNpcWindowPlugIn>(p => p.OpenNpcWindowAsync(npcStats.NpcWindow)).ConfigureAwait(false);
                 break;
             case NpcWindow.IllusionTemple:
-                await player.InvokeViewPlugInAsync<IOpenNpcWindowPlugIn>(p => p.OpenNpcWindowAsync(npcStats.NpcWindow)).ConfigureAwait(false);
-                await this.ShowIllusionTempleUserCountsAsync(player).ConfigureAwait(false);
+                try
+                {
+                    await player.InvokeViewPlugInAsync<IOpenNpcWindowPlugIn>(p => p.OpenNpcWindowAsync(npcStats.NpcWindow)).ConfigureAwait(false);
+                    await this.ShowIllusionTempleUserCountsAsync(player).ConfigureAwait(false);
+                }
+                finally
+                {
+                    // The client doesn't tell the server when this window is closed, so the state is reset
+                    // right away - otherwise the player would be stuck in the NpcDialogOpened state and
+                    // couldn't open the window a second time. That has to happen even when showing the
+                    // dialog failed, for the same reason. The npc itself stays assigned, so that the
+                    // entry can still report its refusals as a message of the npc.
+                    await player.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
+                }
 
-                // The client doesn't tell the server when this window is closed, so the state is reset
-                // right away - otherwise the player would be stuck in the NpcDialogOpened state and
-                // couldn't open the window a second time. The npc itself stays assigned, so that the
-                // entry can still report its refusals as a message of the npc.
-                await player.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
                 break;
             default:
                 await player.InvokeViewPlugInAsync<IOpenNpcWindowPlugIn>(p => p.OpenNpcWindowAsync(npcStats.NpcWindow)).ConfigureAwait(false);

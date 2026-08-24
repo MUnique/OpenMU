@@ -9,7 +9,6 @@ using System.Threading;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
-using MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.Pathfinding;
 
@@ -296,23 +295,6 @@ public sealed class IllusionTempleContext : MiniGameContext
         };
     }
 
-    /// <inheritdoc />
-    /// <remarks>
-    /// Tells the entering player's client that he's waiting for the match to start, so it can show the
-    /// event's waiting state. This is only sent to him, not to the other participants.
-    /// </remarks>
-    public override async ValueTask<EnterResult> TryEnterAsync(Player player)
-    {
-        var result = await base.TryEnterAsync(player).ConfigureAwait(false);
-        if (result == EnterResult.Success)
-        {
-            await player.InvokeViewPlugInAsync<IIllusionTempleEventStateViewPlugIn>(
-                p => p.ChangeEventStateAsync((byte)this.Definition.GameLevel, IllusionTempleEventStatus.WaitingRoom)).ConfigureAwait(false);
-        }
-
-        return result;
-    }
-
     /// <summary>
     /// Handles a player talking to the stone statue (NPC 380) which holds the sacred relic.
     /// </summary>
@@ -327,29 +309,49 @@ public sealed class IllusionTempleContext : MiniGameContext
             return;
         }
 
-        var item = player.PersistenceContext.CreateNew<Item>();
-        item.Definition = player.GameContext.Configuration.Items.First(IsRelicDefinition);
-
-        if (player.Inventory?.CheckInvSpace(item) is null)
+        try
         {
-            // Hand the claim back, and don't leave the unused item behind as an orphan entity.
+            if (player.GameContext.Configuration.Items.FirstOrDefault(IsRelicDefinition) is not { } relicDefinition)
+            {
+                this.Logger.LogWarning(
+                    "The sacred relic item (group {Group}, number {Number}) is missing in the configuration - the illusion temple can't be played.",
+                    RelicItemGroup,
+                    RelicItemNumber);
+                this._relicCarrier = null;
+                return;
+            }
+
+            var item = player.PersistenceContext.CreateNew<Item>();
+            item.Definition = relicDefinition;
+
+            if (player.Inventory?.CheckInvSpace(item) is null)
+            {
+                // Hand the claim back, and don't leave the unused item behind as an orphan entity.
+                this._relicCarrier = null;
+                await player.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.InventoryFull)).ConfigureAwait(false);
+                return;
+            }
+
+            await player.Inventory!.AddItemAsync(item).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IItemAppearPlugIn>(p => p.ItemAppearAsync(item)).ConfigureAwait(false);
+            await this.ShowGoldenMessageAsync(nameof(PlayerMessage.IllusionTempleRelicPickedUpFormat), player.Name).ConfigureAwait(false);
+
+            if (player.OpenedNpc is { } statue)
+            {
+                await statue.DisposeAsync().ConfigureAwait(false);
+            }
+
+            await this.ForEachPlayerAsync(p => p.InvokeViewPlugInAsync<IIllusionTempleHolyItemRelicsViewPlugIn>(
+                vp => vp.ShowHolyItemRelicsAsync(player.Id, player.Name)).AsTask()).ConfigureAwait(false);
+        }
+        catch
+        {
+            // Never keep the claim on an error - otherwise the statue would stay locked for the rest
+            // of the match, and nobody could pick up the relic anymore.
             this._relicCarrier = null;
-            await player.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
-            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.InventoryFull)).ConfigureAwait(false);
-            return;
+            throw;
         }
-
-        await player.Inventory!.AddItemAsync(item).ConfigureAwait(false);
-        await player.InvokeViewPlugInAsync<IItemAppearPlugIn>(p => p.ItemAppearAsync(item)).ConfigureAwait(false);
-        await this.ShowGoldenMessageAsync(nameof(PlayerMessage.IllusionTempleRelicPickedUpFormat), player.Name).ConfigureAwait(false);
-
-        if (player.OpenedNpc is { } statue)
-        {
-            await statue.DisposeAsync().ConfigureAwait(false);
-        }
-
-        await this.ForEachPlayerAsync(p => p.InvokeViewPlugInAsync<IIllusionTempleHolyItemRelicsViewPlugIn>(
-            vp => vp.ShowHolyItemRelicsAsync(player.Id, player.Name)).AsTask()).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -874,6 +876,19 @@ public sealed class IllusionTempleContext : MiniGameContext
             CharacterClass: (byte)(entry.Key.SelectedCharacter?.CharacterClass?.Number ?? 0),
             AddedExperience: this._grantedExperience.GetValueOrDefault(entry.Key)))
         .ToList();
+
+        if (this.Logger.IsEnabled(LogLevel.Debug))
+        {
+            foreach (var result in results)
+            {
+                this.Logger.LogDebug(
+                    "Illusion temple result row: name={Name}, team={Team}, internal class number={ClassNumber}, experience={Experience}",
+                    result.Name,
+                    result.Team,
+                    result.CharacterClass,
+                    result.AddedExperience);
+            }
+        }
 
         await player.InvokeViewPlugInAsync<IIllusionTempleScoreTableViewPlugIn>(p => p.ShowScoreTableAsync(this.Score.AlliedForcesScore, this.Score.IllusionForcesScore, results)).ConfigureAwait(false);
         await base.ShowScoreAsync(player).ConfigureAwait(false);
