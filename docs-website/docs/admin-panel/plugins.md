@@ -68,4 +68,5 @@ documented separately:
 
 ## Writing your own plugin
 
-See [Plugins (development)](../development/plugins.md).
+Implementing a plugin is documented next to the code, in the
+[MUnique.OpenMU.PlugIns readme](https://github.com/MUnique/OpenMU/blob/master/src/PlugIns/Readme.md).

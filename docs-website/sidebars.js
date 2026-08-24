@@ -65,7 +65,6 @@ const sidebars = {
       items: [
         'development/architecture',
         'development/solution-structure',
-        'development/plugins',
         'development/contributing',
       ],
     },

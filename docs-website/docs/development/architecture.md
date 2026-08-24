@@ -138,13 +138,14 @@ tables with JSON columns, or fully switch to a document based database.
 On this site:
 
 * [Solution structure](solution-structure.md) — what lives in which project
-* [Plugins](plugins.md) — the plugin system and how to write one
 * [Packet documentation](../reference/packets.md) — the structures exchanged
   between client and server
 
 The deeper, code-bound technical documentation stays next to the code in the
 repository:
 
+* [The plugin system](https://github.com/MUnique/OpenMU/blob/master/src/PlugIns/Readme.md) — how to define a plugin point, implement a
+  plugin, and load custom ones
 * [Master skill system](https://github.com/MUnique/OpenMU/blob/master/docs/MasterSystem.md)
 * [GameMap](https://github.com/MUnique/OpenMU/blob/master/docs/GameMap.md) — how
   the area of interest management works

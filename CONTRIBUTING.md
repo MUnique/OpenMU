@@ -42,8 +42,8 @@ or by submitting an issue.
   is structured internally
 * [Solution structure](docs-website/docs/development/solution-structure.md) -
   what lives in which project
-* [Plugins](docs-website/docs/development/plugins.md) - the plugin system, which
-  is how most features are implemented
+* [The plugin system](src/PlugIns/Readme.md) - how most features are
+  implemented, and how to write your own plugin
 
 ## Contributing documentation
 

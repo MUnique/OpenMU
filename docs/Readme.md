@@ -11,14 +11,14 @@ We split the documentation by how closely it follows the code:
 * **The documentation website**, built from the [docs-website](../docs-website)
   folder, holds everything a user, server operator or new contributor reads:
   getting started, deployment, the [admin panel](../docs-website/docs/admin-panel/overview.md),
-  the [server features](../docs-website/docs/server-features/bots.md), and the
-  [architecture](../docs-website/docs/development/architecture.md) with the
-  [plugin system](../docs-website/docs/development/plugins.md).
+  the [server features](../docs-website/docs/server-features/bots.md) and the
+  [architecture](../docs-website/docs/development/architecture.md).
 
 * **This folder and the `Readme.md` files under [src](../src)** hold the
   documentation which is derived from the code itself. A lot of it — the packet
   descriptions above all — is generated from the sources, so it belongs next to
-  them and is versioned with them.
+  them and is versioned with them. The implementation details live here too, for
+  example [the plugin system](../src/PlugIns/Readme.md).
 
 That is also why there is no wiki: documentation which is based on the actual
 code should live with the code, and everything else is on the website, where it

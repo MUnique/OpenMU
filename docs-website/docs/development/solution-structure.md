@@ -32,7 +32,7 @@ to its code with the details; this page is the map.
 | `Network/Packets` | The packet definitions; the packet markdown documentation is generated from their XML |
 | `AttributeSystem` | The attribute/power-up system used for damage and stat calculation — [Readme](https://github.com/MUnique/OpenMU/blob/master/src/AttributeSystem/Readme.md) |
 | `Pathfinding` | Pathfinding for monsters and NPCs — [Readme](https://github.com/MUnique/OpenMU/blob/master/src/Pathfinding/Readme.md) |
-| `PlugIns` | The plugin infrastructure — see [Plugins](plugins.md) |
+| `PlugIns` | The plugin infrastructure — [Readme](https://github.com/MUnique/OpenMU/blob/master/src/PlugIns/Readme.md) |
 | `Annotations` / `SourceGenerators` | Attributes and source generators used across the solution |
 
 ## Data
