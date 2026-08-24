@@ -530,6 +530,7 @@ public enum UpdateVersion
     /// </summary>
     ConfigureCastleSiegeParticipation = 104,
 
+    /// <summary>
     /// The version of the <see cref="IllusionTempleDataUpdatePlugIn"/>.
     /// </summary>
     IllusionTempleData = 105,
