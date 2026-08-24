@@ -13,7 +13,7 @@ to its code with the details; this page is the map.
 
 | Project | Contents |
 |---|---|
-| `Startup` | The console program which glues everything together and starts the server as a single process — [Readme](https://github.com/MUnique/OpenMU/blob/master/src/Startup/Readme.md) |
+| `Startup` | The console program which glues everything together and starts the server as a single process — see [Startup parameters](../deployment/startup-parameters.md) |
 | `GameServer` | The game server: packet handlers (`MessageHandler`) and the remote views (`RemoteView`) |
 | `GameLogic` | The actual game: players, items, skills, maps, attacks, quests, mini games, player actions |
 | `ConnectServer` | Serves the server list and redirects clients to a game server |
@@ -32,7 +32,7 @@ to its code with the details; this page is the map.
 | `Network/Packets` | The packet definitions; the packet markdown documentation is generated from their XML |
 | `AttributeSystem` | The attribute/power-up system used for damage and stat calculation — [Readme](https://github.com/MUnique/OpenMU/blob/master/src/AttributeSystem/Readme.md) |
 | `Pathfinding` | Pathfinding for monsters and NPCs — [Readme](https://github.com/MUnique/OpenMU/blob/master/src/Pathfinding/Readme.md) |
-| `PlugIns` | The plugin infrastructure — [Readme](https://github.com/MUnique/OpenMU/blob/master/src/PlugIns/Readme.md) |
+| `PlugIns` | The plugin infrastructure — see [Plugins](plugins.md) |
 | `Annotations` / `SourceGenerators` | Attributes and source generators used across the solution |
 
 ## Data
@@ -48,8 +48,8 @@ to its code with the details; this page is the map.
 
 | Project | Contents |
 |---|---|
-| `Web/AdminPanel` | The [admin panel](../admin-panel/overview.md) — [Readme](https://github.com/MUnique/OpenMU/blob/master/src/Web/AdminPanel/Readme.md) |
-| `Web/Map` | The [live map](../admin-panel/live-map.md) — [Readme](https://github.com/MUnique/OpenMU/blob/master/src/Web/Map/Readme.md) |
+| `Web/AdminPanel` | The [admin panel](../admin-panel/overview.md) |
+| `Web/Map` | The [live map](../admin-panel/live-map.md) |
 | `Web/ItemEditor` | The graphical item and item storage editor |
 | `Web/Shared` | Components shared by the web projects: forms, modals, the map editor, the theme and culture selectors |
 

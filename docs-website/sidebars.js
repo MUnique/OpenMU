@@ -54,6 +54,13 @@ const sidebars = {
     },
     {
       type: 'category',
+      label: 'Server features',
+      items: [
+        'server-features/bots',
+      ],
+    },
+    {
+      type: 'category',
       label: 'Development',
       items: [
         'development/architecture',

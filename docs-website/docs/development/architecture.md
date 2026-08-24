@@ -135,13 +135,20 @@ tables with JSON columns, or fully switch to a document based database.
 
 ## Further reading
 
-The deeper technical documentation lives next to the code in the repository:
+On this site:
 
+* [Solution structure](solution-structure.md) — what lives in which project
+* [Plugins](plugins.md) — the plugin system and how to write one
 * [Packet documentation](../reference/packets.md) — the structures exchanged
   between client and server
+
+The deeper, code-bound technical documentation stays next to the code in the
+repository:
+
 * [Master skill system](https://github.com/MUnique/OpenMU/blob/master/docs/MasterSystem.md)
-* [Server-side AI bots](https://github.com/MUnique/OpenMU/blob/master/docs/Bots.md)
-* [GameMap](https://github.com/MUnique/OpenMU/blob/master/docs/GameMap.md)
+* [GameMap](https://github.com/MUnique/OpenMU/blob/master/docs/GameMap.md) — how
+  the area of interest management works
+* [Packet structure tests](https://github.com/MUnique/OpenMU/blob/master/docs/PacketStructureTests.md)
 * [Progress](https://github.com/MUnique/OpenMU/blob/master/docs/Progress.md) —
   the feature implementation progress
 * [Attribute system](https://github.com/MUnique/OpenMU/tree/master/src/AttributeSystem)

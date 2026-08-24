@@ -58,6 +58,14 @@ point, the change is picked up by the running server or requires a reload — us
 **Reload configuration and restart all game servers** on the
 [Servers page](servers.md) if you don't see an effect.
 
+## Feature plugins
+
+Some plugins are not a single mechanic but a whole feature with its own
+configuration, grouped in the *Feature Plugins* extension point. They are
+documented separately:
+
+* [Server-side AI bots](../server-features/bots.md)
+
 ## Writing your own plugin
 
 See [Plugins (development)](../development/plugins.md).

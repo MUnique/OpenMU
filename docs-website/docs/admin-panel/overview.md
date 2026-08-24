@@ -59,6 +59,9 @@ with `-adminpanel:disabled`.
 | [Logs and monitoring](logs-and-monitoring.md) | Log files, Grafana, Prometheus, Zipkin |
 | [Users](users.md) | The users which may log into the admin panel |
 
+Server features which are configured through the panel have their own pages, for
+example the [server-side AI bots](../server-features/bots.md).
+
 ## Layout
 
 * **Navigation menu** (left) — the pages listed above. The *Configuration*
@@ -96,3 +99,12 @@ Some parts of the panel depend on how the server is hosted:
 | Live map | Rendered by the panel itself | Reverse-proxied from the game server container |
 | Auto start / auto schema update | Applies | Ignored — listeners always start, schema updates are started manually |
 | After an installation | Ready immediately | The connect server and game server containers have to be restarted |
+
+## Planned
+
+The panel grows with the server. Ideas which are not implemented yet:
+
+* More user-friendly configuration editors, and account/character editors which
+  know the game rules instead of showing the raw data model
+* Expanding a server in the list to see the players who are playing on it
+* More game master functions on the [live map](live-map.md)
