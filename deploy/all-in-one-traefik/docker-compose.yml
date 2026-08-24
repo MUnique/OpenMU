@@ -15,9 +15,15 @@ services:
       - "55980:55980"
     environment:
       DB_HOST: database
-    working_dir: /app/
+      # Optional bootstrap admin panel user. Without it, the admin panel is reachable
+      # without a login until the first user has been created within the panel itself.
+      OPENMU_ADMIN_USER: ${OPENMU_ADMIN_USER:-}
+      OPENMU_ADMIN_PASSWORD: ${OPENMU_ADMIN_PASSWORD:-}
+      # Optional base32 TOTP secret, if the bootstrap user should require a second factor.
+      OPENMU_ADMIN_TOTP_SECRET: ${OPENMU_ADMIN_TOTP_SECRET:-}
     volumes:
-      - ./.htpasswd:/etc/nginx/.htpasswd
+      - adminpanel-keys:/app/data-protection-keys
+    working_dir: /app/
     depends_on:
       - database
     labels:
@@ -25,8 +31,6 @@ services:
       - "traefik.docker.network=proxy"
       - "traefik.http.routers.openmu.entrypoints=web"
       - "traefik.http.routers.openmu.rule=Host(`admin.docker.localhost`)"
-      - "traefik.http.routers.openmu.middlewares=auth"
-      - "traefik.http.middlewares.auth.basicauth.usersfile=.htpasswd"
 
   database:
     image: postgres
@@ -56,7 +60,6 @@ services:
       - "80:80"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "./.htpasswd:/.htpasswd"
     networks:
       - proxy
 
@@ -65,4 +68,5 @@ networks:
     external: true
 
 volumes:
+  adminpanel-keys:
   dbdata:

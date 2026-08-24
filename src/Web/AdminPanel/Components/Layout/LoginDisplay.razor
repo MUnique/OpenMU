@@ -1,0 +1,15 @@
+@using MUnique.OpenMU.Web.AdminPanel.Properties
+
+<AuthorizeView>
+    <Authorized>
+        <div class="d-flex align-items-center">
+            <a class="text-secondary small text-decoration-none me-2" href="account/security" title="@Resources.AccountSecurity">
+                <span class="oi oi-person" aria-hidden="true"></span>
+                @context.User.Identity?.Name
+            </a>
+            <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="@this.LogoutAsync">
+                <span class="oi oi-account-logout" aria-hidden="true"></span> @Resources.Logout
+            </button>
+        </div>
+    </Authorized>
+</AuthorizeView>

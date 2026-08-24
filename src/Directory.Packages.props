@@ -1,4 +1,4 @@
-<Project>
+﻿<Project>
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
@@ -43,6 +43,7 @@
     <PackageVersion Include="OpenTelemetry.Exporter.Zipkin" Version="1.10.0" />
     <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.10.0" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.9.0" />
+    <PackageVersion Include="QRCoder" Version="1.8.0" />
     <PackageVersion Include="Pipelines.Sockets.Unofficial" Version="2.2.8" />
     <PackageVersion Include="Serilog" Version="4.3.0" />
     <PackageVersion Include="Serilog.Extensions.Hosting" Version="10.0.0" />

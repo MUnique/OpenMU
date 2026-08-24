@@ -1,4 +1,4 @@
-// <copyright file="ThemeController.cs" company="MUnique">
+﻿// <copyright file="ThemeController.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 /// A controller that writes the UI theme preference to a cookie and redirects to the specified uri.
 /// </summary>
 [Route("[controller]/[action]")]
+[Microsoft.AspNetCore.Authorization.AllowAnonymous]
 public class ThemeController : Controller
 {
     /// <summary>

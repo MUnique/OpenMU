@@ -1,0 +1,13 @@
+@inject NavigationManager NavigationManager
+
+@code {
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        var returnUrl = this.NavigationManager.ToBaseRelativePath(this.NavigationManager.Uri);
+        var target = string.IsNullOrEmpty(returnUrl) || returnUrl.StartsWith("login", StringComparison.OrdinalIgnoreCase)
+            ? "login"
+            : $"login?returnUrl={Uri.EscapeDataString(returnUrl)}";
+        this.NavigationManager.NavigateTo(target, replace: true);
+    }
+}
