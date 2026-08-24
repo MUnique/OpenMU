@@ -43,9 +43,13 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
     private readonly ILogger<Connection> _logger;
     private readonly EndPoint _remoteEndPoint;
 
+    private readonly object _captureLock = new();
+
     private IDuplexPipe? _duplexPipe;
     private bool _disconnected;
-    private PipeWriter? _outputWriter;
+    private ExtendedPipeWriter? _outputWriter;
+
+    private volatile IPacketCaptureSink[]? _captureSinks;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Connection" /> class.
@@ -72,6 +76,9 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
     public event AsyncEventHandler? Disconnected;
 
     /// <inheritdoc />
+    public Guid Id { get; } = Guid.NewGuid();
+
+    /// <inheritdoc />
     public bool Connected => this.SocketConnection != null ? this.SocketConnection.ShutdownKind == PipeShutdownKind.None && !this._disconnected : !this._disconnected;
 
     /// <inheritdoc />
@@ -81,7 +88,7 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
     public EndPoint? LocalEndPoint { get; }
 
     /// <inheritdoc />
-    public PipeWriter Output => this._outputWriter ??= new ExtendedPipeWriter(this._encryptionPipe?.Writer ?? this._duplexPipe!.Output, OutgoingBytesCounter);
+    public PipeWriter Output => this.OutputWriter;
 
     /// <inheritdoc />
     public AsyncLock OutputLock { get; }
@@ -95,6 +102,12 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
     /// Gets the socket connection, if the <see cref="_duplexPipe"/> is an instance of <see cref="SocketConnection"/>. Otherwise, it returns null.
     /// </summary>
     private SocketConnection? SocketConnection => this._duplexPipe as SocketConnection;
+
+    /// <summary>
+    /// Gets the <see cref="ExtendedPipeWriter"/> of the <see cref="Output"/>, which is also
+    /// the place where the outgoing data packets are captured.
+    /// </summary>
+    private ExtendedPipeWriter OutputWriter => this._outputWriter ??= this.CreateOutputWriter(this._duplexPipe!);
 
     /// <inheritdoc/>
     public override string ToString() => this._remoteEndPoint?.ToString() ?? $"{base.ToString()} {this.GetHashCode()}";
@@ -146,12 +159,80 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
         await this.Disconnected.SafeInvokeAsync().ConfigureAwait(false);
     }
 
+    /// <inheritdoc />
+    public void AddCaptureSink(IPacketCaptureSink sink)
+    {
+        lock (this._captureLock)
+        {
+            var current = this._captureSinks;
+            if (current is null)
+            {
+                this._captureSinks = new[] { sink };
+            }
+            else
+            {
+                if (Array.IndexOf(current, sink) >= 0)
+                {
+                    return;
+                }
+
+                var updated = new IPacketCaptureSink[current.Length + 1];
+                current.CopyTo(updated, 0);
+                updated[^1] = sink;
+                this._captureSinks = updated;
+            }
+
+            // We don't use the OutputWriter property here, because the connection may already
+            // be disconnected - in that case there is no outgoing traffic to capture anymore.
+            var outputWriter = this._outputWriter
+                               ?? (this._duplexPipe is { } duplexPipe ? this._outputWriter = this.CreateOutputWriter(duplexPipe) : null);
+            if (outputWriter is not null)
+            {
+                outputWriter.PacketCollector ??= new OutgoingPacketCollector(this.OnPacketSent);
+            }
+        }
+    }
+
+    /// <inheritdoc />
+    public void RemoveCaptureSink(IPacketCaptureSink sink)
+    {
+        lock (this._captureLock)
+        {
+            var current = this._captureSinks;
+            if (current is null)
+            {
+                return;
+            }
+
+            var index = Array.IndexOf(current, sink);
+            if (index < 0)
+            {
+                return;
+            }
+
+            if (current.Length == 1)
+            {
+                this.StopCapturing();
+                return;
+            }
+
+            var updated = new IPacketCaptureSink[current.Length - 1];
+            Array.Copy(current, updated, index);
+            Array.Copy(current, index + 1, updated, index, current.Length - index - 1);
+            this._captureSinks = updated;
+        }
+    }
+
     /// <inheritdoc/>
     public void Dispose()
     {
         this.DisconnectAsync().AsTask().WaitAndUnwrapException();
         this.PacketReceived = null;
         this.Disconnected = null;
+        lock (this._captureLock)
+        {
+            this.StopCapturing();
+        }
     }
 
     /// <inheritdoc />
@@ -207,12 +288,66 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
                 .Start();
         try
         {
+            if (this._captureSinks is not null)
+            {
+                if (packet.IsSingleSegment)
+                {
+                    this.RaisePacketCaptured(packet.FirstSpan, false);
+                }
+                else
+                {
+                    this.RaisePacketCaptured(packet.ToArray(), false);
+                }
+            }
+
             await this.PacketReceived.SafeInvokeAsync(packet).ConfigureAwait(false);
             return true;
         }
         finally
         {
             activity?.Stop();
+        }
+    }
+
+    private ExtendedPipeWriter CreateOutputWriter(IDuplexPipe duplexPipe)
+    {
+        return new ExtendedPipeWriter(this._encryptionPipe?.Writer ?? duplexPipe.Output, OutgoingBytesCounter);
+    }
+
+    /// <summary>
+    /// Stops the capturing. Must be called within a lock of the <see cref="_captureLock"/>.
+    /// </summary>
+    private void StopCapturing()
+    {
+        this._captureSinks = null;
+        if (this._outputWriter is { } outputWriter)
+        {
+            outputWriter.PacketCollector = null;
+        }
+    }
+
+    private void OnPacketSent(ReadOnlySpan<byte> packet)
+    {
+        this.RaisePacketCaptured(packet, true);
+    }
+
+    private void RaisePacketCaptured(ReadOnlySpan<byte> packet, bool sent)
+    {
+        if (this._captureSinks is not { } sinks)
+        {
+            return;
+        }
+
+        foreach (var sink in sinks)
+        {
+            try
+            {
+                sink.PacketCaptured(packet, sent);
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogWarning(ex, "Error in a packet capture sink of connection {connectionId}.", this.Id);
+            }
         }
     }
 }
