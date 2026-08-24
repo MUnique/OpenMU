@@ -230,7 +230,7 @@ public sealed class BotManager
         const int minPartySize = 2;
         const int maxPartySize = 5;
         const int maxLevelGap = 12;
-        const int partiedSharePercent = 60;
+        const int partiedSharePercent = 80;
 
         // Matched by the reset-aware effective level (see BotResetHandler.GetEffectiveLevel), so on a
         // reset server a freshly reset veteran groups with its peers instead of with real newbies.

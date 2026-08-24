@@ -320,6 +320,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("CastleSiegePlugIn_Name", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Delivers queued Castle Siege participant rewards when a character enters the game..
+        /// </summary>
+        public static string CastleSiegePendingRewardPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegePendingRewardPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Pending Reward Delivery.
+        /// </summary>
+        public static string CastleSiegePendingRewardPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegePendingRewardPlugIn_Name", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Handles the chain lightning skill of the summoner class. Additionally to the attacked target, it will hit up to two additional targets..

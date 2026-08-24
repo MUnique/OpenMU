@@ -73,6 +73,20 @@ public class GuildServer : IGuildServer
     }
 
     /// <inheritdoc />
+    public async ValueTask<uint> GetGuildIdAsync(Guid guildId)
+    {
+        try
+        {
+            return await this._daprClient.InvokeMethodAsync<Guid, uint>(this._targetAppId, nameof(this.GetGuildIdAsync), guildId).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Unexpected error when retrieving a runtime guild identifier.");
+            throw;
+        }
+    }
+
+    /// <inheritdoc />
     public async ValueTask<Guid?> GetPersistentAllianceMasterGuildIdAsync(uint guildId)
     {
         try
@@ -196,11 +210,15 @@ public class GuildServer : IGuildServer
     }
 
     /// <inheritdoc />
-    public async ValueTask IncreaseGuildScoreAsync(uint guildId)
+    public async ValueTask IncreaseGuildScoreAsync(uint guildId, int amount)
     {
         try
         {
-            await this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.IncreaseGuildScoreAsync), guildId).ConfigureAwait(false);
+            await this._daprClient.InvokeMethodAsync(
+                    this._targetAppId,
+                    nameof(this.IncreaseGuildScoreAsync),
+                    new GuildScoreIncreaseArguments(guildId, amount))
+                .ConfigureAwait(false);
         }
         catch (Exception ex)
         {

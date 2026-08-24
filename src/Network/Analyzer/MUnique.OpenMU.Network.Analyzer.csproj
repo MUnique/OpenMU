@@ -1,17 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net10.0-windows</TargetFramework>
-    <UseWindowsForms>true</UseWindowsForms>
+    <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <WarningsAsErrors>nullable;CS4014;VSTHRD110;VSTHRD100</WarningsAsErrors>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RootNamespace>MUnique.OpenMU.Network.Analyzer</RootNamespace>
     <AssemblyName>MUnique.OpenMU.Network.Analyzer</AssemblyName>
-    <StartupObject>MUnique.OpenMU.Network.Analyzer.Program</StartupObject>
-    <ApplicationIcon>app.ico</ApplicationIcon>
-    <EnableWindowsTargeting>true</EnableWindowsTargeting>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>bin\Debug\</OutputPath>
@@ -22,6 +17,8 @@
     <DocumentationFile>bin\Release\MUnique.OpenMU.Network.Analyzer.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <!-- The packet definitions are read by the PacketAnalyzer at runtime, so they are
+         copied to the output of this project and of every project referencing it. -->
     <Content Include="..\Packets\ClientToServer\ClientToServerPackets.xml" Link="ClientToServerPackets.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -33,20 +30,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="DG.AdvancedDataGridView" />
-    <PackageReference Include="System.Linq.Dynamic.Core" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\MUnique.OpenMU.Network.csproj" />
     <ProjectReference Include="..\Packets\MUnique.OpenMU.Network.Packets.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Update="MainForm.cs" />
-    <Compile Update="PacketSenderForm.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="Readme.md">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 </Project>

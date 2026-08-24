@@ -134,6 +134,16 @@ public class MagicEffectsList : AsyncDisposable
         return this.ActiveEffects.Values.FirstOrDefault(e => e.Definition.SubType == subType);
     }
 
+    /// <summary>
+    /// Gets a snapshot of the active effects.
+    /// </summary>
+    /// <returns>The active effects at the time the snapshot was taken.</returns>
+    public async ValueTask<IReadOnlyList<MagicEffect>> GetActiveEffectsSnapshotAsync()
+    {
+        using var l = await this._addLock.LockAsync();
+        return this.ActiveEffects.Values.ToList();
+    }
+
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore()
     {

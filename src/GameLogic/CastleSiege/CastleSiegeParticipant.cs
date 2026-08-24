@@ -25,7 +25,17 @@ public class CastleSiegeParticipant
     public uint GuildId { get; set; }
 
     /// <summary>
-    /// Gets or sets the number of seconds for which the character participated.
+    /// Gets or sets the accumulated participation time.
     /// </summary>
-    public int Seconds { get; set; }
+    public TimeSpan ParticipationTime { get; set; }
+
+    /// <summary>
+    /// Gets or sets the UTC time of the latest participation update.
+    /// </summary>
+    internal DateTime LastUpdateUtc { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the current participation interval is active.
+    /// </summary>
+    internal bool IsTracking { get; set; }
 }

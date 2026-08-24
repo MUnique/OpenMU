@@ -57,6 +57,17 @@ public class GuildServerController : ControllerBase
     }
 
     /// <summary>
+    /// Gets the runtime identifier of a persistent guild, loading the guild when necessary.
+    /// </summary>
+    /// <param name="guildId">The persistent guild identifier.</param>
+    /// <returns>The runtime guild identifier, or <c>0</c> if the guild was not found.</returns>
+    [HttpPost(nameof(IGuildServer.GetGuildIdAsync))]
+    public ValueTask<uint> GetGuildIdAsync([FromBody] Guid guildId)
+    {
+        return this._guildServer.GetGuildIdAsync(guildId);
+    }
+
+    /// <summary>
     /// Gets the persistent identifier of a guild by its runtime identifier.
     /// </summary>
     /// <param name="guildId">The runtime guild identifier.</param>
@@ -174,12 +185,12 @@ public class GuildServerController : ControllerBase
     }
 
     /// <summary>
-    /// Increases the guild score by one.
+    /// Increases the guild score by the specified amount.
     /// </summary>
-    /// <param name="guildId">The identifier of the guild.</param>
+    /// <param name="scoreIncrease">The guild identifier and score amount.</param>
     [HttpPost(nameof(IGuildServer.IncreaseGuildScoreAsync))]
-    public ValueTask IncreaseGuildScoreAsync([FromBody] uint guildId)
+    public ValueTask IncreaseGuildScoreAsync([FromBody] GuildScoreIncreaseArguments scoreIncrease)
     {
-        return this._guildServer.IncreaseGuildScoreAsync(guildId);
+        return this._guildServer.IncreaseGuildScoreAsync(scoreIncrease.GuildId, scoreIncrease.Amount);
     }
 }

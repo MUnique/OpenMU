@@ -27,6 +27,7 @@ public class GuildServer : IGuildServer
 
     private readonly ILogger<GuildServer> _logger;
     private readonly AsyncLock _createContainerLock = new AsyncLock();
+    private readonly ConcurrentDictionary<Guid, byte> _fullyLoadedAllianceIds = new();
     private readonly IDictionary<uint, GuildContainer> _guildDictionary;
     private readonly IDictionary<Guid, uint> _guildIdMapping;
     private readonly IdGenerator _idGenerator;
@@ -71,6 +72,14 @@ public class GuildServer : IGuildServer
     }
 
     /// <inheritdoc/>
+    public async ValueTask<uint> GetGuildIdAsync(Guid guildId)
+    {
+        return await this.GetOrCreateGuildContainerAsync(guildId).ConfigureAwait(false) is { } guild
+            ? guild.Id
+            : 0;
+    }
+
+    /// <inheritdoc/>
     public ValueTask<Guid?> GetPersistentGuildIdAsync(uint guildId)
     {
         return ValueTask.FromResult(
@@ -103,11 +112,12 @@ public class GuildServer : IGuildServer
     }
 
     /// <inheritdoc />
-    public async ValueTask IncreaseGuildScoreAsync(uint guildId)
+    public async ValueTask IncreaseGuildScoreAsync(uint guildId, int amount)
     {
-        if (this._guildDictionary.TryGetValue(guildId, out var guildContainer))
+        if (amount > 0
+            && this._guildDictionary.TryGetValue(guildId, out var guildContainer))
         {
-            guildContainer.Guild.Score++;
+            guildContainer.Guild.Score += amount;
             await guildContainer.DatabaseContext.SaveChangesAsync().ConfigureAwait(false);
         }
     }
@@ -408,6 +418,7 @@ public class GuildServer : IGuildServer
                 await member.DatabaseContext.SaveChangesAsync().ConfigureAwait(false);
             }
 
+            this._fullyLoadedAllianceIds.TryRemove(masterContainer.Guild.Id, out _);
             await this._changePublisher.AllianceDisbandedAsync(masterGuildId, masterGuildId).ConfigureAwait(false);
             return true;
         }
@@ -437,10 +448,44 @@ public class GuildServer : IGuildServer
             return ImmutableList<AllianceGuildEntry>.Empty;
         }
 
-        return this._guildDictionary.Values
-            .Where(g => GetAllianceMasterGuid(g.Guild) == masterGuid)
-            .Select(g => new AllianceGuildEntry(g.Id, g.Guild.Name ?? string.Empty, g.Guild.Members.Count, g.Guild.Logo))
+        var runtimeGuilds = this._guildDictionary.Values
+            .Where(guild => GetAllianceMasterGuid(guild.Guild) == masterGuid)
+            .Select(guild => new AllianceGuildEntry(
+                guild.Id,
+                guild.Guild.Name ?? string.Empty,
+                guild.Guild.Members.Count,
+                guild.Guild.Logo))
             .ToImmutableList();
+        if (this._fullyLoadedAllianceIds.ContainsKey(masterGuid))
+        {
+            return runtimeGuilds;
+        }
+
+        // Loading one alliance guild normally materializes the complete alliance. The database fallback
+        // covers a cold or incomplete runtime cache without adding a round-trip to the alliance-chat path.
+        using var context = this._persistenceContextProvider.CreateNewGuildContext();
+        var persistentGuilds = await context.GetAlliancesAsync(masterGuid).ConfigureAwait(false);
+        var result = ImmutableList.CreateBuilder<AllianceGuildEntry>();
+        foreach (var persistentGuild in persistentGuilds)
+        {
+            if (await this.GetOrCreateGuildContainerAsync(persistentGuild.Id).ConfigureAwait(false) is not { } runtimeGuild)
+            {
+                continue;
+            }
+
+            result.Add(new(
+                runtimeGuild.Id,
+                persistentGuild.Name ?? string.Empty,
+                persistentGuild.Members.Count,
+                persistentGuild.Logo));
+        }
+
+        if (result.Count == persistentGuilds.Count)
+        {
+            this._fullyLoadedAllianceIds.TryAdd(masterGuid, 0);
+        }
+
+        return result.ToImmutable();
     }
 
     /// <inheritdoc />
@@ -702,7 +747,8 @@ public class GuildServer : IGuildServer
 
         if (guildinfo.AllianceGuild is { } allianceMaster)
         {
-            var allianceGuilds = await context.GetAlliancesAsync(allianceMaster.GetId()).ConfigureAwait(false);
+            var allianceMasterId = allianceMaster.GetId();
+            var allianceGuilds = await context.GetAlliancesAsync(allianceMasterId).ConfigureAwait(false);
             foreach (var allianceGuild in allianceGuilds)
             {
                 if (!this._guildIdMapping.ContainsKey(allianceGuild.GetId()))
@@ -713,6 +759,8 @@ public class GuildServer : IGuildServer
                     await allyGuild.LoadMemberNamesAsync().ConfigureAwait(false);
                 }
             }
+
+            this._fullyLoadedAllianceIds.TryAdd(allianceMasterId, 0);
         }
 
         return guild;

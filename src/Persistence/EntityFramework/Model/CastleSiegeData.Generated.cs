@@ -33,6 +33,15 @@ internal partial class CastleSiegeData : MUnique.OpenMU.DataModel.Entities.Castl
     [NotMapped]
     public override ICollection<MUnique.OpenMU.DataModel.Entities.CastleSiegeNpcState> NpcStates => base.NpcStates ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Entities.CastleSiegeNpcState, CastleSiegeNpcState>(this.RawNpcStates);
 
+    /// <summary>
+    /// Gets the raw collection of <see cref="Guilds" />.
+    /// </summary>
+    public ICollection<CastleSiegeGuild> RawGuilds { get; } = new EntityFramework.List<CastleSiegeGuild>();
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override ICollection<MUnique.OpenMU.DataModel.Entities.CastleSiegeGuild> Guilds => base.Guilds ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Entities.CastleSiegeGuild, CastleSiegeGuild>(this.RawGuilds);
+
 
     /// <inheritdoc/>
     public override bool Equals(object obj)
