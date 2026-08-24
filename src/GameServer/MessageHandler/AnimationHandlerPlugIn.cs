@@ -7,7 +7,6 @@ namespace MUnique.OpenMU.GameServer.MessageHandler;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
-using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Network.Packets.ClientToServer;
 using MUnique.OpenMU.PlugIns;
@@ -47,11 +46,6 @@ internal class AnimationHandlerPlugIn : IPacketHandlerPlugIn
             0x82 => CharacterPose.Hanging,
             _ => default,
         };
-
-        if (player.Pose > CharacterPose.Standing)
-        {
-            player.Attributes?.SetStatAttribute(Stats.IsResting, 1.0f);
-        }
 
         await player.ForEachWorldObserverAsync<IShowAnimationPlugIn>(p => p.ShowAnimationAsync(player, animation, null, rotation), false).ConfigureAwait(false);
     }

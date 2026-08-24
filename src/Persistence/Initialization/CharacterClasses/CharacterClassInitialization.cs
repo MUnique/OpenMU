@@ -137,14 +137,26 @@ internal partial class CharacterClassInitialization : InitializerBase
 
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.DefenseDecrement, -1, Stats.InnovationDefDecrement));
 
-        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.HealthRecoveryMultiplier, 0.03f, Stats.IsResting));
-        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.ManaRecoveryMultiplier, 0.03f, Stats.IsResting));
+        // The health and mana recovery rise the longer a character rests, until Stats.RestingRecoveryBonus reaches its maximum value.
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.RestingRecoveryBonus, 0.003f, Stats.RestingDuration));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.HealthRecoveryMultiplier, 1, Stats.RestingRecoveryBonus));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.ManaRecoveryMultiplier, 1, Stats.RestingRecoveryBonus));
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.AbilityRecoveryAbsolute, 3, Stats.IsInSafezone));
+
+        // The shield recovery is only active at the safezone, except the character has the attribute which enables it everywhere.
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.ShieldRecoveryActive, Stats.ShieldRecoveryEverywhere, Stats.IsInSafezone, InputOperator.Maximum));
 
         if (this.UseClassicPvp)
         {
             attributeRelationships.Add(this.CreateAttributeRelationship(Stats.DefenseRatePvp, 1, Stats.DefenseRatePvm));
             attributeRelationships.Add(this.CreateAttributeRelationship(Stats.AttackRatePvp, 1, Stats.AttackRatePvm));
+        }
+        else
+        {
+            // The longer the shield recovers without interruption, the higher its recovery rate gets.
+            // With the default values, the rate rises linearly from its base value up to the triple of it after 25 seconds.
+            attributeRelationships.Add(this.CreateAttributeRelationship(Stats.ShieldRecoveryRampBonus, 2f / 25f, Stats.ShieldRecoveryDuration));
+            attributeRelationships.Add(this.CreateAttributeRelationship(Stats.ShieldRecoveryMultiplier, 1, Stats.ShieldRecoveryRampBonus, InputOperator.Add, AggregateType.Multiplicate));
         }
 
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.MaximumGuildSize, 0.1f, Stats.Level));

@@ -1176,6 +1176,35 @@ public class Stats
     public static AttributeDefinition ShieldRecoveryEverywhere { get; } = new(new Guid("3D0A78FF-CCD4-442E-8B4E-64E5082ABD78"), "Is Shield Recovery Active Everwhere", "By default, shield recovery is limited to the safezone only. With this attribute (value >= 1), recovery works everywhere on a map.");
 
     /// <summary>
+    /// Gets the flag attribute which defines if the shield is currently recovering.
+    /// It's usually the maximum of <see cref="IsInSafezone"/> and <see cref="ShieldRecoveryEverywhere"/>,
+    /// and is used as <see cref="Regeneration.EnabledAttribute"/> of the shield regeneration.
+    /// </summary>
+    public static AttributeDefinition ShieldRecoveryActive { get; } = new(new Guid("21DECFAF-303B-4302-BBAE-651EFE37C5B3"), "Is Shield Recovery Active", "Flag which defines if the shield is currently recovering. By default, it's active at the safezone or with the shield recovery everywhere attribute.")
+    {
+        MaximumValue = 1,
+    };
+
+    /// <summary>
+    /// Gets the attribute which holds the duration in seconds of the currently uninterrupted shield recovery.
+    /// It's increased by the plugin which updates the recovery durations, and reset when the recovery is interrupted,
+    /// e.g. when the character got hit or left the safezone.
+    /// </summary>
+    public static AttributeDefinition ShieldRecoveryDuration { get; } = new(new Guid("317E42F0-7FF4-42AA-9D00-AFFAE2FDF020"), "Shield Recovery Duration (seconds)", "The duration in seconds of the currently uninterrupted shield recovery. The longer the shield recovers, the higher the recovery rate gets.")
+    {
+        MaximumValue = 60,
+    };
+
+    /// <summary>
+    /// Gets the attribute which holds the bonus which is added to the shield recovery rate,
+    /// depending on the <see cref="ShieldRecoveryDuration"/>. Its maximum value defines how high the rate can ramp up.
+    /// </summary>
+    public static AttributeDefinition ShieldRecoveryRampBonus { get; } = new(new Guid("1086C276-7F32-471B-B607-1661359D233C"), "Shield Recovery Ramp Bonus", "Relative bonus which is multiplied to the shield recovery rate, based on the shield recovery duration. A value of 2 means, that the recovery rate is tripled.")
+    {
+        MaximumValue = 2,
+    };
+
+    /// <summary>
     /// Gets the ability usage reduction attribute definition. Value ranges from 0 (no reduction) to 1 (full reduction).
     /// </summary>
     public static AttributeDefinition AbilityUsageReduction { get; } = new(new Guid("5A712BEF-EA3C-404A-90DB-0FC37CDC65D4"), "Ability Usage Reduction", "Factor (0~1) which describes how much of required ability of a skill is not consumed.");
@@ -1443,6 +1472,27 @@ public class Stats
     /// Gets the <see cref="IsResting"/> attribute which defines if the character is sitting, leaning or hanging.
     /// </summary>
     public static AttributeDefinition IsResting { get; } = new(new Guid("7A4E2D9F-B1C3-48F5-9D2E-1A6F8C3E5B7D"), "Flag, if the character is resting (sitting, leaning or hanging)", "Characters resting recover additional health and mana.")
+    {
+        MaximumValue = 1,
+    };
+
+    /// <summary>
+    /// Gets the attribute which holds the duration in seconds since the character started to rest.
+    /// It's increased by the plugin which updates the recovery durations, and reset when the character stops resting.
+    /// </summary>
+    public static AttributeDefinition RestingDuration { get; } = new(new Guid("531B06A9-9CA2-4C28-98D8-BA3BE580772B"), "Resting Duration (seconds)", "The duration in seconds since the character started to rest. The longer it rests, the higher its health and mana recovery gets.")
+    {
+        MaximumValue = 60,
+    };
+
+    /// <summary>
+    /// Gets the attribute which holds the bonus which is added to the health and mana recovery multipliers,
+    /// depending on the <see cref="RestingDuration"/>. Its maximum value defines how high the bonus can ramp up.
+    /// </summary>
+    public static AttributeDefinition RestingRecoveryBonus { get; } = new(new Guid("4832723D-D67F-48D8-B4EE-EFCFAE8708A5"), "Resting Recovery Bonus", "Bonus which is added to the health and mana recovery multipliers, based on the resting duration.")
+    {
+        MaximumValue = 0.03f,
+    };
 
     /// <summary>
     /// Gets the <see cref="IsUnderwater"/> attribute which defines if the character is located on an underwater game map.
@@ -1593,13 +1643,26 @@ public class Stats
         }
     }
 
-    private static Regeneration ManaRegeneration { get; } = new(ManaRecoveryMultiplier, MaximumMana, CurrentMana, ManaRecoveryAbsolute);
+    private static Regeneration ManaRegeneration { get; } = new(ManaRecoveryMultiplier, MaximumMana, CurrentMana, ManaRecoveryAbsolute)
+    {
+        Interval = TimeSpan.FromSeconds(3),
+    };
 
-    private static Regeneration HealthRegeneration { get; } = new(HealthRecoveryMultiplier, MaximumHealth, CurrentHealth, HealthRecoveryAbsolute);
+    private static Regeneration HealthRegeneration { get; } = new(HealthRecoveryMultiplier, MaximumHealth, CurrentHealth, HealthRecoveryAbsolute)
+    {
+        Interval = TimeSpan.FromSeconds(7),
+    };
 
-    private static Regeneration AbilityRegeneration { get; } = new(AbilityRecoveryMultiplier, MaximumAbility, CurrentAbility, AbilityRecoveryAbsolute);
+    private static Regeneration AbilityRegeneration { get; } = new(AbilityRecoveryMultiplier, MaximumAbility, CurrentAbility, AbilityRecoveryAbsolute)
+    {
+        Interval = TimeSpan.FromSeconds(3),
+    };
 
-    private static Regeneration ShieldRegeneration { get; } = new(ShieldRecoveryMultiplier, MaximumShield, CurrentShield, ShieldRecoveryAbsolute);
+    private static Regeneration ShieldRegeneration { get; } = new(ShieldRecoveryMultiplier, MaximumShield, CurrentShield, ShieldRecoveryAbsolute)
+    {
+        Interval = TimeSpan.FromSeconds(1),
+        EnabledAttribute = ShieldRecoveryActive,
+    };
 
     private static Regeneration ManaRegenerationAfterMonsterKill { get; } = new(ManaAfterMonsterKillMultiplier, MaximumMana, CurrentMana, ManaAfterMonsterKillAbsolute);
 
@@ -1652,5 +1715,19 @@ public class Stats
         /// Gets the current attribute.
         /// </summary>
         public AttributeDefinition CurrentAttribute { get; }
+
+        /// <summary>
+        /// Gets the interval in which the full regeneration value is applied.
+        /// The regeneration itself runs in the <see cref="MUnique.OpenMU.DataModel.Configuration.GameConfiguration.RecoveryInterval"/>,
+        /// but the applied value is scaled by the elapsed time. That way, the effective recovery rate of each
+        /// regeneration stays the same, regardless of the configured recovery interval.
+        /// </summary>
+        public TimeSpan Interval { get; init; } = TimeSpan.FromSeconds(3);
+
+        /// <summary>
+        /// Gets the attribute which needs to have a value greater than or equal to 1, so that this regeneration is applied.
+        /// If it's <see langword="null"/>, the regeneration is always applied.
+        /// </summary>
+        public AttributeDefinition? EnabledAttribute { get; init; }
     }
 }
