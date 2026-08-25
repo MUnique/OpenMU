@@ -130,6 +130,82 @@ Each user has one role. They build up on each other:
 Give each administrator their own user, so you can remove one without changing
 everybody else's password.
 
+## API keys for external applications
+
+The server has a small public API under `/api` — the server status, the number
+of online players, whether an account is online, and a global message. A game
+launcher, a status page or a website needs it, and none of them can go through
+a login form with a second factor.
+
+They authenticate with an API key instead. Send it in the `X-Api-Key` header:
+
+```http
+GET /api/status HTTP/1.1
+X-Api-Key: <the key>
+```
+
+`Authorization: Bearer <the key>` works as well, for clients which only speak
+that.
+
+### Configuring the keys
+
+Give every application its own key, so you can revoke one of them without
+touching the others:
+
+```json
+{
+  "AdminPanel": {
+    "Api": {
+      "Keys": [
+        { "Name": "launcher", "Key": "<a long random key>" },
+        { "Name": "website", "Key": "<another long random key>", "Roles": "Operator" }
+      ]
+    }
+  }
+}
+```
+
+For a single key, the environment variables work too, like they do for the
+bootstrap user:
+
+```bash
+OPENMU_API_KEY=<a long random key>
+# optional, defaults to Viewer:
+OPENMU_API_KEY_ROLES=Operator
+```
+
+Generate a key with something which is actually random, e.g.
+`openssl rand -base64 24`. Keys shorter than 32 characters are refused and
+logged, because a key travels with every request and is only as good as its
+entropy.
+
+### What a key may do
+
+A key has the same [roles](#roles) as a user, and defaults to **Viewer**:
+
+| Endpoint | Needs |
+|---|---|
+| `GET /api/status` | Viewer |
+| `GET /api/is-online/{account}` | Viewer |
+| `GET /api/send/{server}?msg=` | Operator |
+
+So a status page gets a Viewer key and can only read, while an application which
+announces something in the game needs an Operator key.
+
+A signed in admin panel user can use the API as well, with the same roles — this
+is handy while trying things out in the browser.
+
+Like the panel itself, the API is open as long as [no user exists at all](#the-first-user),
+so configure a key together with the bootstrap user rather than after the first
+start.
+
+:::warning[The key is a password]
+It is sent in plain text with every request, so use HTTPS, and keep it out of
+client side code — a key in a launcher which ships to players is a key your
+players have. Requests without a valid key get `401`, and requests whose key
+lacks the role get `403`.
+:::
+
 ## Keeping the sessions alive across restarts
 
 The sessions and the stored authenticator secrets are protected with a key ring

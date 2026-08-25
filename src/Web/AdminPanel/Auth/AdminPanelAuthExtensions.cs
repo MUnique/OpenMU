@@ -39,6 +39,16 @@ public static class AdminPanelAuthExtensions
     public const string BootstrapAuthenticatorKeyVariableName = "OPENMU_ADMIN_TOTP_SECRET";
 
     /// <summary>
+    /// The environment variable which defines an API key for the public API.
+    /// </summary>
+    public const string ApiKeyVariableName = "OPENMU_API_KEY";
+
+    /// <summary>
+    /// The environment variable which defines the roles of the <see cref="ApiKeyVariableName"/>.
+    /// </summary>
+    public const string ApiKeyRolesVariableName = "OPENMU_API_KEY_ROLES";
+
+    /// <summary>
     /// Adds the authentication of the admin panel to the service collection.
     /// </summary>
     /// <param name="services">The service collection.</param>
@@ -57,6 +67,12 @@ public static class AdminPanelAuthExtensions
             options.LockoutDuration = authOptions.LockoutDuration;
             options.BootstrapUser = authOptions.BootstrapUser;
         });
+
+        var apiKeyOptions = new ApiKeyOptions();
+        configuration.GetSection(ApiKeyOptions.SectionName).Bind(apiKeyOptions);
+        ApplyApiKeyEnvironmentVariable(apiKeyOptions);
+        services.Configure<ApiKeyOptions>(options => options.Keys = apiKeyOptions.Keys);
+        services.AddSingleton<ApiKeyRegistry>();
 
         // The key ring protects the authentication cookies and the authenticator keys. It has to be
         // persisted, otherwise a restart invalidates all sessions and makes all stored authenticator
@@ -108,7 +124,15 @@ public static class AdminPanelAuthExtensions
                 options.LoginPath = AdminAuthenticationDefaults.LoginPath;
                 options.LogoutPath = AdminAuthenticationDefaults.SignOutEndpointPath;
                 options.AccessDeniedPath = AdminAuthenticationDefaults.AccessDeniedPath;
-            });
+
+                // An API client can't do anything with the login page, so it gets a status code
+                // instead of a redirect to it.
+                options.Events.OnRedirectToLogin = context => RespondWithStatusCodeOnApiPath(context, StatusCodes.Status401Unauthorized);
+                options.Events.OnRedirectToAccessDenied = context => RespondWithStatusCodeOnApiPath(context, StatusCodes.Status403Forbidden);
+            })
+            .AddScheme<AuthenticationSchemeOptions, ApiKeyAuthenticationHandler>(
+                ApiKeyAuthenticationDefaults.AuthenticationScheme,
+                configureOptions: null);
 
         services.AddSingleton<IAuthorizationHandler, AdminAccessRequirementHandler>();
         services.AddAuthorizationBuilder()
@@ -167,6 +191,34 @@ public static class AdminPanelAuthExtensions
             }
 
             await next(context).ConfigureAwait(false);
+        });
+    }
+
+    private static Task RespondWithStatusCodeOnApiPath(RedirectContext<CookieAuthenticationOptions> context, int statusCode)
+    {
+        if (context.Request.Path.StartsWithSegments(ApiKeyAuthenticationDefaults.ApiPathPrefix, StringComparison.OrdinalIgnoreCase))
+        {
+            context.Response.StatusCode = statusCode;
+            return Task.CompletedTask;
+        }
+
+        context.Response.Redirect(context.RedirectUri);
+        return Task.CompletedTask;
+    }
+
+    private static void ApplyApiKeyEnvironmentVariable(ApiKeyOptions options)
+    {
+        var key = Environment.GetEnvironmentVariable(ApiKeyVariableName);
+        if (string.IsNullOrWhiteSpace(key))
+        {
+            return;
+        }
+
+        options.Keys.Add(new ApiKeyEntry
+        {
+            Name = ApiKeyVariableName,
+            Key = key,
+            Roles = Environment.GetEnvironmentVariable(ApiKeyRolesVariableName),
         });
     }
 
