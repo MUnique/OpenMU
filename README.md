@@ -34,98 +34,43 @@ information about this development.
 ## Current project state
 
 This project is currently under development without any release.
-You can try the current state by using the available docker image, also
-mentioned in the [quick start guide](QuickStart.md).
+You can try the current state by using the available docker image, see
+[Run with Docker](docs-website/docs/getting-started/docker.md).
+
+## Documentation
+
+The documentation lives in the [docs-website](docs-website) folder and is built
+as a website with [Docusaurus](https://docusaurus.io/). The links below point to
+its sources, so they work on GitHub as well.
+
+| | |
+|---|---|
+| [Getting started](docs-website/docs/getting-started/requirements.md) | Requirements, ports, running with Docker or from source, connecting a game client, test accounts |
+| [Deployment](docs-website/docs/deployment/overview.md) | The deployment variants, HTTPS, start parameters and environment variables |
+| [Admin panel](docs-website/docs/admin-panel/overview.md) | One page per screen of the server's user interface, plus task-oriented how-tos |
+| [Server features](docs-website/docs/server-features/bots.md) | Features with their own configuration, e.g. the server-side AI bots |
+| [Development](docs-website/docs/development/architecture.md) | Architecture, solution structure, the plugin system, contributing |
+| [Reference](docs-website/docs/reference/ports.md) | Ports and the generated packet documentation |
+
+The code-bound technical documentation stays next to the code: see [docs](docs)
+for the packet descriptions and the game mechanics, and the `Readme.md` of the
+individual projects under [src](src).
+
+To run the website locally:
+
+```bash
+cd docs-website
+npm install
+npm start
+```
 
 ## Licensing
 
 This project is released under the MIT license (see LICENSE file).
 
-## Used technologies
-
-The project is mainly written in C# and targets .NET 10.0.
-
-The servers admin panel is hosted on an embedded ASP.NET Core webserver (Kestrel)
-and implemented as Blazor Server App.
-
-At the moment the persistence layer uses the [Entity Framework Core](https://github.com/aspnet/EntityFrameworkCore)
-and [PostgreSQL](https://www.postgresql.org) as database. Additionally, it's
-also possible to start it in a non-persistent in-memory mode.
-
-The project is prepared to be hosted in a single process or distributed in multiple processes.
-For the communication between the processes, we use [Dapr](https://dapr.io/).
-
-## Deployment
-
-We provide Docker images and docker-compose files for easy deployment.
-Please take a look at the deploy-folder of this project.
-
 ## Contributions
 
-Contributions are welcome if they meet the following criteria:
-
-* Language is english.
-
-* Code should be StyleCop compliant - this project uses the [StyleCop.Analyzers](https://www.nuget.org/packages/StyleCop.Analyzers/)
-  for VS2022 so you should see issues directly as warnings.
-
-* Coding style (naming, etc.) and quality should fit to the current state.
-
-* No code copied/converted from the well-known decompiled source of the
-    original server.
-
-If you want to contribute, please create a new issue for the feature or bug (if
-the issue doesn't exist yet) so we can see who is working on something and can
-discuss possible solutions. If it's a small thing, you can also just send a
-pull request without adding an issue.
-
-Apart of that, contributions from non-developers are welcome as well. You can
-test the server, submit issues or suggestions, packet descriptions or
-documentations about the concepts and mechanics of the game itself. Please use
-markdown files/syntax for this purpose.
-
-If you have questions about that, don't hesitate to ask in our [discord channel](https://discord.gg/2u5Agkd)
-or by submitting an issue.
-
-## How to contribute code
-
-If you want to contribute code, please do the following steps:
-
-1. fork this project from the original MUnique OpenMU Project.
-2. create a feature branch from the master branch
-3. commit your changes to your feature branch
-4. please test your changes, don't send AI generated code without testing it yourself
-5. submit a pull request to the original master branch
-6. wait for the code review and merge :)
-
-## How to use
-
-Please have a look at the [quick start guide](QuickStart.md).
-
-## Gameplay differences to the original server
-
-This project doesn't have the goal to copy the original MU Online server
-behavior to 100 %. This is not entirely possible, because the original server
-is written in another programming language and has a completely different
-architecture.
-With some points we make our life easier in this project, with other points we
-try to improve the gameplay.
-
-### Calculations
-
-The calculations of attribute values (like character damage decrement etc.) are
-done with 32 bit float numbers and without rounding off, like the original
-server does at some places.
-E.g. distributed stat points always have effect, while in the original server
-effects might get rounded down. For example, when 4 points of strength gives 1
-base damage, the original server doesn't calculate a fraction of 1 damage for
-3 points, while OpenMU calculates 0.75 damage. This damage
-has then an effect in further calculations.
-
-### Countdown when changing character or sub-server
-
-The original server uses a five second countdown when a player wants to change
-his character or the sub-server. Maybe this was done for some performance
-reasons, as the original server would then save the character/account data.
-We think that's really annoying and see no real value in that, so we don't use
-a countdown.
+Contributions are welcome — from developers and non-developers alike. Please
+read [CONTRIBUTING.md](CONTRIBUTING.md) before you start, and don't hesitate to
+ask in our [discord channel](https://discord.gg/2u5Agkd) or by submitting an
+issue.
