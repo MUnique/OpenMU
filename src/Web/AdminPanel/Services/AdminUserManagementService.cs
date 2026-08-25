@@ -80,7 +80,7 @@ public class AdminUserManagementService
         var user = new AdminUser
         {
             LoginName = input.LoginName,
-            Roles = input.Role,
+            Roles = input.Role.ToString(),
         };
 
         var identityResult = await this._userManager.CreateAsync(user, input.Password).ConfigureAwait(false);
@@ -224,7 +224,7 @@ public class AdminUserManagementService
 
         [Display(ResourceType = typeof(Resources), Name = nameof(Resources.Role))]
         [Required]
-        public string Role { get; set; } = AdminRoles.Administrator;
+        public AdminRole Role { get; set; } = AdminRole.Administrator;
     }
 
     /// <summary>

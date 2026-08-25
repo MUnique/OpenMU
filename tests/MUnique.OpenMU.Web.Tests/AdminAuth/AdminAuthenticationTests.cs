@@ -291,6 +291,19 @@ public class AdminAuthenticationTests
     }
 
     /// <summary>
+    /// Tests that the role names and the role enum stay in sync, since the roles are stored
+    /// and compared as strings, but selected as an enum in the user interface.
+    /// </summary>
+    [Test]
+    public void RoleNamesMatchTheRoleEnum()
+    {
+        Assert.That(AdminRoles.All, Is.EqualTo(Enum.GetNames<AdminRole>()).AsCollection);
+        Assert.That(AdminRoles.Viewer, Is.EqualTo(AdminRole.Viewer.ToString()));
+        Assert.That(AdminRoles.Operator, Is.EqualTo(AdminRole.Operator.ToString()));
+        Assert.That(AdminRoles.Administrator, Is.EqualTo(AdminRole.Administrator.ToString()));
+    }
+
+    /// <summary>
     /// Tests that the claims of an administrator contain the implied roles.
     /// </summary>
     [Test]

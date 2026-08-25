@@ -5,31 +5,31 @@
 namespace MUnique.OpenMU.Persistence.AdminAuth;
 
 /// <summary>
-/// The roles which can be assigned to an <see cref="AdminUser"/>.
+/// The names of the <see cref="AdminRole"/>s, as they are stored and used in the claims.
 /// </summary>
 public static class AdminRoles
 {
     /// <summary>
     /// The role which is allowed to see the state of the servers and the game data, but can't change anything.
     /// </summary>
-    public const string Viewer = "Viewer";
+    public const string Viewer = nameof(AdminRole.Viewer);
 
     /// <summary>
     /// The role which is additionally allowed to operate the servers, e.g. start and stop them,
     /// disconnect players and edit accounts.
     /// </summary>
-    public const string Operator = "Operator";
+    public const string Operator = nameof(AdminRole.Operator);
 
     /// <summary>
     /// The role which is additionally allowed to change the game configuration, install updates,
     /// set the database up and manage the admin panel users.
     /// </summary>
-    public const string Administrator = "Administrator";
+    public const string Administrator = nameof(AdminRole.Administrator);
 
     /// <summary>
     /// Gets all defined roles, from the least to the most privileged one.
     /// </summary>
-    public static IReadOnlyList<string> All { get; } = new[] { Viewer, Operator, Administrator };
+    public static IReadOnlyList<string> All { get; } = Enum.GetNames<AdminRole>();
 
     /// <summary>
     /// Gets the roles which are implied by the specified role, including the role itself.
@@ -42,15 +42,17 @@ public static class AdminRoles
     /// </remarks>
     public static IEnumerable<string> GetEffectiveRoles(string role)
     {
-        var index = All.ToList().IndexOf(role);
-        if (index < 0)
+        if (!Enum.TryParse<AdminRole>(role, out var parsedRole) || !Enum.IsDefined(parsedRole))
         {
             yield break;
         }
 
-        for (var i = 0; i <= index; i++)
+        foreach (var candidate in Enum.GetValues<AdminRole>())
         {
-            yield return All[i];
+            if (candidate <= parsedRole)
+            {
+                yield return candidate.ToString();
+            }
         }
     }
 }

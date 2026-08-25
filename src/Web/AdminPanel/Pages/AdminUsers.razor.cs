@@ -13,17 +13,51 @@ using MUnique.OpenMU.Web.AdminPanel.Services;
 /// </summary>
 public partial class AdminUsers
 {
+    /// <summary>
+    /// The relative url of this page which directly opens the dialog to create a user.
+    /// </summary>
+    public const string CreateUserUrl = "users?create=true";
+
     private IList<AdminUser> _users = new List<AdminUser>();
     private bool _isLoading = true;
+    private bool _isCreationRequestHandled;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the dialog to create a user should be opened right away.
+    /// </summary>
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "create")]
+    public bool OpenCreationDialog { get; set; }
 
     [Inject]
     private AdminUserManagementService UserManagementService { get; set; } = null!;
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; } = null!;
 
     /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync().ConfigureAwait(true);
         await this.ReloadAsync().ConfigureAwait(true);
+    }
+
+    /// <inheritdoc />
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender).ConfigureAwait(true);
+        if (!firstRender || !this.OpenCreationDialog || this._isCreationRequestHandled)
+        {
+            return;
+        }
+
+        this._isCreationRequestHandled = true;
+
+        // Remove the parameter again, so a reload of the page doesn't open the dialog a second time.
+        this.NavigationManager.NavigateTo(
+            this.NavigationManager.GetUriWithQueryParameter("create", (bool?)null),
+            replace: true);
+        await this.OnCreateNewAsync().ConfigureAwait(true);
     }
 
     private async Task ReloadAsync()

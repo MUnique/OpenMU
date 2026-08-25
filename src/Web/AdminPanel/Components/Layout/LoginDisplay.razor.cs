@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Components.Layout;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using MUnique.OpenMU.Web.AdminPanel.Auth;
+using MUnique.OpenMU.Web.AdminPanel.Pages;
 
 /// <summary>
 /// Shows the currently signed in user and allows to sign out.
@@ -53,6 +54,24 @@ public partial class LoginDisplay : IAsyncDisposable
                 .InvokeAsync<IJSObjectReference>("import", AdminAuthenticationDefaults.AuthScriptPath)
                 .ConfigureAwait(true);
         }
+    }
+
+    private void OpenAccountSecurity()
+    {
+        this.NavigationManager.NavigateTo(AdminAuthenticationDefaults.SecurityPath.TrimStart('/'));
+    }
+
+    /// <summary>
+    /// Sends the user to the page where it can create the first user.
+    /// </summary>
+    /// <remarks>
+    /// As long as no user exists, the panel is reachable without a login. There is no own account
+    /// to manage then, so the account security page would be empty - creating a user is what
+    /// actually needs to happen.
+    /// </remarks>
+    private void OpenUserCreation()
+    {
+        this.NavigationManager.NavigateTo(AdminUsers.CreateUserUrl);
     }
 
     private async Task LogoutAsync()

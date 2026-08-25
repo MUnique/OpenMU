@@ -24,6 +24,7 @@ public partial class AccountSecurity : IAsyncDisposable
     private string _confirmationCode = string.Empty;
     private string? _errorMessage;
     private bool _isBusy;
+    private bool _isLoading = true;
     private bool _isTwoFactorRequired;
     private int _remainingRecoveryCodes;
     private IJSObjectReference? _authModule;
@@ -93,12 +94,19 @@ public partial class AccountSecurity : IAsyncDisposable
 
     private async Task LoadUserAsync()
     {
-        this._user = await this.CurrentUserService.GetCurrentUserAsync().ConfigureAwait(true);
-        if (this._user is { IsTwoFactorEnabled: true })
+        try
         {
-            this._remainingRecoveryCodes = await this.SetupService
-                .GetRemainingRecoveryCodeCountAsync(this._user)
-                .ConfigureAwait(true);
+            this._user = await this.CurrentUserService.GetCurrentUserAsync().ConfigureAwait(true);
+            if (this._user is { IsTwoFactorEnabled: true })
+            {
+                this._remainingRecoveryCodes = await this.SetupService
+                    .GetRemainingRecoveryCodeCountAsync(this._user)
+                    .ConfigureAwait(true);
+            }
+        }
+        finally
+        {
+            this._isLoading = false;
         }
     }
 

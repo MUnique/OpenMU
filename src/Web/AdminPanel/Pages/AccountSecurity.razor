@@ -5,9 +5,17 @@
 <Breadcrumb IsFirstFromRoot="true" Caption="@Resources.AccountSecurity" />
 <h1>@Resources.AccountSecurity</h1>
 
-@if (this._user is null)
+@if (this._isLoading)
 {
     <p>@Resources.Loading</p>
+}
+else if (this._user is null)
+{
+    @* Nobody is signed in and no user exists yet - there is no own account to secure. *@
+    <div class="alert alert-warning" style="max-width: 40rem;" role="alert">
+        <p class="mb-2">@Resources.NoAdminUserWarning</p>
+        <a class="btn btn-primary btn-sm" href="@AdminUsers.CreateUserUrl">@Resources.CreateFirstUser</a>
+    </div>
 }
 else
 {
