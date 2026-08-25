@@ -216,6 +216,7 @@ internal partial class {propertyInfo.ReflectedType.Name}
 
 namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
 
+using MUnique.OpenMU.DataModel.Composition;
 using MUnique.OpenMU.Persistence;
 using Mapster;
 
@@ -238,6 +239,11 @@ public static class MapsterConfigurator
 
         Mapster.TypeAdapterConfig.GlobalSettings.Default.PreserveReference(true);
         Mapster.TypeAdapterConfig.GlobalSettings.Default.IgnoreMember((member, side) => member.Name.StartsWith(""Raw""));
+
+        // Transient properties just hold run-time information and are not persisted.
+        // Some of them (e.g. of the SkillEntry) can't be mapped by Mapster at all, because their types are interfaces with events.
+        Mapster.TypeAdapterConfig.GlobalSettings.Default.IgnoreMember(
+            (member, side) => member.GetCustomAttributes(true).OfType<TransientAttribute>().Any());
 
 {configs}
         isConfigured = true;

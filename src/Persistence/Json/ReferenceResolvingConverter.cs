@@ -163,7 +163,7 @@ public class ReferenceResolvingConverter<T> : JsonConverter<T>
 
     private static void ReadProperty(ref Utf8JsonReader reader, JsonSerializerOptions options, T? item, (Type PropertyType, Action<T, object>? Setter, Action<T, object>? Adder) handler)
     {
-        _ = item ?? throw new InvalidOperationException("Item must be set here already. Is $id missing?");
+        var target = item ?? throw new InvalidOperationException("Item must be set here already. Is $id missing?");
 
         if (!reader.Read())
         {
@@ -174,34 +174,69 @@ public class ReferenceResolvingConverter<T> : JsonConverter<T>
         {
             if (JsonSerializer.Deserialize(ref reader, handler.PropertyType, options) is { } value)
             {
-                handler.Setter(item, value);
+                handler.Setter(target, value);
             }
+        }
+        else if (reader.TokenType == JsonTokenType.StartArray)
+        {
+            ReadCollection(ref reader, options, target, handler);
+        }
+        else if (reader.TokenType == JsonTokenType.StartObject)
+        {
+            // When the json was written with a reference handler, collections are wrapped
+            // into an object which holds the "$id" of the collection and its "$values".
+            ReadWrappedCollection(ref reader, options, target, handler);
         }
         else
         {
-            if (reader.TokenType == JsonTokenType.StartArray)
+            reader.Skip();
+        }
+    }
+
+    private static void ReadWrappedCollection(ref Utf8JsonReader reader, JsonSerializerOptions options, T item, (Type PropertyType, Action<T, object>? Setter, Action<T, object>? Adder) handler)
+    {
+        while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
+        {
+            if (reader.TokenType != JsonTokenType.PropertyName)
             {
-                while (true)
-                {
-                    if (!reader.Read())
-                    {
-                        throw new JsonException($"Bad JSON");
-                    }
+                reader.Skip();
+                continue;
+            }
 
-                    if (reader.TokenType == JsonTokenType.EndArray)
-                    {
-                        break;
-                    }
+            var isValues = reader.ValueTextEquals("$values"u8);
+            if (!reader.Read())
+            {
+                throw new JsonException("Bad JSON");
+            }
 
-                    if (JsonSerializer.Deserialize(ref reader, handler.PropertyType, options) is { } collectionItem)
-                    {
-                        handler.Adder!(item, collectionItem);
-                    }
-                }
+            if (isValues && reader.TokenType == JsonTokenType.StartArray)
+            {
+                ReadCollection(ref reader, options, item, handler);
             }
             else
             {
                 reader.Skip();
+            }
+        }
+    }
+
+    private static void ReadCollection(ref Utf8JsonReader reader, JsonSerializerOptions options, T item, (Type PropertyType, Action<T, object>? Setter, Action<T, object>? Adder) handler)
+    {
+        while (true)
+        {
+            if (!reader.Read())
+            {
+                throw new JsonException($"Bad JSON");
+            }
+
+            if (reader.TokenType == JsonTokenType.EndArray)
+            {
+                break;
+            }
+
+            if (JsonSerializer.Deserialize(ref reader, handler.PropertyType, options) is { } collectionItem)
+            {
+                handler.Adder!(item, collectionItem);
             }
         }
     }
