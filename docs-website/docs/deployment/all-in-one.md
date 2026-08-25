@@ -91,10 +91,11 @@ Additionally, take a look at the [admin panel](../admin-panel/overview.md). If
 your containers run on docker at your local machine, you can simply go to
 [http://localhost/](http://localhost/).
 
-:::danger[Change the default password]
-The default user name is `admin` and the password is `openmu`. Change it on the
-[Users page](../admin-panel/users.md) before your server is reachable from the
-internet.
+:::danger[Create a user before you expose the server]
+Until the first admin panel user exists, the panel is reachable without a login.
+Create one on the [Users page](../admin-panel/users.md), or configure a bootstrap
+user with `OPENMU_ADMIN_USER` and `OPENMU_ADMIN_PASSWORD` before the first start
+— see [Signing in](../admin-panel/authentication.md).
 :::
 
 If you want to run another game version, go to the
