@@ -18,6 +18,8 @@ public class ExtendedPipeWriter : PipeWriter
 
     private Memory<byte> _lastBuffer;
 
+    private PipeWriter? _activeCaptureWriter;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ExtendedPipeWriter"/> class.
     /// </summary>
@@ -30,10 +32,15 @@ public class ExtendedPipeWriter : PipeWriter
     }
 
     /// <summary>
-    /// Gets or sets the writer of the packet capture, into which the written data is copied.
-    /// If it's <see langword="null"/>, nothing is captured.
+    /// Gets or sets the writer of the packet capture, into which the written data should be
+    /// copied. If it's <see langword="null"/>, nothing should be captured.
     /// </summary>
-    internal PipeWriter? CaptureWriter { get; set; }
+    /// <remarks>
+    /// It's only applied at a packet boundary, because the capture would start or end in the
+    /// middle of a data packet otherwise. It can be set by any thread; the switch itself
+    /// happens on the thread which writes to this instance.
+    /// </remarks>
+    internal PipeWriter? PendingCaptureWriter { get; set; }
 
     /// <inheritdoc />
     public override void Complete(Exception? exception = null)
@@ -50,18 +57,21 @@ public class ExtendedPipeWriter : PipeWriter
     /// <inheritdoc />
     public override ValueTask<FlushResult> FlushAsync(CancellationToken cancellationToken = default)
     {
-        if (this.CaptureWriter is { } captureWriter)
+        if (this._activeCaptureWriter is { } captureWriter)
         {
             return this.FlushWithCaptureAsync(captureWriter, cancellationToken);
         }
 
+        // After a flush, the next written data starts a new packet, so a requested capture
+        // can start here.
+        this._activeCaptureWriter = this.PendingCaptureWriter;
         return this._target.FlushAsync(cancellationToken);
     }
 
     /// <inheritdoc />
     public override void Advance(int bytes)
     {
-        if (this.CaptureWriter is { } captureWriter && bytes > 0 && this._lastBuffer.Length >= bytes)
+        if (this._activeCaptureWriter is { } captureWriter && bytes > 0 && this._lastBuffer.Length >= bytes)
         {
             // The data has to be copied before it's advanced, because the target may recycle
             // the buffer afterwards. The capturing must never break the connection, so a
@@ -88,6 +98,7 @@ public class ExtendedPipeWriter : PipeWriter
     /// <inheritdoc />
     public override Memory<byte> GetMemory(int sizeHint = 0)
     {
+        this.ApplyPendingCaptureWriterAtPacketBoundary();
         var memory = this._target.GetMemory(sizeHint);
         this._lastBuffer = memory;
         return memory;
@@ -96,7 +107,8 @@ public class ExtendedPipeWriter : PipeWriter
     /// <inheritdoc />
     public override Span<byte> GetSpan(int sizeHint = 0)
     {
-        if (this.CaptureWriter is null)
+        this.ApplyPendingCaptureWriterAtPacketBoundary();
+        if (this._activeCaptureWriter is null)
         {
             // We don't remember the buffer in this case. That way, a capture which gets
             // attached between this call and the next Advance doesn't report stale data.
@@ -113,6 +125,20 @@ public class ExtendedPipeWriter : PipeWriter
         return memorySpan;
     }
 
+    /// <summary>
+    /// Applies a requested change of the capture, when nothing is written to the target yet.
+    /// In that case we're at a packet boundary, so a starting capture doesn't begin in the
+    /// middle of a data packet.
+    /// </summary>
+    private void ApplyPendingCaptureWriterAtPacketBoundary()
+    {
+        if (!ReferenceEquals(this._activeCaptureWriter, this.PendingCaptureWriter)
+            && this._target is { CanGetUnflushedBytes: true, UnflushedBytes: 0 })
+        {
+            this._activeCaptureWriter = this.PendingCaptureWriter;
+        }
+    }
+
     private async ValueTask<FlushResult> FlushWithCaptureAsync(PipeWriter captureWriter, CancellationToken cancellationToken)
     {
         try
@@ -123,6 +149,10 @@ public class ExtendedPipeWriter : PipeWriter
         {
             // The capture has been completed in the meantime.
         }
+
+        // After a flush, the next written data starts a new packet, so a requested change of
+        // the capture can be applied here.
+        this._activeCaptureWriter = this.PendingCaptureWriter;
 
         return await this._target.FlushAsync(cancellationToken).ConfigureAwait(false);
     }

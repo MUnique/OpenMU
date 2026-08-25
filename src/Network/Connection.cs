@@ -44,6 +44,13 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
     private readonly ILogger<Connection> _logger;
     private readonly EndPoint _remoteEndPoint;
 
+    /// <summary>
+    /// Lock for the lifecycle of the <see cref="_outgoingCapture"/>. The sinks themselves are
+    /// lock-free; this one is just held when a capture is started or stopped, which is a rare
+    /// operation and never happens on the path of a data packet.
+    /// </summary>
+    private readonly object _captureLifecycleLock = new();
+
     private IDuplexPipe? _duplexPipe;
     private bool _disconnected;
     private ExtendedPipeWriter? _outputWriter;
@@ -171,6 +178,10 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
     public void RemoveCaptureSink(IPacketCaptureSink sink)
     {
         ImmutableInterlocked.Update(ref this._captureSinks, static (sinks, removed) => sinks.Remove(removed), sink);
+        if (this._captureSinks.IsEmpty)
+        {
+            this.StopCapturing();
+        }
     }
 
     /// <inheritdoc/>
@@ -280,38 +291,42 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
     /// </summary>
     private void StartCapturingOutgoingData()
     {
-        if (this._outgoingCapture is not null || this._disconnected || this._duplexPipe is not { } duplexPipe)
+        lock (this._captureLifecycleLock)
         {
-            return;
-        }
+            if (this._outgoingCapture is not null || this._captureSinks.IsEmpty || this._disconnected
+                || this._duplexPipe is not { } duplexPipe)
+            {
+                return;
+            }
 
-        var capture = new CapturedPacketReader(this.OnPacketSent, this.StopCapturing, this._logger);
-        if (Interlocked.CompareExchange(ref this._outgoingCapture, capture, null) is not null)
-        {
-            // Another thread was faster.
-            capture.Stop();
-            return;
-        }
+            var capture = new CapturedPacketReader(this.OnPacketSent, this.StopCapturing, this._logger);
+            this._outgoingCapture = capture;
 
-        // We don't use the OutputWriter property here, because the connection may already be
-        // disconnected - in that case there is no outgoing traffic to capture anymore.
-        var outputWriter = this.GetOrCreateOutputWriter(duplexPipe);
-        outputWriter.CaptureWriter = capture.Writer;
-        capture.Start();
+            // We don't use the OutputWriter property here, because the connection may already
+            // be disconnected - in that case there is no outgoing traffic to capture anymore.
+            this.GetOrCreateOutputWriter(duplexPipe).PendingCaptureWriter = capture.Writer;
+            capture.Start();
+        }
     }
 
     /// <summary>
-    /// Stops the capturing of the outgoing data packets. The capture of a connection is not
-    /// stopped when the last sink is removed, because the data could then only be captured
-    /// again at a packet boundary, which we can't determine from the outside.
+    /// Stops the capturing of the outgoing data packets, so that nothing is copied anymore
+    /// when nobody is watching. The <see cref="ExtendedPipeWriter"/> applies this at the next
+    /// packet boundary, so a capture never starts or ends in the middle of a data packet.
     /// </summary>
     private void StopCapturing()
     {
-        if (Interlocked.Exchange(ref this._outgoingCapture, null) is { } capture)
+        lock (this._captureLifecycleLock)
         {
+            if (this._outgoingCapture is not { } capture)
+            {
+                return;
+            }
+
+            this._outgoingCapture = null;
             if (this._outputWriter is { } outputWriter)
             {
-                outputWriter.CaptureWriter = null;
+                outputWriter.PendingCaptureWriter = null;
             }
 
             capture.Stop();

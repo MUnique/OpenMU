@@ -202,6 +202,37 @@ public class PacketCaptureTest
     }
 
     /// <summary>
+    /// Tests if the capturing can be started again after it has been stopped, because the
+    /// last sink was removed.
+    /// </summary>
+    /// <returns>The async task.</returns>
+    [Test]
+    public async Task CapturingCanBeRestartedAsync()
+    {
+        var packet = new byte[] { 0xC1, 0x04, 0xF1, 0x00 };
+        using var connection = CreateConnection();
+        var sink = new CapturingSink();
+
+        connection.AddCaptureSink(sink);
+        await connection.Output.WriteAsync(packet).ConfigureAwait(false);
+        await sink.WaitForPacketsAsync(1).ConfigureAwait(false);
+        Assert.That(sink.Snapshot(), Has.Count.EqualTo(1));
+
+        connection.RemoveCaptureSink(sink);
+        await connection.Output.WriteAsync(packet).ConfigureAwait(false);
+        await Task.Delay(50).ConfigureAwait(false);
+        Assert.That(sink.Snapshot(), Has.Count.EqualTo(1), "Nothing should be captured without a sink.");
+
+        var secondSink = new CapturingSink();
+        connection.AddCaptureSink(secondSink);
+        await connection.Output.WriteAsync(packet).ConfigureAwait(false);
+        var captured = await secondSink.WaitForPacketsAsync(1).ConfigureAwait(false);
+
+        Assert.That(captured, Has.Count.EqualTo(1));
+        Assert.That(captured[0].Packet, Is.EqualTo(packet));
+    }
+
+    /// <summary>
     /// Tests if the written data still arrives at the target pipe unchanged, with and without
     /// a registered capture sink.
     /// </summary>
