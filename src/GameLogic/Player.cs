@@ -1061,7 +1061,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             }
 
             var now = DateTime.Now;
-            foreach (var r in Stats.IntervalRegenerationAttributes)
+            foreach (var r in Stats.IntervalRegenerationAttributes.Where(r =>
+                         attributes[r.RegenerationMultiplier] > 0 || attributes[r.AbsoluteAttribute] > 0))
             {
                 if ((r.EnablerAttribute is { } enabler && attributes[enabler] < 1)
                     || (r.HiatusAttribute is { } hiatus && attributes[hiatus] < r.HiatusThreshold))
@@ -1147,7 +1148,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             && observingPlayer.Party == this.Party
             && observingPlayer.Attributes is { } attributes)
         {
-            attributes[Stats.NearbyPartyMemberCount] += 1;
+            attributes[Stats.NearbyPartyMemberCount]++;
         }
     }
 
@@ -1161,7 +1162,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             && observingPlayer.Party == this.Party
             && observingPlayer.Attributes is { } attributes)
         {
-            attributes[Stats.NearbyPartyMemberCount] -= 1;
+            attributes[Stats.NearbyPartyMemberCount]--;
         }
     }
 

@@ -1642,6 +1642,11 @@ public class Stats
     /// <summary>
     /// Gets the shield regeneration.
     /// </summary>
+    /// <remarks>
+    /// Shield recovery is only possible at safe zone, except the character has a specific attribute which has the effect that it's recovered everywhere.
+    /// This attribute is usually provided by level 380 armor with a Guardian Option.
+    /// Also, shield has a penalty (hiatus) period before the recovery starts, after which it increases linearly (see <see cref="ShieldRecoveryRampFactor"/>).
+    /// </remarks>
     public static Regeneration ShieldRegeneration { get; } = new(ShieldRecoveryMultiplier, MaximumShield, CurrentShield, ShieldRecoveryAbsolute)
     {
         Interval = TimeSpan.FromSeconds(1),
