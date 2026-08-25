@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Network;
 
 using System.Buffers;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.IO.Pipelines;
@@ -43,13 +44,13 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
     private readonly ILogger<Connection> _logger;
     private readonly EndPoint _remoteEndPoint;
 
-    private readonly object _captureLock = new();
-
     private IDuplexPipe? _duplexPipe;
     private bool _disconnected;
     private ExtendedPipeWriter? _outputWriter;
 
-    private volatile IPacketCaptureSink[]? _captureSinks;
+    private ImmutableArray<IPacketCaptureSink> _captureSinks = ImmutableArray<IPacketCaptureSink>.Empty;
+
+    private CapturedPacketReader? _outgoingCapture;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Connection" /> class.
@@ -107,7 +108,7 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
     /// Gets the <see cref="ExtendedPipeWriter"/> of the <see cref="Output"/>, which is also
     /// the place where the outgoing data packets are captured.
     /// </summary>
-    private ExtendedPipeWriter OutputWriter => this._outputWriter ??= this.CreateOutputWriter(this._duplexPipe!);
+    private ExtendedPipeWriter OutputWriter => this.GetOrCreateOutputWriter(this._duplexPipe!);
 
     /// <inheritdoc/>
     public override string ToString() => this._remoteEndPoint?.ToString() ?? $"{base.ToString()} {this.GetHashCode()}";
@@ -162,65 +163,14 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
     /// <inheritdoc />
     public void AddCaptureSink(IPacketCaptureSink sink)
     {
-        lock (this._captureLock)
-        {
-            var current = this._captureSinks;
-            if (current is null)
-            {
-                this._captureSinks = new[] { sink };
-            }
-            else
-            {
-                if (Array.IndexOf(current, sink) >= 0)
-                {
-                    return;
-                }
-
-                var updated = new IPacketCaptureSink[current.Length + 1];
-                current.CopyTo(updated, 0);
-                updated[^1] = sink;
-                this._captureSinks = updated;
-            }
-
-            // We don't use the OutputWriter property here, because the connection may already
-            // be disconnected - in that case there is no outgoing traffic to capture anymore.
-            var outputWriter = this._outputWriter
-                               ?? (this._duplexPipe is { } duplexPipe ? this._outputWriter = this.CreateOutputWriter(duplexPipe) : null);
-            if (outputWriter is not null)
-            {
-                outputWriter.PacketCollector ??= new OutgoingPacketCollector(this.OnPacketSent);
-            }
-        }
+        ImmutableInterlocked.Update(ref this._captureSinks, static (sinks, added) => sinks.Contains(added) ? sinks : sinks.Add(added), sink);
+        this.StartCapturingOutgoingData();
     }
 
     /// <inheritdoc />
     public void RemoveCaptureSink(IPacketCaptureSink sink)
     {
-        lock (this._captureLock)
-        {
-            var current = this._captureSinks;
-            if (current is null)
-            {
-                return;
-            }
-
-            var index = Array.IndexOf(current, sink);
-            if (index < 0)
-            {
-                return;
-            }
-
-            if (current.Length == 1)
-            {
-                this.StopCapturing();
-                return;
-            }
-
-            var updated = new IPacketCaptureSink[current.Length - 1];
-            Array.Copy(current, updated, index);
-            Array.Copy(current, index + 1, updated, index, current.Length - index - 1);
-            this._captureSinks = updated;
-        }
+        ImmutableInterlocked.Update(ref this._captureSinks, static (sinks, removed) => sinks.Remove(removed), sink);
     }
 
     /// <inheritdoc/>
@@ -229,10 +179,7 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
         this.DisconnectAsync().AsTask().WaitAndUnwrapException();
         this.PacketReceived = null;
         this.Disconnected = null;
-        lock (this._captureLock)
-        {
-            this.StopCapturing();
-        }
+        this.StopCapturing();
     }
 
     /// <inheritdoc />
@@ -288,7 +235,7 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
                 .Start();
         try
         {
-            if (this._captureSinks is not null)
+            if (!this._captureSinks.IsEmpty)
             {
                 if (packet.IsSingleSegment)
                 {
@@ -309,20 +256,65 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
         }
     }
 
-    private ExtendedPipeWriter CreateOutputWriter(IDuplexPipe duplexPipe)
+    /// <summary>
+    /// Gets the <see cref="ExtendedPipeWriter"/>, or creates it, if it doesn't exist yet.
+    /// It's created atomically, so that the capturing is attached to the same instance which
+    /// is used by the <see cref="Output"/>.
+    /// </summary>
+    /// <param name="duplexPipe">The duplex pipe of the connection.</param>
+    /// <returns>The <see cref="ExtendedPipeWriter"/> of this connection.</returns>
+    private ExtendedPipeWriter GetOrCreateOutputWriter(IDuplexPipe duplexPipe)
     {
-        return new ExtendedPipeWriter(this._encryptionPipe?.Writer ?? duplexPipe.Output, OutgoingBytesCounter);
+        if (this._outputWriter is { } existingWriter)
+        {
+            return existingWriter;
+        }
+
+        var createdWriter = new ExtendedPipeWriter(this._encryptionPipe?.Writer ?? duplexPipe.Output, OutgoingBytesCounter);
+        return Interlocked.CompareExchange(ref this._outputWriter, createdWriter, null) ?? createdWriter;
     }
 
     /// <summary>
-    /// Stops the capturing. Must be called within a lock of the <see cref="_captureLock"/>.
+    /// Starts to capture the outgoing data packets, if it's not running yet. The incoming
+    /// packets don't need that, because they arrive as complete packets anyway.
+    /// </summary>
+    private void StartCapturingOutgoingData()
+    {
+        if (this._outgoingCapture is not null || this._disconnected || this._duplexPipe is not { } duplexPipe)
+        {
+            return;
+        }
+
+        var capture = new CapturedPacketReader(this.OnPacketSent, this.StopCapturing, this._logger);
+        if (Interlocked.CompareExchange(ref this._outgoingCapture, capture, null) is not null)
+        {
+            // Another thread was faster.
+            capture.Stop();
+            return;
+        }
+
+        // We don't use the OutputWriter property here, because the connection may already be
+        // disconnected - in that case there is no outgoing traffic to capture anymore.
+        var outputWriter = this.GetOrCreateOutputWriter(duplexPipe);
+        outputWriter.CaptureWriter = capture.Writer;
+        capture.Start();
+    }
+
+    /// <summary>
+    /// Stops the capturing of the outgoing data packets. The capture of a connection is not
+    /// stopped when the last sink is removed, because the data could then only be captured
+    /// again at a packet boundary, which we can't determine from the outside.
     /// </summary>
     private void StopCapturing()
     {
-        this._captureSinks = null;
-        if (this._outputWriter is { } outputWriter)
+        if (Interlocked.Exchange(ref this._outgoingCapture, null) is { } capture)
         {
-            outputWriter.PacketCollector = null;
+            if (this._outputWriter is { } outputWriter)
+            {
+                outputWriter.CaptureWriter = null;
+            }
+
+            capture.Stop();
         }
     }
 
@@ -333,12 +325,7 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
 
     private void RaisePacketCaptured(ReadOnlySpan<byte> packet, bool sent)
     {
-        if (this._captureSinks is not { } sinks)
-        {
-            return;
-        }
-
-        foreach (var sink in sinks)
+        foreach (var sink in this._captureSinks)
         {
             try
             {

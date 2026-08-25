@@ -30,10 +30,10 @@ public class ExtendedPipeWriter : PipeWriter
     }
 
     /// <summary>
-    /// Gets or sets the collector which gets the written data, to capture the outgoing data
-    /// packets. If it's <see langword="null"/>, nothing is captured.
+    /// Gets or sets the writer of the packet capture, into which the written data is copied.
+    /// If it's <see langword="null"/>, nothing is captured.
     /// </summary>
-    internal OutgoingPacketCollector? PacketCollector { get; set; }
+    internal PipeWriter? CaptureWriter { get; set; }
 
     /// <inheritdoc />
     public override void Complete(Exception? exception = null)
@@ -50,17 +50,31 @@ public class ExtendedPipeWriter : PipeWriter
     /// <inheritdoc />
     public override ValueTask<FlushResult> FlushAsync(CancellationToken cancellationToken = default)
     {
+        if (this.CaptureWriter is { } captureWriter)
+        {
+            return this.FlushWithCaptureAsync(captureWriter, cancellationToken);
+        }
+
         return this._target.FlushAsync(cancellationToken);
     }
 
     /// <inheritdoc />
     public override void Advance(int bytes)
     {
-        if (this.PacketCollector is { } collector && bytes > 0 && this._lastBuffer.Length >= bytes)
+        if (this.CaptureWriter is { } captureWriter && bytes > 0 && this._lastBuffer.Length >= bytes)
         {
-            // The data has to be collected before it's advanced, because the target may
-            // recycle the buffer afterwards.
-            collector.DataWritten(this._lastBuffer.Span[..bytes]);
+            // The data has to be copied before it's advanced, because the target may recycle
+            // the buffer afterwards. The capturing must never break the connection, so a
+            // failing capture is silently ignored here.
+            try
+            {
+                this._lastBuffer.Span[..bytes].CopyTo(captureWriter.GetSpan(bytes));
+                captureWriter.Advance(bytes);
+            }
+            catch (InvalidOperationException)
+            {
+                // The capture has been completed in the meantime.
+            }
         }
 
         // A new buffer has to be requested before writing again, so we forget this one.
@@ -82,9 +96,9 @@ public class ExtendedPipeWriter : PipeWriter
     /// <inheritdoc />
     public override Span<byte> GetSpan(int sizeHint = 0)
     {
-        if (this.PacketCollector is null)
+        if (this.CaptureWriter is null)
         {
-            // We don't remember the buffer in this case. That way, a collector which gets
+            // We don't remember the buffer in this case. That way, a capture which gets
             // attached between this call and the next Advance doesn't report stale data.
             this._lastBuffer = default;
             var span = this._target.GetSpan(sizeHint);
@@ -97,5 +111,19 @@ public class ExtendedPipeWriter : PipeWriter
         var memorySpan = memory.Span;
         memorySpan.Clear();
         return memorySpan;
+    }
+
+    private async ValueTask<FlushResult> FlushWithCaptureAsync(PipeWriter captureWriter, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await captureWriter.FlushAsync(cancellationToken).ConfigureAwait(false);
+        }
+        catch (InvalidOperationException)
+        {
+            // The capture has been completed in the meantime.
+        }
+
+        return await this._target.FlushAsync(cancellationToken).ConfigureAwait(false);
     }
 }
