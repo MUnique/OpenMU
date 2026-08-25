@@ -15,7 +15,8 @@ docker network create proxy
 docker compose -f docker-compose.yml up -d
 ```
 
-The admin panel is then available at http://admin.docker.localhost/ with the
-user `admin` and the password `openmu` —
-[change that](../../docs-website/docs/admin-panel/users.md) before the server is
+The admin panel is then available at http://admin.docker.localhost/. Until the
+first user exists it lets you in without a login, so
+[create one](../../docs-website/docs/admin-panel/users.md) — or set
+`OPENMU_ADMIN_USER` and `OPENMU_ADMIN_PASSWORD` beforehand — before the server is
 reachable from the internet.

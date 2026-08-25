@@ -36,9 +36,11 @@ That's it — the server is available on your local machine through a loopback I
 
 Go to [http://localhost/](http://localhost/).
 
-* The default user name is `admin`, the password is `openmu`.
-* **Change that** before you expose the server to the internet — see
-  [Admin panel users](../admin-panel/users.md).
+* On a fresh installation there is no user yet, so the panel lets you in
+  without a login and says so.
+* **Create your first user** right after the installation, or configure a
+  bootstrap user before the first start — see
+  [Signing in](../admin-panel/authentication.md).
 
 The server is automatically initialized for Season 6, so you can start playing
 right away. If you want another game version, another number of game servers, or

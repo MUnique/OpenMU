@@ -1,4 +1,5 @@
 volumes:
+  adminpanel-keys:
   dbdata:
   prometheus-data:
   minio-data:
@@ -12,7 +13,6 @@ services:
       - "80:80"
     volumes:
       - ./nginx.dev.conf:/etc/nginx/nginx.conf
-      - ./.htpasswd:/etc/nginx/.htpasswd
     depends_on:
       - grafana
       - zipkin
@@ -256,8 +256,14 @@ services:
     environment:
       ASPNETCORE_URLS: http://+:8080
       PATH_BASE: /admin/
+      # Optional bootstrap admin panel user. Without it, the admin panel is reachable
+      # without a login until the first user has been created within the panel itself.
+      OPENMU_ADMIN_USER: ${OPENMU_ADMIN_USER:-}
+      OPENMU_ADMIN_PASSWORD: ${OPENMU_ADMIN_PASSWORD:-}
+      # Optional base32 TOTP secret, if the bootstrap user should require a second factor.
+      OPENMU_ADMIN_TOTP_SECRET: ${OPENMU_ADMIN_TOTP_SECRET:-}
     volumes:
-      - ./.htpasswd:/etc/nginx/.htpasswd
+      - adminpanel-keys:/app/data-protection-keys
 
   adminPanel-dapr:
     image: "daprio/daprd:latest"

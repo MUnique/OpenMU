@@ -28,8 +28,6 @@ services:
       - "traefik.docker.network=proxy"
       - "traefik.http.routers.adm.entrypoints=websecure"
       - "traefik.http.routers.adm.rule=Host(`admin.domain.com`)"
-      - "traefik.http.routers.adm.middlewares=auth"
-      - "traefik.http.middlewares.auth.basicauth.usersfile=.htpasswd"
 
   muonline-website:
     # ...
@@ -107,19 +105,20 @@ docker compose -f docker-compose.prod.yml up -d
 
 ## Admin panel users
 
-:::warning[Restart Traefik after adding a user]
-Avoid editing the `.htpasswd` manually. Instead, add the user in the admin panel
-on the [Users page](../admin-panel/users.md). With the Traefik deployment you
-need to **restart Traefik** after adding a user for it to take effect.
-:::
+The admin panel authenticates its users itself, so there is no basic
+authentication middleware in Traefik anymore — and no restart after a user
+changed. Users are managed on the [Users page](../admin-panel/users.md); the
+login and the optional second factor are described under
+[Signing in](../admin-panel/authentication.md).
 
 ## What's next
 
 The server is automatically started and initialized for Season 6.
 
-Go to the admin panel — locally that is [http://admin.docker.localhost/](http://admin.docker.localhost/). The
-default user name is `admin` and the password is `openmu`; change that before the
-server is reachable from the internet.
+Go to the admin panel — locally that is [http://admin.docker.localhost/](http://admin.docker.localhost/). Until
+the first admin panel user exists, it is reachable without a login; create one
+before the server is reachable from the internet, or configure a bootstrap user
+beforehand (see [Signing in](../admin-panel/authentication.md)).
 
 If you want to run another game version, use the
 [Setup page](../admin-panel/setup.md).

@@ -48,6 +48,7 @@ const sidebars = {
         'admin-panel/map-editor',
         'admin-panel/live-map',
         'admin-panel/logs-and-monitoring',
+        'admin-panel/authentication',
         'admin-panel/users',
         'admin-panel/common-tasks',
       ],

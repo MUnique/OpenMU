@@ -32,9 +32,6 @@ public partial class NavMenu : IDisposable
     private SetupService SetupService { get; set; } = null!;
 
     [Inject]
-    private IUserService UserService { get; set; } = null!;
-
-    [Inject]
     private DataUpdateService UpdateService { get; set; } = null!;
 
     [Inject]

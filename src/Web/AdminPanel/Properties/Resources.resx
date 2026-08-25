@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -677,5 +677,152 @@
   </data>
   <data name="Required" xml:space="preserve">
     <value>Required</value>
+  </data>
+  <data name="Login" xml:space="preserve">
+    <value>Login</value>
+  </data>
+  <data name="Logout" xml:space="preserve">
+    <value>Logout</value>
+  </data>
+  <data name="LoginName" xml:space="preserve">
+    <value>Login name</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="SignIn" xml:space="preserve">
+    <value>Sign in</value>
+  </data>
+  <data name="SignedInAs" xml:space="preserve">
+    <value>Signed in as</value>
+  </data>
+  <data name="RememberMe" xml:space="preserve">
+    <value>Keep me signed in</value>
+  </data>
+  <data name="InvalidCredentials" xml:space="preserve">
+    <value>The login name or password is wrong.</value>
+  </data>
+  <data name="AccountLockedOut" xml:space="preserve">
+    <value>Too many failed attempts. Please try again later.</value>
+  </data>
+  <data name="TwoFactorTitle" xml:space="preserve">
+    <value>Two-factor authentication</value>
+  </data>
+  <data name="TwoFactorPrompt" xml:space="preserve">
+    <value>Enter the code from your authenticator app.</value>
+  </data>
+  <data name="AuthenticatorCode" xml:space="preserve">
+    <value>Authenticator code</value>
+  </data>
+  <data name="RecoveryCode" xml:space="preserve">
+    <value>Recovery code</value>
+  </data>
+  <data name="UseRecoveryCode" xml:space="preserve">
+    <value>Use a recovery code instead</value>
+  </data>
+  <data name="UseAuthenticatorCode" xml:space="preserve">
+    <value>Use an authenticator code instead</value>
+  </data>
+  <data name="InvalidTwoFactorCode" xml:space="preserve">
+    <value>The code is not valid.</value>
+  </data>
+  <data name="Verify" xml:space="preserve">
+    <value>Verify</value>
+  </data>
+  <data name="AccessDenied" xml:space="preserve">
+    <value>Access denied</value>
+  </data>
+  <data name="AccessDeniedDescription" xml:space="preserve">
+    <value>Your account is not permitted to open this page.</value>
+  </data>
+  <data name="AccountSecurity" xml:space="preserve">
+    <value>Account security</value>
+  </data>
+  <data name="TwoFactorAuthentication" xml:space="preserve">
+    <value>Two-factor authentication</value>
+  </data>
+  <data name="TwoFactorEnabled" xml:space="preserve">
+    <value>Two-factor authentication is enabled.</value>
+  </data>
+  <data name="TwoFactorDisabled" xml:space="preserve">
+    <value>Two-factor authentication is not set up yet.</value>
+  </data>
+  <data name="SetUpAuthenticator" xml:space="preserve">
+    <value>Set up authenticator app</value>
+  </data>
+  <data name="DisableTwoFactor" xml:space="preserve">
+    <value>Disable two-factor authentication</value>
+  </data>
+  <data name="ScanQrCode" xml:space="preserve">
+    <value>Scan this QR code with your authenticator app, for example Microsoft Authenticator.</value>
+  </data>
+  <data name="ManualKeyHint" xml:space="preserve">
+    <value>Can't scan it? Enter this key manually:</value>
+  </data>
+  <data name="ConfirmSetupHint" xml:space="preserve">
+    <value>To finish, enter the code which your app shows now.</value>
+  </data>
+  <data name="RecoveryCodes" xml:space="preserve">
+    <value>Recovery codes</value>
+  </data>
+  <data name="RecoveryCodesHint" xml:space="preserve">
+    <value>Store these codes somewhere safe. Each of them can be used once to sign in when you don't have your authenticator app. They are shown only now.</value>
+  </data>
+  <data name="RemainingRecoveryCodes" xml:space="preserve">
+    <value>Remaining recovery codes</value>
+  </data>
+  <data name="GenerateNewRecoveryCodes" xml:space="preserve">
+    <value>Generate new recovery codes</value>
+  </data>
+  <data name="TwoFactorRequiredTitle" xml:space="preserve">
+    <value>Two-factor authentication is required</value>
+  </data>
+  <data name="TwoFactorRequiredDescription" xml:space="preserve">
+    <value>The server configuration requires every admin panel user to use a second factor. Please set up your authenticator app to continue.</value>
+  </data>
+  <data name="Roles" xml:space="preserve">
+    <value>Roles</value>
+  </data>
+  <data name="Role" xml:space="preserve">
+    <value>Role</value>
+  </data>
+  <data name="TwoFactor" xml:space="preserve">
+    <value>Second factor</value>
+  </data>
+  <data name="LastLogin" xml:space="preserve">
+    <value>Last login</value>
+  </data>
+  <data name="Enabled" xml:space="preserve">
+    <value>Enabled</value>
+  </data>
+  <data name="Disabled" xml:space="preserve">
+    <value>Disabled</value>
+  </data>
+  <data name="NoAdminUserWarning" xml:space="preserve">
+    <value>No admin panel user exists yet, so the panel is currently reachable without a login. Create the first user as soon as the database is set up, or configure a bootstrap user.</value>
+  </data>
+  <data name="CreateFirstUser" xml:space="preserve">
+    <value>Create the first user</value>
+  </data>
+  <data name="UserCreated" xml:space="preserve">
+    <value>The user has been created.</value>
+  </data>
+  <data name="UserDeleted" xml:space="preserve">
+    <value>The user has been deleted.</value>
+  </data>
+  <data name="PasswordChanged" xml:space="preserve">
+    <value>The password has been changed.</value>
+  </data>
+  <data name="TwoFactorResetForUser" xml:space="preserve">
+    <value>The second factor of the user has been reset.</value>
+  </data>
+  <data name="ResetTwoFactor" xml:space="preserve">
+    <value>Reset second factor</value>
+  </data>
+  <data name="CannotDeleteLastUser" xml:space="preserve">
+    <value>The last remaining user can't be deleted.</value>
+  </data>
+  <data name="CannotModifyBootstrapUser" xml:space="preserve">
+    <value>The bootstrap user is defined by the configuration and can't be changed here.</value>
   </data>
 </root>

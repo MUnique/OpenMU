@@ -1,6 +1,6 @@
 ---
 title: Common tasks
-sidebar_position: 14
+sidebar_position: 15
 description: Short how-tos for the things server operators do most often.
 ---
 

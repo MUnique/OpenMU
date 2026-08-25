@@ -24,16 +24,17 @@ installation.
 | [All-in-one with Traefik](../deployment/all-in-one-traefik.md) | [http://admin.docker.localhost/](http://admin.docker.localhost/) (locally) |
 | [Distributed](../deployment/distributed.md) | [http://localhost/admin](http://localhost/admin) |
 
-In the docker deployments the panel sits behind a reverse proxy which asks for
-basic authentication. The default user name is `admin` and the password is
-`openmu`.
+The panel asks for a login of its own, in every deployment. See
+[Signing in](authentication.md) for the login, the optional second factor and
+the roles.
 
 :::danger[Secure the panel before exposing it]
 Whoever reaches the admin panel controls your server and can read and modify all
 account data. Before your server is reachable from the internet:
 
-* change the default password on the [Users page](users.md),
-* set up HTTPS, so the password and the session are not sent in plain text
+* create your first user on the [Users page](users.md), so the panel leaves
+  its initial setup mode in which it is reachable without a login,
+* set up HTTPS, so the session is not sent in plain text
   ([all-in-one](../deployment/all-in-one.md#option-b--with-https),
   [Traefik](../deployment/all-in-one-traefik.md#option-b--with-https)).
 
