@@ -123,7 +123,7 @@ internal partial class CharacterClassInitialization : InitializerBase
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.IncreaseBlockBonus, 1, Stats.DefenseRatePvm, aggregateType: AggregateType.Multiplicate));
 
         // If two weapons are equipped (DK, MG, Sum, RF) we average the weapon attack speed
-        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.AreTwoWeaponsEquipped, 1, Stats.EquippedWeaponCount));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.AreTwoWeaponsEquipped, 1, Stats.EquippedWeaponCount, InputOperator.Maximum));
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.AttackSpeedByWeapon, 0.5f, Stats.AreTwoWeaponsEquipped, InputOperator.ExponentiateByAttribute, AggregateType.Multiplicate));
 
         var tempDefense = this.Context.CreateNew<AttributeDefinition>(Guid.NewGuid(), "Temp Defense Bonus multiplier with Shield", string.Empty);

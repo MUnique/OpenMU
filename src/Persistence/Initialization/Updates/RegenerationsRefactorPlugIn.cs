@@ -24,7 +24,7 @@ public class RegenerationsRefactorPlugIn : UpdatePlugInBase
     /// <summary>
     /// The plug in name.
     /// </summary>
-    internal const string PlugInName = "Regenerations Refactor PlugIn";
+    internal const string PlugInName = "Regenerations Refactor";
 
     /// <summary>
     /// The plug in description.
@@ -82,12 +82,17 @@ public class RegenerationsRefactorPlugIn : UpdatePlugInBase
 
         gameConfiguration.CharacterClasses.ForEach(charClass =>
         {
-            var attrCombos = charClass.AttributeCombinations.ToList();
+            var attrCombos = charClass.AttributeCombinations;
 
             // Remove temp attack speed combos
             var tempAttackSpeeds = gameConfiguration.Attributes.Where(a => a.Designation == "Temp Half weapon attack speed");
             if (tempAttackSpeeds.Any())
             {
+                if (attrCombos.FirstOrDefault(ac => ac.TargetAttribute == areTwoWeaponsEquipped) is { } equippedWeaponCountToAreTwoWeaponsEquipped)
+                {
+                    equippedWeaponCountToAreTwoWeaponsEquipped.AggregateType = AggregateType.Maximum;
+                }
+
                 AttributeDefinition? classTempAttackSpeed = null;
                 if (attrCombos.FirstOrDefault(ac => tempAttackSpeeds.Contains(ac.TargetAttribute)) is { } attrCombo1)
                 {
@@ -106,7 +111,6 @@ public class RegenerationsRefactorPlugIn : UpdatePlugInBase
                 }
             }
 
-            // Add new attribute combination
             var areTwoWeaponsEquippedToAttackSpeedByWeapon = context.CreateNew<AttributeRelationship>(
                 attackSpeedByWeapon,
                 0.5f,
@@ -139,7 +143,7 @@ public class RegenerationsRefactorPlugIn : UpdatePlugInBase
                 }
             }
 
-            // Add new attribute combination
+            // Add new attribute combinations
             var isRestingToHealthRecoveryMultiplier = context.CreateNew<AttributeRelationship>(
                 healthRecoveryMultiplier,
                 0.03f,
@@ -190,7 +194,7 @@ public class RegenerationsRefactorPlugIn : UpdatePlugInBase
 
             var shieldRecoveryRampFactorToShieldRecoveryMultiplier = context.CreateNew<AttributeRelationship>(
                 shieldRecoveryMultiplier,
-                1f / 15f,
+                1f,
                 shieldRecoveryRampFactor,
                 InputOperator.Multiply,
                 default(AttributeDefinition?),
@@ -221,15 +225,15 @@ public class RegenerationsRefactorPlugIn : UpdatePlugInBase
                 charClass.BaseAttributeValues.Remove(baseManaRecoveryMultiplier);
             }
 
-            charClass.BaseAttributeValues.Add(context.CreateNew<ConstValueAttribute>(0.037f, manaRecoveryMultiplier));
-            charClass.BaseAttributeValues.Add(context.CreateNew<ConstValueAttribute>(4f / 3f, shieldRecoveryRampFactor));
+            charClass.BaseAttributeValues.Add(context.CreateNew<ConstValueAttribute>(0.037f, manaRecoveryMultiplier, AggregateType.AddRaw));
+            charClass.BaseAttributeValues.Add(context.CreateNew<ConstValueAttribute>(4f / 3f, shieldRecoveryRampFactor, AggregateType.AddRaw));
 
             if (charClass.BaseAttributeValues.FirstOrDefault(bav => bav.Definition == shieldRecoveryMultiplier) is { } baseShieldRecoveryMultiplier)
             {
                 charClass.BaseAttributeValues.Remove(baseShieldRecoveryMultiplier);
             }
 
-            charClass.BaseAttributeValues.Add(context.CreateNew<ConstValueAttribute>(100, shieldRecoveryMultiplier));
+            charClass.BaseAttributeValues.Add(context.CreateNew<ConstValueAttribute>(100, shieldRecoveryMultiplier, AggregateType.AddRaw));
             charClass.BaseAttributeValues.Add(context.CreateNew<ConstValueAttribute>(1f / 75000, shieldRecoveryMultiplier, AggregateType.Multiplicate));
 
             // Create new StatAttributDefinitions
@@ -245,7 +249,7 @@ public class RegenerationsRefactorPlugIn : UpdatePlugInBase
                     charClass.BaseAttributeValues.Remove(baseAbilityRecoveryMultiplier);
                 }
 
-                charClass.BaseAttributeValues.Add(context.CreateNew<ConstValueAttribute>(0.03f, abilityRecoveryMultiplier));
+                charClass.BaseAttributeValues.Add(context.CreateNew<ConstValueAttribute>(0.03f, abilityRecoveryMultiplier, AggregateType.AddRaw));
             }
 
             // Add default movement speeds for tier 2 chars
