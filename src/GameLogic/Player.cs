@@ -941,11 +941,56 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         {
             try
             {
-                await this.InternalDisconnectAsync().ConfigureAwait(false);
+                try
+                {
+                    await this.InternalDisconnectAsync().ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    // The subscribers below are what take the player out of the game context's player
+                    // list - and, for a remote player, dispose it. A teardown which throws half way
+                    // must not skip them: the state machine has already left the state this method
+                    // needs to advance from, so no later call can raise the event again. The player
+                    // would stay in the list, counting towards the server's maximum player count and
+                    // keeping its whole object graph alive, until the process restarts.
+                    this.Logger.LogError(ex, "Error while disconnecting player {Player}; continuing the teardown.", this);
+
+                    // Saving is the LAST step of the regular teardown (see RemoveFromGameAsync), so
+                    // the throw above may well have skipped it. Without a save, continuing would turn
+                    // the failure into silent data loss: the caller sees a successful logout, disposes
+                    // this instance, and the next session loads the character from the database -
+                    // rolled back to its last periodic save.
+                    try
+                    {
+                        await this.SaveProgressAsync().ConfigureAwait(false);
+                    }
+                    catch (Exception saveException)
+                    {
+                        this.Logger.LogError(saveException, "Couldn't save the progress of player {Player} after its teardown failed.", this);
+                    }
+                }
+
                 if (this.PlayerDisconnected is { } disconnectedEventHandler)
                 {
                     this.PlayerDisconnected = null;
-                    await disconnectedEventHandler(this).ConfigureAwait(false);
+
+                    // One by one instead of awaiting the multicast delegate: invoking a multicast
+                    // ValueTask delegate awaits only the LAST subscriber's task, so the earlier ones
+                    // (the removal from the game context's player list) would run unobserved and
+                    // possibly still be in flight while the last one (which disposes a remote player)
+                    // executes. Isolating each subscriber also keeps one failing handler from skipping
+                    // the others - the handler list is already dropped, so nothing could re-run them.
+                    foreach (var subscriber in disconnectedEventHandler.GetInvocationList())
+                    {
+                        try
+                        {
+                            await ((AsyncEventHandler<Player>)subscriber)(this).ConfigureAwait(false);
+                        }
+                        catch (Exception ex)
+                        {
+                            this.Logger.LogError(ex, "A PlayerDisconnected subscriber of player {Player} failed.", this);
+                        }
+                    }
                 }
             }
             finally
@@ -1259,6 +1304,23 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore()
     {
+        // A disposed player must never stay reachable from the game context: it would keep counting
+        // towards the server's maximum player count (which turns real clients away) and keep its whole
+        // object graph alive. The regular teardown removes it through the PlayerDisconnected event, but
+        // a player which is disposed WITHOUT having been disconnected - a login or spawn which failed
+        // after the player was already added to the game - never raises that event, and the fields
+        // below drop the handler which could still do it. Removing here is the last line of defense,
+        // and it is idempotent, so it does nothing on the regular path.
+        try
+        {
+            await this.GameContext.RemovePlayerAsync(this).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            // Must not abort the rest of the disposal - the remaining resources have to be released.
+            this.Logger.LogError(ex, "Error while removing player {Player} from the game context during disposal.", this);
+        }
+
         await this._muHelperLazy.DisposeIfCreatedAsync().ConfigureAwait(false);
 
         this._petCommandManager?.Dispose();
