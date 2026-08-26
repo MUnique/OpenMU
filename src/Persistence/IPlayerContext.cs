@@ -100,4 +100,14 @@ public interface IPlayerContext : IContext
     /// The account; Otherwise, null.
     /// </returns>
     ValueTask<Account?> GetAccountByCharacterNameAsync(string characterName, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets pending Castle Siege rewards for a character.
+    /// </summary>
+    /// <param name="characterId">The persistent character identifier.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The pending Castle Siege rewards.</returns>
+    ValueTask<IReadOnlyList<CastleSiegePendingReward>> GetPendingCastleSiegeRewardsAsync(
+        Guid characterId,
+        CancellationToken cancellationToken = default);
 }

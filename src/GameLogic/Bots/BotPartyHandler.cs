@@ -10,11 +10,16 @@ using MUnique.OpenMU.GameLogic.Offline;
 /// Lets a server-side bot party up with players who invite it (enabled by
 /// <see cref="BotMuHelperSettings.AutoAcceptAnyone"/>): the invitation is accepted after a short
 /// human-like delay, and the bot then follows the leader like any party member (see the follow logic
-/// in <see cref="BotNavigator"/>) until it gets bored and politely leaves. Safeguards keep it
-/// believable and abuse-free: no acceptance while the bot is on an errand (shopping trip) or has
-/// unfinished business (revenge), and the invitation is re-validated when the delay has passed - the
-/// inviter may have joined another party or left. There is no level gate, matching OpenMU's own party
-/// action: it is the player who invites, and the bot leaves again once it gets bored.
+/// in <see cref="BotNavigator"/>). A bot stays in the party with its human companion for as long as
+/// the party exists and the companion is reachable - a player who groups a bot keeps a companion for
+/// the whole session, and the bot only leaves on the engine's own terms: the party disbands, it is
+/// kicked, it can no longer legally follow the leader to another map, every human companion has been
+/// disconnected without reconnecting for longer than the grace period, or before its own logout, as
+/// when the presence rotation or a fault restart stops it. Safeguards keep it believable: no acceptance while
+/// the bot is on an errand (shopping trip) or has unfinished business (revenge), and
+/// the invitation is re-validated when the delay has passed - the inviter may have joined another
+/// party or left. There is no level gate, matching OpenMU's own party action: it is the player who
+/// invites.
 /// </summary>
 internal static class BotPartyHandler
 {
@@ -25,14 +30,9 @@ internal static class BotPartyHandler
     private static readonly TimeSpan MaxAcceptDelay = TimeSpan.FromSeconds(5);
 
     /// <summary>
-    /// Lower bound of the time the bot stays in a party with a human before it gets bored and leaves.
-    /// A player who groups a bot gets a companion for a decent hunting session, but not a permanent
-    /// follower - the bot has its own goals (its resets, its shopping, its own pace).
+    /// How long a bot waits in a dead party before leaving (grace for reconnect/off-level).
     /// </summary>
-    private static readonly TimeSpan MinPartyDuration = TimeSpan.FromMinutes(10);
-
-    /// <summary>Upper bound of the time the bot stays in a party with a human, see <see cref="MinPartyDuration"/>.</summary>
-    private static readonly TimeSpan MaxPartyDuration = TimeSpan.FromMinutes(20);
+    private static readonly TimeSpan PartyDisconnectGracePeriod = TimeSpan.FromMinutes(10);
 
     /// <summary>
     /// Schedules the acceptance of a party invitation to a bot, if the bot is available for it.
@@ -79,14 +79,16 @@ internal static class BotPartyHandler
 
     /// <summary>
     /// Drives the bot's party behavior; called from the bot's regular evaluation tick. Answers a
-    /// pending invitation once its delay passed, and leaves the party again when the bot got bored
-    /// of grouping with a human (bot-only parties are exempt - they are managed by the hourly
-    /// re-formation of <see cref="BotManager"/>).
+    /// pending invitation once its delay passed, and walks the bot out of a dead party once the
+    /// disconnect grace period has elapsed.
     /// </summary>
     /// <param name="bot">The bot.</param>
-    internal static async ValueTask ProcessAsync(OfflinePlayer bot)
+    /// <param name="utcNow">Overrides the current time used for the grace-period check (used by tests).</param>
+    internal static async ValueTask ProcessAsync(OfflinePlayer bot, DateTime? utcNow = null)
     {
-        if (bot.PendingPartyInvite is { } invite && DateTime.UtcNow >= invite.AcceptAtUtc)
+        var now = utcNow ?? DateTime.UtcNow;
+
+        if (bot.PendingPartyInvite is { } invite && now >= invite.AcceptAtUtc)
         {
             bot.PendingPartyInvite = null;
             try
@@ -99,20 +101,37 @@ internal static class BotPartyHandler
             }
         }
 
-        if (bot.Party is { } party && HasHumanCompanion(bot))
+        // No live human is left in the party: every human slot still present is an offline snapshot,
+        // kept by the engine to reserve the spot for reconnection. Wait out the grace period (they may
+        // reconnect or be off-leveling) before leaving. This is independent of who currently holds the
+        // master slot, since mastership moves to a live bot when the previous master leaves properly.
+        // A bot-only party carries no such snapshot, since bots kick themselves before stopping - which
+        // is also the common case this loop must stay cheap for, so it avoids allocating an iterator or
+        // sorting the list just to find out there is nothing to find.
+        if (bot.Party is { } party && !HasHumanCompanion(bot))
         {
-            bot.PartyBoredomAtUtc ??= DateTime.UtcNow + MinPartyDuration
-                + TimeSpan.FromSeconds(Rand.NextInt(0, (int)(MaxPartyDuration - MinPartyDuration).TotalSeconds + 1));
-            if (DateTime.UtcNow >= bot.PartyBoredomAtUtc)
+            DateTime? mostRecentDisconnect = null;
+            string? mostRecentlyDisconnectedMemberName = null;
+            foreach (var member in party.PartyList)
             {
-                bot.PartyBoredomAtUtc = null;
-                bot.Logger.LogDebug("Bot '{Name}' got bored and leaves its party.", bot.Name);
-                await party.KickMySelfAsync(bot).ConfigureAwait(false);
+                if (member is OfflinePartyMember snapshot
+                    && (mostRecentDisconnect is null || snapshot.DisconnectedAtUtc > mostRecentDisconnect))
+                {
+                    mostRecentDisconnect = snapshot.DisconnectedAtUtc;
+                    mostRecentlyDisconnectedMemberName = snapshot.Name;
+                }
             }
-        }
-        else
-        {
-            bot.PartyBoredomAtUtc = null;
+
+            if (mostRecentDisconnect is null || now - mostRecentDisconnect < PartyDisconnectGracePeriod)
+            {
+                return;
+            }
+
+            bot.Logger.LogDebug(
+                "Bot '{Name}' leaves the party of the disconnected player '{Player}'.",
+                bot.Name,
+                mostRecentlyDisconnectedMemberName);
+            await party.KickMySelfAsync(bot).ConfigureAwait(false);
         }
     }
 

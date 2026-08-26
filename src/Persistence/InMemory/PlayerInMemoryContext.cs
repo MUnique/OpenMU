@@ -81,4 +81,15 @@ public class PlayerInMemoryContext : InMemoryContext, IPlayerContext
         var allAccounts = await this.Provider.GetRepository<Account>().GetAllAsync(cancellationToken).ConfigureAwait(false);
         return allAccounts.FirstOrDefault(account => account.Characters.Any(c => c.Name == characterName));
     }
+
+    /// <inheritdoc />
+    public async ValueTask<IReadOnlyList<DataModel.Entities.CastleSiegePendingReward>> GetPendingCastleSiegeRewardsAsync(
+        Guid characterId,
+        CancellationToken cancellationToken = default)
+    {
+        var pendingRewards = await this.Provider.GetRepository<CastleSiegePendingReward>()
+            .GetAllAsync(cancellationToken)
+            .ConfigureAwait(false);
+        return pendingRewards.Where(reward => reward.CharacterId == characterId).ToList();
+    }
 }

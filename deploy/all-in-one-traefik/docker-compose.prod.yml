@@ -16,8 +16,6 @@ services:
     environment:
       DB_HOST: database
     working_dir: /app/
-    volumes:
-      - ./.htpasswd:/etc/nginx/.htpasswd
     depends_on:
       - database
     labels:
@@ -25,8 +23,6 @@ services:
       - "traefik.docker.network=proxy"
       - "traefik.http.routers.openmu.entrypoints=websecure"
       - "traefik.http.routers.openmu.rule=Host(`${DOMAIN}`)"
-      - "traefik.http.routers.openmu.middlewares=auth"
-      - "traefik.http.middlewares.auth.basicauth.usersfile=.htpasswd"
 
   database:
     image: postgres
@@ -57,7 +53,6 @@ services:
       - ./data-traefik/traefik.yml:/traefik.yml:ro
       - ./data-traefik/acme.json:/acme.json
       - ./data-traefik/configurations:/configurations
-      - "./.htpasswd:/.htpasswd"
     networks:
       - proxy
     labels:

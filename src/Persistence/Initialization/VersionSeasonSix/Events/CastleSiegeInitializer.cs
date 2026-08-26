@@ -42,6 +42,7 @@ internal sealed class CastleSiegeInitializer : InitializerBase
     /// <returns>The Castle Siege configuration.</returns>
     internal CastleSiegeConfiguration InitializeConfiguration()
     {
+        this.InitializeParticipantData();
         if (this.GameConfiguration.CastleSiegeConfiguration is { } existingConfiguration)
         {
             this.InitializeRegistration(existingConfiguration);
@@ -98,6 +99,29 @@ internal sealed class CastleSiegeInitializer : InitializerBase
         itemDefinition.MaximumItemLevel = Math.Max(itemDefinition.MaximumItemLevel, SignOfLordItemLevel);
         configuration.SignOfLordItemDefinition = itemDefinition;
         configuration.SignOfLordItemLevel = SignOfLordItemLevel;
+    }
+
+    /// <summary>
+    /// Initializes the client-visible effects used for Castle Siege join sides.
+    /// </summary>
+    internal void InitializeParticipantData()
+    {
+        foreach (var effectNumber in Enum.GetValues<CastleSiegeMagicEffectNumber>())
+        {
+            if (this.GameConfiguration.MagicEffects.Any(
+                    effect => effect.Number == (short)effectNumber))
+            {
+                continue;
+            }
+
+            var effect = this.Context.CreateNew<MagicEffectDefinition>();
+            effect.Number = (short)effectNumber;
+            effect.Name = $"Castle Siege {effectNumber}";
+            effect.InformObservers = true;
+            effect.SendDuration = false;
+            effect.StopByDeath = false;
+            this.GameConfiguration.MagicEffects.Add(effect);
+        }
     }
 
     /// <summary>

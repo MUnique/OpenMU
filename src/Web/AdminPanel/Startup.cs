@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.Web.AdminPanel.Auth;
 using MUnique.OpenMU.Web.AdminPanel.Components;
 using MUnique.OpenMU.Web.AdminPanel.Services;
 using MUnique.OpenMU.Web.Shared;
@@ -77,6 +78,8 @@ public class Startup
         services.AddScoped<CreationPanelService>();
 
         services.AddScoped<IChangeNotificationService, ChangeNotificationService>();
+        services.AddScoped<AdminUserManagementService>();
+        services.AddAdminPanelAuth(this.Configuration);
     }
 
     /// <summary>
@@ -100,6 +103,12 @@ public class Startup
 
         app.UseHttpsRedirection();
         app.UseStaticFiles();
+
+        app.UseRouting();
+        app.UseAdminPanelAuth();
+
+        // The log files may contain sensitive information, so they are only served to authorized users.
+        app.UseAuthorizedPath("/logs");
         app.UseStaticFiles(new StaticFileOptions
         {
             FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "logs")),
@@ -112,7 +121,8 @@ public class Startup
         {
             endpoints.MapRazorComponents<App>()
                 .AddInteractiveServerRenderMode();
-            endpoints.MapControllers();
+            endpoints.MapControllers().RequireAuthorization();
+            endpoints.MapAdminPanelAuthEndpoints();
         });
     }
 }

@@ -1,6 +1,6 @@
 # Refactoring plan: breaking up the `Player` class
 
-**Status:** in progress — phases 0b, 1, 2 and 3 are done, see §6
+**Status:** in progress — phases 0b, 1, 2, 3 and 4 are done, see §6
 **Subject:** `src/GameLogic/Player.cs` (3,098 lines and ~150 members when this
 plan was written; 2,614 after phase 1)
 
@@ -220,7 +220,7 @@ All of these live in `src/GameLogic/PlugIns/`, need a fresh `Guid` and a
 | # | Interface | Signature | Logic that moves there |
 |---|---|---|---|
 | P3 | `IPlayerLeavingGamePlugIn` | `ValueTask PlayerLeavingGameAsync(Player player)` | `RemoveFromGameAsync` steps (1840-1856): party leave-temporarily, safezone move, temporary storage restore, `OpenedNpc` reset. **Only if** the `LogoutAction` state bug above is not fixed — with it fixed, `IPlayerStateChangedPlugIn` covers this too, and P3 is dropped |
-| P4 | `IPlayerSpawnGateSelectionPlugIn` | `ValueTask SelectSpawnGateAsync(Player player, SpawnGateSelectionArgs args)` | the duel and guild-war-soccer branches of `GetSpawnGateOfCurrentMapAsync` (2409-2428); later also mini games and castle siege |
+| P4 | `IPlayerSpawnGateSelectionPlugIn` | `ValueTask SelectSpawnGateAsync(Player player, SpawnGateSelectionArgs args)` | ✔ implemented: the duel and guild-war-soccer branches of `GetSpawnGateOfCurrentMapAsync` are now `DuelSpawnGatePlugIn` and `SoccerSpawnGatePlugIn`; mini games and castle siege can follow |
 | P5 | `IExperienceCalculationPlugIn` | `ValueTask CalculateExperienceAsync(Player player, ExperienceCalculationArgs args)` | ✔ implemented, but *not* by splitting the multiplier chain of `CalculateExpAfterKill` into competing plugins: without plugin ordering (3.1a) their result would depend on the discovery order, and the random multiplier truncates to `int`, so it has to stay last. The rates and the map multiplier stay in the component, the plugin point runs after them and before the randomization, where factors compose order-independently |
 | P6 | `IPlayerGainedExperiencePlugIn` | `ValueTask PlayerGainedExperienceAsync(Player player, int experience, IAttackable? killedObject, ExperienceType type)` | `AddPetExperienceAsync` (2953-3020) becomes `PetExperiencePlugIn`; also the natural hook for statistics/events |
 | P7 | `ICharacterMasterLevelUpPlugIn` | `void CharacterMasterLeveledUp(Player player)` | mirrors the existing `ICharacterLevelUpPlugIn` for the master level branch (2099-2107) |
@@ -341,7 +341,7 @@ Each phase is independently mergeable and leaves the build green.
 | **1** | ✔ done — §5.1 extension-method moves + nested class files | very low | 2,612 |
 | **2** | ✔ done — `PlayerMovement`, `PlayerPersistence`, `PlayerSummon`, `PlayerStorages` components | low | 2,269 |
 | **3** | ✔ done — `PlayerExperience` + P5/P6/P7 + `PetExperiencePlugIn` | medium | 2,058 |
-| **4** | `PlayerMapTransitions` + P4 spawn gate plugins | medium | ~1,550 |
+| **4** | ✔ done — `PlayerMapTransitions` + P4 spawn gate plugins | medium | 1,828 |
 | **5** | `PlayerCombat` + `AttackableNpcBase` dedup + P8 and the `IAttackableGotHit`/`GotKilled` plugins (PK state, respawn, reflection, durability) | **high** | ~1,150 |
 | **6** | Enter-world / leave-game moved onto `IPlayerStateChangedPlugIn` (+ P3 if needed) + `PlayerAttributeHost` + P9 regeneration | medium-high | ~900 |
 | **7** | §5.4 property consolidation, final cleanup of `virtual` members nobody overrides | low | ~700-800 |

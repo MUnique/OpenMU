@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.CastleSiege;
 using System.Threading;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.GameLogic.Views.CastleSiege;
 
 /// <summary>
 /// Holds the runtime state of Castle Siege for one game context.
@@ -17,7 +18,10 @@ using MUnique.OpenMU.DataModel.Entities;
 /// </remarks>
 public class CastleSiegeContext : IEventStateProvider
 {
+    private static readonly TimeSpan JoinSideEffectDuration = TimeSpan.FromDays(7);
+
     private readonly IGameContext _gameContext;
+    private readonly System.Collections.Concurrent.ConcurrentDictionary<Player, CastleSiegeJoinSide> _notifiedPlayerJoinSides = new();
     private readonly System.Collections.Concurrent.ConcurrentDictionary<Player, byte> _siegeMapPlayers = new();
 
     /// <summary>
@@ -66,7 +70,12 @@ public class CastleSiegeContext : IEventStateProvider
     /// <summary>
     /// Gets the selected guilds keyed by their runtime guild identifier.
     /// </summary>
-    public Dictionary<uint, CastleSiegeGuildParticipant> FinalGuildList { get; } = new();
+    public System.Collections.Concurrent.ConcurrentDictionary<uint, CastleSiegeGuildParticipant> FinalGuildList { get; } = new();
+
+    /// <summary>
+    /// Gets the assigned join sides keyed by persistent character identifier.
+    /// </summary>
+    public System.Collections.Concurrent.ConcurrentDictionary<Guid, CastleSiegeJoinSide> PlayerJoinSides { get; } = new();
 
     /// <summary>
     /// Gets the participating characters keyed by their persistent character identifier.
@@ -74,7 +83,7 @@ public class CastleSiegeContext : IEventStateProvider
     public System.Collections.Concurrent.ConcurrentDictionary<Guid, CastleSiegeParticipant> ParticipantTracking { get; } = new();
 
     /// <summary>
-    /// Gets or sets the runtime identifier of the guild which most recently captured the Crown.
+    /// Gets or sets the runtime identifier of the guild which currently owns the castle during the battle.
     /// </summary>
     public uint? MiddleOwnerGuildId { get; set; }
 
@@ -147,6 +156,11 @@ public class CastleSiegeContext : IEventStateProvider
     internal DateTime NextNpcSaveUtc { get; set; } = DateTime.MaxValue;
 
     /// <summary>
+    /// Gets or sets the next participant tracking time.
+    /// </summary>
+    internal DateTime NextParticipantUpdateUtc { get; set; } = DateTime.MaxValue;
+
+    /// <summary>
     /// Gets the Ready-state countdown values which have already been sent.
     /// </summary>
     internal HashSet<int> SentReadyCountdownMinutes { get; } = new();
@@ -166,10 +180,48 @@ public class CastleSiegeContext : IEventStateProvider
     /// <returns>The assigned side, or <see cref="CastleSiegeJoinSide.None"/>.</returns>
     public CastleSiegeJoinSide GetPlayerJoinSide(Player player)
     {
-        return player.GuildStatus is { } guildStatus
-               && this.FinalGuildList.TryGetValue(guildStatus.GuildId, out var guild)
-            ? guild.Side
-            : CastleSiegeJoinSide.None;
+        if (this.Configuration.CastleSiegeMapDefinition?.Number != player.CurrentMap?.Definition.Number)
+        {
+            return CastleSiegeJoinSide.None;
+        }
+
+        return this.GetTrackedPlayerJoinSide(player);
+    }
+
+    /// <summary>
+    /// Assigns the current Castle Siege side to all online players on the Castle Siege map.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous synchronization operation.</returns>
+    public async ValueTask SetPlayerJoinSideAsync()
+    {
+        if (this.Configuration.CastleSiegeMapDefinition is null)
+        {
+            return;
+        }
+
+        var activeCharacterIds = new HashSet<Guid>();
+        var activePlayers = new HashSet<Player>();
+        foreach (var player in this.GetSiegePlayers())
+        {
+            if (player.SelectedCharacter is not { } character)
+            {
+                continue;
+            }
+
+            activeCharacterIds.Add(character.Id);
+            activePlayers.Add(player);
+            await this.SynchronizePlayerJoinSideAsync(player).ConfigureAwait(false);
+        }
+
+        foreach (var player in this._notifiedPlayerJoinSides.Keys.Where(player => !activePlayers.Contains(player)))
+        {
+            await this.ClearPlayerJoinSideAsync(player).ConfigureAwait(false);
+        }
+
+        foreach (var characterId in this.PlayerJoinSides.Keys.Where(id => !activeCharacterIds.Contains(id)))
+        {
+            this.PlayerJoinSides.TryRemove(characterId, out _);
+        }
     }
 
     /// <summary>
@@ -181,6 +233,7 @@ public class CastleSiegeContext : IEventStateProvider
             ?? throw new InvalidOperationException("The persistent Castle Siege state does not exist.");
         this.NpcController.InitializePersistentStructures();
         await this.LoadRegistrationsAsync().ConfigureAwait(false);
+        await this.LoadFinalGuildListAsync().ConfigureAwait(false);
     }
 
     /// <summary>
@@ -202,6 +255,39 @@ public class CastleSiegeContext : IEventStateProvider
     }
 
     /// <summary>
+    /// Replaces the persistent selected-guild list with the current runtime snapshot.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous save operation.</returns>
+    public async ValueTask SaveFinalGuildListAsync()
+    {
+        using var context = this._gameContext.PersistenceContextProvider.CreateNewTypedContext(
+            typeof(CastleSiegeData),
+            false,
+            this._gameContext.Configuration);
+        var persistentData = await context.GetByIdAsync<CastleSiegeData>(this.SiegeData.Id).ConfigureAwait(false)
+            ?? throw new InvalidOperationException("The persistent Castle Siege state no longer exists.");
+
+        foreach (var oldGuild in persistentData.Guilds.ToList())
+        {
+            await context.DeleteAsync(oldGuild).ConfigureAwait(false);
+        }
+
+        persistentData.Guilds.Clear();
+        foreach (var guild in CastleSiegeGuildSelector.OrderFinalGuilds(this.FinalGuildList.Values))
+        {
+            var persistentGuild = context.CreateNew<CastleSiegeGuild>();
+            persistentGuild.GuildId = guild.PersistentGuildId;
+            persistentGuild.GuildName = guild.GuildName;
+            persistentGuild.Side = guild.Side;
+            persistentGuild.Score = guild.Score;
+            persistentGuild.IsAllianceMaster = guild.IsAllianceMaster;
+            persistentData.Guilds.Add(persistentGuild);
+        }
+
+        await context.SaveChangesAsync().ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Updates the persistent NPC states from a complete runtime snapshot.
     /// </summary>
     public async ValueTask SaveNpcStatesAsync()
@@ -212,7 +298,7 @@ public class CastleSiegeContext : IEventStateProvider
         }
 
         this.NpcController.SynchronizeNpcStates();
-        var persistedNpcs = this.ActiveNpcs
+        var persistedNpcs = this.NpcController.GetRuntimeSnapshot()
             .Where(npc => npc.Definition.IsPersistedToDatabase)
             .ToList();
         if (persistedNpcs.Count == 0 || persistedNpcs.Any(npc => npc.PersistedState is null))
@@ -293,17 +379,110 @@ public class CastleSiegeContext : IEventStateProvider
     }
 
     /// <summary>
+    /// Initializes the current battle owner from the selected defending alliance.
+    /// A later Crown capture replaces this value with the attacking guild identifier.
+    /// </summary>
+    internal void InitializeBattleOwner()
+    {
+        this.MiddleOwnerGuildId = this.FinalGuildList.Values
+            .FirstOrDefault(guild => guild.Side == CastleSiegeJoinSide.Defense && guild.IsAllianceMaster)
+            ?.GuildId;
+    }
+
+    /// <summary>
+    /// Gets the previously assigned side without requiring the player to still be on the siege map.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <returns>The assigned side, or <see cref="CastleSiegeJoinSide.None"/>.</returns>
+    internal CastleSiegeJoinSide GetTrackedPlayerJoinSide(Player player)
+    {
+        if (player.SelectedCharacter is { } character
+            && this.PlayerJoinSides.TryGetValue(character.Id, out var assignedSide))
+        {
+            return assignedSide;
+        }
+
+        return player.GuildStatus is { } guildStatus
+               && this.FinalGuildList.TryGetValue(guildStatus.GuildId, out var participatingGuild)
+            ? participatingGuild.Side
+            : CastleSiegeJoinSide.None;
+    }
+
+    /// <summary>
+    /// Gets a snapshot of players currently tracked on the Castle Siege map.
+    /// </summary>
+    /// <returns>The tracked players which are still on the Castle Siege map.</returns>
+    internal IReadOnlyList<Player> GetSiegePlayers()
+    {
+        var mapNumber = this.Configuration.CastleSiegeMapDefinition?.Number;
+        return this._siegeMapPlayers.Keys
+            .Where(player => player.CurrentMap?.Definition.Number == mapNumber)
+            .ToList();
+    }
+
+    /// <summary>
     /// Executes an action concurrently for players currently on the Castle Siege map.
     /// </summary>
     /// <param name="action">The action to execute.</param>
     /// <returns>A task that represents the asynchronous fan-out operation.</returns>
     internal async ValueTask ForEachSiegePlayerAsync(Func<Player, Task> action)
     {
-        var mapNumber = this.Configuration.CastleSiegeMapDefinition?.Number;
-        var actions = this._siegeMapPlayers.Keys
-            .Where(player => player.CurrentMap?.Definition.Number == mapNumber)
-            .Select(action);
+        var actions = this.GetSiegePlayers().Select(action);
         await Task.WhenAll(actions).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Assigns and sends the current Castle Siege side to a player entering the battle map.
+    /// </summary>
+    /// <param name="player">The player to synchronize.</param>
+    /// <returns>A task that represents the asynchronous synchronization operation.</returns>
+    internal async ValueTask SynchronizePlayerJoinSideAsync(Player player)
+    {
+        if (player.SelectedCharacter is not { } character
+            || this.Configuration.CastleSiegeMapDefinition?.Number != player.CurrentMap?.Definition.Number)
+        {
+            return;
+        }
+
+        var side = await this.ResolvePlayerJoinSideAsync(player).ConfigureAwait(false);
+        var notificationRequired = !this._notifiedPlayerJoinSides.TryGetValue(player, out var notifiedSide)
+                                   || notifiedSide != side;
+        this.PlayerJoinSides[character.Id] = side;
+        await SetJoinSideMagicEffectAsync(player, side).ConfigureAwait(false);
+        if (!notificationRequired)
+        {
+            return;
+        }
+
+        await player.InvokeViewPlugInAsync<ICastleSiegeJoinSidePlugIn>(
+                plugIn => plugIn.ShowJoinSideAsync(side))
+            .ConfigureAwait(false);
+        this._notifiedPlayerJoinSides[player] = side;
+    }
+
+    /// <summary>
+    /// Clears a player's Castle Siege side and its client-visible effect.
+    /// </summary>
+    /// <param name="player">The player to clear.</param>
+    /// <returns>A task that represents the asynchronous clear operation.</returns>
+    internal async ValueTask ClearPlayerJoinSideAsync(Player player)
+    {
+        if (player.SelectedCharacter is { } character)
+        {
+            this.PlayerJoinSides.TryRemove(character.Id, out _);
+        }
+
+        this._notifiedPlayerJoinSides.TryRemove(player, out _);
+        await SetJoinSideMagicEffectAsync(player, CastleSiegeJoinSide.None).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Clears all cached player-side assignments and connection notifications.
+    /// </summary>
+    internal void ClearPlayerJoinSides()
+    {
+        this.PlayerJoinSides.Clear();
+        this._notifiedPlayerJoinSides.Clear();
     }
 
     /// <summary>
@@ -384,6 +563,7 @@ public class CastleSiegeContext : IEventStateProvider
             ?? await this.CreateDataAsync().ConfigureAwait(false);
         this.NpcController.InitializePersistentStructures();
         await this.LoadRegistrationsAsync().ConfigureAwait(false);
+        await this.LoadFinalGuildListAsync().ConfigureAwait(false);
         var period = this.Schedule.GetCurrentEventPeriod(utcNow);
         this.SetPeriod(period);
         await this.InitializeSiegeMapPlayersAsync().ConfigureAwait(false);
@@ -442,6 +622,56 @@ public class CastleSiegeContext : IEventStateProvider
         return (state.MonsterNumber, state.InstanceId);
     }
 
+    private static CastleSiegeMagicEffectNumber? GetMagicEffectNumber(CastleSiegeJoinSide side)
+    {
+        return side switch
+        {
+            CastleSiegeJoinSide.Defense => CastleSiegeMagicEffectNumber.Defense,
+            CastleSiegeJoinSide.Attack1 => CastleSiegeMagicEffectNumber.Attack1,
+            CastleSiegeJoinSide.Attack2 => CastleSiegeMagicEffectNumber.Attack2,
+            CastleSiegeJoinSide.Attack3 => CastleSiegeMagicEffectNumber.Attack3,
+            _ => null,
+        };
+    }
+
+    private static bool IsJoinSideEffect(short effectNumber)
+    {
+        return Enum.IsDefined<CastleSiegeMagicEffectNumber>((CastleSiegeMagicEffectNumber)effectNumber);
+    }
+
+    private static async ValueTask SetJoinSideMagicEffectAsync(Player player, CastleSiegeJoinSide side)
+    {
+        var expectedEffectNumber = GetMagicEffectNumber(side);
+        var activeSideEffects = (await player.MagicEffectList
+                .GetActiveEffectsSnapshotAsync()
+                .ConfigureAwait(false))
+            .Where(effect => IsJoinSideEffect(effect.Id))
+            .ToList();
+        foreach (var effect in activeSideEffects)
+        {
+            if (effect.Id != (short?)expectedEffectNumber)
+            {
+                await effect.DisposeAsync().ConfigureAwait(false);
+            }
+        }
+
+        if (expectedEffectNumber is not { } expected
+            || activeSideEffects.Any(effect => effect.Id == (short)expected))
+        {
+            return;
+        }
+
+        if (player.GameContext.Configuration.MagicEffects.FirstOrDefault(
+                effect => effect.Number == (short)expected) is not { } effectDefinition)
+        {
+            return;
+        }
+
+        await player.MagicEffectList
+            .AddEffectAsync(new MagicEffect(JoinSideEffectDuration, effectDefinition))
+            .ConfigureAwait(false);
+    }
+
     private async ValueTask InitializeSiegeMapPlayersAsync()
     {
         this._siegeMapPlayers.Clear();
@@ -482,5 +712,70 @@ public class CastleSiegeContext : IEventStateProvider
         {
             this.RegisteredGuilds[registration.GuildId] = registration;
         }
+    }
+
+    private async ValueTask LoadFinalGuildListAsync()
+    {
+        this.FinalGuildList.Clear();
+        if (this._gameContext is not IGameServerContext gameServerContext)
+        {
+            return;
+        }
+
+        foreach (var guild in this.SiegeData.Guilds)
+        {
+            var runtimeGuildId = await gameServerContext.GuildServer
+                .GetGuildIdAsync(guild.GuildId)
+                .ConfigureAwait(false);
+            if (runtimeGuildId == 0)
+            {
+                continue;
+            }
+
+            this.FinalGuildList[runtimeGuildId] = new CastleSiegeGuildParticipant
+            {
+                GuildId = runtimeGuildId,
+                PersistentGuildId = guild.GuildId,
+                GuildName = guild.GuildName,
+                Side = guild.Side,
+                Score = guild.Score,
+                IsAllianceMaster = guild.IsAllianceMaster,
+            };
+        }
+
+        this.InitializeBattleOwner();
+    }
+
+    private async ValueTask<CastleSiegeJoinSide> ResolvePlayerJoinSideAsync(Player player)
+    {
+        if (player.GuildStatus is not { } guildStatus)
+        {
+            return CastleSiegeJoinSide.None;
+        }
+
+        if (this.FinalGuildList.TryGetValue(guildStatus.GuildId, out var runtimeGuild))
+        {
+            return runtimeGuild.Side;
+        }
+
+        if (this._gameContext is not IGameServerContext gameServerContext
+            || await gameServerContext.GuildServer
+                .GetPersistentGuildIdAsync(guildStatus.GuildId)
+                .ConfigureAwait(false) is not { } persistentGuildId)
+        {
+            return CastleSiegeJoinSide.None;
+        }
+
+        var persistedEntry = this.FinalGuildList.FirstOrDefault(
+            entry => entry.Value.PersistentGuildId == persistentGuildId);
+        if (persistedEntry.Value is null)
+        {
+            return CastleSiegeJoinSide.None;
+        }
+
+        this.FinalGuildList.TryRemove(persistedEntry.Key, out _);
+        persistedEntry.Value.GuildId = guildStatus.GuildId;
+        this.FinalGuildList[guildStatus.GuildId] = persistedEntry.Value;
+        return persistedEntry.Value.Side;
     }
 }

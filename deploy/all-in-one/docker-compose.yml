@@ -6,7 +6,6 @@ services:
       - "80:80"
     volumes:
       - ./nginx/nginx.dev.conf:/etc/nginx/nginx.conf:ro
-      - ./.htpasswd:/etc/nginx/.htpasswd
     depends_on:
       - openmu-startup
 
@@ -27,9 +26,15 @@ services:
     environment:
       DB_HOST: database
       ASPNETCORE_URLS: http://+:8080
-    working_dir: /app/
+      # Optional bootstrap admin panel user. Without it, the admin panel is reachable
+      # without a login until the first user has been created within the panel itself.
+      OPENMU_ADMIN_USER: ${OPENMU_ADMIN_USER:-}
+      OPENMU_ADMIN_PASSWORD: ${OPENMU_ADMIN_PASSWORD:-}
+      # Optional base32 TOTP secret, if the bootstrap user should require a second factor.
+      OPENMU_ADMIN_TOTP_SECRET: ${OPENMU_ADMIN_TOTP_SECRET:-}
     volumes:
-      - ./.htpasswd:/etc/nginx/.htpasswd
+      - adminpanel-keys:/app/data-protection-keys
+    working_dir: /app/
     depends_on:
       - database
 
@@ -46,4 +51,5 @@ services:
       - dbdata:/var/lib/postgresql #store data on volume
 
 volumes:
+  adminpanel-keys:
   dbdata:

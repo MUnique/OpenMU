@@ -16,6 +16,7 @@ using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix;
+using MUnique.OpenMU.Web.AdminPanel.Auth;
 using MUnique.OpenMU.Web.AdminPanel.Components;
 using MUnique.OpenMU.Web.AdminPanel.Services;
 using MUnique.OpenMU.Web.Shared.Components.Modal;
@@ -72,6 +73,8 @@ public static class WebApplicationExtensions
         services.AddScoped<ILookupController, PersistentObjectsLookupController>();
         services.AddScoped<CreationPanelService>();
 
+        services.AddAdminPanelAuth(builder.Configuration);
+
         services.AddSingleton<IDataSource<GameConfiguration>, GameConfigurationDataSource>();
         services.AddSingleton<IDataSource<Account>, AccountDataSource>();
         services.AddSingleton<ConfigurationSearchIndexCache>();
@@ -83,7 +86,7 @@ public static class WebApplicationExtensions
         services.AddScoped<IDataService<PlugInConfigurationViewItem>>(serviceProvider => serviceProvider.GetService<PlugInController>()!);
         services.AddScoped<ChatCommandController>();
         services.AddScoped<IDataService<ChatCommandViewItem>>(serviceProvider => serviceProvider.GetService<ChatCommandController>()!);
-        services.AddScoped<IUserService, NginxHtpasswdFileUserService>();
+        services.AddScoped<AdminUserManagementService>();
         services.AddScoped<IChangeNotificationService, ChangeNotificationService>();
         services.AddScoped<NavigationHistory>();
         services.AddScoped<LoggedInAccountService>();
@@ -113,6 +116,12 @@ public static class WebApplicationExtensions
         }
 
         app.UseStaticFiles();
+
+        app.UseRouting();
+        app.UseAdminPanelAuth();
+
+        // The log files may contain sensitive information, so they are only served to authorized users.
+        app.UseAuthorizedPath("/logs");
         app.UseStaticFiles(new StaticFileOptions
         {
             FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "logs")),
@@ -128,7 +137,8 @@ public static class WebApplicationExtensions
         app.MapRazorComponents<App>()
             .AddInteractiveServerRenderMode();
 
-        app.MapControllers();
+        app.MapControllers().RequireAuthorization();
+        app.MapAdminPanelAuthEndpoints();
 
         AdminPanelEnvironment.IsHostingEmbedded = true;
 

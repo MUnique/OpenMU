@@ -13,6 +13,29 @@ using MUnique.OpenMU.Interfaces;
 public class GuildServerTest : GuildTestBase
 {
     /// <summary>
+    /// Tests that a persistent guild can be loaded without an online member or a name lookup.
+    /// </summary>
+    [Test]
+    public async ValueTask GetGuildIdAsyncLoadsOfflineGuild()
+    {
+        using var context = this.PersistenceContextProvider.CreateNewContext();
+        var persistentGuild = (await context
+                .GetAsync<MUnique.OpenMU.DataModel.Entities.Guild>()
+                .ConfigureAwait(false))
+            .Single(guild => guild.Name == GuildName);
+        Assert.That(await this.GuildServer.GetGuildIdByNameAsync(GuildName).ConfigureAwait(false), Is.Zero);
+
+        var runtimeGuildId = await this.GuildServer.GetGuildIdAsync(persistentGuild.Id).ConfigureAwait(false);
+        var loadedGuildId = await this.GuildServer.GetGuildIdByNameAsync(GuildName).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(runtimeGuildId, Is.Not.Zero);
+            Assert.That(loadedGuildId, Is.EqualTo(runtimeGuildId));
+        });
+    }
+
+    /// <summary>
     /// Tests if the entrance of guild members is registered correctly in the guild member list.
     /// </summary>
     [Test]

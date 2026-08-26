@@ -31,6 +31,16 @@ public class EntityDataContext : ExtendedTypeContext
     /// </summary>
     internal DbSet<CastleSiegeGuildRegistration> CastleSiegeGuildRegistrations => this.Set<CastleSiegeGuildRegistration>();
 
+    /// <summary>
+    /// Gets the selected Castle Siege guilds.
+    /// </summary>
+    internal DbSet<CastleSiegeGuild> CastleSiegeGuilds => this.Set<CastleSiegeGuild>();
+
+    /// <summary>
+    /// Gets pending Castle Siege participant rewards.
+    /// </summary>
+    internal DbSet<CastleSiegePendingReward> CastleSiegePendingRewards => this.Set<CastleSiegePendingReward>();
+
     /// <inheritdoc/>
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -70,7 +80,9 @@ public class EntityDataContext : ExtendedTypeContext
         modelBuilder.Entity<CharacterClass>().Apply();
         modelBuilder.Entity<CastleSiegeConfiguration>().Apply();
         modelBuilder.Entity<CastleSiegeData>().Apply();
+        modelBuilder.Entity<CastleSiegeGuild>().Apply();
         modelBuilder.Entity<CastleSiegeGuildRegistration>().Apply();
+        modelBuilder.Entity<CastleSiegePendingReward>().Apply();
         modelBuilder.Entity<CastleSiegeNpcDefinition>().Apply();
         modelBuilder.Entity<CastleSiegeNpcState>().Apply();
         modelBuilder.Entity<DropItemGroup>().Apply();

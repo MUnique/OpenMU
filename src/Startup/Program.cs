@@ -26,6 +26,7 @@ using MUnique.OpenMU.LoginServer;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.EntityFramework;
+using MUnique.OpenMU.Persistence.EntityFramework.AdminAuth;
 using MUnique.OpenMU.Persistence.EntityFramework.Json;
 using MUnique.OpenMU.Persistence.Initialization;
 using MUnique.OpenMU.Persistence.Initialization.Version075;
@@ -253,6 +254,9 @@ internal sealed class Program : IDisposable
         builder.Host.UseSerilog(this._logger);
         if (addAdminPanel)
         {
+            // The storage of the admin panel users has to be registered before the panel itself,
+            // which only adds a fallback when nothing else is registered.
+            builder.Services.AddAdminUserRepository();
             builder.AddAdminPanel(includeMapApp: true);
         }
 
