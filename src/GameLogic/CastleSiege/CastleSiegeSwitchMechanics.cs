@@ -20,7 +20,66 @@ public static class CastleSiegeSwitchMechanics
     /// <returns>A task that represents the asynchronous broadcast operation.</returns>
     public static async ValueTask SendSwitchInfoAsync(CastleSiegeContext context)
     {
-        var switchInfos = context.ActiveNpcs
+        var switchInfos = CreateSwitchInfos(context);
+        var crownAvailability = UpdateCrownState(context);
+        var changedSwitches = switchInfos
+            .Where((switchInfo, index) => !Equals(switchInfo, context.LastBroadcastSwitchInfos[index]))
+            .ToList();
+        var crownStateChanged = context.LastBroadcastCrownAvailability != crownAvailability;
+        if (changedSwitches.Count == 0 && !crownStateChanged)
+        {
+            return;
+        }
+
+        await context.ForEachSiegePlayerAsync(async player =>
+        {
+            foreach (var switchInfo in changedSwitches)
+            {
+                await player.InvokeViewPlugInAsync<ICastleSiegeSwitchInfoPlugIn>(
+                        plugIn => plugIn.ShowSwitchInfoAsync(switchInfo))
+                    .ConfigureAwait(false);
+            }
+
+            if (crownStateChanged)
+            {
+                await player.InvokeViewPlugInAsync<ICastleSiegeCrownStatePlugIn>(
+                        plugIn => plugIn.ShowCrownStateAsync(crownAvailability))
+                    .ConfigureAwait(false);
+            }
+        }).ConfigureAwait(false);
+
+        for (var index = 0; index < switchInfos.Count; index++)
+        {
+            context.LastBroadcastSwitchInfos[index] = switchInfos[index];
+        }
+
+        context.LastBroadcastCrownAvailability = crownAvailability;
+    }
+
+    /// <summary>
+    /// Sends the current switch and Crown state to one player who entered the siege map.
+    /// </summary>
+    /// <param name="context">The Castle Siege context.</param>
+    /// <param name="player">The player to synchronize.</param>
+    /// <returns>A task that represents the asynchronous synchronization operation.</returns>
+    public static async ValueTask SynchronizePlayerAsync(CastleSiegeContext context, Player player)
+    {
+        foreach (var switchInfo in CreateSwitchInfos(context))
+        {
+            await player.InvokeViewPlugInAsync<ICastleSiegeSwitchInfoPlugIn>(
+                    plugIn => plugIn.ShowSwitchInfoAsync(switchInfo))
+                .ConfigureAwait(false);
+        }
+
+        var crownAvailability = UpdateCrownState(context);
+        await player.InvokeViewPlugInAsync<ICastleSiegeCrownStatePlugIn>(
+                plugIn => plugIn.ShowCrownStateAsync(crownAvailability))
+            .ConfigureAwait(false);
+    }
+
+    private static List<CastleSiegeSwitchInfo> CreateSwitchInfos(CastleSiegeContext context)
+    {
+        return context.ActiveNpcs
             .Select(runtime => runtime.SpawnedInstance)
             .OfType<CastleSiegeSwitch>()
             .OrderBy(candidate => candidate.SwitchIndex)
@@ -29,30 +88,6 @@ public static class CastleSiegeSwitchMechanics
                 siegeSwitch,
                 context.SwitchUsers[siegeSwitch.SwitchIndex]))
             .ToList();
-
-        context.IsCrownAvailable = AreSwitchesHeldBySameAttackingSide(context);
-        foreach (var crown in context.ActiveNpcs
-                     .Select(runtime => runtime.SpawnedInstance)
-                     .OfType<CastleSiegeCrown>())
-        {
-            crown.State = context.IsCrownAvailable
-                ? CastleSiegeCrownState.Idle
-                : CastleSiegeCrownState.Locked;
-        }
-
-        await context.ForEachSiegePlayerAsync(async player =>
-        {
-            foreach (var switchInfo in switchInfos)
-            {
-                await player.InvokeViewPlugInAsync<ICastleSiegeSwitchInfoPlugIn>(
-                        plugIn => plugIn.ShowSwitchInfoAsync(switchInfo))
-                    .ConfigureAwait(false);
-            }
-
-            await player.InvokeViewPlugInAsync<ICastleSiegeCrownStatePlugIn>(
-                    plugIn => plugIn.ShowCrownStateAsync(context.IsCrownAvailable))
-                .ConfigureAwait(false);
-        }).ConfigureAwait(false);
     }
 
     private static CastleSiegeSwitchInfo CreateSwitchInfo(
@@ -67,12 +102,29 @@ public static class CastleSiegeSwitchMechanics
                         && context.FinalGuildList.TryGetValue(guildStatus.GuildId, out var participant)
             ? participant.GuildName
             : string.Empty;
+
+        // MuMain resolves the legacy switch-index field through its visible-object table, so the object id is required.
         return new(
             siegeSwitch.Id,
             occupant is not null,
             side,
             guildName,
             occupant?.Name ?? string.Empty);
+    }
+
+    private static bool UpdateCrownState(CastleSiegeContext context)
+    {
+        context.IsCrownAvailable = AreSwitchesHeldBySameAttackingSide(context);
+        foreach (var crown in context.ActiveNpcs
+                     .Select(runtime => runtime.SpawnedInstance)
+                     .OfType<CastleSiegeCrown>())
+        {
+            crown.State = context.IsCrownAvailable
+                ? CastleSiegeCrownState.Idle
+                : CastleSiegeCrownState.Locked;
+        }
+
+        return context.IsCrownAvailable;
     }
 
     private static bool AreSwitchesHeldBySameAttackingSide(CastleSiegeContext context)

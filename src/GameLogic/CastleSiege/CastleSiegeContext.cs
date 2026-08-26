@@ -131,6 +131,21 @@ public class CastleSiegeContext : IEventStateProvider
     internal Player? PreviousCrownUser { get; set; }
 
     /// <summary>
+    /// Gets or sets the UTC time of the previous Crown progress update.
+    /// </summary>
+    internal DateTime LastCrownUpdateUtc { get; set; }
+
+    /// <summary>
+    /// Gets the switch information which was last broadcast to the siege map.
+    /// </summary>
+    internal CastleSiegeSwitchInfo?[] LastBroadcastSwitchInfos { get; } = new CastleSiegeSwitchInfo?[2];
+
+    /// <summary>
+    /// Gets or sets the Crown availability which was last broadcast to the siege map.
+    /// </summary>
+    internal bool? LastBroadcastCrownAvailability { get; set; }
+
+    /// <summary>
     /// Gets a value indicating whether the context has been initialized.
     /// </summary>
     internal bool IsInitialized { get; private set; }
@@ -390,8 +405,12 @@ public class CastleSiegeContext : IEventStateProvider
     internal void InitializeBattleOwner()
     {
         this.MiddleOwnerGuildId = this.FinalGuildList.Values
-            .FirstOrDefault(guild => guild.Side == CastleSiegeJoinSide.Defense && guild.IsAllianceMaster)
-            ?.GuildId;
+                                      .FirstOrDefault(guild => guild.Side == CastleSiegeJoinSide.Defense
+                                                               && guild.PersistentGuildId == this.SiegeData.OwnerGuildId)
+                                      ?.GuildId
+                                  ?? this.FinalGuildList.Values
+                                      .FirstOrDefault(guild => guild.Side == CastleSiegeJoinSide.Defense && guild.IsAllianceMaster)
+                                      ?.GuildId;
     }
 
     /// <summary>

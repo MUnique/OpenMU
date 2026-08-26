@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.CastleSiege;
 
+using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.CastleSiege.NPC;
 using MUnique.OpenMU.GameLogic.Views.CastleSiege;
@@ -13,15 +14,19 @@ using MUnique.OpenMU.GameLogic.Views.CastleSiege;
 /// </summary>
 public static class CastleSiegeCrownMechanics
 {
-    private static readonly TimeSpan TickInterval = TimeSpan.FromSeconds(1);
-
     /// <summary>
     /// Checks whether the Crown and both switches are held by the same attacking side.
     /// </summary>
     /// <param name="context">The Castle Siege context.</param>
+    /// <param name="utcNow">The current UTC time.</param>
     /// <returns>A task that represents the asynchronous check operation.</returns>
-    public static async ValueTask CheckMiddleWinnerAsync(CastleSiegeContext context)
+    public static async ValueTask CheckMiddleWinnerAsync(CastleSiegeContext context, DateTime utcNow)
     {
+        var elapsed = utcNow > context.LastCrownUpdateUtc
+            ? utcNow - context.LastCrownUpdateUtc
+            : TimeSpan.Zero;
+        context.LastCrownUpdateUtc = utcNow;
+
         var crownUser = context.CrownUser;
         var previousCrownUser = context.PreviousCrownUser;
         if (previousCrownUser is not null
@@ -47,13 +52,16 @@ public static class CastleSiegeCrownMechanics
             return;
         }
 
-        context.CrownAccumulatedTime += TickInterval;
+        context.CrownAccumulatedTime += elapsed;
         context.PreviousCrownUser = crownUser;
-        await SendAccessStateAsync(
-                crownUser!,
-                CastleSiegeCrownAccessState.Attempt,
-                context.CrownAccumulatedTime)
-            .ConfigureAwait(false);
+        if (elapsed > TimeSpan.Zero)
+        {
+            await SendAccessStateAsync(
+                    crownUser!,
+                    CastleSiegeCrownAccessState.Attempt,
+                    context.CrownAccumulatedTime)
+                .ConfigureAwait(false);
+        }
 
         var requiredTime = TimeSpan.FromSeconds(context.Configuration.CrownHoldTimeSeconds);
         if (context.CrownAccumulatedTime < requiredTime)
@@ -76,7 +84,7 @@ public static class CastleSiegeCrownMechanics
     /// <param name="crownUser">The player who captured the Crown.</param>
     /// <param name="capturingSide">The attacking side which captured the Crown.</param>
     /// <returns>A task that represents the asynchronous ownership change.</returns>
-    public static async ValueTask ChangeWinnerGuildAsync(
+    internal static async ValueTask ChangeWinnerGuildAsync(
         CastleSiegeContext context,
         Player crownUser,
         CastleSiegeJoinSide capturingSide)
@@ -104,7 +112,9 @@ public static class CastleSiegeCrownMechanics
             }
         }
 
+        ApplyOwner(context, capturingGuild);
         await context.SaveFinalGuildListAsync().ConfigureAwait(false);
+        await context.SaveOwnerAsync().ConfigureAwait(false);
         await context.SetPlayerJoinSideAsync().ConfigureAwait(false);
         await RespawnAttackersAsync(context).ConfigureAwait(false);
 
@@ -120,6 +130,13 @@ public static class CastleSiegeCrownMechanics
         context.CrownUser = null;
         context.PreviousCrownUser = null;
         Array.Clear(context.SwitchUsers);
+        foreach (var siegeSwitch in context.ActiveNpcs
+                     .Select(runtime => runtime.SpawnedInstance)
+                     .OfType<CastleSiegeSwitch>())
+        {
+            siegeSwitch.Occupant = null;
+        }
+
         await BroadcastOwnershipAsync(context, capturingGuild.GuildName).ConfigureAwait(false);
     }
 
@@ -128,26 +145,28 @@ public static class CastleSiegeCrownMechanics
     /// </summary>
     /// <param name="context">The Castle Siege context.</param>
     /// <returns>A task that represents the asynchronous result operation.</returns>
-    public static async ValueTask CheckResultAsync(CastleSiegeContext context)
+    internal static async ValueTask CheckResultAsync(CastleSiegeContext context)
     {
         CastleSiegeGuildParticipant? winner = null;
         if (context.MiddleOwnerGuildId is { } middleOwnerGuildId)
         {
-            winner = context.FinalGuildList.TryGetValue(middleOwnerGuildId, out var participant)
-                ? participant
-                : throw new InvalidOperationException("The intermediate Castle Siege owner is not in the selected guild list.");
+            if (context.FinalGuildList.TryGetValue(middleOwnerGuildId, out var participant))
+            {
+                winner = participant;
+            }
+            else
+            {
+                context.GameContext.LoggerFactory
+                    .CreateLogger(typeof(CastleSiegeCrownMechanics))
+                    .LogWarning(
+                        "The intermediate Castle Siege owner {guildId} is not in the selected guild list. The persisted owner is retained.",
+                        middleOwnerGuildId);
+            }
         }
 
-        if (winner is not null
-            && (!context.SiegeData.IsOccupied
-                || context.SiegeData.OwnerGuildId != winner.PersistentGuildId))
+        if (winner is not null)
         {
-            context.SiegeData.OwnerGuildId = winner.PersistentGuildId;
-            context.SiegeData.IsOccupied = true;
-            context.SiegeData.TaxChaos = 0;
-            context.SiegeData.TaxStore = 0;
-            context.SiegeData.TaxHunt = 0;
-            context.SiegeData.TributeMoney = 0;
+            ApplyOwner(context, winner);
         }
 
         await context.SaveOwnerAsync().ConfigureAwait(false);
@@ -191,6 +210,7 @@ public static class CastleSiegeCrownMechanics
 
     private static void CapAccumulatedTime(CastleSiegeContext context)
     {
+        // Crown progress is shared across interrupted attempts and attacking sides by design.
         var maximumSeconds = Math.Max(context.Configuration.CrownHoldTimeSeconds, 1) - 1;
         var maximumTime = TimeSpan.FromSeconds(maximumSeconds);
         if (context.CrownAccumulatedTime > maximumTime)
@@ -262,6 +282,22 @@ public static class CastleSiegeCrownMechanics
                     .GetGuildAsync(runtimeGuildId)
                     .ConfigureAwait(false))
                 ?.Name;
+    }
+
+    private static void ApplyOwner(CastleSiegeContext context, CastleSiegeGuildParticipant winner)
+    {
+        if (context.SiegeData.IsOccupied
+            && context.SiegeData.OwnerGuildId == winner.PersistentGuildId)
+        {
+            return;
+        }
+
+        context.SiegeData.OwnerGuildId = winner.PersistentGuildId;
+        context.SiegeData.IsOccupied = true;
+        context.SiegeData.TaxChaos = 0;
+        context.SiegeData.TaxStore = 0;
+        context.SiegeData.TaxHunt = 0;
+        context.SiegeData.TributeMoney = 0;
     }
 
     private static async ValueTask BroadcastOwnershipAsync(CastleSiegeContext context, string guildName)

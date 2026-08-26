@@ -230,6 +230,10 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
                 context,
                 player,
                 this._timeProvider.GetUtcNow().UtcDateTime);
+            if (context.CurrentState == CastleSiegeState.Start)
+            {
+                await CastleSiegeSwitchMechanics.SynchronizePlayerAsync(context, player).ConfigureAwait(false);
+            }
         }
     }
 
@@ -334,11 +338,14 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
                 Array.Clear(context.SwitchUsers);
                 context.CrownAccumulatedTime = TimeSpan.Zero;
                 context.IsCrownAvailable = false;
+                Array.Clear(context.LastBroadcastSwitchInfos);
+                context.LastBroadcastCrownAvailability = null;
                 await context.NpcController.PrepareAsync().ConfigureAwait(false);
                 await context.NpcController.CloseGatesAsync().ConfigureAwait(false);
                 await context.NpcController.SpawnMachinesAsync().ConfigureAwait(false);
                 await context.SetPlayerJoinSideAsync().ConfigureAwait(false);
                 var utcNow = this._timeProvider.GetUtcNow().UtcDateTime;
+                context.LastCrownUpdateUtc = utcNow;
                 await CastleSiegeParticipantTracker.TrackAsync(context, utcNow).ConfigureAwait(false);
                 context.NextParticipantUpdateUtc = utcNow + ParticipantUpdateInterval;
                 break;
@@ -367,6 +374,9 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
                 Array.Clear(context.SwitchUsers);
                 context.CrownAccumulatedTime = TimeSpan.Zero;
                 context.IsCrownAvailable = false;
+                context.LastCrownUpdateUtc = DateTime.MinValue;
+                Array.Clear(context.LastBroadcastSwitchInfos);
+                context.LastBroadcastCrownAvailability = null;
                 context.NextParticipantUpdateUtc = DateTime.MaxValue;
                 break;
         }
@@ -408,7 +418,7 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
         if (context.CurrentState == CastleSiegeState.Start)
         {
             await CastleSiegeSwitchMechanics.SendSwitchInfoAsync(context).ConfigureAwait(false);
-            await CastleSiegeCrownMechanics.CheckMiddleWinnerAsync(context).ConfigureAwait(false);
+            await CastleSiegeCrownMechanics.CheckMiddleWinnerAsync(context, utcNow).ConfigureAwait(false);
         }
 
         if (!context.IsEventRunning && context.NextNpcSaveUtc <= utcNow)

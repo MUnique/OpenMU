@@ -61,11 +61,11 @@ public class CastleSiegeCrownMechanicsTests
         fixture.Context.SwitchUsers[0] = firstSwitchUser;
         fixture.Context.SwitchUsers[1] = secondSwitchUser;
 
-        await CastleSiegeCrownMechanics.CheckMiddleWinnerAsync(fixture.Context).ConfigureAwait(false);
+        await fixture.CheckCrownAsync().ConfigureAwait(false);
         fixture.Context.CrownAccumulatedTime = TimeSpan.FromSeconds(10);
         fixture.Context.SwitchUsers[1] = null;
-        await CastleSiegeCrownMechanics.CheckMiddleWinnerAsync(fixture.Context).ConfigureAwait(false);
-        await CastleSiegeCrownMechanics.CheckMiddleWinnerAsync(fixture.Context).ConfigureAwait(false);
+        await fixture.CheckCrownAsync().ConfigureAwait(false);
+        await fixture.CheckCrownAsync().ConfigureAwait(false);
 
         Assert.That(fixture.Context.CrownAccumulatedTime, Is.EqualTo(TimeSpan.FromSeconds(2)));
         Mock.Get(crownUser.ViewPlugIns.GetPlugIn<ICastleSiegeCrownAccessStatePlugIn>()!)
@@ -107,30 +107,30 @@ public class CastleSiegeCrownMechanicsTests
         fixture.Context.CrownUser = crownUser;
         fixture.Context.SwitchUsers[0] = firstSwitchUser;
         fixture.Context.SwitchUsers[1] = secondSwitchUser;
-        await CastleSiegeCrownMechanics.CheckMiddleWinnerAsync(fixture.Context).ConfigureAwait(false);
+        await fixture.CheckCrownAsync().ConfigureAwait(false);
         Assert.That(fixture.Context.CrownAccumulatedTime, Is.EqualTo(TimeSpan.Zero), "Different attacking sides must not capture.");
 
         fixture.Context.PlayerJoinSides[secondSwitchUser.SelectedCharacter!.Id] = CastleSiegeJoinSide.Attack1;
         secondSwitchUser.IsAlive = false;
-        await CastleSiegeCrownMechanics.CheckMiddleWinnerAsync(fixture.Context).ConfigureAwait(false);
+        await fixture.CheckCrownAsync().ConfigureAwait(false);
         Assert.That(fixture.Context.CrownAccumulatedTime, Is.EqualTo(TimeSpan.Zero), "Dead switch users must not capture.");
 
         secondSwitchUser.IsAlive = true;
         secondSwitchUser.GuildStatus = null;
-        await CastleSiegeCrownMechanics.CheckMiddleWinnerAsync(fixture.Context).ConfigureAwait(false);
+        await fixture.CheckCrownAsync().ConfigureAwait(false);
         Assert.That(fixture.Context.CrownAccumulatedTime, Is.EqualTo(TimeSpan.Zero), "Guildless switch users must not capture.");
 
         secondSwitchUser.GuildStatus = new GuildMemberStatus(AttackGuildId, GuildPosition.NormalMember);
         fixture.Context.PlayerJoinSides[crownUser.SelectedCharacter!.Id] = CastleSiegeJoinSide.Defense;
         fixture.Context.PlayerJoinSides[firstSwitchUser.SelectedCharacter!.Id] = CastleSiegeJoinSide.Defense;
         fixture.Context.PlayerJoinSides[secondSwitchUser.SelectedCharacter.Id] = CastleSiegeJoinSide.Defense;
-        await CastleSiegeCrownMechanics.CheckMiddleWinnerAsync(fixture.Context).ConfigureAwait(false);
+        await fixture.CheckCrownAsync().ConfigureAwait(false);
         Assert.That(fixture.Context.CrownAccumulatedTime, Is.EqualTo(TimeSpan.Zero), "The defending side must not capture.");
 
         fixture.Context.PlayerJoinSides[crownUser.SelectedCharacter.Id] = CastleSiegeJoinSide.Attack1;
         fixture.Context.PlayerJoinSides[firstSwitchUser.SelectedCharacter.Id] = CastleSiegeJoinSide.Attack1;
         fixture.Context.PlayerJoinSides[secondSwitchUser.SelectedCharacter.Id] = CastleSiegeJoinSide.Attack1;
-        await CastleSiegeCrownMechanics.CheckMiddleWinnerAsync(fixture.Context).ConfigureAwait(false);
+        await fixture.CheckCrownAsync().ConfigureAwait(false);
         Assert.That(fixture.Context.CrownAccumulatedTime, Is.EqualTo(TimeSpan.FromSeconds(1)));
     }
 
@@ -172,10 +172,10 @@ public class CastleSiegeCrownMechanicsTests
         fixture.Context.CrownUser = previousCrownUser;
         fixture.Context.SwitchUsers[0] = firstSwitchUser;
         fixture.Context.SwitchUsers[1] = secondSwitchUser;
-        await CastleSiegeCrownMechanics.CheckMiddleWinnerAsync(fixture.Context).ConfigureAwait(false);
+        await fixture.CheckCrownAsync().ConfigureAwait(false);
 
         fixture.Context.CrownUser = newCrownUser;
-        await CastleSiegeCrownMechanics.CheckMiddleWinnerAsync(fixture.Context).ConfigureAwait(false);
+        await fixture.CheckCrownAsync().ConfigureAwait(false);
 
         Assert.That(fixture.Context.CrownAccumulatedTime, Is.EqualTo(TimeSpan.FromSeconds(2)));
         Mock.Get(previousCrownUser.ViewPlugIns.GetPlugIn<ICastleSiegeCrownAccessStatePlugIn>()!)
@@ -231,10 +231,11 @@ public class CastleSiegeCrownMechanicsTests
         fixture.Context.SwitchUsers[0] = firstSwitchUser;
         fixture.Context.SwitchUsers[1] = secondSwitchUser;
         fixture.Context.IsCrownAvailable = true;
+        fixture.Context.FinalGuildList[AttackGuildId].IsAllianceMaster = false;
 
-        await CastleSiegeCrownMechanics.CheckMiddleWinnerAsync(fixture.Context).ConfigureAwait(false);
-        await CastleSiegeCrownMechanics.CheckMiddleWinnerAsync(fixture.Context).ConfigureAwait(false);
-        await CastleSiegeCrownMechanics.CheckMiddleWinnerAsync(fixture.Context).ConfigureAwait(false);
+        await fixture.CheckCrownAsync().ConfigureAwait(false);
+        await fixture.CheckCrownAsync().ConfigureAwait(false);
+        await fixture.CheckCrownAsync().ConfigureAwait(false);
 
         Assert.Multiple(() =>
         {
@@ -247,6 +248,7 @@ public class CastleSiegeCrownMechanicsTests
             Assert.That(fixture.Context.CrownAccumulatedTime, Is.EqualTo(TimeSpan.Zero));
             Assert.That(fixture.Context.CrownUser, Is.Null);
             Assert.That(fixture.Context.SwitchUsers, Is.All.Null);
+            Assert.That(fixture.Context.SiegeData.OwnerGuildId, Is.EqualTo(fixture.AttackPersistentGuildId));
             Assert.That(formerDefender.Position.X, Is.InRange((byte)35, (byte)40));
             Assert.That(formerDefender.Position.Y, Is.InRange((byte)11, (byte)16));
         });
@@ -260,6 +262,15 @@ public class CastleSiegeCrownMechanicsTests
             .Verify(
                 plugIn => plugIn.ShowOwnershipChangeAsync("Attackers"),
                 Times.Once);
+
+        using (var persistenceContext = fixture.PersistenceContextProvider.CreateNewTypedContext(
+                   typeof(CastleSiegeData),
+                   false,
+                   fixture.GameServerContext.Configuration))
+        {
+            var persistedData = (await persistenceContext.GetAsync<CastleSiegeData>().ConfigureAwait(false)).Single();
+            Assert.That(persistedData.OwnerGuildId, Is.EqualTo(fixture.AttackPersistentGuildId));
+        }
 
         var restartedContext = new CastleSiegeContext(fixture.GameServerContext, fixture.Configuration);
         await restartedContext.InitializeAsync(fixture.InitializationTimeUtc).ConfigureAwait(false);
@@ -329,6 +340,27 @@ public class CastleSiegeCrownMechanicsTests
             Mock.Get(firstSwitchUser.ViewPlugIns.GetPlugIn<ICastleSiegeCrownStatePlugIn>()!)
                 .Verify(plugIn => plugIn.ShowCrownStateAsync(true), Times.Once);
 
+            await CastleSiegeSwitchMechanics.SendSwitchInfoAsync(fixture.Context).ConfigureAwait(false);
+            Mock.Get(firstSwitchUser.ViewPlugIns.GetPlugIn<ICastleSiegeSwitchInfoPlugIn>()!)
+                .Verify(plugIn => plugIn.ShowSwitchInfoAsync(It.IsAny<CastleSiegeSwitchInfo>()), Times.Exactly(2));
+            Mock.Get(firstSwitchUser.ViewPlugIns.GetPlugIn<ICastleSiegeCrownStatePlugIn>()!)
+                .Verify(plugIn => plugIn.ShowCrownStateAsync(true), Times.Once);
+
+            var enteringPlayer = await fixture.CreatePlayerAsync(
+                    AttackGuildId,
+                    "EnteringPlayer",
+                    CastleSiegeJoinSide.Attack1,
+                    90,
+                    60)
+                .ConfigureAwait(false);
+            await CastleSiegeSwitchMechanics
+                .SynchronizePlayerAsync(fixture.Context, enteringPlayer)
+                .ConfigureAwait(false);
+            Mock.Get(enteringPlayer.ViewPlugIns.GetPlugIn<ICastleSiegeSwitchInfoPlugIn>()!)
+                .Verify(plugIn => plugIn.ShowSwitchInfoAsync(It.IsAny<CastleSiegeSwitchInfo>()), Times.Exactly(2));
+            Mock.Get(enteringPlayer.ViewPlugIns.GetPlugIn<ICastleSiegeCrownStatePlugIn>()!)
+                .Verify(plugIn => plugIn.ShowCrownStateAsync(true), Times.Once);
+
             fixture.Context.PlayerJoinSides[secondSwitchUser.SelectedCharacter!.Id] = CastleSiegeJoinSide.Attack2;
             await CastleSiegeSwitchMechanics.SendSwitchInfoAsync(fixture.Context).ConfigureAwait(false);
             Assert.Multiple(() =>
@@ -338,6 +370,8 @@ public class CastleSiegeCrownMechanicsTests
             });
             Mock.Get(firstSwitchUser.ViewPlugIns.GetPlugIn<ICastleSiegeCrownStatePlugIn>()!)
                 .Verify(plugIn => plugIn.ShowCrownStateAsync(false), Times.Once);
+            Mock.Get(firstSwitchUser.ViewPlugIns.GetPlugIn<ICastleSiegeSwitchInfoPlugIn>()!)
+                .Verify(plugIn => plugIn.ShowSwitchInfoAsync(It.IsAny<CastleSiegeSwitchInfo>()), Times.Exactly(3));
         }
         finally
         {
@@ -421,6 +455,47 @@ public class CastleSiegeCrownMechanicsTests
             Assert.That(fixture.Context.SiegeData.TaxHunt, Is.EqualTo(100_000));
             Assert.That(fixture.Context.SiegeData.TributeMoney, Is.EqualTo(6_000));
         });
+    }
+
+    /// <summary>
+    /// Verifies that an unresolved intermediate owner does not abort End-state processing.
+    /// </summary>
+    [Test]
+    public async ValueTask FinalResultRetainsPersistedOwnerWhenIntermediateOwnerIsMissingAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        fixture.Context.MiddleOwnerGuildId = uint.MaxValue;
+
+        await CastleSiegeCrownMechanics.CheckResultAsync(fixture.Context).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(fixture.Context.SiegeData.OwnerGuildId, Is.EqualTo(fixture.DefensePersistentGuildId));
+            Assert.That(fixture.Context.SiegeData.IsOccupied, Is.True);
+        });
+    }
+
+    /// <summary>
+    /// Verifies that Crown progress uses elapsed wall time when periodic ticks are delayed.
+    /// </summary>
+    [Test]
+    public async ValueTask CrownProgressUsesElapsedTimeAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var crownUser = await fixture.CreatePlayerAsync(AttackGuildId, "CrownUser", CastleSiegeJoinSide.Attack1, 60, 60).ConfigureAwait(false);
+        fixture.Context.CrownUser = crownUser;
+        fixture.Context.SwitchUsers[0] = await fixture.CreatePlayerAsync(AttackGuildId, "SwitchOne", CastleSiegeJoinSide.Attack1, 70, 60).ConfigureAwait(false);
+        fixture.Context.SwitchUsers[1] = await fixture.CreatePlayerAsync(AttackGuildId, "SwitchTwo", CastleSiegeJoinSide.Attack1, 80, 60).ConfigureAwait(false);
+
+        await fixture.CheckCrownAsync(TimeSpan.FromSeconds(2)).ConfigureAwait(false);
+
+        Assert.That(fixture.Context.CrownAccumulatedTime, Is.EqualTo(TimeSpan.FromSeconds(2)));
+        Mock.Get(crownUser.ViewPlugIns.GetPlugIn<ICastleSiegeCrownAccessStatePlugIn>()!)
+            .Verify(
+                plugIn => plugIn.ShowCrownAccessStateAsync(
+                    CastleSiegeCrownAccessState.Attempt,
+                    TimeSpan.FromSeconds(2)),
+                Times.Once);
     }
 
     private static async ValueTask<TestFixture> CreateFixtureAsync()
@@ -579,6 +654,8 @@ public class CastleSiegeCrownMechanicsTests
         Guid AttackPersistentGuildId,
         DateTime InitializationTimeUtc)
     {
+        private DateTime? _crownTimeUtc;
+
         /// <summary>
         /// Creates and tracks a Castle Siege participant.
         /// </summary>
@@ -608,6 +685,23 @@ public class CastleSiegeCrownMechanicsTests
             this.Context.TrackPlayer(player, this.SiegeMap);
             this.Context.PlayerJoinSides[player.SelectedCharacter.Id] = side;
             return player;
+        }
+
+        /// <summary>
+        /// Advances the Crown mechanics clock and executes one progress check.
+        /// </summary>
+        /// <param name="elapsed">The elapsed time since the previous check.</param>
+        /// <returns>A task that represents the asynchronous check.</returns>
+        internal ValueTask CheckCrownAsync(TimeSpan? elapsed = null)
+        {
+            if (this._crownTimeUtc is null)
+            {
+                this._crownTimeUtc = this.InitializationTimeUtc;
+                this.Context.LastCrownUpdateUtc = this.InitializationTimeUtc;
+            }
+
+            this._crownTimeUtc += elapsed ?? TimeSpan.FromSeconds(1);
+            return CastleSiegeCrownMechanics.CheckMiddleWinnerAsync(this.Context, this._crownTimeUtc.Value);
         }
     }
 }
