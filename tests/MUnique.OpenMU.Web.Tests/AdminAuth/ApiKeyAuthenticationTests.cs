@@ -20,49 +20,58 @@ using MUnique.OpenMU.Web.AdminPanel.Auth;
 [TestFixture]
 public class ApiKeyAuthenticationTests
 {
-    private const string ValidKey = "0123456789abcdef0123456789abcdef";
-    private const string OtherValidKey = "fedcba9876543210fedcba9876543210";
+    private const string ConfiguredKey = "0123456789abcdef0123456789abcdef";
+    private const string OtherConfiguredKey = "fedcba9876543210fedcba9876543210";
+
+    private InMemoryApiKeyRepository _repository = null!;
+
+    /// <summary>
+    /// Sets a fresh repository up for each test.
+    /// </summary>
+    [SetUp]
+    public void SetUp()
+    {
+        this._repository = new InMemoryApiKeyRepository();
+    }
 
     /// <summary>
     /// Tests that a configured key resolves to its client.
     /// </summary>
     [Test]
-    public void ConfiguredKeyIsFound()
+    public async Task ConfiguredKeyIsFoundAsync()
     {
-        var registry = CreateRegistry(new ApiKeyEntry { Name = "launcher", Key = ValidKey });
+        var registry = this.CreateRegistry(new ApiKeyEntry { Name = "launcher", Key = ConfiguredKey });
 
-        var client = registry.Find(ValidKey);
+        var client = await registry.FindAsync(ConfiguredKey).ConfigureAwait(false);
 
         Assert.That(client, Is.Not.Null);
         Assert.That(client!.Name, Is.EqualTo("launcher"));
-        Assert.That(registry.IsConfigured, Is.True);
     }
 
     /// <summary>
     /// Tests that an unknown key is not accepted.
     /// </summary>
     [Test]
-    public void UnknownKeyIsNotFound()
+    public async Task UnknownKeyIsNotFoundAsync()
     {
-        var registry = CreateRegistry(new ApiKeyEntry { Name = "launcher", Key = ValidKey });
+        var registry = this.CreateRegistry(new ApiKeyEntry { Name = "launcher", Key = ConfiguredKey });
 
-        Assert.That(registry.Find(OtherValidKey), Is.Null);
-        Assert.That(registry.Find(ValidKey + "x"), Is.Null);
-        Assert.That(registry.Find(string.Empty), Is.Null);
+        Assert.That(await registry.FindAsync(OtherConfiguredKey).ConfigureAwait(false), Is.Null);
+        Assert.That(await registry.FindAsync(ConfiguredKey + "x").ConfigureAwait(false), Is.Null);
+        Assert.That(await registry.FindAsync(string.Empty).ConfigureAwait(false), Is.Null);
     }
 
     /// <summary>
-    /// Tests that a key which is too short to be safe is not usable at all.
+    /// Tests that a configured key which is too short to be safe is not usable at all.
     /// </summary>
     [Test]
-    public void TooShortKeyIsIgnored()
+    public async Task TooShortConfiguredKeyIsIgnoredAsync()
     {
         var shortKey = new string('a', ApiKeyAuthenticationDefaults.MinimumKeyLength - 1);
 
-        var registry = CreateRegistry(new ApiKeyEntry { Name = "sloppy", Key = shortKey });
+        var registry = this.CreateRegistry(new ApiKeyEntry { Name = "sloppy", Key = shortKey });
 
-        Assert.That(registry.IsConfigured, Is.False);
-        Assert.That(registry.Find(shortKey), Is.Null);
+        Assert.That(await registry.FindAsync(shortKey).ConfigureAwait(false), Is.Null);
     }
 
     /// <summary>
@@ -70,14 +79,81 @@ public class ApiKeyAuthenticationTests
     /// roles of a client build up on each other like they do for a user.
     /// </summary>
     [Test]
-    public void RolesBuildUpOnEachOther()
+    public async Task RolesBuildUpOnEachOtherAsync()
     {
-        var registry = CreateRegistry(
-            new ApiKeyEntry { Name = "reader", Key = ValidKey },
-            new ApiKeyEntry { Name = "writer", Key = OtherValidKey, Roles = AdminRoles.Operator });
+        var registry = this.CreateRegistry(
+            new ApiKeyEntry { Name = "reader", Key = ConfiguredKey },
+            new ApiKeyEntry { Name = "writer", Key = OtherConfiguredKey, Roles = AdminRoles.Operator });
 
-        Assert.That(registry.Find(ValidKey)!.Roles, Is.EquivalentTo(new[] { AdminRoles.Viewer }));
-        Assert.That(registry.Find(OtherValidKey)!.Roles, Is.EquivalentTo(new[] { AdminRoles.Viewer, AdminRoles.Operator }));
+        var reader = await registry.FindAsync(ConfiguredKey).ConfigureAwait(false);
+        var writer = await registry.FindAsync(OtherConfiguredKey).ConfigureAwait(false);
+
+        Assert.That(reader!.Roles, Is.EquivalentTo(new[] { AdminRoles.Viewer }));
+        Assert.That(writer!.Roles, Is.EquivalentTo(new[] { AdminRoles.Viewer, AdminRoles.Operator }));
+    }
+
+    /// <summary>
+    /// Tests that a key which has been created in the admin panel is accepted, and that only its
+    /// hash is stored.
+    /// </summary>
+    [Test]
+    public async Task StoredKeyIsFoundAsync()
+    {
+        var generatedKey = await this.AddStoredKeyAsync("website", AdminRoles.Operator).ConfigureAwait(false);
+        var registry = this.CreateRegistry();
+
+        var client = await registry.FindAsync(generatedKey).ConfigureAwait(false);
+
+        Assert.That(client, Is.Not.Null);
+        Assert.That(client!.Name, Is.EqualTo("website"));
+        Assert.That(client.Roles, Is.EquivalentTo(new[] { AdminRoles.Viewer, AdminRoles.Operator }));
+
+        var stored = (await this._repository.GetAllAsync().ConfigureAwait(false)).Single();
+        Assert.That(stored.KeyHash, Is.Not.EqualTo(generatedKey));
+        Assert.That(stored.KeyPrefix, Is.EqualTo(generatedKey[..ApiKeyGenerator.VisiblePrefixLength]));
+    }
+
+    /// <summary>
+    /// Tests that a disabled key is rejected without having to delete it.
+    /// </summary>
+    [Test]
+    public async Task DisabledStoredKeyIsRejectedAsync()
+    {
+        var generatedKey = await this.AddStoredKeyAsync("website", AdminRoles.Viewer).ConfigureAwait(false);
+        (await this._repository.GetAllAsync().ConfigureAwait(false)).Single().IsDisabled = true;
+        var registry = this.CreateRegistry();
+
+        Assert.That(await registry.FindAsync(generatedKey).ConfigureAwait(false), Is.Null);
+    }
+
+    /// <summary>
+    /// Tests that the last usage of a stored key is not written on every single request.
+    /// </summary>
+    [Test]
+    public async Task LastUsageIsUpdatedAtMostOncePerIntervalAsync()
+    {
+        var generatedKey = await this.AddStoredKeyAsync("website", AdminRoles.Viewer).ConfigureAwait(false);
+        var registry = this.CreateRegistry();
+
+        for (var i = 0; i < 5; i++)
+        {
+            await registry.FindAsync(generatedKey).ConfigureAwait(false);
+        }
+
+        Assert.That(this._repository.TouchCount, Is.EqualTo(1));
+    }
+
+    /// <summary>
+    /// Tests that two generated keys are not the same.
+    /// </summary>
+    [Test]
+    public void GeneratedKeysAreUnique()
+    {
+        var keys = Enumerable.Range(0, 50).Select(_ => ApiKeyGenerator.GenerateKey()).ToList();
+
+        Assert.That(keys.Distinct(StringComparer.Ordinal).Count(), Is.EqualTo(keys.Count));
+        Assert.That(keys, Is.All.StartWith(ApiKeyGenerator.KeyPrefix));
+        Assert.That(keys, Is.All.Length.AtLeast(ApiKeyAuthenticationDefaults.MinimumKeyLength));
     }
 
     /// <summary>
@@ -86,10 +162,10 @@ public class ApiKeyAuthenticationTests
     [Test]
     public async Task ApiKeyHeaderAuthenticatesAsync()
     {
-        var context = CreateContext();
-        context.Request.Headers[ApiKeyAuthenticationDefaults.HeaderName] = ValidKey;
+        var context = new DefaultHttpContext();
+        context.Request.Headers[ApiKeyAuthenticationDefaults.HeaderName] = ConfiguredKey;
 
-        var result = await CreateHandlerAsync(context).ConfigureAwait(false);
+        var result = await this.AuthenticateAsync(context).ConfigureAwait(false);
 
         Assert.That(result.Succeeded, Is.True);
         Assert.That(result.Principal!.Identity!.IsAuthenticated, Is.True);
@@ -103,10 +179,10 @@ public class ApiKeyAuthenticationTests
     [Test]
     public async Task BearerTokenAuthenticatesAsync()
     {
-        var context = CreateContext();
-        context.Request.Headers[HeaderNames.Authorization] = $"Bearer {ValidKey}";
+        var context = new DefaultHttpContext();
+        context.Request.Headers[HeaderNames.Authorization] = $"Bearer {ConfiguredKey}";
 
-        var result = await CreateHandlerAsync(context).ConfigureAwait(false);
+        var result = await this.AuthenticateAsync(context).ConfigureAwait(false);
 
         Assert.That(result.Succeeded, Is.True);
     }
@@ -118,7 +194,7 @@ public class ApiKeyAuthenticationTests
     [Test]
     public async Task RequestWithoutKeyIsNoResultAsync()
     {
-        var result = await CreateHandlerAsync(CreateContext()).ConfigureAwait(false);
+        var result = await this.AuthenticateAsync(new DefaultHttpContext()).ConfigureAwait(false);
 
         Assert.That(result.None, Is.True);
         Assert.That(result.Succeeded, Is.False);
@@ -130,27 +206,39 @@ public class ApiKeyAuthenticationTests
     [Test]
     public async Task RequestWithWrongKeyFailsAsync()
     {
-        var context = CreateContext();
-        context.Request.Headers[ApiKeyAuthenticationDefaults.HeaderName] = OtherValidKey;
+        var context = new DefaultHttpContext();
+        context.Request.Headers[ApiKeyAuthenticationDefaults.HeaderName] = OtherConfiguredKey;
 
-        var result = await CreateHandlerAsync(context).ConfigureAwait(false);
+        var result = await this.AuthenticateAsync(context).ConfigureAwait(false);
 
         Assert.That(result.Succeeded, Is.False);
         Assert.That(result.None, Is.False);
         Assert.That(result.Failure, Is.Not.Null);
     }
 
-    private static ApiKeyRegistry CreateRegistry(params ApiKeyEntry[] entries)
+    private async Task<string> AddStoredKeyAsync(string name, string roles)
     {
-        var options = Options.Create(new ApiKeyOptions { Keys = entries.ToList() });
-        return new ApiKeyRegistry(options, NullLogger<ApiKeyRegistry>.Instance);
+        var generatedKey = ApiKeyGenerator.GenerateKey();
+        await this._repository.AddAsync(new ApiKey
+        {
+            Id = Guid.NewGuid(),
+            Name = name,
+            KeyHash = ApiKeyGenerator.Hash(generatedKey),
+            KeyPrefix = ApiKeyGenerator.GetVisiblePrefix(generatedKey),
+            Roles = roles,
+        }).ConfigureAwait(false);
+        return generatedKey;
     }
 
-    private static DefaultHttpContext CreateContext() => new();
-
-    private static async Task<AuthenticateResult> CreateHandlerAsync(HttpContext context)
+    private ApiKeyRegistry CreateRegistry(params ApiKeyEntry[] entries)
     {
-        var registry = CreateRegistry(new ApiKeyEntry { Name = "launcher", Key = ValidKey });
+        var options = Options.Create(new ApiKeyOptions { Keys = entries.ToList() });
+        return new ApiKeyRegistry(options, this._repository, NullLogger<ApiKeyRegistry>.Instance);
+    }
+
+    private async Task<AuthenticateResult> AuthenticateAsync(HttpContext context)
+    {
+        var registry = this.CreateRegistry(new ApiKeyEntry { Name = "launcher", Key = ConfiguredKey });
         var handler = new ApiKeyAuthenticationHandler(
             new StaticOptionsMonitor(),
             NullLoggerFactory.Instance,

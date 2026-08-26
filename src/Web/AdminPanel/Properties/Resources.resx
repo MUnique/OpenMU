@@ -825,4 +825,55 @@
   <data name="CannotModifyBootstrapUser" xml:space="preserve">
     <value>The bootstrap user is defined by the configuration and can't be changed here.</value>
   </data>
+  <data name="ApiKeys" xml:space="preserve">
+    <value>API keys</value>
+  </data>
+  <data name="ApiKeysDescription" xml:space="preserve">
+    <value>External applications like a game launcher or a website authenticate themselves at the public API under /api with one of these keys. Give each application its own key, so a single one can be revoked.</value>
+  </data>
+  <data name="ApiKeyName" xml:space="preserve">
+    <value>Application</value>
+  </data>
+  <data name="ApiKeyPrefix" xml:space="preserve">
+    <value>Key</value>
+  </data>
+  <data name="CreateApiKey" xml:space="preserve">
+    <value>Create API key</value>
+  </data>
+  <data name="DeleteApiKey" xml:space="preserve">
+    <value>Delete API key</value>
+  </data>
+  <data name="DeleteApiKeyQuestion" xml:space="preserve">
+    <value>Do you really want to delete the API key of '{0}'? The application which uses it stops working immediately.</value>
+  </data>
+  <data name="ApiKeyCreated" xml:space="preserve">
+    <value>The API key has been created.</value>
+  </data>
+  <data name="ApiKeyDeleted" xml:space="preserve">
+    <value>The API key has been deleted.</value>
+  </data>
+  <data name="ApiKeyEnabled" xml:space="preserve">
+    <value>The API key has been enabled.</value>
+  </data>
+  <data name="ApiKeyDisabled" xml:space="preserve">
+    <value>The API key has been disabled.</value>
+  </data>
+  <data name="ApiKeyShownOnce" xml:space="preserve">
+    <value>Copy this key now</value>
+  </data>
+  <data name="ApiKeyShownOnceDescription" xml:space="preserve">
+    <value>Only the hash of the key is stored, so this is the only time it's shown. If it gets lost, delete the key and create a new one.</value>
+  </data>
+  <data name="NoApiKeys" xml:space="preserve">
+    <value>No API key has been created yet.</value>
+  </data>
+  <data name="LastUsed" xml:space="preserve">
+    <value>Last used</value>
+  </data>
+  <data name="Enable" xml:space="preserve">
+    <value>Enable</value>
+  </data>
+  <data name="Disable" xml:space="preserve">
+    <value>Disable</value>
+  </data>
 </root>

@@ -2177,5 +2177,158 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
             }
         }
         
-    }
+            
+        /// <summary>
+        ///   Looks up a localized string similar to API keys.
+        /// </summary>
+        public static string ApiKeys {
+            get {
+                return ResourceManager.GetString("ApiKeys", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to External applications like a game launcher or a website authenticate themselves at the ....
+        /// </summary>
+        public static string ApiKeysDescription {
+            get {
+                return ResourceManager.GetString("ApiKeysDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Application.
+        /// </summary>
+        public static string ApiKeyName {
+            get {
+                return ResourceManager.GetString("ApiKeyName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Key.
+        /// </summary>
+        public static string ApiKeyPrefix {
+            get {
+                return ResourceManager.GetString("ApiKeyPrefix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create API key.
+        /// </summary>
+        public static string CreateApiKey {
+            get {
+                return ResourceManager.GetString("CreateApiKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete API key.
+        /// </summary>
+        public static string DeleteApiKey {
+            get {
+                return ResourceManager.GetString("DeleteApiKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Do you really want to delete the API key of '{0}'? The application which uses it stops ....
+        /// </summary>
+        public static string DeleteApiKeyQuestion {
+            get {
+                return ResourceManager.GetString("DeleteApiKeyQuestion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The API key has been created..
+        /// </summary>
+        public static string ApiKeyCreated {
+            get {
+                return ResourceManager.GetString("ApiKeyCreated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The API key has been deleted..
+        /// </summary>
+        public static string ApiKeyDeleted {
+            get {
+                return ResourceManager.GetString("ApiKeyDeleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The API key has been enabled..
+        /// </summary>
+        public static string ApiKeyEnabled {
+            get {
+                return ResourceManager.GetString("ApiKeyEnabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The API key has been disabled..
+        /// </summary>
+        public static string ApiKeyDisabled {
+            get {
+                return ResourceManager.GetString("ApiKeyDisabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Copy this key now.
+        /// </summary>
+        public static string ApiKeyShownOnce {
+            get {
+                return ResourceManager.GetString("ApiKeyShownOnce", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only the hash of the key is stored, so this is the only time it's shown. If it gets los....
+        /// </summary>
+        public static string ApiKeyShownOnceDescription {
+            get {
+                return ResourceManager.GetString("ApiKeyShownOnceDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No API key has been created yet..
+        /// </summary>
+        public static string NoApiKeys {
+            get {
+                return ResourceManager.GetString("NoApiKeys", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Last used.
+        /// </summary>
+        public static string LastUsed {
+            get {
+                return ResourceManager.GetString("LastUsed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enable.
+        /// </summary>
+        public static string Enable {
+            get {
+                return ResourceManager.GetString("Enable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Disable.
+        /// </summary>
+        public static string Disable {
+            get {
+                return ResourceManager.GetString("Disable", resourceCulture);
+            }
+        }
+}
 }

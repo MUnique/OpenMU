@@ -17,6 +17,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using MUnique.OpenMU.Persistence.AdminAuth;
+using MUnique.OpenMU.Web.AdminPanel.Services;
 
 /// <summary>
 /// Extensions which add the authentication of the admin panel.
@@ -73,6 +74,7 @@ public static class AdminPanelAuthExtensions
         ApplyApiKeyEnvironmentVariable(apiKeyOptions);
         services.Configure<ApiKeyOptions>(options => options.Keys = apiKeyOptions.Keys);
         services.AddSingleton<ApiKeyRegistry>();
+        services.AddScoped<ApiKeyManagementService>();
 
         // The key ring protects the authentication cookies and the authenticator keys. It has to be
         // persisted, otherwise a restart invalidates all sessions and makes all stored authenticator
@@ -85,6 +87,7 @@ public static class AdminPanelAuthExtensions
         // The hosting application registers the real storage; this is just a fallback which lets
         // the panel start in its initial setup mode instead of failing to resolve its services.
         services.TryAddSingleton<IAdminUserRepository, UnavailableAdminUserRepository>();
+        services.TryAddSingleton<IApiKeyRepository, UnavailableApiKeyRepository>();
 
         services.AddSingleton<AdminUserSecretProtector>();
         services.AddSingleton<IPasswordHasher<AdminUser>, BCryptPasswordHasher>();

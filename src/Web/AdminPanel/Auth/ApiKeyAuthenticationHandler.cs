@@ -42,21 +42,21 @@ public class ApiKeyAuthenticationHandler : AuthenticationHandler<AuthenticationS
     }
 
     /// <inheritdoc />
-    protected override Task<AuthenticateResult> HandleAuthenticateAsync()
+    protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         if (!this.TryGetPresentedKey(out var presentedKey))
         {
-            return Task.FromResult(AuthenticateResult.NoResult());
+            return AuthenticateResult.NoResult();
         }
 
-        var client = this._registry.Find(presentedKey);
+        var client = await this._registry.FindAsync(presentedKey, this.Context.RequestAborted).ConfigureAwait(false);
         if (client is null)
         {
             // The key itself is never logged: it's a credential, and the log is readable in the panel.
             this.Logger.LogWarning(
                 "Rejected an API request from {RemoteIpAddress} because its API key is unknown.",
                 this.Context.Connection.RemoteIpAddress);
-            return Task.FromResult(AuthenticateResult.Fail("The presented API key is unknown."));
+            return AuthenticateResult.Fail("The presented API key is unknown.");
         }
 
         var identity = new ClaimsIdentity(
@@ -65,7 +65,7 @@ public class ApiKeyAuthenticationHandler : AuthenticationHandler<AuthenticationS
             ClaimTypes.Name,
             ClaimTypes.Role);
         var ticket = new AuthenticationTicket(new ClaimsPrincipal(identity), this.Scheme.Name);
-        return Task.FromResult(AuthenticateResult.Success(ticket));
+        return AuthenticateResult.Success(ticket);
     }
 
     /// <inheritdoc />

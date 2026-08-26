@@ -147,10 +147,48 @@ X-Api-Key: <the key>
 `Authorization: Bearer <the key>` works as well, for clients which only speak
 that.
 
-### Configuring the keys
+### Creating a key
 
-Give every application its own key, so you can revoke one of them without
-touching the others:
+Open **API keys** in the navigation — it's next to *Users* and needs the
+administrator role. Click **Create API key**, give the application a name and
+pick its role.
+
+:::warning[The key is shown exactly once]
+Only a hash of the key is stored, the same way recovery codes are. Copy it
+straight into the application which needs it. If it gets lost, delete the key
+and create a new one.
+:::
+
+The list shows each key by its name and its first characters, so you can tell
+them apart without knowing them, together with the last time it was used — a
+key whose *Last used* stays empty is one you can delete.
+
+**Disable** stops a key from working without deleting it, which is the quickest
+reaction when you suspect a key has leaked and you don't want to touch the
+application's configuration yet. **Delete** removes it for good.
+
+### What a key may do
+
+A key has the same [roles](#roles) as a user, and defaults to **Viewer**:
+
+| Endpoint | Needs |
+|---|---|
+| `GET /api/status` | Viewer |
+| `GET /api/is-online/{account}` | Viewer |
+| `GET /api/send/{server}?msg=` | Operator |
+
+So a status page gets a Viewer key and can only read, while an application which
+announces something in the game needs an Operator key. The role of a key can be
+changed in the list at any time; the key itself stays the same.
+
+A signed in admin panel user can use the API as well, with the same roles — this
+is handy while trying things out in the browser.
+
+### Keys from the configuration
+
+The panel needs a database to store keys in, and the API has to work before that
+database exists. For that case — and to deploy a key together with the server
+instead of clicking it in afterwards — keys can also be configured:
 
 ```json
 {
@@ -158,7 +196,7 @@ touching the others:
     "Api": {
       "Keys": [
         { "Name": "launcher", "Key": "<a long random key>" },
-        { "Name": "website", "Key": "<another long random key>", "Roles": "Operator" }
+        { "Name": "website", "Key": "<another one>", "Roles": "Operator" }
       ]
     }
   }
@@ -174,30 +212,14 @@ OPENMU_API_KEY=<a long random key>
 OPENMU_API_KEY_ROLES=Operator
 ```
 
-Generate a key with something which is actually random, e.g.
-`openssl rand -base64 24`. Keys shorter than 32 characters are refused and
-logged, because a key travels with every request and is only as good as its
-entropy.
+Generate one with something which is actually random, e.g.
+`openssl rand -base64 24`. Configured keys shorter than 32 characters are
+refused and logged, because a key travels with every request and is only as good
+as its entropy.
 
-### What a key may do
-
-A key has the same [roles](#roles) as a user, and defaults to **Viewer**:
-
-| Endpoint | Needs |
-|---|---|
-| `GET /api/status` | Viewer |
-| `GET /api/is-online/{account}` | Viewer |
-| `GET /api/send/{server}?msg=` | Operator |
-
-So a status page gets a Viewer key and can only read, while an application which
-announces something in the game needs an Operator key.
-
-A signed in admin panel user can use the API as well, with the same roles — this
-is handy while trying things out in the browser.
-
-Like the panel itself, the API is open as long as [no user exists at all](#the-first-user),
-so configure a key together with the bootstrap user rather than after the first
-start.
+Configured keys can't be managed or disabled in the panel — they live outside of
+the database, exactly like the bootstrap user. Prefer created keys, and use
+configured ones only where you need them.
 
 :::warning[The key is a password]
 It is sent in plain text with every request, so use HTTPS, and keep it out of
@@ -205,6 +227,8 @@ client side code — a key in a launcher which ships to players is a key your
 players have. Requests without a valid key get `401`, and requests whose key
 lacks the role get `403`.
 :::
+
+Like the panel itself, the API is open as long as [no user exists at all](#the-first-user).
 
 ## Keeping the sessions alive across restarts
 

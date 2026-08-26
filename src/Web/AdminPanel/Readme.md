@@ -20,5 +20,6 @@ screen:
   [Live map](../../../docs-website/docs/admin-panel/live-map.md)
 * [Logs and monitoring](../../../docs-website/docs/admin-panel/logs-and-monitoring.md)
   and [Users](../../../docs-website/docs/admin-panel/users.md)
+* [Signing in and API keys](../../../docs-website/docs/admin-panel/authentication.md)
 * [Common tasks](../../../docs-website/docs/admin-panel/common-tasks.md) — short
   how-tos which combine several of the pages
