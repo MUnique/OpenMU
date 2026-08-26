@@ -17,6 +17,11 @@ using MUnique.OpenMU.Persistence.AdminAuth;
 /// </remarks>
 public class AdminUserAvailabilityService
 {
+    /// <summary>
+    /// The time for which the answer is reused before the storage is asked again.
+    /// </summary>
+    private static readonly TimeSpan CheckInterval = TimeSpan.FromSeconds(10);
+
     private readonly IAdminUserRepository _repository;
     private readonly BootstrapAdminUserProvider _bootstrapUserProvider;
     private readonly SemaphoreSlim _semaphore = new(1, 1);
@@ -40,24 +45,23 @@ public class AdminUserAvailabilityService
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns><c>true</c>, if at least one user exists; otherwise, <c>false</c>.</returns>
+    /// <remarks>
+    /// This is called by the authorization of every request, so it must never wait for the
+    /// database: when another caller is already asking, or when the last answer is still fresh,
+    /// the known value is returned right away.
+    /// </remarks>
     public async ValueTask<bool> AnyUserExistsAsync(CancellationToken cancellationToken = default)
     {
-        if (this._bootstrapUserProvider.User is not null)
+        if (this._bootstrapUserProvider.User is not null || this._anyUserExists)
         {
             return true;
         }
 
-        if (this._anyUserExists)
+        if (DateTime.UtcNow < this._nextCheck || !await this._semaphore.WaitAsync(0, cancellationToken).ConfigureAwait(false))
         {
-            return true;
+            return this._anyUserExists;
         }
 
-        if (DateTime.UtcNow < this._nextCheck)
-        {
-            return false;
-        }
-
-        await this._semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
         try
         {
             if (this._anyUserExists || DateTime.UtcNow < this._nextCheck)
@@ -65,10 +69,15 @@ public class AdminUserAvailabilityService
                 return this._anyUserExists;
             }
 
-            this._anyUserExists = await this._repository.GetCountAsync(cancellationToken).ConfigureAwait(false) > 0;
+            if (await this._repository.EnsureStorageAsync(cancellationToken).ConfigureAwait(false))
+            {
+                this._anyUserExists = await this._repository.GetCountAsync(cancellationToken).ConfigureAwait(false) > 0;
+            }
 
-            // The database might not be reachable yet, so don't hammer it on every render.
-            this._nextCheck = DateTime.UtcNow.AddSeconds(5);
+            // When the storage isn't available, we can't tell - the previous answer is kept, which
+            // is the initial setup mode on a fresh installation. The installation needs the database
+            // as well, so there is nothing to protect at that point anyway.
+            this._nextCheck = DateTime.UtcNow.Add(CheckInterval);
             return this._anyUserExists;
         }
         finally

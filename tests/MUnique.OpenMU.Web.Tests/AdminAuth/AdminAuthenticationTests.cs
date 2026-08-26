@@ -291,6 +291,73 @@ public class AdminAuthenticationTests
     }
 
     /// <summary>
+    /// Tests that an unreachable storage is not asked again on every authorization check.
+    /// </summary>
+    /// <remarks>
+    /// The authorization of every request asks whether a user exists. When that answer required a
+    /// database round trip each time, an unreachable database made the whole admin panel wait for
+    /// connection attempts which were going to time out anyway - it never finished loading.
+    /// </remarks>
+    [Test]
+    public async Task UnavailableStorageIsNotProbedOnEveryCheckAsync()
+    {
+        var repository = new UnavailableAdminUserRepository();
+        var service = new AdminUserAvailabilityService(
+            repository,
+            this._serviceProvider.GetRequiredService<BootstrapAdminUserProvider>());
+
+        for (var i = 0; i < 20; i++)
+        {
+            Assert.That(await service.AnyUserExistsAsync().ConfigureAwait(false), Is.False);
+        }
+
+        Assert.That(repository.EnsureStorageCallCount, Is.EqualTo(1));
+    }
+
+    /// <summary>
+    /// Tests that an authorization check doesn't wait for an availability probe which is already running.
+    /// </summary>
+    /// <remarks>
+    /// This is the regression test for an admin panel which never finished loading: the
+    /// authorization of every request asks whether a user exists, and while the first request was
+    /// stuck in the connection timeout of an unreachable database, every other request queued up
+    /// behind it - including the ones which render the page.
+    /// </remarks>
+    [Test]
+    public async Task AvailabilityCheckDoesNotWaitForARunningProbeAsync()
+    {
+        var repository = new BlockingAdminUserRepository();
+        var service = new AdminUserAvailabilityService(
+            repository,
+            this._serviceProvider.GetRequiredService<BootstrapAdminUserProvider>());
+
+        var blockedCall = Task.Run(async () => await service.AnyUserExistsAsync().ConfigureAwait(false));
+        await repository.ProbeStarted.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+
+        var concurrentCall = service.AnyUserExistsAsync();
+        Assert.That(concurrentCall.IsCompleted, Is.True, "A check must not wait for a probe which is already running.");
+        Assert.That(await concurrentCall.ConfigureAwait(false), Is.False);
+
+        repository.Release();
+        Assert.That(await blockedCall.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false), Is.False);
+    }
+
+    /// <summary>
+    /// Tests that the answer is cached once a user exists, so the database isn't queried again.
+    /// </summary>
+    [Test]
+    public async Task ExistingUserIsRememberedAsync()
+    {
+        await this.CreateUserAsync("tester").ConfigureAwait(false);
+        var service = new AdminUserAvailabilityService(
+            this._repository,
+            this._serviceProvider.GetRequiredService<BootstrapAdminUserProvider>());
+
+        Assert.That(await service.AnyUserExistsAsync().ConfigureAwait(false), Is.True);
+        Assert.That(await service.AnyUserExistsAsync().ConfigureAwait(false), Is.True);
+    }
+
+    /// <summary>
     /// Tests that the role names and the role enum stay in sync, since the roles are stored
     /// and compared as strings, but selected as an enum in the user interface.
     /// </summary>
