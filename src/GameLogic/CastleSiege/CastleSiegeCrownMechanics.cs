@@ -14,6 +14,8 @@ using MUnique.OpenMU.GameLogic.Views.CastleSiege;
 /// </summary>
 public static class CastleSiegeCrownMechanics
 {
+    private static readonly TimeSpan MaximumProgressInterval = TimeSpan.FromSeconds(2);
+
     /// <summary>
     /// Checks whether the Crown and both switches are held by the same attacking side.
     /// </summary>
@@ -25,6 +27,9 @@ public static class CastleSiegeCrownMechanics
         var elapsed = utcNow > context.LastCrownUpdateUtc
             ? utcNow - context.LastCrownUpdateUtc
             : TimeSpan.Zero;
+        elapsed = elapsed > MaximumProgressInterval
+            ? MaximumProgressInterval
+            : elapsed;
         context.LastCrownUpdateUtc = utcNow;
 
         var crownUser = context.CrownUser;
@@ -292,6 +297,8 @@ public static class CastleSiegeCrownMechanics
             return;
         }
 
+        // A successful seal changes the castle lord immediately. The previous ownership tenure's economy must not
+        // survive that handover, even when the former defender captures the Crown again before the battle ends.
         context.SiegeData.OwnerGuildId = winner.PersistentGuildId;
         context.SiegeData.IsOccupied = true;
         context.SiegeData.TaxChaos = 0;

@@ -338,7 +338,7 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
                 Array.Clear(context.SwitchUsers);
                 context.CrownAccumulatedTime = TimeSpan.Zero;
                 context.IsCrownAvailable = false;
-                Array.Clear(context.LastBroadcastSwitchInfos);
+                context.LastBroadcastSwitchInfos.Clear();
                 context.LastBroadcastCrownAvailability = null;
                 await context.NpcController.PrepareAsync().ConfigureAwait(false);
                 await context.NpcController.CloseGatesAsync().ConfigureAwait(false);
@@ -375,7 +375,7 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
                 context.CrownAccumulatedTime = TimeSpan.Zero;
                 context.IsCrownAvailable = false;
                 context.LastCrownUpdateUtc = DateTime.MinValue;
-                Array.Clear(context.LastBroadcastSwitchInfos);
+                context.LastBroadcastSwitchInfos.Clear();
                 context.LastBroadcastCrownAvailability = null;
                 context.NextParticipantUpdateUtc = DateTime.MaxValue;
                 break;

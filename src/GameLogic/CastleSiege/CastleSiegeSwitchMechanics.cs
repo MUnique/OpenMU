@@ -23,7 +23,8 @@ public static class CastleSiegeSwitchMechanics
         var switchInfos = CreateSwitchInfos(context);
         var crownAvailability = UpdateCrownState(context);
         var changedSwitches = switchInfos
-            .Where((switchInfo, index) => !Equals(switchInfo, context.LastBroadcastSwitchInfos[index]))
+            .Where(switchInfo => !context.LastBroadcastSwitchInfos.TryGetValue(switchInfo.ObjectId, out var previous)
+                                 || !Equals(switchInfo, previous))
             .ToList();
         var crownStateChanged = context.LastBroadcastCrownAvailability != crownAvailability;
         if (changedSwitches.Count == 0 && !crownStateChanged)
@@ -48,9 +49,10 @@ public static class CastleSiegeSwitchMechanics
             }
         }).ConfigureAwait(false);
 
-        for (var index = 0; index < switchInfos.Count; index++)
+        context.LastBroadcastSwitchInfos.Clear();
+        foreach (var switchInfo in switchInfos)
         {
-            context.LastBroadcastSwitchInfos[index] = switchInfos[index];
+            context.LastBroadcastSwitchInfos[switchInfo.ObjectId] = switchInfo;
         }
 
         context.LastBroadcastCrownAvailability = crownAvailability;

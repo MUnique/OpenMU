@@ -380,6 +380,50 @@ public class CastleSiegeCrownMechanicsTests
     }
 
     /// <summary>
+    /// Verifies that duplicate configured switch spawns do not overflow the broadcast snapshot.
+    /// </summary>
+    [Test]
+    public async ValueTask DuplicateSwitchSpawnsAreTrackedByObjectIdAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var firstSwitchDefinition = fixture.Configuration.NpcDefinitions
+            .Single(definition => definition.MonsterDefinition?.Number == CastleSiegeSwitch.FirstMonsterNumber);
+        fixture.Configuration.NpcDefinitions.Add(new BasicModel.CastleSiegeNpcDefinition
+        {
+            MonsterDefinition = firstSwitchDefinition.MonsterDefinition,
+            InstanceId = 3,
+            SpawnX = 71,
+            SpawnY = 60,
+            Direction = Direction.South,
+        });
+
+        try
+        {
+            await fixture.Context.NpcController.PrepareAsync().ConfigureAwait(false);
+            var observer = await fixture.CreatePlayerAsync(
+                    AttackGuildId,
+                    "Observer",
+                    CastleSiegeJoinSide.Attack1,
+                    90,
+                    60)
+                .ConfigureAwait(false);
+
+            await CastleSiegeSwitchMechanics.SendSwitchInfoAsync(fixture.Context).ConfigureAwait(false);
+            await CastleSiegeSwitchMechanics.SendSwitchInfoAsync(fixture.Context).ConfigureAwait(false);
+
+            Mock.Get(observer.ViewPlugIns.GetPlugIn<ICastleSiegeSwitchInfoPlugIn>()!)
+                .Verify(
+                    plugIn => plugIn.ShowSwitchInfoAsync(It.IsAny<CastleSiegeSwitchInfo>()),
+                    Times.Exactly(3));
+            Assert.That(fixture.Context.LastBroadcastSwitchInfos, Has.Count.EqualTo(3));
+        }
+        finally
+        {
+            await fixture.Context.NpcController.DespawnAllAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
     /// Verifies that a new owner is persisted and the Castle Siege economy is reset.
     /// </summary>
     [Test]
@@ -476,6 +520,49 @@ public class CastleSiegeCrownMechanicsTests
     }
 
     /// <summary>
+    /// Verifies that a completed ownership tenure's economy is not restored when its guild recaptures the Crown.
+    /// </summary>
+    [Test]
+    public async ValueTask RecaptureDoesNotRestorePreviousOwnershipEconomyAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var attacker = await fixture.CreatePlayerAsync(
+                AttackGuildId,
+                "Attacker",
+                CastleSiegeJoinSide.Attack1,
+                60,
+                60)
+            .ConfigureAwait(false);
+        var formerDefender = await fixture.CreatePlayerAsync(
+                DefenseGuildId,
+                "FormerDefender",
+                CastleSiegeJoinSide.Defense,
+                61,
+                60)
+            .ConfigureAwait(false);
+        fixture.Context.SiegeData.TaxChaos = 3;
+        fixture.Context.SiegeData.TaxStore = 2;
+        fixture.Context.SiegeData.TaxHunt = 100_000;
+        fixture.Context.SiegeData.TributeMoney = 6_000;
+
+        await CastleSiegeCrownMechanics
+            .ChangeWinnerGuildAsync(fixture.Context, attacker, CastleSiegeJoinSide.Attack1)
+            .ConfigureAwait(false);
+        await CastleSiegeCrownMechanics
+            .ChangeWinnerGuildAsync(fixture.Context, formerDefender, CastleSiegeJoinSide.Attack1)
+            .ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(fixture.Context.SiegeData.OwnerGuildId, Is.EqualTo(fixture.DefensePersistentGuildId));
+            Assert.That(fixture.Context.SiegeData.TaxChaos, Is.Zero);
+            Assert.That(fixture.Context.SiegeData.TaxStore, Is.Zero);
+            Assert.That(fixture.Context.SiegeData.TaxHunt, Is.Zero);
+            Assert.That(fixture.Context.SiegeData.TributeMoney, Is.Zero);
+        });
+    }
+
+    /// <summary>
     /// Verifies that Crown progress uses elapsed wall time when periodic ticks are delayed.
     /// </summary>
     [Test]
@@ -490,6 +577,30 @@ public class CastleSiegeCrownMechanicsTests
         await fixture.CheckCrownAsync(TimeSpan.FromSeconds(2)).ConfigureAwait(false);
 
         Assert.That(fixture.Context.CrownAccumulatedTime, Is.EqualTo(TimeSpan.FromSeconds(2)));
+        Mock.Get(crownUser.ViewPlugIns.GetPlugIn<ICastleSiegeCrownAccessStatePlugIn>()!)
+            .Verify(
+                plugIn => plugIn.ShowCrownAccessStateAsync(
+                    CastleSiegeCrownAccessState.Attempt,
+                    TimeSpan.FromSeconds(2)),
+                Times.Once);
+    }
+
+    /// <summary>
+    /// Verifies that a delayed periodic tick cannot satisfy the Crown hold duration in one update.
+    /// </summary>
+    [Test]
+    public async ValueTask CrownProgressClampsDelayedUpdatesAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var crownUser = await fixture.CreatePlayerAsync(AttackGuildId, "CrownUser", CastleSiegeJoinSide.Attack1, 60, 60).ConfigureAwait(false);
+        fixture.Context.CrownUser = crownUser;
+        fixture.Context.SwitchUsers[0] = await fixture.CreatePlayerAsync(AttackGuildId, "SwitchOne", CastleSiegeJoinSide.Attack1, 70, 60).ConfigureAwait(false);
+        fixture.Context.SwitchUsers[1] = await fixture.CreatePlayerAsync(AttackGuildId, "SwitchTwo", CastleSiegeJoinSide.Attack1, 80, 60).ConfigureAwait(false);
+
+        await fixture.CheckCrownAsync(TimeSpan.FromSeconds(30)).ConfigureAwait(false);
+
+        Assert.That(fixture.Context.CrownAccumulatedTime, Is.EqualTo(TimeSpan.FromSeconds(2)));
+        Assert.That(fixture.Context.SiegeData.OwnerGuildId, Is.EqualTo(fixture.DefensePersistentGuildId));
         Mock.Get(crownUser.ViewPlugIns.GetPlugIn<ICastleSiegeCrownAccessStatePlugIn>()!)
             .Verify(
                 plugIn => plugIn.ShowCrownAccessStateAsync(

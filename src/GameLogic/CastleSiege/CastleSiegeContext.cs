@@ -136,9 +136,9 @@ public class CastleSiegeContext : IEventStateProvider
     internal DateTime LastCrownUpdateUtc { get; set; }
 
     /// <summary>
-    /// Gets the switch information which was last broadcast to the siege map.
+    /// Gets the switch information which was last broadcast to the siege map, keyed by network object identifier.
     /// </summary>
-    internal CastleSiegeSwitchInfo?[] LastBroadcastSwitchInfos { get; } = new CastleSiegeSwitchInfo?[2];
+    internal Dictionary<ushort, CastleSiegeSwitchInfo> LastBroadcastSwitchInfos { get; } = [];
 
     /// <summary>
     /// Gets or sets the Crown availability which was last broadcast to the siege map.
