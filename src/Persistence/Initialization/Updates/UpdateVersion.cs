@@ -526,7 +526,17 @@ public enum UpdateVersion
     FinishRageFighterMasterTree = 103,
 
     /// <summary>
-    /// The version of the <see cref="RegenerationsRefactorPlugIn"/>.
+    /// The version of the <see cref="RegenerationsRefactorPlugIn075"/>.
     /// </summary>
-    RegenerationsRefactor = 104,
+    RegenerationsRefactor075 = 104,
+
+    /// <summary>
+    /// The version of the <see cref="RegenerationsRefactorPlugIn095D"/>.
+    /// </summary>
+    RegenerationsRefactor095d = 105,
+
+    /// <summary>
+    /// The version of the <see cref="RegenerationsRefactorPlugInSeason6"/>.
+    /// </summary>
+    RegenerationsRefactorSeason6 = 106,
 }

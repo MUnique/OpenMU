@@ -140,15 +140,18 @@ internal partial class CharacterClassInitialization : InitializerBase
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.HealthRecoveryMultiplier, 0.03f, Stats.IsResting));
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.ManaRecoveryMultiplier, 0.03f, Stats.IsResting));
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.AbilityRecoveryAbsolute, 3, Stats.IsInSafezone));
-        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.IsShieldRecoveryActive, 1, Stats.IsInSafezone));
-        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.IsShieldRecoveryActive, 1, Stats.ShieldRecoveryEverywhere));
-        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.ShieldRecoveryRampFactor, 1f / 15f, Stats.ShieldRecoveryHiatus));  // (3 - 2) / (25 - 10)
-        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.ShieldRecoveryMultiplier, 1, Stats.ShieldRecoveryRampFactor, aggregateType: AggregateType.Multiplicate));
 
         if (this.UseClassicPvp)
         {
             attributeRelationships.Add(this.CreateAttributeRelationship(Stats.DefenseRatePvp, 1, Stats.DefenseRatePvm));
             attributeRelationships.Add(this.CreateAttributeRelationship(Stats.AttackRatePvp, 1, Stats.AttackRatePvm));
+        }
+        else
+        {
+            attributeRelationships.Add(this.CreateAttributeRelationship(Stats.IsShieldRecoveryActive, 1, Stats.IsInSafezone));
+            attributeRelationships.Add(this.CreateAttributeRelationship(Stats.IsShieldRecoveryActive, 1, Stats.ShieldRecoveryEverywhere));
+            attributeRelationships.Add(this.CreateAttributeRelationship(Stats.ShieldRecoveryRampFactor, 1f / 15f, Stats.ShieldRecoveryHiatus));  // (3 - 2) / (25 - 10)
+            attributeRelationships.Add(this.CreateAttributeRelationship(Stats.ShieldRecoveryMultiplier, 1, Stats.ShieldRecoveryRampFactor, aggregateType: AggregateType.Multiplicate));
         }
 
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.MaximumGuildSize, 0.1f, Stats.Level));
@@ -172,7 +175,6 @@ internal partial class CharacterClassInitialization : InitializerBase
         baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.SwellLifeManaIncrease));
         baseAttributeValues.Add(this.CreateConstValueAttribute(0.1f, Stats.DurabilityReductionFactor));
         baseAttributeValues.Add(this.CreateConstValueAttribute(0, Stats.IncreaseBlockBonus));   // Nullify the Multiplicate values until DefSuccessRateIncPowUp master Skill is learned
-        baseAttributeValues.Add(this.CreateConstValueAttribute(4f / 3f, Stats.ShieldRecoveryRampFactor));   // y=mx+b: m=1/15, y=2, x=10 => b=4/3
 
         if (isMaster)
         {
@@ -184,6 +186,7 @@ internal partial class CharacterClassInitialization : InitializerBase
         {
             baseAttributeValues.Add(this.CreateConstValueAttribute(100, Stats.ShieldRecoveryMultiplier));
             baseAttributeValues.Add(this.CreateConstValueAttribute(1f / 75000, Stats.ShieldRecoveryMultiplier, AggregateType.Multiplicate)); // 1 / (30 * 100 * 25)
+            baseAttributeValues.Add(this.CreateConstValueAttribute(4f / 3f, Stats.ShieldRecoveryRampFactor));   // y=mx+b: m=1/15, y=2, x=10 => b=4/3
         }
     }
 
