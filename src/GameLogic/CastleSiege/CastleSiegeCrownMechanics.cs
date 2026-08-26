@@ -95,8 +95,10 @@ public static class CastleSiegeCrownMechanics
             if (guild.Side == capturingSide)
             {
                 guild.Side = CastleSiegeJoinSide.Defense;
+                continue;
             }
-            else if (guild.Side == CastleSiegeJoinSide.Defense)
+
+            if (guild.Side == CastleSiegeJoinSide.Defense)
             {
                 guild.Side = capturingSide;
             }
