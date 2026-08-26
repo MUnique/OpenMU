@@ -47,7 +47,7 @@ public class RegenerationsRefactorPlugIn : UpdatePlugInBase
     public override bool IsMandatory => true;
 
     /// <inheritdoc />
-    public override DateTime CreatedAt => new(2026, 8, 25, 16, 0, 0, DateTimeKind.Utc);
+    public override DateTime CreatedAt => new(2026, 8, 26, 16, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
@@ -239,7 +239,6 @@ public class RegenerationsRefactorPlugIn : UpdatePlugInBase
             // Create new StatAttributDefinitions
             charClass.StatAttributes.Add(context.CreateNew<StatAttributeDefinition>(isResting, 0, false));
             charClass.StatAttributes.Add(context.CreateNew<StatAttributeDefinition>(nearbyPartyMemberCount, 0, false));
-            charClass.StatAttributes.Add(context.CreateNew<StatAttributeDefinition>(shieldRecoveryHiatus, 0, false));
 
             // Change base ability recovery multiplier
             if (charClass.Number != 4 && charClass.Number != 6 && charClass.Number != 7) // DK classes

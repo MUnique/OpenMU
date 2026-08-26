@@ -54,6 +54,17 @@ public class ComposableAttribute : BaseAttribute, IComposableAttribute
         }
     }
 
+    /// <summary>
+    /// Removes all elements from the composition.
+    /// </summary>
+    public void RemoveAllElements()
+    {
+        while (this._elementList.FirstOrDefault() is { } element)
+        {
+            this._elementList.Remove(element);
+        }
+    }
+
     private float GetAndCacheValue()
     {
         if (this._elementList.Count == 0)

@@ -1060,13 +1060,13 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 return;
             }
 
-            var now = DateTime.Now;
-            foreach (var r in Stats.IntervalRegenerationAttributes.Where(r =>
-                         attributes[r.RegenerationMultiplier] > 0 || attributes[r.AbsoluteAttribute] > 0))
+            var now = DateTime.UtcNow;
+            foreach (var r in Stats.IntervalRegenerationAttributes)
             {
                 if ((r.EnablerAttribute is { } enabler && attributes[enabler] < 1)
                     || (r.HiatusAttribute is { } hiatus && attributes[hiatus] < r.HiatusThreshold))
                 {
+                    this._lastRegeneration[r] = now;
                     continue;
                 }
 
@@ -1855,6 +1855,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.AddMissingStatAttributes();
 
         this.Attributes = new ItemAwareAttributeSystem(this.Account!, selectedCharacter, this.GameContext.Configuration);
+        this.Attributes[Stats.IsResting] = 0;
         this.LogInvalidInventoryItems();
 
         this._storages.CreateForCharacter(selectedCharacter);

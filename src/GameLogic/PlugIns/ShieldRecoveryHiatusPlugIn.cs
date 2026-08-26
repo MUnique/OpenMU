@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns;
 
 using System;
 using System.Runtime.InteropServices;
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.PlugIns;
@@ -27,7 +28,7 @@ public class ShieldRecoveryHiatusPlugIn : IPeriodicTaskPlugIn, IAttackableMovedP
                 && !player.PlayerState.CurrentState.IsDisconnectedOrFinished()
                 && player.Attributes is { } attributes)
             {
-                attributes[Stats.ShieldRecoveryHiatus] += 1;
+                attributes.AddElement(new SimpleElement(1, AggregateType.AddRaw), Stats.ShieldRecoveryHiatus);
             }
 
             return Task.CompletedTask;
@@ -45,29 +46,28 @@ public class ShieldRecoveryHiatusPlugIn : IPeriodicTaskPlugIn, IAttackableMovedP
     {
         var defender = attackable as Player ?? (attackable as Monster)?.SummonedBy;
         var attackerPlayer = attacker as Player ?? (attacker as Monster)?.SummonedBy;
-        if (defender is null || attackerPlayer is null || defender == attackerPlayer)
+        if (defender is null || attackerPlayer is null || defender == attackerPlayer || defender.Attributes is not { } attributes)
         {
             return;
         }
 
         if (hitInfo is { ShieldDamage: > 0 })
         {
-            attackable.Attributes[Stats.ShieldRecoveryHiatus] = 0;
+            attributes.GetComposableAttribute(Stats.ShieldRecoveryHiatus)?.RemoveAllElements();
         }
     }
 
     /// <inheritdoc />
     public void AttackableMoved(IAttackable attackable)
     {
-        if (attackable is not Player)
+        if (attackable is not Player player || player.Attributes is not { } attributes)
         {
             return;
         }
 
-        var attributes = attackable.Attributes;
         if (attributes[Stats.IsShieldRecoveryActive] < 1 || attributes[Stats.CurrentShield] == attributes[Stats.MaximumShield])
         {
-            attributes[Stats.ShieldRecoveryHiatus] = 0;
+            attributes.GetComposableAttribute(Stats.ShieldRecoveryHiatus)?.RemoveAllElements();
         }
     }
 }
