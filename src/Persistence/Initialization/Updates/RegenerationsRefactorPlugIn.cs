@@ -58,6 +58,7 @@ public class RegenerationsRefactorPlugIn : UpdatePlugInBase
         var shieldRecoveryHiatus = context.CreateNew<AttributeDefinition>(Stats.ShieldRecoveryHiatus.Id, Stats.ShieldRecoveryHiatus.Designation, Stats.ShieldRecoveryHiatus.Description);
         gameConfiguration.Attributes.Add(shieldRecoveryHiatus);
         var shieldRecoveryRampFactor = context.CreateNew<AttributeDefinition>(Stats.ShieldRecoveryRampFactor.Id, Stats.ShieldRecoveryRampFactor.Designation, Stats.ShieldRecoveryRampFactor.Description);
+        shieldRecoveryRampFactor.MaximumValue = 3;
         gameConfiguration.Attributes.Add(shieldRecoveryRampFactor);
         var isResting = context.CreateNew<AttributeDefinition>(Stats.IsResting.Id, Stats.IsResting.Designation, Stats.IsResting.Description);
         gameConfiguration.Attributes.Add(isResting);
@@ -90,7 +91,7 @@ public class RegenerationsRefactorPlugIn : UpdatePlugInBase
             {
                 if (attrCombos.FirstOrDefault(ac => ac.TargetAttribute == areTwoWeaponsEquipped) is { } equippedWeaponCountToAreTwoWeaponsEquipped)
                 {
-                    equippedWeaponCountToAreTwoWeaponsEquipped.AggregateType = AggregateType.Maximum;
+                    equippedWeaponCountToAreTwoWeaponsEquipped.InputOperator = InputOperator.Maximum;
                 }
 
                 AttributeDefinition? classTempAttackSpeed = null;
@@ -256,8 +257,8 @@ public class RegenerationsRefactorPlugIn : UpdatePlugInBase
                 || charClass.Number == 12 || charClass.Number == 13 // MG classes
                 || charClass.Number == 24 || charClass.Number == 25) // RF classes
             {
-                charClass.BaseAttributeValues.Add(context.CreateNew<ConstValueAttribute>(MovementSpeedConstants.RunningGearMovementSpeed, Stats.MovementSpeed, AggregateType.Maximum));
-                charClass.BaseAttributeValues.Add(context.CreateNew<ConstValueAttribute>(MovementSpeedConstants.RunningGearMovementSpeed, Stats.MovementSpeedUnderwater, AggregateType.Maximum));
+                charClass.BaseAttributeValues.Add(context.CreateNew<ConstValueAttribute>(MovementSpeedConstants.RunningGearMovementSpeed, movementSpeed, AggregateType.Maximum));
+                charClass.BaseAttributeValues.Add(context.CreateNew<ConstValueAttribute>(MovementSpeedConstants.RunningGearMovementSpeed, movementSpeedUnderwater, AggregateType.Maximum));
             }
         });
 
