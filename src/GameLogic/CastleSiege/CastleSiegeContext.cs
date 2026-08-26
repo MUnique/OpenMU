@@ -126,6 +126,11 @@ public class CastleSiegeContext : IEventStateProvider
     public TimeSpan RemainingTime => this.GetRemainingTime(DateTime.UtcNow);
 
     /// <summary>
+    /// Gets or sets the player whose active Crown attempt was announced to the client.
+    /// </summary>
+    internal Player? PreviousCrownUser { get; set; }
+
+    /// <summary>
     /// Gets a value indicating whether the context has been initialized.
     /// </summary>
     internal bool IsInitialized { get; private set; }
