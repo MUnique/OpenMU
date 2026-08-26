@@ -4,8 +4,10 @@
 
 namespace MUnique.OpenMU.Web.Tests.AdminAuth;
 
+using System.IO;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -315,6 +317,62 @@ public class AdminAuthenticationTests
     }
 
     /// <summary>
+    /// Tests that an unusable directory for the data protection keys is reported instead of throwing.
+    /// </summary>
+    /// <remarks>
+    /// The docker images run as a non-root user while /app belongs to root, so a directory which
+    /// wasn't prepared in the image can't be created. That used to surface as an error page on
+    /// every page of the panel, as soon as a key was needed for an antiforgery token or a cookie.
+    /// </remarks>
+    [Test]
+    public void UnusableDataProtectionDirectoryIsReportedAndDoesNotThrow()
+    {
+        // A file at the place of the directory is a portable way to make its creation fail.
+        var blockingFilePath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        File.WriteAllText(blockingFilePath, string.Empty);
+        try
+        {
+            var provider = BuildAuthServices(blockingFilePath);
+            var status = provider.GetRequiredService<DataProtectionKeyStorageStatus>();
+
+            Assert.That(status.Error, Is.Not.Null);
+            Assert.That(status.Path, Is.EqualTo(blockingFilePath));
+
+            // The keys are what an antiforgery token and the authentication cookie are protected
+            // with, so this is what used to fail on every page of the panel.
+            var protector = provider.GetRequiredService<IDataProtectionProvider>().CreateProtector("test");
+            Assert.That(() => protector.Protect("payload"), Throws.Nothing);
+        }
+        finally
+        {
+            File.Delete(blockingFilePath);
+        }
+    }
+
+    /// <summary>
+    /// Tests that a usable directory for the data protection keys is accepted.
+    /// </summary>
+    [Test]
+    public void UsableDataProtectionDirectoryIsAccepted()
+    {
+        var keyDirectoryPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        try
+        {
+            var status = BuildAuthServices(keyDirectoryPath).GetRequiredService<DataProtectionKeyStorageStatus>();
+
+            Assert.That(status.Error, Is.Null);
+            Assert.That(Directory.Exists(keyDirectoryPath), Is.True);
+        }
+        finally
+        {
+            if (Directory.Exists(keyDirectoryPath))
+            {
+                Directory.Delete(keyDirectoryPath, true);
+            }
+        }
+    }
+
+    /// <summary>
     /// Tests that an authorization check doesn't wait for an availability probe which is already running.
     /// </summary>
     /// <remarks>
@@ -389,6 +447,21 @@ public class AdminAuthenticationTests
             claims.Any(c => c.Type == AdminAuthenticationDefaults.AuthenticationMethodClaimType
                             && c.Value == AdminAuthenticationDefaults.MultiFactorAuthenticationMethod),
             Is.True);
+    }
+
+    private static ServiceProvider BuildAuthServices(string dataProtectionKeyPath)
+    {
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["AdminPanel:Auth:DataProtectionKeyPath"] = dataProtectionKeyPath,
+            })
+            .Build();
+
+        var services = new ServiceCollection();
+        services.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Warning));
+        services.AddAdminPanelAuth(configuration);
+        return services.BuildServiceProvider();
     }
 
     private AdminLoginService GetLoginService()

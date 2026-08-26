@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Persistence.AdminAuth;
 
 /// <summary>
@@ -58,13 +59,7 @@ public static class AdminPanelAuthExtensions
             options.BootstrapUser = authOptions.BootstrapUser;
         });
 
-        // The key ring protects the authentication cookies and the authenticator keys. It has to be
-        // persisted, otherwise a restart invalidates all sessions and makes all stored authenticator
-        // keys unreadable. In docker, the directory should be a mounted volume.
-        var keyPath = configuration["AdminPanel:Auth:DataProtectionKeyPath"] ?? "data-protection-keys";
-        services.AddDataProtection()
-            .SetApplicationName("MUnique.OpenMU.AdminPanel")
-            .PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(Directory.GetCurrentDirectory(), keyPath)));
+        services.AddSingleton(ConfigureDataProtection(services, configuration));
 
         // The hosting application registers the real storage; this is just a fallback which lets
         // the panel start in its initial setup mode instead of failing to resolve its services.
@@ -131,6 +126,18 @@ public static class AdminPanelAuthExtensions
     /// <returns>The same instance, to allow chaining of further calls.</returns>
     public static IApplicationBuilder UseAdminPanelAuth(this IApplicationBuilder app)
     {
+        if (app.ApplicationServices.GetService<DataProtectionKeyStorageStatus>() is { Error: { } error } status)
+        {
+            app.ApplicationServices.GetRequiredService<ILoggerFactory>()
+                .CreateLogger(typeof(AdminPanelAuthExtensions))
+                .LogWarning(
+                    error,
+                    "The data protection keys can't be stored at '{Path}', so they are only kept in memory: "
+                    + "everybody is signed out when the application restarts, and stored authenticator keys "
+                    + "become unreadable. Make sure the directory exists and is writable by the user which runs the application.",
+                    status.Path);
+        }
+
         app.UseAuthentication();
         app.UseAuthorization();
         return app;
@@ -168,6 +175,45 @@ public static class AdminPanelAuthExtensions
 
             await next(context).ConfigureAwait(false);
         });
+    }
+
+    /// <summary>
+    /// Sets the storage of the data protection key ring up.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <param name="configuration">The configuration.</param>
+    /// <returns>The result, which is logged when the request pipeline is built.</returns>
+    /// <remarks>
+    /// The key ring protects the authentication cookies and the authenticator keys, so it has to be
+    /// persisted - otherwise a restart invalidates all sessions and makes all stored authenticator
+    /// keys unreadable. In docker, the directory should be a mounted volume.
+    /// It's deliberately not fatal when the directory can't be used: the containers run as a
+    /// non-root user, so a directory which wasn't prepared in the image would otherwise make every
+    /// page of the panel fail with an error as soon as a key is needed.
+    /// </remarks>
+    private static DataProtectionKeyStorageStatus ConfigureDataProtection(IServiceCollection services, IConfiguration configuration)
+    {
+        var keyPath = configuration["AdminPanel:Auth:DataProtectionKeyPath"] ?? "data-protection-keys";
+        var directory = new DirectoryInfo(Path.Combine(Directory.GetCurrentDirectory(), keyPath));
+        var dataProtection = services.AddDataProtection().SetApplicationName("MUnique.OpenMU.AdminPanel");
+
+        try
+        {
+            directory.Create();
+
+            // Creating an existing directory succeeds even without write access to it, so the
+            // access is checked explicitly - a mounted volume may belong to another user.
+            var probeFilePath = Path.Combine(directory.FullName, ".write-probe");
+            File.WriteAllBytes(probeFilePath, Array.Empty<byte>());
+            File.Delete(probeFilePath);
+
+            dataProtection.PersistKeysToFileSystem(directory);
+            return new DataProtectionKeyStorageStatus(directory.FullName, null);
+        }
+        catch (Exception ex)
+        {
+            return new DataProtectionKeyStorageStatus(directory.FullName, ex);
+        }
     }
 
     private static void ApplyEnvironmentVariables(AdminPanelAuthOptions options)
