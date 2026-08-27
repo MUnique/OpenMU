@@ -73,7 +73,7 @@ public static class CastleSiegeSwitchMechanics
                 .ConfigureAwait(false);
         }
 
-        var crownAvailability = UpdateCrownState(context);
+        var crownAvailability = AreSwitchesHeldBySameAttackingSide(context);
         await player.InvokeViewPlugInAsync<ICastleSiegeCrownStatePlugIn>(
                 plugIn => plugIn.ShowCrownStateAsync(crownAvailability))
             .ConfigureAwait(false);
@@ -81,7 +81,7 @@ public static class CastleSiegeSwitchMechanics
 
     private static List<CastleSiegeSwitchInfo> CreateSwitchInfos(CastleSiegeContext context)
     {
-        return context.ActiveNpcs
+        return context.NpcController.GetRuntimeSnapshot()
             .Select(runtime => runtime.SpawnedInstance)
             .OfType<CastleSiegeSwitch>()
             .OrderBy(candidate => candidate.SwitchIndex)
@@ -117,7 +117,7 @@ public static class CastleSiegeSwitchMechanics
     private static bool UpdateCrownState(CastleSiegeContext context)
     {
         context.IsCrownAvailable = AreSwitchesHeldBySameAttackingSide(context);
-        foreach (var crown in context.ActiveNpcs
+        foreach (var crown in context.NpcController.GetRuntimeSnapshot()
                      .Select(runtime => runtime.SpawnedInstance)
                      .OfType<CastleSiegeCrown>())
         {

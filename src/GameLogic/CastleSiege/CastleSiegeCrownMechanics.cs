@@ -14,6 +14,7 @@ using MUnique.OpenMU.GameLogic.Views.CastleSiege;
 /// </summary>
 public static class CastleSiegeCrownMechanics
 {
+    // GameContext executes periodic tasks once per second, so this permits at most two missed intervals.
     private static readonly TimeSpan MaximumProgressInterval = TimeSpan.FromSeconds(2);
 
     /// <summary>
@@ -124,7 +125,7 @@ public static class CastleSiegeCrownMechanics
         await RespawnAttackersAsync(context).ConfigureAwait(false);
 
         context.IsCrownAvailable = false;
-        foreach (var crown in context.ActiveNpcs
+        foreach (var crown in context.NpcController.GetRuntimeSnapshot()
                      .Select(runtime => runtime.SpawnedInstance)
                      .OfType<CastleSiegeCrown>())
         {
@@ -135,7 +136,7 @@ public static class CastleSiegeCrownMechanics
         context.CrownUser = null;
         context.PreviousCrownUser = null;
         Array.Clear(context.SwitchUsers);
-        foreach (var siegeSwitch in context.ActiveNpcs
+        foreach (var siegeSwitch in context.NpcController.GetRuntimeSnapshot()
                      .Select(runtime => runtime.SpawnedInstance)
                      .OfType<CastleSiegeSwitch>())
         {

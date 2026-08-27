@@ -353,6 +353,8 @@ public class CastleSiegeCrownMechanicsTests
                     90,
                     60)
                 .ConfigureAwait(false);
+            fixture.Context.IsCrownAvailable = false;
+            crown.State = CastleSiegeCrownState.Locked;
             await CastleSiegeSwitchMechanics
                 .SynchronizePlayerAsync(fixture.Context, enteringPlayer)
                 .ConfigureAwait(false);
@@ -360,6 +362,11 @@ public class CastleSiegeCrownMechanicsTests
                 .Verify(plugIn => plugIn.ShowSwitchInfoAsync(It.IsAny<CastleSiegeSwitchInfo>()), Times.Exactly(2));
             Mock.Get(enteringPlayer.ViewPlugIns.GetPlugIn<ICastleSiegeCrownStatePlugIn>()!)
                 .Verify(plugIn => plugIn.ShowCrownStateAsync(true), Times.Once);
+            Assert.Multiple(() =>
+            {
+                Assert.That(fixture.Context.IsCrownAvailable, Is.False);
+                Assert.That(crown.State, Is.EqualTo(CastleSiegeCrownState.Locked));
+            });
 
             fixture.Context.PlayerJoinSides[secondSwitchUser.SelectedCharacter!.Id] = CastleSiegeJoinSide.Attack2;
             await CastleSiegeSwitchMechanics.SendSwitchInfoAsync(fixture.Context).ConfigureAwait(false);
