@@ -891,4 +891,10 @@
   <data name="SelectAPacket" xml:space="preserve">
     <value>Select a packet to see its content.</value>
   </data>
+  <data name="FollowNewPackets" xml:space="preserve">
+    <value>Follow</value>
+  </data>
+  <data name="FollowNewPacketsHint" xml:space="preserve">
+    <value>Shows the newest packets on top, so the live traffic stays visible.</value>
+  </data>
 </root>

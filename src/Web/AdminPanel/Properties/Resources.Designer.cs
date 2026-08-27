@@ -2375,5 +2375,23 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
             }
         }
         
+        /// <summary>
+        ///   Looks up a localized string similar to Follow.
+        /// </summary>
+        public static string FollowNewPackets {
+            get {
+                return ResourceManager.GetString("FollowNewPackets", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shows the newest packets on top, so the live traffic stays visible..
+        /// </summary>
+        public static string FollowNewPacketsHint {
+            get {
+                return ResourceManager.GetString("FollowNewPacketsHint", resourceCulture);
+            }
+        }
+        
     }
 }

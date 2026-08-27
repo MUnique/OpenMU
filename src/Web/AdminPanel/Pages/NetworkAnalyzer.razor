@@ -58,6 +58,11 @@ else
                                     <option value="@DirectionFilter.ToServer">@Resources.ToServer</option>
                                     <option value="@DirectionFilter.ToClient">@Resources.ToClient</option>
                                 </select>
+                                <button type="button" title="@Resources.FollowNewPacketsHint"
+                                        class="btn btn-sm @(this._isFollowing ? "btn-secondary" : "btn-outline-secondary")"
+                                        @onclick="() => this._isFollowing = !this._isFollowing">
+                                    <span class="oi oi-eye" aria-hidden="true"></span> @Resources.FollowNewPackets
+                                </button>
                                 <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="() => this._isPaused = !this._isPaused">
                                     <span class="oi @(this._isPaused ? "oi-media-play" : "oi-media-pause")" aria-hidden="true"></span>
                                     @(this._isPaused ? Resources.Resume : Resources.Pause)

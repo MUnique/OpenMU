@@ -32,6 +32,13 @@ public partial class PacketGrid
     public ClientVersion ClientVersion { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the rows should be virtualized, so that only
+    /// the visible ones are rendered. It requires javascript to measure the viewport.
+    /// </summary>
+    [Parameter]
+    public bool Virtualize { get; set; } = true;
+
+    /// <summary>
     /// Gets or sets the currently selected packet.
     /// </summary>
     [Parameter]

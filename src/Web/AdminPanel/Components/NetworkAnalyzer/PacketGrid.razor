@@ -9,7 +9,7 @@
 else
 {
     <div class="packet-grid overflow-auto">
-        <QuickGrid Items="@this.Packets.AsQueryable()" Virtualize="true" ItemSize="28" Theme="none"
+        <QuickGrid Items="@this.Packets.AsQueryable()" Virtualize="@this.Virtualize" ItemSize="28" Theme="none"
                    Class="table table-sm table-striped table-hover">
             <TemplateColumn Title="@Resources.Timestamp" Class="text-nowrap">
                 @context.Timestamp.ToString(@"hh\:mm\:ss\.fff")
