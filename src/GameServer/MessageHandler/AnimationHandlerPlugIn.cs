@@ -42,9 +42,9 @@ internal class AnimationHandlerPlugIn : IPacketHandlerPlugIn
 
         player.Pose = animation switch
         {
-            0x80 => CharacterPose.Sitting,
-            0x81 => CharacterPose.Leaning,
-            0x82 => CharacterPose.Hanging,
+            0x80 or 0x6C => CharacterPose.Sitting,
+            0x81 or 0x6D => CharacterPose.Leaning,
+            0x82 or 0x6E => CharacterPose.Hanging,
             _ => default,
         };
 

@@ -110,9 +110,9 @@ public class ComposableAttribute : BaseAttribute, IComposableAttribute
     /// </summary>
     public void RemoveAllElements()
     {
-        while (this._elementList.FirstOrDefault() is { } element)
+        while (this._elements.FirstOrDefault() is { } element)
         {
-            this._elementList.Remove(element);
+            this.RemoveElement(element);
         }
     }
 
