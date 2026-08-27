@@ -1,0 +1,17 @@
+.network-analyzer .accordion {
+    max-height: 60vh;
+}
+
+.network-analyzer .packet-grid {
+    max-height: 45vh;
+}
+
+.network-analyzer .packet-raw-data,
+.network-analyzer .packet-extracted-info {
+    max-height: 20vh;
+    overflow: auto;
+    background-color: var(--bs-secondary-bg);
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    margin-bottom: 0.5rem;
+}

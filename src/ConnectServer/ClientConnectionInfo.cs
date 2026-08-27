@@ -1,4 +1,4 @@
-// <copyright file="ClientConnectionInfo.cs" company="MUnique">
+﻿// <copyright file="ClientConnectionInfo.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -22,11 +22,13 @@ internal sealed class ClientConnectionInfo : ICapturedConnectionInfo
     /// <param name="client">The client.</param>
     /// <param name="serverId">The identifier of the connect server.</param>
     /// <param name="clientVersion">The client version of the connect server.</param>
-    public ClientConnectionInfo(Client client, int serverId, ClientVersion clientVersion)
+    /// <param name="serverDescription">The description of the connect server.</param>
+    public ClientConnectionInfo(Client client, int serverId, ClientVersion clientVersion, string serverDescription)
     {
         this._client = client;
         this.ServerId = serverId;
         this.ClientVersion = clientVersion;
+        this.ServerDescription = serverDescription;
     }
 
     /// <inheritdoc />
@@ -37,6 +39,9 @@ internal sealed class ClientConnectionInfo : ICapturedConnectionInfo
 
     /// <inheritdoc />
     public int ServerId { get; }
+
+    /// <inheritdoc />
+    public string ServerDescription { get; }
 
     /// <summary>
     /// Gets the name of the account. The clients of a connect server are never logged in, so

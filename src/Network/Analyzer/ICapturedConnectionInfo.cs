@@ -32,6 +32,11 @@ public interface ICapturedConnectionInfo
     int ServerId { get; }
 
     /// <summary>
+    /// Gets the description of the server which handles this connection.
+    /// </summary>
+    string ServerDescription { get; }
+
+    /// <summary>
     /// Gets the name of the account, if the client is logged in.
     /// </summary>
     string? AccountName { get; }

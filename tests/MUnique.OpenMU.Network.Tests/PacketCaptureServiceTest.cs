@@ -185,6 +185,8 @@ public class PacketCaptureServiceTest
 
         public int ServerId { get; }
 
+        public string ServerDescription => $"Test {this.ServerType} {this.ServerId}";
+
         public string? AccountName { get; init; }
 
         public string? CharacterName { get; init; }

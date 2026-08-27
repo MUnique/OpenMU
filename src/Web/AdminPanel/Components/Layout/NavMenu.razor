@@ -49,6 +49,14 @@
                     <span class="oi oi-people" aria-hidden="true" /> @Resources.OnlineAccounts
                   </NavLink>
                 </li>
+                @if (this.IsNetworkAnalyzerAvailable)
+                {
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" href="network-analyzer" @onclick="() => NavigationHistory.Clear()">
+                            <span class="oi oi-pulse" aria-hidden="true"></span> @Resources.NetworkAnalyzer
+                        </NavLink>
+                    </li>
+                }
                 @if (this.GameConfigurationId is { } gameConfigurationId )
                 {
                     <ConfigNavMenu GameConfigurationId="@gameConfigurationId" />
