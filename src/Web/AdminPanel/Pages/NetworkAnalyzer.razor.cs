@@ -114,16 +114,7 @@ public partial class NetworkAnalyzer : IAsyncDisposable
                                                   || this.GetMessageForFilter(packet).Contains(filter, StringComparison.OrdinalIgnoreCase));
             }
 
-            var result = packets.ToList();
-            if (this._isFollowing)
-            {
-                // Instead of scrolling the view to the newest packet - which would require
-                // javascript and would fight with the scroll position of the user - the newest
-                // packets are simply shown on top.
-                result.Reverse();
-            }
-
-            return result;
+            return packets.ToList();
         }
     }
 

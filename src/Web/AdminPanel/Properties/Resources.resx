@@ -895,6 +895,6 @@
     <value>Follow</value>
   </data>
   <data name="FollowNewPacketsHint" xml:space="preserve">
-    <value>Shows the newest packets on top, so the live traffic stays visible.</value>
+    <value>Scrolls to the newest packet when new traffic arrives.</value>
   </data>
 </root>

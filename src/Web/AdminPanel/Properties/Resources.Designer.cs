@@ -2385,7 +2385,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Shows the newest packets on top, so the live traffic stays visible..
+        ///   Looks up a localized string similar to Scrolls to the newest packet when new traffic arrives..
         /// </summary>
         public static string FollowNewPacketsHint {
             get {

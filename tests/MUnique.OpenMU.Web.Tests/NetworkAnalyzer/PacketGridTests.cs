@@ -111,6 +111,91 @@ public class PacketGridTests
         Assert.That(selected, Is.EqualTo(packet));
     }
 
+    /// <summary>
+    /// Tests if the details of the selected packet are shown inside its row.
+    /// </summary>
+    [Test]
+    public void DetailsOfTheSelectedPacketAreShownInItsRow()
+    {
+        using var context = CreateContext();
+        using var analyzer = new PacketAnalyzer();
+        var first = new Packet(TimeSpan.FromSeconds(1), [0xC1, 0x05, 0x15, 0x0A, 0x14], true);
+        var second = new Packet(TimeSpan.FromSeconds(2), [0xC1, 0x05, 0x15, 0x0B, 0x15], true);
+
+        var component = context.Render<PacketGrid>(parameters => parameters
+            .Add(grid => grid.Packets, [first, second])
+            .Add(grid => grid.Virtualize, false)
+            .Add(grid => grid.Analyzer, analyzer)
+            .Add(grid => grid.ClientVersion, Season6)
+            .Add(grid => grid.SelectedPacket, second));
+
+        var rows = component.FindAll("tbody tr");
+        Assert.That(rows[0].QuerySelectorAll(".packet-detail"), Is.Empty, "The row of the other packet has no details.");
+        var details = rows[1].QuerySelector(".packet-detail");
+        Assert.That(details, Is.Not.Null, "The details are inside the row of the selected packet.");
+        Assert.That(details!.TextContent, Does.Contain("C1 05 15 0B 15"));
+        Assert.That(details.TextContent, Does.Contain("InstantMoveRequest"));
+    }
+
+    /// <summary>
+    /// Tests if the height of the grid is limited to the number of visible rows, so that the
+    /// rest is reachable by scrolling.
+    /// </summary>
+    [Test]
+    public void HeightIsLimitedToTheVisibleRows()
+    {
+        using var context = CreateContext();
+        IReadOnlyList<Packet> packets = [new(TimeSpan.FromSeconds(1), [0xC1, 0x05, 0x15, 0x01, 0x02], true)];
+
+        var component = context.Render<PacketGrid>(parameters => parameters
+            .Add(grid => grid.Packets, packets)
+            .Add(grid => grid.Virtualize, false)
+            .Add(grid => grid.VisibleRowCount, 10));
+
+        var container = component.Find(".packet-grid");
+        Assert.That(container.GetAttribute("style"), Is.EqualTo("height: 320px"), "10 rows of 28 pixels plus the header.");
+    }
+
+    /// <summary>
+    /// Tests if the grid scrolls to the newest packet when auto scrolling is active.
+    /// </summary>
+    [Test]
+    public void ScrollsToTheNewestPacketWhenAutoScrolling()
+    {
+        using var context = CreateContext();
+        var scrollInvocation = context.JSInterop
+            .SetupModule("./_content/MUnique.OpenMU.Web.AdminPanel/Components/NetworkAnalyzer/PacketGrid.razor.js")
+            .SetupVoid("scrollToBottom", _ => true);
+        IReadOnlyList<Packet> packets = [new(TimeSpan.FromSeconds(1), [0xC1, 0x05, 0x15, 0x01, 0x02], true)];
+
+        context.Render<PacketGrid>(parameters => parameters
+            .Add(grid => grid.Packets, packets)
+            .Add(grid => grid.Virtualize, false)
+            .Add(grid => grid.AutoScroll, true));
+
+        Assert.That(scrollInvocation.Invocations, Is.Not.Empty);
+    }
+
+    /// <summary>
+    /// Tests if the grid doesn't scroll when auto scrolling is not active.
+    /// </summary>
+    [Test]
+    public void DoesNotScrollWithoutAutoScrolling()
+    {
+        using var context = CreateContext();
+        var scrollInvocation = context.JSInterop
+            .SetupModule("./_content/MUnique.OpenMU.Web.AdminPanel/Components/NetworkAnalyzer/PacketGrid.razor.js")
+            .SetupVoid("scrollToBottom", _ => true);
+        IReadOnlyList<Packet> packets = [new(TimeSpan.FromSeconds(1), [0xC1, 0x05, 0x15, 0x01, 0x02], true)];
+
+        context.Render<PacketGrid>(parameters => parameters
+            .Add(grid => grid.Packets, packets)
+            .Add(grid => grid.Virtualize, false)
+            .Add(grid => grid.AutoScroll, false));
+
+        Assert.That(scrollInvocation.Invocations, Is.Empty);
+    }
+
     private static BunitContext CreateContext()
     {
         var context = new BunitContext();

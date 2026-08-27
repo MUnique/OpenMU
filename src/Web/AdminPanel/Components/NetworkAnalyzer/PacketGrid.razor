@@ -8,8 +8,8 @@
 }
 else
 {
-    <div class="packet-grid overflow-auto">
-        <QuickGrid Items="@this.Packets.AsQueryable()" Virtualize="@this.Virtualize" ItemSize="28" Theme="none"
+    <div @ref="this.ScrollContainer" class="packet-grid" style="height: @(this.GridHeight)px">
+        <QuickGrid Items="@this.Packets.AsQueryable()" Virtualize="@this.Virtualize" ItemSize="@RowHeight" Theme="none"
                    Class="table table-sm table-striped table-hover">
             <TemplateColumn Title="@Resources.Timestamp" Class="text-nowrap">
                 @context.Timestamp.ToString(@"hh\:mm\:ss\.fff")
@@ -33,6 +33,10 @@ else
                       class="@(this.SelectedPacket == context ? "fw-bold" : string.Empty)">
                     @this.GetMessage(context)
                 </span>
+                @if (this.SelectedPacket == context)
+                {
+                    <PacketDetail Packet="@context" Analyzer="@this.Analyzer" ClientVersion="@this.ClientVersion"/>
+                }
             </TemplateColumn>
         </QuickGrid>
     </div>

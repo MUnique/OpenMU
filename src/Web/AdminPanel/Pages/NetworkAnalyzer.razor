@@ -76,14 +76,11 @@ else
                 </div>
 
                 <PacketGrid Packets="@this.FilteredPackets"
+                            AutoScroll="@this._isFollowing"
                             Analyzer="@this._analyzer"
                             ClientVersion="@this._capture.ConnectionInfo.ClientVersion"
                             SelectedPacket="@this._selectedPacket"
                             OnSelect="packet => this._selectedPacket = packet"/>
-
-                <PacketDetail Packet="@this._selectedPacket"
-                              Analyzer="@this._analyzer"
-                              ClientVersion="@this._capture.ConnectionInfo.ClientVersion"/>
             }
         </div>
     </div>

@@ -79,11 +79,11 @@ public class NetworkAnalyzerPageTests
     }
 
     /// <summary>
-    /// Tests if the newest packets are shown on top while the traffic is followed, and in
-    /// chronological order when it's not.
+    /// Tests if the packets are shown in chronological order, and that the grid scrolls to
+    /// the newest one while the traffic is followed.
     /// </summary>
     [Test]
-    public void FollowingShowsTheNewestPacketsOnTop()
+    public void PacketsAreShownInChronologicalOrder()
     {
         var connection = new TestConnectionInfo { CharacterName = "TestCharacter" };
         var service = new TestCaptureService(connection);
@@ -102,13 +102,14 @@ public class NetworkAnalyzerPageTests
             () => component.FindComponent<PacketGrid>().Instance.Packets.Count == 2,
             TimeSpan.FromSeconds(10));
 
-        var packets = component.FindComponent<PacketGrid>().Instance.Packets;
-        Assert.That(packets[0].PacketData, Is.EqualTo("C1 04 F1 02"), "The newest packet comes first while following.");
+        var grid = component.FindComponent<PacketGrid>().Instance;
+        Assert.That(grid.Packets[0].PacketData, Is.EqualTo("C1 04 F1 01"), "The oldest packet comes first.");
+        Assert.That(grid.Packets[1].PacketData, Is.EqualTo("C1 04 F1 02"), "The newest packet comes last.");
+        Assert.That(grid.AutoScroll, Is.True, "The traffic is followed by default.");
 
-        component.Find("button[title*='newest packets']").Click();
+        component.Find("button[title*='newest packet']").Click();
 
-        var chronological = component.FindComponent<PacketGrid>().Instance.Packets;
-        Assert.That(chronological[0].PacketData, Is.EqualTo("C1 04 F1 01"), "Without following, the packets are in chronological order.");
+        Assert.That(component.FindComponent<PacketGrid>().Instance.AutoScroll, Is.False);
     }
 
     private static BunitContext CreateContext(IPacketCaptureService? captureService = null)
