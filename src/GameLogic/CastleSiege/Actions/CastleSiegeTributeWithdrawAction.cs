@@ -34,23 +34,26 @@ public sealed class CastleSiegeTributeWithdrawAction
                 {
                     result = CastleSiegeRequestResult.NotAuthorized;
                 }
-                else if (amount is > 0 and <= int.MaxValue
-                         && amount <= context.SiegeData.TributeMoney
-                         && amount <= player.GameContext.Configuration.MaximumInventoryMoney - (long)player.Money
-                         && player.TryAddMoney((int)amount))
+                else
                 {
-                    var previousTribute = context.SiegeData.TributeMoney;
-                    context.SiegeData.TributeMoney -= amount;
-                    try
+                    if (amount is > 0 and <= int.MaxValue
+                        && amount <= context.SiegeData.TributeMoney
+                        && amount <= player.GameContext.Configuration.MaximumInventoryMoney - (long)player.Money
+                        && player.TryAddMoney((int)amount))
                     {
-                        await context.SaveOwnerAsync().ConfigureAwait(false);
-                        result = CastleSiegeRequestResult.Success;
-                    }
-                    catch
-                    {
-                        context.SiegeData.TributeMoney = previousTribute;
-                        _ = player.TryRemoveMoney((int)amount);
-                        throw;
+                        var previousTribute = context.SiegeData.TributeMoney;
+                        context.SiegeData.TributeMoney -= amount;
+                        try
+                        {
+                            await context.SaveOwnerAsync().ConfigureAwait(false);
+                            result = CastleSiegeRequestResult.Success;
+                        }
+                        catch
+                        {
+                            context.SiegeData.TributeMoney = previousTribute;
+                            _ = player.TryRemoveMoney((int)amount);
+                            throw;
+                        }
                     }
                 }
             }

@@ -38,26 +38,29 @@ public sealed class CastleSiegeTaxRateChangeAction
                 {
                     result = CastleSiegeRequestResult.NotAuthorized;
                 }
-                else if (context.CurrentState != CastleSiegeState.Start
-                         && IsValid(taxType, taxRate))
+                else
                 {
-                    switch (taxType)
+                    if (context.CurrentState != CastleSiegeState.Start
+                        && IsValid(taxType, taxRate))
                     {
-                        case CastleSiegeTaxType.ChaosMachine:
-                            context.SiegeData.TaxChaos = (byte)taxRate;
-                            break;
-                        case CastleSiegeTaxType.Store:
-                            context.SiegeData.TaxStore = (byte)taxRate;
-                            break;
-                        case CastleSiegeTaxType.HuntZone:
-                            context.SiegeData.TaxHunt = (int)taxRate;
-                            break;
-                        default:
-                            throw new InvalidOperationException($"Unexpected validated tax type {taxType}.");
-                    }
+                        switch (taxType)
+                        {
+                            case CastleSiegeTaxType.ChaosMachine:
+                                context.SiegeData.TaxChaos = (byte)taxRate;
+                                break;
+                            case CastleSiegeTaxType.Store:
+                                context.SiegeData.TaxStore = (byte)taxRate;
+                                break;
+                            case CastleSiegeTaxType.HuntZone:
+                                context.SiegeData.TaxHunt = (int)taxRate;
+                                break;
+                            default:
+                                throw new InvalidOperationException($"Unexpected validated tax type {taxType}.");
+                        }
 
-                    await context.SaveOwnerAsync().ConfigureAwait(false);
-                    result = CastleSiegeRequestResult.Success;
+                        await context.SaveOwnerAsync().ConfigureAwait(false);
+                        result = CastleSiegeRequestResult.Success;
+                    }
                 }
             }
             finally
