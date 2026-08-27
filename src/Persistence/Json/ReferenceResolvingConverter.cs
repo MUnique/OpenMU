@@ -93,6 +93,29 @@ public class ReferenceResolvingConverter<T> : JsonConverter<T>
                             objParam)
                         .Compile();
                 }
+                else if (x.CollectionInterface != null
+                         && properties.All(p => p.Name != "Raw" + x.Property.Name && p.Name != "Joined" + x.Property.Name))
+                {
+                    // A collection without a public setter and without a "Raw" or "Joined" counterpart
+                    // which would hold its data (e.g. ItemSlotType.ItemSlots).
+                    // We can't assign a new collection, so we add the items to the existing one.
+                    propertyType = x.CollectionInterface.GetGenericArguments()[0];
+
+                    var collectionExpr = Expression.Convert(Expression.Property(tParam, x.Property), x.CollectionInterface);
+                    var itemExpr = Expression.Convert(objParam, propertyType);
+                    var addCall = Expression.Call(collectionExpr, x.CollectionInterface.GetMethod("Add")!, itemExpr);
+
+                    adder = Expression.Lambda<Action<T, object>>(addCall, tParam, objParam).Compile();
+                }
+                else if (x.Property.GetSetMethod(nonPublic: true) is not null
+                         && properties.All(p => p.Name != "Joined" + x.Property.Name))
+                {
+                    // A property with a non-public setter (e.g. ConstValueAttribute.Value).
+                    // A compiled expression isn't allowed to call it, so we set it by reflection.
+                    propertyType = x.Property.PropertyType;
+                    var property = x.Property;
+                    setter = (target, value) => property.SetValue(target, value);
+                }
                 else
                 {
                     // not supported property, ignore...

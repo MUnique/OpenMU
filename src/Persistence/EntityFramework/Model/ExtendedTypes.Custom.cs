@@ -274,3 +274,39 @@ internal partial class GameServerDefinition : IConvertibleTo<BasicModel.GameServ
         return this.Adapt<BasicModel.GameServerDefinition>();
     }
 }
+
+internal partial class SystemConfiguration : IConvertibleTo<BasicModel.SystemConfiguration>
+{
+    public BasicModel.SystemConfiguration Convert()
+    {
+        MapsterConfigurator.EnsureConfigured();
+        return this.Adapt<BasicModel.SystemConfiguration>();
+    }
+}
+
+internal partial class ConfigurationUpdate : IConvertibleTo<BasicModel.ConfigurationUpdate>
+{
+    public BasicModel.ConfigurationUpdate Convert()
+    {
+        MapsterConfigurator.EnsureConfigured();
+        return this.Adapt<BasicModel.ConfigurationUpdate>();
+    }
+}
+
+internal partial class ConfigurationUpdateState : IConvertibleTo<BasicModel.ConfigurationUpdateState>
+{
+    public BasicModel.ConfigurationUpdateState Convert()
+    {
+        MapsterConfigurator.EnsureConfigured();
+        return this.Adapt<BasicModel.ConfigurationUpdateState>();
+    }
+}
+
+internal partial class CastleSiegeData : IConvertibleTo<BasicModel.CastleSiegeData>
+{
+    public BasicModel.CastleSiegeData Convert()
+    {
+        MapsterConfigurator.EnsureConfigured();
+        return this.Adapt<BasicModel.CastleSiegeData>();
+    }
+}

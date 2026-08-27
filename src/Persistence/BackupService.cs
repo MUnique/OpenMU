@@ -27,10 +27,14 @@ public class BackupService : IBackupService
     private static readonly (string Prefix, Type BasicModelType)[] EntryTypeInfos =
     [
         ("GameConfiguration_", typeof(BasicModel.GameConfiguration)),
+        ("SystemConfiguration_", typeof(BasicModel.SystemConfiguration)),
         ("ChatServerDefinition_", typeof(BasicModel.ChatServerDefinition)),
         ("ConnectServerDefinition_", typeof(BasicModel.ConnectServerDefinition)),
         ("GameServerDefinition_", typeof(BasicModel.GameServerDefinition)),
+        ("ConfigurationUpdate_", typeof(BasicModel.ConfigurationUpdate)),
+        ("ConfigurationUpdateState_", typeof(BasicModel.ConfigurationUpdateState)),
         ("Account_", typeof(BasicModel.Account)),
+        ("CastleSiegeData_", typeof(BasicModel.CastleSiegeData)),
     ];
 
     private readonly IPersistenceContextProvider _contextProvider;
@@ -57,10 +61,17 @@ public class BackupService : IBackupService
 
         // Export in dependency order: configuration first so that accounts can reference config objects.
         await ExportAsync<GameConfiguration, BasicModel.GameConfiguration>(archive, "GameConfiguration_", context, sharedHandler, cancellationToken).ConfigureAwait(false);
+        await ExportAsync<SystemConfiguration, BasicModel.SystemConfiguration>(archive, "SystemConfiguration_", context, sharedHandler, cancellationToken).ConfigureAwait(false);
         await ExportAsync<ChatServerDefinition, BasicModel.ChatServerDefinition>(archive, "ChatServerDefinition_", context, sharedHandler, cancellationToken).ConfigureAwait(false);
         await ExportAsync<ConnectServerDefinition, BasicModel.ConnectServerDefinition>(archive, "ConnectServerDefinition_", context, sharedHandler, cancellationToken).ConfigureAwait(false);
         await ExportAsync<GameServerDefinition, BasicModel.GameServerDefinition>(archive, "GameServerDefinition_", context, sharedHandler, cancellationToken).ConfigureAwait(false);
+
+        // The applied updates are exported, too. Otherwise, they would be applied again on the restored data.
+        await ExportAsync<ConfigurationUpdate, BasicModel.ConfigurationUpdate>(archive, "ConfigurationUpdate_", context, sharedHandler, cancellationToken).ConfigureAwait(false);
+        await ExportAsync<ConfigurationUpdateState, BasicModel.ConfigurationUpdateState>(archive, "ConfigurationUpdateState_", context, sharedHandler, cancellationToken).ConfigureAwait(false);
+
         await ExportAsync<Account, BasicModel.Account>(archive, "Account_", context, sharedHandler, cancellationToken).ConfigureAwait(false);
+        await ExportAsync<CastleSiegeData, BasicModel.CastleSiegeData>(archive, "CastleSiegeData_", context, sharedHandler, cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -116,10 +127,17 @@ public class BackupService : IBackupService
                     continue;
                 }
 
-                this.GetOrCreateObject(context, basicModelObj, createdObjects);
-            }
+                // The root object is created and saved before it's filled with its data.
+                // Otherwise, a persistence layer with foreign keys (entity framework) would run into a
+                // circular dependency, because objects below the root reference the root object again
+                // (e.g. GameConfiguration -> GameMapDefinition -> CastleSiegeConfiguration -> GameConfiguration).
+                // The data initialization does the same for the game configuration.
+                var rootObject = this.CreateObject(context, basicModelObj, createdObjects);
+                await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-            await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+                this.FillObject(context, basicModelObj, rootObject, createdObjects);
+                await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            }
         }
     }
 
@@ -188,9 +206,29 @@ public class BackupService : IBackupService
             return deserializer.Deserialize<BasicModel.GameServerDefinition>(ms, referenceHandler);
         }
 
+        if (basicModelType == typeof(BasicModel.SystemConfiguration))
+        {
+            return deserializer.Deserialize<BasicModel.SystemConfiguration>(ms, referenceHandler);
+        }
+
+        if (basicModelType == typeof(BasicModel.ConfigurationUpdate))
+        {
+            return deserializer.Deserialize<BasicModel.ConfigurationUpdate>(ms, referenceHandler);
+        }
+
+        if (basicModelType == typeof(BasicModel.ConfigurationUpdateState))
+        {
+            return deserializer.Deserialize<BasicModel.ConfigurationUpdateState>(ms, referenceHandler);
+        }
+
         if (basicModelType == typeof(BasicModel.Account))
         {
             return deserializer.Deserialize<BasicModel.Account>(ms, referenceHandler);
+        }
+
+        if (basicModelType == typeof(BasicModel.CastleSiegeData))
+        {
+            return deserializer.Deserialize<BasicModel.CastleSiegeData>(ms, referenceHandler);
         }
 
         throw new ArgumentException($"Unsupported backup entry type: {basicModelType}", nameof(basicModelType));
@@ -283,6 +321,20 @@ public class BackupService : IBackupService
         return collectionInterface?.GetMethod("Add");
     }
 
+    private static PropertyInfo? FindCollectionProperty(Type type, string propertyName)
+    {
+        var property = type.GetProperty(
+            propertyName,
+            BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+
+        return property is not null
+               && property.CanRead
+               && property.GetIndexParameters().Length == 0
+               && IsCollectionType(property.PropertyType)
+            ? property
+            : null;
+    }
+
     private static PropertyInfo? FindWritableProperty(Type type, string propertyName)
     {
         var prop = type.GetProperty(
@@ -299,19 +351,43 @@ public class BackupService : IBackupService
             return existing;
         }
 
-        var dataModelBaseType = FindDataModelBaseType(basicModelObj.GetType());
-        var newObj = context.CreateNew(dataModelBaseType);
-
-        if (basicModelObj is IIdentifiable id2)
-        {
-            createdObjects[id2.Id] = newObj;
-            SetId(newObj, id2.Id);
-        }
-
-        this.CopyProperties(basicModelObj, newObj, dataModelBaseType, context, createdObjects);
-        this.CopyRawCollectionProperties(basicModelObj, newObj, context, createdObjects);
+        var newObj = this.CreateObject(context, basicModelObj, createdObjects);
+        this.FillObject(context, basicModelObj, newObj, createdObjects);
 
         return newObj;
+    }
+
+    /// <summary>
+    /// Creates the persistent object for the given object of the backup, without copying its data yet.
+    /// </summary>
+    /// <param name="context">The context on which the object is created.</param>
+    /// <param name="basicModelObj">The object of the backup.</param>
+    /// <param name="createdObjects">The objects which have been created so far, by their identifier.</param>
+    /// <returns>The created object.</returns>
+    private object CreateObject(IContext context, object basicModelObj, Dictionary<Guid, object> createdObjects)
+    {
+        var newObj = context.CreateNew(FindDataModelBaseType(basicModelObj.GetType()));
+        if (basicModelObj is IIdentifiable identifiable)
+        {
+            createdObjects[identifiable.Id] = newObj;
+            SetId(newObj, identifiable.Id);
+        }
+
+        return newObj;
+    }
+
+    /// <summary>
+    /// Copies the data of the given object of the backup to the created persistent object.
+    /// Referenced objects are created on the way, if they don't exist yet.
+    /// </summary>
+    /// <param name="context">The context on which referenced objects are created.</param>
+    /// <param name="basicModelObj">The object of the backup.</param>
+    /// <param name="target">The created object which gets the data.</param>
+    /// <param name="createdObjects">The objects which have been created so far, by their identifier.</param>
+    private void FillObject(IContext context, object basicModelObj, object target, Dictionary<Guid, object> createdObjects)
+    {
+        this.CopyProperties(basicModelObj, target, FindDataModelBaseType(basicModelObj.GetType()), context, createdObjects);
+        this.CopyRawCollectionProperties(basicModelObj, target, context, createdObjects);
     }
 
     private void CopyProperties(
@@ -326,9 +402,20 @@ public class BackupService : IBackupService
         {
             if (!prop.CanRead
                 || prop.GetIndexParameters().Length > 0
-                || IsCollectionType(prop.PropertyType)
                 || IsTransient(prop))
             {
+                continue;
+            }
+
+            if (IsCollectionType(prop.PropertyType))
+            {
+                // Collections which have a "Raw" counterpart on the source are copied by CopyRawCollectionProperties.
+                // The other ones (e.g. collections of value types, like ItemSlotType.ItemSlots) are copied here.
+                if (FindCollectionProperty(source.GetType(), "Raw" + prop.Name) is null)
+                {
+                    this.CopyCollection(source, target, prop.Name, prop.Name, context, createdObjects);
+                }
+
                 continue;
             }
 
@@ -370,10 +457,7 @@ public class BackupService : IBackupService
         IContext context,
         Dictionary<Guid, object> createdObjects)
     {
-        var sourceType = source.GetType();
-        var targetType = target.GetType();
-
-        var rawCollectionProps = sourceType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+        var rawCollectionProps = source.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance)
             .Where(p => p.Name.StartsWith("Raw", StringComparison.Ordinal)
                         && IsCollectionType(p.PropertyType)
                         && p.CanRead
@@ -381,35 +465,58 @@ public class BackupService : IBackupService
 
         foreach (var rawProp in rawCollectionProps)
         {
-            if (rawProp.GetValue(source) is not System.Collections.IEnumerable sourceEnumerable)
+            this.CopyCollection(source, target, rawProp.Name, rawProp.Name["Raw".Length..], context, createdObjects);
+        }
+    }
+
+    /// <summary>
+    /// Copies the items of a collection of the backup object into the corresponding collection of the created object.
+    /// </summary>
+    /// <param name="source">The object of the backup.</param>
+    /// <param name="target">The created object.</param>
+    /// <param name="sourcePropertyName">The name of the collection property of the <paramref name="source"/>.</param>
+    /// <param name="fallbackTargetPropertyName">
+    /// The name of the collection property which is used, if the target has no property with the name of the source property.
+    /// Many-to-many relations don't have a "Raw" collection on the entity framework model - it holds the join entities
+    /// in a "Joined" collection instead. Adding the items to the collection of the data model creates these join entities.
+    /// </param>
+    /// <param name="context">The context on which referenced objects are created.</param>
+    /// <param name="createdObjects">The objects which have been created so far, by their identifier.</param>
+    private void CopyCollection(
+        object source,
+        object target,
+        string sourcePropertyName,
+        string fallbackTargetPropertyName,
+        IContext context,
+        Dictionary<Guid, object> createdObjects)
+    {
+        if (FindCollectionProperty(source.GetType(), sourcePropertyName)?.GetValue(source) is not System.Collections.IEnumerable sourceItems)
+        {
+            return;
+        }
+
+        var targetProp = FindCollectionProperty(target.GetType(), sourcePropertyName)
+                         ?? FindCollectionProperty(target.GetType(), fallbackTargetPropertyName);
+        if (targetProp?.GetValue(target) is not { } targetCollection)
+        {
+            return;
+        }
+
+        var addMethod = FindCollectionAddMethod(targetProp.PropertyType)
+                        ?? throw new InvalidOperationException($"Can't restore '{source.GetType().Name}.{sourcePropertyName}': the target collection '{targetProp.PropertyType}' has no Add-method.");
+
+        foreach (var item in sourceItems)
+        {
+            if (item is null)
             {
                 continue;
             }
 
-            var targetProp = targetType.GetProperty(
-                rawProp.Name,
-                BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
-            if (targetProp?.GetValue(target) is not { } targetCollection)
-            {
-                continue;
-            }
+            var targetItem = item is IIdentifiable
+                ? this.GetOrCreateObject(context, item, createdObjects)
+                : item;
 
-            var addMethod = FindCollectionAddMethod(targetProp.PropertyType)
-                            ?? throw new InvalidOperationException($"Can't restore '{sourceType.Name}.{rawProp.Name}': the target collection '{targetProp.PropertyType}' has no Add-method.");
-
-            foreach (var item in sourceEnumerable)
-            {
-                if (item is null)
-                {
-                    continue;
-                }
-
-                var targetItem = item is IIdentifiable
-                    ? this.GetOrCreateObject(context, item, createdObjects)
-                    : item;
-
-                addMethod.Invoke(targetCollection, [targetItem]);
-            }
+            addMethod.Invoke(targetCollection, [targetItem]);
         }
     }
 }

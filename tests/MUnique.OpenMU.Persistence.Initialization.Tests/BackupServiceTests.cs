@@ -57,6 +57,10 @@ public class BackupServiceTests
             Assert.That(targetConfig.CharacterClasses, Has.Count.EqualTo(sourceConfig.CharacterClasses.Count));
             Assert.That(targetConfig.Attributes, Has.Count.EqualTo(sourceConfig.Attributes.Count));
             Assert.That(targetConfig.Monsters, Has.Count.EqualTo(sourceConfig.Monsters.Count));
+            Assert.That(
+                targetConfig.ItemSlotTypes.Sum(s => s.ItemSlots.Count),
+                Is.EqualTo(sourceConfig.ItemSlotTypes.Sum(s => s.ItemSlots.Count)),
+                "The item slots (a collection of value types) were not restored.");
         });
 
         var sourceAccount = (await sourceContext.GetAsync<Account>().ConfigureAwait(false)).OrderBy(a => a.LoginName).First();
