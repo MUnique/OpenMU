@@ -32683,7 +32683,7 @@ public readonly struct CastleSiegeCrownSwitchState
     public C1HeaderWithSubCode Header => new (this._data);
 
     /// <summary>
-    /// Gets or sets the switch index.
+    /// Gets or sets the network object identifier of the Crown switch.
     /// </summary>
     public ushort SwitchIndex
     {
@@ -33719,7 +33719,7 @@ public readonly struct CastleSiegeSwitchInfo
     public C1HeaderWithSubCode Header => new (this._data);
 
     /// <summary>
-    /// Gets or sets the switch index.
+    /// Gets or sets the network object identifier of the Crown switch.
     /// </summary>
     public ushort SwitchIndex
     {

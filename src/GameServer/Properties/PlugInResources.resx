@@ -2319,4 +2319,28 @@
   <data name="ChatCommandListRequestHandlerPlugIn_Description" xml:space="preserve">
     <value>Handles the request for the list of chat commands which are available to the player.</value>
   </data>
+  <data name="CastleSiegeCrownStatePlugIn_Name" xml:space="preserve">
+    <value>Castle Siege Crown State View</value>
+  </data>
+  <data name="CastleSiegeCrownStatePlugIn_Description" xml:space="preserve">
+    <value>Sends the current Castle Siege Crown lock state to the game client.</value>
+  </data>
+  <data name="CastleSiegeCrownAccessStatePlugIn_Name" xml:space="preserve">
+    <value>Castle Siege Crown Access State View</value>
+  </data>
+  <data name="CastleSiegeCrownAccessStatePlugIn_Description" xml:space="preserve">
+    <value>Sends Castle Siege Crown capture progress to the game client.</value>
+  </data>
+  <data name="CastleSiegeSwitchInfoPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege Switch Information View</value>
+  </data>
+  <data name="CastleSiegeSwitchInfoPlugIn_Description" xml:space="preserve">
+    <value>Sends Castle Siege Crown switch occupancy information to the game client.</value>
+  </data>
+  <data name="CastleSiegeOwnershipChangePlugIn_Name" xml:space="preserve">
+    <value>Castle Siege Ownership Change View</value>
+  </data>
+  <data name="CastleSiegeOwnershipChangePlugIn_Description" xml:space="preserve">
+    <value>Sends Castle Siege ownership changes to the game client.</value>
+  </data>
 </root>

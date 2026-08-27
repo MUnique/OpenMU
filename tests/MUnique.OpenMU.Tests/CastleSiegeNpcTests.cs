@@ -686,6 +686,7 @@ public class CastleSiegeNpcTests
 
     /// <summary>
     /// Verifies Crown and switch proximity tracking without applying the later win-condition mechanics.
+    /// Crown availability remains owned by the switch mechanics.
     /// </summary>
     [Test]
     public async ValueTask CrownAndSwitchTrackNearbyAlivePlayerAsync()
@@ -734,7 +735,7 @@ public class CastleSiegeNpcTests
             {
                 Assert.That(fixture.Context.CrownUser, Is.SameAs(fixture.Player));
                 Assert.That(fixture.Context.CrownAccumulatedTime, Is.EqualTo(TimeSpan.FromSeconds(12)));
-                Assert.That(crown.State, Is.EqualTo(CastleSiegeCrownState.Idle));
+                Assert.That(crown.State, Is.EqualTo(CastleSiegeCrownState.Locked));
             });
 
             await fixture.Player.WarpToAsync(new ExitGate
