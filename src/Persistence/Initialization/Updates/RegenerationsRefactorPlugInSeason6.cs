@@ -57,8 +57,6 @@ public class RegenerationsRefactorPlugInSeason6 : RegenerationsRefactorPlugInBas
 
         gameConfiguration.CharacterClasses.ForEach(charClass =>
         {
-            var attrCombos = charClass.AttributeCombinations;
-
             // Add new attribute combinations
             var shieldRecoveryEverywhereToIsShieldRecoveryActive = context.CreateNew<AttributeRelationship>(
                 isShieldRecoveryActive,

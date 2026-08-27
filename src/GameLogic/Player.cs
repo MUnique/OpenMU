@@ -66,6 +66,14 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     private readonly ObserverToWorldViewAdapter _observerToWorldViewAdapter;
 
+    private readonly Dictionary<Stats.Regeneration, DateTime> _lastRegeneration = new()
+    {
+        [Stats.ManaRegeneration] = DateTime.UtcNow,
+        [Stats.HealthRegeneration] = DateTime.UtcNow,
+        [Stats.AbilityRegeneration] = DateTime.UtcNow,
+        [Stats.ShieldRegeneration] = DateTime.UtcNow,
+    };
+
     private readonly Lazy<MuHelper.MuHelper> _muHelperLazy;
 
     private CancellationTokenSource? _respawnAfterDeathCts;
@@ -75,14 +83,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     private ICustomPlugInContainer<IViewPlugIn>? _viewPlugIns;
 
     private DateTime _lastRegenerate = DateTime.UtcNow;
-
-    private Dictionary<Stats.Regeneration, DateTime> _lastRegeneration = new()
-    {
-        [Stats.ManaRegeneration] = DateTime.UtcNow,
-        [Stats.HealthRegeneration] = DateTime.UtcNow,
-        [Stats.AbilityRegeneration] = DateTime.UtcNow,
-        [Stats.ShieldRegeneration] = DateTime.UtcNow,
-    };
 
     private GameMap? _currentMap;
 

@@ -34,7 +34,7 @@ public abstract class RegenerationsRefactorPlugInBase : UpdatePlugInBase
     public override bool IsMandatory => true;
 
     /// <inheritdoc />
-    public override DateTime CreatedAt => new(2026, 8, 26, 16, 0, 0, DateTimeKind.Utc);
+    public override DateTime CreatedAt => new(2026, 8, 27, 16, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
@@ -44,7 +44,6 @@ public abstract class RegenerationsRefactorPlugInBase : UpdatePlugInBase
         gameConfiguration.Attributes.Add(isResting);
 
         var areTwoWeaponsEquipped = Stats.AreTwoWeaponsEquipped.GetPersistent(gameConfiguration);
-        var equippedWeaponCount = Stats.EquippedWeaponCount.GetPersistent(gameConfiguration);
         var attackSpeedByWeapon = Stats.AttackSpeedByWeapon.GetPersistent(gameConfiguration);
         var innovationDefDecrement = Stats.InnovationDefDecrement.GetPersistent(gameConfiguration);
         var defenseDecrement = Stats.DefenseDecrement.GetPersistent(gameConfiguration);
