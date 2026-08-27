@@ -10,7 +10,6 @@ services:
     volumes:
       - ./nginx.server_name.conf.template:/etc/nginx/templates/nginx.server_name.conf.template
       - ./nginx.prod80.conf:/etc/nginx/nginx.conf:ro
-      - ./.htpasswd:/etc/nginx/.htpasswd
       - certbot-www:/var/www/certbot/:ro
 
 # We add another nginx here, just for HTTPs.
@@ -30,7 +29,6 @@ services:
       - ./nginx.server_name.conf.template:/etc/nginx/templates/nginx.server_name.conf.template
       - ./nginx.prod.certificates.conf.template:/etc/nginx/templates/nginx.prod.certificates.conf.template
       - ./nginx.prod443.conf:/etc/nginx/nginx.conf:ro
-      - ./.htpasswd:/etc/nginx/.htpasswd
       - certificates:/etc/nginx/ssl/:ro
     depends_on:
       - grafana

@@ -6665,5 +6665,77 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("WhisperedChatMessageHandlerPlugIn_Name", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Sends Castle Siege Crown capture progress to the game client..
+        /// </summary>
+        public static string CastleSiegeCrownAccessStatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeCrownAccessStatePlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Crown Access State View.
+        /// </summary>
+        public static string CastleSiegeCrownAccessStatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeCrownAccessStatePlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Sends the current Castle Siege Crown lock state to the game client..
+        /// </summary>
+        public static string CastleSiegeCrownStatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeCrownStatePlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Crown State View.
+        /// </summary>
+        public static string CastleSiegeCrownStatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeCrownStatePlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Sends Castle Siege ownership changes to the game client..
+        /// </summary>
+        public static string CastleSiegeOwnershipChangePlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeOwnershipChangePlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Ownership Change View.
+        /// </summary>
+        public static string CastleSiegeOwnershipChangePlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeOwnershipChangePlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Sends Castle Siege Crown switch occupancy information to the game client..
+        /// </summary>
+        public static string CastleSiegeSwitchInfoPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeSwitchInfoPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Switch Information View.
+        /// </summary>
+        public static string CastleSiegeSwitchInfoPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeSwitchInfoPlugIn_Name", resourceCulture);
+            }
+        }
     }
 }

@@ -58,6 +58,29 @@ without a code change:
 A fork which deploys to `https://<user>.github.io/OpenMU/` would therefore build
 with `DOCS_URL=https://<user>.github.io DOCS_BASE_URL=/OpenMU/`.
 
+## Dependency overrides
+
+`package.json` contains an `overrides` block which forces two transitive
+dependencies to a patched version:
+
+| Package | Why |
+|---|---|
+| `serialize-javascript` | `copy-webpack-plugin` and `css-minimizer-webpack-plugin` pin `^6.0.0`, which is affected by [GHSA-5c6j-r48x-rmvq](https://github.com/advisories/GHSA-5c6j-r48x-rmvq) and [GHSA-qj8w-gfj5-8c6v](https://github.com/advisories/GHSA-qj8w-gfj5-8c6v). 7.1.0 is the fixed line. |
+| `uuid` | `sockjs` (via `webpack-dev-server`) pins `^8.3.2`, which is affected by [GHSA-w5hq-g745-h8pq](https://github.com/advisories/GHSA-w5hq-g745-h8pq). |
+
+Remove an entry once the parent package ships a release which depends on the
+fixed version by itself — `npm ls <package>` no longer printing "overridden"
+next to it is the signal that the override became redundant.
+
+One advisory has no fix and is therefore not overridden: `image-size`, used by
+`@docusaurus/mdx-loader` to measure the images of a page, is affected by
+[GHSA-w3rx-r6r6-pgpr](https://github.com/advisories/GHSA-w3rx-r6r6-pgpr) and
+[GHSA-5p2g-fcmc-qvqq](https://github.com/advisories/GHSA-5p2g-fcmc-qvqq) in
+every published version. Both are denial of service through a crafted ICNS, JXL
+or HEIF file. It runs at build time over the images committed to this
+repository, so triggering it means committing a malicious image, and the damage
+is a hanging build — no published page and no game server is exposed to it.
+
 ## CI
 
 [`.github/workflows/docs-website.yml`](../.github/workflows/docs-website.yml)

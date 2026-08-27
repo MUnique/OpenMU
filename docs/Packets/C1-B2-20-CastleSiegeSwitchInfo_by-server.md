@@ -16,7 +16,7 @@ The client updates the crown switch occupation display.
 | 1 | 1 |    Byte   |   27   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xB2  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x20  | Packet header - sub packet type identifier |
-| 4 | 2 | ShortBigEndian |  | SwitchIndex |
+| 4 | 2 | ShortBigEndian |  | SwitchIndex; The network object identifier of the Crown switch. |
 | 6 | 1 | Boolean |  | IsOccupied |
 | 7 | 1 | CastleSiegeJoinSide |  | JoinSide |
 | 8 | 8 | String |  | GuildName |

@@ -6,8 +6,10 @@ namespace MUnique.OpenMU.Web.AdminPanel.API;
 
 using System.IO;
 using System.Threading;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Web.AdminPanel.Auth;
 
 /// <summary>
 /// API controller to download a backup archive.
@@ -15,6 +17,7 @@ using MUnique.OpenMU.Persistence;
 /// the admin panel is notified about the new data.
 /// </summary>
 [Route("admin/backup")]
+[Authorize(Policy = AdminPolicies.Administrator)]
 public class BackupController : Controller
 {
     private readonly IBackupService _backupService;

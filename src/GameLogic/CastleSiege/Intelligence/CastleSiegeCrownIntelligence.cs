@@ -68,9 +68,6 @@ public sealed class CastleSiegeCrownIntelligence : CastleSiegeNpcIntelligenceBas
                              && player.CurrentMap == crown.CurrentMap)
             .MinBy(player => player.Id);
         this._context.CrownUser = candidate;
-        crown.State = this._context.IsCrownAvailable
-            ? CastleSiegeCrownState.Idle
-            : CastleSiegeCrownState.Locked;
         return ValueTask.CompletedTask;
     }
 

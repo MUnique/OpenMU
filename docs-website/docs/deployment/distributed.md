@@ -71,9 +71,10 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml run --rm certbot
 ## What's next
 
 Discover the [admin panel](../admin-panel/overview.md). If your containers run on
-docker at your local machine, go to [http://localhost/admin](http://localhost/admin). The default user
-name is `admin` and the password is `openmu` — change that later on the
-[Users page](../admin-panel/users.md).
+docker at your local machine, go to [http://localhost/admin](http://localhost/admin). Until the first
+admin panel user exists, the panel is reachable without a login — create one on
+the [Users page](../admin-panel/users.md), or configure a bootstrap user before
+the first start (see [Signing in](../admin-panel/authentication.md)).
 
 On the [Setup page](../admin-panel/setup.md) you select the game version, the
 number of game servers (just the data of it), and whether test accounts should be
