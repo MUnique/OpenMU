@@ -48,11 +48,7 @@ public class PlugInManager
         if (configurations is not null)
         {
             this.DiscoverAndRegisterPlugIns();
-            var loadedAssemblies = new HashSet<string>();
-            foreach (var configuration in configurations)
-            {
-                this.ReadConfiguration(configuration, loadedAssemblies);
-            }
+            this.ReadConfigurations(configurations);
         }
     }
 
@@ -83,6 +79,21 @@ public class PlugInManager
     /// Gets the reference handler for references in custom plugin configurations.
     /// </summary>
     public ReferenceHandler? CustomConfigReferenceHandler { get; }
+
+    /// <summary>
+    /// Reads the given plugin configurations and applies them to the known plugins.
+    /// It can be called again later, e.g. when the configurations became available
+    /// after the database has been initialized.
+    /// </summary>
+    /// <param name="configurations">The plugin configurations.</param>
+    public void ReadConfigurations(IEnumerable<PlugInConfiguration> configurations)
+    {
+        var loadedAssemblies = new HashSet<string>();
+        foreach (var configuration in configurations)
+        {
+            this.ReadConfiguration(configuration, loadedAssemblies);
+        }
+    }
 
     /// <summary>
     /// Discovers and registers all plugins of all loaded assemblies.

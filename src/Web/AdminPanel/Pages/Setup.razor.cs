@@ -39,13 +39,23 @@ public partial class Setup
     public IJSRuntime JsRuntime { get; set; } = null!;
 
     /// <inheritdoc />
-    protected override async Task OnInitializedAsync()
+    protected override Task OnInitializedAsync()
+    {
+        return this.LoadDataStateAsync();
+    }
+
+    private async Task LoadDataStateAsync()
     {
         this._isDataInitialized = await this.SetupService.IsDataInitializedAsync().ConfigureAwait(false);
-        if (this._isDataInitialized)
-        {
-            this._gameClientVersion = await this.SetupService.GetCurrentGameClientVersionAsync().ConfigureAwait(false);
-        }
+        this._gameClientVersion = this._isDataInitialized
+            ? await this.SetupService.GetCurrentGameClientVersionAsync().ConfigureAwait(false)
+            : null;
+    }
+
+    private async Task OnInstallationFinishedAsync()
+    {
+        this.ShowInstall = false;
+        await this.LoadDataStateAsync().ConfigureAwait(false);
     }
 
     private Task OnUpdateClickAsync()

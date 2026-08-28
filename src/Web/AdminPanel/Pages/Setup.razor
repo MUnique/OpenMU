@@ -7,7 +7,7 @@
 
 @if (this.ShowInstall)
 {
-    <Install InstallationFinished="() => this.ShowInstall = false" />
+    <Install InstallationFinished="this.OnInstallationFinishedAsync" />
 }
 else if (!this.SetupService.CanConnectToDatabase)
 {
@@ -26,17 +26,19 @@ else if (this.SetupService.IsUpdateRequired)
     <p>@Resources.DatabaseStatus: <span class="badge bg-warning text-dark">@Resources.UpdateRequired</span></p>
     <button class="btn btn-primary" @onclick="this.OnUpdateClickAsync">@Resources.Update</button>
 }
+else if (!this._isDataInitialized)
+{
+    @* The database exists, but doesn't contain any data yet. For the user, it's the same
+       as if the database wasn't created yet - it just needs to be installed. *@
+    <p>@Resources.DatabaseStatus: <span class="badge bg-success">@Resources.UpToDate</span></p>
+    <p>@Resources.InitializedGameVersion: <span class="badge bg-warning text-dark">@Resources.NoInitializedDataFound</span></p>
+
+    <button class="btn btn-primary" @onclick="this.OnInstallClick">@Resources.Create</button>
+}
 else
 {
     <p>@Resources.DatabaseStatus: <span class="badge bg-success">@Resources.UpToDate</span></p>
-    @if (!this._isDataInitialized)
-    {
-        <p>@Resources.InitializedGameVersion: <span class="badge bg-warning text-dark">@Resources.NoInitializedDataFound</span></p>
-    }
-    else
-    {
-        <p>@Resources.InitializedGameVersion: <span class="badge bg-success">@this._gameClientVersion</span></p>
-    }
+    <p>@Resources.InitializedGameVersion: <span class="badge bg-success">@this._gameClientVersion</span></p>
 
     <button class="btn btn-warning" @onclick="this.OnReInstallClickAsync">@Resources.ReInstall</button>
 }

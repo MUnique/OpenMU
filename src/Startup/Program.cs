@@ -304,8 +304,19 @@ internal sealed class Program : IDisposable
                 var dataSource = new GameConfigurationDataSource(
                     provider.GetService<ILogger<GameConfigurationDataSource>>()!,
                     persistenceContextProvider!);
-                var configId = persistenceContextProvider!.CreateNewConfigurationContext().GetDefaultGameConfigurationIdAsync(default).AsTask().WaitAndUnwrapException();
-                dataSource.GetOwnerAsync(configId!.Value).AsTask().WaitAndUnwrapException();
+                using var configurationContext = persistenceContextProvider!.CreateNewConfigurationContext();
+                var configId = configurationContext.GetDefaultGameConfigurationIdAsync(default).AsTask().WaitAndUnwrapException();
+                if (configId is { } gameConfigurationId)
+                {
+                    dataSource.GetOwnerAsync(gameConfigurationId).AsTask().WaitAndUnwrapException();
+                }
+                else
+                {
+                    // The database doesn't contain a game configuration yet. It can be created later,
+                    // e.g. through the admin panel, so we just don't load it here.
+                    this._logger.Warning("No game configuration found in the database.");
+                }
+
                 var referenceHandler = new ByDataSourceReferenceHandler(dataSource);
                 return referenceHandler;
             })
@@ -325,6 +336,12 @@ internal sealed class Program : IDisposable
         {
             host.ConfigureAdminPanel();
         }
+
+        // When the server is started with an uninitialized database, the plugin configurations
+        // are not available yet. They're created during the data initialization, so we have to
+        // load them afterwards. We subscribe before the host is started, so that this handler
+        // runs before the server containers are restarted.
+        host.Services.GetRequiredService<SetupService>().DatabaseInitialized += () => this.OnDatabaseInitializedAsync(host.Services);
 
         this._logger.Information("Starting host...");
         var stopwatch = new Stopwatch();
@@ -378,18 +395,60 @@ internal sealed class Program : IDisposable
             return configs;
         }
 
+        if (!this.IsGameConfigurationAvailable(persistenceContextProvider))
+        {
+            // Without a game configuration, we can't add the missing plugin configurations,
+            // because they are part of it. This is the case when the database is not initialized yet.
+            this._logger.Warning("No game configuration found in the database, so the missing plugin configurations can't be created yet.");
+            return configs;
+        }
+
         configs.AddRange(this.CreateMissingPlugInConfigurations(typesWithMissingConfigs, persistenceContextProvider, referenceHandler));
         _ = context.SaveChangesAsync().AsTask().WaitAndUnwrapException();
         return configs;
     }
 
+    private async ValueTask OnDatabaseInitializedAsync(IServiceProvider services)
+    {
+        try
+        {
+            if (services.GetService<PlugInManager>() is not { } plugInManager
+                || services.GetService<IPersistenceContextProvider>() is not { } persistenceContextProvider)
+            {
+                return;
+            }
+
+            using var context = persistenceContextProvider.CreateNewTypedContext(typeof(PlugInConfiguration), false);
+            var configurations = (await context.GetAsync<PlugInConfiguration>().ConfigureAwait(false)).ToList();
+            plugInManager.ReadConfigurations(configurations);
+            this._logger.Information("Applied {count} plugin configurations after the database initialization.", configurations.Count);
+        }
+        catch (Exception ex)
+        {
+            this._logger.Error(ex, "Error when applying the plugin configurations after the database initialization.");
+        }
+    }
+
+    private bool IsGameConfigurationAvailable(IPersistenceContextProvider persistenceContextProvider)
+    {
+        using var context = persistenceContextProvider.CreateNewConfigurationContext();
+        return context.GetDefaultGameConfigurationIdAsync(default).AsTask().WaitAndUnwrapException() is not null;
+    }
+
     private IEnumerable<PlugInConfiguration> CreateMissingPlugInConfigurations(IEnumerable<Type> plugInTypes, IPersistenceContextProvider persistenceContextProvider, ReferenceHandler referenceHandler)
     {
-        GameConfiguration gameConfiguration;
+        GameConfiguration? gameConfiguration;
 
         using (var context = persistenceContextProvider.CreateNewContext())
         {
-            gameConfiguration = context.GetAsync<GameConfiguration>().AsTask().WaitAndUnwrapException().First();
+            gameConfiguration = context.GetAsync<GameConfiguration>().AsTask().WaitAndUnwrapException().FirstOrDefault();
+        }
+
+        if (gameConfiguration is null)
+        {
+            // The database is not initialized yet - the plugin configurations are created
+            // together with the game configuration.
+            yield break;
         }
 
         using var saveContext = persistenceContextProvider.CreateNewContext(gameConfiguration);
