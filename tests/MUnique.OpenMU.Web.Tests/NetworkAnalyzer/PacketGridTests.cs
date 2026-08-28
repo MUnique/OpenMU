@@ -17,6 +17,8 @@ public class PacketGridTests
 {
     private static readonly ClientVersion Season6 = new(6, 3, ClientLanguage.English);
 
+    private static readonly ClientVersion Version075 = new(0, 75, ClientLanguage.Invariant);
+
     /// <summary>
     /// Tests if a hint is shown when no packets have been captured yet.
     /// </summary>
@@ -46,7 +48,6 @@ public class PacketGridTests
 
         var component = context.Render<PacketGrid>(parameters => parameters
             .Add(grid => grid.Packets, packets)
-            .Add(grid => grid.Virtualize, false)
             .Add(grid => grid.ClientVersion, Season6));
 
         var rows = component.FindAll("tbody tr");
@@ -69,7 +70,6 @@ public class PacketGridTests
 
         var component = context.Render<PacketGrid>(parameters => parameters
             .Add(grid => grid.Packets, packets)
-            .Add(grid => grid.Virtualize, false)
             .Add(grid => grid.Analyzer, analyzer)
             .Add(grid => grid.ClientVersion, Season6));
 
@@ -86,8 +86,7 @@ public class PacketGridTests
         IReadOnlyList<Packet> packets = [new(TimeSpan.FromSeconds(1), [0xC1, 0x05, 0x15, 0x01, 0x02], true)];
 
         var component = context.Render<PacketGrid>(parameters => parameters
-            .Add(grid => grid.Packets, packets)
-            .Add(grid => grid.Virtualize, false));
+            .Add(grid => grid.Packets, packets));
 
         Assert.That(component.Markup, Does.Contain("C1 05 15 01 02"));
     }
@@ -104,7 +103,6 @@ public class PacketGridTests
 
         var component = context.Render<PacketGrid>(parameters => parameters
             .Add(grid => grid.Packets, [packet])
-            .Add(grid => grid.Virtualize, false)
             .Add(grid => grid.OnSelect, p => selected = p));
         component.Find("tbody tr td:last-child span").Click();
 
@@ -124,7 +122,6 @@ public class PacketGridTests
 
         var component = context.Render<PacketGrid>(parameters => parameters
             .Add(grid => grid.Packets, packets)
-            .Add(grid => grid.Virtualize, false)
             .Add(grid => grid.Analyzer, analyzer)
             .Add(grid => grid.ClientVersion, Season6));
 
@@ -145,7 +142,6 @@ public class PacketGridTests
 
         var component = context.Render<PacketGrid>(parameters => parameters
             .Add(grid => grid.Packets, [first, second])
-            .Add(grid => grid.Virtualize, false)
             .Add(grid => grid.Analyzer, analyzer)
             .Add(grid => grid.ClientVersion, Season6)
             .Add(grid => grid.SelectedPacket, second));
@@ -170,7 +166,6 @@ public class PacketGridTests
 
         var component = context.Render<PacketGrid>(parameters => parameters
             .Add(grid => grid.Packets, packets)
-            .Add(grid => grid.Virtualize, false)
             .Add(grid => grid.VisibleRowCount, 10));
 
         var container = component.Find(".packet-grid");
@@ -191,7 +186,6 @@ public class PacketGridTests
 
         context.Render<PacketGrid>(parameters => parameters
             .Add(grid => grid.Packets, packets)
-            .Add(grid => grid.Virtualize, false)
             .Add(grid => grid.AutoScroll, true));
 
         Assert.That(scrollInvocation.Invocations, Is.Not.Empty);
@@ -211,17 +205,108 @@ public class PacketGridTests
 
         context.Render<PacketGrid>(parameters => parameters
             .Add(grid => grid.Packets, packets)
-            .Add(grid => grid.Virtualize, false)
             .Add(grid => grid.AutoScroll, false));
 
         Assert.That(scrollInvocation.Invocations, Is.Empty);
+    }
+
+    /// <summary>
+    /// Tests if the grid scrolls to the newest packet when the auto scrolling is switched on
+    /// again - the view may have been left somewhere in the middle of the packets.
+    /// </summary>
+    [Test]
+    public void ScrollsToTheNewestPacketWhenAutoScrollingIsSwitchedOn()
+    {
+        using var context = CreateContext();
+        var scrollInvocation = context.JSInterop
+            .SetupModule("./_content/MUnique.OpenMU.Web.AdminPanel/Components/NetworkAnalyzer/PacketGrid.razor.js")
+            .SetupVoid("scrollToBottom", _ => true);
+        IReadOnlyList<Packet> packets = [new(TimeSpan.FromSeconds(1), [0xC1, 0x05, 0x15, 0x01, 0x02], true)];
+
+        var component = context.Render<PacketGrid>(parameters => parameters
+            .Add(grid => grid.Packets, packets)
+            .Add(grid => grid.AutoScroll, false));
+        Assert.That(scrollInvocation.Invocations, Is.Empty);
+
+        component.Render(parameters => parameters
+            .Add(grid => grid.Packets, packets)
+            .Add(grid => grid.AutoScroll, true));
+
+        Assert.That(scrollInvocation.Invocations, Is.Not.Empty);
+    }
+
+    /// <summary>
+    /// Tests if the scrolling which is reported by the javascript is passed on, so that the
+    /// page can stop feeding new packets into a view which the user scrolled up.
+    /// </summary>
+    /// <returns>The async task.</returns>
+    [Test]
+    public async Task ScrollingAwayFromTheBottomIsReported()
+    {
+        using var context = CreateContext();
+        IReadOnlyList<Packet> packets = [new(TimeSpan.FromSeconds(1), [0xC1, 0x05, 0x15, 0x01, 0x02], true)];
+        bool? isAtBottom = null;
+
+        var component = context.Render<PacketGrid>(parameters => parameters
+            .Add(grid => grid.Packets, packets)
+            .Add(grid => grid.OnAtBottomChanged, value => isAtBottom = value));
+        await component.InvokeAsync(() => component.Instance.SetAtBottomAsync(false)).ConfigureAwait(false);
+
+        Assert.That(isAtBottom, Is.False);
+    }
+
+    /// <summary>
+    /// Tests if only the newest packets are rendered when there are more than the maximum.
+    /// </summary>
+    [Test]
+    public void OnlyTheNewestPacketsAreRendered()
+    {
+        using var context = CreateContext();
+        var packets = Enumerable.Range(0, 20)
+            .Select(index => new Packet(TimeSpan.FromSeconds(index), [0xC1, 0x04, 0xF1, (byte)index], true))
+            .ToList();
+
+        var component = context.Render<PacketGrid>(parameters => parameters
+            .Add(grid => grid.Packets, packets)
+            .Add(grid => grid.MaximumRowCount, 5));
+
+        var rows = component.FindAll("tbody tr");
+        Assert.That(rows, Has.Count.EqualTo(5));
+        Assert.That(rows[0].TextContent, Does.Contain("C1 04 F1 0F"), "The 16th packet is the first one which is still shown.");
+        Assert.That(rows[4].TextContent, Does.Contain("C1 04 F1 13"), "The newest packet is the last row.");
+    }
+
+    /// <summary>
+    /// Tests if the extracted messages are renewed when the client version changes - the
+    /// messages are cached per packet, because a row is rendered again with each arriving
+    /// packet.
+    /// </summary>
+    [Test]
+    public void MessagesAreRenewedForAnotherClientVersion()
+    {
+        using var context = CreateContext();
+        using var analyzer = new PacketAnalyzer();
+        IReadOnlyList<Packet> packets = [new(TimeSpan.FromSeconds(1), [0xC2, 0x00, 0x06, 0x13, 0x01, 0x00], false)];
+
+        var component = context.Render<PacketGrid>(parameters => parameters
+            .Add(grid => grid.Packets, packets)
+            .Add(grid => grid.Analyzer, analyzer)
+            .Add(grid => grid.ClientVersion, Version075));
+        Assert.That(component.Markup, Does.Contain("AddNpcsToScope075"));
+
+        component.Render(parameters => parameters
+            .Add(grid => grid.Packets, packets)
+            .Add(grid => grid.Analyzer, analyzer)
+            .Add(grid => grid.ClientVersion, Season6));
+
+        Assert.That(component.Markup, Does.Contain("AddNpcsToScope").And.Not.Contain("AddNpcsToScope075"));
     }
 
     private static BunitContext CreateContext()
     {
         var context = new BunitContext();
 
-        // The QuickGrid and its virtualization use javascript, which is not available here.
+        // The auto scrolling of the grid uses javascript, which is not available here.
         context.JSInterop.Mode = JSRuntimeMode.Loose;
         return context;
     }

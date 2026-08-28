@@ -870,12 +870,6 @@
   <data name="ClearPackets" xml:space="preserve">
     <value>Clear</value>
   </data>
-  <data name="Pause" xml:space="preserve">
-    <value>Pause</value>
-  </data>
-  <data name="Resume" xml:space="preserve">
-    <value>Resume</value>
-  </data>
   <data name="ToServer" xml:space="preserve">
     <value>To Server</value>
   </data>
@@ -895,6 +889,6 @@
     <value>Follow</value>
   </data>
   <data name="FollowNewPacketsHint" xml:space="preserve">
-    <value>Scrolls to the newest packet when new traffic arrives.</value>
+    <value>Shows the newest packets and scrolls to them. It's turned off while you scroll up, so that the view doesn't move away.</value>
   </data>
 </root>

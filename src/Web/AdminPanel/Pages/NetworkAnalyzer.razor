@@ -60,12 +60,8 @@ else
                                 </select>
                                 <button type="button" title="@Resources.FollowNewPacketsHint"
                                         class="btn btn-sm @(this._isFollowing ? "btn-secondary" : "btn-outline-secondary")"
-                                        @onclick="() => this._isFollowing = !this._isFollowing">
+                                        @onclick="this.ToggleFollowing">
                                     <span class="oi oi-eye" aria-hidden="true"></span> @Resources.FollowNewPackets
-                                </button>
-                                <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="() => this._isPaused = !this._isPaused">
-                                    <span class="oi @(this._isPaused ? "oi-media-play" : "oi-media-pause")" aria-hidden="true"></span>
-                                    @(this._isPaused ? Resources.Resume : Resources.Pause)
                                 </button>
                                 <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="this.OnClearAsync">
                                     <span class="oi oi-trash" aria-hidden="true"></span> @Resources.ClearPackets
@@ -80,7 +76,8 @@ else
                             Analyzer="@this._analyzer"
                             ClientVersion="@this._capture.ConnectionInfo.ClientVersion"
                             SelectedPacket="@this._selectedPacket"
-                            OnSelect="packet => this._selectedPacket = packet"/>
+                            OnSelect="packet => this._selectedPacket = packet"
+                            OnAtBottomChanged="this.OnAtBottomChanged"/>
             }
         </div>
     </div>

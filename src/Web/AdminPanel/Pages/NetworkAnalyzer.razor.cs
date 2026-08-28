@@ -45,8 +45,6 @@ public partial class NetworkAnalyzer : IAsyncDisposable
 
     private DirectionFilter _directionFilter = DirectionFilter.All;
 
-    private bool _isPaused;
-
     private bool _isFollowing = true;
 
     private bool _isSidebarCollapsed;
@@ -204,6 +202,10 @@ public partial class NetworkAnalyzer : IAsyncDisposable
         this._analyzer = this.AnalyzerProvider.GetAnalyzer(connection.DefinitionSet);
         this._packets = this._capture?.GetPackets() ?? [];
         this._selectedPacket = null;
+
+        // The grid starts at the newest packet of the new connection, so it follows the
+        // traffic again - even when the view of the previous connection was scrolled up.
+        this._isFollowing = true;
         this.UpdateFilteredPackets();
     }
 
@@ -218,6 +220,9 @@ public partial class NetworkAnalyzer : IAsyncDisposable
         this._capture?.Clear();
         this._packets = [];
         this._selectedPacket = null;
+
+        // An empty view has nothing to scroll away from, so it follows the traffic again.
+        this._isFollowing = true;
         this.UpdateFilteredPackets();
         return Task.CompletedTask;
     }
@@ -233,6 +238,40 @@ public partial class NetworkAnalyzer : IAsyncDisposable
         this._selectedConnection = null;
         this._packets = [];
         this.UpdateFilteredPackets();
+    }
+
+    /// <summary>
+    /// Toggles the following of the newest packets. While it's turned off, the view keeps
+    /// showing the packets which are currently in it, so that the user can look at them in
+    /// peace.
+    /// </summary>
+    private void ToggleFollowing()
+    {
+        this._isFollowing = !this._isFollowing;
+        if (this._isFollowing)
+        {
+            this.UpdatePackets();
+        }
+    }
+
+    /// <summary>
+    /// Is called when the packet grid got scrolled to its bottom, or away from it. Scrolling
+    /// up is a good indication that the user wants to look at the packets which are currently
+    /// shown, so the view stops taking new ones until it's scrolled down again.
+    /// </summary>
+    /// <param name="isAtBottom">If set to <c>true</c>, the grid is scrolled to its bottom.</param>
+    private void OnAtBottomChanged(bool isAtBottom)
+    {
+        if (this._isFollowing == isAtBottom)
+        {
+            return;
+        }
+
+        this._isFollowing = isAtBottom;
+        if (isAtBottom)
+        {
+            this.UpdatePackets();
+        }
     }
 
     private void OnPacketFilterChanged(string? filter)
@@ -306,12 +345,16 @@ public partial class NetworkAnalyzer : IAsyncDisposable
     }
 
     /// <summary>
-    /// Takes the newly captured packets, if the view isn't paused.
+    /// Takes the newly captured packets, as long as the view follows them.
     /// </summary>
     /// <returns><see langword="true"/>, if the shown packets changed.</returns>
+    /// <remarks>
+    /// The capture keeps running when the view doesn't follow it, so the missed packets are
+    /// simply taken over as soon as it does again.
+    /// </remarks>
     private bool UpdatePackets()
     {
-        if (this._isPaused || this._capture is not { } capture)
+        if (!this._isFollowing || this._capture is not { } capture)
         {
             return false;
         }

@@ -2313,24 +2313,6 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Pause.
-        /// </summary>
-        public static string Pause {
-            get {
-                return ResourceManager.GetString("Pause", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Resume.
-        /// </summary>
-        public static string Resume {
-            get {
-                return ResourceManager.GetString("Resume", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to To Server.
         /// </summary>
         public static string ToServer {
@@ -2385,7 +2367,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Scrolls to the newest packet when new traffic arrives..
+        ///   Looks up a localized string similar to Shows the newest packets and scrolls to them. It&apos;s turned off while you scroll up, so that the view doesn&apos;t move away..
         /// </summary>
         public static string FollowNewPacketsHint {
             get {

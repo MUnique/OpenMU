@@ -97,7 +97,7 @@ public class NetworkAnalyzerPageTests
         capture.PacketCaptured(new byte[] { 0xC1, 0x04, 0xF1, 0x02 }, false);
 
         // The view is updated by the refresh timer of the page. Following is active by
-        // default, so the newest packet comes first.
+        // default, so it takes the new packets automatically.
         component.WaitForState(
             () => component.FindComponent<PacketGrid>().Instance.Packets.Count == 2,
             TimeSpan.FromSeconds(10));
@@ -113,12 +113,12 @@ public class NetworkAnalyzerPageTests
     }
 
     /// <summary>
-    /// Tests if a paused view doesn't take new packets anymore, and shows them again when
-    /// it's resumed.
+    /// Tests if a view which doesn't follow the traffic anymore keeps its packets, and takes
+    /// the missed ones when it follows again.
     /// </summary>
     /// <returns>The async task.</returns>
     [Test]
-    public async Task PausedViewDoesNotTakeNewPackets()
+    public async Task ViewWhichDoesNotFollowDoesNotTakeNewPackets()
     {
         var connection = new TestConnectionInfo { CharacterName = "TestCharacter" };
         var service = new TestCaptureService(connection);
@@ -126,21 +126,73 @@ public class NetworkAnalyzerPageTests
 
         var component = context.Render<NetworkAnalyzer>();
         component.Find(".list-group-item").Click();
-        component.Find("button[title*='newest packet']").Click(); // stop the auto scrolling
-        component.FindAll("button").First(button => button.TextContent.Contains("Pause")).Click();
+        component.Find("button[title*='newest packet']").Click(); // stop following
 
         var capture = (LiveCapturedConnection)service.GetRunningCapture(connection.Id)!;
         var renderCount = component.RenderCount;
         capture.PacketCaptured(new byte[] { 0xC1, 0x04, 0xF1, 0x01 }, false);
         await Task.Delay(1000).ConfigureAwait(false);
 
-        Assert.That(component.FindComponent<PacketGrid>().Instance.Packets, Is.Empty, "The paused view should not take the new packet.");
-        Assert.That(component.RenderCount, Is.EqualTo(renderCount), "A paused view should not be rendered again, it would just flicker.");
+        Assert.That(component.FindComponent<PacketGrid>().Instance.Packets, Is.Empty, "A view which doesn't follow should not take the new packet.");
+        Assert.That(component.RenderCount, Is.EqualTo(renderCount), "Such a view should not be rendered again, it would just flicker.");
 
-        component.FindAll("button").First(button => button.TextContent.Contains("Resume")).Click();
+        component.Find("button[title*='newest packet']").Click(); // follow again
         component.WaitForState(
             () => component.FindComponent<PacketGrid>().Instance.Packets.Count == 1,
             TimeSpan.FromSeconds(10));
+    }
+
+    /// <summary>
+    /// Tests if the view stops taking new packets when the user scrolls up in the grid, so
+    /// that the packets they're looking at don't move away under their mouse pointer.
+    /// </summary>
+    /// <returns>The async task.</returns>
+    [Test]
+    public async Task ScrollingUpStopsTheViewFromTakingNewPackets()
+    {
+        var connection = new TestConnectionInfo { CharacterName = "TestCharacter" };
+        var service = new TestCaptureService(connection);
+        using var context = CreateContext(service);
+
+        var component = context.Render<NetworkAnalyzer>();
+        component.Find(".list-group-item").Click();
+
+        // The javascript of the grid reports the scrolling of the user like this.
+        var grid = component.FindComponent<PacketGrid>().Instance;
+        await component.InvokeAsync(() => grid.SetAtBottomAsync(false)).ConfigureAwait(false);
+        Assert.That(component.FindComponent<PacketGrid>().Instance.AutoScroll, Is.False, "Scrolling up should stop the following.");
+
+        var capture = (LiveCapturedConnection)service.GetRunningCapture(connection.Id)!;
+        capture.PacketCaptured(new byte[] { 0xC1, 0x04, 0xF1, 0x01 }, false);
+        await Task.Delay(1000).ConfigureAwait(false);
+        Assert.That(component.FindComponent<PacketGrid>().Instance.Packets, Is.Empty, "The new packet should not move the view of the user.");
+
+        await component.InvokeAsync(() => grid.SetAtBottomAsync(true)).ConfigureAwait(false);
+        component.WaitForState(
+            () => component.FindComponent<PacketGrid>().Instance.Packets.Count == 1,
+            TimeSpan.FromSeconds(10));
+        Assert.That(component.FindComponent<PacketGrid>().Instance.AutoScroll, Is.True, "Scrolling back to the bottom should follow the traffic again.");
+    }
+
+    /// <summary>
+    /// Tests if the view follows the traffic again after it has been cleared - there is
+    /// nothing left to look at, so it would just stay empty otherwise.
+    /// </summary>
+    [Test]
+    public void ClearingTheViewFollowsTheTrafficAgain()
+    {
+        var connection = new TestConnectionInfo { CharacterName = "TestCharacter" };
+        var service = new TestCaptureService(connection);
+        using var context = CreateContext(service);
+
+        var component = context.Render<NetworkAnalyzer>();
+        component.Find(".list-group-item").Click();
+        component.Find("button[title*='newest packet']").Click(); // stop following
+        Assert.That(component.FindComponent<PacketGrid>().Instance.AutoScroll, Is.False);
+
+        component.FindAll("button").First(button => button.TextContent.Contains("Clear")).Click();
+
+        Assert.That(component.FindComponent<PacketGrid>().Instance.AutoScroll, Is.True);
     }
 
     /// <summary>
