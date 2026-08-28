@@ -107,6 +107,18 @@ public sealed class Walker : IDisposable
             return;
         }
 
+        if (this._walkCts is { } previousCts)
+        {
+            // A walk loop is still running for a previous walk. Replacing the source without cancelling it
+            // first orphans that loop: its token is the only thing which can end it, and once the field
+            // points at the new source nobody holds a reference to the old one any more. The orphan would
+            // then run forever - see the note in WalkLoopAsync - burning a core and keeping the walk
+            // supporter alive. Callers are expected to StopAsync first; this is the safety net for the
+            // window in which they did not.
+            await previousCts.CancelAsync().ConfigureAwait(false);
+            previousCts.Dispose();
+        }
+
         var cts = new CancellationTokenSource();
         this._walkCts = cts;
         _ = Task.Run(async () => await this.WalkLoopAsync(cts.Token).ConfigureAwait(false), cts.Token);
@@ -194,7 +206,16 @@ public sealed class Walker : IDisposable
                     await this.StopAsync().ConfigureAwait(false);
                 }
 
-                continue;
+                // A null step means this walk is over for good - the walker is disposed, the supporter is
+                // no longer active, the queue ran dry, or the token was cancelled. There is nothing to
+                // retry, so leave the loop instead of continuing it.
+                //
+                // Continuing here used to be load-bearing: it relied on the StopAsync above having
+                // cancelled our own token, so that the while-condition ended the loop on the next pass.
+                // That assumption breaks whenever _walkCts no longer refers to this loop's source, because
+                // StopAsync is then a no-op which leaves our token uncancelled - and since the null step
+                // is reproducible, the loop spins at full speed without ever awaiting anything.
+                break;
             }
 
             var delay = this.StepDelay(step);
