@@ -84,9 +84,9 @@ internal partial class CharacterClassInitialization : InitializerBase
         return CharacterClassHelper.CreateConditionalRelationship(this.Context, this.GameConfiguration, targetAttribute, conditionalAttribute, sourceAttribute, aggregateType);
     }
 
-    private ConstValueAttribute CreateConstValueAttribute(float value, AttributeDefinition attribute)
+    private ConstValueAttribute CreateConstValueAttribute(float value, AttributeDefinition attribute, AggregateType aggregateType = AggregateType.AddRaw)
     {
-        return CharacterClassHelper.CreateConstValueAttribute(this.Context, this.GameConfiguration, value, attribute);
+        return CharacterClassHelper.CreateConstValueAttribute(this.Context, this.GameConfiguration, value, attribute, aggregateType);
     }
 
     private void AddCommonAttributeRelationships(ICollection<AttributeRelationship> attributeRelationships)
@@ -122,12 +122,9 @@ internal partial class CharacterClassInitialization : InitializerBase
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.MaximumMana, 1, Stats.SwellLifeManaIncrease, aggregateType: AggregateType.Multiplicate));
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.IncreaseBlockBonus, 1, Stats.DefenseRatePvm, aggregateType: AggregateType.Multiplicate));
 
-        // If two weapons are equipped (DK, MG, Sum, RF) we subtract the half of the sum of the speeds again from the attack speed
-        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.AreTwoWeaponsEquipped, 1, Stats.EquippedWeaponCount));
-        var tempSpeed = this.Context.CreateNew<AttributeDefinition>(Guid.NewGuid(), "Temp Half weapon attack speed", string.Empty);
-        this.GameConfiguration.Attributes.Add(tempSpeed);
-        attributeRelationships.Add(this.CreateAttributeRelationship(tempSpeed, -0.5f, Stats.AttackSpeedByWeapon));
-        attributeRelationships.Add(this.CreateConditionalRelationship(Stats.AttackSpeedAny, Stats.AreTwoWeaponsEquipped, tempSpeed));
+        // If two weapons are equipped (DK, MG, Sum, RF) we average the weapon attack speed
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.AreTwoWeaponsEquipped, 1, Stats.EquippedWeaponCount, InputOperator.Maximum));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.AttackSpeedByWeapon, 0.5f, Stats.AreTwoWeaponsEquipped, InputOperator.ExponentiateByAttribute, AggregateType.Multiplicate));
 
         var tempDefense = this.Context.CreateNew<AttributeDefinition>(Guid.NewGuid(), "Temp Defense Bonus multiplier with Shield", string.Empty);
         this.GameConfiguration.Attributes.Add(tempDefense);
@@ -138,12 +135,12 @@ internal partial class CharacterClassInitialization : InitializerBase
         attributeRelationships.Add(this.CreateConditionalRelationship(Stats.DefenseFinal, Stats.IsShieldEquipped, Stats.BonusDefenseWithShield, AggregateType.AddFinal));
         attributeRelationships.Add(this.CreateConditionalRelationship(Stats.DefenseRatePvm, Stats.IsShieldEquipped, Stats.BonusDefenseRateWithShield, AggregateType.AddFinal));
 
-        var tempInnovDefDec = this.Context.CreateNew<AttributeDefinition>(Guid.NewGuid(), "Temp Innovation defense decrement", string.Empty);
-        this.GameConfiguration.Attributes.Add(tempInnovDefDec);
-        attributeRelationships.Add(this.CreateAttributeRelationship(tempInnovDefDec, -1, Stats.InnovationDefDecrement));
-        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.DefenseDecrement, 1, tempInnovDefDec, InputOperator.Add, AggregateType.Multiplicate));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.DefenseDecrement, -1, Stats.InnovationDefDecrement));
 
-        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.HealthRecoveryMultiplier, 0.01f, Stats.IsInSafezone));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.HealthRecoveryMultiplier, 0.03f, Stats.IsResting));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.ManaRecoveryMultiplier, 0.03f, Stats.IsResting));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.AbilityRecoveryAbsolute, 3, Stats.IsInSafezone));
+
         if (this.UseClassicPvp)
         {
             attributeRelationships.Add(this.CreateAttributeRelationship(Stats.DefenseRatePvp, 1, Stats.DefenseRatePvm));
@@ -151,7 +148,10 @@ internal partial class CharacterClassInitialization : InitializerBase
         }
         else
         {
-            attributeRelationships.Add(this.CreateAttributeRelationship(Stats.ShieldRecoveryMultiplier, 0.01f, Stats.IsInSafezone));
+            attributeRelationships.Add(this.CreateAttributeRelationship(Stats.IsShieldRecoveryActive, 1, Stats.IsInSafezone));
+            attributeRelationships.Add(this.CreateAttributeRelationship(Stats.IsShieldRecoveryActive, 1, Stats.ShieldRecoveryEverywhere));
+            attributeRelationships.Add(this.CreateAttributeRelationship(Stats.ShieldRecoveryRampFactor, 1f / 15f, Stats.ShieldRecoveryHiatus));  // (3 - 2) / (25 - 10)
+            attributeRelationships.Add(this.CreateAttributeRelationship(Stats.ShieldRecoveryMultiplier, 1, Stats.ShieldRecoveryRampFactor, aggregateType: AggregateType.Multiplicate));
         }
 
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.MaximumGuildSize, 0.1f, Stats.Level));
@@ -160,7 +160,7 @@ internal partial class CharacterClassInitialization : InitializerBase
 
     private void AddCommonBaseAttributeValues(ICollection<ConstValueAttribute> baseAttributeValues, bool isMaster)
     {
-        baseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 27.5f, Stats.ManaRecoveryMultiplier));
+        baseAttributeValues.Add(this.CreateConstValueAttribute(0.037f, Stats.ManaRecoveryMultiplier));
         baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.DamageReceiveDecrement));
         baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.AttackDamageIncrease));
         baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.ExperienceRate));
@@ -184,7 +184,9 @@ internal partial class CharacterClassInitialization : InitializerBase
 
         if (!this.UseClassicPvp)
         {
-            baseAttributeValues.Add(this.CreateConstValueAttribute(0.01f, Stats.ShieldRecoveryMultiplier));
+            baseAttributeValues.Add(this.CreateConstValueAttribute(100, Stats.ShieldRecoveryMultiplier));
+            baseAttributeValues.Add(this.CreateConstValueAttribute(1f / 75000, Stats.ShieldRecoveryMultiplier, AggregateType.Multiplicate)); // 1 / (30 * 100 * 25)
+            baseAttributeValues.Add(this.CreateConstValueAttribute(4f / 3f, Stats.ShieldRecoveryRampFactor));   // y=mx+b: m=1/15, y=2, x=10 => b=4/3
         }
     }
 

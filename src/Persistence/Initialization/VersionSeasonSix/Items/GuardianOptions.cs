@@ -79,7 +79,7 @@ internal class GuardianOptions : InitializerBase
         definition.AddsRandomly = false;
 
         definition.PossibleOptions.Add(this.CreateOption(ItemGroups.Helm, Stats.DefenseRatePvp, 10, AggregateType.AddRaw, ItemOptionDefinitionNumbers.GuardianOption1));
-        definition.PossibleOptions.Add(this.CreateOption(ItemGroups.Helm, Stats.ShieldRecoveryMultiplier, 20, AggregateType.AddRaw, ItemOptionDefinitionNumbers.GuardianOption2)); // 20 absolute, need test
+        definition.PossibleOptions.Add(this.CreateOption(ItemGroups.Helm, Stats.ShieldRecoveryMultiplier, 20, AggregateType.AddRaw, ItemOptionDefinitionNumbers.GuardianOption2));
     }
 
     private void CreateGlovesOption()

@@ -14,7 +14,6 @@ using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.MuHelper;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Pet;
-using MUnique.OpenMU.GameLogic.PlayerActions;
 using MUnique.OpenMU.GameLogic.PlayerActions.Items;
 using MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 using MUnique.OpenMU.GameLogic.PlayerActions.Trade;
@@ -24,7 +23,6 @@ using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.GameLogic.Views.Guild;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.GameLogic.Views.MuHelper;
-using MUnique.OpenMU.GameLogic.Views.Pet;
 using MUnique.OpenMU.GameLogic.Views.Quest;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Interfaces;
@@ -240,8 +238,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         set
         {
-            var character = this._selectedCharacter;
-            if (character is null || character.Pose == this.Pose)
+            if (this._selectedCharacter is not { } character || character.Pose == value)
             {
                 return;
             }
@@ -575,6 +572,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public DateTime PotionCooldownUntil { get; set; } = DateTime.UtcNow;
 
     /// <summary>
+    /// Gets or sets the timestamp of when the shield hiatus was last accrued.
+    /// </summary>
+    public DateTime LastShieldRecoveryHiatusAccrual { get; set; } = DateTime.UtcNow;
+
+    /// <summary>
     /// Gets a value indicating whether opening the player store after entering the game is supported by this instance.
     /// </summary>
     protected virtual bool IsPlayerStoreOpeningAfterEnterSupported => true;
@@ -876,28 +878,41 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     {
         try
         {
-            var attributes = this.Attributes;
-            if (attributes is null)
+            if (this.Attributes is not { } attributes)
             {
                 return;
             }
 
-            foreach (var r in Stats.IntervalRegenerationAttributes.Where(r =>
-                         attributes[r.RegenerationMultiplier] > 0 || attributes[r.AbsoluteAttribute] > 0))
+            var now = DateTime.UtcNow;
+            foreach (var r in Stats.IntervalRegenerationAttributes)
             {
-                if (r.CurrentAttribute == Stats.CurrentShield && !this.IsAtSafezone() &&
-                    attributes[Stats.ShieldRecoveryEverywhere] < 1)
+                if ((r.EnablerAttribute is { } enabler && attributes[enabler] < 1)
+                    || (r.HiatusAttribute is { } hiatus && attributes[hiatus] < r.HiatusThreshold))
                 {
-                    // Shield recovery is only possible at safe-zone, except the character has a specific attribute which has the effect that it's recovered everywhere.
-                    // This attribute is usually provided by level 380 armor and a Guardian Option.
                     continue;
                 }
 
+                var factor = 0f;
+                var interval = r.Interval;
+                if (attributes[Stats.IsResting] > 0)
+                {
+                    interval = r.IntervalResting;
+
+                    if (r.CurrentAttribute == Stats.CurrentMana)
+                    {
+                        // Mana recovery while resting is on top of regular recovery
+                        factor += (float)((now - this._lastRegenerate) / r.Interval);
+                    }
+                }
+
+                factor += (float)((now - this._lastRegenerate) / interval);
+
                 attributes[r.CurrentAttribute] = Math.Min(
                     attributes[r.CurrentAttribute] +
-                    ((attributes[r.MaximumAttribute] * attributes[r.RegenerationMultiplier]) +
-                     attributes[r.AbsoluteAttribute]),
+                        (((attributes[r.MaximumAttribute] * attributes[r.RegenerationMultiplier]) + attributes[r.AbsoluteAttribute]) * factor),
                     attributes[r.MaximumAttribute]);
+
+                // this.Logger.LogDebug($"Regenerated {r.CurrentAttribute} with elapsed time {now - this._lastRegenerate} and factor {factor}");
             }
 
             await this.RegenerateHeroStateAsync().ConfigureAwait(false);
@@ -1200,6 +1215,17 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this._selectedCharacter.StateRemainingSeconds += (int)TimeSpan.FromHours(1).TotalSeconds;
         this._selectedCharacter.PlayerKillCount += 1;
         await this.ForEachWorldObserverAsync<IUpdateCharacterHeroStatePlugIn>(o => o.UpdateCharacterHeroStateAsync(this), true).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sets the current values of the regeneration attributes to their maximum values.
+    /// </summary>
+    internal void SetReclaimableAttributesToMaximum()
+    {
+        foreach (var regeneration in Stats.IntervalRegenerationAttributes)
+        {
+            this.Attributes![regeneration.CurrentAttribute] = this.Attributes[regeneration.MaximumAttribute];
+        }
     }
 
     /// <summary>
@@ -1595,6 +1621,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         this.Attributes = new ItemAwareAttributeSystem(this.Account!, selectedCharacter, this.GameContext.Configuration);
         this.Attributes[Stats.NearbyPartyMemberCount] = 0;
+        this.Attributes[Stats.IsResting] = 0;
         this.LogInvalidInventoryItems();
 
         this._storages.CreateForCharacter(selectedCharacter);
@@ -1619,7 +1646,14 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.Attributes[Stats.AmmunitionAmount] = (float)(this.Inventory?.EquippedAmmunitionItem?.Durability ?? 0);
         ammoAttribute.ValueChanged += this.OnAmmunitionAmountChanged;
 
+        if (this.Attributes[Stats.MaximumShield] > 0)
+        {
+            this.Attributes.GetComposableAttribute(Stats.ShieldRecoveryHiatus)?.AddElement(new SimpleElement(0, AggregateType.AddRaw));
+            this.LastShieldRecoveryHiatusAccrual = DateTime.UtcNow;
+        }
+
         await this.ClientReadyAfterMapChangeAsync().ConfigureAwait(false);
+        this._lastRegenerate = DateTime.UtcNow;
 
         await this.InvokeViewPlugInAsync<IUpdateRotationPlugIn>(p => p.UpdateRotationAsync()).ConfigureAwait(false);
         await this.ResetPetBehaviorAsync().ConfigureAwait(false);
@@ -1667,17 +1701,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.Attributes[Stats.CurrentMana] = this.Attributes[Stats.MaximumMana];
         this.Attributes[Stats.CurrentAbility] = this.Attributes[Stats.MaximumAbility] / 2;
         this.Attributes[Stats.CurrentHealth] = Math.Min(this.Attributes[Stats.CurrentHealth], this.Attributes[Stats.MaximumHealth]);
-    }
-
-    /// <summary>
-    /// Sets the current values of the regeneration attributes to their maximum values.
-    /// </summary>
-    internal void SetReclaimableAttributesToMaximum()
-    {
-        foreach (var regeneration in Stats.IntervalRegenerationAttributes)
-        {
-            this.Attributes![regeneration.CurrentAttribute] = this.Attributes[regeneration.MaximumAttribute];
-        }
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]

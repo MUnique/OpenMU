@@ -9,7 +9,8 @@ using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// Updates the <see cref="Stats.IsInSafezone"/>. For example, this activates the automatic health and shield recover.
+/// Updates the <see cref="Stats.IsInSafezone"/> and <see cref="Stats.IsResting"/> attributes.
+/// For example, these activate or increase shield, ability, health and mana recoveries.
 /// </summary>
 [PlugIn]
 [Display(Name = nameof(PlugInResources.UpdateIsInSafezoneAfterPlayerMoved_Name), Description = nameof(PlugInResources.UpdateIsInSafezoneAfterPlayerMoved_Description), ResourceType = typeof(PlugInResources))]
@@ -22,6 +23,7 @@ public class UpdateIsInSafezoneAfterPlayerMoved : IAttackableMovedPlugIn
         if (attackable is Player player)
         {
             player.Attributes?.SetStatAttribute(Stats.IsInSafezone, attackable.IsAtSafezone() ? 1.0f : 0.0f);
+            player.Attributes?.SetStatAttribute(Stats.IsResting, 0.0f);
         }
     }
 }
