@@ -105,17 +105,6 @@ public class ComposableAttribute : BaseAttribute, IComposableAttribute
         }
     }
 
-    /// <summary>
-    /// Removes all elements from the composition.
-    /// </summary>
-    public void RemoveAllElements()
-    {
-        while (this._elements.FirstOrDefault() is { } element)
-        {
-            this.RemoveElement(element);
-        }
-    }
-
     private float GetAndCacheValue()
     {
         // Aggregate a copy-on-write snapshot, so a concurrent AddElement/RemoveElement (e.g. an expiring
