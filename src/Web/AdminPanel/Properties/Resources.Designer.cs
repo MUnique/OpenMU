@@ -2177,5 +2177,203 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
             }
         }
         
+        /// <summary>
+        ///   Looks up a localized string similar to Network Analyzer.
+        /// </summary>
+        public static string NetworkAnalyzer {
+            get {
+                return ResourceManager.GetString("NetworkAnalyzer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chat Server.
+        /// </summary>
+        public static string ChatServer {
+            get {
+                return ResourceManager.GetString("ChatServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connections.
+        /// </summary>
+        public static string Connections {
+            get {
+                return ResourceManager.GetString("Connections", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No connections found..
+        /// </summary>
+        public static string NoConnectionsFound {
+            get {
+                return ResourceManager.GetString("NoConnectionsFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select a connection to see its network traffic..
+        /// </summary>
+        public static string SelectAConnection {
+            get {
+                return ResourceManager.GetString("SelectAConnection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The network analyzer is only available in the all-in-one deployment, because it needs the servers in the same process..
+        /// </summary>
+        public static string NetworkAnalyzerNotAvailable {
+            get {
+                return ResourceManager.GetString("NetworkAnalyzerNotAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Captured Packets.
+        /// </summary>
+        public static string CapturedPackets {
+            get {
+                return ResourceManager.GetString("CapturedPackets", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Timestamp.
+        /// </summary>
+        public static string Timestamp {
+            get {
+                return ResourceManager.GetString("Timestamp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Direction.
+        /// </summary>
+        public static string Direction {
+            get {
+                return ResourceManager.GetString("Direction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Code.
+        /// </summary>
+        public static string PacketCode {
+            get {
+                return ResourceManager.GetString("PacketCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Message.
+        /// </summary>
+        public static string PacketMessage {
+            get {
+                return ResourceManager.GetString("PacketMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Packet Details.
+        /// </summary>
+        public static string PacketDetails {
+            get {
+                return ResourceManager.GetString("PacketDetails", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Extracted Information.
+        /// </summary>
+        public static string ExtractedInformation {
+            get {
+                return ResourceManager.GetString("ExtractedInformation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Raw Data.
+        /// </summary>
+        public static string RawData {
+            get {
+                return ResourceManager.GetString("RawData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Clear.
+        /// </summary>
+        public static string ClearPackets {
+            get {
+                return ResourceManager.GetString("ClearPackets", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to To Server.
+        /// </summary>
+        public static string ToServer {
+            get {
+                return ResourceManager.GetString("ToServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to To Client.
+        /// </summary>
+        public static string ToClient {
+            get {
+                return ResourceManager.GetString("ToClient", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Filter by code or message.
+        /// </summary>
+        public static string FilterPackets {
+            get {
+                return ResourceManager.GetString("FilterPackets", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No packets captured yet..
+        /// </summary>
+        public static string NoPacketsCaptured {
+            get {
+                return ResourceManager.GetString("NoPacketsCaptured", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select a packet to see its content..
+        /// </summary>
+        public static string SelectAPacket {
+            get {
+                return ResourceManager.GetString("SelectAPacket", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Follow.
+        /// </summary>
+        public static string FollowNewPackets {
+            get {
+                return ResourceManager.GetString("FollowNewPackets", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shows the newest packets and scrolls to them. It&apos;s turned off while you scroll up, so that the view doesn&apos;t move away..
+        /// </summary>
+        public static string FollowNewPacketsHint {
+            get {
+                return ResourceManager.GetString("FollowNewPacketsHint", resourceCulture);
+            }
+        }
+        
     }
 }

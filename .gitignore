@@ -323,3 +323,5 @@ src/AdminPanel/wwwroot/content/js/app.js.map
 
 # AI
 .opencode/
+# Keys which are generated when the server runs locally.
+data-protection-keys/

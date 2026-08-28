@@ -105,6 +105,14 @@
                     </a>
                 </li>
             }
+            @if (this.IsNetworkAnalyzerAvailable)
+            {
+              <li class="nav-item px-3">
+                <NavLink class="nav-link" href="network-analyzer" @onclick="() => NavigationHistory.Clear()">
+                  <span class="oi oi-pulse" aria-hidden="true"></span> @Resources.NetworkAnalyzer
+                </NavLink>
+              </li>
+            }
             <li class="nav-item px-3">
               <CultureSelector />
             </li>

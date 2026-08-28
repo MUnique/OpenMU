@@ -1,4 +1,4 @@
-// <copyright file="ChatClientConnectionInfo.cs" company="MUnique">
+﻿// <copyright file="ChatClientConnectionInfo.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -24,11 +24,13 @@ internal sealed class ChatClientConnectionInfo : ICapturedConnectionInfo
     /// <param name="client">The client.</param>
     /// <param name="connection">The connection of the client.</param>
     /// <param name="serverId">The identifier of the chat server.</param>
-    public ChatClientConnectionInfo(ChatClient client, IConnection connection, int serverId)
+    /// <param name="serverDescription">The description of the chat server.</param>
+    public ChatClientConnectionInfo(ChatClient client, IConnection connection, int serverId, string serverDescription)
     {
         this._client = client;
         this._connection = connection;
         this.ServerId = serverId;
+        this.ServerDescription = serverDescription;
     }
 
     /// <inheritdoc />
@@ -39,6 +41,9 @@ internal sealed class ChatClientConnectionInfo : ICapturedConnectionInfo
 
     /// <inheritdoc />
     public int ServerId { get; }
+
+    /// <inheritdoc />
+    public string ServerDescription { get; }
 
     /// <summary>
     /// Gets the name of the account. The chat server doesn't know the account of its clients,
