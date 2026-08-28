@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.CastleSiege;
 
 using System.Diagnostics.CodeAnalysis;
+using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.Interfaces;
 
@@ -50,7 +51,7 @@ public sealed class CastleSiegeTaxProvider
     /// <param name="player">The player.</param>
     /// <returns>The flat entry fee, or zero when the player is exempt.</returns>
     public ValueTask<int> GetHuntEntryFeeAsync(Player player)
-        => this.GetTaxAsync(player, GetContext(player), CastleSiegeTaxType.HuntZone);
+        => this.GetHuntEntryFeeAsync(player, GetContext(player));
 
     /// <summary>
     /// Determines whether a player belongs to the castle owner's guild or alliance.
@@ -67,7 +68,10 @@ public sealed class CastleSiegeTaxProvider
     /// <param name="baseCost">The untaxed crafting cost.</param>
     /// <returns><see langword="true"/> when the player paid the complete cost.</returns>
     public ValueTask<bool> TryPayChaosCostAsync(Player player, int baseCost)
-        => this.TryPayPercentageCostAsync(player, baseCost, GetContext(player), CastleSiegeTaxType.ChaosMachine);
+        => this.TryPayChaosCostAsync(
+            player,
+            baseCost,
+            player.OpenedNpc?.Definition.NpcWindow == NpcWindow.ChaosMachine ? GetContext(player) : null);
 
     /// <summary>
     /// Removes an NPC store cost, including Castle Siege tax, and persists the tax as tribute.
@@ -126,7 +130,11 @@ public sealed class CastleSiegeTaxProvider
     /// <param name="context">The Castle Siege context.</param>
     /// <returns><see langword="true"/> when the player paid the complete cost.</returns>
     internal ValueTask<bool> TryPayChaosCostAsync(Player player, int baseCost, CastleSiegeContext? context)
-        => this.TryPayPercentageCostAsync(player, baseCost, context, CastleSiegeTaxType.ChaosMachine);
+        => this.TryPayPercentageCostAsync(
+            player,
+            baseCost,
+            player.OpenedNpc?.Definition.NpcWindow == NpcWindow.ChaosMachine ? context : null,
+            CastleSiegeTaxType.ChaosMachine);
 
     /// <summary>
     /// Removes an NPC store cost against a known Castle Siege context.
@@ -137,6 +145,15 @@ public sealed class CastleSiegeTaxProvider
     /// <returns><see langword="true"/> when the player paid the complete cost.</returns>
     internal ValueTask<bool> TryPayStoreCostAsync(Player player, long baseCost, CastleSiegeContext? context)
         => this.TryPayPercentageCostAsync(player, baseCost, context, CastleSiegeTaxType.Store);
+
+    /// <summary>
+    /// Gets the configured Land of Trials fee against a known Castle Siege context.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="context">The Castle Siege context.</param>
+    /// <returns>The flat entry fee, or zero when the player is exempt.</returns>
+    internal ValueTask<int> GetHuntEntryFeeAsync(Player player, CastleSiegeContext? context)
+        => this.GetTaxAsync(player, context, CastleSiegeTaxType.HuntZone);
 
     /// <summary>
     /// Determines whether a player belongs to the castle owner's guild or alliance.
@@ -206,7 +223,7 @@ public sealed class CastleSiegeTaxProvider
                 return false;
             }
 
-            return await this.TryPayAndCollectAsync(player, context, 0, fee).ConfigureAwait(false);
+            return this.TryPayAndCollect(player, context, 0, fee);
         }
         finally
         {
@@ -268,6 +285,11 @@ public sealed class CastleSiegeTaxProvider
             return player.TryRemoveMoney((int)baseCost);
         }
 
+        if (GetTax(context, taxType) == 0)
+        {
+            return player.TryRemoveMoney((int)baseCost);
+        }
+
         var persistentGuildId = await GetPersistentAllianceMasterGuildIdAsync(player).ConfigureAwait(false);
         await context.ExecutionLock.WaitAsync().ConfigureAwait(false);
         try
@@ -280,7 +302,7 @@ public sealed class CastleSiegeTaxProvider
             var isExempt = persistentGuildId == context.SiegeData.OwnerGuildId;
             var rate = isExempt ? 0 : GetTax(context, taxType);
             var tax = checked((baseCost * rate) / 100);
-            return await this.TryPayAndCollectAsync(player, context, baseCost, tax).ConfigureAwait(false);
+            return this.TryPayAndCollect(player, context, baseCost, tax);
         }
         finally
         {
@@ -288,7 +310,7 @@ public sealed class CastleSiegeTaxProvider
         }
     }
 
-    private async ValueTask<bool> TryPayAndCollectAsync(
+    private bool TryPayAndCollect(
         Player player,
         CastleSiegeContext context,
         long baseCost,
@@ -300,13 +322,11 @@ public sealed class CastleSiegeTaxProvider
             return false;
         }
 
-        var previousTribute = context.SiegeData.TributeMoney;
-        if (tax > 0 && previousTribute > long.MaxValue - tax)
+        if (tax > 0 && context.SiegeData.TributeMoney > long.MaxValue - tax)
         {
             return false;
         }
 
-        var updatedTribute = previousTribute + tax;
         if (!player.TryRemoveMoney((int)totalCost))
         {
             return false;
@@ -317,17 +337,8 @@ public sealed class CastleSiegeTaxProvider
             return true;
         }
 
-        context.SiegeData.TributeMoney = updatedTribute;
-        try
-        {
-            await context.SaveOwnerAsync().ConfigureAwait(false);
-            return true;
-        }
-        catch
-        {
-            context.SiegeData.TributeMoney = previousTribute;
-            _ = player.TryAddMoney((int)totalCost);
-            throw;
-        }
+        context.SiegeData.TributeMoney += tax;
+        context.IsEconomyPersistencePending = true;
+        return true;
     }
 }

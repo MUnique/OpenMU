@@ -39,7 +39,7 @@ public sealed class CastleSiegeHuntZoneEnterAction
 
         if (!await this._taxProvider.TryPayHuntEntryFeeAsync(player, context).ConfigureAwait(false))
         {
-            var fee = await this._taxProvider.GetHuntEntryFeeAsync(player).ConfigureAwait(false);
+            var fee = await this._taxProvider.GetHuntEntryFeeAsync(player, context).ConfigureAwait(false);
             if (fee > player.Money)
             {
                 await player.ShowLocalizedBlueMessageAsync(

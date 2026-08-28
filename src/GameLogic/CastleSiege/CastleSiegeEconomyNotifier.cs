@@ -27,7 +27,11 @@ internal static class CastleSiegeEconomyNotifier
     /// </summary>
     /// <param name="context">The Castle Siege context.</param>
     /// <param name="taxType">The tax type.</param>
-    internal static async ValueTask BroadcastTaxRateAsync(CastleSiegeContext context, CastleSiegeTaxType taxType)
+    /// <param name="taxRate">The tax rate captured when the change was applied.</param>
+    internal static async ValueTask BroadcastTaxRateAsync(
+        CastleSiegeContext context,
+        CastleSiegeTaxType taxType,
+        byte taxRate)
     {
         if (taxType is not (CastleSiegeTaxType.ChaosMachine or CastleSiegeTaxType.Store))
         {
@@ -36,7 +40,10 @@ internal static class CastleSiegeEconomyNotifier
 
         foreach (var player in await context.GameContext.GetPlayersAsync().ConfigureAwait(false))
         {
-            await SendTaxRateAsync(context, player, taxType).ConfigureAwait(false);
+            if (player.PlayerState.CurrentState == PlayerState.EnteredWorld)
+            {
+                await SendTaxRateAsync(player, taxType, taxRate).ConfigureAwait(false);
+            }
         }
     }
 
@@ -66,7 +73,15 @@ internal static class CastleSiegeEconomyNotifier
             CastleSiegeTaxType.Store => Math.Min((int)context.SiegeData.TaxStore, CastleSiegeTaxProvider.MaximumPercentageTax),
             _ => 0,
         };
+        return SendTaxRateAsync(player, taxType, checked((byte)taxRate));
+    }
+
+    private static ValueTask SendTaxRateAsync(
+        Player player,
+        CastleSiegeTaxType taxType,
+        byte taxRate)
+    {
         return player.InvokeViewPlugInAsync<ICastleSiegeTaxChangeResultPlugIn>(
-            view => view.ShowTaxRateUpdateAsync(taxType, checked((byte)taxRate)));
+            view => view.ShowTaxRateUpdateAsync(taxType, taxRate));
     }
 }

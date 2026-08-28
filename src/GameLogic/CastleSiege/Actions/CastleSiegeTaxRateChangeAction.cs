@@ -26,6 +26,7 @@ public sealed class CastleSiegeTaxRateChangeAction
         uint taxRate)
     {
         var result = CastleSiegeRequestResult.Failed;
+        byte? broadcastTaxRate = null;
         if (context is { Configuration.Enabled: true })
         {
             var ownerGuildId = await CastleSiegeTaxProvider.GetPersistentGuildMasterIdAsync(player).ConfigureAwait(false);
@@ -60,6 +61,10 @@ public sealed class CastleSiegeTaxRateChangeAction
 
                         await context.SaveOwnerAsync().ConfigureAwait(false);
                         result = CastleSiegeRequestResult.Success;
+                        if (taxType is CastleSiegeTaxType.ChaosMachine or CastleSiegeTaxType.Store)
+                        {
+                            broadcastTaxRate = checked((byte)taxRate);
+                        }
                     }
                 }
             }
@@ -72,11 +77,9 @@ public sealed class CastleSiegeTaxRateChangeAction
         await player.InvokeViewPlugInAsync<ICastleSiegeTaxChangeResultPlugIn>(
                 view => view.ShowTaxChangeResultAsync(result, taxType, taxRate))
             .ConfigureAwait(false);
-        if (result == CastleSiegeRequestResult.Success
-            && context is not null
-            && taxType is CastleSiegeTaxType.ChaosMachine or CastleSiegeTaxType.Store)
+        if (context is not null && broadcastTaxRate is { } rate)
         {
-            await CastleSiegeEconomyNotifier.BroadcastTaxRateAsync(context, taxType).ConfigureAwait(false);
+            await CastleSiegeEconomyNotifier.BroadcastTaxRateAsync(context, taxType, rate).ConfigureAwait(false);
         }
 
         return result == CastleSiegeRequestResult.Success;

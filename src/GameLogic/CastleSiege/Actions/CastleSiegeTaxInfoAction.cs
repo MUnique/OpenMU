@@ -31,6 +31,7 @@ public sealed class CastleSiegeTaxInfoAction
                 : CastleSiegeRequestResult.NotAuthorized;
         }
 
+        // Percentage rates are public protocol state; only the treasury balance is restricted to the owner guild master.
         await player.InvokeViewPlugInAsync<ICastleSiegeTaxInfoPlugIn>(
                 view => view.ShowTaxInfoAsync(
                     result,

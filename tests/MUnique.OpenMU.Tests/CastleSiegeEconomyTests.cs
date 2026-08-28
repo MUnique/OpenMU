@@ -11,6 +11,8 @@ using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.CastleSiege;
 using MUnique.OpenMU.GameLogic.CastleSiege.Actions;
+using MUnique.OpenMU.GameLogic.NPC;
+using MUnique.OpenMU.GameLogic.Views.CastleSiege;
 using MUnique.OpenMU.GameServer;
 using MUnique.OpenMU.GameServer.MessageHandler.CastleSiege;
 using MUnique.OpenMU.Interfaces;
@@ -31,7 +33,7 @@ public class CastleSiegeEconomyTests
     private const string OwnerGuildName = "CastleOwners";
 
     /// <summary>
-    /// Verifies tax calculation, atomic charging, persistence, and owner/alliance exemptions.
+    /// Verifies tax calculation, batched persistence, Chaos Machine scoping, and owner/alliance exemptions.
     /// </summary>
     [Test]
     public async ValueTask TaxesAreCollectedPersistedAndExemptOwnerAllianceAsync()
@@ -41,6 +43,7 @@ public class CastleSiegeEconomyTests
         fixture.Context.SiegeData.TaxChaos = 3;
         fixture.Context.SiegeData.TaxStore = 2;
         fixture.Visitor.Money = 2_000;
+        SetOpenedNpc(fixture.Visitor, NpcWindow.ChaosMachine);
 
         Assert.That(
             await provider.TryPayChaosCostAsync(fixture.Visitor, 1_000, fixture.Context).ConfigureAwait(false),
@@ -67,6 +70,7 @@ public class CastleSiegeEconomyTests
         var allianceMember = await PlayerTestHelper.CreatePlayerAsync(fixture.GameServerContext).ConfigureAwait(false);
         allianceMember.GuildStatus = new GuildMemberStatus(AllianceGuildId, GuildPosition.NormalMember);
         allianceMember.Money = 1_000;
+        SetOpenedNpc(allianceMember, NpcWindow.ChaosMachine);
         Assert.That(
             await provider.TryPayChaosCostAsync(allianceMember, 100, fixture.Context).ConfigureAwait(false),
             Is.True);
@@ -76,7 +80,19 @@ public class CastleSiegeEconomyTests
             Assert.That(fixture.Context.SiegeData.TributeMoney, Is.EqualTo(40));
         });
 
+        fixture.Visitor.Money = 1_000;
+        SetOpenedNpc(fixture.Visitor, NpcWindow.ElphisRefinery);
+        Assert.That(
+            await provider.TryPayChaosCostAsync(fixture.Visitor, 100, fixture.Context).ConfigureAwait(false),
+            Is.True);
+        Assert.Multiple(() =>
+        {
+            Assert.That(fixture.Visitor.Money, Is.EqualTo(900));
+            Assert.That(fixture.Context.SiegeData.TributeMoney, Is.EqualTo(40));
+        });
+
         fixture.Visitor.Money = 10;
+        SetOpenedNpc(fixture.Visitor, NpcWindow.ChaosMachine);
         Assert.That(
             await provider.TryPayChaosCostAsync(fixture.Visitor, 100, fixture.Context).ConfigureAwait(false),
             Is.False);
@@ -86,12 +102,66 @@ public class CastleSiegeEconomyTests
             Assert.That(fixture.Context.SiegeData.TributeMoney, Is.EqualTo(40));
         });
 
-        using var persistenceContext = fixture.PersistenceContextProvider.CreateNewTypedContext(
-            typeof(CastleSiegeData),
-            false,
-            fixture.GameServerContext.Configuration);
-        var persistedData = (await persistenceContext.GetAsync<CastleSiegeData>().ConfigureAwait(false)).Single();
-        Assert.That(persistedData.TributeMoney, Is.EqualTo(40));
+        Assert.That(fixture.Context.IsEconomyPersistencePending, Is.True);
+        var saveDueUtc = new DateTime(2026, 8, 3, 12, 0, 30, DateTimeKind.Utc);
+        fixture.Context.NextEconomySaveUtc = saveDueUtc;
+        await CastleSiegePlugIn
+            .PersistEconomyIfDueAsync(fixture.Context, saveDueUtc.AddTicks(-1))
+            .ConfigureAwait(false);
+        Assert.That(fixture.Context.IsEconomyPersistencePending, Is.True);
+
+        await CastleSiegePlugIn.PersistEconomyIfDueAsync(fixture.Context, saveDueUtc).ConfigureAwait(false);
+        Assert.That(fixture.Context.IsEconomyPersistencePending, Is.False);
+        using (var persistenceContext = fixture.PersistenceContextProvider.CreateNewTypedContext(
+                   typeof(CastleSiegeData),
+                   false,
+                   fixture.GameServerContext.Configuration))
+        {
+            var persistedData = (await persistenceContext.GetAsync<CastleSiegeData>().ConfigureAwait(false)).Single();
+            Assert.That(persistedData.TributeMoney, Is.EqualTo(40));
+        }
+    }
+
+    /// <summary>
+    /// Verifies that a zero store-tax rate keeps the purchase hot path free of guild-server calls.
+    /// </summary>
+    [Test]
+    public async ValueTask ZeroStoreTaxSkipsGuildLookupAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        fixture.Context.SiegeData.TaxStore = 0;
+        fixture.Visitor.Money = 100;
+
+        Assert.That(
+            await new CastleSiegeTaxProvider()
+                .TryPayStoreCostAsync(fixture.Visitor, 25, fixture.Context)
+                .ConfigureAwait(false),
+            Is.True);
+        Assert.That(fixture.Visitor.Money, Is.EqualTo(75));
+        fixture.GuildServer.Verify(
+            server => server.GetPersistentAllianceMasterGuildIdAsync(It.IsAny<uint>()),
+            Times.Never);
+    }
+
+    /// <summary>
+    /// Verifies that tax notifications are only sent to players who entered the world.
+    /// </summary>
+    [Test]
+    public async ValueTask TaxBroadcastSkipsPlayersOutsideTheWorldAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        Assert.That(
+            await fixture.Visitor.PlayerState.TryAdvanceToAsync(PlayerState.CharacterSelection).ConfigureAwait(false),
+            Is.True);
+        var ownerView = Mock.Get(fixture.Owner.ViewPlugIns.GetPlugIn<ICastleSiegeTaxChangeResultPlugIn>()!);
+        var visitorView = Mock.Get(fixture.Visitor.ViewPlugIns.GetPlugIn<ICastleSiegeTaxChangeResultPlugIn>()!);
+
+        await CastleSiegeEconomyNotifier
+            .BroadcastTaxRateAsync(fixture.Context, CastleSiegeTaxType.Store, 2)
+            .ConfigureAwait(false);
+
+        ownerView.Verify(view => view.ShowTaxRateUpdateAsync(CastleSiegeTaxType.Store, 2), Times.Once);
+        visitorView.Verify(view => view.ShowTaxRateUpdateAsync(It.IsAny<CastleSiegeTaxType>(), It.IsAny<byte>()), Times.Never);
     }
 
     /// <summary>
@@ -157,6 +227,8 @@ public class CastleSiegeEconomyTests
             Assert.That(fixture.Context.SiegeData.TributeMoney, Is.EqualTo(300));
             Assert.That(fixture.Owner.Money, Is.EqualTo(300));
         });
+        Mock.Get(fixture.Owner.ViewPlugIns.GetPlugIn<ICastleSiegeTaxChangeResultPlugIn>()!)
+            .Verify(view => view.ShowTaxRateUpdateAsync(CastleSiegeTaxType.Store, 3), Times.Once);
 
         fixture.Context.CurrentState = CastleSiegeState.Start;
         Assert.That(
@@ -374,20 +446,32 @@ public class CastleSiegeEconomyTests
         owner.GuildStatus = new GuildMemberStatus(OwnerGuildId, GuildPosition.GuildMaster);
         var visitor = await PlayerTestHelper.CreatePlayerAsync(gameServerContext).ConfigureAwait(false);
         visitor.GuildStatus = new GuildMemberStatus(VisitorGuildId, GuildPosition.NormalMember);
+        await gameServerContext.AddPlayerAsync(owner).ConfigureAwait(false);
+        await gameServerContext.AddPlayerAsync(visitor).ConfigureAwait(false);
         var context = new CastleSiegeContext(gameServerContext, castleSiegeConfiguration);
         await context.InitializeAsync(new DateTime(2026, 8, 3, 12, 0, 0, DateTimeKind.Utc)).ConfigureAwait(false);
 
         return new(
             persistenceContextProvider,
             gameServerContext,
+            guildServer,
             context,
             owner,
             visitor);
     }
 
+    private static void SetOpenedNpc(Player player, NpcWindow npcWindow)
+    {
+        player.OpenedNpc = new NonPlayerCharacter(
+            null!,
+            new MonsterDefinition { NpcWindow = npcWindow },
+            null!);
+    }
+
     private sealed record TestFixture(
         InMemoryPersistenceContextProvider PersistenceContextProvider,
         GameServerContext GameServerContext,
+        Mock<IGuildServer> GuildServer,
         CastleSiegeContext Context,
         Player Owner,
         Player Visitor);

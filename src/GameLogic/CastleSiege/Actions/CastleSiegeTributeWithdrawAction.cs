@@ -38,7 +38,6 @@ public sealed class CastleSiegeTributeWithdrawAction
                 {
                     if (amount is > 0 and <= int.MaxValue
                         && amount <= context.SiegeData.TributeMoney
-                        && amount <= player.GameContext.Configuration.MaximumInventoryMoney - (long)player.Money
                         && player.TryAddMoney((int)amount))
                     {
                         var previousTribute = context.SiegeData.TributeMoney;
