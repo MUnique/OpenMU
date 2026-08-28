@@ -94,6 +94,8 @@ public partial class NetworkAnalyzer : IAsyncDisposable
 
     private IPacketCaptureService? CaptureService => this._captureService;
 
+    private string TableColClass => this._isSidebarCollapsed ? "col-12" : "col-10";
+
     private void UpdateFilteredPackets()
     {
         IEnumerable<Packet> packets = this._packets;
