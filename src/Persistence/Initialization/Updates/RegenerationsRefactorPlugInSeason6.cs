@@ -49,6 +49,7 @@ public class RegenerationsRefactorPlugInSeason6 : RegenerationsRefactorPlugInBas
         shieldRecoveryRampFactor.MaximumValue = 3;
         gameConfiguration.Attributes.Add(shieldRecoveryRampFactor);
 
+        var isInSafezone = Stats.IsInSafezone.GetPersistent(gameConfiguration);
         var shieldRecoveryMultiplier = Stats.ShieldRecoveryMultiplier.GetPersistent(gameConfiguration);
         var shieldRecoveryEverywhere = Stats.ShieldRecoveryEverywhere.GetPersistent(gameConfiguration);
 
@@ -57,7 +58,22 @@ public class RegenerationsRefactorPlugInSeason6 : RegenerationsRefactorPlugInBas
 
         gameConfiguration.CharacterClasses.ForEach(charClass =>
         {
+            // Remove obsolete shiled recovery combo
+            var attrCombos = charClass.AttributeCombinations;
+            if (attrCombos.FirstOrDefault(ac => ac.InputAttribute == isInSafezone && ac.TargetAttribute == shieldRecoveryMultiplier) is { } isInSafeZoneToShieldRecoveryMultiplier)
+            {
+                attrCombos.Remove(isInSafeZoneToShieldRecoveryMultiplier);
+            }
+
             // Add new attribute combinations
+            var isInSafezoneToIsShieldRecoveryActive = context.CreateNew<AttributeRelationship>(
+                isShieldRecoveryActive,
+                1f,
+                isInSafezone,
+                InputOperator.Multiply,
+                default(AttributeDefinition?),
+                AggregateType.AddRaw);
+
             var shieldRecoveryEverywhereToIsShieldRecoveryActive = context.CreateNew<AttributeRelationship>(
                 isShieldRecoveryActive,
                 1f,
@@ -82,6 +98,7 @@ public class RegenerationsRefactorPlugInSeason6 : RegenerationsRefactorPlugInBas
                 default(AttributeDefinition?),
                 AggregateType.Multiplicate);
 
+            charClass.AttributeCombinations.Add(isInSafezoneToIsShieldRecoveryActive);
             charClass.AttributeCombinations.Add(shieldRecoveryEverywhereToIsShieldRecoveryActive);
             charClass.AttributeCombinations.Add(shieldRecoveryHiatusToShieldRecoveryRampFactor);
             charClass.AttributeCombinations.Add(shieldRecoveryRampFactorToShieldRecoveryMultiplier);

@@ -1734,7 +1734,7 @@ public class Stats
         public AttributeDefinition? HiatusAttribute { get; init; }
 
         /// <summary>
-        /// Gets the hiatus threshold (in seconds) against wich <see cref="HiatusAttribute"/> is checked to allow the regeneration.
+        /// Gets the hiatus threshold (in seconds) against which <see cref="HiatusAttribute"/> is checked to allow the regeneration.
         /// </summary>
         public int HiatusThreshold { get; init; } = 10;
     }

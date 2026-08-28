@@ -14,7 +14,6 @@ using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.MuHelper;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Pet;
-using MUnique.OpenMU.GameLogic.PlayerActions;
 using MUnique.OpenMU.GameLogic.PlayerActions.Items;
 using MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 using MUnique.OpenMU.GameLogic.PlayerActions.Trade;
@@ -65,14 +64,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     private readonly PlayerAppearanceData _appearanceData;
 
     private readonly ObserverToWorldViewAdapter _observerToWorldViewAdapter;
-
-    private readonly Dictionary<Stats.Regeneration, DateTime> _lastRegeneration = new()
-    {
-        [Stats.ManaRegeneration] = DateTime.UtcNow,
-        [Stats.HealthRegeneration] = DateTime.UtcNow,
-        [Stats.AbilityRegeneration] = DateTime.UtcNow,
-        [Stats.ShieldRegeneration] = DateTime.UtcNow,
-    };
 
     private readonly Lazy<MuHelper.MuHelper> _muHelperLazy;
 
@@ -581,6 +572,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public DateTime PotionCooldownUntil { get; set; } = DateTime.UtcNow;
 
     /// <summary>
+    /// Gets or sets the timestamp of when the shield hiatus was lasted accrued.
+    /// </summary>
+    public DateTime LastShieldRecoveryHiatusAccrual { get; set; } = DateTime.UtcNow;
+
+    /// <summary>
     /// Gets a value indicating whether opening the player store after entering the game is supported by this instance.
     /// </summary>
     protected virtual bool IsPlayerStoreOpeningAfterEnterSupported => true;
@@ -893,7 +889,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 if ((r.EnablerAttribute is { } enabler && attributes[enabler] < 1)
                     || (r.HiatusAttribute is { } hiatus && attributes[hiatus] < r.HiatusThreshold))
                 {
-                    this._lastRegeneration[r] = now;
                     continue;
                 }
 
@@ -906,18 +901,18 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                     if (r.CurrentAttribute == Stats.CurrentMana)
                     {
                         // Mana recovery while resting is on top of regular recovery
-                        factor += (float)((now - this._lastRegeneration[r]) / r.Interval);
+                        factor += (float)((now - this._lastRegenerate) / r.Interval);
                     }
                 }
 
-                factor += (float)((now - this._lastRegeneration[r]) / interval);
+                factor += (float)((now - this._lastRegenerate) / interval);
 
                 attributes[r.CurrentAttribute] = Math.Min(
                     attributes[r.CurrentAttribute] +
                         (((attributes[r.MaximumAttribute] * attributes[r.RegenerationMultiplier]) + attributes[r.AbsoluteAttribute]) * factor),
                     attributes[r.MaximumAttribute]);
 
-                this._lastRegeneration[r] = now;
+                // this.Logger.LogDebug($"Regenerated {r.CurrentAttribute} with elapsed time {now - this._lastRegenerate} and factor {factor}");
             }
 
             await this.RegenerateHeroStateAsync().ConfigureAwait(false);
@@ -1625,6 +1620,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.AddMissingStatAttributes();
 
         this.Attributes = new ItemAwareAttributeSystem(this.Account!, selectedCharacter, this.GameContext.Configuration);
+        this.Attributes[Stats.NearbyPartyMemberCount] = 0;
         this.Attributes[Stats.IsResting] = 0;
         this.LogInvalidInventoryItems();
 
@@ -1650,7 +1646,14 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.Attributes[Stats.AmmunitionAmount] = (float)(this.Inventory?.EquippedAmmunitionItem?.Durability ?? 0);
         ammoAttribute.ValueChanged += this.OnAmmunitionAmountChanged;
 
+        if (this.Attributes[Stats.MaximumShield] > 0)
+        {
+            this.Attributes.GetComposableAttribute(Stats.ShieldRecoveryHiatus)?.AddElement(new SimpleElement(0, AggregateType.AddRaw));
+            this.LastShieldRecoveryHiatusAccrual = DateTime.UtcNow;
+        }
+
         await this.ClientReadyAfterMapChangeAsync().ConfigureAwait(false);
+        this._lastRegenerate = DateTime.UtcNow;
 
         await this.InvokeViewPlugInAsync<IUpdateRotationPlugIn>(p => p.UpdateRotationAsync()).ConfigureAwait(false);
         await this.ResetPetBehaviorAsync().ConfigureAwait(false);

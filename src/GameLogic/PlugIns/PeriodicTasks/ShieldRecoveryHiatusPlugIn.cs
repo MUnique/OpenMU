@@ -26,9 +26,12 @@ public class ShieldRecoveryHiatusPlugIn : IPeriodicTaskPlugIn, IAttackableMovedP
             if (player.SelectedCharacter != null
                 && !player.PlayerState.CurrentState.IsDisconnectedOrFinished()
                 && player.Attributes is { } attributes
-                && attributes[Stats.MaximumShield] > 0)
+                && attributes[Stats.MaximumShield] > 0
+                && attributes.GetComposableAttribute(Stats.ShieldRecoveryHiatus)?.Elements.FirstOrDefault() is SimpleElement hiatus)
             {
-                attributes.AddElement(new SimpleElement(1, AggregateType.AddRaw), Stats.ShieldRecoveryHiatus);
+                var now = DateTime.UtcNow;
+                hiatus.Value += (float)now.Subtract(player.LastShieldRecoveryHiatusAccrual).TotalSeconds;
+                player.LastShieldRecoveryHiatusAccrual = now;
             }
 
             return Task.CompletedTask;
@@ -44,16 +47,18 @@ public class ShieldRecoveryHiatusPlugIn : IPeriodicTaskPlugIn, IAttackableMovedP
     /// <inheritdoc />
     public void AttackableGotHit(IAttackable attackable, IAttacker attacker, HitInfo hitInfo)
     {
-        var defender = attackable as Player ?? (attackable as Monster)?.SummonedBy;
+        var defender = attackable as Player;
         var attackerPlayer = attacker as Player ?? (attacker as Monster)?.SummonedBy;
-        if (defender is null || attackerPlayer is null || defender == attackerPlayer || defender.Attributes is not { } attributes)
+        if (defender is null || attackerPlayer is null || attackable == attackerPlayer || defender.Attributes is not { } attributes)
         {
             return;
         }
 
-        if (attributes[Stats.MaximumShield] > 0 && hitInfo is { ShieldDamage: > 0 })
+        if (attributes[Stats.MaximumShield] > 0
+            && hitInfo is { ShieldDamage: > 0 }
+            && attributes.GetComposableAttribute(Stats.ShieldRecoveryHiatus)?.Elements.FirstOrDefault() is SimpleElement hiatusCounter)
         {
-            attributes.GetComposableAttribute(Stats.ShieldRecoveryHiatus)?.RemoveAllElements();
+            hiatusCounter.Value = 0;
         }
     }
 
@@ -65,10 +70,11 @@ public class ShieldRecoveryHiatusPlugIn : IPeriodicTaskPlugIn, IAttackableMovedP
             return;
         }
 
-        if (attributes[Stats.MaximumShield] > 0 &&
-            (attributes[Stats.IsShieldRecoveryActive] < 1 || attributes[Stats.CurrentShield] == attributes[Stats.MaximumShield]))
+        if (attributes[Stats.MaximumShield] > 0
+            && (attributes[Stats.IsShieldRecoveryActive] < 1 || attributes[Stats.CurrentShield] == attributes[Stats.MaximumShield])
+            && attributes.GetComposableAttribute(Stats.ShieldRecoveryHiatus)?.Elements.FirstOrDefault() is SimpleElement hiatusCounter)
         {
-            attributes.GetComposableAttribute(Stats.ShieldRecoveryHiatus)?.RemoveAllElements();
+            hiatusCounter.Value = 0;
         }
     }
 }
