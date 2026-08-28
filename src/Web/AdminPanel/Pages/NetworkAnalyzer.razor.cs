@@ -39,6 +39,8 @@ public partial class NetworkAnalyzer : IAsyncDisposable
 
     private IReadOnlyList<Packet> _packets = [];
 
+    private IReadOnlyList<Packet> _filteredPackets = [];
+
     private string? _packetFilter;
 
     private DirectionFilter _directionFilter = DirectionFilter.All;
@@ -94,28 +96,25 @@ public partial class NetworkAnalyzer : IAsyncDisposable
 
     private IPacketCaptureService? CaptureService => this._captureService;
 
-    private IReadOnlyList<Packet> FilteredPackets
+    private void UpdateFilteredPackets()
     {
-        get
+        IEnumerable<Packet> packets = this._packets;
+        packets = this._directionFilter switch
         {
-            IEnumerable<Packet> packets = this._packets;
-            packets = this._directionFilter switch
-            {
-                DirectionFilter.ToServer => packets.Where(packet => packet.ToServer),
-                DirectionFilter.ToClient => packets.Where(packet => !packet.ToServer),
-                _ => packets,
-            };
+            DirectionFilter.ToServer => packets.Where(packet => packet.ToServer),
+            DirectionFilter.ToClient => packets.Where(packet => !packet.ToServer),
+            _ => packets,
+        };
 
-            if (!string.IsNullOrWhiteSpace(this._packetFilter))
-            {
-                var filter = this._packetFilter;
-                packets = packets.Where(packet => packet.PacketData.Contains(filter, StringComparison.OrdinalIgnoreCase)
-                                                  || packet.DisplayCode.ToString("X2").Contains(filter, StringComparison.OrdinalIgnoreCase)
-                                                  || this.GetMessageForFilter(packet).Contains(filter, StringComparison.OrdinalIgnoreCase));
-            }
-
-            return packets.ToList();
+        if (!string.IsNullOrWhiteSpace(this._packetFilter))
+        {
+            var filter = this._packetFilter;
+            packets = packets.Where(packet => packet.PacketData.Contains(filter, StringComparison.OrdinalIgnoreCase)
+                                              || packet.DisplayCode.ToString("X2").Contains(filter, StringComparison.OrdinalIgnoreCase)
+                                              || this.GetMessageForFilter(packet).Contains(filter, StringComparison.OrdinalIgnoreCase));
         }
+
+        this._filteredPackets = packets.ToList();
     }
 
     /// <inheritdoc />
@@ -136,7 +135,7 @@ public partial class NetworkAnalyzer : IAsyncDisposable
             return;
         }
 
-        await this.RefreshConnectionsAsync().ConfigureAwait(true);
+        _ = await this.RefreshConnectionsAsync().ConfigureAwait(true);
         if (this.ConnectionId is { } connectionId
             && this._connections.FirstOrDefault(connection => connection.Id == connectionId) is { } preselected)
         {
@@ -146,14 +145,49 @@ public partial class NetworkAnalyzer : IAsyncDisposable
         _ = this.RefreshPeriodicallyAsync();
     }
 
-    private async Task RefreshConnectionsAsync()
+    /// <summary>
+    /// Refreshes the list of the connections.
+    /// </summary>
+    /// <returns><see langword="true"/>, if the listed connections changed.</returns>
+    /// <remarks>
+    /// The servers create the information about their connections on each request, so the
+    /// list is only replaced when it actually differs - otherwise the sidebar would be
+    /// rendered again and again.
+    /// </remarks>
+    private async Task<bool> RefreshConnectionsAsync()
     {
         if (this._captureService is not { } captureService)
         {
-            return;
+            return false;
         }
 
-        this._connections = await captureService.GetConnectionsAsync().ConfigureAwait(true);
+        var connections = await captureService.GetConnectionsAsync().ConfigureAwait(true);
+        if (!HasChanged(this._connections, connections))
+        {
+            return false;
+        }
+
+        this._connections = connections;
+        return true;
+    }
+
+    private static bool HasChanged(IReadOnlyList<ICapturedConnectionInfo> current, IReadOnlyList<ICapturedConnectionInfo> updated)
+    {
+        if (current.Count != updated.Count)
+        {
+            return true;
+        }
+
+        for (int i = 0; i < current.Count; i++)
+        {
+            if (current[i].Id != updated[i].Id
+                || current[i].DisplayName != updated[i].DisplayName)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private async Task OnConnectionSelectedAsync(ICapturedConnectionInfo connection)
@@ -170,12 +204,13 @@ public partial class NetworkAnalyzer : IAsyncDisposable
         this._analyzer = this.AnalyzerProvider.GetAnalyzer(connection.DefinitionSet);
         this._packets = this._capture?.GetPackets() ?? [];
         this._selectedPacket = null;
+        this.UpdateFilteredPackets();
     }
 
     private async Task OnDisconnectAsync(ICapturedConnectionInfo connection)
     {
         await connection.DisconnectAsync().ConfigureAwait(true);
-        await this.RefreshConnectionsAsync().ConfigureAwait(true);
+        _ = await this.RefreshConnectionsAsync().ConfigureAwait(true);
     }
 
     private Task OnClearAsync()
@@ -183,6 +218,7 @@ public partial class NetworkAnalyzer : IAsyncDisposable
         this._capture?.Clear();
         this._packets = [];
         this._selectedPacket = null;
+        this.UpdateFilteredPackets();
         return Task.CompletedTask;
     }
 
@@ -196,6 +232,18 @@ public partial class NetworkAnalyzer : IAsyncDisposable
         this._capture = null;
         this._selectedConnection = null;
         this._packets = [];
+        this.UpdateFilteredPackets();
+    }
+
+    private void OnPacketFilterChanged(string? filter)
+    {
+        this._packetFilter = filter;
+        this.UpdateFilteredPackets();
+    }
+
+    private void OnDirectionFilterChanged()
+    {
+        this.UpdateFilteredPackets();
     }
 
     private string GetMessageForFilter(Packet packet)
@@ -234,27 +282,20 @@ public partial class NetworkAnalyzer : IAsyncDisposable
 
                 await this.InvokeAsync(async () =>
                 {
+                    var hasChanged = false;
                     if (refreshConnections)
                     {
-                        await this.RefreshConnectionsAsync().ConfigureAwait(true);
+                        hasChanged = await this.RefreshConnectionsAsync().ConfigureAwait(true);
                     }
 
-                    if (!this._isPaused && this._capture is { } capture)
+                    hasChanged |= this.UpdatePackets();
+
+                    // Rendering without a change would just make the grid flicker, which is
+                    // especially annoying while the user scrolls through the packets.
+                    if (hasChanged)
                     {
-                        var packets = capture.GetPackets();
-                        if (packets.Count == this._packets.Count && !refreshConnections)
-                        {
-                            return;
-                        }
-
-                        this._packets = packets;
+                        this.StateHasChanged();
                     }
-                    else if (!refreshConnections)
-                    {
-                        return;
-                    }
-
-                    this.StateHasChanged();
                 }).ConfigureAwait(false);
             }
         }
@@ -262,5 +303,27 @@ public partial class NetworkAnalyzer : IAsyncDisposable
         {
             // The page has been disposed.
         }
+    }
+
+    /// <summary>
+    /// Takes the newly captured packets, if the view isn't paused.
+    /// </summary>
+    /// <returns><see langword="true"/>, if the shown packets changed.</returns>
+    private bool UpdatePackets()
+    {
+        if (this._isPaused || this._capture is not { } capture)
+        {
+            return false;
+        }
+
+        var packets = capture.GetPackets();
+        if (packets.Count == this._packets.Count)
+        {
+            return false;
+        }
+
+        this._packets = packets;
+        this.UpdateFilteredPackets();
+        return true;
     }
 }

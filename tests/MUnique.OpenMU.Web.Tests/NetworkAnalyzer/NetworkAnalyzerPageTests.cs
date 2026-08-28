@@ -112,6 +112,85 @@ public class NetworkAnalyzerPageTests
         Assert.That(component.FindComponent<PacketGrid>().Instance.AutoScroll, Is.False);
     }
 
+    /// <summary>
+    /// Tests if a paused view doesn't take new packets anymore, and shows them again when
+    /// it's resumed.
+    /// </summary>
+    /// <returns>The async task.</returns>
+    [Test]
+    public async Task PausedViewDoesNotTakeNewPackets()
+    {
+        var connection = new TestConnectionInfo { CharacterName = "TestCharacter" };
+        var service = new TestCaptureService(connection);
+        using var context = CreateContext(service);
+
+        var component = context.Render<NetworkAnalyzer>();
+        component.Find(".list-group-item").Click();
+        component.Find("button[title*='newest packet']").Click(); // stop the auto scrolling
+        component.FindAll("button").First(button => button.TextContent.Contains("Pause")).Click();
+
+        var capture = (LiveCapturedConnection)service.GetRunningCapture(connection.Id)!;
+        var renderCount = component.RenderCount;
+        capture.PacketCaptured(new byte[] { 0xC1, 0x04, 0xF1, 0x01 }, false);
+        await Task.Delay(1000).ConfigureAwait(false);
+
+        Assert.That(component.FindComponent<PacketGrid>().Instance.Packets, Is.Empty, "The paused view should not take the new packet.");
+        Assert.That(component.RenderCount, Is.EqualTo(renderCount), "A paused view should not be rendered again, it would just flicker.");
+
+        component.FindAll("button").First(button => button.TextContent.Contains("Resume")).Click();
+        component.WaitForState(
+            () => component.FindComponent<PacketGrid>().Instance.Packets.Count == 1,
+            TimeSpan.FromSeconds(10));
+    }
+
+    /// <summary>
+    /// Tests if the page is not rendered again when nothing changed. Rendering the grid
+    /// without a change makes it flicker, especially while the user scrolls through it.
+    /// </summary>
+    /// <returns>The async task.</returns>
+    [Test]
+    public async Task NothingIsRenderedWithoutAChange()
+    {
+        var connection = new TestConnectionInfo { CharacterName = "TestCharacter" };
+        var service = new TestCaptureService(connection);
+        using var context = CreateContext(service);
+
+        var component = context.Render<NetworkAnalyzer>();
+        component.Find(".list-group-item").Click();
+
+        var renderCount = component.RenderCount;
+        await Task.Delay(1000).ConfigureAwait(false);
+
+        Assert.That(component.RenderCount, Is.EqualTo(renderCount), "Without new packets, there is nothing to render.");
+    }
+
+    /// <summary>
+    /// Tests if the periodic refresh of the connections doesn't render the page when the
+    /// connections didn't change. The servers create the information about their connections
+    /// on each request, so they are different objects every time.
+    /// </summary>
+    /// <returns>The async task.</returns>
+    /// <remarks>
+    /// This test takes a couple of seconds, because it has to wait for the refresh of the
+    /// connections.
+    /// </remarks>
+    [Test]
+    public async Task UnchangedConnectionsDoNotRenderThePage()
+    {
+        var connection = new TestConnectionInfo { CharacterName = "TestCharacter" };
+        var service = new TestCaptureService(connection);
+        using var context = CreateContext(service);
+
+        var component = context.Render<NetworkAnalyzer>();
+        component.Find(".list-group-item").Click();
+
+        var renderCount = component.RenderCount;
+        await Task.Delay(TimeSpan.FromSeconds(6.5)).ConfigureAwait(false);
+
+        Assert.That(service.RequestedConnectionsCount, Is.GreaterThan(0), "The connections should have been refreshed.");
+        Assert.That(component.RenderCount, Is.EqualTo(renderCount), "The unchanged connections should not render the page.");
+    }
+
     private static BunitContext CreateContext(IPacketCaptureService? captureService = null)
     {
         var context = new BunitContext();

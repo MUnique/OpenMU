@@ -9,7 +9,7 @@
 else
 {
     <div @ref="this.ScrollContainer" class="packet-grid" style="height: @(this.GridHeight)px">
-        <QuickGrid Items="@this.Packets.AsQueryable()" Virtualize="@this.Virtualize" ItemSize="@RowHeight" Theme="none"
+        <QuickGrid Items="@this._queryablePackets" Virtualize="@this.Virtualize" ItemSize="@RowHeight" Theme="none"
                    Class="table table-sm table-striped table-hover">
             <TemplateColumn Title="@Resources.Timestamp" Class="text-nowrap">
                 @context.Timestamp.ToString(@"hh\:mm\:ss\.fff")

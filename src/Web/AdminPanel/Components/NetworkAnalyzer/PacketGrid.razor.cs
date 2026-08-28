@@ -31,6 +31,10 @@ public partial class PacketGrid : IAsyncDisposable
 
     private int _lastPacketCount;
 
+    private IQueryable<Packet> _queryablePackets = Array.Empty<Packet>().AsQueryable();
+
+    private IReadOnlyList<Packet>? _packetsOfQueryable;
+
     /// <summary>
     /// Gets or sets the packets which should be shown.
     /// </summary>
@@ -112,6 +116,20 @@ public partial class PacketGrid : IAsyncDisposable
             {
                 // The circuit is already gone, so there is nothing to dispose anymore.
             }
+        }
+    }
+
+    /// <inheritdoc />
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        // The queryable is only created when the packets actually changed. Creating it on each
+        // render would make the grid treat it as a new data source and re-render its rows.
+        if (!ReferenceEquals(this._packetsOfQueryable, this.Packets))
+        {
+            this._packetsOfQueryable = this.Packets;
+            this._queryablePackets = this.Packets.AsQueryable();
         }
     }
 

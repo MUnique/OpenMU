@@ -52,8 +52,8 @@ else
                             <div class="ms-auto d-flex gap-2 align-items-center">
                                 <input type="text" class="form-control form-control-sm" style="width: 14rem"
                                        placeholder="@Resources.FilterPackets" value="@this._packetFilter"
-                                       @oninput="e => this._packetFilter = e.Value?.ToString()"/>
-                                <select class="form-select form-select-sm w-auto" @bind="this._directionFilter">
+                                       @oninput="e => this.OnPacketFilterChanged(e.Value?.ToString())"/>
+                                <select class="form-select form-select-sm w-auto" @bind="this._directionFilter" @bind:after="this.OnDirectionFilterChanged">
                                     <option value="@DirectionFilter.All">@Resources.All</option>
                                     <option value="@DirectionFilter.ToServer">@Resources.ToServer</option>
                                     <option value="@DirectionFilter.ToClient">@Resources.ToClient</option>
@@ -75,7 +75,7 @@ else
                     </div>
                 </div>
 
-                <PacketGrid Packets="@this.FilteredPackets"
+                <PacketGrid Packets="@this._filteredPackets"
                             AutoScroll="@this._isFollowing"
                             Analyzer="@this._analyzer"
                             ClientVersion="@this._capture.ConnectionInfo.ClientVersion"

@@ -32,9 +32,15 @@ public sealed class TestCaptureService : IPacketCaptureService
     /// </summary>
     public IList<Guid> StoppedCaptures { get; } = new List<Guid>();
 
+    /// <summary>
+    /// Gets the number of requests for the connections.
+    /// </summary>
+    public int RequestedConnectionsCount { get; private set; }
+
     /// <inheritdoc />
     public ValueTask<IReadOnlyList<ICapturedConnectionInfo>> GetConnectionsAsync()
     {
+        this.RequestedConnectionsCount++;
         return ValueTask.FromResult(this.Connections);
     }
 
