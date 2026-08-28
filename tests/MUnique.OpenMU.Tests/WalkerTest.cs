@@ -60,6 +60,42 @@ public class WalkerTest
     }
 
     /// <summary>
+    /// Tests that concurrent walk requests for the same walker leave no loop behind. This is the shape
+    /// the production bug actually had: several requests for the same object overlap, so a loop can be
+    /// on its way into a stop while a newer walk is already installed. Every iteration starts its walk
+    /// twice, so each one strands a loop unless the walker ends it.
+    /// </summary>
+    [Test]
+    public async Task ConcurrentWalkRestartsLeaveNoRunningLoopAsync()
+    {
+        var supporter = new TestWalkSupporter();
+        using var walker = new Walker(supporter.Object, _ => TimeSpan.FromMilliseconds(1));
+
+        var tasks = new Task[8];
+        for (var t = 0; t < tasks.Length; t++)
+        {
+            tasks[t] = Task.Run(async () =>
+            {
+                for (var i = 0; i < 50; i++)
+                {
+                    var token = await walker.InitializeWalkToAsync(new Point(110, 100), CreateSteps()).ConfigureAwait(false);
+
+                    // Twice on purpose. A single start would lose the race against the other tasks
+                    // most of the time - StartWalkAsync returns early once another task initialized
+                    // its own walk in between - and then no loop would ever be started to strand.
+                    await walker.StartWalkAsync(token).ConfigureAwait(false);
+                    await walker.StartWalkAsync(token).ConfigureAwait(false);
+                }
+            });
+        }
+
+        await Task.WhenAll(tasks).ConfigureAwait(false);
+        await walker.StopAsync().ConfigureAwait(false);
+
+        await AssertNoLoopKeepsPollingAsync(supporter).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Tests that a walk loop ends when the walker is disposed while a walk is still in progress.
     /// </summary>
     [Test]
