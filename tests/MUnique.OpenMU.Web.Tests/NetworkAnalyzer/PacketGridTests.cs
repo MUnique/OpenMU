@@ -112,6 +112,27 @@ public class PacketGridTests
     }
 
     /// <summary>
+    /// Tests if the message is kept on one line and stays readable as a tooltip, so that a
+    /// long one doesn't change the height of the row.
+    /// </summary>
+    [Test]
+    public void LongMessageIsTruncatedButAvailableAsTooltip()
+    {
+        using var context = CreateContext();
+        using var analyzer = new PacketAnalyzer();
+        IReadOnlyList<Packet> packets = [new(TimeSpan.FromSeconds(1), [0xC1, 0x05, 0x15, 0x0A, 0x14], true)];
+
+        var component = context.Render<PacketGrid>(parameters => parameters
+            .Add(grid => grid.Packets, packets)
+            .Add(grid => grid.Virtualize, false)
+            .Add(grid => grid.Analyzer, analyzer)
+            .Add(grid => grid.ClientVersion, Season6));
+
+        var message = component.Find("tbody tr .packet-message");
+        Assert.That(message.GetAttribute("title"), Does.Contain("InstantMoveRequest"));
+    }
+
+    /// <summary>
     /// Tests if the details of the selected packet are shown inside its row.
     /// </summary>
     [Test]

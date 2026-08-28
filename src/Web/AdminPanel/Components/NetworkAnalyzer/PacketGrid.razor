@@ -29,8 +29,8 @@ else
                 @context.DisplayCode.ToString("X2")
             </TemplateColumn>
             <TemplateColumn Title="@Resources.PacketMessage">
-                <span role="button" @onclick="() => this.OnSelect.InvokeAsync(context)"
-                      class="@(this.SelectedPacket == context ? "fw-bold" : string.Empty)">
+                <span role="button" @onclick="() => this.OnSelect.InvokeAsync(context)" title="@this.GetMessage(context)"
+                      class="packet-message @(this.SelectedPacket == context ? "fw-bold" : string.Empty)">
                     @this.GetMessage(context)
                 </span>
                 @if (this.SelectedPacket == context)
