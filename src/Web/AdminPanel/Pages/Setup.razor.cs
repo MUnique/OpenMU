@@ -14,7 +14,6 @@ using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.AdminPanel.Components;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
-using MUnique.OpenMU.Web.AdminPanel.Services;
 
 /// <summary>
 /// The set up page.

@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.Startup;
 using System.Threading;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using MUnique.OpenMU.Web.AdminPanel.Services;
+using MUnique.OpenMU.Persistence;
 
 /// <summary>
 /// Base class for a server container, which reacts on database recreations.

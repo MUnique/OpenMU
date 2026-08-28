@@ -26,15 +26,14 @@ using MUnique.OpenMU.LoginServer;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Analyzer;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Persistence.AdminAuth;
 using MUnique.OpenMU.Persistence.EntityFramework;
 using MUnique.OpenMU.Persistence.EntityFramework.AdminAuth;
 using MUnique.OpenMU.Persistence.EntityFramework.Json;
-using MUnique.OpenMU.Persistence.Initialization;
 using MUnique.OpenMU.Persistence.Initialization.Version075;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
 using MUnique.OpenMU.Web.AdminPanel;
-using MUnique.OpenMU.Web.AdminPanel.Services;
 using MUnique.OpenMU.Web.API;
 using MUnique.OpenMU.Web.Map.Map;
 using MUnique.OpenMU.Web.Shared;
@@ -258,6 +257,16 @@ internal sealed class Program : IDisposable
             // The storage of the admin panel users has to be registered before the panel itself,
             // which only adds a fallback when nothing else is registered.
             builder.Services.AddAdminUserRepository();
+            builder.Services.AddSingleton<IBackupService>(s =>
+            {
+                var contextProvider = s.GetRequiredService<IMigratableDatabaseContextProvider>();
+                if (contextProvider is IPersistenceContextProvider persistenceContextProvider)
+                {
+                    return new BackupService(persistenceContextProvider, s.GetRequiredService<IAdminUserRepository>());
+                }
+
+                return new InMemoryBackupService(s.GetRequiredService<IPersistenceContextProvider>(), s.GetRequiredService<IAdminUserRepository>());
+            });
             builder.AddAdminPanel(includeMapApp: true);
         }
 
@@ -279,16 +288,6 @@ internal sealed class Program : IDisposable
                     .WaitAndUnwrapException())
             .AddSingleton<IPersistenceContextProvider>(s => s.GetService<IMigratableDatabaseContextProvider>()!)
             .AddSingleton<Lazy<IPersistenceContextProvider>>(s => new(() => s.GetService<IMigratableDatabaseContextProvider>()!))
-            .AddSingleton<IBackupService>(s =>
-            {
-                var contextProvider = s.GetRequiredService<IMigratableDatabaseContextProvider>();
-                if (contextProvider is PersistenceContextProvider)
-                {
-                    return new BackupService(s.GetRequiredService<IPersistenceContextProvider>());
-                }
-
-                return new InMemoryBackupService(s.GetRequiredService<IPersistenceContextProvider>());
-            })
             .AddSingleton<ILoginServer, LoginServer>()
             .AddSingleton<IGuildServer, GuildServer>()
             .AddSingleton<IFriendServer, FriendServer>()

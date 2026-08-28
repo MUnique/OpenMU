@@ -11,6 +11,7 @@ using System.Threading;
 using MUnique.OpenMU.DataModel.Composition;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.Persistence.AdminAuth;
 using MUnique.OpenMU.Persistence.Json;
 
 /// <summary>
@@ -26,6 +27,7 @@ public class BackupService : IBackupService
     /// </summary>
     private static readonly (string Prefix, Type BasicModelType)[] EntryTypeInfos =
     [
+        ("AdminUser_", typeof(AdminAuth.AdminUser)),
         ("GameConfiguration_", typeof(BasicModel.GameConfiguration)),
         ("SystemConfiguration_", typeof(BasicModel.SystemConfiguration)),
         ("ChatServerDefinition_", typeof(BasicModel.ChatServerDefinition)),
@@ -38,26 +40,32 @@ public class BackupService : IBackupService
     ];
 
     private readonly IPersistenceContextProvider _contextProvider;
+    private readonly IAdminUserRepository _adminUserRepository;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BackupService"/> class.
     /// </summary>
     /// <param name="contextProvider">The persistence context provider.</param>
-    public BackupService(IPersistenceContextProvider contextProvider)
+    /// <param name="adminUserRepository">The admin user repository.</param>
+    public BackupService(IPersistenceContextProvider contextProvider, IAdminUserRepository adminUserRepository)
     {
         this._contextProvider = contextProvider;
+        this._adminUserRepository = adminUserRepository;
     }
 
     /// <inheritdoc />
     public async Task CreateBackupAsync(Stream outputStream, CancellationToken cancellationToken = default)
     {
-        using var archive = new ZipArchive(outputStream, ZipArchiveMode.Create, leaveOpen: true);
+        await using var archive = new ZipArchive(outputStream, ZipArchiveMode.Create, leaveOpen: true);
 
         // A single shared reference handler ensures cross-type references are written as $ref.
         var sharedHandler = new IdReferenceHandler();
 
         // Use a single context so the context stack is set up correctly for all repository calls.
         using var context = this._contextProvider.CreateNewContext();
+
+        // First the auth users
+        await this.ExportAdminUsersAsync(archive, sharedHandler, cancellationToken).ConfigureAwait(false);
 
         // Export in dependency order: configuration first so that accounts can reference config objects.
         await ExportAsync<GameConfiguration, BasicModel.GameConfiguration>(archive, "GameConfiguration_", context, sharedHandler, cancellationToken).ConfigureAwait(false);
@@ -96,7 +104,7 @@ public class BackupService : IBackupService
     /// <inheritdoc />
     public virtual async Task RestoreBackupAsync(Stream inputStream, CancellationToken cancellationToken = default)
     {
-        using var archive = new ZipArchive(inputStream, ZipArchiveMode.Read, leaveOpen: true);
+        await using var archive = new ZipArchive(inputStream, ZipArchiveMode.Read, leaveOpen: true);
 
         // A single shared handler accumulates deserialized objects so cross-file $ref references resolve correctly.
         var sharedHandler = new IdReferenceHandler();
@@ -120,10 +128,16 @@ public class BackupService : IBackupService
                     continue;
                 }
 
-                await using var entryStream = entry.Open();
+                await using var entryStream = await entry.OpenAsync(cancellationToken).ConfigureAwait(false);
                 var basicModelObj = await DeserializeAsync(entryStream, typeInfo.Value.BasicModelType, sharedHandler, cancellationToken).ConfigureAwait(false);
                 if (basicModelObj is null)
                 {
+                    continue;
+                }
+
+                if (basicModelObj is AdminUser adminUser)
+                {
+                    await this._adminUserRepository.AddAsync(adminUser, cancellationToken).ConfigureAwait(false);
                     continue;
                 }
 
@@ -141,6 +155,24 @@ public class BackupService : IBackupService
         }
     }
 
+    private async Task ExportAdminUsersAsync(
+        ZipArchive archive,
+        IdReferenceHandler sharedHandler,
+        CancellationToken cancellationToken)
+    {
+        var items = await this._adminUserRepository.GetAllAsync(cancellationToken).ConfigureAwait(false);
+        var serializer = new JsonObjectSerializer();
+        foreach (var item in items)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var entryName = $"AdminUser_{item.Id}.json";
+            var entry = archive.CreateEntry(entryName);
+            await using var stream = await entry.OpenAsync(cancellationToken).ConfigureAwait(false);
+            await serializer.SerializeAsync(item, stream, sharedHandler, cancellationToken).ConfigureAwait(false);
+        }
+    }
+
     private static async Task ExportAsync<TData, TBasic>(
         ZipArchive archive,
         string filePrefix,
@@ -155,7 +187,16 @@ public class BackupService : IBackupService
         foreach (var item in items)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            if (item is not IConvertibleTo<TBasic> convertible)
+            TBasic targetItem;
+            if (item is TBasic basicItem)
+            {
+                targetItem = basicItem;
+            }
+            else if (item is IConvertibleTo<TBasic> convertible)
+            {
+                targetItem = convertible.Convert();
+            }
+            else
             {
                 continue;
             }
@@ -165,10 +206,10 @@ public class BackupService : IBackupService
                 continue;
             }
 
-            var basicModel = convertible.Convert();
+            var basicModel = targetItem;
             var entryName = $"{filePrefix}{identifiable.Id}.json";
             var entry = archive.CreateEntry(entryName);
-            await using var stream = entry.Open();
+            await using var stream = await entry.OpenAsync(cancellationToken).ConfigureAwait(false);
             await serializer.SerializeAsync(basicModel, stream, sharedHandler, cancellationToken).ConfigureAwait(false);
         }
     }
@@ -229,6 +270,11 @@ public class BackupService : IBackupService
         if (basicModelType == typeof(BasicModel.CastleSiegeData))
         {
             return deserializer.Deserialize<BasicModel.CastleSiegeData>(ms, referenceHandler);
+        }
+
+        if (basicModelType == typeof(AdminUser))
+        {
+            return deserializer.Deserialize<AdminUser>(ms, referenceHandler);
         }
 
         throw new ArgumentException($"Unsupported backup entry type: {basicModelType}", nameof(basicModelType));

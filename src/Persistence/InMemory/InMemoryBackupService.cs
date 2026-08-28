@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Persistence.InMemory;
 
 using System.IO;
 using System.Threading;
+using MUnique.OpenMU.Persistence.AdminAuth;
 
 /// <summary>
 /// An implementation of <see cref="IBackupService"/> for the in-memory persistence layer.
@@ -17,8 +18,9 @@ public class InMemoryBackupService : BackupService
     /// Initializes a new instance of the <see cref="InMemoryBackupService"/> class.
     /// </summary>
     /// <param name="contextProvider">The persistence context provider.</param>
-    public InMemoryBackupService(IPersistenceContextProvider contextProvider)
-        : base(contextProvider)
+    /// <param name="adminUserRepository">The admin user repository.</param>
+    public InMemoryBackupService(IPersistenceContextProvider contextProvider, IAdminUserRepository adminUserRepository)
+        : base(contextProvider, adminUserRepository)
     {
     }
 

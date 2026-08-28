@@ -2,13 +2,11 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Web.AdminPanel.Services;
+namespace MUnique.OpenMU.Persistence;
 
 using System.Threading;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Network.PlugIns;
-using MUnique.OpenMU.Persistence;
-using MUnique.OpenMU.Persistence.Initialization;
 using MUnique.OpenMU.PlugIns;
 using Nito.AsyncEx.Synchronous;
 
