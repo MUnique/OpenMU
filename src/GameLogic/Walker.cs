@@ -85,6 +85,12 @@ public sealed class Walker : IDisposable
             }
         }
 
+        // End the running walk before the new steps go into the queue: otherwise a loop of the previous
+        // walk can dequeue and execute the new walk's steps in the window between this method and
+        // StartWalkAsync, moving the supporter along the new path early and leaving the new loop one step
+        // short. We hold the writer lock here, so this is safe to do without releasing it.
+        await this.StopCurrentWalkAsync().ConfigureAwait(false);
+
         this.CurrentTarget = target;
         EnqueueSteps();
 
