@@ -85,6 +85,12 @@ public sealed class Walker : IDisposable
             }
         }
 
+        // End the running walk before the new steps go into the queue: otherwise a loop of the previous
+        // walk can dequeue and execute the new walk's steps in the window between this method and
+        // StartWalkAsync, moving the supporter along the new path early and leaving the new loop one step
+        // short. We hold the writer lock here, so this is safe to do without releasing it.
+        await this.StopCurrentWalkAsync().ConfigureAwait(false);
+
         this.CurrentTarget = target;
         EnqueueSteps();
 
@@ -107,9 +113,25 @@ public sealed class Walker : IDisposable
             return;
         }
 
+        if (this._walkCts is { } previousCts)
+        {
+            // A walk loop is still running for a previous walk. Replacing the source without cancelling it
+            // first orphans that loop: its token is the only thing which can end it, and once the field
+            // points at the new source nobody holds a reference to the old one any more. The orphan would
+            // then run forever - see the note in WalkLoopAsync - burning a core and keeping the walk
+            // supporter alive.
+            await previousCts.CancelAsync().ConfigureAwait(false);
+            previousCts.Dispose();
+        }
+
         var cts = new CancellationTokenSource();
+        var cancellationToken = cts.Token;
         this._walkCts = cts;
-        _ = Task.Run(async () => await this.WalkLoopAsync(cts.Token).ConfigureAwait(false), cts.Token);
+
+        // The loop is handed its own source as well as its token: it needs the source to recognize whether
+        // the walk it is running is still the current one before it stops anything. It cannot read that back
+        // from the field later (that is the whole point), nor from cts.Token once the source is disposed.
+        _ = Task.Run(async () => await this.WalkLoopAsync(cts, cancellationToken).ConfigureAwait(false), cancellationToken);
     }
 
     /// <summary>
@@ -149,22 +171,15 @@ public sealed class Walker : IDisposable
     }
 
     /// <summary>
-    /// Stops the walk.
+    /// Stops the walk which is currently running - whichever one that is. This is what outside callers
+    /// want: they are ending "the walk of this object", not one particular walk they started earlier.
+    /// A walk loop stopping itself must use <see cref="StopOwnWalkAsync"/> instead.
     /// </summary>
     public async ValueTask StopAsync()
     {
         using var writeLock = await this._walkLock.WriterLockAsync();
 
-        if (this._walkCts != null)
-        {
-            await this._walkCts.CancelAsync().ConfigureAwait(false);
-            this._walkCts.Dispose();
-            this._walkCts = null;
-            this._nextSteps.Clear();
-            this._currentWalkStepCount = 0;
-            this._currentWalkToken = Guid.Empty;
-            this.CurrentTarget = default;
-        }
+        await this.StopCurrentWalkAsync().ConfigureAwait(false);
     }
 
     /// <summary>
@@ -179,22 +194,70 @@ public sealed class Walker : IDisposable
         }
     }
 
-    private async Task WalkLoopAsync(CancellationToken cancellationToken)
+    /// <summary>
+    /// Stops the walk, but only if <paramref name="ownCts"/> still belongs to the walk which is currently
+    /// running. A walk loop must never stop a walk other than its own: by the time it notices it has nothing
+    /// left to do, a newer walk may already be in place, and the unconditional <see cref="StopAsync"/> would
+    /// cancel that one - killing a walk a single step after it began. The loop cannot rule this out by
+    /// checking its own token either, because it may be parked on the writer lock, which is taken without a
+    /// token and therefore is not released by cancelling it.
+    /// </summary>
+    /// <param name="ownCts">The cancellation token source of the calling walk loop.</param>
+    private async ValueTask StopOwnWalkAsync(CancellationTokenSource ownCts)
+    {
+        using var writeLock = await this._walkLock.WriterLockAsync();
+
+        if (!ReferenceEquals(this._walkCts, ownCts))
+        {
+            // Our walk is already over; whatever runs now belongs to someone else and is not ours to stop.
+            return;
+        }
+
+        await this.StopCurrentWalkAsync().ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Ends the currently running walk and resets the walk state. The caller must hold the writer lock.
+    /// </summary>
+    private async ValueTask StopCurrentWalkAsync()
+    {
+        if (this._walkCts != null)
+        {
+            await this._walkCts.CancelAsync().ConfigureAwait(false);
+            this._walkCts.Dispose();
+            this._walkCts = null;
+            this._nextSteps.Clear();
+            this._currentWalkStepCount = 0;
+            this._currentWalkToken = Guid.Empty;
+            this.CurrentTarget = default;
+        }
+    }
+
+    private async Task WalkLoopAsync(CancellationTokenSource ownCts, CancellationToken cancellationToken)
     {
         // Task.Delay might take longer than we specify. We need to compensate that.
         var lastOffset = TimeSpan.Zero;
         while (!cancellationToken.IsCancellationRequested)
         {
             var sw = Stopwatch.StartNew();
-            var step = await this.WalkStepAsync(cancellationToken).ConfigureAwait(false);
+            var step = await this.WalkStepAsync(ownCts, cancellationToken).ConfigureAwait(false);
             if (step is null)
             {
                 if (!cancellationToken.IsCancellationRequested)
                 {
-                    await this.StopAsync().ConfigureAwait(false);
+                    await this.StopOwnWalkAsync(ownCts).ConfigureAwait(false);
                 }
 
-                continue;
+                // A null step means this walk is over for good - the walker is disposed, the supporter is
+                // no longer active, the queue ran dry, or the token was cancelled. There is nothing to
+                // retry, so leave the loop instead of continuing it.
+                //
+                // Continuing here used to be load-bearing: it relied on the StopAsync above having
+                // cancelled our own token, so that the while-condition ended the loop on the next pass.
+                // That assumption breaks whenever _walkCts no longer refers to this loop's source, because
+                // StopAsync is then a no-op which leaves our token uncancelled - and since the null step
+                // is reproducible, the loop spins at full speed without ever awaiting anything.
+                break;
             }
 
             var delay = this.StepDelay(step);
@@ -216,7 +279,7 @@ public sealed class Walker : IDisposable
     /// <summary>
     /// Performs the next step of a walk.
     /// </summary>
-    private async ValueTask<WalkingStep?> WalkStepAsync(CancellationToken cancellationToken)
+    private async ValueTask<WalkingStep?> WalkStepAsync(CancellationTokenSource ownCts, CancellationToken cancellationToken)
     {
         try
         {
@@ -234,7 +297,7 @@ public sealed class Walker : IDisposable
 
             if (stop)
             {
-                await this.StopAsync().ConfigureAwait(false);
+                await this.StopOwnWalkAsync(ownCts).ConfigureAwait(false);
                 return null;
             }
 
