@@ -20,7 +20,6 @@ public partial class ApiKeys : IAsyncDisposable
 
     private IList<ApiKey> _apiKeys = new List<ApiKey>();
     private bool _isLoading = true;
-    private ElementReference _createdKeyInput;
     private IJSObjectReference? _clipboardModule;
 
     /// <summary>
@@ -87,9 +86,6 @@ public partial class ApiKeys : IAsyncDisposable
 
         this._createdKey = createdKey;
         await this.ReloadAsync().ConfigureAwait(true);
-
-        // The key is gone from the server after this render, so put it in front of the user.
-        await this.FocusCreatedKeyAsync().ConfigureAwait(true);
     }
 
     private async Task OnSetDisabledAsync(ApiKey apiKey, bool isDisabled)
@@ -123,26 +119,7 @@ public partial class ApiKeys : IAsyncDisposable
         {
             // Copying is refused without a secure context, so the user selects it instead.
             this.ToastService.ShowError(Resources.CopyToClipboardFailed);
-            await this.SelectCreatedKeyAsync().ConfigureAwait(true);
         }
-    }
-
-    private async Task FocusCreatedKeyAsync()
-    {
-        try
-        {
-            await this._createdKeyInput.FocusAsync().ConfigureAwait(true);
-        }
-        catch (JSException)
-        {
-            // The element isn't there - not worth failing the creation for.
-        }
-    }
-
-    private async Task SelectCreatedKeyAsync()
-    {
-        var module = await this.GetClipboardModuleAsync().ConfigureAwait(true);
-        await module.InvokeVoidAsync("selectElementText", this._createdKeyInput).ConfigureAwait(true);
     }
 
     private async ValueTask<IJSObjectReference> GetClipboardModuleAsync()
