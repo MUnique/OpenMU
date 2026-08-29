@@ -1,5 +1,5 @@
 @page "/api-keys"
-@using MUnique.OpenMU.Persistence.AdminAuth
+
 @using MUnique.OpenMU.Web.AdminPanel.Properties
 @attribute [Authorize(Policy = AdminPolicies.Administrator)]
 
@@ -20,8 +20,7 @@
         </h5>
         <p>@Resources.ApiKeyShownOnceDescription</p>
         <div class="input-group">
-            <input type="text" class="form-control font-monospace" readonly value="@createdKey"
-                   aria-label="@Resources.ApiKeys" @onfocus="@this.SelectCreatedKeyAsync" @ref="@this._createdKeyInput" />
+            <input type="text" class="form-control font-monospace" readonly value="@createdKey" aria-label="@Resources.ApiKeys"/>
             <button type="button" class="btn btn-primary" @onclick="@this.CopyCreatedKeyAsync">
                 <span class="oi oi-clipboard" aria-hidden="true"></span> @Resources.CopyToClipboard
             </button>
