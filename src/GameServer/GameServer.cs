@@ -17,7 +17,9 @@ using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Guild;
 using MUnique.OpenMU.GameLogic.Views.Login;
 using MUnique.OpenMU.GameLogic.Views.Messenger;
+using MUnique.OpenMU.GameServer.RemoteView;
 using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Network.Analyzer;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
 using Nito.AsyncEx;
@@ -25,7 +27,7 @@ using Nito.AsyncEx;
 /// <summary>
 /// The game server to which game clients can connect.
 /// </summary>
-public sealed class GameServer : IGameServer, IDisposable, IGameServerContextProvider
+public sealed class GameServer : IGameServer, IDisposable, IGameServerContextProvider, IConnectionSource
 {
     private readonly ILogger<GameServer> _logger;
 
@@ -419,6 +421,20 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
     public async ValueTask GuildHostilityChangedAsync(uint guildIdA, IReadOnlyList<uint> allianceGuildIdsA, uint guildIdB, IReadOnlyList<uint> allianceGuildIdsB, bool created)
     {
         this._gameContext.UpdateGuildHostility(guildIdA, allianceGuildIdsA, guildIdB, allianceGuildIdsB, created);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<IReadOnlyList<ICapturedConnectionInfo>> GetConnectionsAsync()
+    {
+        var players = await this._gameContext.GetPlayersAsync().ConfigureAwait(false);
+        return players
+            .OfType<RemotePlayer>()
+            .Select(player => player.Connection is { } connection
+                ? new RemotePlayerConnectionInfo(player, connection, this.Id, this.Description)
+                : null)
+            .Where(info => info is not null)
+            .Select(info => (ICapturedConnectionInfo)info!)
+            .ToList();
     }
 
     /// <summary>

@@ -19,9 +19,9 @@ using MUnique.OpenMU.Persistence.Json;
 /// </summary>
 public partial class CastleSiegePendingReward : MUnique.OpenMU.DataModel.Entities.CastleSiegePendingReward, IIdentifiable, IConvertibleTo<CastleSiegePendingReward>
 {
-
-
-
+    
+    
+    
 
     /// <inheritdoc/>
     public override bool Equals(object obj)

@@ -1173,7 +1173,31 @@ public class Stats
     /// Gets the shield recovery everywhere attribute definition.
     /// By default, shield recovery is limited to the safezone only. With this attribute (value >= 1), recovery works everywhere on a map.
     /// </summary>
-    public static AttributeDefinition ShieldRecoveryEverywhere { get; } = new(new Guid("3D0A78FF-CCD4-442E-8B4E-64E5082ABD78"), "Is Shield Recovery Active Everwhere", "By default, shield recovery is limited to the safezone only. With this attribute (value >= 1), recovery works everywhere on a map.");
+    public static AttributeDefinition ShieldRecoveryEverywhere { get; } = new(new Guid("3D0A78FF-CCD4-442E-8B4E-64E5082ABD78"), "Shield Recovery Active Everywhere", "By default, shield recovery is limited to the safezone only. With this attribute (value >= 1), recovery works everywhere on a map.");
+
+    /// <summary>
+    /// Gets the is shield recovery active attribute definition.
+    /// </summary>
+    public static AttributeDefinition IsShieldRecoveryActive { get; } = new(new Guid("8F2C4D7E-B1A9-4E3F-9C5D-2A1B7E8F3C4D"), "Is Shield Recovery Active", string.Empty);
+
+    /// <summary>
+    /// Gets the shield recovery hiatus (in seconds) attribute definition.
+    /// </summary>
+    /// <remarks>
+    /// Must be equal or greater than <see cref="ShieldRegeneration"/>.HiatusThreshold for shield to regenerate. See <see cref="PlugIns.ShieldRecoveryHiatusPlugIn"/>.
+    /// </remarks>
+    public static AttributeDefinition ShieldRecoveryHiatus { get; } = new(new Guid("5A7E2B9C-3D1F-4A8E-B6C2-1E7D4A9F2B3C"), "Shield Recovery Hiatus", "The seconds since when shield recovery was last interrupted, either by leaving a safezone, the shield being damaged or maxing out.");
+
+    /// <summary>
+    /// Gets the shield recovery ramp factor attribute definition.
+    /// </summary>
+    /// <remarks>
+    /// The factor by which shield recovery increases. Rises linearly with <see cref="ShieldRecoveryHiatus"/>. Original range is [2,3].
+    /// </remarks>
+    public static AttributeDefinition ShieldRecoveryRampFactor { get; } = new(new Guid("C3E8F1A7-4B9D-4C5E-8A2F-3D6E1C9B5A7F"), "Shield Recovery Ramp Factor", "The factor by which shield recovery increases. Rises linearly with the uninterrupted shield recovery duration.")
+    {
+        MaximumValue = 3,
+    };
 
     /// <summary>
     /// Gets the ability usage reduction attribute definition. Value ranges from 0 (no reduction) to 1 (full reduction).
@@ -1437,7 +1461,12 @@ public class Stats
     /// <summary>
     /// Gets the <see cref="IsInSafezone"/> attribute which defines if the character is located in a safezone of a game map.
     /// </summary>
-    public static AttributeDefinition IsInSafezone { get; } = new(new Guid("82044DF9-F528-4AD6-9AAA-6FEAA4C786E7"), "Flag, if the character is located in a safezone of a game map", "Characters at the safezone recover additional health and shield.");
+    public static AttributeDefinition IsInSafezone { get; } = new(new Guid("82044DF9-F528-4AD6-9AAA-6FEAA4C786E7"), "Flag, if the character is located in a safezone of a game map", "Characters at the safezone recover shield and additional ability.");
+
+    /// <summary>
+    /// Gets the <see cref="IsResting"/> attribute which defines if the character is in a resting state: sitting, leaning or hanging.
+    /// </summary>
+    public static AttributeDefinition IsResting { get; } = new(new Guid("7A4E2D9F-B1C3-48F5-9D2E-1A6F8C3E5B7D"), "Flag, if the character is resting (sitting, leaning or hanging)", "Characters resting recover additional health and mana.");
 
     /// <summary>
     /// Gets the <see cref="IsUnderwater"/> attribute which defines if the character is located on an underwater game map.
@@ -1588,13 +1617,43 @@ public class Stats
         }
     }
 
-    private static Regeneration ManaRegeneration { get; } = new(ManaRecoveryMultiplier, MaximumMana, CurrentMana, ManaRecoveryAbsolute);
+    /// <summary>
+    /// Gets the mana regeneration.
+    /// </summary>
+    public static Regeneration ManaRegeneration { get; } = new(ManaRecoveryMultiplier, MaximumMana, CurrentMana, ManaRecoveryAbsolute)
+    {
+        IntervalResting = TimeSpan.FromSeconds(5),
+    };
 
-    private static Regeneration HealthRegeneration { get; } = new(HealthRecoveryMultiplier, MaximumHealth, CurrentHealth, HealthRecoveryAbsolute);
+    /// <summary>
+    /// Gets the health regeneration.
+    /// </summary>
+    public static Regeneration HealthRegeneration { get; } = new(HealthRecoveryMultiplier, MaximumHealth, CurrentHealth, HealthRecoveryAbsolute)
+    {
+        Interval = TimeSpan.FromSeconds(7),
+        IntervalResting = TimeSpan.FromSeconds(5),
+    };
 
-    private static Regeneration AbilityRegeneration { get; } = new(AbilityRecoveryMultiplier, MaximumAbility, CurrentAbility, AbilityRecoveryAbsolute);
+    /// <summary>
+    /// Gets the ability regeneration.
+    /// </summary>
+    public static Regeneration AbilityRegeneration { get; } = new(AbilityRecoveryMultiplier, MaximumAbility, CurrentAbility, AbilityRecoveryAbsolute);
 
-    private static Regeneration ShieldRegeneration { get; } = new(ShieldRecoveryMultiplier, MaximumShield, CurrentShield, ShieldRecoveryAbsolute);
+    /// <summary>
+    /// Gets the shield regeneration.
+    /// </summary>
+    /// <remarks>
+    /// Shield recovery is only possible at safe zone, except the character has a specific attribute which has the effect that it's recovered everywhere.
+    /// This attribute is usually provided by level 380 armor with a Guardian Option.
+    /// Also, shield has a penalty (hiatus) period before the recovery starts, after which it increases linearly (see <see cref="ShieldRecoveryRampFactor"/>).
+    /// </remarks>
+    public static Regeneration ShieldRegeneration { get; } = new(ShieldRecoveryMultiplier, MaximumShield, CurrentShield, ShieldRecoveryAbsolute)
+    {
+        Interval = TimeSpan.FromSeconds(1),
+        IntervalResting = TimeSpan.FromSeconds(1),
+        EnablerAttribute = IsShieldRecoveryActive,
+        HiatusAttribute = ShieldRecoveryHiatus,
+    };
 
     private static Regeneration ManaRegenerationAfterMonsterKill { get; } = new(ManaAfterMonsterKillMultiplier, MaximumMana, CurrentMana, ManaAfterMonsterKillAbsolute);
 
@@ -1613,8 +1672,8 @@ public class Stats
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Regeneration" /> class.
-        /// At regeneration the value of <paramref name="regenerationMultiplier" /> * <paramref name="maximumAttribute" /> is getting added to
-        /// <paramref name="currentAttribute" />, until the value of <paramref name="maximumAttribute" /> is reached.
+        /// At regeneration the value of (<paramref name="maximumAttribute" /> * <paramref name="regenerationMultiplier" />) + <paramref name="absoluteAttribute"/>
+        /// is getting added to <paramref name="currentAttribute" />, until the value of <paramref name="maximumAttribute" /> is reached.
         /// </summary>
         /// <param name="regenerationMultiplier">The regeneration multiplier.</param>
         /// <param name="maximumAttribute">The maximum attribute.</param>
@@ -1647,5 +1706,36 @@ public class Stats
         /// Gets the current attribute.
         /// </summary>
         public AttributeDefinition CurrentAttribute { get; }
+
+        /// <summary>
+        /// Gets the interval at which the attribute would complete a full regeneration cycle.
+        /// </summary>
+        /// <remarks>
+        /// Originally, the game had different regeneration cycles depending on attributes and the player's state (<see cref="IsResting"/>).
+        /// To avoid having different timers each with a regeneration interval, we run just one set to <see cref="GameConfiguration.RecoveryInterval"/>.
+        /// Then, we apply a compensation factor which is the ratio between elapsed time and <see cref="Interval"/>.
+        /// This way we can mimic original regeneration over time while still keeping it configurable.
+        /// </remarks>
+        public TimeSpan Interval { get; init; } = TimeSpan.FromSeconds(3);
+
+        /// <summary>
+        /// Gets the interval at which the attribute would complete a full regeneration cycle when the player is resting (<see cref="IsResting"/>).
+        /// </summary>
+        public TimeSpan IntervalResting { get; init; } = TimeSpan.FromSeconds(3);
+
+        /// <summary>
+        /// Gets the attribute which gates the regeneration, if it exists.
+        /// </summary>
+        public AttributeDefinition? EnablerAttribute { get; init; }
+
+        /// <summary>
+        /// Gets the attribute which keeps the regeneration hiatus duration, if it exists.
+        /// </summary>
+        public AttributeDefinition? HiatusAttribute { get; init; }
+
+        /// <summary>
+        /// Gets the hiatus threshold (in seconds) against which <see cref="HiatusAttribute"/> is checked to allow the regeneration.
+        /// </summary>
+        public int HiatusThreshold { get; init; } = 10;
     }
 }

@@ -58,7 +58,9 @@ public partial class MainForm : Form
         this.connectedClientsListBox.DisplayMember = nameof(ICapturedConnection.Name);
         this.connectedClientsListBox.Update();
 
-        this._analyzer = new PacketAnalyzer();
+        // The analyzer watches the packet definition files, so that changed definitions are
+        // applied without restarting the tool.
+        this._analyzer = new PacketAnalyzer(PacketDefinitionSet.GameServer, watchFiles: true);
         this.Disposed += (_, _) => this._analyzer.Dispose();
 
         this.clientVersionComboBox.SelectedIndexChanged += this.OnSelectedClientVersionChanged;
@@ -236,8 +238,9 @@ public partial class MainForm : Form
 
     private void OnPacketAnalyzingRequested(object? sender, Packet.AnalyzingRequestedEventArgs e)
     {
-        e.ClientVersion = this._analyzer.ClientVersion;
-        (e.Message, e.Definition) = this._analyzer.ExtractShortInformation(e.Packet);
+        var clientVersion = this.SelectedClientVersion;
+        e.ClientVersion = clientVersion;
+        (e.Message, e.Definition) = this._analyzer.ExtractShortInformation(e.Packet, clientVersion);
     }
 
     private void OnUnfilteredListChanged(object? sender, ListChangedEventArgs e)
@@ -267,7 +270,6 @@ public partial class MainForm : Form
             listener.ClientVersion = this.SelectedClientVersion;
         }
 
-        this._analyzer.ClientVersion = this.SelectedClientVersion;
         if (this._unfilteredList is { } unfilteredList)
         {
             foreach (var packet in unfilteredList)
@@ -315,7 +317,6 @@ public partial class MainForm : Form
             ClientVersion = this.SelectedClientVersion,
         };
 
-        this._analyzer.ClientVersion = this.SelectedClientVersion;
         this._clientListener.ClientConnected += this.ClientListenerOnClientConnected;
         this._clientListener.Start();
         this.btnStartProxy.Text = "Stop Proxy";
@@ -364,7 +365,7 @@ public partial class MainForm : Form
             if (rows.Count > 0 && this.packetGridView.SelectedRows[0].DataBoundItem is Packet packet)
             {
                 this.rawDataTextBox.Text = packet.PacketData;
-                this.extractedInfoTextBox.Text = this._analyzer.ExtractInformation(packet);
+                this.extractedInfoTextBox.Text = this._analyzer.ExtractInformation(packet, this.SelectedClientVersion);
                 this.packetInfoGroup.Enabled = true;
             }
             else

@@ -2502,6 +2502,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Updates and resets the shield recovery hiatus attribute..
+        /// </summary>
+        public static string ShieldRecoveryHiatusPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ShieldRecoveryHiatusPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shield Recovery Hiatus.
+        /// </summary>
+        public static string ShieldRecoveryHiatusPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ShieldRecoveryHiatusPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the chat command &apos;/fireworks &lt;x&gt; &lt;y&gt;&apos;. Shows an fireworks effect at the specified coordinates..
         /// </summary>
         public static string ShowFireworksEffectChatCommandPlugIn_Description {

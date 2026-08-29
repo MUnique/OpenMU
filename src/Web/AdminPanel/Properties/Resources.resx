@@ -882,4 +882,72 @@
   <data name="CopyToClipboardFailed" xml:space="preserve">
     <value>The API key could not be copied. Please select and copy it by hand.</value>
   </data>
+  <data name="NetworkAnalyzer" xml:space="preserve">
+    <value>Network Analyzer</value>
+  </data>
+  <data name="ChatServer" xml:space="preserve">
+    <value>Chat Server</value>
+  </data>
+  <data name="Connections" xml:space="preserve">
+    <value>Connections</value>
+  </data>
+  <data name="NoConnectionsFound" xml:space="preserve">
+    <value>No connections found.</value>
+  </data>
+  <data name="SelectAConnection" xml:space="preserve">
+    <value>Select a connection to see its network traffic.</value>
+  </data>
+  <data name="NetworkAnalyzerNotAvailable" xml:space="preserve">
+    <value>The network analyzer is only available in the all-in-one deployment, because it needs the servers in the same process.</value>
+  </data>
+  <data name="CapturedPackets" xml:space="preserve">
+    <value>Captured Packets</value>
+  </data>
+  <data name="Timestamp" xml:space="preserve">
+    <value>Timestamp</value>
+  </data>
+  <data name="Direction" xml:space="preserve">
+    <value>Direction</value>
+  </data>
+  <data name="PacketCode" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="PacketMessage" xml:space="preserve">
+    <value>Message</value>
+  </data>
+  <data name="PacketDetails" xml:space="preserve">
+    <value>Packet Details</value>
+  </data>
+  <data name="ExtractedInformation" xml:space="preserve">
+    <value>Extracted Information</value>
+  </data>
+  <data name="RawData" xml:space="preserve">
+    <value>Raw Data</value>
+  </data>
+  <data name="ClearPackets" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="ToServer" xml:space="preserve">
+    <value>To Server</value>
+  </data>
+  <data name="ToClient" xml:space="preserve">
+    <value>To Client</value>
+  </data>
+  <data name="FilterPackets" xml:space="preserve">
+    <value>Filter by code or message</value>
+  </data>
+  <data name="NoPacketsCaptured" xml:space="preserve">
+    <value>No packets captured yet.</value>
+  </data>
+  <data name="SelectAPacket" xml:space="preserve">
+    <value>Select a packet to see its content.</value>
+  </data>
+  <data name="FollowNewPackets" xml:space="preserve">
+    <value>Follow</value>
+  </data>
+  <data name="FollowNewPacketsHint" xml:space="preserve">
+    <value>Shows the newest packets and scrolls to them. It's turned off while you scroll up, so that the view doesn't move away.</value>
+  </data>
+
+  </data>
 </root>

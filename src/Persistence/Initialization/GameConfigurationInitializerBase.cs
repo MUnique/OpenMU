@@ -1,4 +1,4 @@
-// <copyright file="GameConfigurationInitializerBase.cs" company="MUnique">
+﻿// <copyright file="GameConfigurationInitializerBase.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -272,15 +272,16 @@ public abstract class GameConfigurationInitializerBase : InitializerBase
     /// </summary>
     private void AddGlobalBaseAttributeValues()
     {
-        var moneyAmountRate = this.Context.CreateNew<ConstValueAttribute>(1f, Stats.MoneyAmountRate.GetPersistent(this.GameConfiguration));
+        var moneyAmountRate = this.Context.CreateNew<ConstValueAttribute>(1f, Stats.MoneyAmountRate.GetPersistent(this.GameConfiguration), AggregateType.AddRaw);
         this.GameConfiguration.GlobalBaseAttributeValues.Add(moneyAmountRate);
 
-        var randomExperienceMinMultiplier = this.Context.CreateNew<ConstValueAttribute>(0.8f, Stats.RandomExperienceMinMultiplier.GetPersistent(this.GameConfiguration));
+        var randomExperienceMinMultiplier = this.Context.CreateNew<ConstValueAttribute>(0.8f, Stats.RandomExperienceMinMultiplier.GetPersistent(this.GameConfiguration), AggregateType.AddRaw);
         this.GameConfiguration.GlobalBaseAttributeValues.Add(randomExperienceMinMultiplier);
 
-        var randomExperienceMaxMultiplier = this.Context.CreateNew<ConstValueAttribute>(1.2f, Stats.RandomExperienceMaxMultiplier.GetPersistent(this.GameConfiguration));
+        var randomExperienceMaxMultiplier = this.Context.CreateNew<ConstValueAttribute>(1.2f, Stats.RandomExperienceMaxMultiplier.GetPersistent(this.GameConfiguration), AggregateType.AddRaw);
         this.GameConfiguration.GlobalBaseAttributeValues.Add(randomExperienceMaxMultiplier);
 
-        this.GameConfiguration.GlobalBaseAttributeValues.Add(this.Context.CreateNew<ConstValueAttribute>(1f, Stats.MovementSpeedFactor.GetPersistent(this.GameConfiguration)));
+        var movementSpeedFactor = this.Context.CreateNew<ConstValueAttribute>(1f, Stats.MovementSpeedFactor.GetPersistent(this.GameConfiguration), AggregateType.AddRaw);
+        this.GameConfiguration.GlobalBaseAttributeValues.Add(movementSpeedFactor);
     }
 }

@@ -1,4 +1,4 @@
-// <copyright file="ConnectionExtensions.cs" company="MUnique">
+﻿// <copyright file="ConnectionExtensions.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -6814,7 +6814,7 @@ public static class ConnectionExtensions
     /// Sends a <see cref="CastleSiegeCrownSwitchState" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
-    /// <param name="switchIndex">The switch index.</param>
+    /// <param name="switchIndex">The network object identifier of the Crown switch.</param>
     /// <param name="playerIndex">The player index.</param>
     /// <param name="state">The state.</param>
     /// <remarks>
@@ -7142,7 +7142,7 @@ public static class ConnectionExtensions
     /// Sends a <see cref="CastleSiegeSwitchInfo" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
-    /// <param name="switchIndex">The switch index.</param>
+    /// <param name="switchIndex">The network object identifier of the Crown switch.</param>
     /// <param name="isOccupied">The is occupied.</param>
     /// <param name="joinSide">The join side.</param>
     /// <param name="guildName">The guild name.</param>

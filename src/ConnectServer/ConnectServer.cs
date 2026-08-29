@@ -11,12 +11,13 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Network.Analyzer;
 using MUnique.OpenMU.Network.PlugIns;
 
 /// <summary>
 /// The connect server.
 /// </summary>
-public class ConnectServer : IConnectServer, OpenMU.Interfaces.IConnectServer
+public class ConnectServer : IConnectServer, OpenMU.Interfaces.IConnectServer, IConnectionSource
 {
     private readonly ILoggerFactory _loggerFactory;
     private readonly ILogger _logger;
@@ -113,6 +114,15 @@ public class ConnectServer : IConnectServer, OpenMU.Interfaces.IConnectServer
     /// Gets the client listener.
     /// </summary>
     internal ClientListener ClientListener { get; }
+
+    /// <inheritdoc />
+    public ValueTask<IReadOnlyList<ICapturedConnectionInfo>> GetConnectionsAsync()
+    {
+        IReadOnlyList<ICapturedConnectionInfo> result = this.ClientListener.Clients
+            .Select(client => new ClientConnectionInfo(client, this.Id, this.ClientVersion, this.Description))
+            .ToList();
+        return ValueTask.FromResult(result);
+    }
 
     /// <inheritdoc />
     public async Task StartAsync(CancellationToken cancellationToken)
