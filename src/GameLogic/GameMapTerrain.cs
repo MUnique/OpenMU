@@ -1,4 +1,4 @@
-// <copyright file="GameMapTerrain.cs" company="MUnique">
+﻿// <copyright file="GameMapTerrain.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -187,11 +187,6 @@ public class GameMapTerrain
         }
     }
 
-    /// <summary>
-    /// Builds the array of valid spawn points.
-    /// A valid spawn point is walkable and not in a safezone.
-    /// </summary>
-    /// <returns>Array of valid spawn points.</returns>
     /// <summary>
     /// Scans the terrain for the two lookups which are derived from it, in a single pass: the
     /// monster spawn points, and the coordinate behind <see cref="AnyWalkableCoordinate"/>.
