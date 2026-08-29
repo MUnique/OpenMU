@@ -153,6 +153,7 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
                 await context.InitializeAsync(utcNow).ConfigureAwait(false);
                 this.ConfigureNotifications(context, utcNow);
                 await this.OnEnterStateAsync(context, true).ConfigureAwait(false);
+                await CastleSiegeEconomyNotifier.BroadcastTaxRatesAsync(context).ConfigureAwait(false);
                 await this.BroadcastStateUpdateAsync(context).ConfigureAwait(false);
                 logger.LogInformation(
                     "Castle Siege initialized in state {state}; the state ends at {stateEndUtc}.",
@@ -215,6 +216,7 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
         GameMap map,
         CastleSiegeContext context)
     {
+        await CastleSiegeEconomyNotifier.SynchronizePlayerAsync(context, player).ConfigureAwait(false);
         if (context.CurrentState is not (CastleSiegeState.Ready or CastleSiegeState.Start)
             || context.Configuration.CastleSiegeMapDefinition?.Number != map.Definition.Number)
         {

@@ -390,6 +390,14 @@ internal class TestInitializationWithEfCore
                 .Select(effect => effect.Number),
             Is.EquivalentTo(Enum.GetValues<CastleSiegeMagicEffectNumber>().Select(number => (short)number)));
 
+        var senior = gameConfiguration.Monsters.Single(monster => monster.Number == 223);
+        Assert.That(senior.NpcWindow, Is.EqualTo(NpcWindow.CastleSeniorNPC));
+        senior.NpcWindow = NpcWindow.Undefined;
+        var economyUpdate = new ConfigureCastleSiegeEconomyUpdatePlugIn();
+        await economyUpdate.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await economyUpdate.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        Assert.That(senior.NpcWindow, Is.EqualTo(NpcWindow.CastleSeniorNPC));
+
         gameConfiguration.Items.Add(signOfLord);
         configuration.SignOfLordItemDefinition = signOfLord;
         configuration.SignOfLordItemLevel = 3;
