@@ -160,4 +160,37 @@ or behind a firewall) and you want to use it within your computer or private net
     <data name="SocketAbbreviation" xml:space="preserve">
       <value>S</value>
     </data>
+	<data name="SystemConfiguration_NetworkAnalyzer_Name" xml:space="preserve">
+		<value>Network Analyzer</value>
+	</data>
+	<data name="SystemConfiguration_NetworkAnalyzerLiveBufferSize_Name" xml:space="preserve">
+		<value>Live buffer size</value>
+	</data>
+	<data name="SystemConfiguration_NetworkAnalyzerLiveBufferSize_Description" xml:space="preserve">
+		<value>The number of data packets which are kept in memory per connection which is watched in the network analyzer page. When more packets arrive, the oldest ones are dropped.</value>
+	</data>
+	<data name="SystemConfiguration_NetworkObservationArchivePath_Name" xml:space="preserve">
+		<value>Observation archive path</value>
+	</data>
+	<data name="SystemConfiguration_NetworkObservationArchivePath_Description" xml:space="preserve">
+		<value>The path in which the traffic of the observed accounts is archived. A relative path is resolved against the directory of the application. It must not point into a folder which is served by the web server - an archived session contains the login packet of the player in plain text.</value>
+	</data>
+	<data name="SystemConfiguration_NetworkObservationMaxSessionSizeMb_Name" xml:space="preserve">
+		<value>Maximum session size (MB)</value>
+	</data>
+	<data name="SystemConfiguration_NetworkObservationMaxSessionSizeMb_Description" xml:space="preserve">
+		<value>The maximum size of one file of an archived session, in megabytes. A session which grows bigger is continued in another file.</value>
+	</data>
+	<data name="SystemConfiguration_NetworkObservationMaxTotalSizeMb_Name" xml:space="preserve">
+		<value>Maximum archive size (MB)</value>
+	</data>
+	<data name="SystemConfiguration_NetworkObservationMaxTotalSizeMb_Description" xml:space="preserve">
+		<value>The maximum size of the whole observation archive, in megabytes. When it's exceeded, the oldest sessions are removed. A value of 0 means that the size is unlimited.</value>
+	</data>
+	<data name="SystemConfiguration_NetworkObservationRetentionDays_Name" xml:space="preserve">
+		<value>Archive retention (days)</value>
+	</data>
+	<data name="SystemConfiguration_NetworkObservationRetentionDays_Description" xml:space="preserve">
+		<value>The number of days after which an archived session is removed. A value of 0 means that the sessions are kept forever.</value>
+	</data>
 </root>
