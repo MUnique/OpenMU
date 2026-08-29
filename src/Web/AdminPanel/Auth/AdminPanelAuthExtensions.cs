@@ -41,16 +41,6 @@ public static class AdminPanelAuthExtensions
     public const string BootstrapAuthenticatorKeyVariableName = "OPENMU_ADMIN_TOTP_SECRET";
 
     /// <summary>
-    /// The environment variable which defines an API key for the public API.
-    /// </summary>
-    public const string ApiKeyVariableName = "OPENMU_API_KEY";
-
-    /// <summary>
-    /// The environment variable which defines the roles of the <see cref="ApiKeyVariableName"/>.
-    /// </summary>
-    public const string ApiKeyRolesVariableName = "OPENMU_API_KEY_ROLES";
-
-    /// <summary>
     /// Adds the authentication of the admin panel to the service collection.
     /// </summary>
     /// <param name="services">The service collection.</param>
@@ -70,10 +60,6 @@ public static class AdminPanelAuthExtensions
             options.BootstrapUser = authOptions.BootstrapUser;
         });
 
-        var apiKeyOptions = new ApiKeyOptions();
-        configuration.GetSection(ApiKeyOptions.SectionName).Bind(apiKeyOptions);
-        ApplyApiKeyEnvironmentVariable(apiKeyOptions);
-        services.Configure<ApiKeyOptions>(options => options.Keys = apiKeyOptions.Keys);
         services.AddSingleton<ApiKeyRegistry>();
         services.AddScoped<ApiKeyManagementService>();
 
@@ -214,22 +200,6 @@ public static class AdminPanelAuthExtensions
 
         context.Response.Redirect(context.RedirectUri);
         return Task.CompletedTask;
-    }
-
-    private static void ApplyApiKeyEnvironmentVariable(ApiKeyOptions options)
-    {
-        var key = Environment.GetEnvironmentVariable(ApiKeyVariableName);
-        if (string.IsNullOrWhiteSpace(key))
-        {
-            return;
-        }
-
-        options.Keys.Add(new ApiKeyEntry
-        {
-            Name = ApiKeyVariableName,
-            Key = key,
-            Roles = Environment.GetEnvironmentVariable(ApiKeyRolesVariableName),
-        });
     }
 
     /// <summary>

@@ -12,13 +12,21 @@
 
 <p class="text-muted">@Resources.ApiKeysDescription</p>
 
-@if (!string.IsNullOrEmpty(this._createdKey))
+@if (this._createdKey is { Length: > 0 } createdKey)
 {
     <div class="alert alert-warning" role="alert">
-        <h5 class="alert-heading">@Resources.ApiKeyShownOnce</h5>
+        <h5 class="alert-heading">
+            <span class="oi oi-key" aria-hidden="true"></span> @Resources.ApiKeyShownOnce
+        </h5>
         <p>@Resources.ApiKeyShownOnceDescription</p>
-        <code class="user-select-all d-block p-2 bg-body-secondary rounded">@this._createdKey</code>
-        <button type="button" class="btn btn-sm btn-secondary mt-2" @onclick="@(() => this._createdKey = null)">@Resources.Close</button>
+        <div class="input-group">
+            <input type="text" class="form-control font-monospace" readonly value="@createdKey"
+                   aria-label="@Resources.ApiKeys" @onfocus="@this.SelectCreatedKeyAsync" @ref="@this._createdKeyInput" />
+            <button type="button" class="btn btn-primary" @onclick="@this.CopyCreatedKeyAsync">
+                <span class="oi oi-clipboard" aria-hidden="true"></span> @Resources.CopyToClipboard
+            </button>
+        </div>
+        <button type="button" class="btn btn-sm btn-secondary mt-3" @onclick="@(() => this._createdKey = null)">@Resources.Close</button>
     </div>
 }
 
@@ -32,11 +40,10 @@ else
         <table class="table table-striped table-hover">
             <thead>
             <tr>
-                <th class="col-3">@Resources.ApiKeyName</th>
+                <th class="col-4">@Resources.ApiKeyName</th>
                 <th class="col-2">@Resources.ApiKeyPrefix</th>
                 <th class="col-2">@Resources.Role</th>
-                <th class="col-2">@Resources.LastUsed</th>
-                <th class="col-3">@Resources.Actions</th>
+                <th class="col-4">@Resources.Actions</th>
             </tr>
             </thead>
             <tbody>
@@ -45,16 +52,7 @@ else
                 <tr class="@(apiKey.IsDisabled ? "opacity-50" : null)">
                     <td>@apiKey.Name</td>
                     <td><code>@apiKey.KeyPrefix…</code></td>
-                    <td>
-                        <select class="form-select form-select-sm" value="@apiKey.Roles"
-                                @onchange="@(args => this.OnRoleChangedAsync(apiKey, args.Value?.ToString()))">
-                            @foreach (var role in AdminRoles.All)
-                            {
-                                <option value="@role">@role</option>
-                            }
-                        </select>
-                    </td>
-                    <td>@(apiKey.LastUsedAt?.ToString("yyyy-MM-dd HH:mm") ?? "-")</td>
+                    <td>@apiKey.Roles</td>
                     <td>
                         @if (apiKey.IsDisabled)
                         {
@@ -71,7 +69,7 @@ else
             @if (this._apiKeys.Count == 0)
             {
                 <tr>
-                    <td colspan="5" class="text-muted">@Resources.NoApiKeys</td>
+                    <td colspan="4" class="text-muted">@Resources.NoApiKeys</td>
                 </tr>
             }
             </tbody>

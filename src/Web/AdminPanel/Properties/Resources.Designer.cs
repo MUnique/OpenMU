@@ -2305,15 +2305,6 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Last used.
-        /// </summary>
-        public static string LastUsed {
-            get {
-                return ResourceManager.GetString("LastUsed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Enable.
         /// </summary>
         public static string Enable {
@@ -2330,5 +2321,32 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("Disable", resourceCulture);
             }
         }
+        /// <summary>
+        ///   Looks up a localized string similar to Copy.
+        /// </summary>
+        public static string CopyToClipboard {
+            get {
+                return ResourceManager.GetString("CopyToClipboard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The API key has been copied to the clipboard..
+        /// </summary>
+        public static string CopiedToClipboard {
+            get {
+                return ResourceManager.GetString("CopiedToClipboard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The API key could not be copied. Please select and copy it by hand..
+        /// </summary>
+        public static string CopyToClipboardFailed {
+            get {
+                return ResourceManager.GetString("CopyToClipboardFailed", resourceCulture);
+            }
+        }
+        
 }
 }

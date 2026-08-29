@@ -108,24 +108,6 @@ public class ApiKeyManagementService
     }
 
     /// <summary>
-    /// Assigns the specified role to the specified key.
-    /// </summary>
-    /// <param name="apiKey">The key.</param>
-    /// <param name="role">The role.</param>
-    public async Task SetRoleAsync(ApiKey apiKey, string role)
-    {
-        apiKey.Roles = role;
-        try
-        {
-            await this._repository.UpdateAsync(apiKey).ConfigureAwait(false);
-        }
-        catch (Exception ex)
-        {
-            this._toastService.ShowError(ex.Message);
-        }
-    }
-
-    /// <summary>
     /// Deletes the specified key, after asking for a confirmation.
     /// </summary>
     /// <param name="apiKey">The key.</param>

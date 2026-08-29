@@ -54,17 +54,6 @@ public interface IApiKeyRepository
     ValueTask UpdateAsync(ApiKey apiKey, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Sets the <see cref="ApiKey.LastUsedAt"/> of the key with the specified identifier.
-    /// </summary>
-    /// <param name="id">The identifier of the key.</param>
-    /// <param name="lastUsedAt">The point in time.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <remarks>
-    /// This happens while a request is served, so it must not fail the request when it doesn't work.
-    /// </remarks>
-    ValueTask TouchAsync(Guid id, DateTime lastUsedAt, CancellationToken cancellationToken = default);
-
-    /// <summary>
     /// Deletes the specified key.
     /// </summary>
     /// <param name="apiKey">The key.</param>

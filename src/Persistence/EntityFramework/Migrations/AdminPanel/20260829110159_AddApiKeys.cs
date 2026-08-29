@@ -22,8 +22,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations.AdminPanel
                     KeyPrefix = table.Column<string>(type: "character varying(16)", maxLength: 16, nullable: false),
                     Roles = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     IsDisabled = table.Column<bool>(type: "boolean", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    LastUsedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {

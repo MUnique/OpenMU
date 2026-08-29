@@ -153,15 +153,17 @@ Open **API keys** in the navigation — it's next to *Users* and needs the
 administrator role. Click **Create API key**, give the application a name and
 pick its role.
 
+The generated key is then shown once, with a button which copies it to the
+clipboard.
+
 :::warning[The key is shown exactly once]
 Only a hash of the key is stored, the same way recovery codes are. Copy it
-straight into the application which needs it. If it gets lost, delete the key
-and create a new one.
+straight into the application which needs it before you close the message. If it
+gets lost, delete the key and create a new one.
 :::
 
 The list shows each key by its name and its first characters, so you can tell
-them apart without knowing them, together with the last time it was used — a
-key whose *Last used* stays empty is one you can delete.
+them apart without knowing them.
 
 **Disable** stops a key from working without deleting it, which is the quickest
 reaction when you suspect a key has leaked and you don't want to touch the
@@ -178,48 +180,12 @@ A key has the same [roles](#roles) as a user, and defaults to **Viewer**:
 | `GET /api/send/{server}?msg=` | Operator |
 
 So a status page gets a Viewer key and can only read, while an application which
-announces something in the game needs an Operator key. The role of a key can be
-changed in the list at any time; the key itself stays the same.
+announces something in the game needs an Operator key. The role is chosen when
+the key is created and can't be changed afterwards — create a new key with the
+role you need and delete the old one.
 
 A signed in admin panel user can use the API as well, with the same roles — this
 is handy while trying things out in the browser.
-
-### Keys from the configuration
-
-The panel needs a database to store keys in, and the API has to work before that
-database exists. For that case — and to deploy a key together with the server
-instead of clicking it in afterwards — keys can also be configured:
-
-```json
-{
-  "AdminPanel": {
-    "Api": {
-      "Keys": [
-        { "Name": "launcher", "Key": "<a long random key>" },
-        { "Name": "website", "Key": "<another one>", "Roles": "Operator" }
-      ]
-    }
-  }
-}
-```
-
-For a single key, the environment variables work too, like they do for the
-bootstrap user:
-
-```bash
-OPENMU_API_KEY=<a long random key>
-# optional, defaults to Viewer:
-OPENMU_API_KEY_ROLES=Operator
-```
-
-Generate one with something which is actually random, e.g.
-`openssl rand -base64 24`. Configured keys shorter than 32 characters are
-refused and logged, because a key travels with every request and is only as good
-as its entropy.
-
-Configured keys can't be managed or disabled in the panel — they live outside of
-the database, exactly like the bootstrap user. Prefer created keys, and use
-configured ones only where you need them.
 
 :::warning[The key is a password]
 It is sent in plain text with every request, so use HTTPS, and keep it out of

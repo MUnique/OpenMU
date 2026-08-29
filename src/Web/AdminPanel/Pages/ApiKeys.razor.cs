@@ -5,16 +5,23 @@
 namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using MUnique.OpenMU.Persistence.AdminAuth;
+using MUnique.OpenMU.Web.AdminPanel.Properties;
 using MUnique.OpenMU.Web.AdminPanel.Services;
+using MUnique.OpenMU.Web.Shared.Components.Toast;
 
 /// <summary>
 /// The page which manages the API keys of the public API.
 /// </summary>
-public partial class ApiKeys
+public partial class ApiKeys : IAsyncDisposable
 {
+    private const string ClipboardScriptPath = "./_content/MUnique.OpenMU.Web.AdminPanel/js/clipboard.js";
+
     private IList<ApiKey> _apiKeys = new List<ApiKey>();
     private bool _isLoading = true;
+    private ElementReference _createdKeyInput;
+    private IJSObjectReference? _clipboardModule;
 
     /// <summary>
     /// The key which has just been created. It's the only moment at which it's available, because
@@ -24,6 +31,31 @@ public partial class ApiKeys
 
     [Inject]
     private ApiKeyManagementService ApiKeyManagementService { get; set; } = null!;
+
+    [Inject]
+    private IToastService ToastService { get; set; } = null!;
+
+    [Inject]
+    private IJSRuntime JsRuntime { get; set; } = null!;
+
+    /// <inheritdoc />
+    public async ValueTask DisposeAsync()
+    {
+        if (this._clipboardModule is { } module)
+        {
+            this._clipboardModule = null;
+            try
+            {
+                await module.DisposeAsync().ConfigureAwait(false);
+            }
+            catch (JSDisconnectedException)
+            {
+                // The circuit is already gone - nothing to clean up on the client anymore.
+            }
+        }
+
+        GC.SuppressFinalize(this);
+    }
 
     /// <inheritdoc />
     protected override async Task OnInitializedAsync()
@@ -55,6 +87,9 @@ public partial class ApiKeys
 
         this._createdKey = createdKey;
         await this.ReloadAsync().ConfigureAwait(true);
+
+        // The key is gone from the server after this render, so put it in front of the user.
+        await this.FocusCreatedKeyAsync().ConfigureAwait(true);
     }
 
     private async Task OnSetDisabledAsync(ApiKey apiKey, bool isDisabled)
@@ -71,14 +106,49 @@ public partial class ApiKeys
         }
     }
 
-    private async Task OnRoleChangedAsync(ApiKey apiKey, string? role)
+    private async Task CopyCreatedKeyAsync()
     {
-        if (string.IsNullOrEmpty(role) || role == apiKey.Roles)
+        if (this._createdKey is not { Length: > 0 } createdKey)
         {
             return;
         }
 
-        await this.ApiKeyManagementService.SetRoleAsync(apiKey, role).ConfigureAwait(true);
-        await this.ReloadAsync().ConfigureAwait(true);
+        var module = await this.GetClipboardModuleAsync().ConfigureAwait(true);
+        var isCopied = await module.InvokeAsync<bool>("copyText", createdKey).ConfigureAwait(true);
+        if (isCopied)
+        {
+            this.ToastService.ShowSuccess(Resources.CopiedToClipboard);
+        }
+        else
+        {
+            // Copying is refused without a secure context, so the user selects it instead.
+            this.ToastService.ShowError(Resources.CopyToClipboardFailed);
+            await this.SelectCreatedKeyAsync().ConfigureAwait(true);
+        }
+    }
+
+    private async Task FocusCreatedKeyAsync()
+    {
+        try
+        {
+            await this._createdKeyInput.FocusAsync().ConfigureAwait(true);
+        }
+        catch (JSException)
+        {
+            // The element isn't there - not worth failing the creation for.
+        }
+    }
+
+    private async Task SelectCreatedKeyAsync()
+    {
+        var module = await this.GetClipboardModuleAsync().ConfigureAwait(true);
+        await module.InvokeVoidAsync("selectElementText", this._createdKeyInput).ConfigureAwait(true);
+    }
+
+    private async ValueTask<IJSObjectReference> GetClipboardModuleAsync()
+    {
+        return this._clipboardModule ??= await this.JsRuntime
+            .InvokeAsync<IJSObjectReference>("import", ClipboardScriptPath)
+            .ConfigureAwait(true);
     }
 }

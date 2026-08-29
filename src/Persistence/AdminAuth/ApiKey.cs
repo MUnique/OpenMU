@@ -56,15 +56,6 @@ public class ApiKey
     /// </summary>
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-    /// <summary>
-    /// Gets or sets the date and time at which this key has been used the last time.
-    /// </summary>
-    /// <remarks>
-    /// It's only updated at most once per minute, so a busy client doesn't cause a database write
-    /// on every request. It's meant to tell an unused key from a used one, not to be an audit log.
-    /// </remarks>
-    public DateTime? LastUsedAt { get; set; }
-
     /// <inheritdoc />
     public override string ToString() => this.Name;
 }

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations.AdminPanel
 {
     [DbContext(typeof(AdminPanelContext))]
-    [Migration("20260826050827_AddApiKeys")]
+    [Migration("20260829110159_AddApiKeys")]
     partial class AddApiKeys
     {
         /// <inheritdoc />
@@ -111,9 +111,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations.AdminPanel
                         .IsRequired()
                         .HasMaxLength(16)
                         .HasColumnType("character varying(16)");
-
-                    b.Property<DateTime?>("LastUsedAt")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
                         .IsRequired()

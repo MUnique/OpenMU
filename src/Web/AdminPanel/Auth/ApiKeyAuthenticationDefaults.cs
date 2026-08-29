@@ -45,7 +45,7 @@ public static class ApiKeyAuthenticationDefaults
     public const string ApiSchemes = CookieAuthenticationDefaults.AuthenticationScheme + "," + AuthenticationScheme;
 
     /// <summary>
-    /// The minimum length of a configured API key.
+    /// The minimum length of an API key.
     /// </summary>
     /// <remarks>
     /// The key is a bearer credential which is sent with every request, so it has to have enough

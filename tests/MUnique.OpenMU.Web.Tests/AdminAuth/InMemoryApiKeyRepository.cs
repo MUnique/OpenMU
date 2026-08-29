@@ -14,11 +14,6 @@ public class InMemoryApiKeyRepository : IApiKeyRepository
 {
     private readonly List<ApiKey> _apiKeys = new();
 
-    /// <summary>
-    /// Gets the number of calls to <see cref="TouchAsync"/>.
-    /// </summary>
-    public int TouchCount { get; private set; }
-
     /// <inheritdoc />
     public ValueTask<bool> EnsureStorageAsync(CancellationToken cancellationToken = default) => ValueTask.FromResult(true);
 
@@ -39,18 +34,6 @@ public class InMemoryApiKeyRepository : IApiKeyRepository
 
     /// <inheritdoc />
     public ValueTask UpdateAsync(ApiKey apiKey, CancellationToken cancellationToken = default) => ValueTask.CompletedTask;
-
-    /// <inheritdoc />
-    public ValueTask TouchAsync(Guid id, DateTime lastUsedAt, CancellationToken cancellationToken = default)
-    {
-        this.TouchCount++;
-        if (this._apiKeys.FirstOrDefault(k => k.Id == id) is { } apiKey)
-        {
-            apiKey.LastUsedAt = lastUsedAt;
-        }
-
-        return ValueTask.CompletedTask;
-    }
 
     /// <inheritdoc />
     public ValueTask DeleteAsync(ApiKey apiKey, CancellationToken cancellationToken = default)

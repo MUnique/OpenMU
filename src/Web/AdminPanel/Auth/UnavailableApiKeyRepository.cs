@@ -37,8 +37,6 @@ public class UnavailableApiKeyRepository : IApiKeyRepository
     public ValueTask UpdateAsync(ApiKey apiKey, CancellationToken cancellationToken = default) => throw new InvalidOperationException(NotAvailableMessage);
 
     /// <inheritdoc />
-    public ValueTask TouchAsync(Guid id, DateTime lastUsedAt, CancellationToken cancellationToken = default) => ValueTask.CompletedTask;
-
     /// <inheritdoc />
     public ValueTask DeleteAsync(ApiKey apiKey, CancellationToken cancellationToken = default) => throw new InvalidOperationException(NotAvailableMessage);
 }

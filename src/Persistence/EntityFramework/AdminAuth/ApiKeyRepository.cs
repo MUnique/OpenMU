@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.AdminAuth;
 
 using System.Threading;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Persistence.AdminAuth;
 
 /// <summary>
@@ -16,17 +15,14 @@ using MUnique.OpenMU.Persistence.AdminAuth;
 public class ApiKeyRepository : IApiKeyRepository
 {
     private readonly IAdminUserRepository _adminUserRepository;
-    private readonly ILogger<ApiKeyRepository> _logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ApiKeyRepository"/> class.
     /// </summary>
     /// <param name="adminUserRepository">The repository of the admin users, which owns the migration of the shared context.</param>
-    /// <param name="logger">The logger.</param>
-    public ApiKeyRepository(IAdminUserRepository adminUserRepository, ILogger<ApiKeyRepository> logger)
+    public ApiKeyRepository(IAdminUserRepository adminUserRepository)
     {
         this._adminUserRepository = adminUserRepository;
-        this._logger = logger;
     }
 
     /// <inheritdoc />
@@ -86,29 +82,6 @@ public class ApiKeyRepository : IApiKeyRepository
         await using var context = new AdminPanelContext();
         context.ApiKeys.Update(apiKey);
         await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-    }
-
-    /// <inheritdoc />
-    public async ValueTask TouchAsync(Guid id, DateTime lastUsedAt, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            if (!await this.EnsureStorageAsync(cancellationToken).ConfigureAwait(false))
-            {
-                return;
-            }
-
-            await using var context = new AdminPanelContext();
-            await context.ApiKeys
-                .Where(k => k.Id == id)
-                .ExecuteUpdateAsync(setters => setters.SetProperty(k => k.LastUsedAt, lastUsedAt), cancellationToken)
-                .ConfigureAwait(false);
-        }
-        catch (Exception ex)
-        {
-            // This is only a convenience for the admin panel, so it must never fail an API request.
-            this._logger.LogDebug(ex, "Could not update the last usage of the API key {ApiKeyId}.", id);
-        }
     }
 
     /// <inheritdoc />

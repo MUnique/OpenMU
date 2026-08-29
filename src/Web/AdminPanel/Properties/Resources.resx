@@ -867,13 +867,19 @@
   <data name="NoApiKeys" xml:space="preserve">
     <value>No API key has been created yet.</value>
   </data>
-  <data name="LastUsed" xml:space="preserve">
-    <value>Last used</value>
-  </data>
   <data name="Enable" xml:space="preserve">
     <value>Enable</value>
   </data>
   <data name="Disable" xml:space="preserve">
     <value>Disable</value>
+  </data>
+  <data name="CopyToClipboard" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="CopiedToClipboard" xml:space="preserve">
+    <value>The API key has been copied to the clipboard.</value>
+  </data>
+  <data name="CopyToClipboardFailed" xml:space="preserve">
+    <value>The API key could not be copied. Please select and copy it by hand.</value>
   </data>
 </root>
