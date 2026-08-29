@@ -9,11 +9,17 @@ using System.IO.Compression;
 using System.Text.Json;
 using System.Threading;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
+using MUnique.OpenMU.Persistence.EntityFramework.AdminAuth;
 using Npgsql;
 
 /// <summary>
 /// Implementation of the <see cref="IDatabaseSnapshotService"/> which uses the COPY command of postgres.
 /// Each table is written into its own entry of a zip archive, in the binary format of postgres.
+/// The archive also contains a manifest with the applied database migrations, so that a snapshot of
+/// an older server can be restored: its schema is created first, and the migrations which came
+/// afterwards are applied to the restored data.
 /// </summary>
 public class DatabaseSnapshotService : IDatabaseSnapshotService
 {
@@ -25,7 +31,7 @@ public class DatabaseSnapshotService : IDatabaseSnapshotService
     /// <summary>
     /// The version of the snapshot format. It's increased when the layout of the archive changes.
     /// </summary>
-    private const int CurrentFormatVersion = 1;
+    private const int CurrentFormatVersion = 2;
 
     private const string TableEntryExtension = ".bin";
 
@@ -48,7 +54,8 @@ public class DatabaseSnapshotService : IDatabaseSnapshotService
         var manifest = new SnapshotManifest(
             CurrentFormatVersion,
             DateTime.UtcNow,
-            await GetAppliedMigrationsAsync(connection, cancellationToken).ConfigureAwait(false),
+            await GetAppliedMigrationsAsync<EntityDataContext>(cancellationToken).ConfigureAwait(false),
+            await GetAppliedMigrationsAsync<AdminPanelContext>(cancellationToken).ConfigureAwait(false),
             tables.Select(table => table.ToString()).ToArray());
 
         var manifestEntry = archive.CreateEntry(ManifestEntryName);
@@ -86,15 +93,8 @@ public class DatabaseSnapshotService : IDatabaseSnapshotService
                 return $"The snapshot was created in format version {manifest.FormatVersion}, but this server expects version {CurrentFormatVersion}.";
             }
 
-            await using var connection = await CreateConnectionAsync(cancellationToken).ConfigureAwait(false);
-            var currentMigrations = await GetAppliedMigrationsAsync(connection, cancellationToken).ConfigureAwait(false);
-            if (!currentMigrations.SequenceEqual(manifest.Migrations))
-            {
-                return "The snapshot was created with another database schema than the one of this server. "
-                       + "Please use the data backup (json) to transfer data between different versions.";
-            }
-
-            return null;
+            return GetIncompatibilityReason<EntityDataContext>(manifest.Migrations, "game database")
+                   ?? GetIncompatibilityReason<AdminPanelContext>(manifest.AdminPanelMigrations, "admin panel database");
         }
         catch (InvalidDataException)
         {
@@ -113,13 +113,26 @@ public class DatabaseSnapshotService : IDatabaseSnapshotService
         var manifest = await ReadManifestAsync(archive, cancellationToken).ConfigureAwait(false)
                        ?? throw new ArgumentException($"The archive doesn't contain a {ManifestEntryName}, so it's no database snapshot.", nameof(inputStream));
 
+        if ((GetIncompatibilityReason<EntityDataContext>(manifest.Migrations, "game database")
+             ?? GetIncompatibilityReason<AdminPanelContext>(manifest.AdminPanelMigrations, "admin panel database")) is { } incompatibility)
+        {
+            throw new InvalidOperationException(incompatibility);
+        }
+
+        // The data of the snapshot fits to the database schema of the moment when it was created,
+        // so we build exactly that schema first. Afterwards, the migrations which came later are
+        // applied to the restored data, like it would happen for a running server.
+        await DeleteDatabaseAsync(cancellationToken).ConfigureAwait(false);
+        await MigrateToSnapshotStateAsync<EntityDataContext>(manifest.Migrations, cancellationToken).ConfigureAwait(false);
+        await MigrateToSnapshotStateAsync<AdminPanelContext>(manifest.AdminPanelMigrations, cancellationToken).ConfigureAwait(false);
+
         await using var connection = await CreateConnectionAsync(cancellationToken).ConfigureAwait(false);
         var existingTables = (await GetTableNamesAsync(connection, cancellationToken).ConfigureAwait(false))
             .Select(table => table.ToString())
             .ToHashSet(StringComparer.Ordinal);
         if (manifest.Tables.FirstOrDefault(table => !existingTables.Contains(table)) is { } missingTable)
         {
-            throw new InvalidOperationException($"The table '{missingTable}' of the snapshot doesn't exist in this database. The snapshot can't be restored.");
+            throw new InvalidOperationException($"The table '{missingTable}' of the snapshot doesn't exist in the created database. The snapshot can't be restored.");
         }
 
         await using var transaction = await connection.BeginTransactionAsync(cancellationToken).ConfigureAwait(false);
@@ -145,6 +158,95 @@ public class DatabaseSnapshotService : IDatabaseSnapshotService
         }
 
         await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
+        await connection.CloseAsync().ConfigureAwait(false);
+
+        // Bring the restored data to the current state of this server.
+        await MigrateToAsync<EntityDataContext>(null, cancellationToken).ConfigureAwait(false);
+        await MigrateToAsync<AdminPanelContext>(null, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Determines why a snapshot with the given migrations can't be restored by this server.
+    /// The snapshot may be older than this server - the migrations which came later are applied
+    /// to the restored data then. It can't be newer, because we don't know its schema.
+    /// </summary>
+    /// <typeparam name="TContext">The type of the database context.</typeparam>
+    /// <param name="snapshotMigrations">The migrations which were applied when the snapshot was created.</param>
+    /// <param name="databaseName">The name of the database, for the message.</param>
+    /// <returns>The reason why it can't be restored; <c>null</c>, if it can be restored.</returns>
+    private static string? GetIncompatibilityReason<TContext>(string[] snapshotMigrations, string databaseName)
+        where TContext : DbContext, new()
+    {
+        using var context = new TContext();
+        var knownMigrations = context.Database.GetMigrations().ToHashSet(StringComparer.Ordinal);
+        var unknownMigrations = snapshotMigrations.Where(migration => !knownMigrations.Contains(migration)).ToList();
+        if (unknownMigrations.Count > 0)
+        {
+            return $"The snapshot of the {databaseName} was created by a newer or different version of the server: "
+                   + $"it contains the unknown database migration '{unknownMigrations[0]}'. "
+                   + "Please use the data backup (json) to transfer the data.";
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Creates the database schema of the moment when the snapshot was created.
+    /// </summary>
+    /// <typeparam name="TContext">The type of the database context.</typeparam>
+    /// <param name="snapshotMigrations">The migrations which were applied when the snapshot was created.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    private static async Task MigrateToSnapshotStateAsync<TContext>(string[] snapshotMigrations, CancellationToken cancellationToken)
+        where TContext : DbContext, new()
+    {
+        if (snapshotMigrations.Length == 0)
+        {
+            // This database didn't exist when the snapshot was created; it's created below, when
+            // the remaining migrations are applied.
+            return;
+        }
+
+        await using var context = new TContext();
+
+        // The migrations are applied in the order of their identifier. When a migration was added
+        // later with an earlier identifier - which happens when branches are merged - it's applied
+        // here, too. That's not a problem as long as it doesn't change a table of the snapshot;
+        // otherwise the copy of that table fails, and the restore is rolled back.
+        var target = context.Database.GetMigrations().Last(snapshotMigrations.Contains);
+        await MigrateToAsync<TContext>(target, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Migrates the schema of the given context to the given migration.
+    /// </summary>
+    /// <typeparam name="TContext">The type of the database context.</typeparam>
+    /// <param name="targetMigration">The migration which should be the last applied one; <c>null</c>, to apply all of them.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    private static async Task MigrateToAsync<TContext>(string? targetMigration, CancellationToken cancellationToken)
+        where TContext : DbContext, new()
+    {
+        await using var context = new TContext();
+        if (targetMigration is null && !context.Database.GetMigrations().Any())
+        {
+            return;
+        }
+
+        await context.Database.GetService<IMigrator>()
+            .MigrateAsync(targetMigration, cancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    private static async Task DeleteDatabaseAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            await using var context = new EntityDataContext();
+            await context.Database.EnsureDeletedAsync(cancellationToken).ConfigureAwait(false);
+        }
+        catch (NpgsqlException)
+        {
+            // That's expected when there is no database yet.
+        }
     }
 
     private static async Task<NpgsqlConnection> CreateConnectionAsync(CancellationToken cancellationToken)
@@ -208,38 +310,23 @@ public class DatabaseSnapshotService : IDatabaseSnapshotService
         return result;
     }
 
-    private static async ValueTask<string[]> GetAppliedMigrationsAsync(NpgsqlConnection connection, CancellationToken cancellationToken)
+    private static async ValueTask<string[]> GetAppliedMigrationsAsync<TContext>(CancellationToken cancellationToken)
+        where TContext : DbContext, new()
     {
-        await using var command = connection.CreateCommand();
-        command.CommandText = """
-            SELECT table_schema
-            FROM information_schema.tables
-            WHERE table_name = '__EFMigrationsHistory'
-            ORDER BY table_schema
-            """;
-        var historySchemas = new System.Collections.Generic.List<string>();
-        await using (var reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false))
+        try
         {
-            while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
-            {
-                historySchemas.Add(reader.GetString(0));
-            }
-        }
+            await using var context = new TContext();
+            var applied = await context.Database.GetAppliedMigrationsAsync(cancellationToken).ConfigureAwait(false);
 
-        var migrations = new System.Collections.Generic.List<string>();
-        foreach (var schema in historySchemas)
+            // We keep the order in which they are defined, so that we can determine the last one.
+            var knownMigrations = context.Database.GetMigrations().ToList();
+            return knownMigrations.Where(applied.Contains).ToArray();
+        }
+        catch (PostgresException)
         {
-            await using var migrationCommand = connection.CreateCommand();
-            migrationCommand.CommandText = $"""SELECT "MigrationId" FROM "{schema.Replace("\"", "\"\"", StringComparison.Ordinal)}"."__EFMigrationsHistory" """;
-            await using var migrationReader = await migrationCommand.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
-            while (await migrationReader.ReadAsync(cancellationToken).ConfigureAwait(false))
-            {
-                migrations.Add($"{schema}.{migrationReader.GetString(0)}");
-            }
+            // The database of this context doesn't exist yet.
+            return [];
         }
-
-        migrations.Sort(StringComparer.Ordinal);
-        return migrations.ToArray();
     }
 
     /// <summary>
@@ -247,9 +334,10 @@ public class DatabaseSnapshotService : IDatabaseSnapshotService
     /// </summary>
     /// <param name="FormatVersion">The version of the snapshot format.</param>
     /// <param name="CreatedAt">The point in time when the snapshot was created.</param>
-    /// <param name="Migrations">The database migrations which were applied when the snapshot was created.</param>
+    /// <param name="Migrations">The migrations of the game database which were applied when the snapshot was created.</param>
+    /// <param name="AdminPanelMigrations">The migrations of the admin panel database which were applied when the snapshot was created.</param>
     /// <param name="Tables">The names of the tables which are contained in the snapshot.</param>
-    private sealed record SnapshotManifest(int FormatVersion, DateTime CreatedAt, string[] Migrations, string[] Tables);
+    private sealed record SnapshotManifest(int FormatVersion, DateTime CreatedAt, string[] Migrations, string[] AdminPanelMigrations, string[] Tables);
 
     /// <summary>
     /// The name of a table of the database.

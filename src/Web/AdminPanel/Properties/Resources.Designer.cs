@@ -2250,7 +2250,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A snapshot contains all data of the database and is created and restored a lot faster. It can only be restored into a server with the same database schema - use the backup above to transfer data between different versions..
+        ///   Looks up a localized string similar to A snapshot contains all data of the database and is created and restored a lot faster. It can be restored by this or a newer version of the server, which applies its database updates to the restored data. To transfer data to an older version, use the backup above..
         /// </summary>
         public static string DatabaseSnapshotDescription {
             get {

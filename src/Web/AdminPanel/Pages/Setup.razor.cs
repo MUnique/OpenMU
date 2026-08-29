@@ -121,7 +121,7 @@ public partial class Setup
                 return;
             }
 
-            await this.SetupService.CreateDatabaseAsync(() => snapshotService.RestoreSnapshotAsync(memoryStream)).ConfigureAwait(false);
+            await this.SetupService.RestoreDatabaseAsync(() => snapshotService.RestoreSnapshotAsync(memoryStream)).ConfigureAwait(false);
             this._importMessage = Resources.BackupImportSucceeded;
             this._importMessageCssClass = "text-success";
         }

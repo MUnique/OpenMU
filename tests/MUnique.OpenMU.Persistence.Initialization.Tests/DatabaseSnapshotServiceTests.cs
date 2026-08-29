@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence.Initialization.Tests;
 
 using System.IO;
+using System.IO.Compression;
 using Microsoft.Extensions.Logging.Abstractions;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
@@ -48,11 +49,48 @@ internal class DatabaseSnapshotServiceTests
         Assert.That(await snapshotService.GetRestoreBlockingReasonAsync(snapshot).ConfigureAwait(false), Is.Null);
         Assert.That(snapshot.Position, Is.Zero, "The stream position should be restored after the check.");
 
-        await ReCreateDatabaseAsync().ConfigureAwait(false);
+        // The restore re-creates the database on its own.
         await snapshotService.RestoreSnapshotAsync(snapshot).ConfigureAwait(false);
 
         var actual = await GetCountsAsync(new PersistenceContextProvider(new NullLoggerFactory(), null)).ConfigureAwait(false);
         Assert.That(actual, Is.EqualTo(expected));
+    }
+
+    /// <summary>
+    /// Tests if a snapshot of a newer server is rejected - we don't know how to create its schema.
+    /// </summary>
+    [Test]
+    [Ignore("This is not a real test which should run automatically. It requires a database.")]
+    public async Task SnapshotOfNewerServerIsRejectedAsync()
+    {
+        await ReCreateDatabaseAsync().ConfigureAwait(false);
+        var snapshotService = new DatabaseSnapshotService();
+        using var snapshot = new MemoryStream();
+        await snapshotService.CreateSnapshotAsync(snapshot).ConfigureAwait(false);
+
+        // Pretend that the snapshot was created by a server which has one more migration:
+        snapshot.Position = 0;
+        using (var archive = new ZipArchive(snapshot, ZipArchiveMode.Update, leaveOpen: true))
+        {
+            var manifestEntry = archive.GetEntry("manifest.json")!;
+            string manifest;
+            await using (var readStream = manifestEntry.Open())
+            {
+                using var reader = new StreamReader(readStream);
+                manifest = await reader.ReadToEndAsync().ConfigureAwait(false);
+            }
+
+            manifest = manifest.Replace("\"Migrations\":[", "\"Migrations\":[\"99999999999999_FromTheFuture\",", StringComparison.Ordinal);
+            manifestEntry.Delete();
+            var newEntry = archive.CreateEntry("manifest.json");
+            await using var writeStream = newEntry.Open();
+            await using var writer = new StreamWriter(writeStream);
+            await writer.WriteAsync(manifest).ConfigureAwait(false);
+        }
+
+        snapshot.Position = 0;
+        var reason = await snapshotService.GetRestoreBlockingReasonAsync(snapshot).ConfigureAwait(false);
+        Assert.That(reason, Does.Contain("99999999999999_FromTheFuture"));
     }
 
     /// <summary>

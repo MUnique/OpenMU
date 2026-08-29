@@ -127,6 +127,28 @@ public class SetupService
     }
 
     /// <summary>
+    /// Restores the database with the given action, which is responsible for creating the database
+    /// and filling it with data. In contrast to <see cref="CreateDatabaseAsync"/>, the database is
+    /// not created before - a snapshot brings its own schema.
+    /// </summary>
+    /// <param name="restore">The action which restores the database.</param>
+    public async Task RestoreDatabaseAsync(Func<Task> restore)
+    {
+        if (this.DatabaseInitializing is { } initializingHandler)
+        {
+            await initializingHandler.Invoke().ConfigureAwait(false);
+        }
+
+        await restore().ConfigureAwait(false);
+        this._contextProvider.ResetCache();
+
+        if (this.DatabaseInitialized is { } eventHandler)
+        {
+            await eventHandler.Invoke().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
     /// Creates the database.
     /// </summary>
     /// <param name="dataInitialization">The data initialization action.</param>
