@@ -340,7 +340,7 @@ public static class MapsterConfigurator
             .Include<ConstValueAttribute, BasicModel.ConstValueAttribute>();
 
         Mapster.TypeAdapterConfig.GlobalSettings.ForType<MUnique.OpenMU.AttributeSystem.ConstValueAttribute, BasicModel.ConstValueAttribute>()
-            .ConstructUsing(source => new BasicModel.ConstValueAttribute(source.Value, source.Definition));
+            .ConstructUsing(source => new BasicModel.ConstValueAttribute(source.Value, source.Definition, source.AggregateType));
 
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.AttributeSystem.AttributeRelationship, MUnique.OpenMU.AttributeSystem.AttributeRelationship>()
             .Include<AttributeRelationship, BasicModel.AttributeRelationship>();

@@ -12,6 +12,7 @@ using Microsoft.Extensions.Hosting;
 using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.Network.Analyzer;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.AdminAuth;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
@@ -89,6 +90,11 @@ public static class WebApplicationExtensions
         services.AddScoped<IDataService<ChatCommandViewItem>>(serviceProvider => serviceProvider.GetService<ChatCommandController>()!);
         services.AddScoped<AdminUserManagementService>();
         services.AddScoped<IChangeNotificationService, ChangeNotificationService>();
+
+        // The analyzers are only created when the network analyzer page is actually used,
+        // which requires an IPacketCaptureService - that's only registered in the all-in-one
+        // deployment.
+        services.AddSingleton<PacketAnalyzerProvider>();
         services.AddScoped<NavigationHistory>();
         services.AddScoped<LoggedInAccountService>();
         services.AddScoped<LoadingOverlayService>();

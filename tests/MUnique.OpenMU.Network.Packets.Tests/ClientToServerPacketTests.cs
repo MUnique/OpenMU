@@ -1,4 +1,4 @@
-// <copyright file="ClientToServerPacketTests.cs" company="MUnique">
+﻿// <copyright file="ClientToServerPacketTests.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -2821,12 +2821,12 @@ public class PacketStructureTests
         // Fixed-length packet validation
         const int expectedLength = 12;
         var actualLength = RemoveAllianceGuildRequestRef.Length;
-
-        Assert.That(actualLength, Is.EqualTo(expectedLength),
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
             "Packet length mismatch: declared length does not match calculated size");
-
+        
         // Validate field 'GuildName' boundary
-        Assert.That(4 + 8, Is.LessThanOrEqualTo(expectedLength),
+        Assert.That(4 + 8, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'GuildName' exceeds packet boundary");
     }
 

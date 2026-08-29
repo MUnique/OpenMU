@@ -529,4 +529,19 @@ public enum UpdateVersion
     /// The version of the <see cref="ConfigureCastleSiegeParticipationUpdatePlugIn"/>.
     /// </summary>
     ConfigureCastleSiegeParticipation = 104,
+
+    /// <summary>
+    /// The version of the <see cref="RegenerationsRefactorPlugIn075"/>.
+    /// </summary>
+    RegenerationsRefactor075 = 105,
+
+    /// <summary>
+    /// The version of the <see cref="RegenerationsRefactorPlugIn095D"/>.
+    /// </summary>
+    RegenerationsRefactor095d = 106,
+
+    /// <summary>
+    /// The version of the <see cref="RegenerationsRefactorPlugInSeason6"/>.
+    /// </summary>
+    RegenerationsRefactorSeason6 = 107,
 }

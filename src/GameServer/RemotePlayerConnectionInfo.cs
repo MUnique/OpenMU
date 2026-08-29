@@ -1,4 +1,4 @@
-// <copyright file="RemotePlayerConnectionInfo.cs" company="MUnique">
+﻿// <copyright file="RemotePlayerConnectionInfo.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -25,11 +25,13 @@ internal sealed class RemotePlayerConnectionInfo : ICapturedConnectionInfo
     /// <param name="player">The player.</param>
     /// <param name="connection">The connection of the player.</param>
     /// <param name="serverId">The identifier of the game server.</param>
-    public RemotePlayerConnectionInfo(RemotePlayer player, IConnection connection, int serverId)
+    /// <param name="serverDescription">The description of the game server.</param>
+    public RemotePlayerConnectionInfo(RemotePlayer player, IConnection connection, int serverId, string serverDescription)
     {
         this._player = player;
         this._connection = connection;
         this.ServerId = serverId;
+        this.ServerDescription = serverDescription;
     }
 
     /// <inheritdoc />
@@ -40,6 +42,9 @@ internal sealed class RemotePlayerConnectionInfo : ICapturedConnectionInfo
 
     /// <inheritdoc />
     public int ServerId { get; }
+
+    /// <inheritdoc />
+    public string ServerDescription { get; }
 
     /// <inheritdoc />
     public string? AccountName => this._player.Account?.LoginName;

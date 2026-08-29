@@ -1,0 +1,86 @@
+﻿@page "/network-analyzer"
+@page "/network-analyzer/{ConnectionId:guid}"
+
+@using MUnique.OpenMU.Network.Analyzer
+@using MUnique.OpenMU.Web.AdminPanel.Components.NetworkAnalyzer
+@using MUnique.OpenMU.Web.AdminPanel.Properties
+
+<PageTitle>OpenMU: @Resources.NetworkAnalyzer</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="@Resources.NetworkAnalyzer"/>
+<h1>@Resources.NetworkAnalyzer</h1>
+
+@if (this.CaptureService is null)
+{
+    <div class="alert alert-info">@Resources.NetworkAnalyzerNotAvailable</div>
+}
+else
+{
+  <div class="container">
+    <div class="row g-2 network-analyzer">
+      <div class="@(this._isSidebarCollapsed ? "col-auto" : "col-2")">
+        <button type="button" class="btn btn-outline-secondary btn-sm mb-2 w-100"
+                title="@Resources.Connections" @onclick="() => this._isSidebarCollapsed = !this._isSidebarCollapsed">
+          <span class="oi @(this._isSidebarCollapsed ? "oi-chevron-right" : "oi-chevron-left")" aria-hidden="true"></span>
+          @if (!this._isSidebarCollapsed)
+          {
+            <span>@Resources.Connections</span>
+          }
+        </button>
+        @if (!this._isSidebarCollapsed)
+        {
+          <ConnectionList Connections="@this._connections"
+                          SelectedConnectionId="@this._selectedConnection?.Id"
+                          OnSelect="this.OnConnectionSelectedAsync"
+                          OnDisconnect="this.OnDisconnectAsync"
+                          OnRefresh="this.RefreshConnectionsAsync"/>
+        }
+      </div>
+      
+            <div class="@TableColClass">
+        @if (this._capture is null)
+        {
+          <p class="text-muted"><em>@Resources.SelectAConnection</em></p>
+        }
+        else
+        {
+          <div class="card mb-2">
+            <div class="card-body py-2">
+              <div class="d-flex flex-wrap gap-2 align-items-center">
+                <strong>@this._capture.ConnectionInfo.DisplayName</strong>
+                <span class="badge text-bg-secondary">@this._capture.ConnectionInfo.RemoteEndPoint</span>
+                <span class="badge text-bg-light">@this._capture.ConnectionInfo.ClientVersion</span>
+
+                <div class="ms-auto d-flex gap-2 align-items-center">
+                  <input type="text" class="form-control form-control-sm" style="width: 14rem"
+                         placeholder="@Resources.FilterPackets" value="@this._packetFilter"
+                         @oninput="e => this.OnPacketFilterChanged(e.Value?.ToString())"/>
+                  <select class="form-select form-select-sm w-auto" @bind="this._directionFilter" @bind:after="this.OnDirectionFilterChanged">
+                    <option value="@DirectionFilter.All">@Resources.All</option>
+                    <option value="@DirectionFilter.ToServer">@Resources.ToServer</option>
+                    <option value="@DirectionFilter.ToClient">@Resources.ToClient</option>
+                  </select>
+                  <button type="button" title="@Resources.FollowNewPacketsHint"
+                          class="btn btn-sm @(this._isFollowing ? "btn-secondary" : "btn-outline-secondary")"
+                          @onclick="this.ToggleFollowing">
+                    <span class="oi oi-eye" aria-hidden="true"></span> @Resources.FollowNewPackets
+                  </button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="this.OnClearAsync">
+                    <span class="oi oi-trash" aria-hidden="true"></span> @Resources.ClearPackets
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <PacketGrid Packets="@this._filteredPackets"
+                      AutoScroll="@this._isFollowing"
+                      Analyzer="@this._analyzer"
+                      ClientVersion="@this._capture.ConnectionInfo.ClientVersion"
+                      SelectedPacket="@this._selectedPacket"
+                      OnSelect="packet => this._selectedPacket = packet"
+                      OnAtBottomChanged="this.OnAtBottomChanged"/>
+        }
+      </div>
+    </div>
+  </div>
+}

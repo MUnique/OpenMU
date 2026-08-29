@@ -43,7 +43,9 @@ internal partial class CharacterClassInitialization
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.CurrentMana, 20, false));
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.CurrentAbility, 1, false));
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.IsInSafezone, 1, false));
+        result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.IsResting, 0, false));
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.Resets, 0, false));
+        result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.NearbyPartyMemberCount, 0, false));
 
         this.AddCommonAttributeRelationships(result.AttributeCombinations);
         this.AddDoubleWieldAttributeRelationships(result.AttributeCombinations);

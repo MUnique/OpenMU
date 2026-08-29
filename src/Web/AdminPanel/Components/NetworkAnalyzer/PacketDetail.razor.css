@@ -1,0 +1,17 @@
+.packet-detail {
+    /* The detail is shown inside the row of its packet, so its height is limited to keep the
+       rows of the grid readable. */
+    margin-top: 0.25rem;
+    max-width: 60rem;
+    white-space: normal;
+}
+
+.packet-raw-data,
+.packet-extracted-info {
+    max-height: 12rem;
+    overflow: auto;
+    background-color: var(--bs-secondary-bg);
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    margin-bottom: 0.5rem;
+}

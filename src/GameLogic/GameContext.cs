@@ -363,7 +363,21 @@ public class GameContext : AsyncDisposable, IGameContext
             this.PlayersByCharacterName.TryRemove(player.SelectedCharacter.Name, out _);
         }
 
-        player.CurrentMap?.RemoveAsync(player);
+        if (player.CurrentMap is { } currentMap)
+        {
+            // Awaited and guarded: discarding the ValueTask left the removal running in the
+            // background - racing the player's own disposal on the dispose-without-disconnect
+            // paths - with any exception lost, while this method has to stay exception-free for
+            // the teardown paths which call it right before the dispose.
+            try
+            {
+                await currentMap.RemoveAsync(player).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                player.Logger.LogError(ex, "Error while removing player {Player} from its map.", player);
+            }
+        }
 
         player.PlayerDisconnected -= this.RemovePlayerAsync;
         player.PlayerEnteredWorld -= this.PlayerEnteredWorldAsync;

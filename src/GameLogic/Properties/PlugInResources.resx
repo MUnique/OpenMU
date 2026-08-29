@@ -177,6 +177,12 @@
   <data name="SelfDefensePlugIn_Description" xml:space="preserve">
     <value>Updates the state of the self defense system.</value>
   </data>
+  <data name="ShieldRecoveryHiatusPlugIn_Name" xml:space="preserve">
+    <value>Shield Recovery Hiatus</value>
+  </data>
+  <data name="ShieldRecoveryHiatusPlugIn_Description" xml:space="preserve">
+    <value>Updates and resets the shield recovery hiatus attribute.</value>
+  </data>
   <data name="ShowMessageToAllWhenPlayerEnteredWorldPlugIn_Name" xml:space="preserve">
     <value>Show Message To All When Player Entered World</value>
   </data>

@@ -1,0 +1,57 @@
+@using MUnique.OpenMU.Interfaces
+@using MUnique.OpenMU.Network.Analyzer
+@using MUnique.OpenMU.Web.AdminPanel.Properties
+
+<div class="d-flex flex-column h-100">
+    <div class="input-group input-group-sm mb-2">
+        <span class="input-group-text"><span class="oi oi-magnifying-glass" aria-hidden="true"></span></span>
+        <input type="text" class="form-control" placeholder="@Resources.Search" value="@this.SearchTerm"
+               @oninput="e => this.OnSearchChanged(e.Value?.ToString())"/>
+        <button type="button" class="btn btn-outline-secondary" title="@Resources.Refresh" @onclick="this.OnRefresh">
+            <span class="oi oi-reload" aria-hidden="true"></span>
+        </button>
+    </div>
+
+    @if (!this.FilteredGroups.Any())
+    {
+        <p class="text-muted"><em>@Resources.NoConnectionsFound</em></p>
+    }
+    else
+    {
+        <div class="accordion accordion-flush overflow-auto">
+            @foreach (var group in this.FilteredGroups)
+            {
+                var groupId = $"connection-group-{group.Key.ServerType}-{group.Key.ServerId}";
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button @(this.IsCollapsed(group.Key) ? "collapsed" : string.Empty) py-2"
+                                type="button" @onclick="() => this.ToggleGroup(group.Key)">
+                            @group.First().ServerDescription
+                            <span class="badge text-bg-secondary ms-2">@group.Count()</span>
+                        </button>
+                    </h2>
+                    <div id="@groupId" class="accordion-collapse collapse @(this.IsCollapsed(group.Key) ? string.Empty : "show")">
+                        <div class="list-group list-group-flush">
+                            @foreach (var connection in group)
+                            {
+                                <button type="button"
+                                        class="list-group-item list-group-item-action py-1 @(this.SelectedConnectionId == connection.Id ? "active" : string.Empty)"
+                                        @onclick="() => this.OnSelect.InvokeAsync(connection)">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="text-truncate">@connection.DisplayName</span>
+                                        <span class="oi oi-account-logout ms-1" role="button" title="@Resources.Disconnect"
+                                              @onclick:stopPropagation="true"
+                                              @onclick="() => this.OnDisconnect.InvokeAsync(connection)"></span>
+                                    </div>
+                                    <small class="text-truncate d-block @(this.SelectedConnectionId == connection.Id ? string.Empty : "text-muted")">
+                                        @connection.RemoteEndPoint
+                                    </small>
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

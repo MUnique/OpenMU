@@ -1,4 +1,4 @@
-// <copyright file="GameMapTerrain.cs" company="MUnique">
+﻿// <copyright file="GameMapTerrain.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -28,6 +28,8 @@ public class GameMapTerrain
     /// </summary>
     private readonly Point[] _spawnPoints;
 
+    private readonly Point? _anyWalkableCoordinate;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GameMapTerrain"/> class.
     /// </summary>
@@ -52,7 +54,7 @@ public class GameMapTerrain
             this.ReadTerrainData(DefaultTerrain);
         }
 
-        this._spawnPoints = this.BuildSpawnPoints();
+        this._spawnPoints = this.BuildSpawnPoints(out this._anyWalkableCoordinate);
     }
 
     /// <summary>
@@ -86,6 +88,49 @@ public class GameMapTerrain
 
             return points[Random.Shared.Next(points.Length)];
         }
+    }
+
+    /// <summary>
+    /// Gets a walkable coordinate anywhere on the map, preferring a safezone tile. Used to get a
+    /// player off a blocked tile when its spawn gate has none - unlike
+    /// <see cref="RandomWalkableCoordinate"/>, which samples the monster spawn points and therefore
+    /// deliberately excludes every safezone tile, this is allowed to land in a town.
+    /// </summary>
+    /// <value>
+    /// A safezone coordinate; the first walkable one if the map has no safezone at all; or
+    /// <c>null</c> if the map has no walkable tile whatsoever.
+    /// </value>
+    public Point? AnyWalkableCoordinate => this._anyWalkableCoordinate;
+
+    /// <summary>
+    /// Gets the first walkable coordinate within the specified gate, if it has one. A gate without a
+    /// single walkable tile strands whoever is placed there, because a player is placed at a gate by
+    /// one random roll which is never retried - so callers use this to check a gate up front, or to
+    /// get out of one afterwards.
+    /// </summary>
+    /// <param name="gate">The gate to search. Its coordinates are bytes, so this grid can't be overrun.</param>
+    /// <returns>The first walkable coordinate of the gate, or <c>null</c> if it has none.</returns>
+    public Point? GetWalkableCoordinate(Gate? gate)
+    {
+        if (gate is null)
+        {
+            return null;
+        }
+
+        // The counters are ints on purpose: a gate reaching to coordinate 255 would make a byte
+        // counter wrap around and loop forever.
+        for (int x = gate.X1; x <= gate.X2; x++)
+        {
+            for (int y = gate.Y1; y <= gate.Y2; y++)
+            {
+                if (this.WalkMap[x, y])
+                {
+                    return new Point((byte)x, (byte)y);
+                }
+            }
+        }
+
+        return null;
     }
 
     /// <summary>
@@ -143,25 +188,41 @@ public class GameMapTerrain
     }
 
     /// <summary>
-    /// Builds the array of valid spawn points.
-    /// A valid spawn point is walkable and not in a safezone.
+    /// Scans the terrain for the two lookups which are derived from it, in a single pass: the
+    /// monster spawn points, and the coordinate behind <see cref="AnyWalkableCoordinate"/>.
     /// </summary>
-    /// <returns>Array of valid spawn points.</returns>
-    private Point[] BuildSpawnPoints()
+    /// <param name="anyWalkableCoordinate">A safezone coordinate; the first walkable one if the map
+    /// has no safezone at all; or <c>null</c> if nothing on the map is walkable.</param>
+    /// <returns>The walkable coordinates outside the safezone, where monsters may spawn.</returns>
+    private Point[] BuildSpawnPoints(out Point? anyWalkableCoordinate)
     {
         var result = new List<Point>(MapSize * MapSize);
+        Point? safezone = null;
+        Point? outsideSafezone = null;
 
         for (var x = 0; x < MapSize; x++)
         {
             for (var y = 0; y < MapSize; y++)
             {
-                if (this.WalkMap[x, y] && !this.SafezoneMap[x, y])
+                if (!this.WalkMap[x, y])
                 {
-                    result.Add(new Point((byte)x, (byte)y));
+                    continue;
+                }
+
+                var point = new Point((byte)x, (byte)y);
+                if (this.SafezoneMap[x, y])
+                {
+                    safezone ??= point;
+                }
+                else
+                {
+                    result.Add(point);
+                    outsideSafezone ??= point;
                 }
             }
         }
 
+        anyWalkableCoordinate = safezone ?? outsideSafezone;
         return result.ToArray();
     }
 }

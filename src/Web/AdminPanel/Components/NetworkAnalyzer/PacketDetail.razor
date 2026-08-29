@@ -1,0 +1,19 @@
+@using MUnique.OpenMU.Network.Analyzer
+@using MUnique.OpenMU.Web.AdminPanel.Properties
+
+<div class="card packet-detail">
+    <div class="card-header py-1">@Resources.PacketDetails</div>
+    <div class="card-body py-2">
+        @if (this.Packet is null)
+        {
+            <p class="text-muted mb-0"><em>@Resources.SelectAPacket</em></p>
+        }
+        else
+        {
+            <h6>@Resources.RawData</h6>
+            <pre class="packet-raw-data">@this.Packet.PacketData</pre>
+            <h6>@Resources.ExtractedInformation</h6>
+            <pre class="packet-extracted-info">@this.ExtractedInformation</pre>
+        }
+    </div>
+</div>
