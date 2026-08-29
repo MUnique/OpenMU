@@ -157,6 +157,14 @@ public sealed class GameServerContainer : ServerContainerBase, IGameServerInstan
         foreach (var gameServer in this._gameServers.Values)
         {
             await gameServer.StopAsync(cancellationToken).ConfigureAwait(false);
+
+            // The game servers are created again when this container is started, so we dispose them here.
+            // Otherwise, the periodic tasks of their game context (e.g. of the castle siege) would still run.
+            if (gameServer is IAsyncDisposable asyncDisposable)
+            {
+                await asyncDisposable.DisposeAsync().ConfigureAwait(false);
+            }
+
             this._servers.Remove(gameServer);
         }
 

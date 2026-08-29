@@ -1,4 +1,4 @@
-// <copyright file="BackupServiceEfCoreTests.cs" company="MUnique">
+﻿// <copyright file="BackupServiceEfCoreTests.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -39,13 +39,13 @@ internal class BackupServiceEfCoreTests
         var expected = await GetCountsAsync(sourceProvider).ConfigureAwait(false);
 
         using var backup = new MemoryStream();
-        await new BackupService(sourceProvider).CreateBackupAsync(backup).ConfigureAwait(false);
+        await new BackupService(sourceProvider, new InMemoryAdminUserRepository()).CreateBackupAsync(backup).ConfigureAwait(false);
         Assert.That(backup.Length, Is.GreaterThan(0));
 
         await ReCreateDatabaseAsync().ConfigureAwait(false);
         backup.Position = 0;
         var targetProvider = new PersistenceContextProvider(new NullLoggerFactory(), null);
-        await new BackupService(targetProvider).RestoreBackupAsync(backup).ConfigureAwait(false);
+        await new BackupService(targetProvider, new InMemoryAdminUserRepository()).RestoreBackupAsync(backup).ConfigureAwait(false);
 
         var actual = await GetCountsAsync(new PersistenceContextProvider(new NullLoggerFactory(), null)).ConfigureAwait(false);
         Assert.That(actual, Is.EqualTo(expected));

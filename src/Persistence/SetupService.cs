@@ -1,4 +1,4 @@
-// <copyright file="SetupService.cs" company="MUnique">
+﻿// <copyright file="SetupService.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -31,6 +31,12 @@ public class SetupService
         this._contextProvider = contextProvider;
         this._plugInManager = plugInManager;
     }
+
+    /// <summary>
+    /// Occurs before the database gets re-created, so that the subscribers can stop
+    /// accessing it until the initialization is finished.
+    /// </summary>
+    public event AsyncEventHandler? DatabaseInitializing;
 
     /// <summary>
     /// Occurs when the database got initialized.
@@ -126,6 +132,11 @@ public class SetupService
     /// <param name="dataInitialization">The data initialization action.</param>
     public async Task CreateDatabaseAsync(Func<Task> dataInitialization)
     {
+        if (this.DatabaseInitializing is { } initializingHandler)
+        {
+            await initializingHandler.Invoke().ConfigureAwait(false);
+        }
+
         using var update = await this._contextProvider.ReCreateDatabaseAsync().ConfigureAwait(false);
         await dataInitialization().ConfigureAwait(false);
         if (this.DatabaseInitialized is { } eventHandler)

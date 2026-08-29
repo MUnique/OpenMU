@@ -1,4 +1,4 @@
-// <copyright file="BackupServiceTests.cs" company="MUnique">
+﻿// <copyright file="BackupServiceTests.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -8,6 +8,7 @@ using System.IO;
 using Microsoft.Extensions.Logging.Abstractions;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.Persistence.AdminAuth;
 using MUnique.OpenMU.Persistence.InMemory;
 
 /// <summary>
@@ -26,13 +27,24 @@ public class BackupServiceTests
         var dataInitialization = new VersionSeasonSix.DataInitialization(sourceProvider, new NullLoggerFactory());
         await dataInitialization.CreateInitialDataAsync(1, true).ConfigureAwait(false);
 
+        var sourceAdminUsers = new InMemoryAdminUserRepository();
+        await sourceAdminUsers.AddAsync(new AdminUser
+        {
+            Id = Guid.NewGuid(),
+            LoginName = "Admin",
+            NormalizedLoginName = "ADMIN",
+            PasswordHash = "hash",
+            Roles = AdminRoles.Administrator,
+        }).ConfigureAwait(false);
+
         using var backupStream = new MemoryStream();
-        await new BackupService(sourceProvider).CreateBackupAsync(backupStream).ConfigureAwait(false);
+        await new BackupService(sourceProvider, sourceAdminUsers).CreateBackupAsync(backupStream).ConfigureAwait(false);
         Assert.That(backupStream.Length, Is.GreaterThan(0));
 
         backupStream.Position = 0;
         var targetProvider = new InMemoryPersistenceContextProvider();
-        var targetBackupService = new BackupService(targetProvider);
+        var targetAdminUsers = new InMemoryAdminUserRepository();
+        var targetBackupService = new BackupService(targetProvider, targetAdminUsers);
         Assert.That(targetBackupService.ContainsRestorableData(backupStream), Is.True);
         Assert.That(backupStream.Position, Is.Zero, "The stream position should be restored after the check.");
         await targetBackupService.RestoreBackupAsync(backupStream).ConfigureAwait(false);
@@ -72,6 +84,10 @@ public class BackupServiceTests
             Assert.That(targetAccount.Characters, Has.Count.EqualTo(sourceAccount.Characters.Count));
         });
 
+        var restoredAdminUsers = await targetAdminUsers.GetAllAsync().ConfigureAwait(false);
+        Assert.That(restoredAdminUsers, Has.Count.EqualTo(1));
+        Assert.That(restoredAdminUsers[0].LoginName, Is.EqualTo("Admin"));
+
         var sourceCharacter = sourceAccount.Characters.OrderBy(c => c.Name).First();
         var targetCharacter = targetAccount.Characters.OrderBy(c => c.Name).First();
         Assert.Multiple(() =>
@@ -94,7 +110,7 @@ public class BackupServiceTests
     [Test]
     public void ContainsRestorableDataReturnsFalseForOtherFiles()
     {
-        var backupService = new BackupService(new InMemoryPersistenceContextProvider());
+        var backupService = new BackupService(new InMemoryPersistenceContextProvider(), new InMemoryAdminUserRepository());
         using var noZipStream = new MemoryStream("This is not a zip archive."u8.ToArray());
 
         Assert.That(backupService.ContainsRestorableData(noZipStream), Is.False);
