@@ -2367,6 +2367,24 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Analyze the network traffic.
+        /// </summary>
+        public static string AnalyzeTraffic {
+            get {
+                return ResourceManager.GetString("AnalyzeTraffic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The requested connection isn&apos;t available (anymore). Please select one of the listed connections..
+        /// </summary>
+        public static string ConnectionNotFound {
+            get {
+                return ResourceManager.GetString("ConnectionNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Shows the newest packets and scrolls to them. It&apos;s turned off while you scroll up, so that the view doesn&apos;t move away..
         /// </summary>
         public static string FollowNewPacketsHint {
