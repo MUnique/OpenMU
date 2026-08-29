@@ -105,6 +105,44 @@ public class BackupServiceTests
     }
 
     /// <summary>
+    /// Tests if all types which hold data are covered by the backup.
+    /// It's easy to forget to add a new type of the data model to the backup process,
+    /// so this test compares the objects of all types before and after a round trip.
+    /// </summary>
+    [Test]
+    public async Task AllTypesOfTheDataModelAreCoveredAsync()
+    {
+        var sourceProvider = new InMemoryPersistenceContextProvider();
+        await new VersionSeasonSix.DataInitialization(sourceProvider, new NullLoggerFactory())
+            .CreateInitialDataAsync(1, true).ConfigureAwait(false);
+
+        using var backupStream = new MemoryStream();
+        var adminUsers = new InMemoryAdminUserRepository();
+        await new BackupService(sourceProvider, adminUsers).CreateBackupAsync(backupStream).ConfigureAwait(false);
+
+        backupStream.Position = 0;
+        var targetProvider = new InMemoryPersistenceContextProvider();
+        await new BackupService(targetProvider, new InMemoryAdminUserRepository()).RestoreBackupAsync(backupStream).ConfigureAwait(false);
+
+        var expected = await GetObjectCountsAsync(sourceProvider).ConfigureAwait(false);
+        var actual = await GetObjectCountsAsync(targetProvider).ConfigureAwait(false);
+
+        // We don't compare the exact numbers here: the data initialization leaves some objects behind
+        // which are not referenced by anything (e.g. items without an item storage). They can't be
+        // reached from the exported root objects, so they are not part of the backup.
+        // A type which is not covered at all doesn't have any object after the restore.
+        var missingTypes = expected
+            .Where(pair => !actual.ContainsKey(pair.Key))
+            .Select(pair => $"{pair.Key} ({pair.Value} objects)")
+            .ToList();
+
+        Assert.That(
+            missingTypes,
+            Is.Empty,
+            "These types are not covered by the backup. If you added a type to the data model, add it to the BackupService, too.");
+    }
+
+    /// <summary>
     /// Tests if a file which is no backup archive is detected as such, so that the database isn't dropped for nothing.
     /// </summary>
     [Test]
@@ -115,6 +153,40 @@ public class BackupServiceTests
 
         Assert.That(backupService.ContainsRestorableData(noZipStream), Is.False);
         Assert.That(noZipStream.Position, Is.Zero);
+    }
+
+    /// <summary>
+    /// Counts the objects of every type of the data model which is known to the persistence.
+    /// </summary>
+    /// <param name="contextProvider">The context provider.</param>
+    /// <returns>The number of objects, by the name of their type.</returns>
+    private static async Task<Dictionary<string, int>> GetObjectCountsAsync(IPersistenceContextProvider contextProvider)
+    {
+        using var context = contextProvider.CreateNewContext();
+        var result = new Dictionary<string, int>();
+        var dataModelTypes = typeof(GameConfiguration).Assembly.GetTypes()
+            .Where(type => type is { IsClass: true, IsAbstract: false, IsPublic: true }
+                           && type.Namespace?.StartsWith("MUnique.OpenMU.DataModel", StringComparison.Ordinal) is true)
+            .OrderBy(type => type.FullName, StringComparer.Ordinal);
+
+        foreach (var type in dataModelTypes)
+        {
+            try
+            {
+                var objects = await context.GetAsync(type).ConfigureAwait(false);
+                var count = objects.Cast<object>().Count();
+                if (count > 0)
+                {
+                    result.Add(type.FullName!, count);
+                }
+            }
+            catch
+            {
+                // Not every type has a repository - these can't hold data on their own.
+            }
+        }
+
+        return result;
     }
 
     private static Guid GetId(object obj) => ((IIdentifiable)obj).Id;

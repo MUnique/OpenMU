@@ -17,7 +17,16 @@ public interface IBackupService
     /// </summary>
     /// <param name="outputStream">The output stream to write the backup zip archive to.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    Task CreateBackupAsync(Stream outputStream, CancellationToken cancellationToken = default);
+    Task CreateBackupAsync(Stream outputStream, CancellationToken cancellationToken = default)
+        => this.CreateBackupAsync(outputStream, BackupOptions.Default, cancellationToken);
+
+    /// <summary>
+    /// Creates a backup of the configuration and account data and writes it to the given stream as a zip archive.
+    /// </summary>
+    /// <param name="outputStream">The output stream to write the backup zip archive to.</param>
+    /// <param name="options">The options which define what the backup contains.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    Task CreateBackupAsync(Stream outputStream, BackupOptions options, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Determines whether the given stream contains a backup archive with restorable data.

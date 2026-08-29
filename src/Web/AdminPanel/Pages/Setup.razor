@@ -41,7 +41,11 @@ else
     <button class="btn btn-warning" @onclick="this.OnReInstallClickAsync">@Resources.ReInstall</button>
     <hr />
     <h5>@Resources.ExportBackup</h5>
-    <a href="/admin/backup" class="btn btn-secondary">@Resources.ExportBackup</a>
+    <div class="form-check mb-2">
+        <input class="form-check-input" type="checkbox" id="includeAccounts" checked="@this._includeAccounts" @onchange="@(args => this._includeAccounts = args.Value is true)" />
+        <label class="form-check-label" for="includeAccounts">@Resources.IncludeAccounts</label>
+    </div>
+    <a href="@($"/admin/backup?includeAccounts={(this._includeAccounts ? "true" : "false")}")" class="btn btn-secondary">@Resources.ExportBackup</a>
     <hr />
     <h5>@Resources.ImportBackup</h5>
     @if (this._isImporting)

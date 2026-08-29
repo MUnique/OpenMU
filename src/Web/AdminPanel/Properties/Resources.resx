@@ -594,6 +594,9 @@
   <data name="SelectZipFileToRestoreSnapshot" xml:space="preserve">
     <value>Select a .zip snapshot file to restore</value>
   </data>
+  <data name="IncludeAccounts" xml:space="preserve">
+    <value>Include the accounts (takes longer)</value>
+  </data>
   <data name="Character" xml:space="preserve">
     <value>Character</value>
   </data>

@@ -54,7 +54,13 @@ public class BackupService : IBackupService
     }
 
     /// <inheritdoc />
-    public async Task CreateBackupAsync(Stream outputStream, CancellationToken cancellationToken = default)
+    public Task CreateBackupAsync(Stream outputStream, CancellationToken cancellationToken = default)
+    {
+        return this.CreateBackupAsync(outputStream, BackupOptions.Default, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public async Task CreateBackupAsync(Stream outputStream, BackupOptions options, CancellationToken cancellationToken = default)
     {
         await using var archive = new ZipArchive(outputStream, ZipArchiveMode.Create, leaveOpen: true);
 
@@ -78,7 +84,11 @@ public class BackupService : IBackupService
         await ExportAsync<ConfigurationUpdate, BasicModel.ConfigurationUpdate>(archive, "ConfigurationUpdate_", context, sharedHandler, cancellationToken).ConfigureAwait(false);
         await ExportAsync<ConfigurationUpdateState, BasicModel.ConfigurationUpdateState>(archive, "ConfigurationUpdateState_", context, sharedHandler, cancellationToken).ConfigureAwait(false);
 
-        await ExportAsync<Account, BasicModel.Account>(archive, "Account_", context, sharedHandler, cancellationToken).ConfigureAwait(false);
+        if (options.IncludeAccounts)
+        {
+            await ExportAsync<Account, BasicModel.Account>(archive, "Account_", context, sharedHandler, cancellationToken).ConfigureAwait(false);
+        }
+
         await ExportAsync<CastleSiegeData, BasicModel.CastleSiegeData>(archive, "CastleSiegeData_", context, sharedHandler, cancellationToken).ConfigureAwait(false);
     }
 

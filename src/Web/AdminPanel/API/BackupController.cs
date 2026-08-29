@@ -35,15 +35,17 @@ public class BackupController : Controller
     }
 
     /// <summary>
-    /// Downloads a backup archive containing all configuration and account data.
+    /// Downloads a backup archive containing the configuration and account data.
     /// </summary>
+    /// <param name="includeAccounts">If set to <c>false</c>, the accounts are not part of the backup.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The backup zip archive as a file download.</returns>
     [HttpGet]
-    public async Task<IActionResult> DownloadBackupAsync(CancellationToken cancellationToken)
+    public async Task<IActionResult> DownloadBackupAsync([FromQuery] bool includeAccounts, CancellationToken cancellationToken)
     {
         var stream = new MemoryStream();
-        await this._backupService.CreateBackupAsync(stream, cancellationToken).ConfigureAwait(false);
+        var options = new BackupOptions { IncludeAccounts = includeAccounts };
+        await this._backupService.CreateBackupAsync(stream, options, cancellationToken).ConfigureAwait(false);
         stream.Position = 0;
         var fileName = $"backup_{DateTime.UtcNow:yyyyMMdd_HHmmss}.zip";
         return this.File(stream, "application/zip", fileName);

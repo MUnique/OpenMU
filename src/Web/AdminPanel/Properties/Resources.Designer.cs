@@ -2276,5 +2276,14 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
             }
         }
         
+        /// <summary>
+        ///   Looks up a localized string similar to Include the accounts (takes longer).
+        /// </summary>
+        public static string IncludeAccounts {
+            get {
+                return ResourceManager.GetString("IncludeAccounts", resourceCulture);
+            }
+        }
+        
     }
 }

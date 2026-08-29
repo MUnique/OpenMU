@@ -24,6 +24,8 @@ public partial class Setup
 
     private ClientVersion? _gameClientVersion;
 
+    private bool _includeAccounts = true;
+
     private bool _isImporting;
 
     private string? _importMessage;
