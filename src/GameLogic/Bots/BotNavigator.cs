@@ -156,6 +156,14 @@ internal sealed class BotNavigator : AsyncDisposable
     /// <summary>The game's own warp action, so a bot travels on exactly a player's terms - fare included.</summary>
     private static readonly WarpAction WarpAction = new();
 
+    /// <summary>
+    /// Cache of which maps' safezone spawn gates have a walkable tile, so a bot may safely be sent
+    /// there. Keyed by the resolved safezone map's id, not its number: map numbers are not unique -
+    /// the Devil Squares share number 9, and a server can host several game configurations whose
+    /// maps carry the same numbers over different terrain. See <see cref="HasWalkableSpawnGate"/>.
+    /// </summary>
+    private static readonly ConcurrentDictionary<Guid, bool> WalkableSpawnGateCache = new();
+
     private static readonly TimeSpan EvaluationInterval = TimeSpan.FromSeconds(1);
 
     private static readonly TimeSpan EmptyGroundGrace = TimeSpan.FromSeconds(8);
@@ -319,6 +327,59 @@ internal sealed class BotNavigator : AsyncDisposable
         // off the rest of the map.
         var proximity = (ProximityFalloff * ProximityFalloff) / (ProximityFalloff + GroundDistance(area, from));
         return Math.Max(1, (int)area.Quantity) * Math.Max(1, proximity);
+    }
+
+    /// <summary>
+    /// Whether a bot may safely be sent to the map: the safezone spawn gate it would be recovered to
+    /// has at least one walkable tile. A warp which lands a bot on a blocked tile is recovered by
+    /// <see cref="Player.WarpToSafezoneAsync"/>, and for a connection-less bot that recovery runs
+    /// inline (see <see cref="OfflineMapChangePlugIn"/>) - so a spawn gate with no walkable tile at
+    /// all used to recurse until the stack overflowed. The player's map transitions now bound that
+    /// recovery, so this filter is no longer what keeps the server alive; it keeps the bot from
+    /// picking a map it cannot stand in and being bounced straight back out of it.
+    /// </summary>
+    /// <param name="map">The map the bot considers warping to.</param>
+    /// <returns>True, if the map's resolved safezone spawn gate has a walkable tile.</returns>
+    /// <remarks>
+    /// The verdict is cached for the lifetime of the process, keyed by the resolved safezone map -
+    /// terrain is static configuration, so it is parsed once and shared by every bot. Terrain edited
+    /// through the admin panel therefore needs a server restart to be taken into account.
+    /// Only maps whose spawn gate has *zero* walkable tiles are excluded. A gate with a few walkable
+    /// tiles can still, under PlaceAtGateAsync's single random roll, miss and recover to town - a
+    /// quality glitch, not a crash, accepted by design.
+    /// </remarks>
+    internal static bool HasWalkableSpawnGate(GameMapDefinition map)
+    {
+        // The bot is not recovered to the destination map's own gate but to its safezone map's -
+        // mirroring Player.GetSpawnGateOfCurrentMapAsync. Many maps (dungeons, event maps, Icarus,
+        // Karutan 2, ...) point somewhere else entirely, so checking the destination itself would
+        // both reject safe maps and miss the ones which actually strand a bot.
+        var safezoneMap = map.SafezoneMap ?? map;
+        var mapId = safezoneMap.GetId();
+        if (mapId == Guid.Empty)
+        {
+            // GetId falls back to Guid.Empty for anything it cannot identify, so caching under it
+            // would file every such map under one entry and hand the first map's verdict to all the
+            // others - a single blocked one would then reject every map there is.
+            return HasWalkableSpawnGateCore(safezoneMap);
+        }
+
+        return WalkableSpawnGateCache.GetOrAdd(mapId, _ => HasWalkableSpawnGateCore(safezoneMap));
+    }
+
+    /// <summary>
+    /// The uncached terrain check behind <see cref="HasWalkableSpawnGate"/>, on an already resolved
+    /// safezone map.
+    /// </summary>
+    /// <param name="safezoneMap">The resolved safezone map.</param>
+    /// <returns>True, if the map's spawn gate has a walkable tile.</returns>
+    internal static bool HasWalkableSpawnGateCore(GameMapDefinition safezoneMap)
+    {
+        // The map is usually not loaded when a bot weighs it up, so its GameMap (which would expose
+        // Terrain and SafeZoneSpawnGate ready-made) may not exist - and forcing it to load just for
+        // this check would be far more expensive than parsing the terrain once.
+        var terrain = new GameMapTerrain(safezoneMap);
+        return terrain.GetWalkableCoordinate(safezoneMap.GetSafezoneGate(terrain)) is not null;
     }
 
     /// <inheritdoc />
@@ -1772,7 +1833,8 @@ internal sealed class BotNavigator : AsyncDisposable
 
             if (!candidate.TryGetRequirementError(this._player, out _)
                 && this.TryGetLegalWarp(candidate, out var candidateWarp)
-                && this.CanAffordWarp(candidateWarp))
+                && this.CanAffordWarp(candidateWarp)
+                && HasWalkableSpawnGate(candidate))
             {
                 warp = candidateWarp;
                 mapDefinition = candidate;
@@ -1827,7 +1889,9 @@ internal sealed class BotNavigator : AsyncDisposable
                 continue;
             }
 
-            if (this.TryGetLegalWarp(candidate, out var candidateWarp) && this.CanAffordWarp(candidateWarp))
+            if (this.TryGetLegalWarp(candidate, out var candidateWarp)
+                && this.CanAffordWarp(candidateWarp)
+                && HasWalkableSpawnGate(candidate))
             {
                 candidates.Add((candidateWarp, candidate, best));
             }
