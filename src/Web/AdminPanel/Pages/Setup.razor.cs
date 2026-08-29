@@ -48,6 +48,12 @@ public partial class Setup
     public IBackupService BackupService { get; set; } = null!;
 
     /// <summary>
+    /// Gets or sets the database snapshot service. It's only available for a real database.
+    /// </summary>
+    [Inject]
+    public IDatabaseSnapshotService? SnapshotService { get; set; }
+
+    /// <summary>
     /// Gets or sets the javascript runtime.
     /// </summary>
     [Inject]
@@ -61,6 +67,17 @@ public partial class Setup
         {
             this._gameClientVersion = await this.SetupService.GetCurrentGameClientVersionAsync().ConfigureAwait(false);
         }
+    }
+
+    private static async Task<MemoryStream> ReadFileAsync(IBrowserFile file)
+    {
+        // BrowserFileStream doesn't support synchronous reads (which ZipArchive requires),
+        // so copy it into a MemoryStream first. Pre-size with file.Size to avoid reallocations.
+        var memoryStream = new MemoryStream((int)Math.Min(file.Size, int.MaxValue));
+        await using var browserStream = file.OpenReadStream(maxAllowedSize: long.MaxValue);
+        await browserStream.CopyToAsync(memoryStream).ConfigureAwait(false);
+        memoryStream.Position = 0;
+        return memoryStream;
     }
 
     private Task OnUpdateClickAsync()
@@ -81,6 +98,43 @@ public partial class Setup
         }
     }
 
+    private async Task OnSnapshotFileChangeAsync(InputFileChangeEventArgs e)
+    {
+        if (this.SnapshotService is not { } snapshotService)
+        {
+            return;
+        }
+
+        this._importMessage = null;
+        this._isImporting = true;
+        await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
+
+        try
+        {
+            using var memoryStream = await ReadFileAsync(e.File).ConfigureAwait(false);
+            if (await snapshotService.GetRestoreBlockingReasonAsync(memoryStream).ConfigureAwait(false) is { } blockingReason)
+            {
+                this._importMessage = blockingReason;
+                this._importMessageCssClass = "text-danger";
+                return;
+            }
+
+            await this.SetupService.CreateDatabaseAsync(() => snapshotService.RestoreSnapshotAsync(memoryStream)).ConfigureAwait(false);
+            this._importMessage = Resources.BackupImportSucceeded;
+            this._importMessageCssClass = "text-success";
+        }
+        catch (Exception ex)
+        {
+            this._importMessage = $"{Resources.BackupImportFailed} {ex.Message}";
+            this._importMessageCssClass = "text-danger";
+        }
+        finally
+        {
+            this._isImporting = false;
+            await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
+        }
+    }
+
     private async Task OnImportFileChangeAsync(InputFileChangeEventArgs e)
     {
         var file = e.File;
@@ -90,13 +144,7 @@ public partial class Setup
 
         try
         {
-            // BrowserFileStream doesn't support synchronous reads (which ZipArchive requires),
-            // so copy it into a MemoryStream first. Pre-size with file.Size to avoid reallocations.
-            using var memoryStream = new MemoryStream((int)Math.Min(file.Size, int.MaxValue));
-            await using var browserStream = file.OpenReadStream(maxAllowedSize: long.MaxValue);
-            await browserStream.CopyToAsync(memoryStream).ConfigureAwait(false);
-            memoryStream.Position = 0;
-
+            using var memoryStream = await ReadFileAsync(file).ConfigureAwait(false);
             if (!this.BackupService.ContainsRestorableData(memoryStream))
             {
                 this._importMessage = Resources.SelectedFileIsNoBackup;

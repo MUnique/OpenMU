@@ -1,4 +1,4 @@
-﻿// <copyright file="BackupServiceEfCoreTests.cs" company="MUnique">
+﻿// <copyright file="DatabaseSnapshotServiceTests.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -14,18 +14,18 @@ using MUnique.OpenMU.Persistence.EntityFramework.Json;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// Tests the backup with the entity framework core, which requires a running postgres database.
+/// Tests the database snapshot, which requires a running postgres database.
 /// </summary>
 [TestFixture]
-internal class BackupServiceEfCoreTests
+internal class DatabaseSnapshotServiceTests
 {
     /// <summary>
-    /// Creates the initial data, exports a backup, re-creates the database, restores the backup
+    /// Creates the initial data, creates a snapshot, re-creates the database, restores the snapshot
     /// and checks if the data is there again.
     /// </summary>
     [Test]
     [Ignore("This is not a real test which should run automatically. It requires a database.")]
-    public async Task ExportAndRestoreRoundTripAsync()
+    public async Task SnapshotRoundTripAsync()
     {
         // These converters are registered by the host application (see Startup/Program.cs).
         JsonConverterRegistry.ClearConverters();
@@ -39,17 +39,34 @@ internal class BackupServiceEfCoreTests
 
         var expected = await GetCountsAsync(sourceProvider).ConfigureAwait(false);
 
-        using var backup = new MemoryStream();
-        await new BackupService(sourceProvider, new InMemoryAdminUserRepository()).CreateBackupAsync(backup).ConfigureAwait(false);
-        Assert.That(backup.Length, Is.GreaterThan(0));
+        var snapshotService = new DatabaseSnapshotService();
+        using var snapshot = new MemoryStream();
+        await snapshotService.CreateSnapshotAsync(snapshot).ConfigureAwait(false);
+        Assert.That(snapshot.Length, Is.GreaterThan(0));
+
+        snapshot.Position = 0;
+        Assert.That(await snapshotService.GetRestoreBlockingReasonAsync(snapshot).ConfigureAwait(false), Is.Null);
+        Assert.That(snapshot.Position, Is.Zero, "The stream position should be restored after the check.");
 
         await ReCreateDatabaseAsync().ConfigureAwait(false);
-        backup.Position = 0;
-        var targetProvider = new PersistenceContextProvider(new NullLoggerFactory(), null);
-        await new BackupService(targetProvider, new InMemoryAdminUserRepository()).RestoreBackupAsync(backup).ConfigureAwait(false);
+        await snapshotService.RestoreSnapshotAsync(snapshot).ConfigureAwait(false);
 
         var actual = await GetCountsAsync(new PersistenceContextProvider(new NullLoggerFactory(), null)).ConfigureAwait(false);
         Assert.That(actual, Is.EqualTo(expected));
+    }
+
+    /// <summary>
+    /// Tests if a file which is no snapshot is rejected, so that the database isn't dropped for nothing.
+    /// </summary>
+    [Test]
+    [Ignore("This is not a real test which should run automatically. It requires a database.")]
+    public async Task OtherFilesAreRejectedAsync()
+    {
+        var snapshotService = new DatabaseSnapshotService();
+        using var noZipStream = new MemoryStream("This is not a zip archive."u8.ToArray());
+
+        Assert.That(await snapshotService.GetRestoreBlockingReasonAsync(noZipStream).ConfigureAwait(false), Is.Not.Null);
+        Assert.That(noZipStream.Position, Is.Zero);
     }
 
     private static async ValueTask ReCreateDatabaseAsync()
@@ -72,18 +89,9 @@ internal class BackupServiceEfCoreTests
             [nameof(GameConfiguration.CharacterClasses)] = configuration.CharacterClasses.Count,
             [nameof(GameConfiguration.Attributes)] = configuration.Attributes.Count,
             [nameof(GameConfiguration.ItemSlotTypes)] = configuration.ItemSlotTypes.Sum(slotType => slotType.ItemSlots.Count),
-
-            // The character classes hold const value attributes, whose value can only be set by their constructor:
             ["BaseAttributeValues"] = configuration.CharacterClasses.Sum(c => c.BaseAttributeValues.Count(a => a.Value != 0)),
-
-            // Many-to-many relations, which are stored in join entities by the entity framework:
             ["QualifiedCharacters"] = configuration.Items.Sum(item => item.QualifiedCharacters.Count),
-            ["ItemDropGroups"] = configuration.Maps.Sum(map => map.DropItemGroups.Count),
-
             [nameof(Account)] = (await context.GetAsync<Account>().ConfigureAwait(false)).Count(),
-            [nameof(GameServerDefinition)] = (await context.GetAsync<GameServerDefinition>().ConfigureAwait(false)).Count(),
-            [nameof(ConnectServerDefinition)] = (await context.GetAsync<ConnectServerDefinition>().ConfigureAwait(false)).Count(),
-            [nameof(ChatServerDefinition)] = (await context.GetAsync<ChatServerDefinition>().ConfigureAwait(false)).Count(),
             [nameof(SystemConfiguration)] = (await context.GetAsync<SystemConfiguration>().ConfigureAwait(false)).Count(),
             ["AppliedUpdates"] = (await context.GetAsync<ConfigurationUpdate>().ConfigureAwait(false)).Count(),
         };

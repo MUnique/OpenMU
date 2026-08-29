@@ -267,6 +267,12 @@ internal sealed class Program : IDisposable
 
                 return new InMemoryBackupService(s.GetRequiredService<IPersistenceContextProvider>(), s.GetRequiredService<IAdminUserRepository>());
             });
+            if (!args.Contains("-demo"))
+            {
+                // A snapshot of the database is only possible when there is a real database.
+                builder.Services.AddSingleton<IDatabaseSnapshotService, DatabaseSnapshotService>();
+            }
+
             builder.AddAdminPanel(includeMapApp: true);
         }
 

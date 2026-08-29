@@ -60,4 +60,14 @@ else
         <p class="text-muted">@Resources.SelectZipFileToRestore</p>
     }
     <Microsoft.AspNetCore.Components.Forms.InputFile OnChange="this.OnImportFileChangeAsync" accept=".zip" class="form-control mb-2" disabled="@this._isImporting" />
+
+    @if (this.SnapshotService is not null)
+    {
+        <hr />
+        <h5>@Resources.DatabaseSnapshot</h5>
+        <p class="text-muted">@Resources.DatabaseSnapshotDescription</p>
+        <a href="/admin/backup/snapshot" class="btn btn-secondary">@Resources.ExportSnapshot</a>
+        <p class="text-muted mt-2">@Resources.SelectZipFileToRestoreSnapshot</p>
+        <Microsoft.AspNetCore.Components.Forms.InputFile OnChange="this.OnSnapshotFileChangeAsync" accept=".zip" class="form-control mb-2" disabled="@this._isImporting" />
+    }
 }

@@ -59,7 +59,8 @@ public static class Extensions
             .AddAdminUserRepository()
             .AddSingleton<IBackupService>(s => new BackupService(
                 s.GetRequiredService<IPersistenceContextProvider>(),
-                s.GetRequiredService<IAdminUserRepository>()));
+                s.GetRequiredService<IAdminUserRepository>()))
+            .AddSingleton<IDatabaseSnapshotService, DatabaseSnapshotService>();
     }
 
     /// <summary>

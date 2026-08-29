@@ -2240,5 +2240,41 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
             }
         }
         
+        /// <summary>
+        ///   Looks up a localized string similar to Database Snapshot.
+        /// </summary>
+        public static string DatabaseSnapshot {
+            get {
+                return ResourceManager.GetString("DatabaseSnapshot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A snapshot contains all data of the database and is created and restored a lot faster. It can only be restored into a server with the same database schema - use the backup above to transfer data between different versions..
+        /// </summary>
+        public static string DatabaseSnapshotDescription {
+            get {
+                return ResourceManager.GetString("DatabaseSnapshotDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Export Snapshot.
+        /// </summary>
+        public static string ExportSnapshot {
+            get {
+                return ResourceManager.GetString("ExportSnapshot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select a .zip snapshot file to restore.
+        /// </summary>
+        public static string SelectZipFileToRestoreSnapshot {
+            get {
+                return ResourceManager.GetString("SelectZipFileToRestoreSnapshot", resourceCulture);
+            }
+        }
+        
     }
 }
