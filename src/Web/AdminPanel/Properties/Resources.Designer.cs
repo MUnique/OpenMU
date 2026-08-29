@@ -70,11 +70,47 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Access denied.
+        /// </summary>
+        public static string AccessDenied {
+            get {
+                return ResourceManager.GetString("AccessDenied", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your account is not permitted to open this page..
+        /// </summary>
+        public static string AccessDeniedDescription {
+            get {
+                return ResourceManager.GetString("AccessDeniedDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Too many failed attempts. Please try again later..
+        /// </summary>
+        public static string AccountLockedOut {
+            get {
+                return ResourceManager.GetString("AccountLockedOut", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Accounts.
         /// </summary>
         public static string Accounts {
             get {
                 return ResourceManager.GetString("Accounts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Account security.
+        /// </summary>
+        public static string AccountSecurity {
+            get {
+                return ResourceManager.GetString("AccountSecurity", resourceCulture);
             }
         }
         
@@ -160,6 +196,96 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The API key has been created..
+        /// </summary>
+        public static string ApiKeyCreated {
+            get {
+                return ResourceManager.GetString("ApiKeyCreated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The API key has been deleted..
+        /// </summary>
+        public static string ApiKeyDeleted {
+            get {
+                return ResourceManager.GetString("ApiKeyDeleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The API key has been disabled..
+        /// </summary>
+        public static string ApiKeyDisabled {
+            get {
+                return ResourceManager.GetString("ApiKeyDisabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The API key has been enabled..
+        /// </summary>
+        public static string ApiKeyEnabled {
+            get {
+                return ResourceManager.GetString("ApiKeyEnabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Application.
+        /// </summary>
+        public static string ApiKeyName {
+            get {
+                return ResourceManager.GetString("ApiKeyName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Key.
+        /// </summary>
+        public static string ApiKeyPrefix {
+            get {
+                return ResourceManager.GetString("ApiKeyPrefix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to API keys.
+        /// </summary>
+        public static string ApiKeys {
+            get {
+                return ResourceManager.GetString("ApiKeys", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to External applications like a game launcher or a website authenticate themselves at the public API under /api with one of these keys. Give each application its own key, so a single one can be revoked..
+        /// </summary>
+        public static string ApiKeysDescription {
+            get {
+                return ResourceManager.GetString("ApiKeysDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Copy this key now.
+        /// </summary>
+        public static string ApiKeyShownOnce {
+            get {
+                return ResourceManager.GetString("ApiKeyShownOnce", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only the hash of the key is stored, so this is the only time it&apos;s shown. If it gets lost, delete the key and create a new one..
+        /// </summary>
+        public static string ApiKeyShownOnceDescription {
+            get {
+                return ResourceManager.GetString("ApiKeyShownOnceDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Applying updates ....
         /// </summary>
         public static string ApplyingUpdates {
@@ -174,6 +300,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string ApplySelectedUpdates {
             get {
                 return ResourceManager.GetString("ApplySelectedUpdates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Authenticator code.
+        /// </summary>
+        public static string AuthenticatorCode {
+            get {
+                return ResourceManager.GetString("AuthenticatorCode", resourceCulture);
             }
         }
         
@@ -201,6 +336,24 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string Cancel {
             get {
                 return ResourceManager.GetString("Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The last remaining user can&apos;t be deleted..
+        /// </summary>
+        public static string CannotDeleteLastUser {
+            get {
+                return ResourceManager.GetString("CannotDeleteLastUser", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The bootstrap user is defined by the configuration and can&apos;t be changed here..
+        /// </summary>
+        public static string CannotModifyBootstrapUser {
+            get {
+                return ResourceManager.GetString("CannotModifyBootstrapUser", resourceCulture);
             }
         }
         
@@ -286,6 +439,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to To finish, enter the code which your app shows now..
+        /// </summary>
+        public static string ConfirmSetupHint {
+            get {
+                return ResourceManager.GetString("ConfirmSetupHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The connection server configuration has been saved. Initializing connect server ....
         /// </summary>
         public static string ConnectionServerConfigurationSaved {
@@ -300,6 +462,33 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string ConnectServer {
             get {
                 return ResourceManager.GetString("ConnectServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The API key has been copied to the clipboard..
+        /// </summary>
+        public static string CopiedToClipboard {
+            get {
+                return ResourceManager.GetString("CopiedToClipboard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Copy.
+        /// </summary>
+        public static string CopyToClipboard {
+            get {
+                return ResourceManager.GetString("CopyToClipboard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The API key could not be copied. Please select and copy it by hand..
+        /// </summary>
+        public static string CopyToClipboardFailed {
+            get {
+                return ResourceManager.GetString("CopyToClipboardFailed", resourceCulture);
             }
         }
         
@@ -340,6 +529,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create API key.
+        /// </summary>
+        public static string CreateApiKey {
+            get {
+                return ResourceManager.GetString("CreateApiKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create Connect Server.
         /// </summary>
         public static string CreateConnectServer {
@@ -354,6 +552,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string CreatedSuccessfully {
             get {
                 return ResourceManager.GetString("CreatedSuccessfully", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create the first user.
+        /// </summary>
+        public static string CreateFirstUser {
+            get {
+                return ResourceManager.GetString("CreateFirstUser", resourceCulture);
             }
         }
         
@@ -421,6 +628,24 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Delete API key.
+        /// </summary>
+        public static string DeleteApiKey {
+            get {
+                return ResourceManager.GetString("DeleteApiKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Do you really want to delete the API key of &apos;{0}&apos;? The application which uses it stops working immediately..
+        /// </summary>
+        public static string DeleteApiKeyQuestion {
+            get {
+                return ResourceManager.GetString("DeleteApiKeyQuestion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Couldn&apos;t delete &apos;{0}&apos;, probably because it&apos;s referenced by another object. For details, see log.
         /// </summary>
         public static string DeleteFailedReferenced {
@@ -447,6 +672,33 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string DevelopmentMode {
             get {
                 return ResourceManager.GetString("DevelopmentMode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Disable.
+        /// </summary>
+        public static string Disable {
+            get {
+                return ResourceManager.GetString("Disable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Disabled.
+        /// </summary>
+        public static string Disabled {
+            get {
+                return ResourceManager.GetString("Disabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Disable two-factor authentication.
+        /// </summary>
+        public static string DisableTwoFactor {
+            get {
+                return ResourceManager.GetString("DisableTwoFactor", resourceCulture);
             }
         }
         
@@ -519,6 +771,24 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string Edit {
             get {
                 return ResourceManager.GetString("Edit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enable.
+        /// </summary>
+        public static string Enable {
+            get {
+                return ResourceManager.GetString("Enable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enabled.
+        /// </summary>
+        public static string Enabled {
+            get {
+                return ResourceManager.GetString("Enabled", resourceCulture);
             }
         }
         
@@ -676,6 +946,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Generate new recovery codes.
+        /// </summary>
+        public static string GenerateNewRecoveryCodes {
+            get {
+                return ResourceManager.GetString("GenerateNewRecoveryCodes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Global Message.
         /// </summary>
         public static string GlobalMessage {
@@ -775,6 +1054,24 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The login name or password is wrong..
+        /// </summary>
+        public static string InvalidCredentials {
+            get {
+                return ResourceManager.GetString("InvalidCredentials", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The code is not valid..
+        /// </summary>
+        public static string InvalidTwoFactorCode {
+            get {
+                return ResourceManager.GetString("InvalidTwoFactorCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Items.
         /// </summary>
         public static string Items {
@@ -789,6 +1086,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string JewelMixes {
             get {
                 return ResourceManager.GetString("JewelMixes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Last login.
+        /// </summary>
+        public static string LastLogin {
+            get {
+                return ResourceManager.GetString("LastLogin", resourceCulture);
             }
         }
         
@@ -847,6 +1153,33 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Login.
+        /// </summary>
+        public static string Login {
+            get {
+                return ResourceManager.GetString("Login", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Login name.
+        /// </summary>
+        public static string LoginName {
+            get {
+                return ResourceManager.GetString("LoginName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Logout.
+        /// </summary>
+        public static string Logout {
+            get {
+                return ResourceManager.GetString("Logout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Logs.
         /// </summary>
         public static string Logs {
@@ -879,6 +1212,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string MandatoryUpdatesAreAlwaysAppliedAndCannotBeDeselected {
             get {
                 return ResourceManager.GetString("MandatoryUpdatesAreAlwaysAppliedAndCannotBeDeselected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Can&apos;t scan it? Enter this key manually:.
+        /// </summary>
+        public static string ManualKeyHint {
+            get {
+                return ResourceManager.GetString("ManualKeyHint", resourceCulture);
             }
         }
         
@@ -978,6 +1320,24 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string No {
             get {
                 return ResourceManager.GetString("No", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No admin panel user exists yet, so the panel is currently reachable without a login. Create the first user as soon as the database is set up, or configure a bootstrap user..
+        /// </summary>
+        public static string NoAdminUserWarning {
+            get {
+                return ResourceManager.GetString("NoAdminUserWarning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No API key has been created yet..
+        /// </summary>
+        public static string NoApiKeys {
+            get {
+                return ResourceManager.GetString("NoApiKeys", resourceCulture);
             }
         }
         
@@ -1135,6 +1495,24 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Password.
+        /// </summary>
+        public static string Password {
+            get {
+                return ResourceManager.GetString("Password", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The password has been changed..
+        /// </summary>
+        public static string PasswordChanged {
+            get {
+                return ResourceManager.GetString("PasswordChanged", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Patch.
         /// </summary>
         public static string Patch {
@@ -1216,6 +1594,33 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Recovery code.
+        /// </summary>
+        public static string RecoveryCode {
+            get {
+                return ResourceManager.GetString("RecoveryCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Recovery codes.
+        /// </summary>
+        public static string RecoveryCodes {
+            get {
+                return ResourceManager.GetString("RecoveryCodes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Store these codes somewhere safe. Each of them can be used once to sign in when you don&apos;t have your authenticator app. They are shown only now..
+        /// </summary>
+        public static string RecoveryCodesHint {
+            get {
+                return ResourceManager.GetString("RecoveryCodesHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Refresh.
         /// </summary>
         public static string Refresh {
@@ -1270,6 +1675,24 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Remaining recovery codes.
+        /// </summary>
+        public static string RemainingRecoveryCodes {
+            get {
+                return ResourceManager.GetString("RemainingRecoveryCodes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Keep me signed in.
+        /// </summary>
+        public static string RememberMe {
+            get {
+                return ResourceManager.GetString("RememberMe", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Remove.
         /// </summary>
         public static string Remove {
@@ -1293,6 +1716,33 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string Required {
             get {
                 return ResourceManager.GetString("Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset second factor.
+        /// </summary>
+        public static string ResetTwoFactor {
+            get {
+                return ResourceManager.GetString("ResetTwoFactor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Role.
+        /// </summary>
+        public static string Role {
+            get {
+                return ResourceManager.GetString("Role", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Roles.
+        /// </summary>
+        public static string Roles {
+            get {
+                return ResourceManager.GetString("Roles", resourceCulture);
             }
         }
         
@@ -1329,6 +1779,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string SavingConfigurationInfo {
             get {
                 return ResourceManager.GetString("SavingConfigurationInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scan this QR code with your authenticator app, for example Microsoft Authenticator..
+        /// </summary>
+        public static string ScanQrCode {
+            get {
+                return ResourceManager.GetString("ScanQrCode", resourceCulture);
             }
         }
         
@@ -1450,6 +1909,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Set up authenticator app.
+        /// </summary>
+        public static string SetUpAuthenticator {
+            get {
+                return ResourceManager.GetString("SetUpAuthenticator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Show entry form.
         /// </summary>
         public static string ShowEntryForm {
@@ -1464,6 +1932,24 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string ShowingXOfYLines {
             get {
                 return ResourceManager.GetString("ShowingXOfYLines", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Signed in as.
+        /// </summary>
+        public static string SignedInAs {
+            get {
+                return ResourceManager.GetString("SignedInAs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sign in.
+        /// </summary>
+        public static string SignIn {
+            get {
+                return ResourceManager.GetString("SignIn", resourceCulture);
             }
         }
         
@@ -1594,6 +2080,87 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Second factor.
+        /// </summary>
+        public static string TwoFactor {
+            get {
+                return ResourceManager.GetString("TwoFactor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Two-factor authentication.
+        /// </summary>
+        public static string TwoFactorAuthentication {
+            get {
+                return ResourceManager.GetString("TwoFactorAuthentication", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Two-factor authentication is not set up yet..
+        /// </summary>
+        public static string TwoFactorDisabled {
+            get {
+                return ResourceManager.GetString("TwoFactorDisabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Two-factor authentication is enabled..
+        /// </summary>
+        public static string TwoFactorEnabled {
+            get {
+                return ResourceManager.GetString("TwoFactorEnabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter the code from your authenticator app..
+        /// </summary>
+        public static string TwoFactorPrompt {
+            get {
+                return ResourceManager.GetString("TwoFactorPrompt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The server configuration requires every admin panel user to use a second factor. Please set up your authenticator app to continue..
+        /// </summary>
+        public static string TwoFactorRequiredDescription {
+            get {
+                return ResourceManager.GetString("TwoFactorRequiredDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Two-factor authentication is required.
+        /// </summary>
+        public static string TwoFactorRequiredTitle {
+            get {
+                return ResourceManager.GetString("TwoFactorRequiredTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The second factor of the user has been reset..
+        /// </summary>
+        public static string TwoFactorResetForUser {
+            get {
+                return ResourceManager.GetString("TwoFactorResetForUser", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Two-factor authentication.
+        /// </summary>
+        public static string TwoFactorTitle {
+            get {
+                return ResourceManager.GetString("TwoFactorTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Type &apos;{0}&apos; does not support cloning..
         /// </summary>
         public static string TypeDoesNotSupportCloning {
@@ -1693,11 +2260,56 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Use an authenticator code instead.
+        /// </summary>
+        public static string UseAuthenticatorCode {
+            get {
+                return ResourceManager.GetString("UseAuthenticatorCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The user has been created..
+        /// </summary>
+        public static string UserCreated {
+            get {
+                return ResourceManager.GetString("UserCreated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The user has been deleted..
+        /// </summary>
+        public static string UserDeleted {
+            get {
+                return ResourceManager.GetString("UserDeleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use a recovery code instead.
+        /// </summary>
+        public static string UseRecoveryCode {
+            get {
+                return ResourceManager.GetString("UseRecoveryCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Users.
         /// </summary>
         public static string Users {
             get {
                 return ResourceManager.GetString("Users", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Verify.
+        /// </summary>
+        public static string Verify {
+            get {
+                return ResourceManager.GetString("Verify", resourceCulture);
             }
         }
         
@@ -1736,617 +2348,5 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("YesCreateTestAccounts", resourceCulture);
             }
         }
-        /// <summary>
-        ///   Looks up a localized string similar to Login.
-        /// </summary>
-        public static string Login {
-            get {
-                return ResourceManager.GetString("Login", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Logout.
-        /// </summary>
-        public static string Logout {
-            get {
-                return ResourceManager.GetString("Logout", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Login name.
-        /// </summary>
-        public static string LoginName {
-            get {
-                return ResourceManager.GetString("LoginName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Password.
-        /// </summary>
-        public static string Password {
-            get {
-                return ResourceManager.GetString("Password", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Sign in.
-        /// </summary>
-        public static string SignIn {
-            get {
-                return ResourceManager.GetString("SignIn", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Signed in as.
-        /// </summary>
-        public static string SignedInAs {
-            get {
-                return ResourceManager.GetString("SignedInAs", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Keep me signed in.
-        /// </summary>
-        public static string RememberMe {
-            get {
-                return ResourceManager.GetString("RememberMe", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The login name or password is wrong..
-        /// </summary>
-        public static string InvalidCredentials {
-            get {
-                return ResourceManager.GetString("InvalidCredentials", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Too many failed attempts. Please try again later..
-        /// </summary>
-        public static string AccountLockedOut {
-            get {
-                return ResourceManager.GetString("AccountLockedOut", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Two-factor authentication.
-        /// </summary>
-        public static string TwoFactorTitle {
-            get {
-                return ResourceManager.GetString("TwoFactorTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Enter the code from your authenticator app..
-        /// </summary>
-        public static string TwoFactorPrompt {
-            get {
-                return ResourceManager.GetString("TwoFactorPrompt", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Authenticator code.
-        /// </summary>
-        public static string AuthenticatorCode {
-            get {
-                return ResourceManager.GetString("AuthenticatorCode", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Recovery code.
-        /// </summary>
-        public static string RecoveryCode {
-            get {
-                return ResourceManager.GetString("RecoveryCode", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Use a recovery code instead.
-        /// </summary>
-        public static string UseRecoveryCode {
-            get {
-                return ResourceManager.GetString("UseRecoveryCode", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Use an authenticator code instead.
-        /// </summary>
-        public static string UseAuthenticatorCode {
-            get {
-                return ResourceManager.GetString("UseAuthenticatorCode", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The code is not valid..
-        /// </summary>
-        public static string InvalidTwoFactorCode {
-            get {
-                return ResourceManager.GetString("InvalidTwoFactorCode", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Verify.
-        /// </summary>
-        public static string Verify {
-            get {
-                return ResourceManager.GetString("Verify", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Access denied.
-        /// </summary>
-        public static string AccessDenied {
-            get {
-                return ResourceManager.GetString("AccessDenied", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Your account is not permitted to open this page..
-        /// </summary>
-        public static string AccessDeniedDescription {
-            get {
-                return ResourceManager.GetString("AccessDeniedDescription", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Account security.
-        /// </summary>
-        public static string AccountSecurity {
-            get {
-                return ResourceManager.GetString("AccountSecurity", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Two-factor authentication.
-        /// </summary>
-        public static string TwoFactorAuthentication {
-            get {
-                return ResourceManager.GetString("TwoFactorAuthentication", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Two-factor authentication is enabled..
-        /// </summary>
-        public static string TwoFactorEnabled {
-            get {
-                return ResourceManager.GetString("TwoFactorEnabled", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Two-factor authentication is not set up yet..
-        /// </summary>
-        public static string TwoFactorDisabled {
-            get {
-                return ResourceManager.GetString("TwoFactorDisabled", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Set up authenticator app.
-        /// </summary>
-        public static string SetUpAuthenticator {
-            get {
-                return ResourceManager.GetString("SetUpAuthenticator", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Disable two-factor authentication.
-        /// </summary>
-        public static string DisableTwoFactor {
-            get {
-                return ResourceManager.GetString("DisableTwoFactor", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Scan this QR code with your authenticator app, for example Microsoft Authenticator..
-        /// </summary>
-        public static string ScanQrCode {
-            get {
-                return ResourceManager.GetString("ScanQrCode", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Can't scan it? Enter this key manually:.
-        /// </summary>
-        public static string ManualKeyHint {
-            get {
-                return ResourceManager.GetString("ManualKeyHint", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to To finish, enter the code which your app shows now..
-        /// </summary>
-        public static string ConfirmSetupHint {
-            get {
-                return ResourceManager.GetString("ConfirmSetupHint", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Recovery codes.
-        /// </summary>
-        public static string RecoveryCodes {
-            get {
-                return ResourceManager.GetString("RecoveryCodes", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Store these codes somewhere safe. Each of them can be used once to sign in when you don't have your  [rest of string was truncated]&amp;quot;;.
-        /// </summary>
-        public static string RecoveryCodesHint {
-            get {
-                return ResourceManager.GetString("RecoveryCodesHint", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Remaining recovery codes.
-        /// </summary>
-        public static string RemainingRecoveryCodes {
-            get {
-                return ResourceManager.GetString("RemainingRecoveryCodes", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Generate new recovery codes.
-        /// </summary>
-        public static string GenerateNewRecoveryCodes {
-            get {
-                return ResourceManager.GetString("GenerateNewRecoveryCodes", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Two-factor authentication is required.
-        /// </summary>
-        public static string TwoFactorRequiredTitle {
-            get {
-                return ResourceManager.GetString("TwoFactorRequiredTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The server configuration requires every admin panel user to use a second factor. Please set up your  [rest of string was truncated]&amp;quot;;.
-        /// </summary>
-        public static string TwoFactorRequiredDescription {
-            get {
-                return ResourceManager.GetString("TwoFactorRequiredDescription", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Roles.
-        /// </summary>
-        public static string Roles {
-            get {
-                return ResourceManager.GetString("Roles", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Role.
-        /// </summary>
-        public static string Role {
-            get {
-                return ResourceManager.GetString("Role", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Second factor.
-        /// </summary>
-        public static string TwoFactor {
-            get {
-                return ResourceManager.GetString("TwoFactor", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Last login.
-        /// </summary>
-        public static string LastLogin {
-            get {
-                return ResourceManager.GetString("LastLogin", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Enabled.
-        /// </summary>
-        public static string Enabled {
-            get {
-                return ResourceManager.GetString("Enabled", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Disabled.
-        /// </summary>
-        public static string Disabled {
-            get {
-                return ResourceManager.GetString("Disabled", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to No admin panel user exists yet, so the panel is currently reachable without a login. Create the firs [rest of string was truncated]&amp;quot;;.
-        /// </summary>
-        public static string NoAdminUserWarning {
-            get {
-                return ResourceManager.GetString("NoAdminUserWarning", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Create the first user.
-        /// </summary>
-        public static string CreateFirstUser {
-            get {
-                return ResourceManager.GetString("CreateFirstUser", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The user has been created..
-        /// </summary>
-        public static string UserCreated {
-            get {
-                return ResourceManager.GetString("UserCreated", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The user has been deleted..
-        /// </summary>
-        public static string UserDeleted {
-            get {
-                return ResourceManager.GetString("UserDeleted", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The password has been changed..
-        /// </summary>
-        public static string PasswordChanged {
-            get {
-                return ResourceManager.GetString("PasswordChanged", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The second factor of the user has been reset..
-        /// </summary>
-        public static string TwoFactorResetForUser {
-            get {
-                return ResourceManager.GetString("TwoFactorResetForUser", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Reset second factor.
-        /// </summary>
-        public static string ResetTwoFactor {
-            get {
-                return ResourceManager.GetString("ResetTwoFactor", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The last remaining user can't be deleted..
-        /// </summary>
-        public static string CannotDeleteLastUser {
-            get {
-                return ResourceManager.GetString("CannotDeleteLastUser", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The bootstrap user is defined by the configuration and can't be changed here..
-        /// </summary>
-        public static string CannotModifyBootstrapUser {
-            get {
-                return ResourceManager.GetString("CannotModifyBootstrapUser", resourceCulture);
-            }
-        }
-        
-            
-        /// <summary>
-        ///   Looks up a localized string similar to API keys.
-        /// </summary>
-        public static string ApiKeys {
-            get {
-                return ResourceManager.GetString("ApiKeys", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to External applications like a game launcher or a website authenticate themselves at the ....
-        /// </summary>
-        public static string ApiKeysDescription {
-            get {
-                return ResourceManager.GetString("ApiKeysDescription", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Application.
-        /// </summary>
-        public static string ApiKeyName {
-            get {
-                return ResourceManager.GetString("ApiKeyName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Key.
-        /// </summary>
-        public static string ApiKeyPrefix {
-            get {
-                return ResourceManager.GetString("ApiKeyPrefix", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Create API key.
-        /// </summary>
-        public static string CreateApiKey {
-            get {
-                return ResourceManager.GetString("CreateApiKey", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Delete API key.
-        /// </summary>
-        public static string DeleteApiKey {
-            get {
-                return ResourceManager.GetString("DeleteApiKey", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Do you really want to delete the API key of '{0}'? The application which uses it stops ....
-        /// </summary>
-        public static string DeleteApiKeyQuestion {
-            get {
-                return ResourceManager.GetString("DeleteApiKeyQuestion", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The API key has been created..
-        /// </summary>
-        public static string ApiKeyCreated {
-            get {
-                return ResourceManager.GetString("ApiKeyCreated", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The API key has been deleted..
-        /// </summary>
-        public static string ApiKeyDeleted {
-            get {
-                return ResourceManager.GetString("ApiKeyDeleted", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The API key has been enabled..
-        /// </summary>
-        public static string ApiKeyEnabled {
-            get {
-                return ResourceManager.GetString("ApiKeyEnabled", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The API key has been disabled..
-        /// </summary>
-        public static string ApiKeyDisabled {
-            get {
-                return ResourceManager.GetString("ApiKeyDisabled", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Copy this key now.
-        /// </summary>
-        public static string ApiKeyShownOnce {
-            get {
-                return ResourceManager.GetString("ApiKeyShownOnce", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Only the hash of the key is stored, so this is the only time it's shown. If it gets los....
-        /// </summary>
-        public static string ApiKeyShownOnceDescription {
-            get {
-                return ResourceManager.GetString("ApiKeyShownOnceDescription", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to No API key has been created yet..
-        /// </summary>
-        public static string NoApiKeys {
-            get {
-                return ResourceManager.GetString("NoApiKeys", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Enable.
-        /// </summary>
-        public static string Enable {
-            get {
-                return ResourceManager.GetString("Enable", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Disable.
-        /// </summary>
-        public static string Disable {
-            get {
-                return ResourceManager.GetString("Disable", resourceCulture);
-            }
-        }
-        /// <summary>
-        ///   Looks up a localized string similar to Copy.
-        /// </summary>
-        public static string CopyToClipboard {
-            get {
-                return ResourceManager.GetString("CopyToClipboard", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The API key has been copied to the clipboard..
-        /// </summary>
-        public static string CopiedToClipboard {
-            get {
-                return ResourceManager.GetString("CopiedToClipboard", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The API key could not be copied. Please select and copy it by hand..
-        /// </summary>
-        public static string CopyToClipboardFailed {
-            get {
-                return ResourceManager.GetString("CopyToClipboardFailed", resourceCulture);
-            }
-        }
-        
-}
+    }
 }
