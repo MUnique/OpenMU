@@ -7453,4 +7453,162 @@ public class PacketStructureTests
         Assert.That(4, Is.GreaterThanOrEqualTo(0), 
             "Field 'NpcCount' has invalid negative index");
     }
+
+    /// <summary>
+    /// Tests the packet size calculation for KanturuStateInfo.
+    /// </summary>
+    [Test]
+    public void KanturuStateInfo_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 12;
+        var actualLength = KanturuStateInfoRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'State' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'State' exceeds packet boundary");
+        
+        // Validate field 'DetailState' boundary
+        Assert.That(5 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'DetailState' exceeds packet boundary");
+        
+        // Validate field 'CanEnter' boundary
+        Assert.That(6 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'CanEnter' exceeds packet boundary");
+        
+        // Validate field 'UserCount' boundary
+        Assert.That(7 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'UserCount' exceeds packet boundary");
+        
+        // Validate field 'RemainSeconds' boundary
+        Assert.That(8 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'RemainSeconds' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for KanturuEnterResult.
+    /// </summary>
+    [Test]
+    public void KanturuEnterResult_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 5;
+        var actualLength = KanturuEnterResultRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Result' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Result' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for KanturuStateChange.
+    /// </summary>
+    [Test]
+    public void KanturuStateChange_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 6;
+        var actualLength = KanturuStateChangeRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'State' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'State' exceeds packet boundary");
+        
+        // Validate field 'DetailState' boundary
+        Assert.That(5 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'DetailState' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for KanturuBattleResult.
+    /// </summary>
+    [Test]
+    public void KanturuBattleResult_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 5;
+        var actualLength = KanturuBattleResultRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Result' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Result' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for KanturuTimeLimit.
+    /// </summary>
+    [Test]
+    public void KanturuTimeLimit_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 8;
+        var actualLength = KanturuTimeLimitRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'TimeLimitMilliseconds' boundary
+        Assert.That(4 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'TimeLimitMilliseconds' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for KanturuMayaWideAreaAttack.
+    /// </summary>
+    [Test]
+    public void KanturuMayaWideAreaAttack_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 7;
+        var actualLength = KanturuMayaWideAreaAttackRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'ObjClassH' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'ObjClassH' exceeds packet boundary");
+        
+        // Validate field 'ObjClassL' boundary
+        Assert.That(5 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'ObjClassL' exceeds packet boundary");
+        
+        // Validate field 'Type' boundary
+        Assert.That(6 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Type' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for KanturuMonsterUserCount.
+    /// </summary>
+    [Test]
+    public void KanturuMonsterUserCount_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 6;
+        var actualLength = KanturuMonsterUserCountRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'MonsterCount' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'MonsterCount' exceeds packet boundary");
+        
+        // Validate field 'UserCount' boundary
+        Assert.That(5 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'UserCount' exceeds packet boundary");
+    }
 }
