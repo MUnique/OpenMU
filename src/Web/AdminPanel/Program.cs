@@ -2,6 +2,10 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("MUnique.OpenMU.Web.Tests")]
+
 namespace MUnique.OpenMU.Web.AdminPanel;
 
 using Microsoft.AspNetCore.Hosting;

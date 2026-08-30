@@ -135,6 +135,12 @@
   <data name="CastleSiegePendingRewardPlugIn_Description" xml:space="preserve">
     <value>Delivers queued Castle Siege participant rewards when a character enters the game.</value>
   </data>
+  <data name="CastleSiegeGuardsmanTalkPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege Guardsman</value>
+  </data>
+  <data name="CastleSiegeGuardsmanTalkPlugIn_Description" xml:space="preserve">
+    <value>Shows Land of Trials availability and its applicable entry fee.</value>
+  </data>
   <data name="MuHelperFeaturePlugIn_Name" xml:space="preserve">
     <value>MU Helper Feature</value>
   </data>

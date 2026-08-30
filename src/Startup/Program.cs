@@ -34,7 +34,7 @@ using MUnique.OpenMU.Persistence.Initialization.Version075;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
 using MUnique.OpenMU.Web.AdminPanel;
-using MUnique.OpenMU.Web.API;
+using MUnique.OpenMU.Web.AdminPanel.API;
 using MUnique.OpenMU.Web.Map.Map;
 using MUnique.OpenMU.Web.Shared;
 using Nito.AsyncEx.Synchronous;

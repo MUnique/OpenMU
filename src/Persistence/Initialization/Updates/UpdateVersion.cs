@@ -544,4 +544,9 @@ public enum UpdateVersion
     /// The version of the <see cref="RegenerationsRefactorPlugInSeason6"/>.
     /// </summary>
     RegenerationsRefactorSeason6 = 107,
+
+    /// <summary>
+    /// The version of the <see cref="ConfigureCastleSiegeEconomyUpdatePlugIn"/>.
+    /// </summary>
+    ConfigureCastleSiegeEconomy = 108,
 }
