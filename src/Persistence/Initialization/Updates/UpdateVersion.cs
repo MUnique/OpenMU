@@ -549,4 +549,14 @@ public enum UpdateVersion
     /// The version of the <see cref="ConfigureCastleSiegeEconomyUpdatePlugIn"/>.
     /// </summary>
     ConfigureCastleSiegeEconomy = 108,
+
+    /// <summary>
+    /// The version of the <see cref="AddKanturuDataUpdatePlugIn"/>.
+    /// </summary>
+    AddKanturuData = 109,
+
+    /// <summary>
+    /// The version of the <see cref="AddKanturuMapContentUpdatePlugIn"/>.
+    /// </summary>
+    AddKanturuMapContent = 110,
 }
