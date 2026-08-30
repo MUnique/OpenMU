@@ -541,9 +541,9 @@ public sealed class KanturuContext : MiniGameContext
         {
             await Task.Delay(TimeSpan.FromSeconds(1), ct).ConfigureAwait(false);
 
-            // Do NOT check HP while a teleport is already in progress.
-            // ExecuteNightmareTeleportAsync restores Nightmare's HP as part of the sequence;
-            // reading HP mid-teleport would give a stale (low) value and re-trigger.
+            // Do NOT check HP while a teleport is already in progress: the teleport sequence
+            // restores Nightmare's HP by itself, so reading the HP in the meantime would give
+            // a stale (low) value and trigger the next phase too early.
             if (Volatile.Read(ref this._nightmareTeleporting) != 0)
             {
                 continue;
