@@ -439,7 +439,7 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
         return players
             .OfType<RemotePlayer>()
             .Select(player => player.Connection is { } connection
-                ? new RemotePlayerConnectionInfo(player, connection, this.Id, this.Description)
+                ? new RemotePlayerConnectionInfo(player, connection, this.Id, this.Description, this._observationHandler)
                 : null)
             .Where(info => info is not null)
             .Select(info => (ICapturedConnectionInfo)info!)

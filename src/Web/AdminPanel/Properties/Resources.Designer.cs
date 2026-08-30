@@ -2367,6 +2367,87 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Archived sessions.
+        /// </summary>
+        public static string ArchivedSessions {
+            get {
+                return ResourceManager.GetString("ArchivedSessions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No archived sessions..
+        /// </summary>
+        public static string NoArchivedSessions {
+            get {
+                return ResourceManager.GetString("NoArchivedSessions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Archive.
+        /// </summary>
+        public static string ArchivedSession {
+            get {
+                return ResourceManager.GetString("ArchivedSession", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Running.
+        /// </summary>
+        public static string SessionIsRunning {
+            get {
+                return ResourceManager.GetString("SessionIsRunning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Observe.
+        /// </summary>
+        public static string ObserveAccount {
+            get {
+                return ResourceManager.GetString("ObserveAccount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Archives the traffic of this account for each of its sessions, until it&apos;s turned off again..
+        /// </summary>
+        public static string ObserveAccountHint {
+            get {
+                return ResourceManager.GetString("ObserveAccountHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete the archived session.
+        /// </summary>
+        public static string DeleteArchivedSession {
+            get {
+                return ResourceManager.GetString("DeleteArchivedSession", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You&apos;re about to delete the archived session &apos;{0}&apos;. Are you sure?.
+        /// </summary>
+        public static string DeleteArchivedSessionQuestion {
+            get {
+                return ResourceManager.GetString("DeleteArchivedSessionQuestion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Download the archived session.
+        /// </summary>
+        public static string DownloadArchivedSession {
+            get {
+                return ResourceManager.GetString("DownloadArchivedSession", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Shows the newest packets and scrolls to them. It&apos;s turned off while you scroll up, so that the view doesn&apos;t move away..
         /// </summary>
         public static string FollowNewPacketsHint {

@@ -66,6 +66,25 @@ internal sealed class NetworkObservationHandler
         player.PlayerDisconnected += this.OnPlayerDisconnectedAsync;
     }
 
+    /// <summary>
+    /// Applies a change of the observation to the running session of the player: it starts to
+    /// archive the traffic, or finishes the archived session.
+    /// </summary>
+    /// <param name="player">The player whose account has been (un)observed.</param>
+    /// <param name="isActive">If set to <c>true</c>, the traffic is observed.</param>
+    /// <returns>The async task.</returns>
+    public async ValueTask ApplyObservationAsync(Player player, bool isActive)
+    {
+        if (isActive)
+        {
+            await this.OnPlayerLoggedInAsync(player).ConfigureAwait(false);
+        }
+        else
+        {
+            await this.StopSessionAsync(player).ConfigureAwait(false);
+        }
+    }
+
     private async ValueTask OnPlayerLoggedInAsync(Player player)
     {
         try
@@ -123,6 +142,11 @@ internal sealed class NetworkObservationHandler
         player.PlayerEnteredWorld -= this.OnPlayerEnteredWorldAsync;
         player.PlayerDisconnected -= this.OnPlayerDisconnectedAsync;
 
+        await this.StopSessionAsync(player).ConfigureAwait(false);
+    }
+
+    private async ValueTask StopSessionAsync(Player player)
+    {
         if (!this._sessions.TryRemove(player, out var session))
         {
             return;

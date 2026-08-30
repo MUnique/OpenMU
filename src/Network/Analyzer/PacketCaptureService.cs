@@ -108,6 +108,17 @@ public sealed class PacketCaptureService : IPacketCaptureService
     }
 
     /// <inheritdoc />
+    public async ValueTask<bool> SetObservationAsync(Guid connectionId, bool isActive)
+    {
+        if (await this.FindConnectionAsync(connectionId).ConfigureAwait(false) is not { } connectionInfo)
+        {
+            return false;
+        }
+
+        return await connectionInfo.SetObservationAsync(isActive).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
     public ILiveCapturedConnection? GetRunningCapture(Guid connectionId)
     {
         return this._runningCaptures.TryGetValue(connectionId, out var running) ? running.Capture : null;

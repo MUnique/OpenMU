@@ -1,5 +1,6 @@
 ﻿@page "/network-analyzer"
 @page "/network-analyzer/{ConnectionId:guid}"
+@page "/network-analyzer/archive/{*SessionId}"
 
 @using MUnique.OpenMU.Network.Analyzer
 @using MUnique.OpenMU.Web.AdminPanel.Components.NetworkAnalyzer
@@ -33,11 +34,21 @@ else
                           OnSelect="this.OnConnectionSelectedAsync"
                           OnDisconnect="this.OnDisconnectAsync"
                           OnRefresh="this.RefreshConnectionsAsync"/>
+
+          @if (this.IsArchiveAvailable)
+          {
+            <ArchiveList Sessions="@this._archivedSessions"
+                         SelectedSessionId="@this._selectedSession?.Id"
+                         DownloadRoute="@ArchiveDownloadRoute"
+                         OnSelect="this.OnArchivedSessionSelectedAsync"
+                         OnDelete="this.OnDeleteArchivedSessionAsync"
+                         OnRefresh="this.RefreshArchiveAsync"/>
+          }
         }
       </div>
-      
+
             <div class="@TableColClass">
-        @if (this._capture is null)
+        @if (this._capture is null && this._selectedSession is null)
         {
           <p class="text-muted"><em>@Resources.SelectAConnection</em></p>
         }
@@ -46,9 +57,35 @@ else
           <div class="card mb-2">
             <div class="card-body py-2">
               <div class="d-flex flex-wrap gap-2 align-items-center">
-                <strong>@this._capture.ConnectionInfo.DisplayName</strong>
-                <span class="badge text-bg-secondary">@this._capture.ConnectionInfo.RemoteEndPoint</span>
-                <span class="badge text-bg-light">@this._capture.ConnectionInfo.ClientVersion</span>
+                @if (this._capture is { } capture)
+                {
+                  <strong>@capture.ConnectionInfo.DisplayName</strong>
+                  <span class="badge text-bg-secondary">@capture.ConnectionInfo.RemoteEndPoint</span>
+                  <span class="badge text-bg-light">@capture.ConnectionInfo.ClientVersion</span>
+                  @if (capture.ConnectionInfo.AccountName is not null)
+                  {
+                    <button type="button" title="@Resources.ObserveAccountHint"
+                            class="btn btn-sm @(capture.ConnectionInfo.IsObserved ? "btn-danger" : "btn-outline-danger")"
+                            @onclick="this.ToggleObservationAsync">
+                      <span class="oi oi-video" aria-hidden="true"></span> @Resources.ObserveAccount
+                    </button>
+                  }
+                }
+                else if (this._selectedSession is { } session)
+                {
+                  <strong>@session.Metadata.AccountName</strong>
+                  @if (session.Metadata.CharacterNames.Count > 0)
+                  {
+                    <span class="badge text-bg-secondary">@string.Join(", ", session.Metadata.CharacterNames)</span>
+                  }
+                  <span class="badge text-bg-light">@session.Metadata.ClientVersion</span>
+                  <span class="badge text-bg-info">@Resources.ArchivedSession</span>
+                  @if (session.IsRunning)
+                  {
+                    <span class="badge text-bg-success">@Resources.SessionIsRunning</span>
+                  }
+                  <span class="text-muted small">@session.Metadata.StartTimestamp.ToString("yyyy-MM-dd HH:mm:ss") UTC</span>
+                }
 
                 <div class="ms-auto d-flex gap-2 align-items-center">
                   <input type="text" class="form-control form-control-sm" style="width: 14rem"
@@ -64,9 +101,12 @@ else
                           @onclick="this.ToggleFollowing">
                     <span class="oi oi-eye" aria-hidden="true"></span> @Resources.FollowNewPackets
                   </button>
-                  <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="this.OnClearAsync">
-                    <span class="oi oi-trash" aria-hidden="true"></span> @Resources.ClearPackets
-                  </button>
+                  @if (this._capture is not null)
+                  {
+                    <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="this.OnClearAsync">
+                      <span class="oi oi-trash" aria-hidden="true"></span> @Resources.ClearPackets
+                    </button>
+                  }
                 </div>
               </div>
             </div>
@@ -75,7 +115,7 @@ else
           <PacketGrid Packets="@this._filteredPackets"
                       AutoScroll="@this._isFollowing"
                       Analyzer="@this._analyzer"
-                      ClientVersion="@this._capture.ConnectionInfo.ClientVersion"
+                      ClientVersion="@this.CurrentClientVersion"
                       SelectedPacket="@this._selectedPacket"
                       OnSelect="packet => this._selectedPacket = packet"
                       OnAtBottomChanged="this.OnAtBottomChanged"/>
