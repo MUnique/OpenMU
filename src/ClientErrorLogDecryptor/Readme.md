@@ -3,7 +3,7 @@
 This tool can be used to decrypt the MuError.log files which are created by the
 game client on every start.
 
-It might help to find/analyse errors which occured on the client side.
+It might help to find/analyse errors which occurred on the client side.
 
 ## Usage
 
