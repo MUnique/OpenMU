@@ -21,7 +21,7 @@ public static class NetworkObservationExtensions
     /// configuration of the database.
     /// </summary>
     /// <param name="services">The service collection.</param>
-    /// <returns>The service collection.</returns>
+    /// <returns>The given service collection, so that the calls can be chained.</returns>
     /// <remarks>
     /// It belongs to the game server, not to the admin panel: an observed account is archived
     /// as soon as it plays, no matter whether an admin panel is running somewhere.
