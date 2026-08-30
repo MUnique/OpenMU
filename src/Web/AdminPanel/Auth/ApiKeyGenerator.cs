@@ -12,16 +12,16 @@ using System.Security.Cryptography;
 public static class ApiKeyGenerator
 {
     /// <summary>
-    /// The prefix of every generated key, so it can be recognized as one, e.g. in a log or a
+    /// Gets the prefix of every generated key, so it can be recognized as one, e.g. in a log or a
     /// secret scanner.
     /// </summary>
-    public const string KeyPrefix = "omu_";
+    public static string KeyPrefix => "omu_";
 
     /// <summary>
-    /// The number of leading characters of a key which are stored in plain text, so a key can be
+    /// Gets the number of leading characters of a key which are stored in plain text, so a key can be
     /// told apart from another one in the admin panel without knowing it.
     /// </summary>
-    public const int VisiblePrefixLength = 12;
+    public static int VisiblePrefixLength => 12;
 
     private const int SecretByteCount = 32;
 

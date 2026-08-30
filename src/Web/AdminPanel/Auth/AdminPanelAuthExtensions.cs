@@ -26,19 +26,19 @@ using MUnique.OpenMU.Web.AdminPanel.Services;
 public static class AdminPanelAuthExtensions
 {
     /// <summary>
-    /// The environment variable which defines the login name of the bootstrap user.
+    /// Gets the environment variable which defines the login name of the bootstrap user.
     /// </summary>
-    public const string BootstrapUserVariableName = "OPENMU_ADMIN_USER";
+    public static string BootstrapUserVariableName => "OPENMU_ADMIN_USER";
 
     /// <summary>
-    /// The environment variable which defines the password of the bootstrap user.
+    /// Gets the environment variable which defines the password of the bootstrap user.
     /// </summary>
-    public const string BootstrapPasswordVariableName = "OPENMU_ADMIN_PASSWORD";
+    public static string BootstrapPasswordVariableName => "OPENMU_ADMIN_PASSWORD";
 
     /// <summary>
-    /// The environment variable which defines the base32 authenticator key of the bootstrap user.
+    /// Gets the environment variable which defines the base32 authenticator key of the bootstrap user.
     /// </summary>
-    public const string BootstrapAuthenticatorKeyVariableName = "OPENMU_ADMIN_TOTP_SECRET";
+    public static string BootstrapAuthenticatorKeyVariableName => "OPENMU_ADMIN_TOTP_SECRET";
 
     /// <summary>
     /// Adds the authentication of the admin panel to the service collection.
