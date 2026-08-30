@@ -26,6 +26,31 @@ internal class KanturuEvent : BaseMapInitializer
     internal const string Name = "Kanturu Event";
 
     /// <summary>
+    /// The monster number of Maya's body.
+    /// </summary>
+    protected const short MayaBodyNumber = 364;
+
+    private const short MayaLeftHandNumber = 362;
+
+    private const short MayaRightHandNumber = 363;
+
+    private const short NightmareNumber = 361;
+
+    private const short BladeHunterNumber = 354;
+
+    private const short DreadfearNumber = 360;
+
+    private const short TwinTaleNumber = 359;
+
+    private const short GenociderNumber = 357;
+
+    private const short PersonaNumber = 358;
+
+    private const short ElpisNpcNumber = 368;
+
+    private const short LaserTrapNumber = 106;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="KanturuEvent"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -35,6 +60,53 @@ internal class KanturuEvent : BaseMapInitializer
     {
     }
 
+    /// <summary>
+    /// Gets the spawn areas of the event waves, which are started by the
+    /// <c>KanturuContext</c> in the order of their wave number.
+    /// </summary>
+    /// <remarks>
+    /// It's shared with <c>AddKanturuMapContentUpdatePlugIn</c>, which adds these spawns to
+    /// databases which were created before the event existed.
+    /// Boss positions: Maya Left (202, 83), Maya Right (189, 82), Nightmare (78, 143).
+    /// Maya room (bounded by laser traps): X:174-217, Y:54-83. Nightmare zone: X:75-88, Y:97-143.
+    /// </remarks>
+    protected static IEnumerable<(short Number, short MonsterNumber, byte X1, byte X2, byte Y1, byte Y2, short Quantity, byte WaveNumber)> EventWaveSpawns { get; } =
+    [
+
+        // Wave 0: Maya body rises when the battle starts (fixed position below the fight room).
+        (299, MayaBodyNumber, 188, 188, 110, 110, 1, 0),
+
+        // Wave 1: Phase 1 — 30 Blade Hunter + 10 Dreadfear (Maya room).
+        (200, BladeHunterNumber, 175, 215, 58, 86, 30, 1),
+        (201, DreadfearNumber, 175, 215, 58, 86, 10, 1),
+
+        // Wave 2: Phase 1 boss — Maya's left hand.
+        (210, MayaLeftHandNumber, 202, 202, 83, 83, 1, 2),
+
+        // Wave 3: Phase 2 — 30 Blade Hunter + 10 Dreadfear (Maya room).
+        (220, BladeHunterNumber, 175, 215, 58, 86, 30, 3),
+        (221, DreadfearNumber, 175, 215, 58, 86, 10, 3),
+
+        // Wave 4: Phase 2 boss — Maya's right hand.
+        (230, MayaRightHandNumber, 189, 189, 82, 82, 1, 4),
+
+        // Wave 5: Phase 3 — 10 Dreadfear + 10 Twin Tale (Maya room).
+        (240, DreadfearNumber, 175, 215, 58, 86, 10, 5),
+        (241, TwinTaleNumber, 175, 215, 58, 86, 10, 5),
+
+        // Wave 6: Phase 3 bosses — both of Maya's hands.
+        (250, MayaLeftHandNumber, 202, 202, 83, 83, 1, 6),
+        (251, MayaRightHandNumber, 189, 189, 82, 82, 1, 6),
+
+        // Wave 7: Nightmare preparation — 15 Genocider + 15 Dreadfear + 15 Persona (Nightmare zone).
+        (260, GenociderNumber, 75, 88, 97, 137, 15, 7),
+        (261, DreadfearNumber, 75, 88, 97, 137, 15, 7),
+        (262, PersonaNumber, 75, 88, 97, 137, 15, 7),
+
+        // Wave 8: Nightmare.
+        (270, NightmareNumber, 78, 78, 143, 143, 1, 8),
+    ];
+
     /// <inheritdoc/>
     protected override byte MapNumber => Number;
 
@@ -42,7 +114,8 @@ internal class KanturuEvent : BaseMapInitializer
     protected override string MapName => Name;
 
     /// <summary>
-    /// Players who die inside the Kanturu Event map respawn at Kanturu Relics (map 38).
+    /// Gets the safezone map number. Players who die inside the Kanturu Event map
+    /// respawn at Kanturu Relics (map 38).
     /// </summary>
     protected override byte SafezoneMapNumber => KanturuRelics.Number;
 
@@ -55,14 +128,14 @@ internal class KanturuEvent : BaseMapInitializer
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
     {
-        yield return this.CreateMonsterSpawn(1, this.NpcDictionary[368], 77, 177, Direction.SouthWest); // Elpis NPC
+        yield return this.CreateMonsterSpawn(1, this.NpcDictionary[ElpisNpcNumber], 77, 177, Direction.SouthWest); // Elpis NPC
     }
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()
     {
         // Laser traps (auto-spawn on map load)
-        var laserTrap = this.NpcDictionary[106];
+        var laserTrap = this.NpcDictionary[LaserTrapNumber];
         yield return this.CreateMonsterSpawn(100, laserTrap, 60, 108);
         yield return this.CreateMonsterSpawn(101, laserTrap, 173, 61);
         yield return this.CreateMonsterSpawn(102, laserTrap, 173, 64);
@@ -102,52 +175,10 @@ internal class KanturuEvent : BaseMapInitializer
         yield return this.CreateMonsterSpawn(136, laserTrap, 176, 58);
         yield return this.CreateMonsterSpawn(137, laserTrap, 174, 59);
 
-        // --- Event wave spawns (OnceAtWaveStart) ---
-        // Boss positions: Maya Left (202,83), Maya Right (189,82), Nightmare (78,141)
-        // Maya room (bounded by laser traps): X:174-217, Y:54-83
-        // Nightmare zone: X:75-88, Y:97-141
-
-        // Wave 0: Maya body rises when battle starts (fixed position below the fight room)
-        var maya = this.NpcDictionary[364];
-        yield return this.CreateMonsterSpawn(299, maya, 188, 188, 110, 110, 1, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, 0);
-
-        // Wave 1: Phase 1 — 30 Blade Hunter + 10 Dreadfear (Maya room)
-        var bladeHunter = this.NpcDictionary[354];
-        var dreadfear = this.NpcDictionary[360];
-        yield return this.CreateMonsterSpawn(200, bladeHunter, 175, 215, 58, 86, 30, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, 1);
-        yield return this.CreateMonsterSpawn(201, dreadfear,   175, 215, 58, 86, 10, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, 1);
-
-        // Wave 2: Phase 1 Boss — Maya Left Hand
-        var mayaLeft = this.NpcDictionary[362];
-        yield return this.CreateMonsterSpawn(210, mayaLeft, 202, 202, 83, 83, 1, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, 2);
-
-        // Wave 3: Phase 2 — 30 Blade Hunter + 10 Dreadfear (Maya room)
-        yield return this.CreateMonsterSpawn(220, bladeHunter, 175, 215, 58, 86, 30, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, 3);
-        yield return this.CreateMonsterSpawn(221, dreadfear,   175, 215, 58, 86, 10, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, 3);
-
-        // Wave 4: Phase 2 Boss — Maya Right Hand
-        var mayaRight = this.NpcDictionary[363];
-        yield return this.CreateMonsterSpawn(230, mayaRight, 189, 189, 82, 82, 1, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, 4);
-
-        // Wave 5: Phase 3 — 10 Dreadfear + 10 Twin Tale (Maya room)
-        var twinTale = this.NpcDictionary[359];
-        yield return this.CreateMonsterSpawn(240, dreadfear, 175, 215, 58, 86, 10, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, 5);
-        yield return this.CreateMonsterSpawn(241, twinTale,  175, 215, 58, 86, 10, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, 5);
-
-        // Wave 6: Phase 3 Bosses — Maya Left Hand + Maya Right Hand
-        yield return this.CreateMonsterSpawn(250, mayaLeft,  202, 202, 83, 83, 1, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, 6);
-        yield return this.CreateMonsterSpawn(251, mayaRight, 189, 189, 82, 82, 1, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, 6);
-
-        // Wave 7: Nightmare Prep — 15 Genocider + 15 Dreadfear + 15 Persona (Nightmare zone)
-        var genocider = this.NpcDictionary[357];
-        var persona = this.NpcDictionary[358];
-        yield return this.CreateMonsterSpawn(260, genocider, 75, 88, 97, 137, 15, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, 7);
-        yield return this.CreateMonsterSpawn(261, dreadfear, 75, 88, 97, 137, 15, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, 7);
-        yield return this.CreateMonsterSpawn(262, persona,   75, 88, 97, 137, 15, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, 7);
-
-        // Wave 8: Nightmare
-        var nightmare = this.NpcDictionary[361];
-        yield return this.CreateMonsterSpawn(270, nightmare, 78, 78, 143, 143, 1, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, 8);
+        foreach (var (number, monsterNumber, x1, x2, y1, y2, quantity, waveNumber) in EventWaveSpawns)
+        {
+            yield return this.CreateMonsterSpawn(number, this.NpcDictionary[monsterNumber], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, waveNumber);
+        }
     }
 
     /// <inheritdoc/>
@@ -157,7 +188,7 @@ internal class KanturuEvent : BaseMapInitializer
         {
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
-            monster.Number = 364;
+            monster.Number = MayaBodyNumber;
             monster.Designation = "Maya";
             monster.MoveRange = 3;
             monster.AttackRange = 6;
@@ -189,7 +220,7 @@ internal class KanturuEvent : BaseMapInitializer
         {
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
-            monster.Number = 361;
+            monster.Number = NightmareNumber;
             monster.Designation = "Nightmare";
             monster.MoveRange = 3;
             monster.AttackRange = 5;
@@ -199,6 +230,7 @@ internal class KanturuEvent : BaseMapInitializer
             monster.RespawnDelay = new TimeSpan(0);
             monster.Attribute = 2;
             monster.NumberOfMaximumItemDrops = 5;
+
             // Nightmare uses a Decay (poison) area attack — applies poison DoT to players on each hit.
             monster.AttackSkill = this.GameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.Decay);
             var attributes = new Dictionary<AttributeDefinition, float>
@@ -223,7 +255,7 @@ internal class KanturuEvent : BaseMapInitializer
         {
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
-            monster.Number = 362;
+            monster.Number = MayaLeftHandNumber;
             monster.Designation = "Maya (Hand Left)";
             monster.MoveRange = 3;
             monster.AttackRange = 5;
@@ -233,6 +265,7 @@ internal class KanturuEvent : BaseMapInitializer
             monster.RespawnDelay = new TimeSpan(0);
             monster.Attribute = 2;
             monster.NumberOfMaximumItemDrops = 3;
+
             // Maya Left Hand uses IceStorm — AoE ice attack that hits a 3×3 tile area around the target.
             monster.AttackSkill = this.GameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.IceStorm);
             var attributes = new Dictionary<AttributeDefinition, float>
@@ -257,7 +290,7 @@ internal class KanturuEvent : BaseMapInitializer
         {
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
-            monster.Number = 363;
+            monster.Number = MayaRightHandNumber;
             monster.Designation = "Maya (Hand Right)";
             monster.MoveRange = 3;
             monster.AttackRange = 5;
@@ -267,6 +300,7 @@ internal class KanturuEvent : BaseMapInitializer
             monster.RespawnDelay = new TimeSpan(0);
             monster.Attribute = 2;
             monster.NumberOfMaximumItemDrops = 3;
+
             // Maya Right Hand uses IceStorm — same AoE ice attack as the left hand.
             monster.AttackSkill = this.GameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.IceStorm);
             var attributes = new Dictionary<AttributeDefinition, float>

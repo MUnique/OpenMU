@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.MiniGames;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlugIns;
+using MUnique.OpenMU.GameServer.Properties;
 using MUnique.OpenMU.Network.Packets.ClientToServer;
 using MUnique.OpenMU.PlugIns;
 
@@ -18,7 +19,7 @@ using MUnique.OpenMU.PlugIns;
 /// shows current player count and remaining time.
 /// </summary>
 [PlugIn]
-[Display(Name = "Kanturu Info Request Handler", Description = "Responds to 0xD1/0x00 (KanturuInfoRequest) with fresh event state info.")]
+[Display(Name = nameof(PlugInResources.KanturuInfoRequestHandlerPlugIn_Name), Description = nameof(PlugInResources.KanturuInfoRequestHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("D5F2B8A1-4C73-4E09-8A31-7B6F9E2C4D08")]
 [BelongsToGroup(KanturuGroupHandlerPlugIn.GroupKey)]
 internal class KanturuInfoRequestHandlerPlugIn : ISubPacketHandlerPlugIn

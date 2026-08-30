@@ -6,9 +6,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView.MiniGames;
 
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic.MiniGames;
+using MUnique.OpenMU.GameServer.Properties;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.PlugIns;
-using MUnique.OpenMU.GameServer.RemoteView;
 
 /// <summary>
 /// Sends Kanturu-specific state/result/HUD packets (0xD1 group) to the client.
@@ -26,7 +26,7 @@ using MUnique.OpenMU.GameServer.RemoteView;
 /// </list>
 /// </remarks>
 [PlugIn]
-[Display(Name = "Kanturu Event View Plugin", Description = "Sends Kanturu event state/result/HUD packets (0xD1 group) to the client.")]
+[Display(Name = nameof(PlugInResources.KanturuEventViewPlugIn_Name), Description = nameof(PlugInResources.KanturuEventViewPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("A3F1C8D2-5E94-4B7A-8C31-D6F2E0A49B15")]
 public sealed class KanturuEventViewPlugIn : IKanturuEventViewPlugIn
 {

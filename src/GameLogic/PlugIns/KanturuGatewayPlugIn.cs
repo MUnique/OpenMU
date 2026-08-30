@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 /// When a player talks to this NPC, the server sends a <c>0xD1/0x00</c> StateInfo
 /// packet so that the client opens the <c>INTERFACE_KANTURU2ND_ENTERNPC</c> dialog.
 /// The actual entry is triggered later when the client sends <c>0xD1/0x01</c>
-/// (KanturuEnterRequest) — handled by <see cref="KanturuEnterRequestHandlerPlugIn"/>.
+/// (KanturuEnterRequest) — handled by the <c>KanturuEnterRequestHandlerPlugIn</c>.
 /// </summary>
 [Guid("B7E4D2A3-1F85-4DAB-9074-19B4708389D5")]
 [PlugIn]
@@ -30,25 +30,12 @@ public class KanturuGatewayPlugIn : IPlayerTalkToNpcPlugIn
     // KANTURU_MAYA_DIRECTION_STANBY1 = 1 — shows user count and enables Enter button.
     private const byte DetailStandbyOpen = 1;
 
-    /// <inheritdoc />
-    public async ValueTask PlayerTalksToNpcAsync(Player player, NonPlayerCharacter npc, NpcTalkEventArgs eventArgs)
-    {
-        if (npc.Definition.Number != GatewayMachineNumber)
-        {
-            return;
-        }
-
-        // Mark as handled before any await so TalkNpcAction sees it synchronously.
-        eventArgs.HasBeenHandled = true;
-
-        await SendKanturuStateInfoAsync(player).ConfigureAwait(false);
-    }
-
     /// <summary>
     /// Sends the 0xD1/0x00 StateInfo packet to the player so the client opens the
-    /// gateway dialog.  Also called from <see cref="KanturuInfoRequestHandlerPlugIn"/>
+    /// gateway dialog. Also called from the <c>KanturuInfoRequestHandlerPlugIn</c>
     /// when the client refreshes the dialog.
     /// </summary>
+    /// <param name="player">The player which requested the state info.</param>
     public static async ValueTask SendKanturuStateInfoAsync(Player player)
     {
         var miniGameStartPlugIn = player.GameContext.PlugInManager
@@ -120,5 +107,19 @@ public class KanturuGatewayPlugIn : IPlayerTalkToNpcPlugIn
         await player.InvokeViewPlugInAsync<IKanturuEventViewPlugIn>(p =>
             p.ShowStateInfoAsync(state, detailState, canEnter, userCount, remainTime))
             .ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask PlayerTalksToNpcAsync(Player player, NonPlayerCharacter npc, NpcTalkEventArgs eventArgs)
+    {
+        if (npc.Definition.Number != GatewayMachineNumber)
+        {
+            return;
+        }
+
+        // Mark as handled before any await so TalkNpcAction sees it synchronously.
+        eventArgs.HasBeenHandled = true;
+
+        await SendKanturuStateInfoAsync(player).ConfigureAwait(false);
     }
 }

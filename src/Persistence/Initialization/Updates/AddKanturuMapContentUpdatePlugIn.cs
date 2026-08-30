@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 /// <remarks>
 /// <see cref="AddKanturuDataUpdatePlugIn"/> only adds the <see cref="MiniGameDefinition"/>.
-/// The bosses (Maya, both of her hands and Nightmare) and the nine wave spawns are part of
+/// The bosses (Maya, both of her hands and Nightmare) and the wave spawns are part of
 /// the map initializer, which only runs when a database is created from scratch. Without
 /// them the event starts but nothing ever spawns, so this update adds the missing content
 /// to the already existing map definition instead of creating a second one.
@@ -65,16 +65,6 @@ public class AddKanturuMapContentUpdatePlugIn : UpdatePlugInBase
     /// </summary>
     private sealed class KanturuMapContentSeeder : VersionSeasonSix.Maps.KanturuEvent
     {
-        private const short MayaBodyNumber = 364;
-        private const short MayaLeftHandNumber = 362;
-        private const short MayaRightHandNumber = 363;
-        private const short NightmareNumber = 361;
-        private const short BladeHunterNumber = 354;
-        private const short DreadfearNumber = 360;
-        private const short TwinTaleNumber = 359;
-        private const short GenociderNumber = 357;
-        private const short PersonaNumber = 358;
-
         public KanturuMapContentSeeder(IContext context, GameConfiguration gameConfiguration)
             : base(context, gameConfiguration)
         {
@@ -100,48 +90,10 @@ public class AddKanturuMapContentUpdatePlugIn : UpdatePlugInBase
                 return;
             }
 
-            var maya = this.NpcDictionary[MayaBodyNumber];
-            var mayaLeft = this.NpcDictionary[MayaLeftHandNumber];
-            var mayaRight = this.NpcDictionary[MayaRightHandNumber];
-            var nightmare = this.NpcDictionary[NightmareNumber];
-            var bladeHunter = this.NpcDictionary[BladeHunterNumber];
-            var dreadfear = this.NpcDictionary[DreadfearNumber];
-            var twinTale = this.NpcDictionary[TwinTaleNumber];
-            var genocider = this.NpcDictionary[GenociderNumber];
-            var persona = this.NpcDictionary[PersonaNumber];
-
-            // Wave 0: Maya's body rises when the battle starts.
-            this.AddWaveSpawn(map, 299, maya, 188, 188, 110, 110, 1, 0);
-
-            // Wave 1: Phase 1 - 30 Blade Hunter + 10 Dreadfear.
-            this.AddWaveSpawn(map, 200, bladeHunter, 175, 215, 58, 86, 30, 1);
-            this.AddWaveSpawn(map, 201, dreadfear, 175, 215, 58, 86, 10, 1);
-
-            // Wave 2: Phase 1 boss - Maya's left hand.
-            this.AddWaveSpawn(map, 210, mayaLeft, 202, 202, 83, 83, 1, 2);
-
-            // Wave 3: Phase 2 - 30 Blade Hunter + 10 Dreadfear.
-            this.AddWaveSpawn(map, 220, bladeHunter, 175, 215, 58, 86, 30, 3);
-            this.AddWaveSpawn(map, 221, dreadfear, 175, 215, 58, 86, 10, 3);
-
-            // Wave 4: Phase 2 boss - Maya's right hand.
-            this.AddWaveSpawn(map, 230, mayaRight, 189, 189, 82, 82, 1, 4);
-
-            // Wave 5: Phase 3 - 10 Dreadfear + 10 Twin Tale.
-            this.AddWaveSpawn(map, 240, dreadfear, 175, 215, 58, 86, 10, 5);
-            this.AddWaveSpawn(map, 241, twinTale, 175, 215, 58, 86, 10, 5);
-
-            // Wave 6: Phase 3 bosses - both of Maya's hands.
-            this.AddWaveSpawn(map, 250, mayaLeft, 202, 202, 83, 83, 1, 6);
-            this.AddWaveSpawn(map, 251, mayaRight, 189, 189, 82, 82, 1, 6);
-
-            // Wave 7: Nightmare preparation - 15 Genocider + 15 Dreadfear + 15 Persona.
-            this.AddWaveSpawn(map, 260, genocider, 75, 88, 97, 137, 15, 7);
-            this.AddWaveSpawn(map, 261, dreadfear, 75, 88, 97, 137, 15, 7);
-            this.AddWaveSpawn(map, 262, persona, 75, 88, 97, 137, 15, 7);
-
-            // Wave 8: Nightmare.
-            this.AddWaveSpawn(map, 270, nightmare, 78, 78, 143, 143, 1, 8);
+            foreach (var (number, monsterNumber, x1, x2, y1, y2, quantity, waveNumber) in EventWaveSpawns)
+            {
+                this.AddWaveSpawn(map, number, this.NpcDictionary[monsterNumber], x1, x2, y1, y2, quantity, waveNumber);
+            }
         }
 
         /// <summary>
@@ -149,8 +101,8 @@ public class AddKanturuMapContentUpdatePlugIn : UpdatePlugInBase
         /// </summary>
         /// <remarks>
         /// This mirrors <c>BaseMapInitializer.CreateMonsterSpawn</c>, which can't be used here:
-        /// it derives the id from the map definition which the initializer creates itself, and
-        /// it's only reachable through the <c>CreateMonsterSpawns</c> iterator, which would also
+        /// it assigns the map definition which the initializer creates itself, and it's only
+        /// reachable through the <c>CreateMonsterSpawns</c> iterator, which would also
         /// re-create the automatic spawns of the laser traps. Those would get the same
         /// deterministic ids as the ones which already exist in the database, and the change
         /// tracker rejects that.

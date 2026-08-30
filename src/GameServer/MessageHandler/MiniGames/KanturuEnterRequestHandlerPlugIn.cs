@@ -9,6 +9,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
+using MUnique.OpenMU.GameServer.Properties;
 using MUnique.OpenMU.Network.Packets.ClientToServer;
 using MUnique.OpenMU.PlugIns;
 
@@ -20,7 +21,7 @@ using MUnique.OpenMU.PlugIns;
 /// On failure <see cref="EnterMiniGameAction"/> already shows an error to the player.
 /// </summary>
 [PlugIn]
-[Display(Name = "Kanturu Enter Request Handler", Description = "Handles 0xD1/0x01 (KanturuEnterRequest) and teleports the player into the event.")]
+[Display(Name = nameof(PlugInResources.KanturuEnterRequestHandlerPlugIn_Name), Description = nameof(PlugInResources.KanturuEnterRequestHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("E6A3C9B2-5D84-4F10-9B42-8C7A0F3D5E19")]
 [BelongsToGroup(KanturuGroupHandlerPlugIn.GroupKey)]
 internal class KanturuEnterRequestHandlerPlugIn : ISubPacketHandlerPlugIn

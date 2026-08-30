@@ -35538,16 +35538,34 @@ public readonly struct KanturuStateChange
     /// </summary>
     public enum StateType
     {
+        /// <summary>
+        /// No active state.
+        /// </summary>
             None = 0,
 
+        /// <summary>
+        /// Standby phase; the event is waiting for players to enter.
+        /// </summary>
             Standby = 1,
 
+        /// <summary>
+        /// Maya battle phase, which consists of three monster waves and the boss fights against her hands.
+        /// </summary>
             MayaBattle = 2,
 
+        /// <summary>
+        /// Nightmare battle phase after all three Maya phases are cleared.
+        /// </summary>
             NightmareBattle = 3,
 
+        /// <summary>
+        /// Tower of Refinement phase; opens after Nightmare is defeated.
+        /// </summary>
             Tower = 4,
 
+        /// <summary>
+        /// Event has ended.
+        /// </summary>
             End = 5,
     }
 

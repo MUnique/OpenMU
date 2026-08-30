@@ -25,9 +25,9 @@ Main state; see KanturuStateInfo.StateType for value descriptions.
 
 | Value | Name | Description |
 |-------|------|-------------|
-| 0 | None |  |
-| 1 | Standby |  |
-| 2 | MayaBattle |  |
-| 3 | NightmareBattle |  |
-| 4 | Tower |  |
-| 5 | End |  |
+| 0 | None | No active state. |
+| 1 | Standby | Standby phase; the event is waiting for players to enter. |
+| 2 | MayaBattle | Maya battle phase, which consists of three monster waves and the boss fights against her hands. |
+| 3 | NightmareBattle | Nightmare battle phase after all three Maya phases are cleared. |
+| 4 | Tower | Tower of Refinement phase; opens after Nightmare is defeated. |
+| 5 | End | Event has ended. |

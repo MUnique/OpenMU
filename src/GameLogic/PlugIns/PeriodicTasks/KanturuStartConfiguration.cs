@@ -10,12 +10,6 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 public class KanturuStartConfiguration : MiniGameStartConfiguration
 {
     /// <summary>
-    /// Gets or sets how long the Tower of Refinement stays open after Nightmare is defeated.
-    /// Default is 1 hour. Set to zero to skip the tower phase.
-    /// </summary>
-    public TimeSpan TowerOfRefinementDuration { get; set; } = TimeSpan.FromHours(1);
-
-    /// <summary>
     /// Gets the default configuration for the Kanturu event.
     /// The event runs once per day. After Nightmare is defeated the Tower of Refinement
     /// stays open for 1 hour, then the event ends and the next occurrence is the following day.
@@ -31,4 +25,10 @@ public class KanturuStartConfiguration : MiniGameStartConfiguration
             Timetable = [new TimeOnly(20, 0)],   // 20:00 UTC — one occurrence per day
             TowerOfRefinementDuration = TimeSpan.FromHours(1),
         };
+
+    /// <summary>
+    /// Gets or sets how long the Tower of Refinement stays open after Nightmare is defeated.
+    /// Default is 1 hour. Set to zero to skip the tower phase.
+    /// </summary>
+    public TimeSpan TowerOfRefinementDuration { get; set; } = TimeSpan.FromHours(1);
 }

@@ -12593,12 +12593,36 @@
         <Name>StateType</Name>
         <Description>Main state; see KanturuStateInfo.StateType for value descriptions.</Description>
         <Values>
-          <EnumValue><Name>None</Name><Value>0</Value></EnumValue>
-          <EnumValue><Name>Standby</Name><Value>1</Value></EnumValue>
-          <EnumValue><Name>MayaBattle</Name><Value>2</Value></EnumValue>
-          <EnumValue><Name>NightmareBattle</Name><Value>3</Value></EnumValue>
-          <EnumValue><Name>Tower</Name><Value>4</Value></EnumValue>
-          <EnumValue><Name>End</Name><Value>5</Value></EnumValue>
+          <EnumValue>
+            <Name>None</Name>
+            <Description>No active state.</Description>
+            <Value>0</Value>
+          </EnumValue>
+          <EnumValue>
+            <Name>Standby</Name>
+            <Description>Standby phase; the event is waiting for players to enter.</Description>
+            <Value>1</Value>
+          </EnumValue>
+          <EnumValue>
+            <Name>MayaBattle</Name>
+            <Description>Maya battle phase, which consists of three monster waves and the boss fights against her hands.</Description>
+            <Value>2</Value>
+          </EnumValue>
+          <EnumValue>
+            <Name>NightmareBattle</Name>
+            <Description>Nightmare battle phase after all three Maya phases are cleared.</Description>
+            <Value>3</Value>
+          </EnumValue>
+          <EnumValue>
+            <Name>Tower</Name>
+            <Description>Tower of Refinement phase; opens after Nightmare is defeated.</Description>
+            <Value>4</Value>
+          </EnumValue>
+          <EnumValue>
+            <Name>End</Name>
+            <Description>Event has ended.</Description>
+            <Value>5</Value>
+          </EnumValue>
         </Values>
       </Enum>
     </Enums>
