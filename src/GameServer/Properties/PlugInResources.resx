@@ -1953,6 +1953,12 @@
   <data name="CastleSiegeGroupHandlerPlugIn_Description" xml:space="preserve">
     <value>Routes Castle Siege packet subcodes.</value>
   </data>
+  <data name="CastleSiegeHuntZoneGroupHandlerPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege Hunting-Zone Packet Group</value>
+  </data>
+  <data name="CastleSiegeHuntZoneGroupHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles grouped Castle Siege hunting-zone packets.</value>
+  </data>
   <data name="CastleSiegeDefenseBuyHandlerPlugIn_Name" xml:space="preserve">
     <value>Castle Siege Defense Purchase Handler</value>
   </data>
@@ -2342,5 +2348,65 @@
   </data>
   <data name="CastleSiegeOwnershipChangePlugIn_Description" xml:space="preserve">
     <value>Sends Castle Siege ownership changes to the game client.</value>
+  </data>
+  <data name="CastleSiegeTaxInfoHandlerPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege tax information request handler</value>
+  </data>
+  <data name="CastleSiegeTaxInfoHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles requests for the current Castle Siege tax and treasury information.</value>
+  </data>
+  <data name="CastleSiegeTaxChangeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege tax change request handler</value>
+  </data>
+  <data name="CastleSiegeTaxChangeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles requests to change a Castle Siege tax rate.</value>
+  </data>
+  <data name="CastleSiegeTributeWithdrawHandlerPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege tribute withdrawal request handler</value>
+  </data>
+  <data name="CastleSiegeTributeWithdrawHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles requests to withdraw money from the Castle Siege treasury.</value>
+  </data>
+  <data name="CastleSiegeHuntZoneToggleHandlerPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege hunting-zone access request handler</value>
+  </data>
+  <data name="CastleSiegeHuntZoneToggleHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles requests to change public access to the Castle Siege hunting zone.</value>
+  </data>
+  <data name="CastleSiegeHuntZoneEnterHandlerPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege hunting-zone entry request handler</value>
+  </data>
+  <data name="CastleSiegeHuntZoneEnterHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles requests to enter the Castle Siege hunting zone.</value>
+  </data>
+  <data name="CastleSiegeTaxInfoPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege tax information view</value>
+  </data>
+  <data name="CastleSiegeTaxInfoPlugIn_Description" xml:space="preserve">
+    <value>Sends the current Castle Siege tax and treasury information to the game client.</value>
+  </data>
+  <data name="CastleSiegeTaxChangeResultPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege tax change result view</value>
+  </data>
+  <data name="CastleSiegeTaxChangeResultPlugIn_Description" xml:space="preserve">
+    <value>Sends Castle Siege tax changes and their results to the game client.</value>
+  </data>
+  <data name="CastleSiegeTributeWithdrawResultPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege tribute withdrawal result view</value>
+  </data>
+  <data name="CastleSiegeTributeWithdrawResultPlugIn_Description" xml:space="preserve">
+    <value>Sends Castle Siege treasury withdrawal results to the game client.</value>
+  </data>
+  <data name="CastleSiegeHuntZoneGuardInfoPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege hunting-zone guardsman view</value>
+  </data>
+  <data name="CastleSiegeHuntZoneGuardInfoPlugIn_Description" xml:space="preserve">
+    <value>Sends Castle Siege hunting-zone access information to the game client.</value>
+  </data>
+  <data name="CastleSiegeHuntZoneResultPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege hunting-zone result view</value>
+  </data>
+  <data name="CastleSiegeHuntZoneResultPlugIn_Description" xml:space="preserve">
+    <value>Sends Castle Siege hunting-zone request results to the game client.</value>
   </data>
 </root>
