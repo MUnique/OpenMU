@@ -14,9 +14,9 @@ using MUnique.OpenMU.Web.AdminPanel.Services;
 public partial class AdminUsers
 {
     /// <summary>
-    /// The relative url of this page which directly opens the dialog to create a user.
+    /// Gets the relative url of this page which directly opens the dialog to create a user.
     /// </summary>
-    public const string CreateUserUrl = "users?create=true";
+    public static string CreateUserUrl => "users?create=true";
 
     private IList<AdminUser> _users = new List<AdminUser>();
     private bool _isLoading = true;

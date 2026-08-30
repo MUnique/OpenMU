@@ -2,20 +2,28 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Web.API
+namespace MUnique.OpenMU.Web.AdminPanel.API
 {
     using System.Text.Json;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameServer;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Persistence;
+    using MUnique.OpenMU.Web.AdminPanel.Auth;
 
     /// <summary>
     /// Server API controller.
     /// </summary>
+    /// <remarks>
+    /// This is the public API of the server, meant to be used by external applications like a
+    /// game launcher or a website. Unlike the rest of the admin panel, it accepts an API key in
+    /// addition to the authentication cookie, because such an application can't go through an
+    /// interactive login with a second factor.
+    /// </remarks>
     [Route("api/")]
+    [Authorize(AuthenticationSchemes = ApiKeyAuthenticationDefaults.ApiSchemes, Policy = AdminPolicies.Viewer)]
     public class ServerController : Controller
     {
         private IDictionary<int, IGameServer> _gameServers;
@@ -31,7 +39,12 @@ namespace MUnique.OpenMU.Web.API
         /// </summary>
         /// <param name="id">The server id.</param>
         /// <param name="msg">The message.</param>
+        /// <remarks>
+        /// This is the only endpoint of the API which does something instead of reporting
+        /// something, so it requires the operator role and not just the viewer role.
+        /// </remarks>
         [Route("send/{id=0}")]
+        [Authorize(AuthenticationSchemes = ApiKeyAuthenticationDefaults.ApiSchemes, Policy = AdminPolicies.Operator)]
         public async Task<IActionResult> SendGlobalMessageAsync(int id, [FromQuery(Name = "msg")] string msg)
         {
             var server = (GameServer)this._gameServers.Values.ElementAt(id);
