@@ -868,7 +868,9 @@ public class CastleSiegeNpcTests
             await talkPlugIn.PlayerTalksToNpcAsync(contender, attackMachine, new NpcTalkEventArgs()).ConfigureAwait(false);
             Assert.That(attackMachine.Operator, Is.SameAs(contender));
 
-            attackMachine.Operator = null;
+            fixture.Context.NpcController.ClearMachineOperator(contender);
+            Assert.That(attackMachine.Operator, Is.Null);
+
             fixture.Context.PlayerJoinSides[contender.SelectedCharacter!.Id] = CastleSiegeJoinSide.Defense;
             var wrongSideInteraction = new NpcTalkEventArgs();
             await talkPlugIn.PlayerTalksToNpcAsync(contender, attackMachine, wrongSideInteraction).ConfigureAwait(false);
@@ -897,6 +899,7 @@ public class CastleSiegeNpcTests
         var observer = await PlayerTestHelper.CreatePlayerAsync(fixture.GameServerContext).ConfigureAwait(false);
         observer.SelectedCharacter!.Id = Guid.NewGuid();
         var target = new Mock<IAttackable>();
+        var targetHit = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         var idSupport = target.As<ISupportIdUpdate>();
         idSupport.SetupProperty(identifiable => identifiable.Id);
         target.SetupGet(attackable => attackable.Id).Returns(() => idSupport.Object.Id);
@@ -909,7 +912,11 @@ public class CastleSiegeNpcTests
                 It.IsAny<bool>(),
                 It.IsAny<double>(),
                 It.IsAny<bool?>()))
-            .Returns(ValueTask.FromResult<HitInfo?>(null));
+            .Returns(() =>
+            {
+                targetHit.TrySetResult();
+                return ValueTask.FromResult<HitInfo?>(null);
+            });
 
         try
         {
@@ -942,13 +949,23 @@ public class CastleSiegeNpcTests
                 Assert.That(fixture.Context.GetPlayerJoinSide(fixture.Player), Is.EqualTo(CastleSiegeJoinSide.Attack1));
             });
 
+            fixture.Context.CurrentState = CastleSiegeState.Start;
+            Assert.That(await action.UseAsync(fixture.Player, fixture.Context, machine.Id, 1).ConfigureAwait(false), Is.False);
+
+            fixture.Player.OpenedNpc = machine;
+            fixture.Player.Position = new Point(
+                checked((byte)(machine.Position.X + CastleSiegeMachine.OperationRange + 1)),
+                machine.Position.Y);
+            Assert.That(await action.UseAsync(fixture.Player, fixture.Context, machine.Id, 1).ConfigureAwait(false), Is.False);
+            fixture.Player.Position = machine.Position;
+
             fixture.Context.CurrentState = CastleSiegeState.Ready;
             Assert.That(await action.UseAsync(fixture.Player, fixture.Context, machine.Id, 1).ConfigureAwait(false), Is.False);
             fixture.Context.CurrentState = CastleSiegeState.Start;
             Assert.That(await action.UseAsync(fixture.Player, fixture.Context, machine.Id, 0).ConfigureAwait(false), Is.False);
             Assert.That(await action.UseAsync(fixture.Player, fixture.Context, machine.Id, 2).ConfigureAwait(false), Is.False);
 
-            var firstShot = action.UseAsync(fixture.Player, fixture.Context, machine.Id, 1).AsTask();
+            Assert.That(await action.UseAsync(fixture.Player, fixture.Context, machine.Id, 1).ConfigureAwait(false), Is.True);
             Assert.That(machine.IsActive, Is.True);
             Assert.That(await action.UseAsync(fixture.Player, fixture.Context, machine.Id, 1).ConfigureAwait(false), Is.False);
             Mock.Get(fixture.Player.ViewPlugIns.GetPlugIn<ICastleSiegeMachineUseResultPlugIn>()!)
@@ -972,8 +989,7 @@ public class CastleSiegeNpcTests
                 Times.Never);
 
             impactDelay.SetResult();
-            Assert.That(await firstShot.ConfigureAwait(false), Is.True);
-            Assert.That(machine.IsActive, Is.False);
+            await targetHit.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
             target.Verify(
                 attackable => attackable.AttackByAsync(fixture.Player, null, false, 1.0, null),
                 Times.Once);
@@ -1003,7 +1019,6 @@ public class CastleSiegeNpcTests
             Assert.That(new CastleSiegeStatueListHandlerPlugIn().Key, Is.EqualTo(0x02));
             Assert.That(CastleSiegeMachineGroupHandlerPlugIn.GroupKey, Is.EqualTo(0xB7));
             Assert.That(new CastleSiegeMachineUseHandlerPlugIn().Key, Is.EqualTo(0x01));
-            Assert.That(new CastleSiegeMachineDamageHandlerPlugIn().Key, Is.EqualTo(0x04));
         });
     }
 
@@ -1029,9 +1044,6 @@ public class CastleSiegeNpcTests
                 .HandlePacketAsync(fixture.Player, Memory<byte>.Empty)
                 .ConfigureAwait(false);
             await new CastleSiegeMachineUseHandlerPlugIn()
-                .HandlePacketAsync(fixture.Player, Memory<byte>.Empty)
-                .ConfigureAwait(false);
-            await new CastleSiegeMachineDamageHandlerPlugIn()
                 .HandlePacketAsync(fixture.Player, Memory<byte>.Empty)
                 .ConfigureAwait(false);
         }

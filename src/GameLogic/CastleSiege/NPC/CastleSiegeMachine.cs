@@ -20,26 +20,17 @@ public sealed class CastleSiegeMachine : CastleSiegeNpcBase
     /// <param name="map">The map on which the machine is spawned.</param>
     /// <param name="runtime">The Castle Siege runtime entry.</param>
     /// <param name="intelligence">The machine intelligence.</param>
+    /// <param name="machineType">The machine type.</param>
     public CastleSiegeMachine(
         MonsterSpawnArea spawnInfo,
         MonsterDefinition stats,
         GameMap map,
         CastleSiegeNpcRuntime runtime,
-        CastleSiegeMachineIntelligence intelligence)
+        CastleSiegeMachineIntelligence intelligence,
+        CastleSiegeMachineType machineType)
         : base(spawnInfo, stats, map, runtime, intelligence)
     {
-        if (stats.Number == AttackMonsterNumber)
-        {
-            this.MachineType = CastleSiegeMachineType.Attack;
-        }
-        else if (stats.Number == DefenseMonsterNumber)
-        {
-            this.MachineType = CastleSiegeMachineType.Defense;
-        }
-        else
-        {
-            throw new ArgumentOutOfRangeException(nameof(stats), stats.Number, "Not a Castle Siege machine.");
-        }
+        this.MachineType = machineType;
     }
 
     /// <summary>
@@ -51,6 +42,11 @@ public sealed class CastleSiegeMachine : CastleSiegeNpcBase
     /// Gets the defending machine monster number.
     /// </summary>
     public static short DefenseMonsterNumber { get; } = 222;
+
+    /// <summary>
+    /// Gets the maximum distance from which a player can operate the machine.
+    /// </summary>
+    public static int OperationRange { get; } = 3;
 
     /// <summary>
     /// Gets the machine type.

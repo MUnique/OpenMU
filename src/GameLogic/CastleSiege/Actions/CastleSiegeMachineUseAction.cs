@@ -14,6 +14,11 @@ using MUnique.OpenMU.Pathfinding;
 /// </summary>
 public sealed class CastleSiegeMachineUseAction
 {
+    // The landing notification reaches players beyond the area which receives damage.
+    private const int ImpactNotificationRange = 6;
+    private const int ImpactDamageRange = 3;
+
+    // Keep the machine reserved until its client-visible projectile reaches the target.
     private static readonly TimeSpan ImpactDelay = TimeSpan.FromMilliseconds(1500);
     private readonly IRandomizer _randomizer;
     private readonly Func<TimeSpan, ValueTask> _delay;
@@ -67,6 +72,8 @@ public sealed class CastleSiegeMachineUseAction
                 || !player.IsAlive
                 || player.CurrentMap is not { } playerMap
                 || playerMap.GetObject(machineId) is not CastleSiegeMachine foundMachine
+                || !ReferenceEquals(player.OpenedNpc, foundMachine)
+                || !player.IsInRange(foundMachine.Position, CastleSiegeMachine.OperationRange)
                 || !ReferenceEquals(foundMachine.Operator, player)
                 || !foundMachine.CanBeUsedBy(context.GetPlayerJoinSide(player))
                 || foundMachine.IsActive
@@ -108,29 +115,65 @@ public sealed class CastleSiegeMachineUseAction
                     view => view.ShowMachineUseResultAsync(machine!.Id, machineType, target),
                     true)
                 .ConfigureAwait(false);
-            foreach (var observer in map!.GetAttackablesInRange(target, 6).OfType<Player>())
+            foreach (var observer in map!.GetAttackablesInRange(target, ImpactNotificationRange).OfType<Player>())
             {
                 await observer.InvokeViewPlugInAsync<ICastleSiegeMachineRegionNotifyPlugIn>(
                         view => view.ShowMachineRegionAsync(machineType, target))
                     .ConfigureAwait(false);
             }
 
+            _ = this.ApplyImpactAsync(context, player, machine!, map, target);
+            return true;
+        }
+        catch
+        {
+            machine!.IsActive = false;
+            throw;
+        }
+    }
+
+    private static bool IsValidImpactTarget(
+        CastleSiegeContext context,
+        CastleSiegeMachine machine,
+        Player player,
+        IAttackable attackable)
+    {
+        return !ReferenceEquals(attackable, player)
+               && attackable.IsActive()
+               && !attackable.IsAtSafezone()
+               && (attackable is not Player targetPlayer
+                   || !machine.CanBeUsedBy(context.GetPlayerJoinSide(targetPlayer)));
+    }
+
+    private async Task ApplyImpactAsync(
+        CastleSiegeContext context,
+        Player player,
+        CastleSiegeMachine machine,
+        GameMap map,
+        Point target)
+    {
+        try
+        {
             await this._delay.Invoke(ImpactDelay).ConfigureAwait(false);
             if (context.CurrentState != CastleSiegeState.Start)
             {
-                return true;
+                return;
             }
 
-            foreach (var attackable in map.GetAttackablesInRange(target, 3).Where(attackable => attackable.IsAlive))
+            foreach (var attackable in map.GetAttackablesInRange(target, ImpactDamageRange)
+                         .Where(attackable => IsValidImpactTarget(context, machine, player, attackable)))
             {
+                // Machines are passive NPCs; the operator supplies the combat attacker used by the regular damage pipeline.
                 await attackable.AttackByAsync(player, null, false).ConfigureAwait(false);
             }
-
-            return true;
+        }
+        catch (Exception ex)
+        {
+            player.Logger.LogError(ex, "Castle Siege warfare-machine impact failed.");
         }
         finally
         {
-            machine!.IsActive = false;
+            machine.IsActive = false;
         }
     }
 }

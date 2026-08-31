@@ -1971,12 +1971,6 @@
   <data name="CastleSiegeMachineUseHandlerPlugIn_Description" xml:space="preserve">
     <value>Handles Castle Siege warfare-machine fire requests.</value>
   </data>
-  <data name="CastleSiegeMachineDamageHandlerPlugIn_Name" xml:space="preserve">
-    <value>Castle Siege Warfare-Machine Impact Handler</value>
-  </data>
-  <data name="CastleSiegeMachineDamageHandlerPlugIn_Description" xml:space="preserve">
-    <value>Consumes legacy Castle Siege warfare-machine impact callbacks.</value>
-  </data>
   <data name="CastleSiegeMachineInterfacePlugIn_Name" xml:space="preserve">
     <value>Castle Siege Warfare-Machine Interface View</value>
   </data>

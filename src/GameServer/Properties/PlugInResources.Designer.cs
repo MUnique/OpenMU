@@ -745,24 +745,6 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
 
         /// <summary>
-        ///   Looks up a localized string similar to Consumes legacy Castle Siege warfare-machine impact callbacks..
-        /// </summary>
-        public static string CastleSiegeMachineDamageHandlerPlugIn_Description {
-            get {
-                return ResourceManager.GetString("CastleSiegeMachineDamageHandlerPlugIn_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Castle Siege Warfare-Machine Impact Handler.
-        /// </summary>
-        public static string CastleSiegeMachineDamageHandlerPlugIn_Name {
-            get {
-                return ResourceManager.GetString("CastleSiegeMachineDamageHandlerPlugIn_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
         ///   Looks up a localized string similar to Routes Castle Siege warfare-machine packet subcodes..
         /// </summary>
         public static string CastleSiegeMachineGroupHandlerPlugIn_Description {

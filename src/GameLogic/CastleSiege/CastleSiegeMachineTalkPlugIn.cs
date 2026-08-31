@@ -54,7 +54,8 @@ public sealed class CastleSiegeMachineTalkPlugIn : IPlayerTalkToNpcPlugIn
         if (context is not { Configuration.Enabled: true }
             || context.CurrentState != CastleSiegeState.Start
             || !player.IsAlive
-            || !ReferenceEquals(player.CurrentMap, machine.CurrentMap))
+            || !ReferenceEquals(player.CurrentMap, machine.CurrentMap)
+            || !player.IsInRange(machine.Position, CastleSiegeMachine.OperationRange))
         {
             return;
         }
