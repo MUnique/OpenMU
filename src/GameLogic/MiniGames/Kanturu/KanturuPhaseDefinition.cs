@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.MiniGames.Kanturu;
 
+using MUnique.OpenMU.DataModel.Configuration;
+
 /// <summary>
 /// The definition of one phase of the Kanturu event. The <see cref="KanturuContext"/> runs the
 /// <see cref="KanturuEventDefinition.Phases"/> one after another.
@@ -56,9 +58,9 @@ public class KanturuPhaseDefinition
     public int KillTarget { get; set; }
 
     /// <summary>
-    /// Gets or sets the numbers of the monsters which count towards the <see cref="KillTarget"/>.
+    /// Gets or sets the monsters which count towards the <see cref="KillTarget"/>.
     /// </summary>
-    public IList<short> CountedMonsterNumbers { get; set; } = new List<short>();
+    public IList<MonsterDefinition> CountedMonsters { get; set; } = new List<MonsterDefinition>();
 
     /// <summary>
     /// Gets or sets the duration after which the phase is finished, regardless of the

@@ -21,7 +21,7 @@ using MUnique.OpenMU.PlugIns;
 /// The run of the event is described by a <see cref="KanturuEventDefinition"/>, which is
 /// configured at the <see cref="KanturuStartPlugIn"/>. This context just executes its
 /// <see cref="KanturuEventDefinition.Phases"/> one after another, so the event can be adapted
-/// without code changes. <see cref="KanturuEventDefinition.Default"/> describes the original
+/// without code changes. <see cref="KanturuEventDefinition.CreateDefault"/> describes the original
 /// season 6 event: three waves of monsters which each end with a fight against the hands of
 /// Maya, then the transition into the Nightmare zone and the boss fight, and finally the Tower
 /// of Refinement.
@@ -38,7 +38,7 @@ public sealed class KanturuContext : MiniGameContext
 
     private readonly IMapInitializer _mapInitializer;
     private readonly KanturuEventDefinition _definition;
-    private readonly short? _nightmareMonsterNumber;
+    private readonly MonsterDefinition? _nightmareMonsterDefinition;
 
     private KanturuPhaseDefinition? _currentPhase;
     private int _waveKillCount;
@@ -73,8 +73,8 @@ public sealed class KanturuContext : MiniGameContext
         // The definition is resolved once, so that a configuration change doesn't affect a
         // running event.
         this._definition = GetEventDefinition(gameContext);
-        this._nightmareMonsterNumber = this._definition.Phases
-            .FirstOrDefault(phase => phase.Kind == KanturuPhaseKind.Nightmare)?.Nightmare?.MonsterNumber;
+        this._nightmareMonsterDefinition = this._definition.Phases
+            .FirstOrDefault(phase => phase.Kind == KanturuPhaseKind.Nightmare)?.Nightmare?.Monster;
     }
 
     /// <summary>
@@ -119,11 +119,11 @@ public sealed class KanturuContext : MiniGameContext
                 return;
             }
 
-            var monsterNumber = (short)monster.Definition.Number;
+            var definition = monster.Definition;
             var phase = this._currentPhase;
-            if (phase is null || !phase.CountedMonsterNumbers.Contains(monsterNumber))
+            if (phase is null || !phase.CountedMonsters.Any(counted => IsSameMonster(counted, definition)))
             {
-                if (monsterNumber == this._nightmareMonsterNumber)
+                if (IsSameMonster(this._nightmareMonsterDefinition, definition))
                 {
                     this.Logger.LogWarning(
                         "Kanturu: Nightmare died during phase {Phase}, where it isn't expected. The barrier is NOT opened.",
@@ -136,7 +136,7 @@ public sealed class KanturuContext : MiniGameContext
             var killed = Interlocked.Increment(ref this._waveKillCount);
             await this.ShowMonsterUserCountAsync(Math.Max(0, phase.KillTarget - killed), this.PlayerCount).ConfigureAwait(false);
 
-            if (phase.Kind == KanturuPhaseKind.Nightmare && monsterNumber == phase.Nightmare?.MonsterNumber)
+            if (phase.Kind == KanturuPhaseKind.Nightmare && IsSameMonster(phase.Nightmare?.Monster, definition))
             {
                 // Open the barrier immediately from the death event. Don't wait for the game
                 // loop - it may be interrupted by a cancellation of the GameEndedToken before
@@ -185,7 +185,17 @@ public sealed class KanturuContext : MiniGameContext
             return definition;
         }
 
-        return KanturuEventDefinition.Default;
+        return KanturuEventDefinition.CreateDefault(gameContext.Configuration);
+    }
+
+    /// <summary>
+    /// Determines whether the monster definitions describe the same monster. They're compared
+    /// by their number, because the configured definition may be a different instance than the
+    /// one of the spawned monster.
+    /// </summary>
+    private static bool IsSameMonster(MonsterDefinition? first, MonsterDefinition? second)
+    {
+        return first is not null && second is not null && first.Number == second.Number;
     }
 
     private async Task RunKanturuGameLoopAsync(CancellationToken ct)
@@ -304,7 +314,7 @@ public sealed class KanturuContext : MiniGameContext
 
         ValueTask OnObjectAddedAsync((GameMap Map, ILocateable Object) args)
         {
-            if (args.Object is Monster monster && (short)monster.Definition.Number == nightmare.MonsterNumber)
+            if (args.Object is Monster monster && IsSameMonster(nightmare.Monster, monster.Definition))
             {
                 nightmareFound.TrySetResult(monster);
             }

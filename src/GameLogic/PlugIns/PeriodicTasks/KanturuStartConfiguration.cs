@@ -25,12 +25,17 @@ public class KanturuStartConfiguration : MiniGameStartConfiguration
             EntranceClosedMessage = "Kanturu Refinery Tower entrance closed.",
             TaskDuration = TimeSpan.FromMinutes(135),
             Timetable = [new TimeOnly(20, 0)],   // 20:00 UTC — one occurrence per day
-            EventDefinition = KanturuEventDefinition.Default,
         };
 
     /// <summary>
     /// Gets or sets the definition of the event run itself: its phases, the monsters which
     /// have to be killed in each of them, the boss fight and the Tower of Refinement.
     /// </summary>
-    public KanturuEventDefinition EventDefinition { get; set; } = KanturuEventDefinition.Default;
+    /// <remarks>
+    /// It's <see langword="null"/> until it's either seeded by the data initialization or
+    /// filled in by an administrator, because the monsters can only be referenced when the
+    /// game configuration is known. The <see cref="MiniGames.Kanturu.KanturuContext"/> falls
+    /// back to <see cref="KanturuEventDefinition.CreateDefault"/> in that case.
+    /// </remarks>
+    public KanturuEventDefinition? EventDefinition { get; set; }
 }

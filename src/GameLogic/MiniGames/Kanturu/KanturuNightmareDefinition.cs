@@ -4,15 +4,17 @@
 
 namespace MUnique.OpenMU.GameLogic.MiniGames.Kanturu;
 
+using MUnique.OpenMU.DataModel.Configuration;
+
 /// <summary>
 /// The definition of the Nightmare boss fight.
 /// </summary>
 public class KanturuNightmareDefinition
 {
     /// <summary>
-    /// Gets or sets the monster number of the boss.
+    /// Gets or sets the monster of the boss.
     /// </summary>
-    public short MonsterNumber { get; set; }
+    public MonsterDefinition? Monster { get; set; }
 
     /// <summary>
     /// Gets or sets how long the context waits for the boss to spawn before it gives up
@@ -38,7 +40,7 @@ public class KanturuNightmareDefinition
     /// </summary>
     /// <remarks>
     /// This is a purely visual broadcast. The actual area damage is done by the
-    /// <see cref="MUnique.OpenMU.DataModel.Configuration.MonsterDefinition.AttackSkill"/>.
+    /// <see cref="MonsterDefinition.AttackSkill"/>.
     /// </remarks>
     public short SpecialAttackSkillNumber { get; set; } = 14;
 
