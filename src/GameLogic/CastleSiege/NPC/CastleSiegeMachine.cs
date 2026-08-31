@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.CastleSiege.NPC;
 
+using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.CastleSiege.Intelligence;
 
 /// <summary>
@@ -27,6 +28,18 @@ public sealed class CastleSiegeMachine : CastleSiegeNpcBase
         CastleSiegeMachineIntelligence intelligence)
         : base(spawnInfo, stats, map, runtime, intelligence)
     {
+        if (stats.Number == AttackMonsterNumber)
+        {
+            this.MachineType = CastleSiegeMachineType.Attack;
+        }
+        else if (stats.Number == DefenseMonsterNumber)
+        {
+            this.MachineType = CastleSiegeMachineType.Defense;
+        }
+        else
+        {
+            throw new ArgumentOutOfRangeException(nameof(stats), stats.Number, "Not a Castle Siege machine.");
+        }
     }
 
     /// <summary>
@@ -40,6 +53,11 @@ public sealed class CastleSiegeMachine : CastleSiegeNpcBase
     public static short DefenseMonsterNumber { get; } = 222;
 
     /// <summary>
+    /// Gets the machine type.
+    /// </summary>
+    public CastleSiegeMachineType MachineType { get; }
+
+    /// <summary>
     /// Gets or sets the current operator.
     /// </summary>
     public Player? Operator { get; set; }
@@ -48,4 +66,34 @@ public sealed class CastleSiegeMachine : CastleSiegeNpcBase
     /// Gets or sets a value indicating whether this machine is active.
     /// </summary>
     public bool IsActive { get; set; }
+
+    /// <summary>
+    /// Determines whether the machine can be operated by the specified side.
+    /// </summary>
+    /// <param name="side">The player's Castle Siege side.</param>
+    /// <returns><see langword="true"/> when the side matches this machine.</returns>
+    public bool CanBeUsedBy(CastleSiegeJoinSide side)
+    {
+        return this.MachineType switch
+        {
+            CastleSiegeMachineType.Attack => side is
+                CastleSiegeJoinSide.Attack1
+                or CastleSiegeJoinSide.Attack2
+                or CastleSiegeJoinSide.Attack3,
+            CastleSiegeMachineType.Defense => side == CastleSiegeJoinSide.Defense,
+            _ => false,
+        };
+    }
+
+    /// <inheritdoc />
+    protected override void Dispose(bool managed)
+    {
+        if (managed)
+        {
+            this.Operator = null;
+            this.IsActive = false;
+        }
+
+        base.Dispose(managed);
+    }
 }

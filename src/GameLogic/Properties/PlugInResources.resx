@@ -123,6 +123,12 @@
   <data name="CastleSiegeLeverTalkPlugIn_Description" xml:space="preserve">
     <value>Opens the operation interface for a Castle Siege gate lever.</value>
   </data>
+  <data name="CastleSiegeMachineTalkPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege Warfare Machine</value>
+  </data>
+  <data name="CastleSiegeMachineTalkPlugIn_Description" xml:space="preserve">
+    <value>Opens a Castle Siege warfare machine for an authorized player.</value>
+  </data>
   <data name="CastleSiegePlugIn_Name" xml:space="preserve">
     <value>Castle Siege</value>
   </data>

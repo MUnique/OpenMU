@@ -745,6 +745,114 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Consumes legacy Castle Siege warfare-machine impact callbacks..
+        /// </summary>
+        public static string CastleSiegeMachineDamageHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeMachineDamageHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Warfare-Machine Impact Handler.
+        /// </summary>
+        public static string CastleSiegeMachineDamageHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeMachineDamageHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Routes Castle Siege warfare-machine packet subcodes..
+        /// </summary>
+        public static string CastleSiegeMachineGroupHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeMachineGroupHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Warfare-Machine Packet Group.
+        /// </summary>
+        public static string CastleSiegeMachineGroupHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeMachineGroupHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Sends Castle Siege warfare-machine interface packets to the game client..
+        /// </summary>
+        public static string CastleSiegeMachineInterfacePlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeMachineInterfacePlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Warfare-Machine Interface View.
+        /// </summary>
+        public static string CastleSiegeMachineInterfacePlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeMachineInterfacePlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Sends Castle Siege warfare-machine impact-region notifications to the game client..
+        /// </summary>
+        public static string CastleSiegeMachineRegionNotifyPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeMachineRegionNotifyPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Warfare-Machine Region View.
+        /// </summary>
+        public static string CastleSiegeMachineRegionNotifyPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeMachineRegionNotifyPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Handles Castle Siege warfare-machine fire requests..
+        /// </summary>
+        public static string CastleSiegeMachineUseHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeMachineUseHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Warfare-Machine Fire Handler.
+        /// </summary>
+        public static string CastleSiegeMachineUseHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeMachineUseHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Sends Castle Siege warfare-machine fire results to the game client..
+        /// </summary>
+        public static string CastleSiegeMachineUseResultPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeMachineUseResultPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Warfare-Machine Use Result View.
+        /// </summary>
+        public static string CastleSiegeMachineUseResultPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeMachineUseResultPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Handles Castle Siege Sign of Lord registration requests..
         /// </summary>
         public static string CastleSiegeMarkRegistrationHandlerPlugIn_Description {
