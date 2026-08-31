@@ -260,6 +260,7 @@ internal sealed class BotNavigator : AsyncDisposable
     private static readonly ConcurrentBag<PathFinder> TravelPathFinders = CreateTravelPathFinderPool();
 
     private readonly OfflinePlayer _player;
+    private readonly TimeProvider _timeProvider;
     private readonly CancellationTokenSource _cts = new();
 
     private Timer? _timer;
@@ -293,16 +294,27 @@ internal sealed class BotNavigator : AsyncDisposable
     /// </summary>
     private DateTime _nextShoppingCheckUtc = DateTime.UtcNow + (ShoppingCooldown * Rand.NextDouble());
     private DateTime? _resetDueAtUtc;
-    private short _leaderMapNumber;
-    private DateTime _leaderOnMapSinceUtc = DateTime.MinValue;
+    private Guid _leaderMapId;
+    private DateTimeOffset _leaderOnMapSinceUtc = DateTimeOffset.MinValue;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BotNavigator"/> class.
     /// </summary>
     /// <param name="player">The bot player.</param>
     public BotNavigator(OfflinePlayer player)
+        : this(player, TimeProvider.System)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BotNavigator"/> class.
+    /// </summary>
+    /// <param name="player">The bot player.</param>
+    /// <param name="timeProvider">The time provider.</param>
+    internal BotNavigator(OfflinePlayer player, TimeProvider timeProvider)
     {
         this._player = player;
+        this._timeProvider = timeProvider;
     }
 
     /// <summary>
@@ -394,6 +406,129 @@ internal sealed class BotNavigator : AsyncDisposable
         return terrain.GetWalkableCoordinate(safezoneMap.GetSafezoneGate(terrain)) is not null;
     }
 
+    /// <summary>
+    /// Keeps a party member with its leader: warps to the leader's map when the leader warped away,
+    /// and walks towards the leader when it moved out of the follow range.
+    /// </summary>
+    /// <param name="map">The bot's current map.</param>
+    /// <param name="leader">The party leader.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>True, if following consumed this tick; false, if the bot is close enough and should hunt normally.</returns>
+    internal async ValueTask<bool> TryFollowLeaderAsync(GameMap map, Player leader, CancellationToken cancellationToken)
+    {
+        if (!ReferenceEquals(leader.CurrentMap, map))
+        {
+            ExitGate? warpListGate = null;
+            if (leader.CurrentMap is { } targetMap
+                && (this.TryGetLegalWarp(targetMap.Definition, out var leaderWarp)
+                    ? (warpListGate = leaderWarp.Gate) is null
+                    : targetMap.Definition.Number != this._player.SelectedCharacter?.CharacterClass?.HomeMap?.Number))
+            {
+                // The leader moved to a map the bot's plain character level cannot legally enter
+                // (level gates map access, the same rule as everywhere else). Rather than trail
+                // behind unreachable or sneak in through a back door, the bot leaves the group.
+                if (this._player.Party is { } party)
+                {
+                    this._player.Logger.LogDebug(
+                        "Bot {Character} leaves its party: it cannot legally follow '{Leader}' to map {Map}.",
+                        this._player.Name,
+                        leader.Name,
+                        targetMap.Definition.Name);
+                    await party.KickMySelfAsync(this._player).ConfigureAwait(false);
+                }
+
+                return true;
+            }
+
+            // Only follow a leader who SETTLED on the new map: a leader in transit (pulling a town
+            // scroll for shopping, passing through a gate, hopping back and forth) used to drag its
+            // whole party along on every hop - and since the followers land on the map's spawn gate
+            // rather than next to him, they were still walking over when he warped away again.
+            if (!this.HasLeaderSettled(leader))
+            {
+                return true;
+            }
+
+            // Prefer a spawn gate of the leader's map; maps without one (the Dungeon has no town)
+            // fall back to the warp list gate - the same spot the leader warped to. Without the
+            // fallback a follower could neither warp after its leader nor hunt (following consumed
+            // its ticks), and only the stuck watchdog kept it twitching between hunting grounds.
+            if (DateTime.UtcNow - this._lastWarpUtc >= FollowWarpCooldown
+                && leader.CurrentMap is { } leaderMap
+                && (leaderMap.Definition.ExitGates.Where(g => g.IsSpawnGate).SelectRandom() ?? warpListGate) is { } leaderGate)
+            {
+                this._lastWarpUtc = DateTime.UtcNow;
+                this._hasDestination = false;
+                this._travelPath = null;
+                this._player.Logger.LogDebug(
+                    "Bot {Character} following party leader {Leader} to map {Map}.",
+                    this._player.Name,
+                    leader.Name,
+                    leaderMap.Definition.Name);
+                await this._player.WarpToAsync(leaderGate).ConfigureAwait(false);
+                await this.TryPersistCurrentMapAsync(leaderMap.Definition).ConfigureAwait(false);
+            }
+
+            return true;
+        }
+
+        if (this._player.GetDistanceTo(leader.Position) > FollowDistance)
+        {
+            this._destination = leader.Position;
+            this._hasDestination = true;
+            if (await this.TravelTowardAsync(map, leader.Position, cancellationToken).ConfigureAwait(false))
+            {
+                return true;
+            }
+
+            // Some maps represent several floors as disconnected regions on the same map id
+            // (Dungeon, Lost Tower, ...). If walking cannot reach the leader, regroup through the
+            // legal warp entry nearest to him instead of re-issuing an impossible path every tick.
+            if (DateTime.UtcNow - this._lastWarpUtc >= FollowWarpCooldown
+                && this.TryGetNearestLegalWarp(map.Definition, leader.Position, out var leaderWarp)
+                && leaderWarp.Gate is { } leaderGate)
+            {
+                this._lastWarpUtc = DateTime.UtcNow;
+                this._hasDestination = false;
+                this._travelPath = null;
+                this._player.Logger.LogDebug(
+                    "Bot {Character} following party leader {Leader} within map {Map} through warp {Warp}.",
+                    this._player.Name,
+                    leader.Name,
+                    map.Definition.Name,
+                    leaderWarp.Name);
+                await this._player.WarpToAsync(leaderGate).ConfigureAwait(false);
+                await this.TryPersistCurrentMapAsync(map.Definition).ConfigureAwait(false);
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Whether the leader has been on his current map long enough (<see cref="LeaderSettleTime"/>) for the
+    /// bot to follow him there. Tracks the leader's map instance per bot, so each follower makes the call on its own.
+    /// </summary>
+    /// <param name="leader">The party leader.</param>
+    /// <returns>True, if the leader has settled long enough.</returns>
+    internal bool HasLeaderSettled(Player leader)
+    {
+        if (leader.CurrentMap is not { } leaderMap)
+        {
+            return false;
+        }
+
+        if (this._leaderMapId != leaderMap.Id)
+        {
+            this._leaderMapId = leaderMap.Id;
+            this._leaderOnMapSinceUtc = this._timeProvider.GetUtcNow();
+        }
+
+        return this._timeProvider.GetUtcNow() - this._leaderOnMapSinceUtc >= LeaderSettleTime;
+    }
+
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore()
     {
@@ -466,6 +601,26 @@ internal sealed class BotNavigator : AsyncDisposable
         var centerX = (area.X1 + area.X2) / 2;
         var centerY = (area.Y1 + area.Y2) / 2;
         return Math.Abs(from.X - centerX) + Math.Abs(from.Y - centerY);
+    }
+
+    private static bool IsSameMapDefinition(GameMapDefinition left, GameMapDefinition right)
+    {
+        var leftId = left.GetId();
+        var rightId = right.GetId();
+        if (leftId != Guid.Empty && rightId != Guid.Empty)
+        {
+            return leftId == rightId;
+        }
+
+        return ReferenceEquals(left, right)
+               || (left.Number == right.Number && left.Discriminator == right.Discriminator);
+    }
+
+    private static int GateDistance(Gate gate, Point target)
+    {
+        var centerX = (gate.X1 + gate.X2) / 2;
+        var centerY = (gate.Y1 + gate.Y2) / 2;
+        return Math.Abs(target.X - centerX) + Math.Abs(target.Y - centerY);
     }
 
     /// <summary>
@@ -1136,76 +1291,6 @@ internal sealed class BotNavigator : AsyncDisposable
     }
 
     /// <summary>
-    /// Follows the party leader across maps: warps to the leader's map when the leader warped away and
-    /// settled there. Same-map spacing is NOT handled here - it is owned by
-    /// <see cref="EvaluateFollowerHuntingAsync"/>, which gates the regroup walk on "nothing to fight",
-    /// so a follower engaged at hunting range is never yanked back mid-fight.
-    /// </summary>
-    /// <returns>True, if cross-map following consumed this tick; false, if on the same map (follower hunting runs next).</returns>
-    private async ValueTask<bool> TryFollowLeaderAsync(GameMap map, Player leader, CancellationToken cancellationToken)
-    {
-        if (!ReferenceEquals(leader.CurrentMap, map))
-        {
-            ExitGate? warpListGate = null;
-            if (leader.CurrentMap is { } targetMap
-                && (this.TryGetLegalWarp(targetMap.Definition, out var leaderWarp)
-                    ? (warpListGate = leaderWarp.Gate) is null
-                    : targetMap.Definition.Number != this._player.SelectedCharacter?.CharacterClass?.HomeMap?.Number))
-            {
-                // The leader moved to a map the bot's plain character level cannot legally enter
-                // (level gates map access, the same rule as everywhere else). Rather than trail
-                // behind unreachable or sneak in through a back door, the bot leaves the group.
-                if (this._player.Party is { } party)
-                {
-                    this._player.Logger.LogDebug(
-                        "Bot {Character} leaves its party: it cannot legally follow '{Leader}' to map {Map}.",
-                        this._player.Name,
-                        leader.Name,
-                        targetMap.Definition.Name);
-                    await party.KickMySelfAsync(this._player).ConfigureAwait(false);
-                }
-
-                return true;
-            }
-
-            // Only follow a leader who SETTLED on the new map: a leader in transit (pulling a town
-            // scroll for shopping, passing through a gate, hopping back and forth) used to drag its
-            // whole party along on every hop - and since the followers land on the map's spawn gate
-            // rather than next to him, they were still walking over when he warped away again.
-            if (!this.HasLeaderSettled(leader))
-            {
-                return true;
-            }
-
-            // Prefer a spawn gate of the leader's map; maps without one (the Dungeon has no town)
-            // fall back to the warp list gate - the same spot the leader warped to. Without the
-            // fallback a follower could neither warp after its leader nor hunt (following consumed
-            // its ticks), and only the stuck watchdog kept it twitching between hunting grounds.
-            if (DateTime.UtcNow - this._lastWarpUtc >= FollowWarpCooldown
-                && leader.CurrentMap is { } leaderMap
-                && (leaderMap.Definition.ExitGates.Where(g => g.IsSpawnGate).SelectRandom() ?? warpListGate) is { } leaderGate)
-            {
-                this._lastWarpUtc = DateTime.UtcNow;
-                this._hasDestination = false;
-                this._travelPath = null;
-                this._player.Logger.LogDebug(
-                    "Bot {Character} following party leader {Leader} to map {Map}.",
-                    this._player.Name,
-                    leader.Name,
-                    leaderMap.Definition.Name);
-                await this._player.WarpToAsync(leaderGate).ConfigureAwait(false);
-                await this.TryPersistCurrentMapAsync(leaderMap.Definition).ConfigureAwait(false);
-            }
-
-            return true;
-        }
-
-        // Same map: spacing is owned by EvaluateFollowerHuntingAsync - return without moving, so the
-        // follower can keep fighting a monster at hunting range instead of being yanked back mid-fight.
-        return false;
-    }
-
-    /// <summary>
     /// Hunts around the party leader on the same map: monsters within hunting range
     /// (<see cref="HuntingRange"/>, mirroring the follower's effective combat range of
     /// <see cref="Bots.BotMuHelperSettings.HuntingRange"/>) of the leader are fought via the combat
@@ -1250,26 +1335,6 @@ internal sealed class BotNavigator : AsyncDisposable
 
         this._hasDestination = false;
         this._emptyGroundSince = null;
-    }
-
-    /// <summary>
-    /// Whether the leader has been on his current map long enough (<see cref="LeaderSettleTime"/>) for the
-    /// bot to follow him there. Tracks the leader's map per bot, so each follower makes the call on its own.
-    /// </summary>
-    private bool HasLeaderSettled(Player leader)
-    {
-        if (leader.CurrentMap?.Definition is not { } leaderMap)
-        {
-            return false;
-        }
-
-        if (this._leaderMapNumber != leaderMap.Number)
-        {
-            this._leaderMapNumber = leaderMap.Number;
-            this._leaderOnMapSinceUtc = DateTime.UtcNow;
-        }
-
-        return DateTime.UtcNow - this._leaderOnMapSinceUtc >= LeaderSettleTime;
     }
 
     /// <summary>
@@ -1756,18 +1821,39 @@ internal sealed class BotNavigator : AsyncDisposable
     /// <returns>True, if the bot may warp to the map.</returns>
     private bool TryGetLegalWarp(GameMapDefinition mapDefinition, [MaybeNullWhen(false)] out WarpInfo warp)
     {
-        warp = null;
+        warp = this.GetLegalWarps(mapDefinition)
+            .FirstOrDefault();
+        return warp is not null;
+    }
+
+    /// <summary>
+    /// Gets the legal warp entry nearest to a target position on the given map.
+    /// </summary>
+    /// <param name="mapDefinition">The target map.</param>
+    /// <param name="target">The target position.</param>
+    /// <param name="warp">The nearest legal warp info, if any.</param>
+    /// <returns>True, if a legal entry exists.</returns>
+    private bool TryGetNearestLegalWarp(GameMapDefinition mapDefinition, Point target, [MaybeNullWhen(false)] out WarpInfo warp)
+    {
+        warp = this.GetLegalWarps(mapDefinition)
+            .OrderBy(w => GateDistance(w.Gate!, target))
+            .FirstOrDefault();
+        return warp is not null;
+    }
+
+    private IEnumerable<WarpInfo> GetLegalWarps(GameMapDefinition mapDefinition)
+    {
         if (this._player.SelectedCharacter is not { } character)
         {
-            return false;
+            return [];
         }
 
         var plainLevel = (int)(this._player.Attributes?[Stats.Level] ?? 1);
-        warp = this._player.GameContext.Configuration.WarpList
-            .Where(w => w.Gate?.Map?.Number == mapDefinition.Number
+        return this._player.GameContext.Configuration.WarpList
+            .Where(w => w.Gate?.Map is { } gateMap
+                        && IsSameMapDefinition(gateMap, mapDefinition)
                         && character.GetEffectiveMoveLevelRequirement(w.LevelRequirement) <= plainLevel)
-            .FirstOrDefault();
-        return warp is not null;
+            .ToList();
     }
 
     /// <summary>
