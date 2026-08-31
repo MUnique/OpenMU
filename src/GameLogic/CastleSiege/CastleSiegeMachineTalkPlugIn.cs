@@ -50,7 +50,7 @@ public sealed class CastleSiegeMachineTalkPlugIn : IPlayerTalkToNpcPlugIn
         }
 
         eventArgs.HasBeenHandled = true;
-        var context = this._contextResolver(player);
+        var context = this._contextResolver.Invoke(player);
         if (context is not { Configuration.Enabled: true }
             || context.CurrentState != CastleSiegeState.Start
             || !player.IsAlive

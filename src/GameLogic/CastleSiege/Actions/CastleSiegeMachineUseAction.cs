@@ -115,7 +115,7 @@ public sealed class CastleSiegeMachineUseAction
                     .ConfigureAwait(false);
             }
 
-            await this._delay(ImpactDelay).ConfigureAwait(false);
+            await this._delay.Invoke(ImpactDelay).ConfigureAwait(false);
             if (context.CurrentState != CastleSiegeState.Start)
             {
                 return true;
