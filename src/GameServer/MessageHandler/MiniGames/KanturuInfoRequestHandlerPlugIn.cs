@@ -1,4 +1,4 @@
-// <copyright file="KanturuInfoRequestHandlerPlugIn.cs" company="MUnique">
+﻿// <copyright file="KanturuInfoRequestHandlerPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -33,7 +33,8 @@ internal class KanturuInfoRequestHandlerPlugIn : ISubPacketHandlerPlugIn
     /// <inheritdoc/>
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
-        if (packet.Length < KanturuInfoRequest.Length)
+        if (packet.Length < KanturuInfoRequest.Length
+            || player.OpenedNpc?.Definition.Number != KanturuGatewayPlugIn.GatewayMachineNumber)
         {
             return;
         }

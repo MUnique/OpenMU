@@ -1,4 +1,4 @@
-// <copyright file="KanturuEnterRequestHandlerPlugIn.cs" company="MUnique">
+﻿// <copyright file="KanturuEnterRequestHandlerPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -8,7 +8,9 @@ using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.MiniGames;
+using MUnique.OpenMU.GameLogic.MiniGames.Kanturu;
 using MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
+using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameServer.Properties;
 using MUnique.OpenMU.Network.Packets.ClientToServer;
 using MUnique.OpenMU.PlugIns;
@@ -26,6 +28,11 @@ using MUnique.OpenMU.PlugIns;
 [BelongsToGroup(KanturuGroupHandlerPlugIn.GroupKey)]
 internal class KanturuEnterRequestHandlerPlugIn : ISubPacketHandlerPlugIn
 {
+    /// <summary>
+    /// The Kanturu event has no ticket item, so no inventory slot is sent.
+    /// </summary>
+    private const byte UndefinedTicketSlot = 0xFF;
+
     private readonly EnterMiniGameAction _enterAction = new();
 
     /// <inheritdoc/>
@@ -38,16 +45,24 @@ internal class KanturuEnterRequestHandlerPlugIn : ISubPacketHandlerPlugIn
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         if (packet.Length < KanturuEnterRequest.Length
-            || player.SelectedCharacter?.CharacterClass is null)
+            || player.SelectedCharacter?.CharacterClass is null
+            || player.OpenedNpc?.Definition.Number != KanturuGatewayPlugIn.GatewayMachineNumber)
         {
             return;
         }
 
         // Try to enter the Kanturu mini game.
-        // On success: player is teleported to map 39 — the map change clears the dialog.
+        // On success: the player is teleported to the event map.
         // On failure: TryEnterMiniGameAsync shows a message to the player and the client
-        //             NPC animation resets naturally at frame 50.
-        await this._enterAction.TryEnterMiniGameAsync(player, MiniGameType.Kanturu, 1, 0xFF)
+        //             NPC animation resets naturally at frame 50, so the dialog stays usable.
+        await this._enterAction.TryEnterMiniGameAsync(player, MiniGameType.Kanturu, 1, UndefinedTicketSlot)
             .ConfigureAwait(false);
+
+        if (player.CurrentMiniGame is not null)
+        {
+            // The client closes the dialog when it changes the map, so the player isn't at
+            // the gateway NPC anymore.
+            player.OpenedNpc = null;
+        }
     }
 }

@@ -1,8 +1,10 @@
-// <copyright file="KanturuStartConfiguration.cs" company="MUnique">
+﻿// <copyright file="KanturuStartConfiguration.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
 namespace MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
+
+using MUnique.OpenMU.GameLogic.MiniGames.Kanturu;
 
 /// <summary>
 /// The Kanturu event start configuration.
@@ -23,12 +25,12 @@ public class KanturuStartConfiguration : MiniGameStartConfiguration
             EntranceClosedMessage = "Kanturu Refinery Tower entrance closed.",
             TaskDuration = TimeSpan.FromMinutes(135),
             Timetable = [new TimeOnly(20, 0)],   // 20:00 UTC — one occurrence per day
-            TowerOfRefinementDuration = TimeSpan.FromHours(1),
+            EventDefinition = KanturuEventDefinition.Default,
         };
 
     /// <summary>
-    /// Gets or sets how long the Tower of Refinement stays open after Nightmare is defeated.
-    /// Default is 1 hour. Set to zero to skip the tower phase.
+    /// Gets or sets the definition of the event run itself: its phases, the monsters which
+    /// have to be killed in each of them, the boss fight and the Tower of Refinement.
     /// </summary>
-    public TimeSpan TowerOfRefinementDuration { get; set; } = TimeSpan.FromHours(1);
+    public KanturuEventDefinition EventDefinition { get; set; } = KanturuEventDefinition.Default;
 }

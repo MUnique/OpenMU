@@ -1,8 +1,8 @@
-// <copyright file="IKanturuEventViewPlugIn.cs" company="MUnique">
+﻿// <copyright file="IKanturuEventViewPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.MiniGames;
+namespace MUnique.OpenMU.GameLogic.MiniGames.Kanturu;
 
 using MUnique.OpenMU.GameLogic.Views;
 

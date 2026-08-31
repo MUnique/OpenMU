@@ -1,4 +1,4 @@
-// <copyright file="KanturuGatewayPlugIn.cs" company="MUnique">
+﻿// <copyright file="KanturuGatewayPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.MiniGames;
+using MUnique.OpenMU.GameLogic.MiniGames.Kanturu;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
 using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
@@ -24,7 +25,10 @@ using MUnique.OpenMU.PlugIns;
 [Display(Name = nameof(KanturuGatewayPlugIn), Description = "Handles the Kanturu Gateway Machine NPC for event entry.")]
 public class KanturuGatewayPlugIn : IPlayerTalkToNpcPlugIn
 {
-    private const short GatewayMachineNumber = 367;
+    /// <summary>
+    /// The NPC number of the Gateway Machine.
+    /// </summary>
+    public const short GatewayMachineNumber = 367;
 
     // Detail state for the dialog when entry is open:
     // KANTURU_MAYA_DIRECTION_STANBY1 = 1 — shows user count and enables Enter button.
@@ -119,6 +123,10 @@ public class KanturuGatewayPlugIn : IPlayerTalkToNpcPlugIn
 
         // Mark as handled before any await so TalkNpcAction sees it synchronously.
         eventArgs.HasBeenHandled = true;
+
+        // The client keeps the dialog open until the player enters or closes it, so the
+        // player stays assigned to this NPC. The 0xD1 handlers check that assignment.
+        eventArgs.LeavesDialogOpen = true;
 
         await SendKanturuStateInfoAsync(player).ConfigureAwait(false);
     }
