@@ -40,14 +40,15 @@ public class RegenerationsRefactorPlugInSeason6 : RegenerationsRefactorPlugInBas
     {
         await base.ApplyAsync(context, gameConfiguration).ConfigureAwait(false);
 
-        // Create new Stats
-        var isShieldRecoveryActive = context.CreateNew<AttributeDefinition>(Stats.IsShieldRecoveryActive.Id, Stats.IsShieldRecoveryActive.Designation, Stats.IsShieldRecoveryActive.Description);
-        gameConfiguration.Attributes.Add(isShieldRecoveryActive);
-        var shieldRecoveryHiatus = context.CreateNew<AttributeDefinition>(Stats.ShieldRecoveryHiatus.Id, Stats.ShieldRecoveryHiatus.Designation, Stats.ShieldRecoveryHiatus.Description);
-        gameConfiguration.Attributes.Add(shieldRecoveryHiatus);
-        var shieldRecoveryRampFactor = context.CreateNew<AttributeDefinition>(Stats.ShieldRecoveryRampFactor.Id, Stats.ShieldRecoveryRampFactor.Designation, Stats.ShieldRecoveryRampFactor.Description);
+        // Create new Stats, but only when the configuration doesn't contain them already - it would
+        // create duplicated attribute definitions otherwise.
+        this.AddStatIfNotExists(context, gameConfiguration, Stats.IsShieldRecoveryActive);
+        var isShieldRecoveryActive = Stats.IsShieldRecoveryActive.GetPersistent(gameConfiguration);
+        this.AddStatIfNotExists(context, gameConfiguration, Stats.ShieldRecoveryHiatus);
+        var shieldRecoveryHiatus = Stats.ShieldRecoveryHiatus.GetPersistent(gameConfiguration);
+        this.AddStatIfNotExists(context, gameConfiguration, Stats.ShieldRecoveryRampFactor);
+        var shieldRecoveryRampFactor = Stats.ShieldRecoveryRampFactor.GetPersistent(gameConfiguration);
         shieldRecoveryRampFactor.MaximumValue = 3;
-        gameConfiguration.Attributes.Add(shieldRecoveryRampFactor);
 
         var isInSafezone = Stats.IsInSafezone.GetPersistent(gameConfiguration);
         var shieldRecoveryMultiplier = Stats.ShieldRecoveryMultiplier.GetPersistent(gameConfiguration);

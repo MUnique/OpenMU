@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic;
 
 using System.ComponentModel;
+using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.Character;
@@ -61,7 +62,7 @@ public sealed class SkillList : ISkillList, IDisposable
         this._learnedSkills = this._player.SelectedCharacter.LearnedSkills ?? new List<SkillEntry>();
         this._learnedSkills.Where(entry => entry.Skill is null).ForEach(entry => throw Error.NotInitializedProperty(entry, nameof(entry.Skill)));
 
-        this._availableSkills = this._learnedSkills.ToDictionary(skillEntry => skillEntry.Skill!.Number.ToUnsigned());
+        this._availableSkills = this.CreateAvailableSkills();
         this._itemSkills = new List<SkillEntry>();
         this._player.Inventory.EquippedItems
             .Where(item => item.HasSkill)
@@ -114,17 +115,23 @@ public sealed class SkillList : ISkillList, IDisposable
     /// <inheritdoc/>
     public async ValueTask<bool> RemoveItemSkillAsync(ushort skillId)
     {
-        this._availableSkills.TryGetValue(skillId, out var skillEntry);
+        // The entry is looked up in the item skills, not in the available skills: when the same skill
+        // is also learned by the character, the available skills hold the learned entry - removing that
+        // one would take a learned skill away just because an item was taken off.
+        var skillEntry = this._itemSkills.FirstOrDefault(s => s.Skill!.Number.ToUnsigned() == skillId);
         if (skillEntry is null)
         {
             return false;
         }
 
-        // We need to take into account that we there might be multiple items equipped with the same skill
-        var skillRemoved = this._itemSkills.Remove(skillEntry);
-        if (skillRemoved && this._itemSkills.All(s => s.Skill!.Number != skillId))
+        this._itemSkills.Remove(skillEntry);
+
+        // We need to take into account that there might be multiple items equipped with the same skill
+        if (this._itemSkills.All(s => s.Skill!.Number.ToUnsigned() != skillId)
+            && this._availableSkills.TryGetValue(skillId, out var availableSkill)
+            && !this._learnedSkills.Contains(availableSkill))
         {
-            await this._player.InvokeViewPlugInAsync<ISkillListViewPlugIn>(p => p.RemoveSkillAsync(skillEntry.Skill!)).ConfigureAwait(false);
+            await this._player.InvokeViewPlugInAsync<ISkillListViewPlugIn>(p => p.RemoveSkillAsync(availableSkill.Skill!)).ConfigureAwait(false);
             this._availableSkills.Remove(skillId);
         }
 
@@ -135,6 +142,41 @@ public sealed class SkillList : ISkillList, IDisposable
     public bool ContainsSkill(ushort skillId)
     {
         return this._availableSkills.ContainsKey(skillId);
+    }
+
+    /// <summary>
+    /// Creates the dictionary of the available skills from the learned skills of the character.
+    /// A character may have the same skill in its stored skill list more than once - it's data which
+    /// shouldn't exist, but it must never keep the character from entering the game. Such duplicates
+    /// are removed from the character, keeping the entry with the highest level.
+    /// </summary>
+    /// <returns>The dictionary of the available skills.</returns>
+    private Dictionary<ushort, SkillEntry> CreateAvailableSkills()
+    {
+        var availableSkills = new Dictionary<ushort, SkillEntry>();
+        foreach (var skillEntry in this._learnedSkills.ToList())
+        {
+            var skillId = skillEntry.Skill!.Number.ToUnsigned();
+            if (availableSkills.TryAdd(skillId, skillEntry))
+            {
+                continue;
+            }
+
+            var previousEntry = availableSkills[skillId];
+            var (keptEntry, obsoleteEntry) = skillEntry.Level > previousEntry.Level
+                ? (skillEntry, previousEntry)
+                : (previousEntry, skillEntry);
+            availableSkills[skillId] = keptEntry;
+            this._learnedSkills.Remove(obsoleteEntry);
+
+            this._player.Logger.LogWarning(
+                "Removed a duplicate learned skill '{Skill}' (number {Number}) of character '{Character}'.",
+                skillEntry.Skill.Name,
+                skillEntry.Skill.Number,
+                this._player.SelectedCharacter?.Name);
+        }
+
+        return availableSkills;
     }
 
     private async ValueTask AddItemSkillAsync(Skill skill)
@@ -167,7 +209,10 @@ public sealed class SkillList : ISkillList, IDisposable
 
     private async ValueTask AddLearnedSkillAsync(SkillEntry skill)
     {
-        this._availableSkills.Add(skill.Skill!.Number.ToUnsigned(), skill);
+        // A learned skill replaces the entry of an equipped item which grants the same skill: an item
+        // skill is always level 0, while the learned one keeps its own level. The item skill entry stays
+        // in the item skill list, so unequipping the item doesn't take the learned skill away.
+        this._availableSkills[skill.Skill!.Number.ToUnsigned()] = skill;
         this._learnedSkills.Add(skill);
 
         if (skill.Skill.SkillType == SkillType.PassiveBoost || this._castedSkillsWithPassiveBoost.Contains(skill.Skill.Number))
