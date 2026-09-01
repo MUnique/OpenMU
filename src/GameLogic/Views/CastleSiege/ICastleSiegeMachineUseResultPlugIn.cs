@@ -8,15 +8,16 @@ using MUnique.OpenMU.GameLogic.CastleSiege;
 using MUnique.OpenMU.Pathfinding;
 
 /// <summary>
-/// A view which shows a Castle Siege warfare-machine shot.
+/// A view which reports the result of a Castle Siege warfare-machine shot.
 /// </summary>
 public interface ICastleSiegeMachineUseResultPlugIn : IViewPlugIn
 {
     /// <summary>
-    /// Shows the fired machine and its selected impact point.
+    /// Shows the result of a warfare-machine firing request.
     /// </summary>
+    /// <param name="success">A value indicating whether the machine was fired.</param>
     /// <param name="machineId">The machine object identifier.</param>
     /// <param name="machineType">The machine type.</param>
-    /// <param name="target">The impact point.</param>
-    ValueTask ShowMachineUseResultAsync(ushort machineId, CastleSiegeMachineType machineType, Point target);
+    /// <param name="target">The impact point when the request succeeded.</param>
+    ValueTask ShowMachineUseResultAsync(bool success, ushort machineId, CastleSiegeMachineType machineType, Point target);
 }

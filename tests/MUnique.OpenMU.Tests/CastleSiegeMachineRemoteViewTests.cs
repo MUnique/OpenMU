@@ -24,13 +24,13 @@ public class CastleSiegeMachineRemoteViewTests
     {
         var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
         await new CastleSiegeMachineUseResultPlugIn(player)
-            .ShowMachineUseResultAsync(0x1234, MachineType.Attack, new Point(40, 41))
+            .ShowMachineUseResultAsync(true, 0x1234, MachineType.Attack, new Point(40, 41))
             .ConfigureAwait(false);
         await new CastleSiegeMachineRegionNotifyPlugIn(player)
             .ShowMachineRegionAsync(MachineType.Defense, new Point(42, 43))
             .ConfigureAwait(false);
         await new CastleSiegeMachineInterfacePlugIn(player)
-            .ShowMachineInterfaceAsync(MachineType.Attack, 0x5678)
+            .ShowMachineInterfaceAsync(true, MachineType.Attack, 0x5678)
             .ConfigureAwait(false);
 
         var data = output.ToArray().AsMemory();
@@ -66,6 +66,34 @@ public class CastleSiegeMachineRemoteViewTests
         {
             Assert.That(machineInterface.Result, Is.EqualTo(1));
             Assert.That(machineInterface.MachineType, Is.EqualTo(MachinePacketType.Attack));
+            Assert.That(machineInterface.NpcIndex, Is.EqualTo(0x5678));
+        });
+    }
+
+    /// <summary>
+    /// Verifies that rejected machine requests are sent as failure responses.
+    /// </summary>
+    [Test]
+    public async ValueTask SerializeMachineFailurePacketsAsync()
+    {
+        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        await new CastleSiegeMachineUseResultPlugIn(player)
+            .ShowMachineUseResultAsync(false, 0x1234, MachineType.Attack, default)
+            .ConfigureAwait(false);
+        await new CastleSiegeMachineInterfacePlugIn(player)
+            .ShowMachineInterfaceAsync(false, MachineType.Defense, 0x5678)
+            .ConfigureAwait(false);
+
+        var data = output.ToArray().AsMemory();
+        var useResult = (CastleSiegeMachineUseResult)data[..CastleSiegeMachineUseResult.Length];
+        var machineInterface = (CastleSiegeMachineInterface)data.Slice(
+            CastleSiegeMachineUseResult.Length,
+            CastleSiegeMachineInterface.Length);
+        Assert.Multiple(() =>
+        {
+            Assert.That(useResult.Result, Is.Zero);
+            Assert.That(useResult.NpcIndex, Is.EqualTo(0x1234));
+            Assert.That(machineInterface.Result, Is.Zero);
             Assert.That(machineInterface.NpcIndex, Is.EqualTo(0x5678));
         });
     }

@@ -7,14 +7,15 @@ namespace MUnique.OpenMU.GameLogic.Views.CastleSiege;
 using MUnique.OpenMU.GameLogic.CastleSiege;
 
 /// <summary>
-/// A view which opens a Castle Siege warfare-machine interface.
+/// A view which reports the result of opening a Castle Siege warfare-machine interface.
 /// </summary>
 public interface ICastleSiegeMachineInterfacePlugIn : IViewPlugIn
 {
     /// <summary>
-    /// Opens the warfare-machine interface.
+    /// Shows the result of a request to open the warfare-machine interface.
     /// </summary>
+    /// <param name="success">A value indicating whether the interface was opened.</param>
     /// <param name="machineType">The machine type.</param>
     /// <param name="machineId">The machine object identifier.</param>
-    ValueTask ShowMachineInterfaceAsync(CastleSiegeMachineType machineType, ushort machineId);
+    ValueTask ShowMachineInterfaceAsync(bool success, CastleSiegeMachineType machineType, ushort machineId);
 }

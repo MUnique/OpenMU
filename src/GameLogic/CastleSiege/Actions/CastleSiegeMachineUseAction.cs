@@ -56,8 +56,10 @@ public sealed class CastleSiegeMachineUseAction
         ushort machineId,
         byte targetZoneIndex)
     {
+        var failureMachineType = (player.CurrentMap?.GetObject(machineId) as CastleSiegeMachine)?.MachineType ?? default;
         if (context is not { Configuration.Enabled: true })
         {
+            await ShowMachineUseResultAsync(player, false, machineId, failureMachineType, default).ConfigureAwait(false);
             return false;
         }
 
@@ -65,54 +67,57 @@ public sealed class CastleSiegeMachineUseAction
         GameMap? map = null;
         CastleSiegeMachineType machineType = default;
         Point target = default;
+        var isValidRequest = false;
         await context.ExecutionLock.WaitAsync().ConfigureAwait(false);
         try
         {
-            if (context.CurrentState != CastleSiegeState.Start
-                || !player.IsAlive
-                || player.CurrentMap is not { } playerMap
-                || playerMap.GetObject(machineId) is not CastleSiegeMachine foundMachine
-                || !ReferenceEquals(player.OpenedNpc, foundMachine)
-                || !player.IsInRange(foundMachine.Position, CastleSiegeMachine.OperationRange)
-                || !ReferenceEquals(foundMachine.Operator, player)
-                || !foundMachine.CanBeUsedBy(context.GetPlayerJoinSide(player))
-                || foundMachine.IsActive
-                || targetZoneIndex == 0)
+            var playerMap = player.CurrentMap;
+            var foundMachine = playerMap?.GetObject(machineId) as CastleSiegeMachine;
+            if (context.CurrentState == CastleSiegeState.Start
+                && player.IsAlive
+                && foundMachine is not null
+                && ReferenceEquals(player.OpenedNpc, foundMachine)
+                && player.IsInRange(foundMachine.Position, CastleSiegeMachine.OperationRange)
+                && ReferenceEquals(foundMachine.Operator, player)
+                && foundMachine.CanBeUsedBy(context.GetPlayerJoinSide(player))
+                && !foundMachine.IsActive
+                && targetZoneIndex != 0)
             {
-                return false;
+                var zones = foundMachine.MachineType == CastleSiegeMachineType.Attack
+                    ? context.Configuration.AttackMachineZones
+                    : context.Configuration.DefenseMachineZones;
+                if (targetZoneIndex <= zones.Count)
+                {
+                    var targetZone = zones.ElementAt(targetZoneIndex - 1);
+                    if (targetZone.X1 <= targetZone.X2 && targetZone.Y1 <= targetZone.Y2)
+                    {
+                        machine = foundMachine;
+                        map = playerMap;
+                        machineType = foundMachine.MachineType;
+                        target = new Point(
+                            checked((byte)this._randomizer.NextInt(targetZone.X1, targetZone.X2 + 1)),
+                            checked((byte)this._randomizer.NextInt(targetZone.Y1, targetZone.Y2 + 1)));
+                        machine.IsActive = true;
+                        isValidRequest = true;
+                    }
+                }
             }
-
-            var zones = foundMachine.MachineType == CastleSiegeMachineType.Attack
-                ? context.Configuration.AttackMachineZones
-                : context.Configuration.DefenseMachineZones;
-            if (targetZoneIndex > zones.Count)
-            {
-                return false;
-            }
-
-            var targetZone = zones.ElementAt(targetZoneIndex - 1);
-            if (targetZone.X1 > targetZone.X2 || targetZone.Y1 > targetZone.Y2)
-            {
-                return false;
-            }
-
-            machine = foundMachine;
-            map = playerMap;
-            machineType = foundMachine.MachineType;
-            target = new Point(
-                checked((byte)this._randomizer.NextInt(targetZone.X1, targetZone.X2 + 1)),
-                checked((byte)this._randomizer.NextInt(targetZone.Y1, targetZone.Y2 + 1)));
-            machine.IsActive = true;
         }
         finally
         {
             context.ExecutionLock.Release();
         }
 
+        if (!isValidRequest)
+        {
+            await ShowMachineUseResultAsync(player, false, machineId, failureMachineType, default).ConfigureAwait(false);
+            return false;
+        }
+
         try
         {
             await player.ForEachWorldObserverAsync<ICastleSiegeMachineUseResultPlugIn>(
-                    view => view.ShowMachineUseResultAsync(machine!.Id, machineType, target),
+                    view => view.ShowMachineUseResultAsync(true, machine!.Id, machineType, target),
                     true)
                 .ConfigureAwait(false);
             foreach (var observer in map!.GetAttackablesInRange(target, ImpactNotificationRange).OfType<Player>())
@@ -122,7 +127,8 @@ public sealed class CastleSiegeMachineUseAction
                     .ConfigureAwait(false);
             }
 
-            _ = this.ApplyImpactAsync(context, player, machine!, map, target);
+            // Don't wait for completion: this detached task releases the machine after the delayed impact.
+            _ = this.ApplyImpactAsync(context, player, machine!, map!, target);
             return true;
         }
         catch
@@ -141,8 +147,32 @@ public sealed class CastleSiegeMachineUseAction
         return !ReferenceEquals(attackable, player)
                && attackable.IsActive()
                && !attackable.IsAtSafezone()
-               && (attackable is not Player targetPlayer
-                   || !machine.CanBeUsedBy(context.GetPlayerJoinSide(targetPlayer)));
+               && !IsFriendlyTarget(context, machine, attackable);
+    }
+
+    private static bool IsFriendlyTarget(
+        CastleSiegeContext context,
+        CastleSiegeMachine machine,
+        IAttackable attackable)
+    {
+        // Configured structures retain their assigned side in the NPC definition across the battle.
+        return attackable switch
+        {
+            Player targetPlayer => machine.CanBeUsedBy(context.GetPlayerJoinSide(targetPlayer)),
+            ICastleSiegeNpc targetNpc => machine.CanBeUsedBy(targetNpc.Runtime.Definition.DefaultSide),
+            _ => false,
+        };
+    }
+
+    private static ValueTask ShowMachineUseResultAsync(
+        Player player,
+        bool success,
+        ushort machineId,
+        CastleSiegeMachineType machineType,
+        Point target)
+    {
+        return player.InvokeViewPlugInAsync<ICastleSiegeMachineUseResultPlugIn>(
+            view => view.ShowMachineUseResultAsync(success, machineId, machineType, target));
     }
 
     private async Task ApplyImpactAsync(
@@ -163,7 +193,7 @@ public sealed class CastleSiegeMachineUseAction
             foreach (var attackable in map.GetAttackablesInRange(target, ImpactDamageRange)
                          .Where(attackable => IsValidImpactTarget(context, machine, player, attackable)))
             {
-                // Machines are passive NPCs; the operator supplies the combat attacker used by the regular damage pipeline.
+                // Machines are passive NPCs, so their damage deliberately uses the operator and the regular player damage pipeline.
                 await attackable.AttackByAsync(player, null, false).ConfigureAwait(false);
             }
         }

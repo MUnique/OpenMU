@@ -8,8 +8,8 @@ using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic.Views.CastleSiege;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.PlugIns;
-using MachineType = MUnique.OpenMU.GameLogic.CastleSiege.CastleSiegeMachineType;
 using MachinePacketType = MUnique.OpenMU.Network.Packets.ServerToClient.CastleSiegeMachineType;
+using MachineType = MUnique.OpenMU.GameLogic.CastleSiege.CastleSiegeMachineType;
 
 /// <summary>
 /// The default implementation of the <see cref="ICastleSiegeMachineInterfacePlugIn"/>
@@ -20,7 +20,6 @@ using MachinePacketType = MUnique.OpenMU.Network.Packets.ServerToClient.CastleSi
 [Guid("60F1C3AC-2A7A-44B1-8DE1-8CB030E1A38A")]
 public class CastleSiegeMachineInterfacePlugIn : ICastleSiegeMachineInterfacePlugIn
 {
-    private const byte SuccessResult = 1;
     private readonly RemotePlayer _player;
 
     /// <summary>
@@ -30,9 +29,9 @@ public class CastleSiegeMachineInterfacePlugIn : ICastleSiegeMachineInterfacePlu
     public CastleSiegeMachineInterfacePlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc />
-    public ValueTask ShowMachineInterfaceAsync(MachineType machineType, ushort machineId)
+    public ValueTask ShowMachineInterfaceAsync(bool success, MachineType machineType, ushort machineId)
         => this._player.Connection?.SendCastleSiegeMachineInterfaceAsync(
-            SuccessResult,
+            success ? (byte)1 : (byte)0,
             (MachinePacketType)machineType,
             machineId) ?? default;
 }

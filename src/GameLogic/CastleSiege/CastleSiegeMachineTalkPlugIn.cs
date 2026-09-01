@@ -57,9 +57,11 @@ public sealed class CastleSiegeMachineTalkPlugIn : IPlayerTalkToNpcPlugIn
             || !ReferenceEquals(player.CurrentMap, machine.CurrentMap)
             || !player.IsInRange(machine.Position, CastleSiegeMachine.OperationRange))
         {
+            await this.ShowMachineInterfaceAsync(player, machine, false).ConfigureAwait(false);
             return;
         }
 
+        var isAvailable = false;
         await context.ExecutionLock.WaitAsync().ConfigureAwait(false);
         try
         {
@@ -69,19 +71,31 @@ public sealed class CastleSiegeMachineTalkPlugIn : IPlayerTalkToNpcPlugIn
                     && currentOperator.IsAlive
                     && ReferenceEquals(currentOperator.CurrentMap, machine.CurrentMap)))
             {
-                return;
+                isAvailable = false;
             }
-
-            machine.Operator = player;
+            else
+            {
+                machine.Operator = player;
+                isAvailable = true;
+            }
         }
         finally
         {
             context.ExecutionLock.Release();
         }
 
+        await this.ShowMachineInterfaceAsync(player, machine, isAvailable).ConfigureAwait(false);
+        if (!isAvailable)
+        {
+            return;
+        }
+
         eventArgs.LeavesDialogOpen = true;
-        await player.InvokeViewPlugInAsync<ICastleSiegeMachineInterfacePlugIn>(
-                view => view.ShowMachineInterfaceAsync(machine.MachineType, machine.Id))
-            .ConfigureAwait(false);
+    }
+
+    private ValueTask ShowMachineInterfaceAsync(Player player, CastleSiegeMachine machine, bool success)
+    {
+        return player.InvokeViewPlugInAsync<ICastleSiegeMachineInterfacePlugIn>(
+            view => view.ShowMachineInterfaceAsync(success, machine.MachineType, machine.Id));
     }
 }
