@@ -8,7 +8,6 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 using MUnique.OpenMU.DataModel.Configuration;
-using MUnique.OpenMU.GameLogic.CastleSiege.NPC;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.PlugIns;
 
@@ -98,7 +97,6 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
 
         if (previousState == PlayerState.NpcDialogOpened
             && currentState == PlayerState.EnteredWorld
-            && player.OpenedNpc is CastleSiegeMachine
             && player.CurrentMap?.Definition.Number == context.Configuration.CastleSiegeMapDefinition?.Number)
         {
             await this.ClearMachineOperatorAsync(context, player).ConfigureAwait(false);

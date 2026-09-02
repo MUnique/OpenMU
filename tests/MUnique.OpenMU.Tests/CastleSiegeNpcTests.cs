@@ -893,6 +893,46 @@ public class CastleSiegeNpcTests
     }
 
     /// <summary>
+    /// Verifies that leaving any NPC dialog on the siege map releases an operated warfare machine.
+    /// </summary>
+    [Test]
+    public async ValueTask LeavingAnotherNpcDialogReleasesMachineOperatorAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var battleTimeUtc = new DateTime(2026, 8, 4, 12, 0, 0, DateTimeKind.Utc);
+        var plugIn = new CastleSiegePlugIn(new FixedTimeProvider(battleTimeUtc));
+        CastleSiegeContext? context = null;
+        try
+        {
+            await AddSiegePlayerAsync(fixture, CastleSiegeJoinSide.Attack1, 20, 20).ConfigureAwait(false);
+            await plugIn.ExecuteTaskAsync(fixture.GameServerContext).ConfigureAwait(false);
+            context = plugIn.GetContext(fixture.GameServerContext);
+            var machine = context!.NpcController
+                .GetRuntimeSnapshot()
+                .Select(runtime => runtime.SpawnedInstance)
+                .OfType<CastleSiegeMachine>()
+                .Single(candidate => candidate.MachineType == CastleSiegeMachineType.Attack);
+            machine.Operator = fixture.Player;
+            fixture.Player.OpenedNpc = null;
+
+            await plugIn
+                .PlayerStateChangedAsync(fixture.Player, PlayerState.NpcDialogOpened, PlayerState.EnteredWorld)
+                .ConfigureAwait(false);
+
+            Assert.That(machine.Operator, Is.Null);
+        }
+        finally
+        {
+            if (context is not null)
+            {
+                await context.NpcController.DespawnAllAsync().ConfigureAwait(false);
+            }
+
+            await fixture.GameServerContext.RemovePlayerAsync(fixture.Player).ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
     /// Verifies machine validation, configured-zone targeting, visual ranges, delayed damage, and cooldown.
     /// </summary>
     [Test]

@@ -68,7 +68,14 @@ public sealed class CastleSiegeMachine : CastleSiegeNpcBase
     /// </summary>
     /// <param name="side">The player's Castle Siege side.</param>
     /// <returns><see langword="true"/> when the side matches this machine.</returns>
-    public bool CanBeUsedBy(CastleSiegeJoinSide side)
+    public bool CanBeUsedBy(CastleSiegeJoinSide side) => this.IsSameSide(side);
+
+    /// <summary>
+    /// Determines whether the specified side matches this machine's side.
+    /// </summary>
+    /// <param name="side">The Castle Siege side to check.</param>
+    /// <returns><see langword="true"/> when the side matches this machine.</returns>
+    public bool IsSameSide(CastleSiegeJoinSide side)
     {
         return this.MachineType switch
         {

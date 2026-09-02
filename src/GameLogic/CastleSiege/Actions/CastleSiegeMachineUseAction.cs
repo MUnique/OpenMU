@@ -56,10 +56,9 @@ public sealed class CastleSiegeMachineUseAction
         ushort machineId,
         byte targetZoneIndex)
     {
-        var failureMachineType = (player.CurrentMap?.GetObject(machineId) as CastleSiegeMachine)?.MachineType ?? default;
         if (context is not { Configuration.Enabled: true })
         {
-            await ShowMachineUseResultAsync(player, false, machineId, failureMachineType, default).ConfigureAwait(false);
+            await ShowMachineUseResultAsync(player, false, machineId, default, default).ConfigureAwait(false);
             return false;
         }
 
@@ -73,6 +72,7 @@ public sealed class CastleSiegeMachineUseAction
         {
             var playerMap = player.CurrentMap;
             var foundMachine = playerMap?.GetObject(machineId) as CastleSiegeMachine;
+            machineType = foundMachine?.MachineType ?? default;
             if (context.CurrentState == CastleSiegeState.Start
                 && player.IsAlive
                 && foundMachine is not null
@@ -110,7 +110,7 @@ public sealed class CastleSiegeMachineUseAction
 
         if (!isValidRequest)
         {
-            await ShowMachineUseResultAsync(player, false, machineId, failureMachineType, default).ConfigureAwait(false);
+            await ShowMachineUseResultAsync(player, false, machineId, machineType, default).ConfigureAwait(false);
             return false;
         }
 
@@ -158,8 +158,8 @@ public sealed class CastleSiegeMachineUseAction
         // Configured structures retain their assigned side in the NPC definition across the battle.
         return attackable switch
         {
-            Player targetPlayer => machine.CanBeUsedBy(context.GetPlayerJoinSide(targetPlayer)),
-            ICastleSiegeNpc targetNpc => machine.CanBeUsedBy(targetNpc.Runtime.Definition.DefaultSide),
+            Player targetPlayer => machine.IsSameSide(context.GetPlayerJoinSide(targetPlayer)),
+            ICastleSiegeNpc targetNpc => machine.IsSameSide(targetNpc.Runtime.Definition.DefaultSide),
             _ => false,
         };
     }
