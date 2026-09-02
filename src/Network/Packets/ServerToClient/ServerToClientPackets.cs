@@ -1,4 +1,4 @@
-// <copyright file="ServerToClientPackets.cs" company="MUnique">
+﻿// <copyright file="ServerToClientPackets.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -31347,7 +31347,7 @@ public readonly struct CastleSiegeStatusResponse
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeStatusResponse packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeStatusResponse packet) => packet._data; 
 }
 
 
@@ -31442,7 +31442,7 @@ public readonly struct CastleSiegeRegistrationResponse
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeRegistrationResponse packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeRegistrationResponse packet) => packet._data; 
 }
 
 
@@ -31546,7 +31546,7 @@ public readonly struct CastleSiegeUnregisterResponse
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeUnregisterResponse packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeUnregisterResponse packet) => packet._data; 
 }
 
 
@@ -31668,7 +31668,7 @@ public readonly struct CastleSiegeRegistrationStateResponse
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeRegistrationStateResponse packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeRegistrationStateResponse packet) => packet._data; 
 }
 
 
@@ -31772,7 +31772,7 @@ public readonly struct CastleSiegeMarkRegistrationResponse
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeMarkRegistrationResponse packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeMarkRegistrationResponse packet) => packet._data; 
 }
 
 
@@ -31876,7 +31876,7 @@ public readonly struct CastleSiegeDefenseBuyResponse
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeDefenseBuyResponse packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeDefenseBuyResponse packet) => packet._data; 
 }
 
 
@@ -31998,7 +31998,7 @@ public readonly struct CastleSiegeDefenseRepairResponse
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeDefenseRepairResponse packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeDefenseRepairResponse packet) => packet._data; 
 }
 
 
@@ -32120,7 +32120,7 @@ public readonly struct CastleSiegeDefenseUpgradeResponse
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeDefenseUpgradeResponse packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeDefenseUpgradeResponse packet) => packet._data; 
 }
 
 
@@ -32233,7 +32233,7 @@ public readonly struct CastleSiegeTaxInfoResponse
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeTaxInfoResponse packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeTaxInfoResponse packet) => packet._data; 
 }
 
 
@@ -32337,7 +32337,7 @@ public readonly struct CastleSiegeTaxChangeResponse
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeTaxChangeResponse packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeTaxChangeResponse packet) => packet._data; 
 }
 
 
@@ -32432,7 +32432,7 @@ public readonly struct CastleSiegeTributeWithdrawResponse
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeTributeWithdrawResponse packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeTributeWithdrawResponse packet) => packet._data; 
 }
 
 
@@ -32527,7 +32527,7 @@ public readonly struct CastleSiegeGateInterfaceResponse
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeGateInterfaceResponse packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeGateInterfaceResponse packet) => packet._data; 
 }
 
 
@@ -32631,7 +32631,7 @@ public readonly struct CastleSiegeGateOperateResponse
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeGateOperateResponse packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeGateOperateResponse packet) => packet._data; 
 }
 
 
@@ -32726,7 +32726,7 @@ public readonly struct CastleSiegeGateStateNotification
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeGateStateNotification packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeGateStateNotification packet) => packet._data; 
 }
 
 
@@ -32830,7 +32830,7 @@ public readonly struct CastleSiegeCrownSwitchState
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeCrownSwitchState packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeCrownSwitchState packet) => packet._data; 
 }
 
 
@@ -32925,7 +32925,7 @@ public readonly struct CastleSiegeCrownAccessState
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeCrownAccessState packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeCrownAccessState packet) => packet._data; 
 }
 
 
@@ -33011,7 +33011,7 @@ public readonly struct CastleSiegeCrownStateUpdate
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeCrownStateUpdate packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeCrownStateUpdate packet) => packet._data; 
 }
 
 
@@ -33097,7 +33097,7 @@ public readonly struct CastleSiegeBattleStartEnd
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeBattleStartEnd packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeBattleStartEnd packet) => packet._data; 
 }
 
 
@@ -33192,7 +33192,7 @@ public readonly struct CastleSiegeBattleProcess
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeBattleProcess packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeBattleProcess packet) => packet._data; 
 }
 
 
@@ -33278,7 +33278,7 @@ public readonly struct CastleSiegeJoinSideNotification
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeJoinSideNotification packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeJoinSideNotification packet) => packet._data; 
 }
 
 
@@ -33373,7 +33373,7 @@ public readonly struct CastleSiegeTaxRateNotification
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeTaxRateNotification packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeTaxRateNotification packet) => packet._data; 
 }
 
 
@@ -33459,7 +33459,7 @@ public readonly struct CastleSiegeMiniMapResponse
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeMiniMapResponse packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeMiniMapResponse packet) => packet._data; 
 }
 
 
@@ -33572,7 +33572,7 @@ public readonly struct CastleSiegeGuildCommand
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeGuildCommand packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeGuildCommand packet) => packet._data; 
 }
 
 
@@ -33667,7 +33667,7 @@ public readonly struct CastleSiegeRemainingTime
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeRemainingTime packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeRemainingTime packet) => packet._data; 
 }
 
 
@@ -33762,7 +33762,7 @@ public readonly struct CastleSiegeHuntingZoneEntranceSettingResponse
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeHuntingZoneEntranceSettingResponse packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeHuntingZoneEntranceSettingResponse packet) => packet._data; 
 }
 
 
@@ -33884,7 +33884,7 @@ public readonly struct CastleSiegeSwitchInfo
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeSwitchInfo packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeSwitchInfo packet) => packet._data; 
 }
 
 
@@ -33972,13 +33972,13 @@ public readonly struct CastleSiegeNpcList
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeNpcList packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeNpcList packet) => packet._data; 
 
     /// <summary>
     /// Calculates the size of the packet for the specified count of <see cref="CastleSiegeNpcInfo"/>.
     /// </summary>
     /// <param name="npcListCount">The count of <see cref="CastleSiegeNpcInfo"/> from which the size will be calculated.</param>
-
+        
     public static int GetRequiredSize(int npcListCount) => npcListCount * CastleSiegeNpcInfo.Length + 9;
 
 
@@ -34171,13 +34171,13 @@ public readonly struct CastleSiegeRegisteredGuildList
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeRegisteredGuildList packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeRegisteredGuildList packet) => packet._data; 
 
     /// <summary>
     /// Calculates the size of the packet for the specified count of <see cref="RegisteredGuildEntry"/>.
     /// </summary>
     /// <param name="guildsCount">The count of <see cref="RegisteredGuildEntry"/> from which the size will be calculated.</param>
-
+        
     public static int GetRequiredSize(int guildsCount) => guildsCount * RegisteredGuildEntry.Length + 9;
 
 
@@ -34325,13 +34325,13 @@ public readonly struct CastleSiegeGuildList
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeGuildList packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeGuildList packet) => packet._data; 
 
     /// <summary>
     /// Calculates the size of the packet for the specified count of <see cref="CastleSiegeGuildEntry"/>.
     /// </summary>
     /// <param name="guildsCount">The count of <see cref="CastleSiegeGuildEntry"/> from which the size will be calculated.</param>
-
+        
     public static int GetRequiredSize(int guildsCount) => guildsCount * CastleSiegeGuildEntry.Length + 9;
 
 
@@ -34470,13 +34470,13 @@ public readonly struct CastleSiegeMiniMapPlayerPositions
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeMiniMapPlayerPositions packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeMiniMapPlayerPositions packet) => packet._data; 
 
     /// <summary>
     /// Calculates the size of the packet for the specified count of <see cref="MiniMapPlayerPosition"/>.
     /// </summary>
     /// <param name="playersCount">The count of <see cref="MiniMapPlayerPosition"/> from which the size will be calculated.</param>
-
+        
     public static int GetRequiredSize(int playersCount) => playersCount * MiniMapPlayerPosition.Length + 8;
 
 
@@ -34622,7 +34622,7 @@ public readonly struct CastleSiegeMachineInterface
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeMachineInterface packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeMachineInterface packet) => packet._data; 
 }
 
 
@@ -34744,7 +34744,7 @@ public readonly struct CastleSiegeMachineUseResult
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeMachineUseResult packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeMachineUseResult packet) => packet._data; 
 }
 
 
@@ -34848,7 +34848,7 @@ public readonly struct CastleSiegeMachineRegionNotify
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeMachineRegionNotify packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeMachineRegionNotify packet) => packet._data; 
 }
 
 
@@ -34943,7 +34943,7 @@ public readonly struct CastleSiegeLifeStoneBuildTime
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeLifeStoneBuildTime packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeLifeStoneBuildTime packet) => packet._data; 
 }
 
 
@@ -35028,7 +35028,7 @@ public readonly struct CastleSiegeOwnerLogo
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeOwnerLogo packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeOwnerLogo packet) => packet._data; 
 }
 
 
@@ -35150,7 +35150,7 @@ public readonly struct CastleSiegeHuntingZoneGuardInfo
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeHuntingZoneGuardInfo packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeHuntingZoneGuardInfo packet) => packet._data; 
 }
 
 
@@ -35236,7 +35236,7 @@ public readonly struct CastleSiegeHuntingZoneEnterResponse
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeHuntingZoneEnterResponse packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeHuntingZoneEnterResponse packet) => packet._data; 
 }
 
 
@@ -35315,13 +35315,13 @@ public readonly struct CastleSiegeMiniMapNpcPositions
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(CastleSiegeMiniMapNpcPositions packet) => packet._data;
+    public static implicit operator Memory<byte>(CastleSiegeMiniMapNpcPositions packet) => packet._data; 
 
     /// <summary>
     /// Calculates the size of the packet for the specified count of <see cref="MiniMapNpcPosition"/>.
     /// </summary>
     /// <param name="npcsCount">The count of <see cref="MiniMapNpcPosition"/> from which the size will be calculated.</param>
-
+        
     public static int GetRequiredSize(int npcsCount) => npcsCount * MiniMapNpcPosition.Length + 5;
 
 

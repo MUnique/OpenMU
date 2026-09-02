@@ -261,20 +261,29 @@ public sealed class PacketAnalyzer : IDisposable
 
     private void LoadConfiguration(Action<PacketDefinitions?> assignAction, string fileName, bool watchFile)
     {
-        assignAction(PacketDefinitions.Load(fileName));
+        // The definition files are copied next to the binaries, which is not necessarily the
+        // working directory of the process - a server is usually not started from its own
+        // folder.
+        var directory = AppContext.BaseDirectory;
+        var filePath = Path.Combine(directory, fileName);
+        if (File.Exists(filePath))
+        {
+            assignAction(PacketDefinitions.Load(filePath));
+        }
+
         if (!watchFile)
         {
             return;
         }
 
-        var watcher = new FileSystemWatcher(Environment.CurrentDirectory, fileName);
+        var watcher = new FileSystemWatcher(directory, fileName);
 
         watcher.Changed += (_, _) =>
         {
             PacketDefinitions? definitions;
             try
             {
-                definitions = PacketDefinitions.Load(fileName);
+                definitions = PacketDefinitions.Load(filePath);
             }
             catch
             {

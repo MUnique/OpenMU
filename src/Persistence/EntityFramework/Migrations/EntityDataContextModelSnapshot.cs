@@ -1176,6 +1176,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<int>("AggregateType")
+                        .HasColumnType("integer");
+
                     b.Property<Guid?>("CharacterClassId")
                         .HasColumnType("uuid");
 

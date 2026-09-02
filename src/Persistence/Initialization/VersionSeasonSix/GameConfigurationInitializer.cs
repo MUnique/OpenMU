@@ -1,4 +1,4 @@
-// <copyright file="GameConfigurationInitializer.cs" company="MUnique">
+﻿// <copyright file="GameConfigurationInitializer.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -53,7 +53,7 @@ public class GameConfigurationInitializer : GameConfigurationInitializerBase
         this.GameConfiguration.ItemOptions.Add(this.CreateOptionDefinition(Stats.CurseBaseDmg, ItemOptionDefinitionNumbers.CurseAttack));
 
         var maximumAllianceSizeDef = Stats.MaximumAllianceSize.GetPersistent(this.GameConfiguration);
-        var maximumAllianceSizeValue = this.Context.CreateNew<ConstValueAttribute>(5f, maximumAllianceSizeDef);
+        var maximumAllianceSizeValue = this.Context.CreateNew<ConstValueAttribute>(5f, maximumAllianceSizeDef, AggregateType.AddRaw);
         this.GameConfiguration.GlobalBaseAttributeValues.Add(maximumAllianceSizeValue);
 
         new CharacterClassInitialization(this.Context, this.GameConfiguration).Initialize();

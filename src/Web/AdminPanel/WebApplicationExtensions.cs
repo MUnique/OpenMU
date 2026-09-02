@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.Web.AdminPanel;
 
-using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,7 +12,9 @@ using Microsoft.Extensions.Hosting;
 using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.Network.Analyzer;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Persistence.AdminAuth;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix;
 using MUnique.OpenMU.Web.AdminPanel.Auth;
@@ -22,6 +23,7 @@ using MUnique.OpenMU.Web.AdminPanel.Services;
 using MUnique.OpenMU.Web.Shared.Components.Modal;
 using MUnique.OpenMU.Web.Shared.Models;
 using MUnique.OpenMU.Web.Shared.Services;
+using System.IO;
 
 /// <summary>
 /// Extensions for the <see cref="WebApplicationBuilder"/>.
@@ -88,6 +90,11 @@ public static class WebApplicationExtensions
         services.AddScoped<IDataService<ChatCommandViewItem>>(serviceProvider => serviceProvider.GetService<ChatCommandController>()!);
         services.AddScoped<AdminUserManagementService>();
         services.AddScoped<IChangeNotificationService, ChangeNotificationService>();
+
+        // The analyzers are only created when the network analyzer page is actually used,
+        // which requires an IPacketCaptureService - that's only registered in the all-in-one
+        // deployment.
+        services.AddSingleton<PacketAnalyzerProvider>();
         services.AddScoped<NavigationHistory>();
         services.AddScoped<LoggedInAccountService>();
         services.AddScoped<LoadingOverlayService>();

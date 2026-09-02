@@ -123,6 +123,12 @@
   <data name="CastleSiegeLeverTalkPlugIn_Description" xml:space="preserve">
     <value>Opens the operation interface for a Castle Siege gate lever.</value>
   </data>
+  <data name="CastleSiegeMachineTalkPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege Warfare Machine</value>
+  </data>
+  <data name="CastleSiegeMachineTalkPlugIn_Description" xml:space="preserve">
+    <value>Opens a Castle Siege warfare machine for an authorized player.</value>
+  </data>
   <data name="CastleSiegePlugIn_Name" xml:space="preserve">
     <value>Castle Siege</value>
   </data>
@@ -134,6 +140,12 @@
   </data>
   <data name="CastleSiegePendingRewardPlugIn_Description" xml:space="preserve">
     <value>Delivers queued Castle Siege participant rewards when a character enters the game.</value>
+  </data>
+  <data name="CastleSiegeGuardsmanTalkPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege Guardsman</value>
+  </data>
+  <data name="CastleSiegeGuardsmanTalkPlugIn_Description" xml:space="preserve">
+    <value>Shows Land of Trials availability and its applicable entry fee.</value>
   </data>
   <data name="MuHelperFeaturePlugIn_Name" xml:space="preserve">
     <value>MU Helper Feature</value>
@@ -176,6 +188,12 @@
   </data>
   <data name="SelfDefensePlugIn_Description" xml:space="preserve">
     <value>Updates the state of the self defense system.</value>
+  </data>
+  <data name="ShieldRecoveryHiatusPlugIn_Name" xml:space="preserve">
+    <value>Shield Recovery Hiatus</value>
+  </data>
+  <data name="ShieldRecoveryHiatusPlugIn_Description" xml:space="preserve">
+    <value>Updates and resets the shield recovery hiatus attribute.</value>
   </data>
   <data name="ShowMessageToAllWhenPlayerEnteredWorldPlugIn_Name" xml:space="preserve">
     <value>Show Message To All When Player Entered World</value>

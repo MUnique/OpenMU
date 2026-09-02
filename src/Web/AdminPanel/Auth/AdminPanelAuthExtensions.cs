@@ -18,6 +18,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Persistence.AdminAuth;
+using MUnique.OpenMU.Web.AdminPanel.Services;
 
 /// <summary>
 /// Extensions which add the authentication of the admin panel.
@@ -25,19 +26,19 @@ using MUnique.OpenMU.Persistence.AdminAuth;
 public static class AdminPanelAuthExtensions
 {
     /// <summary>
-    /// The environment variable which defines the login name of the bootstrap user.
+    /// Gets the environment variable which defines the login name of the bootstrap user.
     /// </summary>
-    public const string BootstrapUserVariableName = "OPENMU_ADMIN_USER";
+    public static string BootstrapUserVariableName => "OPENMU_ADMIN_USER";
 
     /// <summary>
-    /// The environment variable which defines the password of the bootstrap user.
+    /// Gets the environment variable which defines the password of the bootstrap user.
     /// </summary>
-    public const string BootstrapPasswordVariableName = "OPENMU_ADMIN_PASSWORD";
+    public static string BootstrapPasswordVariableName => "OPENMU_ADMIN_PASSWORD";
 
     /// <summary>
-    /// The environment variable which defines the base32 authenticator key of the bootstrap user.
+    /// Gets the environment variable which defines the base32 authenticator key of the bootstrap user.
     /// </summary>
-    public const string BootstrapAuthenticatorKeyVariableName = "OPENMU_ADMIN_TOTP_SECRET";
+    public static string BootstrapAuthenticatorKeyVariableName => "OPENMU_ADMIN_TOTP_SECRET";
 
     /// <summary>
     /// Adds the authentication of the admin panel to the service collection.
@@ -59,11 +60,15 @@ public static class AdminPanelAuthExtensions
             options.BootstrapUser = authOptions.BootstrapUser;
         });
 
+        services.AddSingleton<ApiKeyRegistry>();
+        services.AddScoped<ApiKeyManagementService>();
+
         services.AddSingleton(ConfigureDataProtection(services, configuration));
 
         // The hosting application registers the real storage; this is just a fallback which lets
         // the panel start in its initial setup mode instead of failing to resolve its services.
         services.TryAddSingleton<IAdminUserRepository, UnavailableAdminUserRepository>();
+        services.TryAddSingleton<IApiKeyRepository, UnavailableApiKeyRepository>();
 
         services.AddSingleton<AdminUserSecretProtector>();
         services.AddSingleton<IPasswordHasher<AdminUser>, BCryptPasswordHasher>();
@@ -103,7 +108,15 @@ public static class AdminPanelAuthExtensions
                 options.LoginPath = AdminAuthenticationDefaults.LoginPath;
                 options.LogoutPath = AdminAuthenticationDefaults.SignOutEndpointPath;
                 options.AccessDeniedPath = AdminAuthenticationDefaults.AccessDeniedPath;
-            });
+
+                // An API client can't do anything with the login page, so it gets a status code
+                // instead of a redirect to it.
+                options.Events.OnRedirectToLogin = context => RespondWithStatusCodeOnApiPath(context, StatusCodes.Status401Unauthorized);
+                options.Events.OnRedirectToAccessDenied = context => RespondWithStatusCodeOnApiPath(context, StatusCodes.Status403Forbidden);
+            })
+            .AddScheme<AuthenticationSchemeOptions, ApiKeyAuthenticationHandler>(
+                ApiKeyAuthenticationDefaults.AuthenticationScheme,
+                configureOptions: null);
 
         services.AddSingleton<IAuthorizationHandler, AdminAccessRequirementHandler>();
         services.AddAuthorizationBuilder()
@@ -175,6 +188,18 @@ public static class AdminPanelAuthExtensions
 
             await next(context).ConfigureAwait(false);
         });
+    }
+
+    private static Task RespondWithStatusCodeOnApiPath(RedirectContext<CookieAuthenticationOptions> context, int statusCode)
+    {
+        if (context.Request.Path.StartsWithSegments(ApiKeyAuthenticationDefaults.ApiPathPrefix, StringComparison.OrdinalIgnoreCase))
+        {
+            context.Response.StatusCode = statusCode;
+            return Task.CompletedTask;
+        }
+
+        context.Response.Redirect(context.RedirectUri);
+        return Task.CompletedTask;
     }
 
     /// <summary>

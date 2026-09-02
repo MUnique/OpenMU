@@ -1,14 +1,12 @@
-// <copyright file="SetupService.cs" company="MUnique">
+﻿// <copyright file="SetupService.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Web.AdminPanel.Services;
+namespace MUnique.OpenMU.Persistence;
 
 using System.Threading;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Network.PlugIns;
-using MUnique.OpenMU.Persistence;
-using MUnique.OpenMU.Persistence.Initialization;
 using MUnique.OpenMU.PlugIns;
 using Nito.AsyncEx.Synchronous;
 
@@ -33,6 +31,12 @@ public class SetupService
         this._contextProvider = contextProvider;
         this._plugInManager = plugInManager;
     }
+
+    /// <summary>
+    /// Occurs before the database gets re-created, so that the subscribers can stop
+    /// accessing it until the initialization is finished.
+    /// </summary>
+    public event AsyncEventHandler? DatabaseInitializing;
 
     /// <summary>
     /// Occurs when the database got initialized.
@@ -123,11 +127,38 @@ public class SetupService
     }
 
     /// <summary>
+    /// Restores the database with the given action, which is responsible for creating the database
+    /// and filling it with data. In contrast to <see cref="CreateDatabaseAsync"/>, the database is
+    /// not created before - a snapshot brings its own schema.
+    /// </summary>
+    /// <param name="restore">The action which restores the database.</param>
+    public async Task RestoreDatabaseAsync(Func<Task> restore)
+    {
+        if (this.DatabaseInitializing is { } initializingHandler)
+        {
+            await initializingHandler.Invoke().ConfigureAwait(false);
+        }
+
+        await restore().ConfigureAwait(false);
+        this._contextProvider.ResetCache();
+
+        if (this.DatabaseInitialized is { } eventHandler)
+        {
+            await eventHandler.Invoke().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
     /// Creates the database.
     /// </summary>
     /// <param name="dataInitialization">The data initialization action.</param>
     public async Task CreateDatabaseAsync(Func<Task> dataInitialization)
     {
+        if (this.DatabaseInitializing is { } initializingHandler)
+        {
+            await initializingHandler.Invoke().ConfigureAwait(false);
+        }
+
         using var update = await this._contextProvider.ReCreateDatabaseAsync().ConfigureAwait(false);
         await dataInitialization().ConfigureAwait(false);
         if (this.DatabaseInitialized is { } eventHandler)

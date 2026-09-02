@@ -531,7 +531,42 @@ public enum UpdateVersion
     ConfigureCastleSiegeParticipation = 104,
 
     /// <summary>
+    /// The version of the <see cref="RegenerationsRefactorPlugIn075"/>.
+    /// </summary>
+    RegenerationsRefactor075 = 105,
+
+    /// <summary>
+    /// The version of the <see cref="RegenerationsRefactorPlugIn095D"/>.
+    /// </summary>
+    RegenerationsRefactor095d = 106,
+
+    /// <summary>
+    /// The version of the <see cref="RegenerationsRefactorPlugInSeason6"/>.
+    /// </summary>
+    RegenerationsRefactorSeason6 = 107,
+
+    /// <summary>
+    /// The version of the <see cref="ConfigureCastleSiegeEconomyUpdatePlugIn"/>.
+    /// </summary>
+    ConfigureCastleSiegeEconomy = 108,
+
+    /// <summary>
+    /// The version of the <see cref="RemoveDuplicateStatAttributesPlugIn075"/>.
+    /// </summary>
+    RemoveDuplicateStatAttributes075 = 109,
+
+    /// <summary>
+    /// The version of the <see cref="RemoveDuplicateStatAttributesPlugIn095D"/>.
+    /// </summary>
+    RemoveDuplicateStatAttributes095d = 110,
+
+    /// <summary>
+    /// The version of the <see cref="RemoveDuplicateStatAttributesPlugInSeason6"/>.
+    /// </summary>
+    RemoveDuplicateStatAttributesSeason6 = 111,
+    
+    /// <summary>
     /// The version of the <see cref="IllusionTempleDataUpdatePlugIn"/>.
     /// </summary>
-    IllusionTempleData = 105,
+    IllusionTempleData = 112,
 }

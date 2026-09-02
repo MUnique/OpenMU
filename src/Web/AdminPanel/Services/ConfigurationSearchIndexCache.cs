@@ -8,7 +8,6 @@ using System.Diagnostics;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Configuration;
-using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 
 /// <summary>

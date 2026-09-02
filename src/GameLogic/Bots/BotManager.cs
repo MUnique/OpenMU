@@ -289,8 +289,10 @@ public sealed class BotManager
     /// Stops the bot like a regular logout (which saves its progress) and releases its resources.
     /// A stopped-but-not-disposed player keeps its persistence context - and with it the whole tracked
     /// account graph - alive; with the presence rotation stopping bots around the clock, that adds up
-    /// to a leak. Mirrors the teardown of the <see cref="Offline.OfflinePlayerManager"/>; the removal
-    /// from the game context happens through the disconnect event.
+    /// to a leak. Mirrors the teardown of the <see cref="Offline.OfflinePlayerManager"/>: the removal
+    /// from the game context normally happens through the disconnect event, and when the stop threw
+    /// before it could raise that event, the disposal removes the bot as its own safety net (see
+    /// <see cref="Player.DisposeAsyncCore"/>).
     /// </summary>
     private static async ValueTask StopAndDisposeAsync(BotPlayer bot, string key, string reason)
     {
@@ -308,6 +310,14 @@ public sealed class BotManager
         }
     }
 
+    /// <summary>
+    /// Drops a bot which never got as far as playing. It was already added to the game context if its
+    /// initialization failed after <see cref="Player.SetSelectedCharacterAsync"/> was reached, and it is
+    /// never disconnected on this path - the disposal takes it out of the player list (see
+    /// <see cref="Player.DisposeAsyncCore"/>).
+    /// </summary>
+    /// <param name="key">The key of the bot.</param>
+    /// <param name="bot">The bot to drop.</param>
     private async ValueTask RemoveAndDisposeAsync(string key, BotPlayer bot)
     {
         this._bots.TryRemove(key, out _);
