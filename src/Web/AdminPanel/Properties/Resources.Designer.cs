@@ -61,29 +61,65 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Create.
+        ///   Looks up a localized string similar to About.
         /// </summary>
-        public static string Create {
+        public static string About {
             get {
-                return ResourceManager.GetString("Create", resourceCulture);
+                return ResourceManager.GetString("About", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Reload.
+        ///   Looks up a localized string similar to Access denied.
         /// </summary>
-        public static string Reload {
+        public static string AccessDenied {
             get {
-                return ResourceManager.GetString("Reload", resourceCulture);
+                return ResourceManager.GetString("AccessDenied", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Admin Users.
+        ///   Looks up a localized string similar to Your account is not permitted to open this page..
         /// </summary>
-        public static string AdminUsers {
+        public static string AccessDeniedDescription {
             get {
-                return ResourceManager.GetString("AdminUsers", resourceCulture);
+                return ResourceManager.GetString("AccessDeniedDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Too many failed attempts. Please try again later..
+        /// </summary>
+        public static string AccountLockedOut {
+            get {
+                return ResourceManager.GetString("AccountLockedOut", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Accounts.
+        /// </summary>
+        public static string Accounts {
+            get {
+                return ResourceManager.GetString("Accounts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Account security.
+        /// </summary>
+        public static string AccountSecurity {
+            get {
+                return ResourceManager.GetString("AccountSecurity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Action.
+        /// </summary>
+        public static string Action {
+            get {
+                return ResourceManager.GetString("Action", resourceCulture);
             }
         }
         
@@ -97,6 +133,267 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Activate.
+        /// </summary>
+        public static string Activate {
+            get {
+                return ResourceManager.GetString("Activate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Active Offline Player.
+        /// </summary>
+        public static string ActiveOfflinePlayer {
+            get {
+                return ResourceManager.GetString("ActiveOfflinePlayer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add New.
+        /// </summary>
+        public static string AddNew {
+            get {
+                return ResourceManager.GetString("AddNew", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Admin Users.
+        /// </summary>
+        public static string AdminUsers {
+            get {
+                return ResourceManager.GetString("AdminUsers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All.
+        /// </summary>
+        public static string All {
+            get {
+                return ResourceManager.GetString("All", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All Game Servers.
+        /// </summary>
+        public static string AllGameServers {
+            get {
+                return ResourceManager.GetString("AllGameServers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An error occurred while processing your request.
+        /// </summary>
+        public static string AnErrorOccurredWhileProcessingYourRequest {
+            get {
+                return ResourceManager.GetString("AnErrorOccurredWhileProcessingYourRequest", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The API key has been created..
+        /// </summary>
+        public static string ApiKeyCreated {
+            get {
+                return ResourceManager.GetString("ApiKeyCreated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The API key has been deleted..
+        /// </summary>
+        public static string ApiKeyDeleted {
+            get {
+                return ResourceManager.GetString("ApiKeyDeleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The API key has been disabled..
+        /// </summary>
+        public static string ApiKeyDisabled {
+            get {
+                return ResourceManager.GetString("ApiKeyDisabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The API key has been enabled..
+        /// </summary>
+        public static string ApiKeyEnabled {
+            get {
+                return ResourceManager.GetString("ApiKeyEnabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Application.
+        /// </summary>
+        public static string ApiKeyName {
+            get {
+                return ResourceManager.GetString("ApiKeyName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Key.
+        /// </summary>
+        public static string ApiKeyPrefix {
+            get {
+                return ResourceManager.GetString("ApiKeyPrefix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to API keys.
+        /// </summary>
+        public static string ApiKeys {
+            get {
+                return ResourceManager.GetString("ApiKeys", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to External applications like a game launcher or a website authenticate themselves at the public API under /api with one of these keys. Give each application its own key, so a single one can be revoked..
+        /// </summary>
+        public static string ApiKeysDescription {
+            get {
+                return ResourceManager.GetString("ApiKeysDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Copy this key now.
+        /// </summary>
+        public static string ApiKeyShownOnce {
+            get {
+                return ResourceManager.GetString("ApiKeyShownOnce", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only the hash of the key is stored, so this is the only time it&apos;s shown. If it gets lost, delete the key and create a new one..
+        /// </summary>
+        public static string ApiKeyShownOnceDescription {
+            get {
+                return ResourceManager.GetString("ApiKeyShownOnceDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Applying updates ....
+        /// </summary>
+        public static string ApplyingUpdates {
+            get {
+                return ResourceManager.GetString("ApplyingUpdates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Apply selected updates.
+        /// </summary>
+        public static string ApplySelectedUpdates {
+            get {
+                return ResourceManager.GetString("ApplySelectedUpdates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Authenticator code.
+        /// </summary>
+        public static string AuthenticatorCode {
+            get {
+                return ResourceManager.GetString("AuthenticatorCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to available updates.
+        /// </summary>
+        public static string AvailableUpdates {
+            get {
+                return ResourceManager.GetString("AvailableUpdates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Back.
+        /// </summary>
+        public static string Back {
+            get {
+                return ResourceManager.GetString("Back", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Backup import failed..
+        /// </summary>
+        public static string BackupImportFailed {
+            get {
+                return ResourceManager.GetString("BackupImportFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Backup import succeeded. Please restart the server process to apply the changes..
+        /// </summary>
+        public static string BackupImportSucceeded {
+            get {
+                return ResourceManager.GetString("BackupImportSucceeded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string Cancel {
+            get {
+                return ResourceManager.GetString("Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The last remaining user can&apos;t be deleted..
+        /// </summary>
+        public static string CannotDeleteLastUser {
+            get {
+                return ResourceManager.GetString("CannotDeleteLastUser", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The bootstrap user is defined by the configuration and can&apos;t be changed here..
+        /// </summary>
+        public static string CannotModifyBootstrapUser {
+            get {
+                return ResourceManager.GetString("CannotModifyBootstrapUser", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Can&apos;t connect to the database. Probably not created yet..
+        /// </summary>
+        public static string CantConnectToTheDatabaseProbablyNotCreatedYet {
+            get {
+                return ResourceManager.GetString("CantConnectToTheDatabaseProbablyNotCreatedYet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Captured Packets.
+        /// </summary>
+        public static string CapturedPackets {
+            get {
+                return ResourceManager.GetString("CapturedPackets", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Change password.
         /// </summary>
         public static string ChangePassword {
@@ -106,11 +403,428 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Character.
+        /// </summary>
+        public static string Character {
+            get {
+                return ResourceManager.GetString("Character", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Character classes.
+        /// </summary>
+        public static string CharacterClasses {
+            get {
+                return ResourceManager.GetString("CharacterClasses", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chat commands.
+        /// </summary>
+        public static string ChatCommands {
+            get {
+                return ResourceManager.GetString("ChatCommands", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chat Server.
+        /// </summary>
+        public static string ChatServer {
+            get {
+                return ResourceManager.GetString("ChatServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Clear.
+        /// </summary>
+        public static string ClearPackets {
+            get {
+                return ResourceManager.GetString("ClearPackets", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Close.
+        /// </summary>
+        public static string Close {
+            get {
+                return ResourceManager.GetString("Close", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Command.
+        /// </summary>
+        public static string CommandColumn {
+            get {
+                return ResourceManager.GetString("CommandColumn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Description.
+        /// </summary>
+        public static string CommandDescription {
+            get {
+                return ResourceManager.GetString("CommandDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Usage.
+        /// </summary>
+        public static string CommandUsage {
+            get {
+                return ResourceManager.GetString("CommandUsage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to To finish, enter the code which your app shows now..
+        /// </summary>
+        public static string ConfirmSetupHint {
+            get {
+                return ResourceManager.GetString("ConfirmSetupHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connections.
+        /// </summary>
+        public static string Connections {
+            get {
+                return ResourceManager.GetString("Connections", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The connection server configuration has been saved. Initializing connect server ....
+        /// </summary>
+        public static string ConnectionServerConfigurationSaved {
+            get {
+                return ResourceManager.GetString("ConnectionServerConfigurationSaved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connect Server.
+        /// </summary>
+        public static string ConnectServer {
+            get {
+                return ResourceManager.GetString("ConnectServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The API key has been copied to the clipboard..
+        /// </summary>
+        public static string CopiedToClipboard {
+            get {
+                return ResourceManager.GetString("CopiedToClipboard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Copy.
+        /// </summary>
+        public static string CopyToClipboard {
+            get {
+                return ResourceManager.GetString("CopyToClipboard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The API key could not be copied. Please select and copy it by hand..
+        /// </summary>
+        public static string CopyToClipboardFailed {
+            get {
+                return ResourceManager.GetString("CopyToClipboardFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Couldn&apos;t find &apos;{0}&apos; to delete..
+        /// </summary>
+        public static string CouldNotFindToDelete {
+            get {
+                return ResourceManager.GetString("CouldNotFindToDelete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Couldn&apos;t find &apos;{0}&apos; to duplicate..
+        /// </summary>
+        public static string CouldNotFindToDuplicate {
+            get {
+                return ResourceManager.GetString("CouldNotFindToDuplicate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not load the map data. Check the logs for details..
+        /// </summary>
+        public static string CouldNotLoadMapDataCheckTheLogs {
+            get {
+                return ResourceManager.GetString("CouldNotLoadMapDataCheckTheLogs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create.
+        /// </summary>
+        public static string Create {
+            get {
+                return ResourceManager.GetString("Create", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create API key.
+        /// </summary>
+        public static string CreateApiKey {
+            get {
+                return ResourceManager.GetString("CreateApiKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create Connect Server.
+        /// </summary>
+        public static string CreateConnectServer {
+            get {
+                return ResourceManager.GetString("CreateConnectServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New object successfully created..
+        /// </summary>
+        public static string CreatedSuccessfully {
+            get {
+                return ResourceManager.GetString("CreatedSuccessfully", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create the first user.
+        /// </summary>
+        public static string CreateFirstUser {
+            get {
+                return ResourceManager.GetString("CreateFirstUser", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create Game Server.
+        /// </summary>
+        public static string CreateGameServer {
+            get {
+                return ResourceManager.GetString("CreateGameServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create User.
+        /// </summary>
+        public static string CreateUser {
+            get {
+                return ResourceManager.GetString("CreateUser", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Creating Configuration ....
+        /// </summary>
+        public static string CreatingConfigurationInfo {
+            get {
+                return ResourceManager.GetString("CreatingConfigurationInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current State.
+        /// </summary>
+        public static string CurrentState {
+            get {
+                return ResourceManager.GetString("CurrentState", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Database Snapshot.
+        /// </summary>
+        public static string DatabaseSnapshot {
+            get {
+                return ResourceManager.GetString("DatabaseSnapshot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A snapshot contains all data of the database and is created and restored a lot faster. It can be restored by this or a newer version of the server, which applies its database updates to the restored data. To transfer data to an older version, use the backup above..
+        /// </summary>
+        public static string DatabaseSnapshotDescription {
+            get {
+                return ResourceManager.GetString("DatabaseSnapshotDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Database status.
+        /// </summary>
+        public static string DatabaseStatus {
+            get {
+                return ResourceManager.GetString("DatabaseStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Deactivate.
+        /// </summary>
+        public static string Deactivate {
+            get {
+                return ResourceManager.GetString("Deactivate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Delete.
         /// </summary>
         public static string Delete {
             get {
                 return ResourceManager.GetString("Delete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete API key.
+        /// </summary>
+        public static string DeleteApiKey {
+            get {
+                return ResourceManager.GetString("DeleteApiKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Do you really want to delete the API key of &apos;{0}&apos;? The application which uses it stops working immediately..
+        /// </summary>
+        public static string DeleteApiKeyQuestion {
+            get {
+                return ResourceManager.GetString("DeleteApiKeyQuestion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Couldn&apos;t delete &apos;{0}&apos;, probably because it&apos;s referenced by another object. For details, see log.
+        /// </summary>
+        public static string DeleteFailedReferenced {
+            get {
+                return ResourceManager.GetString("DeleteFailedReferenced", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;strong&gt;The Development environment shouldn&apos;t be enabled for deployed applications.&lt;/strong&gt;
+        ///    It can result in displaying sensitive information from exceptions to end users.
+        ///    For local debugging, enable the &lt;strong&gt;Development&lt;/strong&gt; environment by setting the &lt;strong&gt;ASPNETCORE_ENVIRONMENT&lt;/strong&gt; environment variable to &lt;strong&gt;Development&lt;/strong&gt;
+        ///    and restarting the app..
+        /// </summary>
+        public static string DevelopmentEnvironmentWarning {
+            get {
+                return ResourceManager.GetString("DevelopmentEnvironmentWarning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Development Mode.
+        /// </summary>
+        public static string DevelopmentMode {
+            get {
+                return ResourceManager.GetString("DevelopmentMode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Direction.
+        /// </summary>
+        public static string Direction {
+            get {
+                return ResourceManager.GetString("Direction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Disable.
+        /// </summary>
+        public static string Disable {
+            get {
+                return ResourceManager.GetString("Disable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Disabled.
+        /// </summary>
+        public static string Disabled {
+            get {
+                return ResourceManager.GetString("Disabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Disable two-factor authentication.
+        /// </summary>
+        public static string DisableTwoFactor {
+            get {
+                return ResourceManager.GetString("DisableTwoFactor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Discard changes.
+        /// </summary>
+        public static string DiscardChanges {
+            get {
+                return ResourceManager.GetString("DiscardChanges", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Disconnect.
+        /// </summary>
+        public static string Disconnect {
+            get {
+                return ResourceManager.GetString("Disconnect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Download as JSON.
+        /// </summary>
+        public static string DownloadAsJson {
+            get {
+                return ResourceManager.GetString("DownloadAsJson", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Download File.
+        /// </summary>
+        public static string DownloadFile {
+            get {
+                return ResourceManager.GetString("DownloadFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Drop item groups.
+        /// </summary>
+        public static string DropItemGroups {
+            get {
+                return ResourceManager.GetString("DropItemGroups", resourceCulture);
             }
         }
         
@@ -133,168 +847,6 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Couldn&apos;t find &apos;{0}&apos; to duplicate..
-        /// </summary>
-        public static string CouldNotFindToDuplicate {
-            get {
-                return ResourceManager.GetString("CouldNotFindToDuplicate", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Type &apos;{0}&apos; does not support cloning..
-        /// </summary>
-        public static string TypeDoesNotSupportCloning {
-            get {
-                return ResourceManager.GetString("TypeDoesNotSupportCloning", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Failed to clone &apos;{0}&apos;..
-        /// </summary>
-        public static string FailedToClone {
-            get {
-                return ResourceManager.GetString("FailedToClone", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Error duplicating &apos;{0}&apos;: {1}.
-        /// </summary>
-        public static string ErrorDuplicating {
-            get {
-                return ResourceManager.GetString("ErrorDuplicating", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Create User.
-        /// </summary>
-        public static string CreateUser {
-            get {
-                return ResourceManager.GetString("CreateUser", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Loading ....
-        /// </summary>
-        public static string Loading {
-            get {
-                return ResourceManager.GetString("Loading", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Create Connect Server.
-        /// </summary>
-        public static string CreateConnectServer {
-            get {
-                return ResourceManager.GetString("CreateConnectServer", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Create Game Server.
-        /// </summary>
-        public static string CreateGameServer {
-            get {
-                return ResourceManager.GetString("CreateGameServer", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Server with Id {0} already exists. Please use another value..
-        /// </summary>
-        public static string ServerWithIdAlreadyExists {
-            get {
-                return ResourceManager.GetString("ServerWithIdAlreadyExists", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to A server with tcp port {0} already exists. Please use another tcp port..
-        /// </summary>
-        public static string ServerWithPortAlreadyExists {
-            get {
-                return ResourceManager.GetString("ServerWithPortAlreadyExists", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Creating Configuration ....
-        /// </summary>
-        public static string CreatingConfigurationInfo {
-            get {
-                return ResourceManager.GetString("CreatingConfigurationInfo", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Saving Configuration ....
-        /// </summary>
-        public static string SavingConfigurationInfo {
-            get {
-                return ResourceManager.GetString("SavingConfigurationInfo", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The connection server configuration has been saved. Initializing connect server ....
-        /// </summary>
-        public static string ConnectionServerConfigurationSaved {
-            get {
-                return ResourceManager.GetString("ConnectionServerConfigurationSaved", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Initializing Connect Server ....
-        /// </summary>
-        public static string InitializingConnectServerInfo {
-            get {
-                return ResourceManager.GetString("InitializingConnectServerInfo", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to No changes have been saved..
-        /// </summary>
-        public static string NoChangesSaved {
-            get {
-                return ResourceManager.GetString("NoChangesSaved", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to An unexpected error occurred: {0}..
-        /// </summary>
-        public static string UnexpectedErrorOccurred {
-            get {
-                return ResourceManager.GetString("UnexpectedErrorOccurred", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The game server configuration has been saved. Initializing game server ....
-        /// </summary>
-        public static string GameServerConfigurationSavedInfo {
-            get {
-                return ResourceManager.GetString("GameServerConfigurationSavedInfo", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Initializing Game Server ....
-        /// </summary>
-        public static string InitializingGameServerInfo {
-            get {
-                return ResourceManager.GetString("InitializingGameServerInfo", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Edit.
         /// </summary>
         public static string Edit {
@@ -304,65 +856,20 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Refresh.
+        ///   Looks up a localized string similar to Enable.
         /// </summary>
-        public static string Refresh {
+        public static string Enable {
             get {
-                return ResourceManager.GetString("Refresh", resourceCulture);
+                return ResourceManager.GetString("Enable", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The changes have been saved..
+        ///   Looks up a localized string similar to Enabled.
         /// </summary>
-        public static string SavedChanges {
+        public static string Enabled {
             get {
-                return ResourceManager.GetString("SavedChanges", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to There were no changes to save..
-        /// </summary>
-        public static string NoChangesToSave {
-            get {
-                return ResourceManager.GetString("NoChangesToSave", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Failed, context not initialized.
-        /// </summary>
-        public static string FailedByUninitializedContext {
-            get {
-                return ResourceManager.GetString("FailedByUninitializedContext", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to There are unsaved changes. Are you sure you want to discard them?.
-        /// </summary>
-        public static string UnsavedChangesQuestion {
-            get {
-                return ResourceManager.GetString("UnsavedChangesQuestion", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Download as JSON.
-        /// </summary>
-        public static string DownloadAsJson {
-            get {
-                return ResourceManager.GetString("DownloadAsJson", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Could not load the data. Check the logs for details..
-        /// </summary>
-        public static string LoadingErrorCheckLog {
-            get {
-                return ResourceManager.GetString("LoadingErrorCheckLog", resourceCulture);
+                return ResourceManager.GetString("Enabled", resourceCulture);
             }
         }
         
@@ -376,266 +883,29 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Map Editor.
+        ///   Looks up a localized string similar to Error duplicating &apos;{0}&apos;: {1}.
         /// </summary>
-        public static string MapEditor {
+        public static string ErrorDuplicating {
             get {
-                return ResourceManager.GetString("MapEditor", resourceCulture);
+                return ResourceManager.GetString("ErrorDuplicating", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Search.
+        ///   Looks up a localized string similar to Export JSON Backup.
         /// </summary>
-        public static string Search {
+        public static string ExportJsonBackup {
             get {
-                return ResourceManager.GetString("Search", resourceCulture);
+                return ResourceManager.GetString("ExportJsonBackup", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add New.
+        ///   Looks up a localized string similar to Export Snapshot.
         /// </summary>
-        public static string AddNew {
+        public static string ExportSnapshot {
             get {
-                return ResourceManager.GetString("AddNew", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Could not load the map data. Check the logs for details..
-        /// </summary>
-        public static string CouldNotLoadMapDataCheckTheLogs {
-            get {
-                return ResourceManager.GetString("CouldNotLoadMapDataCheckTheLogs", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to An unexpected error occurred: {0}. See logs for more details..
-        /// </summary>
-        public static string UnexpectedErrorCheckLogs {
-            get {
-                return ResourceManager.GetString("UnexpectedErrorCheckLogs", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to An unhandled error has occurred..
-        /// </summary>
-        public static string UnhandledErrorOccurred {
-            get {
-                return ResourceManager.GetString("UnhandledErrorOccurred", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &lt;strong&gt;The Development environment shouldn&apos;t be enabled for deployed applications.&lt;/strong&gt;
-        ///    It can result in displaying sensitive information from exceptions to end users.
-        ///    For local debugging, enable the &lt;strong&gt;Development&lt;/strong&gt; environment by setting the &lt;strong&gt;ASPNETCORE_ENVIRONMENT&lt;/strong&gt; environment variable to &lt;strong&gt;Development&lt;/strong&gt;
-        ///    and restarting the app..
-        /// </summary>
-        public static string DevelopmentEnvironmentWarning {
-            get {
-                return ResourceManager.GetString("DevelopmentEnvironmentWarning", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Swapping to &lt;strong&gt;Development&lt;/strong&gt; environment will display more detailed information about the error that occurred..
-        /// </summary>
-        public static string SwappingToDevForMoreInformation {
-            get {
-                return ResourceManager.GetString("SwappingToDevForMoreInformation", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to An error occurred while processing your request.
-        /// </summary>
-        public static string AnErrorOccurredWhileProcessingYourRequest {
-            get {
-                return ResourceManager.GetString("AnErrorOccurredWhileProcessingYourRequest", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Development Mode.
-        /// </summary>
-        public static string DevelopmentMode {
-            get {
-                return ResourceManager.GetString("DevelopmentMode", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Game Server.
-        /// </summary>
-        public static string GameServer {
-            get {
-                return ResourceManager.GetString("GameServer", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Welcome to the admin panel of OpenMU..
-        /// </summary>
-        public static string WelcomeMessage {
-            get {
-                return ResourceManager.GetString("WelcomeMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to OpenMU AdminPanel.
-        /// </summary>
-        public static string OpenMUAdminPanel {
-            get {
-                return ResourceManager.GetString("OpenMUAdminPanel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to About.
-        /// </summary>
-        public static string About {
-            get {
-                return ResourceManager.GetString("About", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Log Files.
-        /// </summary>
-        public static string LogFiles {
-            get {
-                return ResourceManager.GetString("LogFiles", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Logs.
-        /// </summary>
-        public static string Logs {
-            get {
-                return ResourceManager.GetString("Logs", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Metrics.
-        /// </summary>
-        public static string Metrics {
-            get {
-                return ResourceManager.GetString("Metrics", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Tracing.
-        /// </summary>
-        public static string Tracing {
-            get {
-                return ResourceManager.GetString("Tracing", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to File name.
-        /// </summary>
-        public static string FileName {
-            get {
-                return ResourceManager.GetString("FileName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Last update.
-        /// </summary>
-        public static string LastUpdate {
-            get {
-                return ResourceManager.GetString("LastUpdate", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Size.
-        /// </summary>
-        public static string Size {
-            get {
-                return ResourceManager.GetString("Size", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Server-ID.
-        /// </summary>
-        public static string ServerID {
-            get {
-                return ResourceManager.GetString("ServerID", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Disconnect.
-        /// </summary>
-        public static string Disconnect {
-            get {
-                return ResourceManager.GetString("Disconnect", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Live Map.
-        /// </summary>
-        public static string LiveMap {
-            get {
-                return ResourceManager.GetString("LiveMap", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to All.
-        /// </summary>
-        public static string All {
-            get {
-                return ResourceManager.GetString("All", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Merchants.
-        /// </summary>
-        public static string Merchants {
-            get {
-                return ResourceManager.GetString("Merchants", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Back.
-        /// </summary>
-        public static string Back {
-            get {
-                return ResourceManager.GetString("Back", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Discard changes.
-        /// </summary>
-        public static string DiscardChanges {
-            get {
-                return ResourceManager.GetString("DiscardChanges", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Save changes.
-        /// </summary>
-        public static string SaveChanges {
-            get {
-                return ResourceManager.GetString("SaveChanges", resourceCulture);
+                return ResourceManager.GetString("ExportSnapshot", resourceCulture);
             }
         }
         
@@ -649,560 +919,56 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Plugin Name.
+        ///   Looks up a localized string similar to Extracted Information.
         /// </summary>
-        public static string PluginName {
+        public static string ExtractedInformation {
             get {
-                return ResourceManager.GetString("PluginName", resourceCulture);
+                return ResourceManager.GetString("ExtractedInformation", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Plugin Type.
+        ///   Looks up a localized string similar to Failed, context not initialized.
         /// </summary>
-        public static string PluginType {
+        public static string FailedByUninitializedContext {
             get {
-                return ResourceManager.GetString("PluginType", resourceCulture);
+                return ResourceManager.GetString("FailedByUninitializedContext", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Plugins.
+        ///   Looks up a localized string similar to Failed to clone &apos;{0}&apos;..
         /// </summary>
-        public static string Plugins {
+        public static string FailedToClone {
             get {
-                return ResourceManager.GetString("Plugins", resourceCulture);
+                return ResourceManager.GetString("FailedToClone", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Deactivate.
+        ///   Looks up a localized string similar to File name.
         /// </summary>
-        public static string Deactivate {
+        public static string FileName {
             get {
-                return ResourceManager.GetString("Deactivate", resourceCulture);
+                return ResourceManager.GetString("FileName", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Activate.
+        ///   Looks up a localized string similar to Filter log entries....
         /// </summary>
-        public static string Activate {
+        public static string FilterLogEntries {
             get {
-                return ResourceManager.GetString("Activate", resourceCulture);
+                return ResourceManager.GetString("FilterLogEntries", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Servers.
+        ///   Looks up a localized string similar to Filter by code or message.
         /// </summary>
-        public static string Servers {
+        public static string FilterPackets {
             get {
-                return ResourceManager.GetString("Servers", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Server Name.
-        /// </summary>
-        public static string ServerName {
-            get {
-                return ResourceManager.GetString("ServerName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Players.
-        /// </summary>
-        public static string PlayerCount {
-            get {
-                return ResourceManager.GetString("PlayerCount", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Current State.
-        /// </summary>
-        public static string CurrentState {
-            get {
-                return ResourceManager.GetString("CurrentState", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Connect Server.
-        /// </summary>
-        public static string ConnectServer {
-            get {
-                return ResourceManager.GetString("ConnectServer", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Reload configuration and restart all Game Servers.
-        /// </summary>
-        public static string ReloadConfigurationAndRestartAllGameServers {
-            get {
-                return ResourceManager.GetString("ReloadConfigurationAndRestartAllGameServers", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Database status.
-        /// </summary>
-        public static string DatabaseStatus {
-            get {
-                return ResourceManager.GetString("DatabaseStatus", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Can&apos;t connect to the database. Probably not created yet..
-        /// </summary>
-        public static string CantConnectToTheDatabaseProbablyNotCreatedYet {
-            get {
-                return ResourceManager.GetString("CantConnectToTheDatabaseProbablyNotCreatedYet", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Initialized game version.
-        /// </summary>
-        public static string InitializedGameVersion {
-            get {
-                return ResourceManager.GetString("InitializedGameVersion", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to No initialized data found!.
-        /// </summary>
-        public static string NoInitializedDataFound {
-            get {
-                return ResourceManager.GetString("NoInitializedDataFound", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Re-install.
-        /// </summary>
-        public static string ReInstall {
-            get {
-                return ResourceManager.GetString("ReInstall", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Update.
-        /// </summary>
-        public static string Update {
-            get {
-                return ResourceManager.GetString("Update", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Up-to-date.
-        /// </summary>
-        public static string UpToDate {
-            get {
-                return ResourceManager.GetString("UpToDate", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Not created.
-        /// </summary>
-        public static string NotCreated {
-            get {
-                return ResourceManager.GetString("NotCreated", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Update required.
-        /// </summary>
-        public static string UpdateRequired {
-            get {
-                return ResourceManager.GetString("UpdateRequired", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Setup.
-        /// </summary>
-        public static string Setup {
-            get {
-                return ResourceManager.GetString("Setup", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Home.
-        /// </summary>
-        public static string Home {
-            get {
-                return ResourceManager.GetString("Home", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Accounts.
-        /// </summary>
-        public static string Accounts {
-            get {
-                return ResourceManager.GetString("Accounts", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Online Accounts.
-        /// </summary>
-        public static string OnlineAccounts {
-            get {
-                return ResourceManager.GetString("OnlineAccounts", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Updates.
-        /// </summary>
-        public static string Updates {
-            get {
-                return ResourceManager.GetString("Updates", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to available updates.
-        /// </summary>
-        public static string AvailableUpdates {
-            get {
-                return ResourceManager.GetString("AvailableUpdates", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Users.
-        /// </summary>
-        public static string Users {
-            get {
-                return ResourceManager.GetString("Users", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to System.
-        /// </summary>
-        public static string System {
-            get {
-                return ResourceManager.GetString("System", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Game clients.
-        /// </summary>
-        public static string GameClients {
-            get {
-                return ResourceManager.GetString("GameClients", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Monsters.
-        /// </summary>
-        public static string Monsters {
-            get {
-                return ResourceManager.GetString("Monsters", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Merchant stores.
-        /// </summary>
-        public static string MerchantStores {
-            get {
-                return ResourceManager.GetString("MerchantStores", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Character classes.
-        /// </summary>
-        public static string CharacterClasses {
-            get {
-                return ResourceManager.GetString("CharacterClasses", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Skills.
-        /// </summary>
-        public static string Skills {
-            get {
-                return ResourceManager.GetString("Skills", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Items.
-        /// </summary>
-        public static string Items {
-            get {
-                return ResourceManager.GetString("Items", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Drop item groups.
-        /// </summary>
-        public static string DropItemGroups {
-            get {
-                return ResourceManager.GetString("DropItemGroups", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Game maps.
-        /// </summary>
-        public static string GameMaps {
-            get {
-                return ResourceManager.GetString("GameMaps", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Mini games.
-        /// </summary>
-        public static string MiniGames {
-            get {
-                return ResourceManager.GetString("MiniGames", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Warp list.
-        /// </summary>
-        public static string WarpList {
-            get {
-                return ResourceManager.GetString("WarpList", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Jewel mixes.
-        /// </summary>
-        public static string JewelMixes {
-            get {
-                return ResourceManager.GetString("JewelMixes", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to General.
-        /// </summary>
-        public static string General {
-            get {
-                return ResourceManager.GetString("General", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Full configuration.
-        /// </summary>
-        public static string FullConfiguration {
-            get {
-                return ResourceManager.GetString("FullConfiguration", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Game configuration.
-        /// </summary>
-        public static string GameConfiguration {
-            get {
-                return ResourceManager.GetString("GameConfiguration", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Are you sure? All the current data is getting deleted and freshly installed..
-        /// </summary>
-        public static string ReinstallConfirmation {
-            get {
-                return ResourceManager.GetString("ReinstallConfirmation", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Please, first install the database updates on the setup page..
-        /// </summary>
-        public static string PleaseFirstInstallTheDatabaseUpdatesOnTheSetupPage {
-            get {
-                return ResourceManager.GetString("PleaseFirstInstallTheDatabaseUpdatesOnTheSetupPage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to No configuration data update available..
-        /// </summary>
-        public static string NoConfigurationDataUpdateAvailable {
-            get {
-                return ResourceManager.GetString("NoConfigurationDataUpdateAvailable", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to New updates for the configuration data are available. You can select the ones which should be applied to your configuration..
-        /// </summary>
-        public static string NewConfigurationUpdatesAvailable {
-            get {
-                return ResourceManager.GetString("NewConfigurationUpdatesAvailable", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Mandatory updates are always applied and cannot be deselected..
-        /// </summary>
-        public static string MandatoryUpdatesAreAlwaysAppliedAndCannotBeDeselected {
-            get {
-                return ResourceManager.GetString("MandatoryUpdatesAreAlwaysAppliedAndCannotBeDeselected", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The updates require a restart of the server process to take effect..
-        /// </summary>
-        public static string TheUpdatesRequireARestartOfTheServerProcessToTakeEffect {
-            get {
-                return ResourceManager.GetString("TheUpdatesRequireARestartOfTheServerProcessToTakeEffect", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Updating....
-        /// </summary>
-        public static string Updating {
-            get {
-                return ResourceManager.GetString("Updating", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Applying updates ....
-        /// </summary>
-        public static string ApplyingUpdates {
-            get {
-                return ResourceManager.GetString("ApplyingUpdates", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Update Failed!.
-        /// </summary>
-        public static string UpdateFailed {
-            get {
-                return ResourceManager.GetString("UpdateFailed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Apply selected updates.
-        /// </summary>
-        public static string ApplySelectedUpdates {
-            get {
-                return ResourceManager.GetString("ApplySelectedUpdates", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Patch-Version.
-        /// </summary>
-        public static string PatchVersion {
-            get {
-                return ResourceManager.GetString("PatchVersion", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Major.
-        /// </summary>
-        public static string MajorVersion {
-            get {
-                return ResourceManager.GetString("MajorVersion", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Patch-Address.
-        /// </summary>
-        public static string PatchAddress {
-            get {
-                return ResourceManager.GetString("PatchAddress", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to seconds.
-        /// </summary>
-        public static string Seconds {
-            get {
-                return ResourceManager.GetString("Seconds", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Minor.
-        /// </summary>
-        public static string MinorVersion {
-            get {
-                return ResourceManager.GetString("MinorVersion", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Patch.
-        /// </summary>
-        public static string Patch {
-            get {
-                return ResourceManager.GetString("Patch", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Save.
-        /// </summary>
-        public static string Save {
-            get {
-                return ResourceManager.GetString("Save", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cancel.
-        /// </summary>
-        public static string Cancel {
-            get {
-                return ResourceManager.GetString("Cancel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Installing, please wait ....
-        /// </summary>
-        public static string InstallingPleaseWait {
-            get {
-                return ResourceManager.GetString("InstallingPleaseWait", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Please restart the connect and game server containers..
-        /// </summary>
-        public static string PleaseRestartTheConnectAndGameServerContainers {
-            get {
-                return ResourceManager.GetString("PleaseRestartTheConnectAndGameServerContainers", resourceCulture);
+                return ResourceManager.GetString("FilterPackets", resourceCulture);
             }
         }
         
@@ -1225,155 +991,74 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to OK.
+        ///   Looks up a localized string similar to Follow.
         /// </summary>
-        public static string OK {
+        public static string FollowNewPackets {
             get {
-                return ResourceManager.GetString("OK", resourceCulture);
+                return ResourceManager.GetString("FollowNewPackets", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Select the game version.
+        ///   Looks up a localized string similar to Shows the newest packets and scrolls to them. It&apos;s turned off while you scroll up, so that the view doesn&apos;t move away..
         /// </summary>
-        public static string SelectTheGameVersion {
+        public static string FollowNewPacketsHint {
             get {
-                return ResourceManager.GetString("SelectTheGameVersion", resourceCulture);
+                return ResourceManager.GetString("FollowNewPacketsHint", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to How many game servers do you want?.
+        ///   Looks up a localized string similar to Full configuration.
         /// </summary>
-        public static string HowManyGameServersQuestion {
+        public static string FullConfiguration {
             get {
-                return ResourceManager.GetString("HowManyGameServersQuestion", resourceCulture);
+                return ResourceManager.GetString("FullConfiguration", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Do you want test accounts?.
+        ///   Looks up a localized string similar to Game clients.
         /// </summary>
-        public static string TestAccountsQuestion {
+        public static string GameClients {
             get {
-                return ResourceManager.GetString("TestAccountsQuestion", resourceCulture);
+                return ResourceManager.GetString("GameClients", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Yes, create test accounts.
+        ///   Looks up a localized string similar to Game configuration.
         /// </summary>
-        public static string YesCreateTestAccounts {
+        public static string GameConfiguration {
             get {
-                return ResourceManager.GetString("YesCreateTestAccounts", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Start install.
-        /// </summary>
-        public static string StartInstall {
-            get {
-                return ResourceManager.GetString("StartInstall", resourceCulture);
+                return ResourceManager.GetString("GameConfiguration", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Remove.
+        ///   Looks up a localized string similar to Game maps.
         /// </summary>
-        public static string Remove {
+        public static string GameMaps {
             get {
-                return ResourceManager.GetString("Remove", resourceCulture);
+                return ResourceManager.GetString("GameMaps", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Yes.
+        ///   Looks up a localized string similar to Game Server.
         /// </summary>
-        public static string Yes {
+        public static string GameServer {
             get {
-                return ResourceManager.GetString("Yes", resourceCulture);
+                return ResourceManager.GetString("GameServer", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No.
+        ///   Looks up a localized string similar to The game server configuration has been saved. Initializing game server ....
         /// </summary>
-        public static string No {
+        public static string GameServerConfigurationSavedInfo {
             get {
-                return ResourceManager.GetString("No", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Start.
-        /// </summary>
-        public static string Start {
-            get {
-                return ResourceManager.GetString("Start", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Stop.
-        /// </summary>
-        public static string Stop {
-            get {
-                return ResourceManager.GetString("Stop", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Remove Server.
-        /// </summary>
-        public static string RemoveServer {
-            get {
-                return ResourceManager.GetString("RemoveServer", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The server will be deleted from the database. Are you sure to proceed?.
-        /// </summary>
-        public static string ServerDeleteProceedQuestion {
-            get {
-                return ResourceManager.GetString("ServerDeleteProceedQuestion", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Server control.
-        /// </summary>
-        public static string ServerControl {
-            get {
-                return ResourceManager.GetString("ServerControl", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Total Players.
-        /// </summary>
-        public static string TotalPlayers {
-            get {
-                return ResourceManager.GetString("TotalPlayers", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Socket {0}.
-        /// </summary>
-        public static string SocketNumber {
-            get {
-                return ResourceManager.GetString("SocketNumber", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Action.
-        /// </summary>
-        public static string Action {
-            get {
-                return ResourceManager.GetString("Action", resourceCulture);
+                return ResourceManager.GetString("GameServerConfigurationSavedInfo", resourceCulture);
             }
         }
         
@@ -1387,83 +1072,20 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Character.
+        ///   Looks up a localized string similar to General.
         /// </summary>
-        public static string Character {
+        public static string General {
             get {
-                return ResourceManager.GetString("Character", resourceCulture);
+                return ResourceManager.GetString("General", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Started At.
+        ///   Looks up a localized string similar to Generate new recovery codes.
         /// </summary>
-        public static string StartedAt {
+        public static string GenerateNewRecoveryCodes {
             get {
-                return ResourceManager.GetString("StartedAt", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Active Offline Player.
-        /// </summary>
-        public static string ActiveOfflinePlayer {
-            get {
-                return ResourceManager.GetString("ActiveOfflinePlayer", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Couldn&apos;t find &apos;{0}&apos; to delete..
-        /// </summary>
-        public static string CouldNotFindToDelete {
-            get {
-                return ResourceManager.GetString("CouldNotFindToDelete", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Couldn&apos;t delete &apos;{0}&apos;, probably because it&apos;s referenced by another object. For details, see log.
-        /// </summary>
-        public static string DeleteFailedReferenced {
-            get {
-                return ResourceManager.GetString("DeleteFailedReferenced", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to New object successfully created..
-        /// </summary>
-        public static string CreatedSuccessfully {
-            get {
-                return ResourceManager.GetString("CreatedSuccessfully", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Show entry form.
-        /// </summary>
-        public static string ShowEntryForm {
-            get {
-                return ResourceManager.GetString("ShowEntryForm", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Hide entry form.
-        /// </summary>
-        public static string HideEntryForm {
-            get {
-                return ResourceManager.GetString("HideEntryForm", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to All Game Servers.
-        /// </summary>
-        public static string AllGameServers {
-            get {
-                return ResourceManager.GetString("AllGameServers", resourceCulture);
+                return ResourceManager.GetString("GenerateNewRecoveryCodes", resourceCulture);
             }
         }
         
@@ -1504,47 +1126,155 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enter message....
+        ///   Looks up a localized string similar to Hide entry form.
         /// </summary>
-        public static string MessagePlaceholder {
+        public static string HideEntryForm {
             get {
-                return ResourceManager.GetString("MessagePlaceholder", resourceCulture);
+                return ResourceManager.GetString("HideEntryForm", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} online.
+        ///   Looks up a localized string similar to Home.
         /// </summary>
-        public static string OnlineCount {
+        public static string Home {
             get {
-                return ResourceManager.GetString("OnlineCount", resourceCulture);
+                return ResourceManager.GetString("Home", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Send.
+        ///   Looks up a localized string similar to How many game servers do you want?.
         /// </summary>
-        public static string Send {
+        public static string HowManyGameServersQuestion {
             get {
-                return ResourceManager.GetString("Send", resourceCulture);
+                return ResourceManager.GetString("HowManyGameServersQuestion", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Target.
+        ///   Looks up a localized string similar to Importing backup, please wait ....
         /// </summary>
-        public static string Target {
+        public static string ImportingBackupPleaseWait {
             get {
-                return ResourceManager.GetString("Target", resourceCulture);
+                return ResourceManager.GetString("ImportingBackupPleaseWait", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Log Viewer.
+        ///   Looks up a localized string similar to Import JSON Backup.
         /// </summary>
-        public static string LogViewer {
+        public static string ImportJsonBackup {
             get {
-                return ResourceManager.GetString("LogViewer", resourceCulture);
+                return ResourceManager.GetString("ImportJsonBackup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Include the accounts (takes longer).
+        /// </summary>
+        public static string IncludeAccounts {
+            get {
+                return ResourceManager.GetString("IncludeAccounts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Initialized game version.
+        /// </summary>
+        public static string InitializedGameVersion {
+            get {
+                return ResourceManager.GetString("InitializedGameVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Initializing Connect Server ....
+        /// </summary>
+        public static string InitializingConnectServerInfo {
+            get {
+                return ResourceManager.GetString("InitializingConnectServerInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Initializing Game Server ....
+        /// </summary>
+        public static string InitializingGameServerInfo {
+            get {
+                return ResourceManager.GetString("InitializingGameServerInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Installing, please wait ....
+        /// </summary>
+        public static string InstallingPleaseWait {
+            get {
+                return ResourceManager.GetString("InstallingPleaseWait", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The login name or password is wrong..
+        /// </summary>
+        public static string InvalidCredentials {
+            get {
+                return ResourceManager.GetString("InvalidCredentials", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The code is not valid..
+        /// </summary>
+        public static string InvalidTwoFactorCode {
+            get {
+                return ResourceManager.GetString("InvalidTwoFactorCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Items.
+        /// </summary>
+        public static string Items {
+            get {
+                return ResourceManager.GetString("Items", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Jewel mixes.
+        /// </summary>
+        public static string JewelMixes {
+            get {
+                return ResourceManager.GetString("JewelMixes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to JSON Backup (slow!).
+        /// </summary>
+        public static string JsonBackup {
+            get {
+                return ResourceManager.GetString("JsonBackup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Last login.
+        /// </summary>
+        public static string LastLogin {
+            get {
+                return ResourceManager.GetString("LastLogin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Last update.
+        /// </summary>
+        public static string LastUpdate {
+            get {
+                return ResourceManager.GetString("LastUpdate", resourceCulture);
             }
         }
         
@@ -1558,20 +1288,290 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Close.
+        ///   Looks up a localized string similar to Live Map.
         /// </summary>
-        public static string Close {
+        public static string LiveMap {
             get {
-                return ResourceManager.GetString("Close", resourceCulture);
+                return ResourceManager.GetString("LiveMap", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Filter log entries....
+        ///   Looks up a localized string similar to Loading ....
         /// </summary>
-        public static string FilterLogEntries {
+        public static string Loading {
             get {
-                return ResourceManager.GetString("FilterLogEntries", resourceCulture);
+                return ResourceManager.GetString("Loading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not load the data. Check the logs for details..
+        /// </summary>
+        public static string LoadingErrorCheckLog {
+            get {
+                return ResourceManager.GetString("LoadingErrorCheckLog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Log Files.
+        /// </summary>
+        public static string LogFiles {
+            get {
+                return ResourceManager.GetString("LogFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Login.
+        /// </summary>
+        public static string Login {
+            get {
+                return ResourceManager.GetString("Login", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Login name.
+        /// </summary>
+        public static string LoginName {
+            get {
+                return ResourceManager.GetString("LoginName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Logout.
+        /// </summary>
+        public static string Logout {
+            get {
+                return ResourceManager.GetString("Logout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Logs.
+        /// </summary>
+        public static string Logs {
+            get {
+                return ResourceManager.GetString("Logs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Log Viewer.
+        /// </summary>
+        public static string LogViewer {
+            get {
+                return ResourceManager.GetString("LogViewer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Major.
+        /// </summary>
+        public static string MajorVersion {
+            get {
+                return ResourceManager.GetString("MajorVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mandatory updates are always applied and cannot be deselected..
+        /// </summary>
+        public static string MandatoryUpdatesAreAlwaysAppliedAndCannotBeDeselected {
+            get {
+                return ResourceManager.GetString("MandatoryUpdatesAreAlwaysAppliedAndCannotBeDeselected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Can&apos;t scan it? Enter this key manually:.
+        /// </summary>
+        public static string ManualKeyHint {
+            get {
+                return ResourceManager.GetString("ManualKeyHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Map Editor.
+        /// </summary>
+        public static string MapEditor {
+            get {
+                return ResourceManager.GetString("MapEditor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Merchants.
+        /// </summary>
+        public static string Merchants {
+            get {
+                return ResourceManager.GetString("Merchants", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Merchant stores.
+        /// </summary>
+        public static string MerchantStores {
+            get {
+                return ResourceManager.GetString("MerchantStores", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter message....
+        /// </summary>
+        public static string MessagePlaceholder {
+            get {
+                return ResourceManager.GetString("MessagePlaceholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Metrics.
+        /// </summary>
+        public static string Metrics {
+            get {
+                return ResourceManager.GetString("Metrics", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mini games.
+        /// </summary>
+        public static string MiniGames {
+            get {
+                return ResourceManager.GetString("MiniGames", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Required status.
+        /// </summary>
+        public static string MinimumCharacterStatus {
+            get {
+                return ResourceManager.GetString("MinimumCharacterStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minor.
+        /// </summary>
+        public static string MinorVersion {
+            get {
+                return ResourceManager.GetString("MinorVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Monsters.
+        /// </summary>
+        public static string Monsters {
+            get {
+                return ResourceManager.GetString("Monsters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Network Analyzer.
+        /// </summary>
+        public static string NetworkAnalyzer {
+            get {
+                return ResourceManager.GetString("NetworkAnalyzer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The network analyzer is only available in the all-in-one deployment, because it needs the servers in the same process..
+        /// </summary>
+        public static string NetworkAnalyzerNotAvailable {
+            get {
+                return ResourceManager.GetString("NetworkAnalyzerNotAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New updates for the configuration data are available. You can select the ones which should be applied to your configuration..
+        /// </summary>
+        public static string NewConfigurationUpdatesAvailable {
+            get {
+                return ResourceManager.GetString("NewConfigurationUpdatesAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No.
+        /// </summary>
+        public static string No {
+            get {
+                return ResourceManager.GetString("No", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No admin panel user exists yet, so the panel is currently reachable without a login. Create the first user as soon as the database is set up, or configure a bootstrap user..
+        /// </summary>
+        public static string NoAdminUserWarning {
+            get {
+                return ResourceManager.GetString("NoAdminUserWarning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No API key has been created yet..
+        /// </summary>
+        public static string NoApiKeys {
+            get {
+                return ResourceManager.GetString("NoApiKeys", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No changes have been saved..
+        /// </summary>
+        public static string NoChangesSaved {
+            get {
+                return ResourceManager.GetString("NoChangesSaved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There were no changes to save..
+        /// </summary>
+        public static string NoChangesToSave {
+            get {
+                return ResourceManager.GetString("NoChangesToSave", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No configuration data update available..
+        /// </summary>
+        public static string NoConfigurationDataUpdateAvailable {
+            get {
+                return ResourceManager.GetString("NoConfigurationDataUpdateAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No connections found..
+        /// </summary>
+        public static string NoConnectionsFound {
+            get {
+                return ResourceManager.GetString("NoConnectionsFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No initialized data found!.
+        /// </summary>
+        public static string NoInitializedDataFound {
+            get {
+                return ResourceManager.GetString("NoInitializedDataFound", resourceCulture);
             }
         }
         
@@ -1594,83 +1594,11 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Showing {0} of {1} lines (Last {2} lines loaded)..
+        ///   Looks up a localized string similar to No packets captured yet..
         /// </summary>
-        public static string ShowingXOfYLines {
+        public static string NoPacketsCaptured {
             get {
-                return ResourceManager.GetString("ShowingXOfYLines", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Scroll to Bottom.
-        /// </summary>
-        public static string ScrollToBottom {
-            get {
-                return ResourceManager.GetString("ScrollToBottom", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Reload File List.
-        /// </summary>
-        public static string ReloadFileList {
-            get {
-                return ResourceManager.GetString("ReloadFileList", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Download File.
-        /// </summary>
-        public static string DownloadFile {
-            get {
-                return ResourceManager.GetString("DownloadFile", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Chat commands.
-        /// </summary>
-        public static string ChatCommands {
-            get {
-                return ResourceManager.GetString("ChatCommands", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Command.
-        /// </summary>
-        public static string CommandColumn {
-            get {
-                return ResourceManager.GetString("CommandColumn", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Description.
-        /// </summary>
-        public static string CommandDescription {
-            get {
-                return ResourceManager.GetString("CommandDescription", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Usage.
-        /// </summary>
-        public static string CommandUsage {
-            get {
-                return ResourceManager.GetString("CommandUsage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Required status.
-        /// </summary>
-        public static string MinimumCharacterStatus {
-            get {
-                return ResourceManager.GetString("MinimumCharacterStatus", resourceCulture);
+                return ResourceManager.GetString("NoPacketsCaptured", resourceCulture);
             }
         }
         
@@ -1680,6 +1608,78 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string NoParameters {
             get {
                 return ResourceManager.GetString("NoParameters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not created.
+        /// </summary>
+        public static string NotCreated {
+            get {
+                return ResourceManager.GetString("NotCreated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to OK.
+        /// </summary>
+        public static string OK {
+            get {
+                return ResourceManager.GetString("OK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Online Accounts.
+        /// </summary>
+        public static string OnlineAccounts {
+            get {
+                return ResourceManager.GetString("OnlineAccounts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} online.
+        /// </summary>
+        public static string OnlineCount {
+            get {
+                return ResourceManager.GetString("OnlineCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to OpenMU AdminPanel.
+        /// </summary>
+        public static string OpenMUAdminPanel {
+            get {
+                return ResourceManager.GetString("OpenMUAdminPanel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Code.
+        /// </summary>
+        public static string PacketCode {
+            get {
+                return ResourceManager.GetString("PacketCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Packet Details.
+        /// </summary>
+        public static string PacketDetails {
+            get {
+                return ResourceManager.GetString("PacketDetails", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Message.
+        /// </summary>
+        public static string PacketMessage {
+            get {
+                return ResourceManager.GetString("PacketMessage", resourceCulture);
             }
         }
         
@@ -1702,6 +1702,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Parameters of {0}.
+        /// </summary>
+        public static string ParametersOf {
+            get {
+                return ResourceManager.GetString("ParametersOf", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Type.
         /// </summary>
         public static string ParameterType {
@@ -1720,51 +1729,6 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Parameters of {0}.
-        /// </summary>
-        public static string ParametersOf {
-            get {
-                return ResourceManager.GetString("ParametersOf", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Required.
-        /// </summary>
-        public static string Required {
-            get {
-                return ResourceManager.GetString("Required", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Login.
-        /// </summary>
-        public static string Login {
-            get {
-                return ResourceManager.GetString("Login", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Logout.
-        /// </summary>
-        public static string Logout {
-            get {
-                return ResourceManager.GetString("Logout", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Login name.
-        /// </summary>
-        public static string LoginName {
-            get {
-                return ResourceManager.GetString("LoginName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Password.
         /// </summary>
         public static string Password {
@@ -1774,74 +1738,101 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Sign in.
+        ///   Looks up a localized string similar to The password has been changed..
         /// </summary>
-        public static string SignIn {
+        public static string PasswordChanged {
             get {
-                return ResourceManager.GetString("SignIn", resourceCulture);
+                return ResourceManager.GetString("PasswordChanged", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Signed in as.
+        ///   Looks up a localized string similar to Patch.
         /// </summary>
-        public static string SignedInAs {
+        public static string Patch {
             get {
-                return ResourceManager.GetString("SignedInAs", resourceCulture);
+                return ResourceManager.GetString("Patch", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Keep me signed in.
+        ///   Looks up a localized string similar to Patch-Address.
         /// </summary>
-        public static string RememberMe {
+        public static string PatchAddress {
             get {
-                return ResourceManager.GetString("RememberMe", resourceCulture);
+                return ResourceManager.GetString("PatchAddress", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The login name or password is wrong..
+        ///   Looks up a localized string similar to Patch-Version.
         /// </summary>
-        public static string InvalidCredentials {
+        public static string PatchVersion {
             get {
-                return ResourceManager.GetString("InvalidCredentials", resourceCulture);
+                return ResourceManager.GetString("PatchVersion", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Too many failed attempts. Please try again later..
+        ///   Looks up a localized string similar to Players.
         /// </summary>
-        public static string AccountLockedOut {
+        public static string PlayerCount {
             get {
-                return ResourceManager.GetString("AccountLockedOut", resourceCulture);
+                return ResourceManager.GetString("PlayerCount", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Two-factor authentication.
+        ///   Looks up a localized string similar to Please, first install the database updates on the setup page..
         /// </summary>
-        public static string TwoFactorTitle {
+        public static string PleaseFirstInstallTheDatabaseUpdatesOnTheSetupPage {
             get {
-                return ResourceManager.GetString("TwoFactorTitle", resourceCulture);
+                return ResourceManager.GetString("PleaseFirstInstallTheDatabaseUpdatesOnTheSetupPage", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enter the code from your authenticator app..
+        ///   Looks up a localized string similar to Please restart the connect and game server containers..
         /// </summary>
-        public static string TwoFactorPrompt {
+        public static string PleaseRestartTheConnectAndGameServerContainers {
             get {
-                return ResourceManager.GetString("TwoFactorPrompt", resourceCulture);
+                return ResourceManager.GetString("PleaseRestartTheConnectAndGameServerContainers", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Authenticator code.
+        ///   Looks up a localized string similar to Plugin Name.
         /// </summary>
-        public static string AuthenticatorCode {
+        public static string PluginName {
             get {
-                return ResourceManager.GetString("AuthenticatorCode", resourceCulture);
+                return ResourceManager.GetString("PluginName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Plugins.
+        /// </summary>
+        public static string Plugins {
+            get {
+                return ResourceManager.GetString("Plugins", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Plugin Type.
+        /// </summary>
+        public static string PluginType {
+            get {
+                return ResourceManager.GetString("PluginType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Raw Data.
+        /// </summary>
+        public static string RawData {
+            get {
+                return ResourceManager.GetString("RawData", resourceCulture);
             }
         }
         
@@ -1851,141 +1842,6 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string RecoveryCode {
             get {
                 return ResourceManager.GetString("RecoveryCode", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Use a recovery code instead.
-        /// </summary>
-        public static string UseRecoveryCode {
-            get {
-                return ResourceManager.GetString("UseRecoveryCode", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Use an authenticator code instead.
-        /// </summary>
-        public static string UseAuthenticatorCode {
-            get {
-                return ResourceManager.GetString("UseAuthenticatorCode", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The code is not valid..
-        /// </summary>
-        public static string InvalidTwoFactorCode {
-            get {
-                return ResourceManager.GetString("InvalidTwoFactorCode", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Verify.
-        /// </summary>
-        public static string Verify {
-            get {
-                return ResourceManager.GetString("Verify", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Access denied.
-        /// </summary>
-        public static string AccessDenied {
-            get {
-                return ResourceManager.GetString("AccessDenied", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Your account is not permitted to open this page..
-        /// </summary>
-        public static string AccessDeniedDescription {
-            get {
-                return ResourceManager.GetString("AccessDeniedDescription", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Account security.
-        /// </summary>
-        public static string AccountSecurity {
-            get {
-                return ResourceManager.GetString("AccountSecurity", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Two-factor authentication.
-        /// </summary>
-        public static string TwoFactorAuthentication {
-            get {
-                return ResourceManager.GetString("TwoFactorAuthentication", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Two-factor authentication is enabled..
-        /// </summary>
-        public static string TwoFactorEnabled {
-            get {
-                return ResourceManager.GetString("TwoFactorEnabled", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Two-factor authentication is not set up yet..
-        /// </summary>
-        public static string TwoFactorDisabled {
-            get {
-                return ResourceManager.GetString("TwoFactorDisabled", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Set up authenticator app.
-        /// </summary>
-        public static string SetUpAuthenticator {
-            get {
-                return ResourceManager.GetString("SetUpAuthenticator", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Disable two-factor authentication.
-        /// </summary>
-        public static string DisableTwoFactor {
-            get {
-                return ResourceManager.GetString("DisableTwoFactor", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Scan this QR code with your authenticator app, for example Microsoft Authenticator..
-        /// </summary>
-        public static string ScanQrCode {
-            get {
-                return ResourceManager.GetString("ScanQrCode", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Can&apos;t scan it? Enter this key manually:.
-        /// </summary>
-        public static string ManualKeyHint {
-            get {
-                return ResourceManager.GetString("ManualKeyHint", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to To finish, enter the code which your app shows now..
-        /// </summary>
-        public static string ConfirmSetupHint {
-            get {
-                return ResourceManager.GetString("ConfirmSetupHint", resourceCulture);
             }
         }
         
@@ -2008,6 +1864,60 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Refresh.
+        /// </summary>
+        public static string Refresh {
+            get {
+                return ResourceManager.GetString("Refresh", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Re-install.
+        /// </summary>
+        public static string ReInstall {
+            get {
+                return ResourceManager.GetString("ReInstall", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure? All the current data is getting deleted and freshly installed..
+        /// </summary>
+        public static string ReinstallConfirmation {
+            get {
+                return ResourceManager.GetString("ReinstallConfirmation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reload.
+        /// </summary>
+        public static string Reload {
+            get {
+                return ResourceManager.GetString("Reload", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reload configuration and restart all Game Servers.
+        /// </summary>
+        public static string ReloadConfigurationAndRestartAllGameServers {
+            get {
+                return ResourceManager.GetString("ReloadConfigurationAndRestartAllGameServers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reload File List.
+        /// </summary>
+        public static string ReloadFileList {
+            get {
+                return ResourceManager.GetString("ReloadFileList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Remaining recovery codes.
         /// </summary>
         public static string RemainingRecoveryCodes {
@@ -2017,38 +1927,47 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Generate new recovery codes.
+        ///   Looks up a localized string similar to Keep me signed in.
         /// </summary>
-        public static string GenerateNewRecoveryCodes {
+        public static string RememberMe {
             get {
-                return ResourceManager.GetString("GenerateNewRecoveryCodes", resourceCulture);
+                return ResourceManager.GetString("RememberMe", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Two-factor authentication is required.
+        ///   Looks up a localized string similar to Remove.
         /// </summary>
-        public static string TwoFactorRequiredTitle {
+        public static string Remove {
             get {
-                return ResourceManager.GetString("TwoFactorRequiredTitle", resourceCulture);
+                return ResourceManager.GetString("Remove", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The server configuration requires every admin panel user to use a second factor. Please set up your authenticator app to continue..
+        ///   Looks up a localized string similar to Remove Server.
         /// </summary>
-        public static string TwoFactorRequiredDescription {
+        public static string RemoveServer {
             get {
-                return ResourceManager.GetString("TwoFactorRequiredDescription", resourceCulture);
+                return ResourceManager.GetString("RemoveServer", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Roles.
+        ///   Looks up a localized string similar to Required.
         /// </summary>
-        public static string Roles {
+        public static string Required {
             get {
-                return ResourceManager.GetString("Roles", resourceCulture);
+                return ResourceManager.GetString("Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset second factor.
+        /// </summary>
+        public static string ResetTwoFactor {
+            get {
+                return ResourceManager.GetString("ResetTwoFactor", resourceCulture);
             }
         }
         
@@ -2062,6 +1981,420 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Roles.
+        /// </summary>
+        public static string Roles {
+            get {
+                return ResourceManager.GetString("Roles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save.
+        /// </summary>
+        public static string Save {
+            get {
+                return ResourceManager.GetString("Save", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save changes.
+        /// </summary>
+        public static string SaveChanges {
+            get {
+                return ResourceManager.GetString("SaveChanges", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The changes have been saved..
+        /// </summary>
+        public static string SavedChanges {
+            get {
+                return ResourceManager.GetString("SavedChanges", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Saving Configuration ....
+        /// </summary>
+        public static string SavingConfigurationInfo {
+            get {
+                return ResourceManager.GetString("SavingConfigurationInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scan this QR code with your authenticator app, for example Microsoft Authenticator..
+        /// </summary>
+        public static string ScanQrCode {
+            get {
+                return ResourceManager.GetString("ScanQrCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scroll to Bottom.
+        /// </summary>
+        public static string ScrollToBottom {
+            get {
+                return ResourceManager.GetString("ScrollToBottom", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search.
+        /// </summary>
+        public static string Search {
+            get {
+                return ResourceManager.GetString("Search", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to seconds.
+        /// </summary>
+        public static string Seconds {
+            get {
+                return ResourceManager.GetString("Seconds", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select a connection to see its network traffic..
+        /// </summary>
+        public static string SelectAConnection {
+            get {
+                return ResourceManager.GetString("SelectAConnection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select a packet to see its content..
+        /// </summary>
+        public static string SelectAPacket {
+            get {
+                return ResourceManager.GetString("SelectAPacket", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The selected file is no backup archive. The database was left untouched..
+        /// </summary>
+        public static string SelectedFileIsNoBackup {
+            get {
+                return ResourceManager.GetString("SelectedFileIsNoBackup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select the game version.
+        /// </summary>
+        public static string SelectTheGameVersion {
+            get {
+                return ResourceManager.GetString("SelectTheGameVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select a .zip backup file to restore.
+        /// </summary>
+        public static string SelectZipFileToRestore {
+            get {
+                return ResourceManager.GetString("SelectZipFileToRestore", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select a .zip snapshot file to restore.
+        /// </summary>
+        public static string SelectZipFileToRestoreSnapshot {
+            get {
+                return ResourceManager.GetString("SelectZipFileToRestoreSnapshot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Send.
+        /// </summary>
+        public static string Send {
+            get {
+                return ResourceManager.GetString("Send", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Server control.
+        /// </summary>
+        public static string ServerControl {
+            get {
+                return ResourceManager.GetString("ServerControl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The server will be deleted from the database. Are you sure to proceed?.
+        /// </summary>
+        public static string ServerDeleteProceedQuestion {
+            get {
+                return ResourceManager.GetString("ServerDeleteProceedQuestion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Server-ID.
+        /// </summary>
+        public static string ServerID {
+            get {
+                return ResourceManager.GetString("ServerID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Server Name.
+        /// </summary>
+        public static string ServerName {
+            get {
+                return ResourceManager.GetString("ServerName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Servers.
+        /// </summary>
+        public static string Servers {
+            get {
+                return ResourceManager.GetString("Servers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Server with Id {0} already exists. Please use another value..
+        /// </summary>
+        public static string ServerWithIdAlreadyExists {
+            get {
+                return ResourceManager.GetString("ServerWithIdAlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A server with tcp port {0} already exists. Please use another tcp port..
+        /// </summary>
+        public static string ServerWithPortAlreadyExists {
+            get {
+                return ResourceManager.GetString("ServerWithPortAlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Setup.
+        /// </summary>
+        public static string Setup {
+            get {
+                return ResourceManager.GetString("Setup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Set up authenticator app.
+        /// </summary>
+        public static string SetUpAuthenticator {
+            get {
+                return ResourceManager.GetString("SetUpAuthenticator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show entry form.
+        /// </summary>
+        public static string ShowEntryForm {
+            get {
+                return ResourceManager.GetString("ShowEntryForm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Showing {0} of {1} lines (Last {2} lines loaded)..
+        /// </summary>
+        public static string ShowingXOfYLines {
+            get {
+                return ResourceManager.GetString("ShowingXOfYLines", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Signed in as.
+        /// </summary>
+        public static string SignedInAs {
+            get {
+                return ResourceManager.GetString("SignedInAs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sign in.
+        /// </summary>
+        public static string SignIn {
+            get {
+                return ResourceManager.GetString("SignIn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Size.
+        /// </summary>
+        public static string Size {
+            get {
+                return ResourceManager.GetString("Size", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skills.
+        /// </summary>
+        public static string Skills {
+            get {
+                return ResourceManager.GetString("Skills", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Socket {0}.
+        /// </summary>
+        public static string SocketNumber {
+            get {
+                return ResourceManager.GetString("SocketNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start.
+        /// </summary>
+        public static string Start {
+            get {
+                return ResourceManager.GetString("Start", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Started At.
+        /// </summary>
+        public static string StartedAt {
+            get {
+                return ResourceManager.GetString("StartedAt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start install.
+        /// </summary>
+        public static string StartInstall {
+            get {
+                return ResourceManager.GetString("StartInstall", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stop.
+        /// </summary>
+        public static string Stop {
+            get {
+                return ResourceManager.GetString("Stop", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Swapping to &lt;strong&gt;Development&lt;/strong&gt; environment will display more detailed information about the error that occurred..
+        /// </summary>
+        public static string SwappingToDevForMoreInformation {
+            get {
+                return ResourceManager.GetString("SwappingToDevForMoreInformation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to System.
+        /// </summary>
+        public static string System {
+            get {
+                return ResourceManager.GetString("System", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Target.
+        /// </summary>
+        public static string Target {
+            get {
+                return ResourceManager.GetString("Target", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Do you want test accounts?.
+        /// </summary>
+        public static string TestAccountsQuestion {
+            get {
+                return ResourceManager.GetString("TestAccountsQuestion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The updates require a restart of the server process to take effect..
+        /// </summary>
+        public static string TheUpdatesRequireARestartOfTheServerProcessToTakeEffect {
+            get {
+                return ResourceManager.GetString("TheUpdatesRequireARestartOfTheServerProcessToTakeEffect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Timestamp.
+        /// </summary>
+        public static string Timestamp {
+            get {
+                return ResourceManager.GetString("Timestamp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to To Client.
+        /// </summary>
+        public static string ToClient {
+            get {
+                return ResourceManager.GetString("ToClient", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to To Server.
+        /// </summary>
+        public static string ToServer {
+            get {
+                return ResourceManager.GetString("ToServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total Players.
+        /// </summary>
+        public static string TotalPlayers {
+            get {
+                return ResourceManager.GetString("TotalPlayers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tracing.
+        /// </summary>
+        public static string Tracing {
+            get {
+                return ResourceManager.GetString("Tracing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Second factor.
         /// </summary>
         public static string TwoFactor {
@@ -2071,47 +2404,182 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Last login.
+        ///   Looks up a localized string similar to Two-factor authentication.
         /// </summary>
-        public static string LastLogin {
+        public static string TwoFactorAuthentication {
             get {
-                return ResourceManager.GetString("LastLogin", resourceCulture);
+                return ResourceManager.GetString("TwoFactorAuthentication", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enabled.
+        ///   Looks up a localized string similar to Two-factor authentication is not set up yet..
         /// </summary>
-        public static string Enabled {
+        public static string TwoFactorDisabled {
             get {
-                return ResourceManager.GetString("Enabled", resourceCulture);
+                return ResourceManager.GetString("TwoFactorDisabled", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Disabled.
+        ///   Looks up a localized string similar to Two-factor authentication is enabled..
         /// </summary>
-        public static string Disabled {
+        public static string TwoFactorEnabled {
             get {
-                return ResourceManager.GetString("Disabled", resourceCulture);
+                return ResourceManager.GetString("TwoFactorEnabled", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No admin panel user exists yet, so the panel is currently reachable without a login. Create the first user as soon as the database is set up, or configure a bootstrap user..
+        ///   Looks up a localized string similar to Enter the code from your authenticator app..
         /// </summary>
-        public static string NoAdminUserWarning {
+        public static string TwoFactorPrompt {
             get {
-                return ResourceManager.GetString("NoAdminUserWarning", resourceCulture);
+                return ResourceManager.GetString("TwoFactorPrompt", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Create the first user.
+        ///   Looks up a localized string similar to The server configuration requires every admin panel user to use a second factor. Please set up your authenticator app to continue..
         /// </summary>
-        public static string CreateFirstUser {
+        public static string TwoFactorRequiredDescription {
             get {
-                return ResourceManager.GetString("CreateFirstUser", resourceCulture);
+                return ResourceManager.GetString("TwoFactorRequiredDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Two-factor authentication is required.
+        /// </summary>
+        public static string TwoFactorRequiredTitle {
+            get {
+                return ResourceManager.GetString("TwoFactorRequiredTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The second factor of the user has been reset..
+        /// </summary>
+        public static string TwoFactorResetForUser {
+            get {
+                return ResourceManager.GetString("TwoFactorResetForUser", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Two-factor authentication.
+        /// </summary>
+        public static string TwoFactorTitle {
+            get {
+                return ResourceManager.GetString("TwoFactorTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Type &apos;{0}&apos; does not support cloning..
+        /// </summary>
+        public static string TypeDoesNotSupportCloning {
+            get {
+                return ResourceManager.GetString("TypeDoesNotSupportCloning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An unexpected error occurred: {0}. See logs for more details..
+        /// </summary>
+        public static string UnexpectedErrorCheckLogs {
+            get {
+                return ResourceManager.GetString("UnexpectedErrorCheckLogs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An unexpected error occurred: {0}..
+        /// </summary>
+        public static string UnexpectedErrorOccurred {
+            get {
+                return ResourceManager.GetString("UnexpectedErrorOccurred", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An unhandled error has occurred..
+        /// </summary>
+        public static string UnhandledErrorOccurred {
+            get {
+                return ResourceManager.GetString("UnhandledErrorOccurred", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There are unsaved changes. Are you sure you want to discard them?.
+        /// </summary>
+        public static string UnsavedChangesQuestion {
+            get {
+                return ResourceManager.GetString("UnsavedChangesQuestion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update.
+        /// </summary>
+        public static string Update {
+            get {
+                return ResourceManager.GetString("Update", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update Failed!.
+        /// </summary>
+        public static string UpdateFailed {
+            get {
+                return ResourceManager.GetString("UpdateFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update required.
+        /// </summary>
+        public static string UpdateRequired {
+            get {
+                return ResourceManager.GetString("UpdateRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Updates.
+        /// </summary>
+        public static string Updates {
+            get {
+                return ResourceManager.GetString("Updates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Updating....
+        /// </summary>
+        public static string Updating {
+            get {
+                return ResourceManager.GetString("Updating", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Up-to-date.
+        /// </summary>
+        public static string UpToDate {
+            get {
+                return ResourceManager.GetString("UpToDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use an authenticator code instead.
+        /// </summary>
+        public static string UseAuthenticatorCode {
+            get {
+                return ResourceManager.GetString("UseAuthenticatorCode", resourceCulture);
             }
         }
         
@@ -2134,527 +2602,66 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The password has been changed..
+        ///   Looks up a localized string similar to Use a recovery code instead.
         /// </summary>
-        public static string PasswordChanged {
+        public static string UseRecoveryCode {
             get {
-                return ResourceManager.GetString("PasswordChanged", resourceCulture);
+                return ResourceManager.GetString("UseRecoveryCode", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The second factor of the user has been reset..
+        ///   Looks up a localized string similar to Users.
         /// </summary>
-        public static string TwoFactorResetForUser {
+        public static string Users {
             get {
-                return ResourceManager.GetString("TwoFactorResetForUser", resourceCulture);
+                return ResourceManager.GetString("Users", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Reset second factor.
+        ///   Looks up a localized string similar to Verify.
         /// </summary>
-        public static string ResetTwoFactor {
+        public static string Verify {
             get {
-                return ResourceManager.GetString("ResetTwoFactor", resourceCulture);
+                return ResourceManager.GetString("Verify", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The last remaining user can&apos;t be deleted..
+        ///   Looks up a localized string similar to Warp list.
         /// </summary>
-        public static string CannotDeleteLastUser {
+        public static string WarpList {
             get {
-                return ResourceManager.GetString("CannotDeleteLastUser", resourceCulture);
+                return ResourceManager.GetString("WarpList", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The bootstrap user is defined by the configuration and can&apos;t be changed here..
+        ///   Looks up a localized string similar to Welcome to the admin panel of OpenMU..
         /// </summary>
-        public static string CannotModifyBootstrapUser {
+        public static string WelcomeMessage {
             get {
-                return ResourceManager.GetString("CannotModifyBootstrapUser", resourceCulture);
+                return ResourceManager.GetString("WelcomeMessage", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to API keys.
+        ///   Looks up a localized string similar to Yes.
         /// </summary>
-        public static string ApiKeys {
+        public static string Yes {
             get {
-                return ResourceManager.GetString("ApiKeys", resourceCulture);
+                return ResourceManager.GetString("Yes", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to External applications like a game launcher or a website authenticate themselves at the public API under /api with one of these keys. Give each application its own key, so a single one can be revoked..
+        ///   Looks up a localized string similar to Yes, create test accounts.
         /// </summary>
-        public static string ApiKeysDescription {
+        public static string YesCreateTestAccounts {
             get {
-                return ResourceManager.GetString("ApiKeysDescription", resourceCulture);
+                return ResourceManager.GetString("YesCreateTestAccounts", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Application.
-        /// </summary>
-        public static string ApiKeyName {
-            get {
-                return ResourceManager.GetString("ApiKeyName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Key.
-        /// </summary>
-        public static string ApiKeyPrefix {
-            get {
-                return ResourceManager.GetString("ApiKeyPrefix", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Create API key.
-        /// </summary>
-        public static string CreateApiKey {
-            get {
-                return ResourceManager.GetString("CreateApiKey", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Delete API key.
-        /// </summary>
-        public static string DeleteApiKey {
-            get {
-                return ResourceManager.GetString("DeleteApiKey", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Do you really want to delete the API key of &apos;{0}&apos;? The application which uses it stops working immediately..
-        /// </summary>
-        public static string DeleteApiKeyQuestion {
-            get {
-                return ResourceManager.GetString("DeleteApiKeyQuestion", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The API key has been created..
-        /// </summary>
-        public static string ApiKeyCreated {
-            get {
-                return ResourceManager.GetString("ApiKeyCreated", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The API key has been deleted..
-        /// </summary>
-        public static string ApiKeyDeleted {
-            get {
-                return ResourceManager.GetString("ApiKeyDeleted", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The API key has been enabled..
-        /// </summary>
-        public static string ApiKeyEnabled {
-            get {
-                return ResourceManager.GetString("ApiKeyEnabled", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The API key has been disabled..
-        /// </summary>
-        public static string ApiKeyDisabled {
-            get {
-                return ResourceManager.GetString("ApiKeyDisabled", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Copy this key now.
-        /// </summary>
-        public static string ApiKeyShownOnce {
-            get {
-                return ResourceManager.GetString("ApiKeyShownOnce", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Only the hash of the key is stored, so this is the only time it&apos;s shown. If it gets lost, delete the key and create a new one..
-        /// </summary>
-        public static string ApiKeyShownOnceDescription {
-            get {
-                return ResourceManager.GetString("ApiKeyShownOnceDescription", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to No API key has been created yet..
-        /// </summary>
-        public static string NoApiKeys {
-            get {
-                return ResourceManager.GetString("NoApiKeys", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Enable.
-        /// </summary>
-        public static string Enable {
-            get {
-                return ResourceManager.GetString("Enable", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Disable.
-        /// </summary>
-        public static string Disable {
-            get {
-                return ResourceManager.GetString("Disable", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Copy.
-        /// </summary>
-        public static string CopyToClipboard {
-            get {
-                return ResourceManager.GetString("CopyToClipboard", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The API key has been copied to the clipboard..
-        /// </summary>
-        public static string CopiedToClipboard {
-            get {
-                return ResourceManager.GetString("CopiedToClipboard", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The API key could not be copied. Please select and copy it by hand..
-        /// </summary>
-        public static string CopyToClipboardFailed {
-            get {
-                return ResourceManager.GetString("CopyToClipboardFailed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Network Analyzer.
-        /// </summary>
-        public static string NetworkAnalyzer {
-            get {
-                return ResourceManager.GetString("NetworkAnalyzer", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Chat Server.
-        /// </summary>
-        public static string ChatServer {
-            get {
-                return ResourceManager.GetString("ChatServer", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Connections.
-        /// </summary>
-        public static string Connections {
-            get {
-                return ResourceManager.GetString("Connections", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to No connections found..
-        /// </summary>
-        public static string NoConnectionsFound {
-            get {
-                return ResourceManager.GetString("NoConnectionsFound", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Select a connection to see its network traffic..
-        /// </summary>
-        public static string SelectAConnection {
-            get {
-                return ResourceManager.GetString("SelectAConnection", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The network analyzer is only available in the all-in-one deployment, because it needs the servers in the same process..
-        /// </summary>
-        public static string NetworkAnalyzerNotAvailable {
-            get {
-                return ResourceManager.GetString("NetworkAnalyzerNotAvailable", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Captured Packets.
-        /// </summary>
-        public static string CapturedPackets {
-            get {
-                return ResourceManager.GetString("CapturedPackets", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Timestamp.
-        /// </summary>
-        public static string Timestamp {
-            get {
-                return ResourceManager.GetString("Timestamp", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Direction.
-        /// </summary>
-        public static string Direction {
-            get {
-                return ResourceManager.GetString("Direction", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Code.
-        /// </summary>
-        public static string PacketCode {
-            get {
-                return ResourceManager.GetString("PacketCode", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Message.
-        /// </summary>
-        public static string PacketMessage {
-            get {
-                return ResourceManager.GetString("PacketMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Packet Details.
-        /// </summary>
-        public static string PacketDetails {
-            get {
-                return ResourceManager.GetString("PacketDetails", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Extracted Information.
-        /// </summary>
-        public static string ExtractedInformation {
-            get {
-                return ResourceManager.GetString("ExtractedInformation", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Raw Data.
-        /// </summary>
-        public static string RawData {
-            get {
-                return ResourceManager.GetString("RawData", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Clear.
-        /// </summary>
-        public static string ClearPackets {
-            get {
-                return ResourceManager.GetString("ClearPackets", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to To Server.
-        /// </summary>
-        public static string ToServer {
-            get {
-                return ResourceManager.GetString("ToServer", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to To Client.
-        /// </summary>
-        public static string ToClient {
-            get {
-                return ResourceManager.GetString("ToClient", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Filter by code or message.
-        /// </summary>
-        public static string FilterPackets {
-            get {
-                return ResourceManager.GetString("FilterPackets", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to No packets captured yet..
-        /// </summary>
-        public static string NoPacketsCaptured {
-            get {
-                return ResourceManager.GetString("NoPacketsCaptured", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Select a packet to see its content..
-        /// </summary>
-        public static string SelectAPacket {
-            get {
-                return ResourceManager.GetString("SelectAPacket", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Follow.
-        /// </summary>
-        public static string FollowNewPackets {
-            get {
-                return ResourceManager.GetString("FollowNewPackets", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Shows the newest packets and scrolls to them. It&apos;s turned off while you scroll up, so that the view doesn&apos;t move away..
-        /// </summary>
-        public static string FollowNewPacketsHint {
-            get {
-                return ResourceManager.GetString("FollowNewPacketsHint", resourceCulture);
-            }
-        }
-        
-
-        /// <summary>
-        ///   Looks up a localized string similar to Export Backup.
-        /// </summary>
-        public static string ExportBackup {
-            get {
-                return ResourceManager.GetString("ExportBackup", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Import Backup.
-        /// </summary>
-        public static string ImportBackup {
-            get {
-                return ResourceManager.GetString("ImportBackup", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Importing backup, please wait ....
-        /// </summary>
-        public static string ImportingBackupPleaseWait {
-            get {
-                return ResourceManager.GetString("ImportingBackupPleaseWait", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Backup import succeeded. Please restart the server process to apply the changes..
-        /// </summary>
-        public static string BackupImportSucceeded {
-            get {
-                return ResourceManager.GetString("BackupImportSucceeded", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Backup import failed..
-        /// </summary>
-        public static string BackupImportFailed {
-            get {
-                return ResourceManager.GetString("BackupImportFailed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Select a .zip backup file to restore.
-        /// </summary>
-        public static string SelectZipFileToRestore {
-            get {
-                return ResourceManager.GetString("SelectZipFileToRestore", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The selected file is no backup archive. The database was left untouched..
-        /// </summary>
-        public static string SelectedFileIsNoBackup {
-            get {
-                return ResourceManager.GetString("SelectedFileIsNoBackup", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Database Snapshot.
-        /// </summary>
-        public static string DatabaseSnapshot {
-            get {
-                return ResourceManager.GetString("DatabaseSnapshot", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to A snapshot contains all data of the database and is created and restored a lot faster. It can be restored by this or a newer version of the server, which applies its database updates to the restored data. To transfer data to an older version, use the backup above..
-        /// </summary>
-        public static string DatabaseSnapshotDescription {
-            get {
-                return ResourceManager.GetString("DatabaseSnapshotDescription", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Export Snapshot.
-        /// </summary>
-        public static string ExportSnapshot {
-            get {
-                return ResourceManager.GetString("ExportSnapshot", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Select a .zip snapshot file to restore.
-        /// </summary>
-        public static string SelectZipFileToRestoreSnapshot {
-            get {
-                return ResourceManager.GetString("SelectZipFileToRestoreSnapshot", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Include the accounts (takes longer).
-        /// </summary>
-        public static string IncludeAccounts {
-            get {
-                return ResourceManager.GetString("IncludeAccounts", resourceCulture);
-            }
-        }
-        
     }
 }

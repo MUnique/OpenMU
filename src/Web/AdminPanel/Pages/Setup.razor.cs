@@ -30,6 +30,10 @@ public partial class Setup
 
     private string? _importMessage;
 
+    private bool _showJsonBackup;
+
+    private bool _showSnapshotBackup = true;
+
     private string _importMessageCssClass = string.Empty;
 
     /// <summary>

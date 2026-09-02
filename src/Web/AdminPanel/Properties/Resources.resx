@@ -561,11 +561,14 @@
   <data name="GameServerCount" xml:space="preserve">
     <value>Game server count</value>
   </data>
-  <data name="ExportBackup" xml:space="preserve">
-    <value>Export Backup</value>
+  <data name="JsonBackup" xml:space="preserve">
+    <value>JSON Backup (slow!)</value>
   </data>
-  <data name="ImportBackup" xml:space="preserve">
-    <value>Import Backup</value>
+  <data name="ExportJsonBackup" xml:space="preserve">
+    <value>Export JSON Backup</value>
+  </data>
+  <data name="ImportJsonBackup" xml:space="preserve">
+    <value>Import JSON Backup</value>
   </data>
   <data name="ImportingBackupPleaseWait" xml:space="preserve">
     <value>Importing backup, please wait ...</value>
