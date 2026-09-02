@@ -561,6 +561,45 @@
   <data name="GameServerCount" xml:space="preserve">
     <value>Game server count</value>
   </data>
+  <data name="JsonBackup" xml:space="preserve">
+    <value>JSON Backup (slow!)</value>
+  </data>
+  <data name="ExportJsonBackup" xml:space="preserve">
+    <value>Export JSON Backup</value>
+  </data>
+  <data name="ImportJsonBackup" xml:space="preserve">
+    <value>Import JSON Backup</value>
+  </data>
+  <data name="ImportingBackupPleaseWait" xml:space="preserve">
+    <value>Importing backup, please wait ...</value>
+  </data>
+  <data name="BackupImportSucceeded" xml:space="preserve">
+    <value>Backup import succeeded. Please restart the server process to apply the changes.</value>
+  </data>
+  <data name="BackupImportFailed" xml:space="preserve">
+    <value>Backup import failed.</value>
+  </data>
+  <data name="SelectZipFileToRestore" xml:space="preserve">
+    <value>Select a .zip backup file to restore</value>
+  </data>
+  <data name="SelectedFileIsNoBackup" xml:space="preserve">
+    <value>The selected file is no backup archive. The database was left untouched.</value>
+  </data>
+  <data name="DatabaseSnapshot" xml:space="preserve">
+    <value>Database Snapshot</value>
+  </data>
+  <data name="DatabaseSnapshotDescription" xml:space="preserve">
+    <value>A snapshot contains all data of the database and is created and restored a lot faster. It can be restored by this or a newer version of the server, which applies its database updates to the restored data. To transfer data to an older version, use the backup above.</value>
+  </data>
+  <data name="ExportSnapshot" xml:space="preserve">
+    <value>Export Snapshot</value>
+  </data>
+  <data name="SelectZipFileToRestoreSnapshot" xml:space="preserve">
+    <value>Select a .zip snapshot file to restore</value>
+  </data>
+  <data name="IncludeAccounts" xml:space="preserve">
+    <value>Include the accounts (takes longer)</value>
+  </data>
   <data name="Character" xml:space="preserve">
     <value>Character</value>
   </data>

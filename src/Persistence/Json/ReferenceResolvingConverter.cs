@@ -93,6 +93,29 @@ public class ReferenceResolvingConverter<T> : JsonConverter<T>
                             objParam)
                         .Compile();
                 }
+                else if (x.CollectionInterface != null
+                         && properties.All(p => p.Name != "Raw" + x.Property.Name && p.Name != "Joined" + x.Property.Name))
+                {
+                    // A collection without a public setter and without a "Raw" or "Joined" counterpart
+                    // which would hold its data (e.g. ItemSlotType.ItemSlots).
+                    // We can't assign a new collection, so we add the items to the existing one.
+                    propertyType = x.CollectionInterface.GetGenericArguments()[0];
+
+                    var collectionExpr = Expression.Convert(Expression.Property(tParam, x.Property), x.CollectionInterface);
+                    var itemExpr = Expression.Convert(objParam, propertyType);
+                    var addCall = Expression.Call(collectionExpr, x.CollectionInterface.GetMethod("Add")!, itemExpr);
+
+                    adder = Expression.Lambda<Action<T, object>>(addCall, tParam, objParam).Compile();
+                }
+                else if (x.Property.GetSetMethod(nonPublic: true) is not null
+                         && properties.All(p => p.Name != "Joined" + x.Property.Name))
+                {
+                    // A property with a non-public setter (e.g. ConstValueAttribute.Value).
+                    // A compiled expression isn't allowed to call it, so we set it by reflection.
+                    propertyType = x.Property.PropertyType;
+                    var property = x.Property;
+                    setter = (target, value) => property.SetValue(target, value);
+                }
                 else
                 {
                     // not supported property, ignore...
@@ -163,7 +186,7 @@ public class ReferenceResolvingConverter<T> : JsonConverter<T>
 
     private static void ReadProperty(ref Utf8JsonReader reader, JsonSerializerOptions options, T? item, (Type PropertyType, Action<T, object>? Setter, Action<T, object>? Adder) handler)
     {
-        _ = item ?? throw new InvalidOperationException("Item must be set here already. Is $id missing?");
+        var target = item ?? throw new InvalidOperationException("Item must be set here already. Is $id missing?");
 
         if (!reader.Read())
         {
@@ -174,34 +197,69 @@ public class ReferenceResolvingConverter<T> : JsonConverter<T>
         {
             if (JsonSerializer.Deserialize(ref reader, handler.PropertyType, options) is { } value)
             {
-                handler.Setter(item, value);
+                handler.Setter(target, value);
             }
+        }
+        else if (reader.TokenType == JsonTokenType.StartArray)
+        {
+            ReadCollection(ref reader, options, target, handler);
+        }
+        else if (reader.TokenType == JsonTokenType.StartObject)
+        {
+            // When the json was written with a reference handler, collections are wrapped
+            // into an object which holds the "$id" of the collection and its "$values".
+            ReadWrappedCollection(ref reader, options, target, handler);
         }
         else
         {
-            if (reader.TokenType == JsonTokenType.StartArray)
+            reader.Skip();
+        }
+    }
+
+    private static void ReadWrappedCollection(ref Utf8JsonReader reader, JsonSerializerOptions options, T item, (Type PropertyType, Action<T, object>? Setter, Action<T, object>? Adder) handler)
+    {
+        while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
+        {
+            if (reader.TokenType != JsonTokenType.PropertyName)
             {
-                while (true)
-                {
-                    if (!reader.Read())
-                    {
-                        throw new JsonException($"Bad JSON");
-                    }
+                reader.Skip();
+                continue;
+            }
 
-                    if (reader.TokenType == JsonTokenType.EndArray)
-                    {
-                        break;
-                    }
+            var isValues = reader.ValueTextEquals("$values"u8);
+            if (!reader.Read())
+            {
+                throw new JsonException("Bad JSON");
+            }
 
-                    if (JsonSerializer.Deserialize(ref reader, handler.PropertyType, options) is { } collectionItem)
-                    {
-                        handler.Adder!(item, collectionItem);
-                    }
-                }
+            if (isValues && reader.TokenType == JsonTokenType.StartArray)
+            {
+                ReadCollection(ref reader, options, item, handler);
             }
             else
             {
                 reader.Skip();
+            }
+        }
+    }
+
+    private static void ReadCollection(ref Utf8JsonReader reader, JsonSerializerOptions options, T item, (Type PropertyType, Action<T, object>? Setter, Action<T, object>? Adder) handler)
+    {
+        while (true)
+        {
+            if (!reader.Read())
+            {
+                throw new JsonException($"Bad JSON");
+            }
+
+            if (reader.TokenType == JsonTokenType.EndArray)
+            {
+                break;
+            }
+
+            if (JsonSerializer.Deserialize(ref reader, handler.PropertyType, options) is { } collectionItem)
+            {
+                handler.Adder!(item, collectionItem);
             }
         }
     }

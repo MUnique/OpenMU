@@ -6,8 +6,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Components;
 
 using Microsoft.AspNetCore.Components;
 using MUnique.OpenMU.Interfaces;
-using MUnique.OpenMU.Persistence.Initialization;
-using MUnique.OpenMU.Web.AdminPanel.Services;
+using MUnique.OpenMU.Persistence;
 
 /// <summary>
 /// The component which allows to initialize the database.
