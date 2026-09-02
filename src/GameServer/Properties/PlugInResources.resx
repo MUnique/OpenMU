@@ -1959,6 +1959,36 @@
   <data name="CastleSiegeHuntZoneGroupHandlerPlugIn_Description" xml:space="preserve">
     <value>Handles grouped Castle Siege hunting-zone packets.</value>
   </data>
+  <data name="CastleSiegeMachineGroupHandlerPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege Warfare-Machine Packet Group</value>
+  </data>
+  <data name="CastleSiegeMachineGroupHandlerPlugIn_Description" xml:space="preserve">
+    <value>Routes Castle Siege warfare-machine packet subcodes.</value>
+  </data>
+  <data name="CastleSiegeMachineUseHandlerPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege Warfare-Machine Fire Handler</value>
+  </data>
+  <data name="CastleSiegeMachineUseHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles Castle Siege warfare-machine fire requests.</value>
+  </data>
+  <data name="CastleSiegeMachineInterfacePlugIn_Name" xml:space="preserve">
+    <value>Castle Siege Warfare-Machine Interface View</value>
+  </data>
+  <data name="CastleSiegeMachineInterfacePlugIn_Description" xml:space="preserve">
+    <value>Sends Castle Siege warfare-machine interface packets to the game client.</value>
+  </data>
+  <data name="CastleSiegeMachineRegionNotifyPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege Warfare-Machine Region View</value>
+  </data>
+  <data name="CastleSiegeMachineRegionNotifyPlugIn_Description" xml:space="preserve">
+    <value>Sends Castle Siege warfare-machine impact-region notifications to the game client.</value>
+  </data>
+  <data name="CastleSiegeMachineUseResultPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege Warfare-Machine Use Result View</value>
+  </data>
+  <data name="CastleSiegeMachineUseResultPlugIn_Description" xml:space="preserve">
+    <value>Sends Castle Siege warfare-machine fire results to the game client.</value>
+  </data>
   <data name="CastleSiegeDefenseBuyHandlerPlugIn_Name" xml:space="preserve">
     <value>Castle Siege Defense Purchase Handler</value>
   </data>
