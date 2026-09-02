@@ -118,6 +118,7 @@ public sealed class SkillList : ISkillList, IDisposable
         // The entry is looked up in the item skills, not in the available skills: when the same skill
         // is also learned by the character, the available skills hold the learned entry - removing that
         // one would take a learned skill away just because an item was taken off.
+        // This should actually never happen with default configs, but the admin panel allows to configure stuff like that.
         var skillEntry = this._itemSkills.FirstOrDefault(s => s.Skill!.Number.ToUnsigned() == skillId);
         if (skillEntry is null)
         {
