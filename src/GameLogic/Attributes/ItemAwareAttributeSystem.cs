@@ -20,7 +20,7 @@ public sealed class ItemAwareAttributeSystem : AttributeSystem, IDisposable
     /// <param name="gameConfiguration">The game configuration with global attributes.</param>
     public ItemAwareAttributeSystem(Account account, Character character, GameConfiguration gameConfiguration)
         : base(
-            character.Attributes.Concat(account.Attributes),
+            GetStatAttributes(account, character),
             character.CharacterClass!.BaseAttributeValues.Concat(gameConfiguration.GlobalBaseAttributeValues),
             character.CharacterClass.AttributeCombinations.Concat(gameConfiguration.GlobalAttributeCombinations))
     {
@@ -112,6 +112,23 @@ public sealed class ItemAwareAttributeSystem : AttributeSystem, IDisposable
     {
         attribute.ValueChanged -= this.OnAttributeValueChanged;
         base.OnAttributeRemoved(attribute);
+    }
+
+    /// <summary>
+    /// Gets the stat attributes of the character and its account, without duplicates.
+    /// The attribute system holds exactly one attribute per <see cref="AttributeDefinition"/>, so a
+    /// duplicated definition would fail the construction of the whole system - and with it the login
+    /// of the character. Duplicates can exist in the stored data, e.g. when a data update added a stat
+    /// attribute to a character class which already had it, and every character of that class then got
+    /// the attribute twice. The character's own attribute wins over the one of its account.
+    /// </summary>
+    /// <param name="account">The account.</param>
+    /// <param name="character">The character.</param>
+    /// <returns>The distinct stat attributes of the character and its account.</returns>
+    private static IEnumerable<IAttribute> GetStatAttributes(Account account, Character character)
+    {
+        return character.Attributes.Concat(account.Attributes)
+            .DistinctBy(attribute => attribute.Definition);
     }
 
     /// <summary>

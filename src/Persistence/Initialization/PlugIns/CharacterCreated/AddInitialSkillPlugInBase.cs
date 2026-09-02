@@ -52,6 +52,16 @@ public class AddInitialSkillPlugInBase : ICharacterCreatedPlugIn
             return;
         }
 
+        if (createdCharacter.LearnedSkills.Any(entry => entry.Skill?.Number == skillDefinition.Number))
+        {
+            // This plug-in is not only called when a character is created, but also for characters which
+            // were created outside the game (e.g. on the database or with the admin panel) and are missing
+            // their inventory. Adding the skill again would give the character the same skill twice, which
+            // its skill list can't handle.
+            player.Logger.LogDebug("Skill {0} is already learned by character {1}.", skillDefinition.Name, createdCharacter.Name);
+            return;
+        }
+
         var skillEntry = player.PersistenceContext.CreateNew<SkillEntry>();
         skillEntry.Skill = skillDefinition;
         createdCharacter.LearnedSkills.Add(skillEntry);
