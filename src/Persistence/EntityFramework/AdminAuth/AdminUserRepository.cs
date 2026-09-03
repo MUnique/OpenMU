@@ -14,7 +14,7 @@ using Nito.AsyncEx;
 /// Implementation of the <see cref="IAdminUserRepository"/> which stores the users
 /// in the <c>admin</c> schema of the configured PostgreSQL database.
 /// </summary>
-public class AdminUserRepository : IAdminUserRepository
+public sealed class AdminUserRepository : IAdminUserRepository, IDisposable
 {
     /// <summary>
     /// The time after which a connection attempt to the database server is given up.
@@ -35,14 +35,24 @@ public class AdminUserRepository : IAdminUserRepository
     private readonly AsyncLock _storageLock = new();
     private bool _isStorageReady;
     private DateTime _nextProbeAt = DateTime.MinValue;
+    private readonly SetupService _setupService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AdminUserRepository"/> class.
     /// </summary>
+    /// <param name="setupService">The setup service.</param>
     /// <param name="logger">The logger.</param>
-    public AdminUserRepository(ILogger<AdminUserRepository> logger)
+    public AdminUserRepository(SetupService setupService, ILogger<AdminUserRepository> logger)
     {
         this._logger = logger;
+        this._setupService = setupService;
+        this._setupService.DatabaseInitialized += this.OnDatabaseInitialized;
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        this._setupService.DatabaseInitialized -= this.OnDatabaseInitialized;
     }
 
     /// <inheritdoc />
@@ -199,5 +209,11 @@ public class AdminUserRepository : IAdminUserRepository
         {
             throw new InvalidOperationException("The admin user storage is not available. Please check the database connection.");
         }
+    }
+
+    private ValueTask OnDatabaseInitialized()
+    {
+        this._isStorageReady = false;
+        return ValueTask.CompletedTask;
     }
 }
