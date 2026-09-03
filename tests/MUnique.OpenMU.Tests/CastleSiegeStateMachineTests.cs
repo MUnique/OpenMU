@@ -269,6 +269,60 @@ public class CastleSiegeStateMachineTests
     }
 
     /// <summary>
+    /// Verifies that the administration snapshot includes registrations and can remove one during the registration state.
+    /// </summary>
+    [Test]
+    public async ValueTask AdministrationSnapshotsAndRemovesRegistrationAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var timeProvider = new ManualTimeProvider(new DateTimeOffset(2026, 8, 3, 12, 0, 0, TimeSpan.Zero));
+        var plugIn = new CastleSiegePlugIn(timeProvider);
+        var administration = new CastleSiegeAdministration(plugIn);
+
+        await plugIn.ExecuteTaskAsync(fixture.GameContext.Object).ConfigureAwait(false);
+        var snapshot = await administration.GetSnapshotAsync(fixture.GameContext.Object).ConfigureAwait(false);
+        var result = await administration
+            .RemoveRegistrationAsync(fixture.GameContext.Object, fixture.RegisteredGuildId)
+            .ConfigureAwait(false);
+        var updatedSnapshot = await administration.GetSnapshotAsync(fixture.GameContext.Object).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(snapshot, Is.Not.Null);
+            Assert.That(snapshot!.State, Is.EqualTo(CastleSiegeState.RegisterGuild));
+            Assert.That(snapshot.Registrations.Select(registration => registration.GuildId), Does.Contain(fixture.RegisteredGuildId));
+            Assert.That(result.IsSuccess, Is.True);
+            Assert.That(updatedSnapshot!.Registrations, Is.Empty);
+        });
+    }
+
+    /// <summary>
+    /// Verifies that an administration state request only affects the selected game context.
+    /// </summary>
+    [Test]
+    public async ValueTask AdministrationStateRequestIsScopedToOneGameContextAsync()
+    {
+        var firstFixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var secondFixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var timeProvider = new ManualTimeProvider(new DateTimeOffset(2026, 8, 3, 12, 0, 0, TimeSpan.Zero));
+        var plugIn = new CastleSiegePlugIn(timeProvider);
+        var administration = new CastleSiegeAdministration(plugIn);
+
+        await plugIn.ExecuteTaskAsync(firstFixture.GameContext.Object).ConfigureAwait(false);
+        await plugIn.ExecuteTaskAsync(secondFixture.GameContext.Object).ConfigureAwait(false);
+        var result = administration.ForceState(firstFixture.GameContext.Object, CastleSiegeState.Idle1);
+        await plugIn.ExecuteTaskAsync(firstFixture.GameContext.Object).ConfigureAwait(false);
+        await plugIn.ExecuteTaskAsync(secondFixture.GameContext.Object).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.IsSuccess, Is.True);
+            Assert.That(plugIn.GetContext(firstFixture.GameContext.Object)!.CurrentState, Is.EqualTo(CastleSiegeState.Idle1));
+            Assert.That(plugIn.GetContext(secondFixture.GameContext.Object)!.CurrentState, Is.EqualTo(CastleSiegeState.RegisterGuild));
+        });
+    }
+
+    /// <summary>
     /// Verifies that plug-in initialization restores the early registration period after a restart.
     /// </summary>
     [Test]

@@ -987,4 +987,7 @@
   <data name="FollowNewPacketsHint" xml:space="preserve">
     <value>Shows the newest packets and scrolls to them. It's turned off while you scroll up, so that the view doesn't move away.</value>
   </data>
+  <data name="CastleSiege" xml:space="preserve">
+    <value>Castle Siege</value>
+  </data>
 </root>

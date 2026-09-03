@@ -73,6 +73,20 @@ public class GuildServer : IGuildServer
     }
 
     /// <inheritdoc />
+    public async ValueTask<Guid?> GetPersistentGuildIdByNameAsync(string guildName)
+    {
+        try
+        {
+            return await this._daprClient.InvokeMethodAsync<string, Guid?>(this._targetAppId, nameof(this.GetPersistentGuildIdByNameAsync), guildName).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Unexpected error when retrieving a persistent guild identifier by name.");
+            return null;
+        }
+    }
+
+    /// <inheritdoc />
     public async ValueTask<uint> GetGuildIdAsync(Guid guildId)
     {
         try

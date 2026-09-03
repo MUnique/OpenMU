@@ -112,6 +112,14 @@ public interface IGuildServer
     ValueTask<Guid?> GetPersistentGuildIdAsync(uint guildId);
 
     /// <summary>
+    /// Gets the persistent identifier of a guild by name.
+    /// </summary>
+    /// <param name="guildName">The guild name.</param>
+    /// <returns>The persistent guild identifier, or <see langword="null"/> if the guild was not found.</returns>
+    /// <remarks>This lookup also finds guilds without online members.</remarks>
+    ValueTask<Guid?> GetPersistentGuildIdByNameAsync(string guildName);
+
+    /// <summary>
     /// Gets the persistent identifier under which a guild participates in an alliance event.
     /// </summary>
     /// <param name="guildId">The runtime guild identifier.</param>

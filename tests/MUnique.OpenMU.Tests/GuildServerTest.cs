@@ -36,6 +36,23 @@ public class GuildServerTest : GuildTestBase
     }
 
     /// <summary>
+    /// Tests that a persistent guild identifier can be resolved by name without an online guild member.
+    /// </summary>
+    [Test]
+    public async ValueTask GetPersistentGuildIdByNameAsyncFindsOfflineGuild()
+    {
+        using var context = this.PersistenceContextProvider.CreateNewContext();
+        var persistentGuild = (await context
+                .GetAsync<MUnique.OpenMU.DataModel.Entities.Guild>()
+                .ConfigureAwait(false))
+            .Single(guild => guild.Name == GuildName);
+
+        var guildId = await this.GuildServer.GetPersistentGuildIdByNameAsync(GuildName).ConfigureAwait(false);
+
+        Assert.That(guildId, Is.EqualTo(persistentGuild.Id));
+    }
+
+    /// <summary>
     /// Tests if the entrance of guild members is registered correctly in the guild member list.
     /// </summary>
     [Test]

@@ -86,6 +86,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("AccessDeniedDescription", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege.
+        /// </summary>
+        public static string CastleSiege {
+            get {
+                return ResourceManager.GetString("CastleSiege", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Too many failed attempts. Please try again later..
