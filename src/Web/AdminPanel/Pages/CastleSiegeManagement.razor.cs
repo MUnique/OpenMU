@@ -21,7 +21,7 @@ public partial class CastleSiegeManagement : ComponentBase
     private string? _statusMessage;
     private int? _selectedGameServerId;
     private CastleSiegeState _forcedState;
-    private string _ownerGuildName = string.Empty;
+    private string OwnerGuildName { get; set; } = string.Empty;
     private byte _chaosTax;
     private byte _storeTax;
     private int _huntTax;
@@ -42,7 +42,7 @@ public partial class CastleSiegeManagement : ComponentBase
     /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
-        this._servers = this.ManagementService.GetAvailableGameServers();
+        this._servers = this.ManagementService.AvailableGameServers;
         this._selectedGameServerId = this._servers.FirstOrDefault()?.Id;
         await this.RefreshAsync().ConfigureAwait(false);
     }
@@ -67,9 +67,9 @@ public partial class CastleSiegeManagement : ComponentBase
         try
         {
             var result = await this.ManagementService.GetSnapshotAsync(gameServerId).ConfigureAwait(false);
-            this._snapshot = result.Snapshot;
             this._statusMessage = result.ErrorMessage;
-            if (result.Snapshot is { } snapshot)
+            this._snapshot = result.Snapshot;
+            if (this._statusMessage is null && this._snapshot is { } snapshot)
             {
                 this._forcedState = snapshot.State;
                 this._chaosTax = snapshot.ChaosTax;
@@ -94,7 +94,7 @@ public partial class CastleSiegeManagement : ComponentBase
     private Task SetOwnerAsync()
     {
         return this.RunOperationAsync(
-            () => this.ManagementService.SetOwnerAsync(this._selectedGameServerId!.Value, this._ownerGuildName),
+            () => this.ManagementService.SetOwnerAsync(this._selectedGameServerId!.Value, this.OwnerGuildName),
             "The Castle Siege owner has been updated.");
     }
 
@@ -130,6 +130,11 @@ public partial class CastleSiegeManagement : ComponentBase
         Func<ValueTask<CastleSiegeAdministrationResult>> operation,
         string successMessage)
     {
+        if (this._isWorking)
+        {
+            return;
+        }
+
         this._isWorking = true;
         try
         {

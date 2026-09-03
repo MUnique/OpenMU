@@ -104,7 +104,7 @@ else
                         <div class="mb-3">
                             <label for="castle-siege-owner" class="form-label">Change owner</label>
                             <div class="input-group">
-                                <input id="castle-siege-owner" type="text" class="form-control" placeholder="Guild name" @bind="this._ownerGuildName" disabled="@this._isWorking" />
+                                <input id="castle-siege-owner" type="text" class="form-control" placeholder="Guild name" @bind="this.OwnerGuildName" disabled="@this._isWorking" />
                                 <button type="button" class="btn btn-primary" @onclick="this.SetOwnerAsync" disabled="@this._isWorking">Save</button>
                             </div>
                         </div>

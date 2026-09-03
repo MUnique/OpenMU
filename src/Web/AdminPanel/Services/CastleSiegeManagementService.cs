@@ -34,15 +34,13 @@ public sealed class CastleSiegeManagementService
     /// Gets the game servers which can provide direct Castle Siege runtime access.
     /// </summary>
     /// <returns>The available game servers.</returns>
-    public IReadOnlyList<CastleSiegeManagementGameServer> GetAvailableGameServers()
-    {
-        return this._serverProvider.Servers
+    public IReadOnlyList<CastleSiegeManagementGameServer> AvailableGameServers =>
+        this._serverProvider.Servers
             .OfType<IGameServer>()
             .Where(server => server is IGameServerContextProvider)
             .OrderBy(server => server.Id)
             .Select(server => new CastleSiegeManagementGameServer(server.Id, server.Description))
             .ToList();
-    }
 
     /// <summary>
     /// Gets the current Castle Siege snapshot for a game server.
