@@ -198,42 +198,50 @@ internal sealed class BotGenerator
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            // Load the account again, this time with its whole graph: the paging query returns the
-            // accounts untracked and without their characters, and deleting such a shallow account
-            // leaves its item storages behind. A character's inventory is referenced BY the character,
-            // so no delete cascade ever reaches it - those storages, and every item lying in them, would
-            // stay in the database forever as unreachable rows.
-            var account = await context.GetAccountByLoginNameAsync(loginName, cancellationToken).ConfigureAwait(false);
-            if (account is null)
+            try
             {
-                continue;
-            }
-
-            foreach (var character in account.Characters)
-            {
-                if (character.Inventory is { } inventory)
+                // Load the account again, this time with its whole graph: the paging query returns the
+                // accounts untracked and without their characters, and deleting such a shallow account
+                // leaves its item storages behind. A character's inventory is referenced BY the character,
+                // so no delete cascade ever reaches it - those storages, and every item lying in them, would
+                // stay in the database forever as unreachable rows.
+                var account = await context.GetAccountByLoginNameAsync(loginName, cancellationToken).ConfigureAwait(false);
+                if (account is null)
                 {
-                    await context.DeleteAsync(inventory).ConfigureAwait(false);
+                    continue;
                 }
-            }
 
-            if (account.Vault is { } vault)
-            {
-                await context.DeleteAsync(vault).ConfigureAwait(false);
-            }
+                foreach (var character in account.Characters)
+                {
+                    if (character.Inventory is { } inventory)
+                    {
+                        await context.DeleteAsync(inventory).ConfigureAwait(false);
+                    }
+                }
 
-            if (await context.DeleteAsync(account).ConfigureAwait(false))
-            {
-                deleted++;
-            }
-            else
-            {
-                // Not silent: a bot account which survives the purge is spawned again right after it.
-                this._logger.LogWarning("Bot account '{LoginName}' could not be deleted.", loginName);
-            }
+                if (account.Vault is { } vault)
+                {
+                    await context.DeleteAsync(vault).ConfigureAwait(false);
+                }
 
-            // Save per account, so a single failure does not roll back the accounts already deleted.
-            await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+                if (await context.DeleteAsync(account).ConfigureAwait(false))
+                {
+                    deleted++;
+                }
+                else
+                {
+                    // Not silent: a bot account which survives the purge is spawned again right after it.
+                    this._logger.LogWarning("Bot account '{LoginName}' could not be deleted.", loginName);
+                }
+
+                // Save per account, so a single failure does not roll back the accounts already deleted.
+                await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                // One unreadable account must not abort the whole purge; the next purge retries it.
+                this._logger.LogError(ex, "Failed to delete bot account '{LoginName}', skipping it.", loginName);
+            }
         }
 
         return deleted;

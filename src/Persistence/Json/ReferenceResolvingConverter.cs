@@ -162,7 +162,7 @@ public class ReferenceResolvingConverter<T> : JsonConverter<T>
                 var propertyName = reader.GetString();
                 if (propertyName == null)
                 {
-                    reader.Skip();
+                    SkipUnknownPropertyValue(ref reader, options);
                 }
                 else if (propertyName is "$ref" or "$id"
                          && JsonSerializer.Deserialize<string>(ref reader, options) is { } referenceId)
@@ -176,7 +176,7 @@ public class ReferenceResolvingConverter<T> : JsonConverter<T>
                 }
                 else
                 {
-                    reader.Skip();
+                    SkipUnknownPropertyValue(ref reader, options);
                 }
             }
         }
@@ -210,10 +210,42 @@ public class ReferenceResolvingConverter<T> : JsonConverter<T>
             // into an object which holds the "$id" of the collection and its "$values".
             ReadWrappedCollection(ref reader, options, target, handler);
         }
-        else
+        else if (reader.TokenType != JsonTokenType.Null)
         {
-            reader.Skip();
+            // Adder-only collection with an unexpected scalar value (e.g. a schema change).
+            // Discard it streaming-safe; Null means "empty collection" and needs nothing.
+            JsonSerializer.Deserialize<JsonElement>(ref reader, options);
         }
+    }
+
+    /// <summary>
+    /// Advances from a property name to its value and discards the value in a way which is safe
+    /// for chunked (streaming) deserialization. <see cref="Utf8JsonReader.Skip"/> must not be used
+    /// here: it throws "Cannot skip tokens on partial JSON" when the buffer is not final.
+    /// </summary>
+    private static void SkipUnknownPropertyValue(ref Utf8JsonReader reader, JsonSerializerOptions options)
+    {
+        if (!reader.Read())
+        {
+            throw new JsonException("Bad JSON");
+        }
+
+        SkipValue(ref reader, options);
+    }
+
+    /// <summary>
+    /// Discards the value the reader is positioned on in a way which is safe for chunked
+    /// (streaming) deserialization.
+    /// </summary>
+    private static void SkipValue(ref Utf8JsonReader reader, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.Null)
+        {
+            // Single token; the caller's next Read() moves past it.
+            return;
+        }
+
+        JsonSerializer.Deserialize<JsonElement>(ref reader, options);
     }
 
     private static void ReadWrappedCollection(ref Utf8JsonReader reader, JsonSerializerOptions options, T item, (Type PropertyType, Action<T, object>? Setter, Action<T, object>? Adder) handler)
@@ -222,7 +254,7 @@ public class ReferenceResolvingConverter<T> : JsonConverter<T>
         {
             if (reader.TokenType != JsonTokenType.PropertyName)
             {
-                reader.Skip();
+                SkipValue(ref reader, options);
                 continue;
             }
 
@@ -238,7 +270,7 @@ public class ReferenceResolvingConverter<T> : JsonConverter<T>
             }
             else
             {
-                reader.Skip();
+                SkipValue(ref reader, options);
             }
         }
     }
