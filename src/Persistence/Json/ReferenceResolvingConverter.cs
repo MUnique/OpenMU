@@ -216,6 +216,10 @@ public class ReferenceResolvingConverter<T> : JsonConverter<T>
             // Discard it streaming-safe; Null means "empty collection" and needs nothing.
             JsonSerializer.Deserialize<JsonElement>(ref reader, options);
         }
+        else
+        {
+            // Null means "empty collection" (e.g. array_agg over zero rows): nothing to add.
+        }
     }
 
     /// <summary>
