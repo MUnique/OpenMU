@@ -64,9 +64,9 @@
     <!-- Workaround for:
    The "DiscoverPrecompressedAssets" task failed unexpectedly.
    System.ArgumentException: An item with the same key has already been added. Key: C:\Users\[user]\.nuget\packages\microsoft.aspnetcore.app.internal.assets\10.0.0\_framework\blazor.web.js
-    
+   
    https://github.com/dotnet/sdk/issues/52089
-    
+   
    This is caused by a Microsoft.NET.Sdk.Web project (like this) referencing another project that also uses Microsoft.NET.Sdk.Web.
    It appears to be a .NET SDK bug, and we're not the only one hitting it.
    -->
@@ -76,5 +76,31 @@
       <StaticWebAsset Remove="@(StaticWebAsset)" />
       <StaticWebAsset Include="@(_StaticWebAsset-&gt;Distinct())" />
     </ItemGroup>
+  </Target>
+
+  <!-- The SDK generates root-relative @import rules (e.g. "@import '_content/...'")
+       in this project's scoped css bundle. Because the bundle is served from this project's
+       StaticWebAssetBasePath instead of the web root, browsers resolve them to a doubled
+       path ('/_content/MUnique.OpenMU.Web.AdminPanel/_content/...') which returns 404.
+       Rewrite them as root-absolute paths after bundling. The replace is idempotent. -->
+  <UsingTask TaskName="AbsolutizeScopedCssBundleImports" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <BundleFile ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System.IO" />
+      <Code Type="Fragment" Language="cs"><![CDATA[
+var text = File.ReadAllText(BundleFile);
+var fixedText = text.Replace("@import '_content/", "@import '/_content/");
+if (fixedText != text)
+{
+    File.WriteAllText(BundleFile, fixedText);
+}
+      ]]></Code>
+    </Task>
+  </UsingTask>
+
+  <Target Name="AbsolutizeScopedCssBundleImports" AfterTargets="BundleScopedCssFiles" Condition="Exists('$(IntermediateOutputPath)scopedcss/bundle/$(PackageId).styles.css')">
+    <AbsolutizeScopedCssBundleImports BundleFile="$(IntermediateOutputPath)scopedcss/bundle/$(PackageId).styles.css" />
   </Target>
 </Project>
