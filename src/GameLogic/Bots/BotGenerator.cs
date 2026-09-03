@@ -212,8 +212,10 @@ internal sealed class BotGenerator
             {
                 failed++;
             }
-
-            // NotFound: the account was already gone, nothing to count.
+            else
+            {
+                // NotFound: the account was already gone, nothing to count.
+            }
         }
 
         if (failed > 0)
