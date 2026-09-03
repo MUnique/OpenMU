@@ -126,6 +126,7 @@ public static class CastleSiegeCrownMechanics
             await CastleSiegeEconomyNotifier.BroadcastTaxRatesAsync(context).ConfigureAwait(false);
         }
 
+        await context.KillAllLifeStonesAsync().ConfigureAwait(false);
         await context.SetPlayerJoinSideAsync().ConfigureAwait(false);
         await RespawnAttackersAsync(context).ConfigureAwait(false);
 

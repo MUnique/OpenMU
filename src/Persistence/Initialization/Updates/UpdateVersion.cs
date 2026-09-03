@@ -549,4 +549,9 @@ public enum UpdateVersion
     /// The version of the <see cref="ConfigureCastleSiegeEconomyUpdatePlugIn"/>.
     /// </summary>
     ConfigureCastleSiegeEconomy = 108,
+
+    /// <summary>
+    /// The version of the <see cref="ConfigureCastleSiegeLifeStoneUpdatePlugIn"/>.
+    /// </summary>
+    ConfigureCastleSiegeLifeStone = 109,
 }

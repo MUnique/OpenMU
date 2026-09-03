@@ -5,10 +5,12 @@
 namespace MUnique.OpenMU.Persistence.Initialization.Tests;
 
 using Microsoft.Extensions.Logging.Abstractions;
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Persistence.EntityFramework;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
 using MUnique.OpenMU.Persistence.InMemory;
@@ -397,6 +399,22 @@ internal class TestInitializationWithEfCore
         await economyUpdate.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
         await economyUpdate.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
         Assert.That(senior.NpcWindow, Is.EqualTo(NpcWindow.CastleSeniorNPC));
+
+        var lifeStone = gameConfiguration.Monsters.Single(monster => monster.Number == 278);
+        var maximumHealth = lifeStone.Attributes.Single(attribute => attribute.AttributeDefinition?.Id == Stats.MaximumHealth.Id);
+        maximumHealth.Value = 12_345;
+        var defense = lifeStone.Attributes.Single(attribute => attribute.AttributeDefinition?.Id == Stats.DefenseBase.Id);
+        lifeStone.Attributes.Remove(defense);
+        var lifeStoneUpdate = new ConfigureCastleSiegeLifeStoneUpdatePlugIn();
+        await lifeStoneUpdate.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await lifeStoneUpdate.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        Assert.Multiple(() =>
+        {
+            Assert.That(maximumHealth.Value, Is.EqualTo(12_345));
+            Assert.That(
+                lifeStone.Attributes.Single(attribute => attribute.AttributeDefinition?.Id == Stats.DefenseBase.Id).Value,
+                Is.Zero);
+        });
 
         gameConfiguration.Items.Add(signOfLord);
         configuration.SignOfLordItemDefinition = signOfLord;

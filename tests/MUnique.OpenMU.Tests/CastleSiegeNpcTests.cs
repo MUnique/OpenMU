@@ -828,6 +828,64 @@ public class CastleSiegeNpcTests
     }
 
     /// <summary>
+    /// Verifies Life Stone placement, construction, same-side healing, and forced destruction on a side swap.
+    /// </summary>
+    [Test]
+    public async ValueTask LifeStoneBuildsHealsAlliesAndIsDestroyedOnSideSwapAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        await AddSiegePlayerAsync(fixture, CastleSiegeJoinSide.Attack1, 60, 60).ConfigureAwait(false);
+        try
+        {
+            fixture.Context.CurrentState = CastleSiegeState.Start;
+            var attributes = fixture.Player.Attributes!;
+            attributes[Stats.CurrentHealth] = attributes[Stats.MaximumHealth] / 2;
+            attributes[Stats.CurrentMana] = attributes[Stats.MaximumMana] / 2;
+            var healthBeforeHealing = attributes[Stats.CurrentHealth];
+            var manaBeforeHealing = attributes[Stats.CurrentMana];
+
+            Assert.That(
+                await CastleSiegeSummonLifeStoneAction
+                    .SummonAsync(fixture.Player, fixture.Context)
+                    .ConfigureAwait(false),
+                Is.True);
+            Assert.That(
+                await CastleSiegeSummonLifeStoneAction
+                    .SummonAsync(fixture.Player, fixture.Context)
+                    .ConfigureAwait(false),
+                Is.False,
+                "A guild must not place a second Life Stone while its first one exists.");
+
+            var lifeStone = fixture.Context.LifeStones.Single();
+            await lifeStone.TickAsync(lifeStone.CreatedAtUtc.AddSeconds(12)).ConfigureAwait(false);
+            Assert.That(lifeStone.BuildTime, Is.EqualTo(1));
+            Assert.That(lifeStone.IsActive, Is.False);
+
+            await lifeStone.TickAsync(lifeStone.CreatedAtUtc.AddSeconds(60)).ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(lifeStone.BuildTime, Is.EqualTo(5));
+                Assert.That(lifeStone.IsActive, Is.True);
+                Assert.That(attributes[Stats.CurrentHealth], Is.EqualTo(healthBeforeHealing + (attributes[Stats.MaximumHealth] / 100)));
+                Assert.That(attributes[Stats.CurrentMana], Is.EqualTo(manaBeforeHealing + (attributes[Stats.MaximumMana] / 100)));
+            });
+
+            await fixture.Context.KillAllLifeStonesAsync().ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(fixture.Context.LifeStones, Is.Empty);
+                Assert.That(fixture.Map.GetObject(lifeStone.Id), Is.Null);
+            });
+        }
+        finally
+        {
+            await fixture.GameServerContext.RemovePlayerAsync(fixture.Player).ConfigureAwait(false);
+            await fixture.Context.KillAllLifeStonesAsync().ConfigureAwait(false);
+            await fixture.Context.NpcController.DespawnAllAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
     /// Verifies machine-side authorization, exclusive operation, and stale-operator replacement.
     /// </summary>
     [Test]
@@ -1202,8 +1260,10 @@ public class CastleSiegeNpcTests
             var defenseMachine = AddMonster(222, NpcObjectKind.PassiveNpc);
             var gate = AddMonster(CastleSiegeGate.MonsterNumber, NpcObjectKind.Gate);
             var statue = AddMonster(CastleSiegeStatue.MonsterNumber, NpcObjectKind.Statue);
+            var lifeStone = AddMonster(CastleSiegeLifeStone.MonsterNumber, NpcObjectKind.Statue);
             AddAttributes(gate);
             AddAttributes(statue);
+            AddAttributes(lifeStone, 1_000);
 
             AddNpc(configuration, crown, 1, false, 60, 60);
             AddNpc(configuration, firstSwitch, 1, false, 70, 60);
@@ -1345,12 +1405,12 @@ public class CastleSiegeNpcTests
             });
         }
 
-        void AddAttributes(BasicModel.MonsterDefinition monster)
+        void AddAttributes(BasicModel.MonsterDefinition monster, int maximumHealth = 1)
         {
             monster.Attributes.Add(new BasicModel.MonsterAttribute
             {
                 AttributeDefinition = Stats.MaximumHealth,
-                Value = 1,
+                Value = maximumHealth,
             });
             monster.Attributes.Add(new BasicModel.MonsterAttribute
             {
