@@ -297,6 +297,27 @@ public class CastleSiegeStateMachineTests
     }
 
     /// <summary>
+    /// Verifies that duplicate runtime NPC keys don't prevent the administration snapshot from being created.
+    /// </summary>
+    [Test]
+    public async ValueTask AdministrationSnapshotToleratesDuplicateNpcRuntimeKeysAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var timeProvider = new ManualTimeProvider(new DateTimeOffset(2026, 8, 3, 12, 0, 0, TimeSpan.Zero));
+        var plugIn = new CastleSiegePlugIn(timeProvider);
+        var administration = new CastleSiegeAdministration(plugIn);
+
+        await plugIn.ExecuteTaskAsync(fixture.GameContext.Object).ConfigureAwait(false);
+        var context = plugIn.GetContext(fixture.GameContext.Object)!;
+        context.ActiveNpcs.Add(CreateNpcRuntime(277, 0, 125_000, true, true));
+        context.ActiveNpcs.Add(CreateNpcRuntime(277, 0, 125_000, true, true));
+
+        Assert.DoesNotThrowAsync(async () => await administration
+            .GetSnapshotAsync(fixture.GameContext.Object)
+            .ConfigureAwait(false));
+    }
+
+    /// <summary>
     /// Verifies that an administration state request only affects the selected game context.
     /// </summary>
     [Test]
@@ -319,6 +340,55 @@ public class CastleSiegeStateMachineTests
             Assert.That(result.IsSuccess, Is.True);
             Assert.That(plugIn.GetContext(firstFixture.GameContext.Object)!.CurrentState, Is.EqualTo(CastleSiegeState.Idle1));
             Assert.That(plugIn.GetContext(secondFixture.GameContext.Object)!.CurrentState, Is.EqualTo(CastleSiegeState.RegisterGuild));
+        });
+    }
+
+    /// <summary>
+    /// Verifies that a context-specific state request wins over a simultaneous global request without applying both.
+    /// </summary>
+    [Test]
+    public async ValueTask AdministrationStateRequestPreventsSecondTransitionInSameTickAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var timeProvider = new ManualTimeProvider(new DateTimeOffset(2026, 8, 3, 12, 0, 0, TimeSpan.Zero));
+        var plugIn = new CastleSiegePlugIn(timeProvider);
+        var administration = new CastleSiegeAdministration(plugIn);
+
+        await plugIn.ExecuteTaskAsync(fixture.GameContext.Object).ConfigureAwait(false);
+        plugIn.ForceState(CastleSiegeState.EndCycle);
+        var result = administration.ForceState(fixture.GameContext.Object, CastleSiegeState.Idle1);
+        await plugIn.ExecuteTaskAsync(fixture.GameContext.Object).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.IsSuccess, Is.True);
+            Assert.That(plugIn.GetContext(fixture.GameContext.Object)!.CurrentState, Is.EqualTo(CastleSiegeState.Idle1));
+            Assert.That(plugIn.GetContext(fixture.GameContext.Object)!.RegisteredGuilds, Is.Not.Empty);
+        });
+    }
+
+    /// <summary>
+    /// Verifies that an administrator can remove a registration while marks are being registered.
+    /// </summary>
+    [Test]
+    public async ValueTask AdministrationRemovesRegistrationDuringMarkRegistrationAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var timeProvider = new ManualTimeProvider(new DateTimeOffset(2026, 8, 3, 12, 0, 0, TimeSpan.Zero));
+        var plugIn = new CastleSiegePlugIn(timeProvider);
+        var administration = new CastleSiegeAdministration(plugIn);
+
+        await plugIn.ExecuteTaskAsync(fixture.GameContext.Object).ConfigureAwait(false);
+        administration.ForceState(fixture.GameContext.Object, CastleSiegeState.RegisterMark);
+        await plugIn.ExecuteTaskAsync(fixture.GameContext.Object).ConfigureAwait(false);
+        var result = await administration
+            .RemoveRegistrationAsync(fixture.GameContext.Object, fixture.RegisteredGuildId)
+            .ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.IsSuccess, Is.True);
+            Assert.That(plugIn.GetContext(fixture.GameContext.Object)!.RegisteredGuilds, Is.Empty);
         });
     }
 

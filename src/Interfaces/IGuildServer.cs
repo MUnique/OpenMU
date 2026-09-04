@@ -120,6 +120,14 @@ public interface IGuildServer
     ValueTask<Guid?> GetPersistentGuildIdByNameAsync(string guildName);
 
     /// <summary>
+    /// Gets the name of a guild by its persistent identifier.
+    /// </summary>
+    /// <param name="guildId">The persistent guild identifier.</param>
+    /// <returns>The canonical guild name, or <see langword="null"/> if the guild was not found.</returns>
+    /// <remarks>This lookup does not load a runtime guild container.</remarks>
+    ValueTask<string?> GetPersistentGuildNameAsync(Guid guildId);
+
+    /// <summary>
     /// Gets the persistent identifier under which a guild participates in an alliance event.
     /// </summary>
     /// <param name="guildId">The runtime guild identifier.</param>

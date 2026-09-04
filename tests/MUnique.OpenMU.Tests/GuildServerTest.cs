@@ -53,6 +53,28 @@ public class GuildServerTest : GuildTestBase
     }
 
     /// <summary>
+    /// Tests that a persistent guild name can be resolved without creating a runtime guild container.
+    /// </summary>
+    [Test]
+    public async ValueTask GetPersistentGuildNameAsyncFindsOfflineGuild()
+    {
+        using var context = this.PersistenceContextProvider.CreateNewContext();
+        var persistentGuild = (await context
+                .GetAsync<MUnique.OpenMU.DataModel.Entities.Guild>()
+                .ConfigureAwait(false))
+            .Single(guild => guild.Name == GuildName);
+
+        var guildName = await this.GuildServer.GetPersistentGuildNameAsync(persistentGuild.Id).ConfigureAwait(false);
+        var runtimeGuildId = await this.GuildServer.GetGuildIdByNameAsync(GuildName).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(guildName, Is.EqualTo(GuildName));
+            Assert.That(runtimeGuildId, Is.Zero);
+        });
+    }
+
+    /// <summary>
     /// Tests if the entrance of guild members is registered correctly in the guild member list.
     /// </summary>
     [Test]

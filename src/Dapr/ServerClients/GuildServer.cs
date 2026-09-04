@@ -82,7 +82,21 @@ public class GuildServer : IGuildServer
         catch (Exception ex)
         {
             this._logger.LogError(ex, "Unexpected error when retrieving a persistent guild identifier by name.");
-            return null;
+            throw;
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<string?> GetPersistentGuildNameAsync(Guid guildId)
+    {
+        try
+        {
+            return await this._daprClient.InvokeMethodAsync<Guid, string?>(this._targetAppId, nameof(this.GetPersistentGuildNameAsync), guildId).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Unexpected error when retrieving a persistent guild name.");
+            throw;
         }
     }
 

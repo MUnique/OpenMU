@@ -10,5 +10,5 @@ using MUnique.OpenMU.GameLogic.CastleSiege;
 /// The result of a Castle Siege status request.
 /// </summary>
 /// <param name="Snapshot">The status snapshot, when available.</param>
-/// <param name="ErrorMessage">The explanation when no snapshot is available.</param>
-public sealed record CastleSiegeManagementSnapshotResult(CastleSiegeAdministrationSnapshot? Snapshot, string? ErrorMessage);
+/// <param name="Error">The error when no snapshot is available.</param>
+public sealed record CastleSiegeManagementSnapshotResult(CastleSiegeAdministrationSnapshot? Snapshot, CastleSiegeAdministrationError Error);

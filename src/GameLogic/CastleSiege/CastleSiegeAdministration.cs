@@ -76,7 +76,12 @@ public sealed class CastleSiegeAdministration
         }
 
         var ownerGuildName = await GetGuildNameAsync(context, snapshot.OwnerGuildId).ConfigureAwait(false);
-        return snapshot with { OwnerGuildName = ownerGuildName };
+        var registrations = await ResolveRegistrationsAsync(context, snapshot.Registrations).ConfigureAwait(false);
+        return snapshot with
+        {
+            OwnerGuildName = ownerGuildName,
+            Registrations = registrations,
+        };
     }
 
     /// <summary>
@@ -89,15 +94,15 @@ public sealed class CastleSiegeAdministration
     {
         if (!Enum.IsDefined(state))
         {
-            return CastleSiegeAdministrationResult.Failed("The selected Castle Siege state is invalid.");
+            return CastleSiegeAdministrationResult.Failed(CastleSiegeAdministrationError.InvalidState);
         }
 
-        if (this._plugIn.GetContext(gameContext) is null)
+        if (this._plugIn.GetContext(gameContext) is not { } context)
         {
-            return CastleSiegeAdministrationResult.Failed("Castle Siege has not initialized on this game server.");
+            return CastleSiegeAdministrationResult.Failed(CastleSiegeAdministrationError.NotInitialized);
         }
 
-        this._plugIn.ForceState(gameContext, state);
+        context.RequestState(state);
         return CastleSiegeAdministrationResult.Succeeded;
     }
 
@@ -111,28 +116,37 @@ public sealed class CastleSiegeAdministration
     {
         if (string.IsNullOrWhiteSpace(guildName))
         {
-            return CastleSiegeAdministrationResult.Failed("Enter a guild name.");
+            return CastleSiegeAdministrationResult.Failed(CastleSiegeAdministrationError.GuildNameRequired);
         }
 
         if (gameContext is not IGameServerContext gameServerContext)
         {
-            return CastleSiegeAdministrationResult.Failed("Changing the owner requires a game-server context.");
+            return CastleSiegeAdministrationResult.Failed(CastleSiegeAdministrationError.GameServerContextRequired);
         }
 
         // Resolve the name before taking the event lock. This works for offline guilds and avoids holding the
         // state-machine lock while the guild server performs its persistence lookup.
+        var canonicalGuildName = guildName.Trim();
         var guildId = await gameServerContext.GuildServer
-            .GetPersistentGuildIdByNameAsync(guildName.Trim())
+            .GetPersistentGuildIdByNameAsync(canonicalGuildName)
             .ConfigureAwait(false);
         if (guildId is null)
         {
-            return CastleSiegeAdministrationResult.Failed("The guild was not found.");
+            return CastleSiegeAdministrationResult.Failed(CastleSiegeAdministrationError.GuildNotFound);
+        }
+
+        canonicalGuildName = await gameServerContext.GuildServer
+            .GetPersistentGuildNameAsync(guildId.Value)
+            .ConfigureAwait(false);
+        if (canonicalGuildName is null)
+        {
+            return CastleSiegeAdministrationResult.Failed(CastleSiegeAdministrationError.GuildNotFound);
         }
 
         var context = this._plugIn.GetContext(gameContext);
         if (context is null)
         {
-            return CastleSiegeAdministrationResult.Failed("Castle Siege has not initialized on this game server.");
+            return CastleSiegeAdministrationResult.Failed(CastleSiegeAdministrationError.NotInitialized);
         }
 
         var ownershipChanged = false;
@@ -141,16 +155,19 @@ public sealed class CastleSiegeAdministration
         {
             if (!context.IsInitialized)
             {
-                return CastleSiegeAdministrationResult.Failed("Castle Siege has not initialized on this game server.");
+                return CastleSiegeAdministrationResult.Failed(CastleSiegeAdministrationError.NotInitialized);
             }
 
             if (context.CurrentState == CastleSiegeState.Start)
             {
-                return CastleSiegeAdministrationResult.Failed("The owner cannot be changed while the siege battle is running.");
+                return CastleSiegeAdministrationResult.Failed(CastleSiegeAdministrationError.OwnerChangeDuringBattle);
             }
 
             ownershipChanged = CastleSiegeCrownMechanics.ApplyOwner(context, guildId.Value);
-            await context.SaveOwnerAsync().ConfigureAwait(false);
+            if (ownershipChanged)
+            {
+                await context.SaveOwnerAsync().ConfigureAwait(false);
+            }
         }
         finally
         {
@@ -160,9 +177,9 @@ public sealed class CastleSiegeAdministration
         if (ownershipChanged)
         {
             await CastleSiegeEconomyNotifier.BroadcastTaxRatesAsync(context).ConfigureAwait(false);
+            await CastleSiegeCrownMechanics.BroadcastOwnershipChangeAsync(context, canonicalGuildName).ConfigureAwait(false);
         }
 
-        await CastleSiegeCrownMechanics.BroadcastOwnershipChangeAsync(context, guildName.Trim()).ConfigureAwait(false);
         return CastleSiegeAdministrationResult.Succeeded;
     }
 
@@ -176,7 +193,7 @@ public sealed class CastleSiegeAdministration
         var context = this._plugIn.GetContext(gameContext);
         if (context is null)
         {
-            return CastleSiegeAdministrationResult.Failed("Castle Siege has not initialized on this game server.");
+            return CastleSiegeAdministrationResult.Failed(CastleSiegeAdministrationError.NotInitialized);
         }
 
         await context.ExecutionLock.WaitAsync().ConfigureAwait(false);
@@ -184,14 +201,16 @@ public sealed class CastleSiegeAdministration
         {
             if (!context.IsInitialized)
             {
-                return CastleSiegeAdministrationResult.Failed("Castle Siege has not initialized on this game server.");
+                return CastleSiegeAdministrationResult.Failed(CastleSiegeAdministrationError.NotInitialized);
             }
 
             if (context.CurrentState is CastleSiegeState.Ready or CastleSiegeState.Start or CastleSiegeState.End)
             {
-                return CastleSiegeAdministrationResult.Failed("The Castle Siege cycle cannot be reset while siege preparation, battle, or result processing is active.");
+                return CastleSiegeAdministrationResult.Failed(CastleSiegeAdministrationError.ResetDuringActiveSiege);
             }
 
+            // These persistence operations and the despawn intentionally stay under the event lock so the periodic
+            // state machine cannot observe or persist a partially reset cycle.
             await context.ClearRegistrationsAsync().ConfigureAwait(false);
             context.FinalGuildList.Clear();
             await context.SaveFinalGuildListAsync().ConfigureAwait(false);
@@ -209,8 +228,8 @@ public sealed class CastleSiegeAdministration
             context.NextParticipantUpdateUtc = DateTime.MaxValue;
             await context.NpcController.DespawnAllAsync().ConfigureAwait(false);
 
-            // ForceState is processed by the periodic task, which owns schedule calculation and state-enter notifications.
-            this._plugIn.ForceState(gameContext, CastleSiegeState.Idle1);
+            // The request is processed by the periodic task, which owns schedule calculation and state-enter notifications.
+            context.RequestState(CastleSiegeState.Idle1);
             return CastleSiegeAdministrationResult.Succeeded;
         }
         finally
@@ -237,13 +256,13 @@ public sealed class CastleSiegeAdministration
             || storeTax > CastleSiegeTaxProvider.MaximumPercentageTax
             || huntTax is < 0 or > CastleSiegeTaxProvider.MaximumHuntTax)
         {
-            return CastleSiegeAdministrationResult.Failed("One or more tax values are outside the supported range.");
+            return CastleSiegeAdministrationResult.Failed(CastleSiegeAdministrationError.TaxOutOfRange);
         }
 
         var context = this._plugIn.GetContext(gameContext);
         if (context is null)
         {
-            return CastleSiegeAdministrationResult.Failed("Castle Siege has not initialized on this game server.");
+            return CastleSiegeAdministrationResult.Failed(CastleSiegeAdministrationError.NotInitialized);
         }
 
         await context.ExecutionLock.WaitAsync().ConfigureAwait(false);
@@ -251,12 +270,12 @@ public sealed class CastleSiegeAdministration
         {
             if (!context.IsInitialized)
             {
-                return CastleSiegeAdministrationResult.Failed("Castle Siege has not initialized on this game server.");
+                return CastleSiegeAdministrationResult.Failed(CastleSiegeAdministrationError.NotInitialized);
             }
 
             if (context.CurrentState == CastleSiegeState.Start)
             {
-                return CastleSiegeAdministrationResult.Failed("Taxes cannot be changed while the siege battle is running.");
+                return CastleSiegeAdministrationResult.Failed(CastleSiegeAdministrationError.TaxChangeDuringBattle);
             }
 
             context.SiegeData.TaxChaos = chaosTax;
@@ -283,7 +302,7 @@ public sealed class CastleSiegeAdministration
         var context = this._plugIn.GetContext(gameContext);
         if (context is null)
         {
-            return CastleSiegeAdministrationResult.Failed("Castle Siege has not initialized on this game server.");
+            return CastleSiegeAdministrationResult.Failed(CastleSiegeAdministrationError.NotInitialized);
         }
 
         await context.ExecutionLock.WaitAsync().ConfigureAwait(false);
@@ -291,12 +310,12 @@ public sealed class CastleSiegeAdministration
         {
             if (!context.IsInitialized)
             {
-                return CastleSiegeAdministrationResult.Failed("Castle Siege has not initialized on this game server.");
+                return CastleSiegeAdministrationResult.Failed(CastleSiegeAdministrationError.NotInitialized);
             }
 
             if (context.CurrentState == CastleSiegeState.Start)
             {
-                return CastleSiegeAdministrationResult.Failed("Tribute cannot be cleared while the siege battle is running.");
+                return CastleSiegeAdministrationResult.Failed(CastleSiegeAdministrationError.TributeClearDuringBattle);
             }
 
             context.SiegeData.TributeMoney = 0;
@@ -320,7 +339,7 @@ public sealed class CastleSiegeAdministration
         var context = this._plugIn.GetContext(gameContext);
         if (context is null)
         {
-            return CastleSiegeAdministrationResult.Failed("Castle Siege has not initialized on this game server.");
+            return CastleSiegeAdministrationResult.Failed(CastleSiegeAdministrationError.NotInitialized);
         }
 
         await context.ExecutionLock.WaitAsync().ConfigureAwait(false);
@@ -328,17 +347,17 @@ public sealed class CastleSiegeAdministration
         {
             if (!context.IsInitialized)
             {
-                return CastleSiegeAdministrationResult.Failed("Castle Siege has not initialized on this game server.");
+                return CastleSiegeAdministrationResult.Failed(CastleSiegeAdministrationError.NotInitialized);
             }
 
-            if (context.CurrentState != CastleSiegeState.RegisterGuild)
+            if (context.CurrentState is not (CastleSiegeState.RegisterGuild or CastleSiegeState.RegisterMark))
             {
-                return CastleSiegeAdministrationResult.Failed("Guild registrations can only be changed during the registration state.");
+                return CastleSiegeAdministrationResult.Failed(CastleSiegeAdministrationError.RegistrationChangeOutsideRegistration);
             }
 
             if (!context.RegisteredGuilds.TryGetValue(guildId, out var registration))
             {
-                return CastleSiegeAdministrationResult.Failed("The registration no longer exists.");
+                return CastleSiegeAdministrationResult.Failed(CastleSiegeAdministrationError.RegistrationMissing);
             }
 
             await context.RemoveRegistrationAsync(registration).ConfigureAwait(false);
@@ -353,9 +372,8 @@ public sealed class CastleSiegeAdministration
     private static IReadOnlyList<CastleSiegeNpcAdministrationSnapshot> CreateNpcSnapshots(CastleSiegeContext context)
     {
         var runtimes = context.NpcController.GetRuntimeSnapshot()
-            .ToDictionary(
-                runtime => (runtime.Definition.MonsterDefinition?.Number, runtime.Definition.InstanceId),
-                runtime => runtime);
+            .GroupBy(runtime => (runtime.Definition.MonsterDefinition?.Number, runtime.Definition.InstanceId))
+            .ToDictionary(group => group.Key, group => group.First());
         return context.Configuration.NpcDefinitions
             .OrderBy(definition => definition.MonsterDefinition?.Number)
             .ThenBy(definition => definition.InstanceId)
@@ -389,9 +407,30 @@ public sealed class CastleSiegeAdministration
             return null;
         }
 
-        var runtimeGuildId = await gameServerContext.GuildServer.GetGuildIdAsync(guildId.Value).ConfigureAwait(false);
-        return runtimeGuildId == 0
-            ? null
-            : (await gameServerContext.GuildServer.GetGuildAsync(runtimeGuildId).ConfigureAwait(false))?.Name;
+        return await gameServerContext.GuildServer.GetPersistentGuildNameAsync(guildId.Value).ConfigureAwait(false);
+    }
+
+    private static async ValueTask<IReadOnlyList<CastleSiegeRegistrationSnapshot>> ResolveRegistrationsAsync(
+        CastleSiegeContext context,
+        IReadOnlyList<CastleSiegeRegistrationSnapshot> registrations)
+    {
+        if (context.GameContext is not IGameServerContext gameServerContext)
+        {
+            return registrations;
+        }
+
+        var resolvedRegistrations = new List<CastleSiegeRegistrationSnapshot>(registrations.Count);
+        foreach (var registration in registrations)
+        {
+            var guildName = await gameServerContext.GuildServer
+                .GetPersistentGuildNameAsync(registration.GuildId)
+                .ConfigureAwait(false);
+            if (guildName is not null)
+            {
+                resolvedRegistrations.Add(registration with { GuildName = guildName });
+            }
+        }
+
+        return resolvedRegistrations;
     }
 }

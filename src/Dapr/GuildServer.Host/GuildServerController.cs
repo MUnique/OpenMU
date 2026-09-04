@@ -90,6 +90,17 @@ public class GuildServerController : ControllerBase
     }
 
     /// <summary>
+    /// Gets the name of a guild by its persistent identifier.
+    /// </summary>
+    /// <param name="guildId">The persistent guild identifier.</param>
+    /// <returns>The canonical guild name, or <see langword="null"/> if the guild was not found.</returns>
+    [HttpPost(nameof(IGuildServer.GetPersistentGuildNameAsync))]
+    public ValueTask<string?> GetPersistentGuildNameAsync([FromBody] Guid guildId)
+    {
+        return this._guildServer.GetPersistentGuildNameAsync(guildId);
+    }
+
+    /// <summary>
     /// Gets the persistent alliance master identifier of a guild by its runtime identifier.
     /// </summary>
     /// <param name="guildId">The runtime guild identifier.</param>

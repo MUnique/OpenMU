@@ -17,12 +17,12 @@ public sealed class CastleSiegeTaxProvider
     /// <summary>
     /// The maximum percentage which can be configured for Chaos Machine and NPC store taxes.
     /// </summary>
-    internal const int MaximumPercentageTax = 3;
+    public const int MaximumPercentageTax = 3;
 
     /// <summary>
     /// The maximum Land of Trials entry fee.
     /// </summary>
-    internal const int MaximumHuntTax = 300_000;
+    public const int MaximumHuntTax = 300_000;
 
     /// <summary>
     /// The increment used when changing the Land of Trials entry fee.

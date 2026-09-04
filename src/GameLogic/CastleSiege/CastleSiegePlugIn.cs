@@ -120,16 +120,6 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
     }
 
     /// <summary>
-    /// Forces one Castle Siege game context to enter a state on its next timer tick.
-    /// </summary>
-    /// <param name="gameContext">The game context to update.</param>
-    /// <param name="state">The state to enter.</param>
-    public void ForceState(IGameContext gameContext, CastleSiegeState state)
-    {
-        this.GetContext(gameContext)?.RequestState(state);
-    }
-
-    /// <summary>
     /// Gets the Castle Siege runtime context for a game context, if it has already been initialized.
     /// </summary>
     /// <param name="gameContext">The game context.</param>
@@ -203,16 +193,17 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
             }
 
             var forceRequestVersion = Volatile.Read(ref this._forceRequestVersion);
-            if (context.LastForceRequestVersion != forceRequestVersion)
+            if (context.TryTakeRequestedState(out var requestedState))
+            {
+                // A context-specific request takes precedence and consumes a simultaneous global request for this context.
+                context.LastForceRequestVersion = forceRequestVersion;
+                await this.ChangeStateAsync(context, context.Schedule.CreatePeriod(requestedState, utcNow), logger).ConfigureAwait(false);
+            }
+            else if (context.LastForceRequestVersion != forceRequestVersion)
             {
                 context.LastForceRequestVersion = forceRequestVersion;
                 var forcedState = (CastleSiegeState)Volatile.Read(ref this._forcedState);
                 await this.ChangeStateAsync(context, context.Schedule.CreatePeriod(forcedState, utcNow), logger).ConfigureAwait(false);
-            }
-
-            if (context.TryTakeRequestedState(out var requestedState))
-            {
-                await this.ChangeStateAsync(context, context.Schedule.CreatePeriod(requestedState, utcNow), logger).ConfigureAwait(false);
             }
 
             await this.AdvanceExpiredStatesAsync(context, utcNow, logger).ConfigureAwait(false);

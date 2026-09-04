@@ -49,16 +49,16 @@ public sealed class CastleSiegeManagementService
     /// <returns>The status result.</returns>
     public async ValueTask<CastleSiegeManagementSnapshotResult> GetSnapshotAsync(int gameServerId)
     {
-        var (administration, context, errorMessage) = this.Resolve(gameServerId);
+        var (administration, context, error) = this.Resolve(gameServerId);
         if (administration is null || context is null)
         {
-            return new(null, errorMessage);
+            return new(null, error);
         }
 
         var snapshot = await administration.GetSnapshotAsync(context).ConfigureAwait(false);
         return snapshot is null
-            ? new(null, "Castle Siege has not initialized on this game server.")
-            : new(snapshot, null);
+            ? new(null, CastleSiegeAdministrationError.NotInitialized)
+            : new(snapshot, CastleSiegeAdministrationError.None);
     }
 
     /// <summary>
@@ -69,9 +69,9 @@ public sealed class CastleSiegeManagementService
     /// <returns>The operation result.</returns>
     public ValueTask<CastleSiegeAdministrationResult> ForceStateAsync(int gameServerId, CastleSiegeState state)
     {
-        var (administration, context, errorMessage) = this.Resolve(gameServerId);
+        var (administration, context, error) = this.Resolve(gameServerId);
         return ValueTask.FromResult(administration is null || context is null
-            ? CastleSiegeAdministrationResult.Failed(errorMessage!)
+            ? CastleSiegeAdministrationResult.Failed(error)
             : administration.ForceState(context, state));
     }
 
@@ -83,9 +83,9 @@ public sealed class CastleSiegeManagementService
     /// <returns>A task that represents the asynchronous operation.</returns>
     public ValueTask<CastleSiegeAdministrationResult> SetOwnerAsync(int gameServerId, string guildName)
     {
-        var (administration, context, errorMessage) = this.Resolve(gameServerId);
+        var (administration, context, error) = this.Resolve(gameServerId);
         return administration is null || context is null
-            ? ValueTask.FromResult(CastleSiegeAdministrationResult.Failed(errorMessage!))
+            ? ValueTask.FromResult(CastleSiegeAdministrationResult.Failed(error))
             : administration.SetOwnerAsync(context, guildName);
     }
 
@@ -96,9 +96,9 @@ public sealed class CastleSiegeManagementService
     /// <returns>A task that represents the asynchronous operation.</returns>
     public ValueTask<CastleSiegeAdministrationResult> ResetCycleAsync(int gameServerId)
     {
-        var (administration, context, errorMessage) = this.Resolve(gameServerId);
+        var (administration, context, error) = this.Resolve(gameServerId);
         return administration is null || context is null
-            ? ValueTask.FromResult(CastleSiegeAdministrationResult.Failed(errorMessage!))
+            ? ValueTask.FromResult(CastleSiegeAdministrationResult.Failed(error))
             : administration.ResetCycleAsync(context);
     }
 
@@ -116,9 +116,9 @@ public sealed class CastleSiegeManagementService
         byte storeTax,
         int huntTax)
     {
-        var (administration, context, errorMessage) = this.Resolve(gameServerId);
+        var (administration, context, error) = this.Resolve(gameServerId);
         return administration is null || context is null
-            ? ValueTask.FromResult(CastleSiegeAdministrationResult.Failed(errorMessage!))
+            ? ValueTask.FromResult(CastleSiegeAdministrationResult.Failed(error))
             : administration.SetTaxesAsync(context, chaosTax, storeTax, huntTax);
     }
 
@@ -129,9 +129,9 @@ public sealed class CastleSiegeManagementService
     /// <returns>A task that represents the asynchronous operation.</returns>
     public ValueTask<CastleSiegeAdministrationResult> ClearTributeAsync(int gameServerId)
     {
-        var (administration, context, errorMessage) = this.Resolve(gameServerId);
+        var (administration, context, error) = this.Resolve(gameServerId);
         return administration is null || context is null
-            ? ValueTask.FromResult(CastleSiegeAdministrationResult.Failed(errorMessage!))
+            ? ValueTask.FromResult(CastleSiegeAdministrationResult.Failed(error))
             : administration.ClearTributeAsync(context);
     }
 
@@ -143,25 +143,25 @@ public sealed class CastleSiegeManagementService
     /// <returns>A task that represents the asynchronous operation.</returns>
     public ValueTask<CastleSiegeAdministrationResult> RemoveRegistrationAsync(int gameServerId, Guid guildId)
     {
-        var (administration, context, errorMessage) = this.Resolve(gameServerId);
+        var (administration, context, error) = this.Resolve(gameServerId);
         return administration is null || context is null
-            ? ValueTask.FromResult(CastleSiegeAdministrationResult.Failed(errorMessage!))
+            ? ValueTask.FromResult(CastleSiegeAdministrationResult.Failed(error))
             : administration.RemoveRegistrationAsync(context, guildId);
     }
 
-    private (CastleSiegeAdministration? Administration, IGameServerContext? Context, string? ErrorMessage) Resolve(int gameServerId)
+    private (CastleSiegeAdministration? Administration, IGameServerContext? Context, CastleSiegeAdministrationError Error) Resolve(int gameServerId)
     {
         var server = this._serverProvider.Servers
             .OfType<IGameServer>()
             .FirstOrDefault(candidate => candidate.Id == gameServerId);
         if (server is null)
         {
-            return (null, null, "The selected game server is no longer available.");
+            return (null, null, CastleSiegeAdministrationError.GameServerUnavailable);
         }
 
         if (server is not IGameServerContextProvider contextProvider)
         {
-            return (null, null, "Castle Siege management requires an all-in-one game-server deployment.");
+            return (null, null, CastleSiegeAdministrationError.AllInOneDeploymentRequired);
         }
 
         var plugIn = contextProvider.Context.PlugInManager
@@ -169,7 +169,7 @@ public sealed class CastleSiegeManagementService
             .OfType<CastleSiegePlugIn>()
             .FirstOrDefault();
         return plugIn is null
-            ? (null, contextProvider.Context, "The Castle Siege plug-in is not active on this game server.")
-            : (new CastleSiegeAdministration(plugIn), contextProvider.Context, null);
+            ? (null, contextProvider.Context, CastleSiegeAdministrationError.PlugInInactive)
+            : (new CastleSiegeAdministration(plugIn), contextProvider.Context, CastleSiegeAdministrationError.None);
     }
 }
