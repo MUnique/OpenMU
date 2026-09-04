@@ -45,7 +45,8 @@ public class NewNpcsInScopePlugIn : INewNpcsInScopePlugIn
 
         if (npcs.Any())
         {
-            await NpcsInScopeAsync(isSpawned, connection, npcs, this._player.GuildStatus?.GuildId).ConfigureAwait(false);
+            await connection.SendAsync(
+                () => WriteNpcsInScope(isSpawned, connection, npcs, this._player.GuildStatus?.GuildId)).ConfigureAwait(false);
         }
 
         if (summons.Any())
@@ -54,56 +55,51 @@ public class NewNpcsInScopePlugIn : INewNpcsInScopePlugIn
         }
     }
 
-    private static async ValueTask NpcsInScopeAsync(
+    private static int WriteNpcsInScope(
         bool isSpawned,
         IConnection connection,
         ICollection<NonPlayerCharacter> npcs,
         uint? observerGuildId)
     {
-        int Write()
+        var size = AddNpcsToScopeRef.GetRequiredSize(npcs.Count);
+        var span = connection.Output.GetSpan(size)[..size];
+        var packet = new AddNpcsToScopeRef(span)
         {
-            var size = AddNpcsToScopeRef.GetRequiredSize(npcs.Count);
-            var span = connection.Output.GetSpan(size)[..size];
-            var packet = new AddNpcsToScopeRef(span)
+            NpcCount = (byte)npcs.Count,
+        };
+
+        int i = 0;
+        foreach (var npc in npcs)
+        {
+            var npcBlock = packet[i];
+            npcBlock.Id = npc.Id;
+            if (isSpawned)
             {
-                NpcCount = (byte)npcs.Count,
-            };
-
-            int i = 0;
-            foreach (var npc in npcs)
-            {
-                var npcBlock = packet[i];
-                npcBlock.Id = npc.Id;
-                if (isSpawned)
-                {
-                    npcBlock.Id |= 0x8000;
-                }
-
-                npcBlock.TypeNumber = GetNpcTypeNumber(npc, observerGuildId);
-                npcBlock.CurrentPositionX = npc.Position.X;
-                npcBlock.CurrentPositionY = npc.Position.Y;
-
-                var supportWalk = npc as ISupportWalk;
-                if (supportWalk?.IsWalking ?? false)
-                {
-                    npcBlock.TargetPositionX = supportWalk.WalkTarget.X;
-                    npcBlock.TargetPositionY = supportWalk.WalkTarget.Y;
-                }
-                else
-                {
-                    npcBlock.TargetPositionX = npc.Position.X;
-                    npcBlock.TargetPositionY = npc.Position.Y;
-                }
-
-                npcBlock.Rotation = npc.Rotation.ToPacketByte();
-
-                i++;
+                npcBlock.Id |= 0x8000;
             }
 
-            return size;
+            npcBlock.TypeNumber = GetNpcTypeNumber(npc, observerGuildId);
+            npcBlock.CurrentPositionX = npc.Position.X;
+            npcBlock.CurrentPositionY = npc.Position.Y;
+
+            var supportWalk = npc as ISupportWalk;
+            if (supportWalk?.IsWalking ?? false)
+            {
+                npcBlock.TargetPositionX = supportWalk.WalkTarget.X;
+                npcBlock.TargetPositionY = supportWalk.WalkTarget.Y;
+            }
+            else
+            {
+                npcBlock.TargetPositionX = npc.Position.X;
+                npcBlock.TargetPositionY = npc.Position.Y;
+            }
+
+            npcBlock.Rotation = npc.Rotation.ToPacketByte();
+
+            i++;
         }
 
-        await connection.SendAsync(Write).ConfigureAwait(false);
+        return size;
     }
 
     private static ushort GetNpcTypeNumber(NonPlayerCharacter npc, uint? observerGuildId)
