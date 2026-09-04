@@ -304,6 +304,24 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Archive.
+        /// </summary>
+        public static string ArchivedSession {
+            get {
+                return ResourceManager.GetString("ArchivedSession", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Archived sessions.
+        /// </summary>
+        public static string ArchivedSessions {
+            get {
+                return ResourceManager.GetString("ArchivedSessions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Authenticator code.
         /// </summary>
         public static string AuthenticatorCode {
@@ -718,6 +736,24 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Delete the archived session.
+        /// </summary>
+        public static string DeleteArchivedSession {
+            get {
+                return ResourceManager.GetString("DeleteArchivedSession", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You&apos;re about to delete the archived session &apos;{0}&apos;. Are you sure?.
+        /// </summary>
+        public static string DeleteArchivedSessionQuestion {
+            get {
+                return ResourceManager.GetString("DeleteArchivedSessionQuestion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Couldn&apos;t delete &apos;{0}&apos;, probably because it&apos;s referenced by another object. For details, see log.
         /// </summary>
         public static string DeleteFailedReferenced {
@@ -798,6 +834,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string Disconnect {
             get {
                 return ResourceManager.GetString("Disconnect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Download the archived session.
+        /// </summary>
+        public static string DownloadArchivedSession {
+            get {
+                return ResourceManager.GetString("DownloadArchivedSession", resourceCulture);
             }
         }
         
@@ -1531,6 +1576,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No archived sessions..
+        /// </summary>
+        public static string NoArchivedSessions {
+            get {
+                return ResourceManager.GetString("NoArchivedSessions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No changes have been saved..
         /// </summary>
         public static string NoChangesSaved {
@@ -1617,6 +1671,24 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string NotCreated {
             get {
                 return ResourceManager.GetString("NotCreated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Observe.
+        /// </summary>
+        public static string ObserveAccount {
+            get {
+                return ResourceManager.GetString("ObserveAccount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Archives the traffic of this account for each of its sessions, until it&apos;s turned off again..
+        /// </summary>
+        public static string ObserveAccountHint {
+            get {
+                return ResourceManager.GetString("ObserveAccountHint", resourceCulture);
             }
         }
         
@@ -2188,6 +2260,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Running.
+        /// </summary>
+        public static string SessionIsRunning {
+            get {
+                return ResourceManager.GetString("SessionIsRunning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Setup.
         /// </summary>
         public static string Setup {
@@ -2661,95 +2742,6 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string YesCreateTestAccounts {
             get {
                 return ResourceManager.GetString("YesCreateTestAccounts", resourceCulture);
-            }
-        }
-        /// <summary>
-        ///   Archived sessions.
-        /// </summary>
-        public static string ArchivedSessions {
-            get {
-                return ResourceManager.GetString("ArchivedSessions", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   No archived sessions..
-        /// </summary>
-        public static string NoArchivedSessions {
-            get {
-                return ResourceManager.GetString("NoArchivedSessions", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Archive.
-        /// </summary>
-        public static string ArchivedSession {
-            get {
-                return ResourceManager.GetString("ArchivedSession", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Running.
-        /// </summary>
-        public static string SessionIsRunning {
-            get {
-                return ResourceManager.GetString("SessionIsRunning", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Observe.
-        /// </summary>
-        public static string ObserveAccount {
-            get {
-                return ResourceManager.GetString("ObserveAccount", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Archives the traffic of this account for each of its sessions, until it's turned off again..
-        /// </summary>
-        public static string ObserveAccountHint {
-            get {
-                return ResourceManager.GetString("ObserveAccountHint", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Delete the archived session.
-        /// </summary>
-        public static string DeleteArchivedSession {
-            get {
-                return ResourceManager.GetString("DeleteArchivedSession", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   You're about to delete the archived session '{0}'. Are you sure?.
-        /// </summary>
-        public static string DeleteArchivedSessionQuestion {
-            get {
-                return ResourceManager.GetString("DeleteArchivedSessionQuestion", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Download the archived session.
-        /// </summary>
-        public static string DownloadArchivedSession {
-            get {
-                return ResourceManager.GetString("DownloadArchivedSession", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Shows the newest packets and scrolls to them. It's turned off while you scroll up, so that the view doesn't move away..
-        /// </summary>
-        public static string FollowNewPacketsHint {
-            get {
-                return ResourceManager.GetString("FollowNewPacketsHint", resourceCulture);
             }
         }
     }
