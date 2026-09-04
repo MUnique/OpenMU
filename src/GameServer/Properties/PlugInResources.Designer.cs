@@ -617,7 +617,43 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("CancelGuildCreationHandlerPlugIn_Name", resourceCulture);
             }
         }
-
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends Castle Siege Crown capture progress to the game client..
+        /// </summary>
+        public static string CastleSiegeCrownAccessStatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeCrownAccessStatePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Crown Access State View.
+        /// </summary>
+        public static string CastleSiegeCrownAccessStatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeCrownAccessStatePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends the current Castle Siege Crown lock state to the game client..
+        /// </summary>
+        public static string CastleSiegeCrownStatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeCrownStatePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Crown State View.
+        /// </summary>
+        public static string CastleSiegeCrownStatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeCrownStatePlugIn_Name", resourceCulture);
+            }
+        }
+        
         /// <summary>
         ///   Looks up a localized string similar to Handles Castle Siege defense-structure purchase requests..
         /// </summary>
@@ -626,7 +662,7 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("CastleSiegeDefenseBuyHandlerPlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Castle Siege Defense Purchase Handler.
         /// </summary>
@@ -635,7 +671,7 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("CastleSiegeDefenseBuyHandlerPlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Handles Castle Siege defense-structure repair requests..
         /// </summary>
@@ -644,7 +680,7 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("CastleSiegeDefenseRepairHandlerPlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Castle Siege Defense Repair Handler.
         /// </summary>
@@ -653,7 +689,7 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("CastleSiegeDefenseRepairHandlerPlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Handles Castle Siege defense-structure upgrade requests..
         /// </summary>
@@ -662,7 +698,7 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("CastleSiegeDefenseUpgradeHandlerPlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Castle Siege Defense Upgrade Handler.
         /// </summary>
@@ -671,7 +707,7 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("CastleSiegeDefenseUpgradeHandlerPlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Handles requests for the Castle Siege gate list..
         /// </summary>
@@ -680,7 +716,7 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("CastleSiegeGateListHandlerPlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Castle Siege Gate List Handler.
         /// </summary>
@@ -689,7 +725,7 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("CastleSiegeGateListHandlerPlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Handles Castle Siege gate open and close requests..
         /// </summary>
@@ -698,7 +734,7 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("CastleSiegeGateOperateHandlerPlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Castle Siege Gate Operation Handler.
         /// </summary>
@@ -707,7 +743,7 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("CastleSiegeGateOperateHandlerPlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Routes Castle Siege packet subcodes..
         /// </summary>
@@ -716,7 +752,7 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("CastleSiegeGroupHandlerPlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Castle Siege Packet Group Handler.
         /// </summary>
@@ -725,277 +761,7 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("CastleSiegeGroupHandlerPlugIn_Name", resourceCulture);
             }
         }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Handles grouped Castle Siege hunting-zone packets..
-        /// </summary>
-        public static string CastleSiegeHuntZoneGroupHandlerPlugIn_Description {
-            get {
-                return ResourceManager.GetString("CastleSiegeHuntZoneGroupHandlerPlugIn_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Castle Siege Hunting-Zone Packet Group.
-        /// </summary>
-        public static string CastleSiegeHuntZoneGroupHandlerPlugIn_Name {
-            get {
-                return ResourceManager.GetString("CastleSiegeHuntZoneGroupHandlerPlugIn_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Routes Castle Siege warfare-machine packet subcodes..
-        /// </summary>
-        public static string CastleSiegeMachineGroupHandlerPlugIn_Description {
-            get {
-                return ResourceManager.GetString("CastleSiegeMachineGroupHandlerPlugIn_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Castle Siege Warfare-Machine Packet Group.
-        /// </summary>
-        public static string CastleSiegeMachineGroupHandlerPlugIn_Name {
-            get {
-                return ResourceManager.GetString("CastleSiegeMachineGroupHandlerPlugIn_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Sends Castle Siege warfare-machine interface packets to the game client..
-        /// </summary>
-        public static string CastleSiegeMachineInterfacePlugIn_Description {
-            get {
-                return ResourceManager.GetString("CastleSiegeMachineInterfacePlugIn_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Castle Siege Warfare-Machine Interface View.
-        /// </summary>
-        public static string CastleSiegeMachineInterfacePlugIn_Name {
-            get {
-                return ResourceManager.GetString("CastleSiegeMachineInterfacePlugIn_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Sends Castle Siege warfare-machine impact-region notifications to the game client..
-        /// </summary>
-        public static string CastleSiegeMachineRegionNotifyPlugIn_Description {
-            get {
-                return ResourceManager.GetString("CastleSiegeMachineRegionNotifyPlugIn_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Castle Siege Warfare-Machine Region View.
-        /// </summary>
-        public static string CastleSiegeMachineRegionNotifyPlugIn_Name {
-            get {
-                return ResourceManager.GetString("CastleSiegeMachineRegionNotifyPlugIn_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Handles Castle Siege warfare-machine fire requests..
-        /// </summary>
-        public static string CastleSiegeMachineUseHandlerPlugIn_Description {
-            get {
-                return ResourceManager.GetString("CastleSiegeMachineUseHandlerPlugIn_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Castle Siege Warfare-Machine Fire Handler.
-        /// </summary>
-        public static string CastleSiegeMachineUseHandlerPlugIn_Name {
-            get {
-                return ResourceManager.GetString("CastleSiegeMachineUseHandlerPlugIn_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Sends Castle Siege warfare-machine fire results to the game client..
-        /// </summary>
-        public static string CastleSiegeMachineUseResultPlugIn_Description {
-            get {
-                return ResourceManager.GetString("CastleSiegeMachineUseResultPlugIn_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Castle Siege Warfare-Machine Use Result View.
-        /// </summary>
-        public static string CastleSiegeMachineUseResultPlugIn_Name {
-            get {
-                return ResourceManager.GetString("CastleSiegeMachineUseResultPlugIn_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Handles Castle Siege Sign of Lord registration requests..
-        /// </summary>
-        public static string CastleSiegeMarkRegistrationHandlerPlugIn_Description {
-            get {
-                return ResourceManager.GetString("CastleSiegeMarkRegistrationHandlerPlugIn_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Castle Siege Mark Registration Handler.
-        /// </summary>
-        public static string CastleSiegeMarkRegistrationHandlerPlugIn_Name {
-            get {
-                return ResourceManager.GetString("CastleSiegeMarkRegistrationHandlerPlugIn_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Sends Sign of Lord registration results to the game client..
-        /// </summary>
-        public static string CastleSiegeMarkRegistrationResultPlugIn_Description {
-            get {
-                return ResourceManager.GetString("CastleSiegeMarkRegistrationResultPlugIn_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Castle Siege Mark Registration View.
-        /// </summary>
-        public static string CastleSiegeMarkRegistrationResultPlugIn_Name {
-            get {
-                return ResourceManager.GetString("CastleSiegeMarkRegistrationResultPlugIn_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Routes Castle Siege NPC-list packet subcodes..
-        /// </summary>
-        public static string CastleSiegeNpcGroupHandlerPlugIn_Description {
-            get {
-                return ResourceManager.GetString("CastleSiegeNpcGroupHandlerPlugIn_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Castle Siege NPC Packet Group Handler.
-        /// </summary>
-        public static string CastleSiegeNpcGroupHandlerPlugIn_Name {
-            get {
-                return ResourceManager.GetString("CastleSiegeNpcGroupHandlerPlugIn_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Sends Castle Siege defense-structure lists to the game client..
-        /// </summary>
-        public static string CastleSiegeNpcListPlugIn_Description {
-            get {
-                return ResourceManager.GetString("CastleSiegeNpcListPlugIn_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Castle Siege NPC List View.
-        /// </summary>
-        public static string CastleSiegeNpcListPlugIn_Name {
-            get {
-                return ResourceManager.GetString("CastleSiegeNpcListPlugIn_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Sends Castle Siege defense-structure operation results to the game client..
-        /// </summary>
-        public static string CastleSiegeNpcOperationResultPlugIn_Description {
-            get {
-                return ResourceManager.GetString("CastleSiegeNpcOperationResultPlugIn_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Castle Siege NPC Operation Result View.
-        /// </summary>
-        public static string CastleSiegeNpcOperationResultPlugIn_Name {
-            get {
-                return ResourceManager.GetString("CastleSiegeNpcOperationResultPlugIn_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Handles Castle Siege guild registration requests..
-        /// </summary>
-        public static string CastleSiegeRegistrationHandlerPlugIn_Description {
-            get {
-                return ResourceManager.GetString("CastleSiegeRegistrationHandlerPlugIn_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Castle Siege Registration Handler.
-        /// </summary>
-        public static string CastleSiegeRegistrationHandlerPlugIn_Name {
-            get {
-                return ResourceManager.GetString("CastleSiegeRegistrationHandlerPlugIn_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Sends Castle Siege registration results to the game client..
-        /// </summary>
-        public static string CastleSiegeRegistrationResultPlugIn_Description {
-            get {
-                return ResourceManager.GetString("CastleSiegeRegistrationResultPlugIn_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Castle Siege Registration Result View.
-        /// </summary>
-        public static string CastleSiegeRegistrationResultPlugIn_Name {
-            get {
-                return ResourceManager.GetString("CastleSiegeRegistrationResultPlugIn_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Handles Castle Siege registration-state requests..
-        /// </summary>
-        public static string CastleSiegeRegistrationStateHandlerPlugIn_Description {
-            get {
-                return ResourceManager.GetString("CastleSiegeRegistrationStateHandlerPlugIn_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Castle Siege Registration State Handler.
-        /// </summary>
-        public static string CastleSiegeRegistrationStateHandlerPlugIn_Name {
-            get {
-                return ResourceManager.GetString("CastleSiegeRegistrationStateHandlerPlugIn_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Sends Castle Siege registration state to the game client..
-        /// </summary>
-        public static string CastleSiegeRegistrationStatePlugIn_Description {
-            get {
-                return ResourceManager.GetString("CastleSiegeRegistrationStatePlugIn_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Castle Siege Registration State View.
-        /// </summary>
-        public static string CastleSiegeRegistrationStatePlugIn_Name {
-            get {
-                return ResourceManager.GetString("CastleSiegeRegistrationStatePlugIn_Name", resourceCulture);
-            }
-        }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Handles requests for the selected Castle Siege guild list..
         /// </summary>
@@ -1004,7 +770,7 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("CastleSiegeGuildListHandlerPlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Castle Siege Guild List Handler.
         /// </summary>
@@ -1013,25 +779,7 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("CastleSiegeGuildListHandlerPlugIn_Name", resourceCulture);
             }
         }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Handles requests for the current Castle Siege guild registrations..
-        /// </summary>
-        public static string CastleSiegeRegisteredGuildListHandlerPlugIn_Description {
-            get {
-                return ResourceManager.GetString("CastleSiegeRegisteredGuildListHandlerPlugIn_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Castle Siege Registered Guild List Handler.
-        /// </summary>
-        public static string CastleSiegeRegisteredGuildListHandlerPlugIn_Name {
-            get {
-                return ResourceManager.GetString("CastleSiegeRegisteredGuildListHandlerPlugIn_Name", resourceCulture);
-            }
-        }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Sends the selected Castle Siege guild list to the game client..
         /// </summary>
@@ -1040,7 +788,7 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("CastleSiegeGuildListPlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Castle Siege Guild List View.
         /// </summary>
@@ -1049,25 +797,97 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("CastleSiegeGuildListPlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to Sends the current Castle Siege guild registrations to the game client..
+        ///   Looks up a localized string similar to Handles requests to enter the Castle Siege hunting zone..
         /// </summary>
-        public static string CastleSiegeRegisteredGuildListPlugIn_Description {
+        public static string CastleSiegeHuntZoneEnterHandlerPlugIn_Description {
             get {
-                return ResourceManager.GetString("CastleSiegeRegisteredGuildListPlugIn_Description", resourceCulture);
+                return ResourceManager.GetString("CastleSiegeHuntZoneEnterHandlerPlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to Castle Siege Registered Guild List View.
+        ///   Looks up a localized string similar to Castle Siege hunting-zone entry request handler.
         /// </summary>
-        public static string CastleSiegeRegisteredGuildListPlugIn_Name {
+        public static string CastleSiegeHuntZoneEnterHandlerPlugIn_Name {
             get {
-                return ResourceManager.GetString("CastleSiegeRegisteredGuildListPlugIn_Name", resourceCulture);
+                return ResourceManager.GetString("CastleSiegeHuntZoneEnterHandlerPlugIn_Name", resourceCulture);
             }
         }
-
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles grouped Castle Siege hunting-zone packets..
+        /// </summary>
+        public static string CastleSiegeHuntZoneGroupHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeHuntZoneGroupHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Hunting-Zone Packet Group.
+        /// </summary>
+        public static string CastleSiegeHuntZoneGroupHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeHuntZoneGroupHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends Castle Siege hunting-zone access information to the game client..
+        /// </summary>
+        public static string CastleSiegeHuntZoneGuardInfoPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeHuntZoneGuardInfoPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege hunting-zone guardsman view.
+        /// </summary>
+        public static string CastleSiegeHuntZoneGuardInfoPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeHuntZoneGuardInfoPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends Castle Siege hunting-zone request results to the game client..
+        /// </summary>
+        public static string CastleSiegeHuntZoneResultPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeHuntZoneResultPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege hunting-zone result view.
+        /// </summary>
+        public static string CastleSiegeHuntZoneResultPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeHuntZoneResultPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles requests to change public access to the Castle Siege hunting zone..
+        /// </summary>
+        public static string CastleSiegeHuntZoneToggleHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeHuntZoneToggleHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege hunting-zone access request handler.
+        /// </summary>
+        public static string CastleSiegeHuntZoneToggleHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeHuntZoneToggleHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
         /// <summary>
         ///   Looks up a localized string similar to Sends a player&apos;s assigned Castle Siege side to the game client..
         /// </summary>
@@ -1076,7 +896,7 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("CastleSiegeJoinSidePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Castle Siege Join Side View.
         /// </summary>
@@ -1085,7 +905,313 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("CastleSiegeJoinSidePlugIn_Name", resourceCulture);
             }
         }
-
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Routes Castle Siege warfare-machine packet subcodes..
+        /// </summary>
+        public static string CastleSiegeMachineGroupHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeMachineGroupHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Warfare-Machine Packet Group.
+        /// </summary>
+        public static string CastleSiegeMachineGroupHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeMachineGroupHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends Castle Siege warfare-machine interface packets to the game client..
+        /// </summary>
+        public static string CastleSiegeMachineInterfacePlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeMachineInterfacePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Warfare-Machine Interface View.
+        /// </summary>
+        public static string CastleSiegeMachineInterfacePlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeMachineInterfacePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends Castle Siege warfare-machine impact-region notifications to the game client..
+        /// </summary>
+        public static string CastleSiegeMachineRegionNotifyPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeMachineRegionNotifyPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Warfare-Machine Region View.
+        /// </summary>
+        public static string CastleSiegeMachineRegionNotifyPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeMachineRegionNotifyPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles Castle Siege warfare-machine fire requests..
+        /// </summary>
+        public static string CastleSiegeMachineUseHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeMachineUseHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Warfare-Machine Fire Handler.
+        /// </summary>
+        public static string CastleSiegeMachineUseHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeMachineUseHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends Castle Siege warfare-machine fire results to the game client..
+        /// </summary>
+        public static string CastleSiegeMachineUseResultPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeMachineUseResultPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Warfare-Machine Use Result View.
+        /// </summary>
+        public static string CastleSiegeMachineUseResultPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeMachineUseResultPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles Castle Siege Sign of Lord registration requests..
+        /// </summary>
+        public static string CastleSiegeMarkRegistrationHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeMarkRegistrationHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Mark Registration Handler.
+        /// </summary>
+        public static string CastleSiegeMarkRegistrationHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeMarkRegistrationHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends Sign of Lord registration results to the game client..
+        /// </summary>
+        public static string CastleSiegeMarkRegistrationResultPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeMarkRegistrationResultPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Mark Registration View.
+        /// </summary>
+        public static string CastleSiegeMarkRegistrationResultPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeMarkRegistrationResultPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Routes Castle Siege NPC-list packet subcodes..
+        /// </summary>
+        public static string CastleSiegeNpcGroupHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeNpcGroupHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege NPC Packet Group Handler.
+        /// </summary>
+        public static string CastleSiegeNpcGroupHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeNpcGroupHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends Castle Siege defense-structure lists to the game client..
+        /// </summary>
+        public static string CastleSiegeNpcListPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeNpcListPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege NPC List View.
+        /// </summary>
+        public static string CastleSiegeNpcListPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeNpcListPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends Castle Siege defense-structure operation results to the game client..
+        /// </summary>
+        public static string CastleSiegeNpcOperationResultPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeNpcOperationResultPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege NPC Operation Result View.
+        /// </summary>
+        public static string CastleSiegeNpcOperationResultPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeNpcOperationResultPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends Castle Siege ownership changes to the game client..
+        /// </summary>
+        public static string CastleSiegeOwnershipChangePlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeOwnershipChangePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Ownership Change View.
+        /// </summary>
+        public static string CastleSiegeOwnershipChangePlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeOwnershipChangePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles requests for the current Castle Siege guild registrations..
+        /// </summary>
+        public static string CastleSiegeRegisteredGuildListHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeRegisteredGuildListHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Registered Guild List Handler.
+        /// </summary>
+        public static string CastleSiegeRegisteredGuildListHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeRegisteredGuildListHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends the current Castle Siege guild registrations to the game client..
+        /// </summary>
+        public static string CastleSiegeRegisteredGuildListPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeRegisteredGuildListPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Registered Guild List View.
+        /// </summary>
+        public static string CastleSiegeRegisteredGuildListPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeRegisteredGuildListPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles Castle Siege guild registration requests..
+        /// </summary>
+        public static string CastleSiegeRegistrationHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeRegistrationHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Registration Handler.
+        /// </summary>
+        public static string CastleSiegeRegistrationHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeRegistrationHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends Castle Siege registration results to the game client..
+        /// </summary>
+        public static string CastleSiegeRegistrationResultPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeRegistrationResultPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Registration Result View.
+        /// </summary>
+        public static string CastleSiegeRegistrationResultPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeRegistrationResultPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles Castle Siege registration-state requests..
+        /// </summary>
+        public static string CastleSiegeRegistrationStateHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeRegistrationStateHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Registration State Handler.
+        /// </summary>
+        public static string CastleSiegeRegistrationStateHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeRegistrationStateHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends Castle Siege registration state to the game client..
+        /// </summary>
+        public static string CastleSiegeRegistrationStatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeRegistrationStatePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Registration State View.
+        /// </summary>
+        public static string CastleSiegeRegistrationStatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeRegistrationStatePlugIn_Name", resourceCulture);
+            }
+        }
+        
         /// <summary>
         ///   Looks up a localized string similar to Handles requests for the Castle Siege Guardian Statue list..
         /// </summary>
@@ -1094,7 +1220,7 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("CastleSiegeStatueListHandlerPlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Castle Siege Guardian Statue List Handler.
         /// </summary>
@@ -1103,7 +1229,133 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("CastleSiegeStatueListHandlerPlugIn_Name", resourceCulture);
             }
         }
-
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends Castle Siege Crown switch occupancy information to the game client..
+        /// </summary>
+        public static string CastleSiegeSwitchInfoPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeSwitchInfoPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Switch Information View.
+        /// </summary>
+        public static string CastleSiegeSwitchInfoPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeSwitchInfoPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles requests to change a Castle Siege tax rate..
+        /// </summary>
+        public static string CastleSiegeTaxChangeHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeTaxChangeHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege tax change request handler.
+        /// </summary>
+        public static string CastleSiegeTaxChangeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeTaxChangeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends Castle Siege tax changes and their results to the game client..
+        /// </summary>
+        public static string CastleSiegeTaxChangeResultPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeTaxChangeResultPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege tax change result view.
+        /// </summary>
+        public static string CastleSiegeTaxChangeResultPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeTaxChangeResultPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles requests for the current Castle Siege tax and treasury information..
+        /// </summary>
+        public static string CastleSiegeTaxInfoHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeTaxInfoHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege tax information request handler.
+        /// </summary>
+        public static string CastleSiegeTaxInfoHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeTaxInfoHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends the current Castle Siege tax and treasury information to the game client..
+        /// </summary>
+        public static string CastleSiegeTaxInfoPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeTaxInfoPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege tax information view.
+        /// </summary>
+        public static string CastleSiegeTaxInfoPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeTaxInfoPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles requests to withdraw money from the Castle Siege treasury..
+        /// </summary>
+        public static string CastleSiegeTributeWithdrawHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeTributeWithdrawHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege tribute withdrawal request handler.
+        /// </summary>
+        public static string CastleSiegeTributeWithdrawHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeTributeWithdrawHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends Castle Siege treasury withdrawal results to the game client..
+        /// </summary>
+        public static string CastleSiegeTributeWithdrawResultPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeTributeWithdrawResultPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege tribute withdrawal result view.
+        /// </summary>
+        public static string CastleSiegeTributeWithdrawResultPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeTributeWithdrawResultPlugIn_Name", resourceCulture);
+            }
+        }
+        
         /// <summary>
         ///   Looks up a localized string similar to Handles Castle Siege guild unregistration requests..
         /// </summary>
@@ -1112,7 +1364,7 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("CastleSiegeUnregisterHandlerPlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Castle Siege Unregister Handler.
         /// </summary>
@@ -6774,257 +7026,6 @@ namespace MUnique.OpenMU.GameServer.Properties {
             }
         }
 
-        /// <summary>
-        ///   Looks up a localized string similar to Sends Castle Siege Crown capture progress to the game client..
-        /// </summary>
-        public static string CastleSiegeCrownAccessStatePlugIn_Description {
-            get {
-                return ResourceManager.GetString("CastleSiegeCrownAccessStatePlugIn_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Castle Siege Crown Access State View.
-        /// </summary>
-        public static string CastleSiegeCrownAccessStatePlugIn_Name {
-            get {
-                return ResourceManager.GetString("CastleSiegeCrownAccessStatePlugIn_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Sends the current Castle Siege Crown lock state to the game client..
-        /// </summary>
-        public static string CastleSiegeCrownStatePlugIn_Description {
-            get {
-                return ResourceManager.GetString("CastleSiegeCrownStatePlugIn_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Castle Siege Crown State View.
-        /// </summary>
-        public static string CastleSiegeCrownStatePlugIn_Name {
-            get {
-                return ResourceManager.GetString("CastleSiegeCrownStatePlugIn_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Sends Castle Siege ownership changes to the game client..
-        /// </summary>
-        public static string CastleSiegeOwnershipChangePlugIn_Description {
-            get {
-                return ResourceManager.GetString("CastleSiegeOwnershipChangePlugIn_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Castle Siege Ownership Change View.
-        /// </summary>
-        public static string CastleSiegeOwnershipChangePlugIn_Name {
-            get {
-                return ResourceManager.GetString("CastleSiegeOwnershipChangePlugIn_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Sends Castle Siege Crown switch occupancy information to the game client..
-        /// </summary>
-        public static string CastleSiegeSwitchInfoPlugIn_Description {
-            get {
-                return ResourceManager.GetString("CastleSiegeSwitchInfoPlugIn_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Castle Siege Switch Information View.
-        /// </summary>
-        public static string CastleSiegeSwitchInfoPlugIn_Name {
-            get {
-                return ResourceManager.GetString("CastleSiegeSwitchInfoPlugIn_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Handles requests to enter the Castle Siege hunting zone..
-        /// </summary>
-        public static string CastleSiegeHuntZoneEnterHandlerPlugIn_Description {
-            get {
-                return ResourceManager.GetString("CastleSiegeHuntZoneEnterHandlerPlugIn_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Castle Siege hunting-zone entry request handler.
-        /// </summary>
-        public static string CastleSiegeHuntZoneEnterHandlerPlugIn_Name {
-            get {
-                return ResourceManager.GetString("CastleSiegeHuntZoneEnterHandlerPlugIn_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Sends Castle Siege hunting-zone access information to the game client..
-        /// </summary>
-        public static string CastleSiegeHuntZoneGuardInfoPlugIn_Description {
-            get {
-                return ResourceManager.GetString("CastleSiegeHuntZoneGuardInfoPlugIn_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Castle Siege hunting-zone guardsman view.
-        /// </summary>
-        public static string CastleSiegeHuntZoneGuardInfoPlugIn_Name {
-            get {
-                return ResourceManager.GetString("CastleSiegeHuntZoneGuardInfoPlugIn_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Sends Castle Siege hunting-zone request results to the game client..
-        /// </summary>
-        public static string CastleSiegeHuntZoneResultPlugIn_Description {
-            get {
-                return ResourceManager.GetString("CastleSiegeHuntZoneResultPlugIn_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Castle Siege hunting-zone result view.
-        /// </summary>
-        public static string CastleSiegeHuntZoneResultPlugIn_Name {
-            get {
-                return ResourceManager.GetString("CastleSiegeHuntZoneResultPlugIn_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Handles requests to change public access to the Castle Siege hunting zone..
-        /// </summary>
-        public static string CastleSiegeHuntZoneToggleHandlerPlugIn_Description {
-            get {
-                return ResourceManager.GetString("CastleSiegeHuntZoneToggleHandlerPlugIn_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Castle Siege hunting-zone access request handler.
-        /// </summary>
-        public static string CastleSiegeHuntZoneToggleHandlerPlugIn_Name {
-            get {
-                return ResourceManager.GetString("CastleSiegeHuntZoneToggleHandlerPlugIn_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Handles requests to change a Castle Siege tax rate..
-        /// </summary>
-        public static string CastleSiegeTaxChangeHandlerPlugIn_Description {
-            get {
-                return ResourceManager.GetString("CastleSiegeTaxChangeHandlerPlugIn_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Castle Siege tax change request handler.
-        /// </summary>
-        public static string CastleSiegeTaxChangeHandlerPlugIn_Name {
-            get {
-                return ResourceManager.GetString("CastleSiegeTaxChangeHandlerPlugIn_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Sends Castle Siege tax changes and their results to the game client..
-        /// </summary>
-        public static string CastleSiegeTaxChangeResultPlugIn_Description {
-            get {
-                return ResourceManager.GetString("CastleSiegeTaxChangeResultPlugIn_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Castle Siege tax change result view.
-        /// </summary>
-        public static string CastleSiegeTaxChangeResultPlugIn_Name {
-            get {
-                return ResourceManager.GetString("CastleSiegeTaxChangeResultPlugIn_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Handles requests for the current Castle Siege tax and treasury information..
-        /// </summary>
-        public static string CastleSiegeTaxInfoHandlerPlugIn_Description {
-            get {
-                return ResourceManager.GetString("CastleSiegeTaxInfoHandlerPlugIn_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Castle Siege tax information request handler.
-        /// </summary>
-        public static string CastleSiegeTaxInfoHandlerPlugIn_Name {
-            get {
-                return ResourceManager.GetString("CastleSiegeTaxInfoHandlerPlugIn_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Sends the current Castle Siege tax and treasury information to the game client..
-        /// </summary>
-        public static string CastleSiegeTaxInfoPlugIn_Description {
-            get {
-                return ResourceManager.GetString("CastleSiegeTaxInfoPlugIn_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Castle Siege tax information view.
-        /// </summary>
-        public static string CastleSiegeTaxInfoPlugIn_Name {
-            get {
-                return ResourceManager.GetString("CastleSiegeTaxInfoPlugIn_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Handles requests to withdraw money from the Castle Siege treasury..
-        /// </summary>
-        public static string CastleSiegeTributeWithdrawHandlerPlugIn_Description {
-            get {
-                return ResourceManager.GetString("CastleSiegeTributeWithdrawHandlerPlugIn_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Castle Siege tribute withdrawal request handler.
-        /// </summary>
-        public static string CastleSiegeTributeWithdrawHandlerPlugIn_Name {
-            get {
-                return ResourceManager.GetString("CastleSiegeTributeWithdrawHandlerPlugIn_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Sends Castle Siege treasury withdrawal results to the game client..
-        /// </summary>
-        public static string CastleSiegeTributeWithdrawResultPlugIn_Description {
-            get {
-                return ResourceManager.GetString("CastleSiegeTributeWithdrawResultPlugIn_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Castle Siege tribute withdrawal result view.
-        /// </summary>
-        public static string CastleSiegeTributeWithdrawResultPlugIn_Name {
-            get {
-                return ResourceManager.GetString("CastleSiegeTributeWithdrawResultPlugIn_Name", resourceCulture);
-            }
-        }
         /// <summary>
         ///   Looks up a localized string similar to Sends Castle Siege Life Stone creation progress to the game client.
         /// </summary>

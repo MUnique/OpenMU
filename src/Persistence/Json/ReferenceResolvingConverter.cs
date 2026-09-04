@@ -162,7 +162,7 @@ public class ReferenceResolvingConverter<T> : JsonConverter<T>
                 var propertyName = reader.GetString();
                 if (propertyName == null)
                 {
-                    reader.Skip();
+                    SkipValue(ref reader);
                 }
                 else if (propertyName is "$ref" or "$id"
                          && JsonSerializer.Deserialize<string>(ref reader, options) is { } referenceId)
@@ -176,7 +176,7 @@ public class ReferenceResolvingConverter<T> : JsonConverter<T>
                 }
                 else
                 {
-                    reader.Skip();
+                    SkipValue(ref reader);
                 }
             }
         }
@@ -212,7 +212,22 @@ public class ReferenceResolvingConverter<T> : JsonConverter<T>
         }
         else
         {
-            reader.Skip();
+            SkipValue(ref reader);
+        }
+    }
+
+    /// <summary>
+    /// Skips the current value - or the value of the property the reader is positioned on - in a way
+    /// which is safe for chunked (streaming) deserialization. <see cref="Utf8JsonReader.Skip"/> must not
+    /// be used here: it throws "Cannot skip tokens on partial JSON" when the buffer is not final,
+    /// while <see cref="Utf8JsonReader.TrySkip"/> handles that case.
+    /// </summary>
+    /// <param name="reader">The reader.</param>
+    private static void SkipValue(ref Utf8JsonReader reader)
+    {
+        if (!reader.TrySkip())
+        {
+            throw new JsonException("Incomplete JSON: could not skip the value.");
         }
     }
 
@@ -222,7 +237,7 @@ public class ReferenceResolvingConverter<T> : JsonConverter<T>
         {
             if (reader.TokenType != JsonTokenType.PropertyName)
             {
-                reader.Skip();
+                SkipValue(ref reader);
                 continue;
             }
 
@@ -238,7 +253,7 @@ public class ReferenceResolvingConverter<T> : JsonConverter<T>
             }
             else
             {
-                reader.Skip();
+                SkipValue(ref reader);
             }
         }
     }

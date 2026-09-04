@@ -12,6 +12,7 @@ using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameServer;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Network;
+using MUnique.OpenMU.Network.Analyzer.Archive;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.Initialization;
@@ -36,6 +37,8 @@ public sealed class GameServerContainer : ServerContainerBase, IGameServerInstan
     private readonly IDictionary<int, IGameServer> _gameServers;
     private readonly IEventPublisher _eventPublisher;
 
+    private readonly IPacketArchive? _packetArchive;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GameServerContainer" /> class.
     /// </summary>
@@ -51,6 +54,7 @@ public sealed class GameServerContainer : ServerContainerBase, IGameServerInstan
     /// <param name="plugInManager">The plug in manager.</param>
     /// <param name="setupService">The setup service.</param>
     /// <param name="changeMediator">The change mediator.</param>
+    /// <param name="packetArchive">The archive for the traffic of observed accounts.</param>
     public GameServerContainer(
         ILoggerFactory loggerFactory,
         IList<IManageableServer> servers,
@@ -63,7 +67,8 @@ public sealed class GameServerContainer : ServerContainerBase, IGameServerInstan
         IIpAddressResolver ipResolver,
         PlugInManager plugInManager,
         SetupService setupService,
-        IConfigurationChangeMediator changeMediator)
+        IConfigurationChangeMediator changeMediator,
+        IPacketArchive? packetArchive = null)
         : base(setupService, loggerFactory.CreateLogger<GameServerContainer>())
     {
         this._loggerFactory = loggerFactory;
@@ -80,6 +85,7 @@ public sealed class GameServerContainer : ServerContainerBase, IGameServerInstan
 
         this._logger = this._loggerFactory.CreateLogger<GameServerContainer>();
         this._eventPublisher = new InMemoryEventPublisher(this._gameServers, this._friendServer, this._guildServer);
+        this._packetArchive = packetArchive;
     }
 
     /// <inheritdoc />
@@ -174,7 +180,7 @@ public sealed class GameServerContainer : ServerContainerBase, IGameServerInstan
     private void InitializeGameServer(GameServerDefinition gameServerDefinition)
     {
         using var loggerScope = this._logger.BeginScope("GameServer: {0}", gameServerDefinition.ServerID);
-        var gameServer = new GameServer(gameServerDefinition, this._guildServer, this._eventPublisher, this._loginServer, this._persistenceContextProvider, this._friendServer, this._loggerFactory, this._plugInManager, this._changeMediator);
+        var gameServer = new GameServer(gameServerDefinition, this._guildServer, this._eventPublisher, this._loginServer, this._persistenceContextProvider, this._friendServer, this._loggerFactory, this._plugInManager, this._changeMediator, this._packetArchive);
         gameServer.Context.ServerTimeZone = Program.ServerTimeZone;
         foreach (var endpoint in gameServerDefinition.Endpoints)
         {
