@@ -165,6 +165,7 @@ public partial class NetworkAnalyzer : IAsyncDisposable
         if (await this.FindPreselectedConnectionAsync().ConfigureAwait(true) is { } preselected)
         {
             await this.OnConnectionSelectedAsync(preselected).ConfigureAwait(true);
+            this._isSidebarCollapsed = true;
         }
         else
         {
