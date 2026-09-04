@@ -1,3 +1,4 @@
+"use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -13,6 +14,15 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
 var __assign = (this && this.__assign) || function () {
     __assign = Object.assign || function(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
@@ -62,40 +72,44 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 System.register("Queue", [], function (exports_1, context_1) {
     "use strict";
-    var Queue;
+    var INITIAL_HEAD_INDEX, Queue;
     var __moduleName = context_1 && context_1.id;
     return {
         setters: [],
         execute: function () {
+            INITIAL_HEAD_INDEX = 0;
             Queue = (function () {
                 function Queue() {
-                    this._oldestIndex = 1;
-                    this._newestIndex = 1;
-                    this._storage = [];
+                    this.storage = [];
+                    this.headIndex = INITIAL_HEAD_INDEX;
                 }
                 Queue.prototype.size = function () {
-                    return this._newestIndex - this._oldestIndex;
+                    return this.storage.length - this.headIndex;
                 };
                 Queue.prototype.enqueue = function (data) {
-                    this._storage[this._newestIndex] = data;
-                    this._newestIndex++;
+                    this.storage.push(data);
                 };
                 Queue.prototype.dequeue = function () {
-                    var oldestIndex = this._oldestIndex;
-                    var newestIndex = this._newestIndex;
-                    if (oldestIndex !== newestIndex) {
-                        var deletedData = this._storage[oldestIndex];
-                        delete this._storage[oldestIndex];
-                        this._oldestIndex++;
-                        return deletedData;
+                    if (this.size() === 0) {
+                        return null;
                     }
-                    return null;
+                    var data = this.storage[this.headIndex];
+                    this.headIndex++;
+                    this.compactIfRequired();
+                    return data;
                 };
                 Queue.prototype.peek = function () {
-                    if (this._oldestIndex !== this._newestIndex) {
-                        return this._storage[this._oldestIndex];
+                    if (this.size() === 0) {
+                        return null;
                     }
-                    return null;
+                    return this.storage[this.headIndex];
+                };
+                Queue.prototype.compactIfRequired = function () {
+                    var compactionThresholdDivisor = 2;
+                    if (this.headIndex >= this.storage.length / compactionThresholdDivisor) {
+                        this.storage = this.storage.slice(this.headIndex);
+                        this.headIndex = INITIAL_HEAD_INDEX;
+                    }
                 };
                 return Queue;
             }());
@@ -182,6 +196,10 @@ System.register("Attack", ["three", "tween", "Queue"], function (exports_4, cont
                 }
                 Attacks.prototype.update = function () {
                 };
+                Attacks.prototype.dispose = function () {
+                    this.geometry.dispose();
+                    this.material.dispose();
+                };
                 Attacks.prototype.addAttack = function (attacker, target) {
                     var _this = this;
                     if (this.freeAttackIndexes.peek() === null) {
@@ -225,7 +243,7 @@ System.register("Attack", ["three", "tween", "Queue"], function (exports_4, cont
 });
 System.register("NameLabel", ["three"], function (exports_5, context_5) {
     "use strict";
-    var THREE, CANVAS_WIDTH, CANVAS_HEIGHT, LABEL_SCALE_X, LABEL_SCALE_Y, LABEL_SCALE_Z, CLEAR_X, CLEAR_Y, SCALE_MULTIPLIER, NameLabel;
+    var THREE, CANVAS_HEIGHT, LABEL_SCALE_X, LABEL_SCALE_Y, LABEL_SCALE_Z, CLEAR_X, CLEAR_Y, SCALE_MULTIPLIER, EMPTY_CANVAS_SIZE, NameLabel;
     var __moduleName = context_5 && context_5.id;
     return {
         setters: [
@@ -234,7 +252,6 @@ System.register("NameLabel", ["three"], function (exports_5, context_5) {
             }
         ],
         execute: function () {
-            CANVAS_WIDTH = 512;
             CANVAS_HEIGHT = 64;
             LABEL_SCALE_X = 40;
             LABEL_SCALE_Y = 6;
@@ -242,24 +259,15 @@ System.register("NameLabel", ["three"], function (exports_5, context_5) {
             CLEAR_X = 0;
             CLEAR_Y = 0;
             SCALE_MULTIPLIER = 8;
+            EMPTY_CANVAS_SIZE = 0;
             NameLabel = (function (_super) {
                 __extends(NameLabel, _super);
                 function NameLabel() {
-                    var _this = this;
-                    var canvas = document.createElement("canvas");
-                    canvas.width = CANVAS_WIDTH;
-                    canvas.height = CANVAS_HEIGHT;
-                    var context = canvas.getContext("2d");
-                    if (!context) {
-                        throw new Error("Failed to get 2D context");
-                    }
-                    var texture = new THREE.CanvasTexture(canvas);
-                    var material = new THREE.SpriteMaterial({ map: texture, transparent: true });
-                    _this = _super.call(this, material) || this;
-                    _this.isVisible = false;
-                    _this.canvas = canvas;
-                    _this.context = context;
-                    _this.texture = texture;
+                    var _this = _super.call(this, NameLabel.hiddenMaterial) || this;
+                    _this.canvas = null;
+                    _this.context = null;
+                    _this.texture = null;
+                    _this.labelMaterial = null;
                     _this.scale.set(LABEL_SCALE_X, LABEL_SCALE_Y, LABEL_SCALE_Z);
                     _this.visible = false;
                     return _this;
@@ -267,17 +275,54 @@ System.register("NameLabel", ["three"], function (exports_5, context_5) {
                 NameLabel.prototype.raycast = function () {
                 };
                 NameLabel.prototype.show = function (name) {
+                    this.createCanvasIfRequired();
                     this.renderLabel(name);
                     this.visible = true;
-                    this.isVisible = true;
                 };
                 NameLabel.prototype.hide = function () {
                     this.visible = false;
-                    this.isVisible = false;
+                };
+                NameLabel.prototype.dispose = function () {
+                    this.visible = false;
+                    this.material = NameLabel.hiddenMaterial;
+                    if (this.labelMaterial !== null) {
+                        this.labelMaterial.dispose();
+                        this.labelMaterial = null;
+                    }
+                    if (this.texture !== null) {
+                        this.texture.dispose();
+                        this.texture = null;
+                    }
+                    if (this.canvas !== null) {
+                        this.canvas.width = EMPTY_CANVAS_SIZE;
+                        this.canvas.height = EMPTY_CANVAS_SIZE;
+                        this.canvas = null;
+                    }
+                    this.context = null;
+                };
+                NameLabel.prototype.createCanvasIfRequired = function () {
+                    if (this.canvas !== null) {
+                        return;
+                    }
+                    var canvas = document.createElement("canvas");
+                    canvas.height = CANVAS_HEIGHT;
+                    var context = canvas.getContext("2d");
+                    if (!context) {
+                        throw new Error("Failed to get 2D context");
+                    }
+                    this.canvas = canvas;
+                    this.context = context;
+                    this.texture = new THREE.CanvasTexture(canvas);
+                    this.labelMaterial = new THREE.SpriteMaterial({ map: this.texture, transparent: true });
+                    this.material = this.labelMaterial;
                 };
                 NameLabel.prototype.renderLabel = function (name) {
                     var ctx = this.context;
                     var canvas = this.canvas;
+                    var texture = this.texture;
+                    if (ctx === null || canvas === null || texture === null) {
+                        return;
+                    }
                     ctx.font = "bold 28px Consolas, monospace";
                     var textWidth = ctx.measureText(name).width;
                     var padding = 12;
@@ -308,11 +353,12 @@ System.register("NameLabel", ["three"], function (exports_5, context_5) {
                     ctx.textAlign = "center";
                     ctx.textBaseline = "middle";
                     ctx.fillText(name, canvas.width / 2, canvas.height / 2);
-                    this.texture.needsUpdate = true;
+                    texture.needsUpdate = true;
                 };
                 NameLabel.prototype.nextPowerOfTwo = function (value) {
                     return Math.pow(2, Math.ceil(Math.log2(value)));
                 };
+                NameLabel.hiddenMaterial = new THREE.SpriteMaterial();
                 return NameLabel;
             }(THREE.Sprite));
             exports_5("NameLabel", NameLabel);
@@ -342,8 +388,11 @@ System.register("Attackable", ["three", "tween", "NameLabel"], function (exports
                 __extends(Attackable, _super);
                 function Attackable(data, geometry, material) {
                     var _this = _super.call(this, geometry, material) || this;
+                    _this.moveTweens = [];
+                    _this.rotateTween = null;
+                    _this.scaleTween = null;
+                    _this.fadeTween = null;
                     _this.data = data;
-                    _this.moveTween = null;
                     _this.nameLabel = new NameLabel_1.NameLabel();
                     _this.nameLabel.position.z = NAME_LABEL_Z_POSITION;
                     _this.add(_this.nameLabel);
@@ -355,13 +404,21 @@ System.register("Attackable", ["three", "tween", "NameLabel"], function (exports
                 Attackable.prototype.hideLabel = function () {
                     this.nameLabel.hide();
                 };
+                Attackable.prototype.dispose = function () {
+                    this.stopTweens();
+                    this.remove(this.nameLabel);
+                    this.nameLabel.dispose();
+                    this.material.dispose();
+                };
                 Attackable.prototype.gotKilled = function () {
                     var _this = this;
+                    var _a;
                     var fadeOutDurationMs = 1000;
                     var startingOpacity = 1;
                     var fadedOutOpacity = 0.1;
+                    (_a = this.fadeTween) === null || _a === void 0 ? void 0 : _a.stop();
                     var state = { opacity: startingOpacity };
-                    var tween = new tween_2.default.Tween(state)
+                    this.fadeTween = new tween_2.default.Tween(state)
                         .to({ opacity: fadedOutOpacity }, fadeOutDurationMs)
                         .onUpdate(function () { return _this.material.opacity = state.opacity; })
                         .easing(tween_2.default.Easing.Circular.Out)
@@ -369,11 +426,15 @@ System.register("Attackable", ["three", "tween", "NameLabel"], function (exports
                 };
                 Attackable.prototype.respawn = function (newData) {
                     var _this = this;
+                    var _a, _b;
                     var scaleUpDurationMs = 500;
                     this.data = newData;
                     this.material.opacity = 1.0;
+                    (_a = this.fadeTween) === null || _a === void 0 ? void 0 : _a.stop();
+                    this.fadeTween = null;
+                    (_b = this.scaleTween) === null || _b === void 0 ? void 0 : _b.stop();
                     var state = { scale: 0 };
-                    var tween = new tween_2.default.Tween(state)
+                    this.scaleTween = new tween_2.default.Tween(state)
                         .to({ scale: 1 }, scaleUpDurationMs)
                         .onUpdate(function () { return _this.scale.setScalar(state.scale); })
                         .easing(tween_2.default.Easing.Back.Out)
@@ -384,50 +445,71 @@ System.register("Attackable", ["three", "tween", "NameLabel"], function (exports
                 Attackable.prototype.moveTo = function (newX, newY, moveType, walkDelay, steps) {
                     var _this = this;
                     var state = { x: this.data.x, y: this.data.y };
-                    this.data = this.data = Object.assign({}, this.data, { x: newX, y: newY });
-                    if (this.moveTween !== null) {
-                        this.moveTween.stop();
-                    }
-                    this.moveTween = new tween_2.default.Tween(state)
-                        .onUpdate(function () { return _this.setObjectPositionOnMap(state.x, state.y); });
-                    if (moveType === "Instant" || moveType === 1) {
+                    this.data = Object.assign({}, this.data, { x: newX, y: newY });
+                    this.stopMoveTweens();
+                    var isWalking = moveType !== "Instant" && moveType !== 1
+                        && steps !== undefined && steps !== null && steps.length > 0;
+                    if (!isWalking) {
                         var moveDurationMs = 300;
-                        this.moveTween = this.moveTween.easing(tween_2.default.Easing.Elastic.Out)
-                            .to({ x: newX, y: newY }, moveDurationMs);
+                        var moveTween = new tween_2.default.Tween(state)
+                            .to({ x: newX, y: newY }, moveDurationMs)
+                            .onUpdate(function () { return _this.setObjectPositionOnMap(state.x, state.y); })
+                            .easing(tween_2.default.Easing.Elastic.Out);
+                        this.moveTweens.push(moveTween);
+                        moveTween.start();
+                        return;
                     }
-                    else {
-                        var _loop_1 = function (i) {
-                            if (steps.hasOwnProperty(i)) {
-                                var step_1 = steps[i];
-                                var stepTween = new tween_2.default.Tween(state)
-                                    .to({ x: step_1.x, y: step_1.y }, walkDelay)
-                                    .onStart(function () { return _this.rotateTo(step_1.direction); })
-                                    .onUpdate(function () { return _this.setObjectPositionOnMap(state.x, state.y); });
-                                this_1.moveTween.chain(stepTween);
-                            }
-                        };
-                        var this_1 = this;
-                        for (var i in steps) {
-                            _loop_1(i);
-                        }
+                    var previousTween = null;
+                    var _loop_1 = function (step) {
+                        var stepTween = new tween_2.default.Tween(state)
+                            .to({ x: step.x, y: step.y }, walkDelay)
+                            .onStart(function () { return _this.rotateTo(step.direction); })
+                            .onUpdate(function () { return _this.setObjectPositionOnMap(state.x, state.y); });
+                        previousTween === null || previousTween === void 0 ? void 0 : previousTween.chain(stepTween);
+                        previousTween = stepTween;
+                        this_1.moveTweens.push(stepTween);
+                    };
+                    var this_1 = this;
+                    for (var _i = 0, steps_1 = steps; _i < steps_1.length; _i++) {
+                        var step = steps_1[_i];
+                        _loop_1(step);
                     }
-                    this.moveTween.start();
+                    this.moveTweens[0].start();
                 };
                 Attackable.prototype.rotateTo = function (rotation) {
                     var _this = this;
+                    var _a;
                     if (this.data !== undefined) {
-                        this.data = Object.assign({}, this.data, rotation);
+                        this.data = Object.assign({}, this.data, { direction: rotation });
                     }
                     var degreesOfOneTurn = 360;
                     var numberOfDirectionValues = 8;
                     var targetAngle = THREE.Math.degToRad((rotation * degreesOfOneTurn) / numberOfDirectionValues);
                     var rotateDurationMs = 200;
+                    (_a = this.rotateTween) === null || _a === void 0 ? void 0 : _a.stop();
                     var state = { z: this.rotation.z };
-                    new tween_2.default.Tween(state)
+                    this.rotateTween = new tween_2.default.Tween(state)
                         .to({ z: targetAngle }, rotateDurationMs)
                         .onUpdate(function () { return _this.rotation.z = state.z; })
                         .easing(tween_2.default.Easing.Quadratic.Out)
                         .start();
+                };
+                Attackable.prototype.stopTweens = function () {
+                    var _a, _b, _c;
+                    this.stopMoveTweens();
+                    (_a = this.rotateTween) === null || _a === void 0 ? void 0 : _a.stop();
+                    this.rotateTween = null;
+                    (_b = this.scaleTween) === null || _b === void 0 ? void 0 : _b.stop();
+                    this.scaleTween = null;
+                    (_c = this.fadeTween) === null || _c === void 0 ? void 0 : _c.stop();
+                    this.fadeTween = null;
+                };
+                Attackable.prototype.stopMoveTweens = function () {
+                    for (var _i = 0, _a = this.moveTweens; _i < _a.length; _i++) {
+                        var moveTween = _a[_i];
+                        moveTween.stop();
+                    }
+                    this.moveTweens = [];
                 };
                 Attackable.prototype.setRotation = function (value) {
                     var degreesOfOneTurn = 360;
@@ -448,10 +530,45 @@ System.register("Attackable", ["three", "tween", "NameLabel"], function (exports
         }
     };
 });
-System.register("TerrainShader", ["three"], function (exports_7, context_7) {
+System.register("Debug", [], function (exports_7, context_7) {
     "use strict";
-    var THREE, terrainShader;
     var __moduleName = context_7 && context_7.id;
+    function isDebugLoggingEnabled() {
+        return window.liveMapDebugLogging === true;
+    }
+    exports_7("isDebugLoggingEnabled", isDebugLoggingEnabled);
+    function logDebug(message) {
+        var parameters = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            parameters[_i - 1] = arguments[_i];
+        }
+        if (isDebugLoggingEnabled()) {
+            console.debug.apply(console, __spreadArray([message], parameters, false));
+        }
+    }
+    exports_7("logDebug", logDebug);
+    return {
+        setters: [],
+        execute: function () {
+        }
+    };
+});
+System.register("TerrainShader", ["three"], function (exports_8, context_8) {
+    "use strict";
+    var THREE, fragmentShader, vertexShader;
+    var __moduleName = context_8 && context_8.id;
+    function createTerrainShader() {
+        return {
+            fragmentShader: fragmentShader,
+            side: THREE.DoubleSide,
+            uniforms: {
+                tColor: { type: "t", value: 0 },
+                tPixelSize: { type: "f", value: 0.3 },
+            },
+            vertexShader: vertexShader,
+        };
+    }
+    exports_8("createTerrainShader", createTerrainShader);
     return {
         setters: [
             function (THREE_4) {
@@ -459,44 +576,37 @@ System.register("TerrainShader", ["three"], function (exports_7, context_7) {
             }
         ],
         execute: function () {
-            exports_7("terrainShader", terrainShader = {
-                fragmentShader: [
-                    "uniform sampler2D tColor;",
-                    "uniform float tPixelSize;",
-                    "varying vec2 vUv;",
-                    "void main() {",
-                    "vec4 texel = texture2D( tColor, vUv );",
-                    "float multi = 0.1;",
-                    "for(float x = -1.0; x <= 1.0; x++) {",
-                    "for (float y = -1.0; y <= 1.0; y++) {",
-                    "if (x == 0.0 && y == 0.0) continue;",
-                    "vec4 neighborcolor = texture2D(tColor, vUv + vec2(x/256.0, y/256.0) * tPixelSize);",
-                    "if (neighborcolor != texel) { multi = 1.0; }",
-                    "}",
-                    "}",
-                    "gl_FragColor = texel * multi;",
-                    "}"
-                ].join("\n"),
-                side: THREE.DoubleSide,
-                uniforms: {
-                    tColor: { type: "t", value: 0 },
-                    tPixelSize: { type: "f", value: 0.3 },
-                },
-                vertexShader: [
-                    "varying vec2 vUv;",
-                    "void main() {",
-                    "vUv = vec2(uv.x, uv.y);",
-                    "gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);",
-                    "}"
-                ].join("\n"),
-            });
+            fragmentShader = [
+                "uniform sampler2D tColor;",
+                "uniform float tPixelSize;",
+                "varying vec2 vUv;",
+                "void main() {",
+                "vec4 texel = texture2D( tColor, vUv );",
+                "float multi = 0.1;",
+                "for(float x = -1.0; x <= 1.0; x++) {",
+                "for (float y = -1.0; y <= 1.0; y++) {",
+                "if (x == 0.0 && y == 0.0) continue;",
+                "vec4 neighborcolor = texture2D(tColor, vUv + vec2(x/256.0, y/256.0) * tPixelSize);",
+                "if (neighborcolor != texel) { multi = 1.0; }",
+                "}",
+                "}",
+                "gl_FragColor = texel * multi;",
+                "}"
+            ].join("\n");
+            vertexShader = [
+                "varying vec2 vUv;",
+                "void main() {",
+                "vUv = vec2(uv.x, uv.y);",
+                "gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);",
+                "}"
+            ].join("\n");
         }
     };
 });
-System.register("Player", ["three", "Attackable"], function (exports_8, context_8) {
+System.register("Player", ["three", "Attackable"], function (exports_9, context_9) {
     "use strict";
     var THREE, Attackable_1, Player;
-    var __moduleName = context_8 && context_8.id;
+    var __moduleName = context_9 && context_9.id;
     return {
         setters: [
             function (THREE_5) {
@@ -536,15 +646,15 @@ System.register("Player", ["three", "Attackable"], function (exports_8, context_
                 Player.defaultGeometry = new THREE.BoxGeometry(Player.size, Player.size, Player.size);
                 return Player;
             }(Attackable_1.Attackable));
-            exports_8("Player", Player);
+            exports_9("Player", Player);
             ;
         }
     };
 });
-System.register("NonPlayerCharacter", ["three", "Attackable"], function (exports_9, context_9) {
+System.register("NonPlayerCharacter", ["three", "Attackable"], function (exports_10, context_10) {
     "use strict";
     var THREE, Attackable_2, NpcObjectKind, NpcColors, NonPlayerCharacter;
-    var __moduleName = context_9 && context_9.id;
+    var __moduleName = context_10 && context_10.id;
     return {
         setters: [
             function (THREE_6) {
@@ -591,15 +701,15 @@ System.register("NonPlayerCharacter", ["three", "Attackable"], function (exports
                 NonPlayerCharacter.defaultGeometry = new THREE.BoxGeometry(NonPlayerCharacter.size, NonPlayerCharacter.size, NonPlayerCharacter.size);
                 return NonPlayerCharacter;
             }(Attackable_2.Attackable));
-            exports_9("NonPlayerCharacter", NonPlayerCharacter);
+            exports_10("NonPlayerCharacter", NonPlayerCharacter);
             ;
         }
     };
 });
-System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attackable", "NonPlayerCharacter"], function (exports_10, context_10) {
+System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attackable", "NonPlayerCharacter", "Debug"], function (exports_11, context_11) {
     "use strict";
-    var THREE, Attack_1, TerrainShader_1, Player_1, Attackable_3, NonPlayerCharacter_1, World;
-    var __moduleName = context_10 && context_10.id;
+    var THREE, Attack_1, TerrainShader_1, Player_1, Attackable_3, NonPlayerCharacter_1, Debug_1, World;
+    var __moduleName = context_11 && context_11.id;
     return {
         setters: [
             function (THREE_7) {
@@ -619,6 +729,9 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
             },
             function (NonPlayerCharacter_1_1) {
                 NonPlayerCharacter_1 = NonPlayerCharacter_1_1;
+            },
+            function (Debug_1_1) {
+                Debug_1 = Debug_1_1;
             }
         ],
         execute: function () {
@@ -626,19 +739,27 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                 __extends(World, _super);
                 function World(serverId, mapId) {
                     var _this = _super.call(this) || this;
+                    _this.terrainTexture = null;
                     _this.lastLabelObjectId = null;
+                    _this.isDisposed = false;
                     _this.objects = {};
                     var attacksZ = 100;
                     _this.attacks = new Attack_1.Attacks();
                     _this.attacks.position.z = attacksZ;
                     _this.add(_this.attacks);
                     var segments = 1;
-                    var planeMesh = new THREE.Mesh(new THREE.PlaneGeometry(World.sideLength, World.sideLength, segments, segments), new THREE.ShaderMaterial(TerrainShader_1.terrainShader));
-                    _this.add(planeMesh);
+                    _this.terrainMaterial = new THREE.ShaderMaterial(TerrainShader_1.createTerrainShader());
+                    _this.terrainMesh = new THREE.Mesh(new THREE.PlaneGeometry(World.sideLength, World.sideLength, segments, segments), _this.terrainMaterial);
+                    _this.add(_this.terrainMesh);
                     var textureLoader = new THREE.TextureLoader();
                     textureLoader.load("terrain/" + serverId + "/" + mapId, function (texture) {
+                        if (_this.isDisposed) {
+                            texture.dispose();
+                            return;
+                        }
                         texture.magFilter = THREE.NearestFilter;
-                        TerrainShader_1.terrainShader.uniforms.tColor.value = texture;
+                        _this.terrainTexture = texture;
+                        _this.terrainMaterial.uniforms.tColor.value = texture;
                     });
                     return _this;
                 }
@@ -671,11 +792,11 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                                     _a.sent();
                                     return [3, 1];
                                 case 3:
-                                    console.debug("Adding npc", npcData);
+                                    Debug_1.logDebug("Adding npc", npcData);
                                     this.addNpc(npcData);
                                     return [3, 5];
                                 case 4:
-                                    console.debug("Updating npc", npcData);
+                                    Debug_1.logDebug("Updating npc", npcData);
                                     obj.respawn(npcData);
                                     _a.label = 5;
                                 case 5: return [2];
@@ -700,11 +821,11 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                                     _a.sent();
                                     return [3, 1];
                                 case 3:
-                                    console.debug("Adding player", playerData);
+                                    Debug_1.logDebug("Adding player", playerData);
                                     this.addPlayer(playerData);
                                     return [3, 5];
                                 case 4:
-                                    console.debug("Updating player", playerData, obj.data);
+                                    Debug_1.logDebug("Updating player", playerData, obj.data);
                                     obj.respawn(playerData);
                                     _a.label = 5;
                                 case 5: return [2];
@@ -749,7 +870,27 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                     }
                 };
                 World.prototype.dispose = function () {
-                    delete this.objects;
+                    var _a;
+                    if (this.isDisposed) {
+                        return;
+                    }
+                    this.isDisposed = true;
+                    this.lastLabelObjectId = null;
+                    for (var id in this.objects) {
+                        if (this.objects.hasOwnProperty(id)) {
+                            var object = this.objects[id];
+                            this.remove(object);
+                            object.dispose();
+                        }
+                    }
+                    this.objects = {};
+                    this.remove(this.attacks);
+                    this.attacks.dispose();
+                    this.remove(this.terrainMesh);
+                    this.terrainMesh.geometry.dispose();
+                    this.terrainMaterial.dispose();
+                    (_a = this.terrainTexture) === null || _a === void 0 ? void 0 : _a.dispose();
+                    this.terrainTexture = null;
                 };
                 World.prototype.highlightPlayerByName = function (playerName) {
                     for (var id in this.objects) {
@@ -791,14 +932,20 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                     }
                 };
                 World.prototype.onSizeChanged = function (newSize) {
-                    TerrainShader_1.terrainShader.uniforms.tPixelSize.value = World.sideLength / newSize;
+                    this.terrainMaterial.uniforms.tPixelSize.value = World.sideLength / newSize;
                 };
                 World.prototype.addNpc = function (data) {
+                    if (this.isDisposed) {
+                        return;
+                    }
                     var npc = new NonPlayerCharacter_1.NonPlayerCharacter(data);
                     this.addObjectMesh(npc);
                     npc.respawn(data);
                 };
                 World.prototype.addPlayer = function (data) {
+                    if (this.isDisposed) {
+                        return;
+                    }
                     var player = new Player_1.Player(data);
                     this.addObjectMesh(player);
                     player.respawn(data);
@@ -808,9 +955,13 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                     if (mesh === undefined || mesh === null) {
                         return;
                     }
-                    console.debug("Removing object", mesh.data);
+                    Debug_1.logDebug("Removing object", mesh.data);
                     this.remove(mesh);
                     delete this.objects[objectId];
+                    if (this.lastLabelObjectId === objectId) {
+                        this.lastLabelObjectId = null;
+                    }
+                    mesh.dispose();
                 };
                 World.prototype.getObjectById = function (objectId) {
                     return this.objects[objectId];
@@ -823,14 +974,14 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                 World.rotationAnimationId = 122;
                 return World;
             }(THREE.Object3D));
-            exports_10("World", World);
+            exports_11("World", World);
         }
     };
 });
-System.register("WorldObjectPicker", ["three"], function (exports_11, context_11) {
+System.register("WorldObjectPicker", ["three"], function (exports_12, context_12) {
     "use strict";
     var THREE, isGameObject, WorldObjectPicker;
-    var __moduleName = context_11 && context_11.id;
+    var __moduleName = context_12 && context_12.id;
     return {
         setters: [
             function (THREE_8) {
@@ -909,14 +1060,14 @@ System.register("WorldObjectPicker", ["three"], function (exports_11, context_11
                 WorldObjectPicker.hoverThresholdSquared = 16;
                 return WorldObjectPicker;
             }());
-            exports_11("WorldObjectPicker", WorldObjectPicker);
+            exports_12("WorldObjectPicker", WorldObjectPicker);
         }
     };
 });
-System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], function (exports_12, context_12) {
+System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], function (exports_13, context_13) {
     "use strict";
     var THREE, tween_3, WorldObjectPicker_1, World_1, MapApp;
-    var __moduleName = context_12 && context_12.id;
+    var __moduleName = context_13 && context_13.id;
     return {
         setters: [
             function (THREE_9) {
@@ -939,6 +1090,7 @@ System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], func
                     this.lastHighlightedId = null;
                     this.isDisposing = false;
                     this.isDisposed = false;
+                    this.animationFrameId = null;
                     this.stats = stats;
                     this.container = mapContainer;
                     this.onPickObjectHandler = onPickObjectHandler;
@@ -967,7 +1119,6 @@ System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], func
                             hideInfo();
                         }
                     }, function (data) { return _this.onObjectHovered(data); });
-                    this.container.appendChild(this.renderer.domElement);
                     this.animate();
                 }
                 MapApp.prototype.highlightByName = function (playerName) {
@@ -994,13 +1145,23 @@ System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], func
                     }
                     this.isDisposing = true;
                     window.removeEventListener("resize", this.resizeEventListener);
-                    var webGlRenderer = this.renderer;
-                    if (webGlRenderer != null) {
-                        webGlRenderer.dispose();
+                    if (this.animationFrameId !== null) {
+                        cancelAnimationFrame(this.animationFrameId);
+                        this.animationFrameId = null;
                     }
+                    this.picker.dispose();
                     this.scene.remove(this.world);
                     this.world.dispose();
                     this.world = null;
+                    var canvas = this.renderer.domElement;
+                    var webGlRenderer = this.renderer;
+                    if (webGlRenderer != null) {
+                        webGlRenderer.dispose();
+                        webGlRenderer.forceContextLoss();
+                    }
+                    if (canvas.parentNode !== null) {
+                        canvas.parentNode.removeChild(canvas);
+                    }
                     this.renderer = null;
                     this.isDisposing = false;
                     this.isDisposed = true;
@@ -1011,7 +1172,7 @@ System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], func
                     if (this.isDisposing || this.isDisposed) {
                         return;
                     }
-                    requestAnimationFrame(function () { return _this.animate(time); });
+                    this.animationFrameId = requestAnimationFrame(function (frameTime) { return _this.animate(frameTime); });
                     (_a = this.stats) === null || _a === void 0 ? void 0 : _a.update();
                     tween_3.default.update(time);
                     this.world.update();
@@ -1052,7 +1213,7 @@ System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], func
                 };
                 return MapApp;
             }());
-            exports_12("MapApp", MapApp);
+            exports_13("MapApp", MapApp);
         }
     };
 });
