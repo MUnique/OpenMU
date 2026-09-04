@@ -11,6 +11,7 @@ using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.CastleSiege;
 using MUnique.OpenMU.GameLogic.PlugIns;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
@@ -297,6 +298,41 @@ public class CastleSiegeStateMachineTests
     }
 
     /// <summary>
+    /// Verifies that a registration remains visible and removable after its guild has been deleted.
+    /// </summary>
+    [Test]
+    public async ValueTask AdministrationSnapshotKeepsDeletedGuildRegistrationAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var guildServer = new Mock<IGuildServer>();
+        guildServer
+            .Setup(server => server.GetPersistentGuildNamesAsync(It.IsAny<IReadOnlyCollection<Guid>>()))
+            .Returns(ValueTask.FromResult<IReadOnlyDictionary<Guid, string>>(new Dictionary<Guid, string>()));
+        fixture.GameContext.As<IGameServerContext>()
+            .SetupGet(context => context.GuildServer)
+            .Returns(guildServer.Object);
+        var timeProvider = new ManualTimeProvider(new DateTimeOffset(2026, 8, 3, 12, 0, 0, TimeSpan.Zero));
+        var plugIn = new CastleSiegePlugIn(timeProvider);
+        var administration = new CastleSiegeAdministration(plugIn);
+
+        await plugIn.ExecuteTaskAsync(fixture.GameContext.Object).ConfigureAwait(false);
+        var snapshot = await administration.GetSnapshotAsync(fixture.GameContext.Object).ConfigureAwait(false);
+        var result = await administration
+            .RemoveRegistrationAsync(fixture.GameContext.Object, fixture.RegisteredGuildId)
+            .ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(snapshot, Is.Not.Null);
+            Assert.That(snapshot!.Registrations, Has.Count.EqualTo(1));
+            Assert.That(snapshot.Registrations[0].GuildName, Is.EqualTo("Test"));
+            Assert.That(snapshot.Registrations[0].IsGuildDeleted, Is.True);
+            Assert.That(result.IsSuccess, Is.True);
+            Assert.That(plugIn.GetContext(fixture.GameContext.Object)!.RegisteredGuilds, Is.Empty);
+        });
+    }
+
+    /// <summary>
     /// Verifies that duplicate runtime NPC keys don't prevent the administration snapshot from being created.
     /// </summary>
     [Test]
@@ -312,9 +348,11 @@ public class CastleSiegeStateMachineTests
         context.ActiveNpcs.Add(CreateNpcRuntime(277, 0, 125_000, true, true));
         context.ActiveNpcs.Add(CreateNpcRuntime(277, 0, 125_000, true, true));
 
-        Assert.DoesNotThrowAsync(async () => await administration
+        var snapshot = await administration
             .GetSnapshotAsync(fixture.GameContext.Object)
-            .ConfigureAwait(false));
+            .ConfigureAwait(false);
+
+        Assert.That(snapshot, Is.Not.Null);
     }
 
     /// <summary>

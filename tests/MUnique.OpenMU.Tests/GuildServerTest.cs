@@ -75,6 +75,31 @@ public class GuildServerTest : GuildTestBase
     }
 
     /// <summary>
+    /// Tests that persistent guild names are projected in one batch and missing guilds are omitted.
+    /// </summary>
+    [Test]
+    public async ValueTask GetPersistentGuildNamesAsyncFindsOfflineGuilds()
+    {
+        using var context = this.PersistenceContextProvider.CreateNewContext();
+        var persistentGuild = (await context
+                .GetAsync<MUnique.OpenMU.DataModel.Entities.Guild>()
+                .ConfigureAwait(false))
+            .Single(guild => guild.Name == GuildName);
+        var missingGuildId = Guid.NewGuid();
+
+        var guildNames = await this.GuildServer
+            .GetPersistentGuildNamesAsync([persistentGuild.Id, missingGuildId])
+            .ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(guildNames, Has.Count.EqualTo(1));
+            Assert.That(guildNames[persistentGuild.Id], Is.EqualTo(GuildName));
+            Assert.That(guildNames.ContainsKey(missingGuildId), Is.False);
+        });
+    }
+
+    /// <summary>
     /// Tests if the entrance of guild members is registered correctly in the guild member list.
     /// </summary>
     [Test]

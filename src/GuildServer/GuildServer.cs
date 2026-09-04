@@ -98,8 +98,15 @@ public class GuildServer : IGuildServer
     /// <inheritdoc/>
     public async ValueTask<string?> GetPersistentGuildNameAsync(Guid guildId)
     {
+        var guildNames = await this.GetPersistentGuildNamesAsync([guildId]).ConfigureAwait(false);
+        return guildNames.GetValueOrDefault(guildId);
+    }
+
+    /// <inheritdoc/>
+    public async ValueTask<IReadOnlyDictionary<Guid, string>> GetPersistentGuildNamesAsync(IReadOnlyCollection<Guid> guildIds)
+    {
         using var context = this._persistenceContextProvider.CreateNewGuildContext();
-        return (await context.GetByIdAsync<Guild>(guildId).ConfigureAwait(false))?.Name;
+        return await context.GetPersistentGuildNamesAsync(guildIds).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>

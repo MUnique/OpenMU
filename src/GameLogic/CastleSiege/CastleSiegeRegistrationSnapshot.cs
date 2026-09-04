@@ -11,4 +11,10 @@ namespace MUnique.OpenMU.GameLogic.CastleSiege;
 /// <param name="GuildName">The guild name.</param>
 /// <param name="Marks">The submitted Mark of Lord count.</param>
 /// <param name="RegistrationOrder">The registration tie-break order.</param>
-public sealed record CastleSiegeRegistrationSnapshot(Guid GuildId, string GuildName, int Marks, int RegistrationOrder);
+/// <param name="IsGuildDeleted">Whether the persistent guild can no longer be found.</param>
+public sealed record CastleSiegeRegistrationSnapshot(
+    Guid GuildId,
+    string GuildName,
+    int Marks,
+    int RegistrationOrder,
+    bool IsGuildDeleted = false);

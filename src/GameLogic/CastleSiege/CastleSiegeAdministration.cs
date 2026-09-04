@@ -75,13 +75,7 @@ public sealed class CastleSiegeAdministration
             context.ExecutionLock.Release();
         }
 
-        var ownerGuildName = await GetGuildNameAsync(context, snapshot.OwnerGuildId).ConfigureAwait(false);
-        var registrations = await ResolveRegistrationsAsync(context, snapshot.Registrations).ConfigureAwait(false);
-        return snapshot with
-        {
-            OwnerGuildName = ownerGuildName,
-            Registrations = registrations,
-        };
+        return await ResolveGuildNamesAsync(context, snapshot).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -401,37 +395,36 @@ public sealed class CastleSiegeAdministration
             definition.IsPersistedToDatabase);
     }
 
-    private static async ValueTask<string?> GetGuildNameAsync(CastleSiegeContext context, Guid? guildId)
-    {
-        if (guildId is null || context.GameContext is not IGameServerContext gameServerContext)
-        {
-            return null;
-        }
-
-        return await gameServerContext.GuildServer.GetPersistentGuildNameAsync(guildId.Value).ConfigureAwait(false);
-    }
-
-    private static async ValueTask<IReadOnlyList<CastleSiegeRegistrationSnapshot>> ResolveRegistrationsAsync(
+    private static async ValueTask<CastleSiegeAdministrationSnapshot> ResolveGuildNamesAsync(
         CastleSiegeContext context,
-        IReadOnlyList<CastleSiegeRegistrationSnapshot> registrations)
+        CastleSiegeAdministrationSnapshot snapshot)
     {
         if (context.GameContext is not IGameServerContext gameServerContext)
         {
-            return registrations;
+            return snapshot;
         }
 
-        var resolvedRegistrations = new List<CastleSiegeRegistrationSnapshot>(registrations.Count);
-        foreach (var registration in registrations)
+        var guildIds = snapshot.Registrations
+            .Select(registration => registration.GuildId)
+            .ToHashSet();
+        if (snapshot.OwnerGuildId is { } resolvedOwnerGuildId)
         {
-            var guildName = await gameServerContext.GuildServer
-                .GetPersistentGuildNameAsync(registration.GuildId)
-                .ConfigureAwait(false);
-            if (guildName is not null)
-            {
-                resolvedRegistrations.Add(registration with { GuildName = guildName });
-            }
+            guildIds.Add(resolvedOwnerGuildId);
         }
 
-        return resolvedRegistrations;
+        var guildNames = await gameServerContext.GuildServer
+            .GetPersistentGuildNamesAsync(guildIds)
+            .ConfigureAwait(false);
+        return snapshot with
+        {
+            OwnerGuildName = snapshot.OwnerGuildId is { } ownerGuildId
+                ? guildNames.GetValueOrDefault(ownerGuildId)
+                : null,
+            Registrations = snapshot.Registrations
+                .Select(registration => guildNames.TryGetValue(registration.GuildId, out var guildName)
+                    ? registration with { GuildName = guildName, IsGuildDeleted = false }
+                    : registration with { IsGuildDeleted = true })
+                .ToList(),
+        };
     }
 }

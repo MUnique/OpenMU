@@ -1083,6 +1083,9 @@
   <data name="CastleSiegeName" xml:space="preserve">
     <value>Name</value>
   </data>
+  <data name="CastleSiegeGuildDeleted" xml:space="preserve">
+    <value>Guild deleted</value>
+  </data>
   <data name="CastleSiegeMarks" xml:space="preserve">
     <value>Marks</value>
   </data>

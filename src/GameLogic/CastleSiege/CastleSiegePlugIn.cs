@@ -193,21 +193,19 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
             }
 
             var forceRequestVersion = Volatile.Read(ref this._forceRequestVersion);
-            if (context.TryTakeRequestedState(out var requestedState))
+            var contextStateRequested = context.TryTakeRequestedState(out var requestedState);
+            if (contextStateRequested)
             {
                 // A context-specific request takes precedence and consumes a simultaneous global request for this context.
                 context.LastForceRequestVersion = forceRequestVersion;
                 await this.ChangeStateAsync(context, context.Schedule.CreatePeriod(requestedState, utcNow), logger).ConfigureAwait(false);
             }
-            else if (context.LastForceRequestVersion != forceRequestVersion)
+
+            if (!contextStateRequested && context.LastForceRequestVersion != forceRequestVersion)
             {
                 context.LastForceRequestVersion = forceRequestVersion;
                 var forcedState = (CastleSiegeState)Volatile.Read(ref this._forcedState);
                 await this.ChangeStateAsync(context, context.Schedule.CreatePeriod(forcedState, utcNow), logger).ConfigureAwait(false);
-            }
-            else
-            {
-                // No requested transition is pending; continue with the regular schedule below.
             }
 
             await this.AdvanceExpiredStatesAsync(context, utcNow, logger).ConfigureAwait(false);

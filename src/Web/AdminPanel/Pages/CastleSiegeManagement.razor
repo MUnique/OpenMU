@@ -165,7 +165,13 @@ else
                                 @foreach (var registration in snapshot.Registrations)
                                 {
                                     <tr>
-                                        <td>@registration.GuildName</td>
+                                        <td>
+                                            @registration.GuildName
+                                            @if (registration.IsGuildDeleted)
+                                            {
+                                                <span class="badge text-bg-warning ms-1">@Resources.CastleSiegeGuildDeleted</span>
+                                            }
+                                        </td>
                                         <td>@registration.Marks</td>
                                         <td>@registration.RegistrationOrder</td>
                                         <td>

@@ -2953,6 +2953,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Guild deleted.
+        /// </summary>
+        public static string CastleSiegeGuildDeleted {
+            get {
+                return ResourceManager.GetString("CastleSiegeGuildDeleted", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Marks.
         /// </summary>
         public static string CastleSiegeMarks {

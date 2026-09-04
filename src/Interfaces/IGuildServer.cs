@@ -128,6 +128,14 @@ public interface IGuildServer
     ValueTask<string?> GetPersistentGuildNameAsync(Guid guildId);
 
     /// <summary>
+    /// Gets the canonical names of guilds by their persistent identifiers.
+    /// </summary>
+    /// <param name="guildIds">The persistent guild identifiers.</param>
+    /// <returns>The names keyed by persistent guild identifier. Missing guilds are omitted.</returns>
+    /// <remarks>This lookup does not load runtime guild containers.</remarks>
+    ValueTask<IReadOnlyDictionary<Guid, string>> GetPersistentGuildNamesAsync(IReadOnlyCollection<Guid> guildIds);
+
+    /// <summary>
     /// Gets the persistent identifier under which a guild participates in an alliance event.
     /// </summary>
     /// <param name="guildId">The runtime guild identifier.</param>
