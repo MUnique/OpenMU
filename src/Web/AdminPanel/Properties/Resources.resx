@@ -984,6 +984,12 @@
   <data name="FollowNewPackets" xml:space="preserve">
     <value>Follow</value>
   </data>
+  <data name="AnalyzeTraffic" xml:space="preserve">
+    <value>Analyze the network traffic</value>
+  </data>
+  <data name="ConnectionNotFound" xml:space="preserve">
+    <value>The requested connection isn't available (anymore). Please select one of the listed connections.</value>
+  </data>
   <data name="FollowNewPacketsHint" xml:space="preserve">
     <value>Shows the newest packets and scrolls to them. It's turned off while you scroll up, so that the view doesn't move away.</value>
   </data>
@@ -1208,5 +1214,32 @@
   </data>
   <data name="CastleSiegeErrorUnexpected" xml:space="preserve">
     <value>The Castle Siege operation failed unexpectedly. Check the server log for details.</value>
+  </data>
+  <data name="ArchivedSessions" xml:space="preserve">
+    <value>Archived sessions</value>
+  </data>
+  <data name="NoArchivedSessions" xml:space="preserve">
+    <value>No archived sessions.</value>
+  </data>
+  <data name="ArchivedSession" xml:space="preserve">
+    <value>Archive</value>
+  </data>
+  <data name="SessionIsRunning" xml:space="preserve">
+    <value>Running</value>
+  </data>
+  <data name="ObserveAccount" xml:space="preserve">
+    <value>Observe</value>
+  </data>
+  <data name="ObserveAccountHint" xml:space="preserve">
+    <value>Archives the traffic of this account for each of its sessions, until it's turned off again.</value>
+  </data>
+  <data name="DeleteArchivedSession" xml:space="preserve">
+    <value>Delete the archived session</value>
+  </data>
+  <data name="DeleteArchivedSessionQuestion" xml:space="preserve">
+    <value>You're about to delete the archived session '{0}'. Are you sure?</value>
+  </data>
+  <data name="DownloadArchivedSession" xml:space="preserve">
+    <value>Download the archived session</value>
   </data>
 </root>

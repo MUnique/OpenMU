@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using MUnique.OpenMU.Dapr.Common;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameServer;
 using MUnique.OpenMU.GameServer.Host;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.PlugIns;
@@ -43,6 +44,7 @@ services.AddSingleton<GameServer>()
     .AddPeristenceProvider()
     .AddPlugInManager(plugInConfigurations)
     .AddIpResolver(args)
+    .AddNetworkObservation()
     .AddHostedService<GameServerHostedServiceWrapper>()
     .PublishManageableServer<IGameServer>();
 

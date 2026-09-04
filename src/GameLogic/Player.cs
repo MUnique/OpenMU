@@ -123,6 +123,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public event AsyncEventHandler<Player>? PlayerEnteredWorld;
 
     /// <summary>
+    /// Occurs when the player has been logged in, so that its <see cref="Account"/> is known.
+    /// </summary>
+    public event AsyncEventHandler<Player>? PlayerLoggedIn;
+
+    /// <summary>
     /// Occurs when the player left the world with his selected character.
     /// </summary>
     public event AsyncEventHandler<Player>? PlayerLeftWorld;
@@ -580,6 +585,18 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// Gets a value indicating whether opening the player store after entering the game is supported by this instance.
     /// </summary>
     protected virtual bool IsPlayerStoreOpeningAfterEnterSupported => true;
+
+    /// <summary>
+    /// Sets the account of the player after a successful login and notifies the subscribers
+    /// of <see cref="PlayerLoggedIn"/>.
+    /// </summary>
+    /// <param name="account">The account of the player.</param>
+    /// <returns>The async task.</returns>
+    public async ValueTask SetAccountAsync(Account account)
+    {
+        this.Account = account;
+        await this.PlayerLoggedIn.SafeInvokeAsync(this).ConfigureAwait(false);
+    }
 
     /// <summary>
     /// Sets the selected character.
