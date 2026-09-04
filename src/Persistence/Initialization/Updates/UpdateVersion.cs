@@ -549,7 +549,7 @@ public enum UpdateVersion
     /// The version of the <see cref="ConfigureCastleSiegeEconomyUpdatePlugIn"/>.
     /// </summary>
     ConfigureCastleSiegeEconomy = 108,
-
+    
     /// <summary>
     /// The version of the <see cref="RemoveDuplicateStatAttributesPlugIn075"/>.
     /// </summary>
@@ -564,4 +564,14 @@ public enum UpdateVersion
     /// The version of the <see cref="RemoveDuplicateStatAttributesPlugInSeason6"/>.
     /// </summary>
     RemoveDuplicateStatAttributesSeason6 = 111,
+    
+    /// <summary>
+    /// The version of the <see cref="AddKanturuDataUpdatePlugIn"/>.
+    /// </summary>
+    AddKanturuData = 112,
+
+    /// <summary>
+    /// The version of the <see cref="AddKanturuMapContentUpdatePlugIn"/>.
+    /// </summary>
+    AddKanturuMapContent = 113,
 }

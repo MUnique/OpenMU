@@ -9,7 +9,9 @@ using System.Text.Json.Serialization;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.MiniGames.Kanturu;
 using MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
+using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 using MUnique.OpenMU.GameLogic.Resets;
 using MUnique.OpenMU.GameServer.MessageHandler;
 using MUnique.OpenMU.Network;
@@ -157,6 +159,15 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
                     config.RepairTargetItems.Add(fenrir);
                 }
 
+                plugInConfiguration.SetConfiguration(config, referenceHandler);
+            }
+
+            if (plugInType == typeof(KanturuStartPlugIn))
+            {
+                // The default configuration of the plug-in can't reference the monsters of the
+                // event, because it's created without a game configuration.
+                var config = KanturuStartConfiguration.Default;
+                config.EventDefinition = KanturuEventDefinition.CreateDefault(this.GameConfiguration);
                 plugInConfiguration.SetConfiguration(config, referenceHandler);
             }
 

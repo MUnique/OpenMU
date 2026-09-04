@@ -38,4 +38,9 @@ public enum MiniGameType
     /// The doppelganger event.
     /// </summary>
     Doppelganger,
+
+    /// <summary>
+    /// The Kanturu Refinery Tower event.
+    /// </summary>
+    Kanturu,
 }

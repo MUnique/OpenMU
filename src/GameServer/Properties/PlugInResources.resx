@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -494,6 +494,24 @@
   </data>
   <data name="JewelMixHandlerPlugIn_Description" xml:space="preserve">
     <value>Handler for jewel mix packets.</value>
+  </data>
+  <data name="KanturuEnterRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Kanturu Enter Request Handler</value>
+  </data>
+  <data name="KanturuEnterRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles 0xD1/0x01 (KanturuEnterRequest) and teleports the player into the event.</value>
+  </data>
+  <data name="KanturuGroupHandlerPlugIn_Name" xml:space="preserve">
+    <value>Kanturu Group Handler</value>
+  </data>
+  <data name="KanturuGroupHandlerPlugIn_Description" xml:space="preserve">
+    <value>Routes 0xD1 Kanturu client packets to sub-handlers.</value>
+  </data>
+  <data name="KanturuInfoRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Kanturu Info Request Handler</value>
+  </data>
+  <data name="KanturuInfoRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Responds to 0xD1/0x00 (KanturuInfoRequest) with fresh event state info.</value>
   </data>
   <data name="PickupItemHandlerPlugIn_Name" xml:space="preserve">
     <value>Pickup Item Handler</value>
@@ -1316,6 +1334,12 @@
   </data>
   <data name="ChaosCastleStateViewPlugIn_Description" xml:space="preserve">
     <value>The default implementation of the IChaosCastleStateViewPlugin which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="KanturuEventViewPlugIn_Name" xml:space="preserve">
+    <value>Kanturu Event View</value>
+  </data>
+  <data name="KanturuEventViewPlugIn_Description" xml:space="preserve">
+    <value>Sends Kanturu event state/result/HUD packets (0xD1 group) to the client.</value>
   </data>
   <data name="MiniGameScoreTableViewPlugin_Name" xml:space="preserve">
     <value>MiniGameScoreTableViewPlugin</value>

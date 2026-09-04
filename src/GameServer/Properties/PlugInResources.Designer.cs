@@ -2923,6 +2923,78 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handles 0xD1/0x01 (KanturuEnterRequest) and teleports the player into the event..
+        /// </summary>
+        public static string KanturuEnterRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("KanturuEnterRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Kanturu Enter Request Handler.
+        /// </summary>
+        public static string KanturuEnterRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("KanturuEnterRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends Kanturu event state/result/HUD packets (0xD1 group) to the client..
+        /// </summary>
+        public static string KanturuEventViewPlugIn_Description {
+            get {
+                return ResourceManager.GetString("KanturuEventViewPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Kanturu Event View.
+        /// </summary>
+        public static string KanturuEventViewPlugIn_Name {
+            get {
+                return ResourceManager.GetString("KanturuEventViewPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Routes 0xD1 Kanturu client packets to sub-handlers..
+        /// </summary>
+        public static string KanturuGroupHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("KanturuGroupHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Kanturu Group Handler.
+        /// </summary>
+        public static string KanturuGroupHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("KanturuGroupHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Responds to 0xD1/0x00 (KanturuInfoRequest) with fresh event state info..
+        /// </summary>
+        public static string KanturuInfoRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("KanturuInfoRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Kanturu Info Request Handler.
+        /// </summary>
+        public static string KanturuInfoRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("KanturuInfoRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The default implementation of the ILegacyQuestRewardPlugIn which is forwarding everything to the game client with specific data packets..
         /// </summary>
         public static string LegacyQuestRewardPlugIn_Description {
