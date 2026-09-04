@@ -167,6 +167,7 @@ public partial class NetworkAnalyzer : IAsyncDisposable
 
     private string TableColClass => this._isSidebarCollapsed ? "col-12" : "col-10";
 
+
     /// <inheritdoc />
     public async ValueTask DisposeAsync()
     {
@@ -188,15 +189,21 @@ public partial class NetworkAnalyzer : IAsyncDisposable
 
         _ = await this.RefreshConnectionsAsync().ConfigureAwait(true);
         _ = await this.RefreshArchiveAsync().ConfigureAwait(true);
-        if (this.ConnectionId is { } connectionId
-            && this._connections.FirstOrDefault(connection => connection.Id == connectionId) is { } preselected)
+        if (await this.FindPreselectedConnectionAsync().ConfigureAwait(true) is { } preselected)
         {
             await this.OnConnectionSelectedAsync(preselected).ConfigureAwait(true);
+            this._isSidebarCollapsed = true;
         }
         else if (!string.IsNullOrEmpty(this.SessionId)
                  && this._archivedSessions.FirstOrDefault(session => session.Id == this.SessionId) is { } preselectedSession)
         {
             await this.OnArchivedSessionSelectedAsync(preselectedSession).ConfigureAwait(true);
+        }
+        else
+        {
+            // A link may be opened when the player is already gone, e.g. because it was
+            // rendered in a list which isn't up to date anymore.
+            this._isPreselectedConnectionMissing = this.ConnectionId is not null || this.PlayerName is not null;
         }
 
         _ = this.RefreshPeriodicallyAsync();
@@ -262,39 +269,6 @@ public partial class NetworkAnalyzer : IAsyncDisposable
         this._filteredPackets = packets.ToList();
     }
 
-/// <inheritdoc />
-    public async ValueTask DisposeAsync()
-    {
-        await this._disposeCts.CancelAsync().ConfigureAwait(false);
-        this.StopCapture();
-        this._disposeCts.Dispose();
-    }
-
-    /// <inheritdoc />
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync().ConfigureAwait(true);
-        this._captureService = this.ServiceProvider.GetService(typeof(IPacketCaptureService)) as IPacketCaptureService;
-        if (this._captureService is null)
-        {
-            return;
-        }
-
-        _ = await this.RefreshConnectionsAsync().ConfigureAwait(true);
-        if (await this.FindPreselectedConnectionAsync().ConfigureAwait(true) is { } preselected)
-        {
-            await this.OnConnectionSelectedAsync(preselected).ConfigureAwait(true);
-            this._isSidebarCollapsed = true;
-        }
-        else
-        {
-            // A link may be opened when the player is already gone, e.g. because it was
-            // rendered in a list which isn't up to date anymore.
-            this._isPreselectedConnectionMissing = this.ConnectionId is not null || this.PlayerName is not null;
-        }
-
-        _ = this.RefreshPeriodicallyAsync();
-    }
     /// <summary>
     /// Refreshes the list of the connections.
     /// </summary>
@@ -321,25 +295,6 @@ public partial class NetworkAnalyzer : IAsyncDisposable
         return true;
     }
 
-private static bool HasChanged(IReadOnlyList<ICapturedConnectionInfo> current, IReadOnlyList<ICapturedConnectionInfo> updated)
-    {
-        if (current.Count != updated.Count)
-        {
-            return true;
-        }
-
-        for (int i = 0; i < current.Count; i++)
-        {
-            if (current[i].Id != updated[i].Id
-                || current[i].DisplayName != updated[i].DisplayName)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     /// <summary>
     /// Finds the connection which should be selected initially, if the page was opened for a
     /// specific connection or player.
@@ -364,6 +319,7 @@ private static bool HasChanged(IReadOnlyList<ICapturedConnectionInfo> current, I
 
         return null;
     }
+
     private async Task OnConnectionSelectedAsync(ICapturedConnectionInfo connection)
     {
         if (this._captureService is not { } captureService || this._selectedConnection?.Id == connection.Id)
