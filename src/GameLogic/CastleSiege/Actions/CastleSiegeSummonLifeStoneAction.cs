@@ -34,7 +34,7 @@ public static class CastleSiegeSummonLifeStoneAction
                 || map is null
                 || context.Configuration.CastleSiegeMapDefinition?.Number != map.Definition.Number
                 || !map.Terrain.WalkMap[player.Position.X, player.Position.Y]
-                || map.Terrain.SafezoneMap[player.Position.X, player.Position.Y]
+                || player.IsAtSafezone()
                 || map.GetNpcsInRange(player.Position, 0).Count > 0
                 || context.LifeStones.Any(lifeStone => lifeStone.OwnerGuildId == guildStatus.GuildId))
             {

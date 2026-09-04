@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World;
 
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
-using MUnique.OpenMU.GameLogic.CastleSiege.NPC;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Network;
@@ -46,7 +45,7 @@ public class NewNpcsInScopePlugIn : INewNpcsInScopePlugIn
         if (npcs.Any())
         {
             await connection.SendAsync(
-                () => WriteNpcsInScope(isSpawned, connection, npcs, this._player.GuildStatus?.GuildId)).ConfigureAwait(false);
+                () => WriteNpcsInScope(isSpawned, connection, npcs, this._player)).ConfigureAwait(false);
         }
 
         if (summons.Any())
@@ -59,7 +58,7 @@ public class NewNpcsInScopePlugIn : INewNpcsInScopePlugIn
         bool isSpawned,
         IConnection connection,
         ICollection<NonPlayerCharacter> npcs,
-        uint? observerGuildId)
+        Player observer)
     {
         var size = AddNpcsToScopeRef.GetRequiredSize(npcs.Count);
         var span = connection.Output.GetSpan(size)[..size];
@@ -78,7 +77,7 @@ public class NewNpcsInScopePlugIn : INewNpcsInScopePlugIn
                 npcBlock.Id |= 0x8000;
             }
 
-            npcBlock.TypeNumber = GetNpcTypeNumber(npc, observerGuildId);
+            npcBlock.TypeNumber = GetNpcTypeNumber(npc, observer);
             npcBlock.CurrentPositionX = npc.Position.X;
             npcBlock.CurrentPositionY = npc.Position.Y;
 
@@ -102,19 +101,12 @@ public class NewNpcsInScopePlugIn : INewNpcsInScopePlugIn
         return size;
     }
 
-    private static ushort GetNpcTypeNumber(NonPlayerCharacter npc, uint? observerGuildId)
+    private static ushort GetNpcTypeNumber(NonPlayerCharacter npc, Player observer)
     {
         var typeNumber = (ushort)(npc.Definition?.Number ?? 0);
-        if (npc is not CastleSiegeLifeStone lifeStone)
+        if (npc is IObserverDependentNpcTypeNumber observerDependentTypeNumber)
         {
-            return typeNumber;
-        }
-
-        // MuMain reserves bits 4-6 of the high byte for the build stage and bit 7 for the owning guild marker.
-        typeNumber |= (ushort)((lifeStone.BuildTime & 0x07) << 12);
-        if (lifeStone.OwnerGuildId == observerGuildId)
-        {
-            typeNumber |= 0x8000;
+            typeNumber |= observerDependentTypeNumber.GetTypeNumberFlags(observer);
         }
 
         return typeNumber;

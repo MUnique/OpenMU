@@ -919,6 +919,62 @@ public class CastleSiegeNpcTests
     }
 
     /// <summary>
+    /// Verifies that every guild on the Life Stone's side receives its friendly spawn marker.
+    /// </summary>
+    [Test]
+    public async ValueTask LifeStoneSpawnMarksSameSideObserversAsFriendlyAsync()
+    {
+        const uint alliedGuildId = 11;
+        const uint opposingGuildId = 12;
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        await AddSiegePlayerAsync(fixture, CastleSiegeJoinSide.Attack1, 60, 60).ConfigureAwait(false);
+        try
+        {
+            fixture.Context.CurrentState = CastleSiegeState.Start;
+            fixture.Context.FinalGuildList[alliedGuildId] = new CastleSiegeGuildParticipant
+            {
+                GuildId = alliedGuildId,
+                PersistentGuildId = Guid.NewGuid(),
+                GuildName = "Ally",
+                Side = CastleSiegeJoinSide.Attack1,
+            };
+            fixture.Context.FinalGuildList[opposingGuildId] = new CastleSiegeGuildParticipant
+            {
+                GuildId = opposingGuildId,
+                PersistentGuildId = Guid.NewGuid(),
+                GuildName = "Opponent",
+                Side = CastleSiegeJoinSide.Attack2,
+            };
+            Assert.That(
+                await CastleSiegeSummonLifeStoneAction.SummonAsync(fixture.Player, fixture.Context).ConfigureAwait(false),
+                Is.True);
+            var lifeStone = fixture.Context.LifeStones.Single();
+
+            var (alliedObserver, alliedOutput) = CastleSiegeRemoteViewTestHelper.CreatePlayer(fixture.GameServerContext);
+            alliedObserver.GuildStatus = new GuildMemberStatus(alliedGuildId, GuildPosition.NormalMember);
+            await new NewNpcsInScopePlugIn(alliedObserver).NewNpcsInScopeAsync([lifeStone]).ConfigureAwait(false);
+
+            var (opposingObserver, opposingOutput) = CastleSiegeRemoteViewTestHelper.CreatePlayer(fixture.GameServerContext);
+            opposingObserver.GuildStatus = new GuildMemberStatus(opposingGuildId, GuildPosition.NormalMember);
+            await new NewNpcsInScopePlugIn(opposingObserver).NewNpcsInScopeAsync([lifeStone]).ConfigureAwait(false);
+
+            var alliedSpawn = (AddNpcsToScopePacket)alliedOutput.ToArray().AsMemory();
+            var opposingSpawn = (AddNpcsToScopePacket)opposingOutput.ToArray().AsMemory();
+            Assert.Multiple(() =>
+            {
+                Assert.That(alliedSpawn[0].TypeNumber & 0x8000, Is.EqualTo(0x8000));
+                Assert.That(opposingSpawn[0].TypeNumber & 0x8000, Is.Zero);
+            });
+        }
+        finally
+        {
+            await fixture.GameServerContext.RemovePlayerAsync(fixture.Player).ConfigureAwait(false);
+            await fixture.Context.KillAllLifeStonesAsync().ConfigureAwait(false);
+            await fixture.Context.NpcController.DespawnAllAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
     /// Verifies that only participating players on an opposing side may attack a Life Stone.
     /// </summary>
     [Test]

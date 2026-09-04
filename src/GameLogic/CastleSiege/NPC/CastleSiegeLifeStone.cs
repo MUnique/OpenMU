@@ -19,12 +19,14 @@ using MUnique.OpenMU.PlugIns;
 /// The guild identity is captured when the stone is placed. Player movement and later guild-roster changes do not
 /// remove it; it remains until it is destroyed, its guild captures the Crown, or the battle ends.
 /// </remarks>
-public sealed class CastleSiegeLifeStone : AttackableNpcBase
+public sealed class CastleSiegeLifeStone : AttackableNpcBase, IObserverDependentNpcTypeNumber
 {
     private const byte CompletedBuildTime = 5;
     private const int HealingRange = 3;
     private const int HealingPercentage = 1;
     private const int PercentageBase = 100;
+    private const ushort ObserverFriendlyFlag = 0x8000;
+    private const int BuildStageBitShift = 12;
     private static readonly TimeSpan BuildStageInterval = TimeSpan.FromSeconds(12);
     private static readonly TimeSpan HealingInterval = TimeSpan.FromSeconds(1);
     private DateTime _nextHealingUtc;
@@ -112,6 +114,22 @@ public sealed class CastleSiegeLifeStone : AttackableNpcBase
 
     /// <inheritdoc />
     public override ValueTask ApplyBleedingDamageAsync(IAttacker initialAttacker, uint damage) => ValueTask.CompletedTask;
+
+    /// <inheritdoc />
+    public ushort GetTypeNumberFlags(Player observer)
+    {
+        // MuMain reserves bits 4-6 of the high byte for the build stage and bit 7 for the friendly marker.
+        var flags = (ushort)((this.BuildTime & 0x07) << BuildStageBitShift);
+
+        // Healing is side-scoped by the Castle Siege specification, so every allied guild must record the stone.
+        // MuMain additionally filters the healing particle by guild mark, showing feedback for each observer's guild.
+        if (this.Context.GetTrackedPlayerJoinSide(observer) == this.JoinSide)
+        {
+            flags |= ObserverFriendlyFlag;
+        }
+
+        return flags;
+    }
 
     /// <summary>
     /// Sends the current creation phase to all current observers.

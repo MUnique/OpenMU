@@ -322,6 +322,11 @@ public class CastleSiegeContext : IEventStateProvider
             lifeStone.OnSpawn();
             return lifeStone;
         }
+        catch (OperationCanceledException)
+        {
+            await lifeStone.DestroyAsync().ConfigureAwait(false);
+            throw;
+        }
         catch (Exception ex)
         {
             await lifeStone.DestroyAsync().ConfigureAwait(false);
