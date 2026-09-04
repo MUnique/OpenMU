@@ -7,6 +7,11 @@ namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 using System.Threading;
 using Microsoft.AspNetCore.Components;
 using MUnique.OpenMU.Network.Analyzer;
+using MUnique.OpenMU.Network.Analyzer.Archive;
+using MUnique.OpenMU.Network.PlugIns;
+using MUnique.OpenMU.Web.AdminPanel.Properties;
+using MUnique.OpenMU.Web.Shared;
+using MUnique.OpenMU.Web.Shared.Components.Modal;
 
 /// <summary>
 /// The page which shows the network traffic of the connections of our servers.
@@ -14,6 +19,7 @@ using MUnique.OpenMU.Network.Analyzer;
 public partial class NetworkAnalyzer : IAsyncDisposable
 {
     /// <summary>
+/// <summary>
     /// The route to this page for a player of a server. The identifier of the server and the
     /// name of the account or character are appended to it.
     /// </summary>
@@ -22,6 +28,17 @@ public partial class NetworkAnalyzer : IAsyncDisposable
     /// the page which offers it is shown.
     /// </remarks>
     internal const string PlayerRoute = "network-analyzer/player/";
+
+    /// <summary>
+    /// The route which downloads an archived session, with its identifier appended.
+    /// </summary>
+    internal const string ArchiveDownloadRoute = "api/network-archive/";
+
+    /// <summary>
+    /// The maximum number of packets which are loaded from an archived session. Only the
+    /// newest ones are shown when it contains more.
+    /// </summary>
+    private const int MaximumArchivedPacketCount = 5000;
 
     /// <summary>
     /// The interval in which the list of the connections is refreshed.
@@ -63,6 +80,12 @@ public partial class NetworkAnalyzer : IAsyncDisposable
 
     private IPacketCaptureService? _captureService;
 
+    private IPacketArchive? _archive;
+
+    private IReadOnlyList<ArchivedSessionInfo> _archivedSessions = [];
+
+    private ArchivedSessionInfo? _selectedSession;
+
     /// <summary>
     /// The direction of the packets which should be shown.
     /// </summary>
@@ -91,6 +114,7 @@ public partial class NetworkAnalyzer : IAsyncDisposable
     public Guid? ConnectionId { get; set; }
 
     /// <summary>
+/// <summary>
     /// Gets or sets the identifier of the server whose connection should be selected
     /// initially. It's used together with the <see cref="PlayerName"/>.
     /// </summary>
@@ -103,6 +127,12 @@ public partial class NetworkAnalyzer : IAsyncDisposable
     /// </summary>
     [Parameter]
     public string? PlayerName { get; set; }
+
+    /// <summary>
+    /// Gets or sets the identifier of the archived session which should be opened initially.
+    /// </summary>
+    [Parameter]
+    public string? SessionId { get; set; }
 
     /// <summary>
     /// Gets or sets the service provider, used to resolve the capture service optionally:
@@ -118,9 +148,105 @@ public partial class NetworkAnalyzer : IAsyncDisposable
     [Inject]
     public PacketAnalyzerProvider AnalyzerProvider { get; set; } = null!;
 
+    /// <summary>
+    /// Gets or sets the modal service, used to confirm the deletion of an archived session.
+    /// </summary>
+    [Inject]
+    public IModalService ModalService { get; set; } = null!;
+
     private IPacketCaptureService? CaptureService => this._captureService;
 
+    private bool IsArchiveAvailable => this._archive is not null;
+
+    /// <summary>
+    /// Gets the client version which applies to the shown packets - either the one of the
+    /// captured connection, or the one which was recorded with the archived session.
+    /// </summary>
+    private ClientVersion CurrentClientVersion =>
+        this._capture?.ConnectionInfo.ClientVersion ?? this._selectedSession?.Metadata.ClientVersion ?? default;
+
     private string TableColClass => this._isSidebarCollapsed ? "col-12" : "col-10";
+
+
+    /// <inheritdoc />
+    public async ValueTask DisposeAsync()
+    {
+        await this._disposeCts.CancelAsync().ConfigureAwait(false);
+        this.StopCapture();
+        this._disposeCts.Dispose();
+    }
+
+    /// <inheritdoc />
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync().ConfigureAwait(true);
+        this._captureService = this.ServiceProvider.GetService(typeof(IPacketCaptureService)) as IPacketCaptureService;
+        this._archive = this.ServiceProvider.GetService(typeof(IPacketArchive)) as IPacketArchive;
+        if (this._captureService is null)
+        {
+            return;
+        }
+
+        _ = await this.RefreshConnectionsAsync().ConfigureAwait(true);
+        _ = await this.RefreshArchiveAsync().ConfigureAwait(true);
+        if (await this.FindPreselectedConnectionAsync().ConfigureAwait(true) is { } preselected)
+        {
+            await this.OnConnectionSelectedAsync(preselected).ConfigureAwait(true);
+            this._isSidebarCollapsed = true;
+        }
+        else if (!string.IsNullOrEmpty(this.SessionId)
+                 && this._archivedSessions.FirstOrDefault(session => session.Id == this.SessionId) is { } preselectedSession)
+        {
+            await this.OnArchivedSessionSelectedAsync(preselectedSession).ConfigureAwait(true);
+        }
+        else
+        {
+            // A link may be opened when the player is already gone, e.g. because it was
+            // rendered in a list which isn't up to date anymore.
+            this._isPreselectedConnectionMissing = this.ConnectionId is not null || this.PlayerName is not null;
+        }
+
+        _ = this.RefreshPeriodicallyAsync();
+    }
+
+    private static bool HasChanged(IReadOnlyList<ICapturedConnectionInfo> current, IReadOnlyList<ICapturedConnectionInfo> updated)
+    {
+        if (current.Count != updated.Count)
+        {
+            return true;
+        }
+
+        for (int i = 0; i < current.Count; i++)
+        {
+            if (current[i].Id != updated[i].Id
+                || current[i].DisplayName != updated[i].DisplayName)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool HasChanged(IReadOnlyList<ArchivedSessionInfo> current, IReadOnlyList<ArchivedSessionInfo> updated)
+    {
+        if (current.Count != updated.Count)
+        {
+            return true;
+        }
+
+        for (int i = 0; i < current.Count; i++)
+        {
+            if (current[i].Id != updated[i].Id
+                || current[i].SizeInBytes != updated[i].SizeInBytes
+                || current[i].IsRunning != updated[i].IsRunning)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     private void UpdateFilteredPackets()
     {
@@ -141,40 +267,6 @@ public partial class NetworkAnalyzer : IAsyncDisposable
         }
 
         this._filteredPackets = packets.ToList();
-    }
-
-    /// <inheritdoc />
-    public async ValueTask DisposeAsync()
-    {
-        await this._disposeCts.CancelAsync().ConfigureAwait(false);
-        this.StopCapture();
-        this._disposeCts.Dispose();
-    }
-
-    /// <inheritdoc />
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync().ConfigureAwait(true);
-        this._captureService = this.ServiceProvider.GetService(typeof(IPacketCaptureService)) as IPacketCaptureService;
-        if (this._captureService is null)
-        {
-            return;
-        }
-
-        _ = await this.RefreshConnectionsAsync().ConfigureAwait(true);
-        if (await this.FindPreselectedConnectionAsync().ConfigureAwait(true) is { } preselected)
-        {
-            await this.OnConnectionSelectedAsync(preselected).ConfigureAwait(true);
-            this._isSidebarCollapsed = true;
-        }
-        else
-        {
-            // A link may be opened when the player is already gone, e.g. because it was
-            // rendered in a list which isn't up to date anymore.
-            this._isPreselectedConnectionMissing = this.ConnectionId is not null || this.PlayerName is not null;
-        }
-
-        _ = this.RefreshPeriodicallyAsync();
     }
 
     /// <summary>
@@ -201,25 +293,6 @@ public partial class NetworkAnalyzer : IAsyncDisposable
 
         this._connections = connections;
         return true;
-    }
-
-    private static bool HasChanged(IReadOnlyList<ICapturedConnectionInfo> current, IReadOnlyList<ICapturedConnectionInfo> updated)
-    {
-        if (current.Count != updated.Count)
-        {
-            return true;
-        }
-
-        for (int i = 0; i < current.Count; i++)
-        {
-            if (current[i].Id != updated[i].Id
-                || current[i].DisplayName != updated[i].DisplayName)
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /// <summary>
@@ -255,6 +328,7 @@ public partial class NetworkAnalyzer : IAsyncDisposable
         }
 
         this.StopCapture();
+        this._selectedSession = null;
         this._isPreselectedConnectionMissing = false;
 
         this._selectedConnection = connection;
@@ -267,6 +341,116 @@ public partial class NetworkAnalyzer : IAsyncDisposable
         // traffic again - even when the view of the previous connection was scrolled up.
         this._isFollowing = true;
         this.UpdateFilteredPackets();
+    }
+
+    /// <summary>
+    /// Refreshes the list of the archived sessions.
+    /// </summary>
+    /// <returns><see langword="true"/>, if the listed sessions changed.</returns>
+    private async Task<bool> RefreshArchiveAsync()
+    {
+        if (this._archive is not { } archive)
+        {
+            return false;
+        }
+
+        var sessions = await archive.GetSessionsAsync().ConfigureAwait(true);
+        if (!HasChanged(this._archivedSessions, sessions))
+        {
+            return false;
+        }
+
+        this._archivedSessions = sessions;
+        return true;
+    }
+
+    /// <summary>
+    /// Opens an archived session, which stops a running capture of the page.
+    /// </summary>
+    /// <param name="session">The session which should be shown.</param>
+    /// <returns>The async task.</returns>
+    private async Task OnArchivedSessionSelectedAsync(ArchivedSessionInfo session)
+    {
+        this.StopCapture();
+
+        this._selectedSession = session;
+        this._selectedPacket = null;
+        this._isFollowing = true;
+        this._analyzer = this.AnalyzerProvider.GetAnalyzer(PacketDefinitionSet.GameServer);
+        await this.LoadArchivedPacketsAsync().ConfigureAwait(true);
+    }
+
+    /// <summary>
+    /// Deletes an archived session, after the user confirmed it.
+    /// </summary>
+    /// <param name="session">The session which should be deleted.</param>
+    /// <returns>The async task.</returns>
+    private async Task OnDeleteArchivedSessionAsync(ArchivedSessionInfo session)
+    {
+        if (this._archive is not { } archive)
+        {
+            return;
+        }
+
+        var isConfirmed = await this.ModalService
+            .ShowQuestionAsync(Resources.DeleteArchivedSession, string.Format(Resources.DeleteArchivedSessionQuestion, session.DisplayName))
+            .ConfigureAwait(true);
+        if (!isConfirmed)
+        {
+            return;
+        }
+
+        if (await archive.DeleteSessionAsync(session.Id).ConfigureAwait(true)
+            && this._selectedSession?.Id == session.Id)
+        {
+            this._selectedSession = null;
+            this._packets = [];
+            this._selectedPacket = null;
+            this.UpdateFilteredPackets();
+        }
+
+        _ = await this.RefreshArchiveAsync().ConfigureAwait(true);
+    }
+
+    /// <summary>
+    /// Toggles the observation of the account of the selected connection.
+    /// </summary>
+    /// <returns>The async task.</returns>
+    private async Task ToggleObservationAsync()
+    {
+        if (this._captureService is not { } captureService || this._capture is not { } capture)
+        {
+            return;
+        }
+
+        await captureService.SetObservationAsync(capture.ConnectionInfo.Id, !capture.ConnectionInfo.IsObserved).ConfigureAwait(true);
+        _ = await this.RefreshArchiveAsync().ConfigureAwait(true);
+    }
+
+    /// <summary>
+    /// Loads the packets of the opened archived session.
+    /// </summary>
+    /// <returns><see langword="true"/>, if the shown packets changed.</returns>
+    private async Task<bool> LoadArchivedPacketsAsync()
+    {
+        if (this._selectedSession is not { } selectedSession || this._archive is not { } archive)
+        {
+            return false;
+        }
+
+        // A running session grows while it's shown, so its file is read again - the newest
+        // packets are the interesting ones, and their number is capped anyway.
+        var session = await archive.GetSessionAsync(selectedSession.Id).ConfigureAwait(true) ?? selectedSession;
+        var loaded = await ArchivedSession.LoadAsync(session, MaximumArchivedPacketCount).ConfigureAwait(true);
+        if (loaded.PacketList.Count == this._packets.Count && this._packets.Count > 0)
+        {
+            return false;
+        }
+
+        this._selectedSession = session;
+        this._packets = loaded.PacketList.ToList();
+        this.UpdateFilteredPackets();
+        return true;
     }
 
     private async Task OnDisconnectAsync(ICapturedConnectionInfo connection)
@@ -347,14 +531,14 @@ public partial class NetworkAnalyzer : IAsyncDisposable
 
     private string GetMessageForFilter(Packet packet)
     {
-        if (this._analyzer is not { } analyzer || this._capture is not { } capture)
+        if (this._analyzer is not { } analyzer)
         {
             return string.Empty;
         }
 
         try
         {
-            return analyzer.ExtractShortInformation(packet, capture.ConnectionInfo.ClientVersion).Data;
+            return analyzer.ExtractShortInformation(packet, this.CurrentClientVersion).Data;
         }
         catch
         {
@@ -385,9 +569,14 @@ public partial class NetworkAnalyzer : IAsyncDisposable
                     if (refreshConnections)
                     {
                         hasChanged = await this.RefreshConnectionsAsync().ConfigureAwait(true);
+                        hasChanged |= await this.RefreshArchiveAsync().ConfigureAwait(true);
                     }
 
                     hasChanged |= this.UpdatePackets();
+                    if (this._selectedSession is { IsRunning: true } && this._isFollowing)
+                    {
+                        hasChanged |= await this.LoadArchivedPacketsAsync().ConfigureAwait(true);
+                    }
 
                     // Rendering without a change would just make the grid flicker, which is
                     // especially annoying while the user scrolls through the packets.

@@ -51,6 +51,15 @@ public interface IPacketCaptureService
     void StopCapture(Guid connectionId);
 
     /// <summary>
+    /// Sets whether the traffic of the account of the specified connection is observed, so
+    /// that it's archived for each of its sessions.
+    /// </summary>
+    /// <param name="connectionId">The identifier of the connection.</param>
+    /// <param name="isActive">If set to <c>true</c>, the traffic is observed.</param>
+    /// <returns><see langword="true"/>, if it has been applied.</returns>
+    ValueTask<bool> SetObservationAsync(Guid connectionId, bool isActive);
+
+    /// <summary>
     /// Gets the currently running capture of the specified connection.
     /// </summary>
     /// <param name="connectionId">The identifier of the connection.</param>
