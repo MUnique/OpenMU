@@ -25631,7 +25631,7 @@ public readonly struct IllusionTempleEnterResult
 
 /// <summary>
 /// Is sent by the server when: The player is in the illusion temple event and the server sends a cyclic update.
-/// Causes reaction on client side: The client shows the state in the user interface.
+/// Causes reaction on client side: The client shows the score board, the remaining time, and the carrier of the holy relic and the own team mates on its mini map.
 /// </summary>
 public readonly struct IllusionTempleState
 {
@@ -25695,12 +25695,12 @@ public readonly struct IllusionTempleState
     }
 
     /// <summary>
-    /// Gets or sets the player index.
+    /// Gets or sets the relic carrier id.
     /// </summary>
-    public ushort PlayerIndex
+    public ushort RelicCarrierId
     {
-        get => ReadUInt16LittleEndian(this._data.Span[4..]);
-        set => WriteUInt16LittleEndian(this._data.Span[4..], value);
+        get => ReadUInt16LittleEndian(this._data.Span[6..]);
+        set => WriteUInt16LittleEndian(this._data.Span[6..], value);
     }
 
     /// <summary>
@@ -25708,8 +25708,8 @@ public readonly struct IllusionTempleState
     /// </summary>
     public byte PositionX
     {
-        get => this._data.Span[6];
-        set => this._data.Span[6] = value;
+        get => this._data.Span[8];
+        set => this._data.Span[8] = value;
     }
 
     /// <summary>
@@ -25717,26 +25717,26 @@ public readonly struct IllusionTempleState
     /// </summary>
     public byte PositionY
     {
-        get => this._data.Span[7];
-        set => this._data.Span[7] = value;
-    }
-
-    /// <summary>
-    /// Gets or sets the team 1 points.
-    /// </summary>
-    public byte Team1Points
-    {
-        get => this._data.Span[8];
-        set => this._data.Span[8] = value;
-    }
-
-    /// <summary>
-    /// Gets or sets the team 2 points.
-    /// </summary>
-    public byte Team2Points
-    {
         get => this._data.Span[9];
         set => this._data.Span[9] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the allied forces points.
+    /// </summary>
+    public byte AlliedForcesPoints
+    {
+        get => this._data.Span[10];
+        set => this._data.Span[10] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the illusion forces points.
+    /// </summary>
+    public byte IllusionForcesPoints
+    {
+        get => this._data.Span[11];
+        set => this._data.Span[11] = value;
     }
 
     /// <summary>
@@ -25744,8 +25744,8 @@ public readonly struct IllusionTempleState
     /// </summary>
     public byte MyTeam
     {
-        get => this._data.Span[10];
-        set => this._data.Span[10] = value;
+        get => this._data.Span[12];
+        set => this._data.Span[12] = value;
     }
 
     /// <summary>
@@ -25753,14 +25753,14 @@ public readonly struct IllusionTempleState
     /// </summary>
     public byte PartyCount
     {
-        get => this._data.Span[11];
-        set => this._data.Span[11] = value;
+        get => this._data.Span[13];
+        set => this._data.Span[13] = value;
     }
 
     /// <summary>
-    /// Gets the <see cref="IllusionTemplePartyEntry"/> of the specified index.
+    /// Gets the <see cref="IllusionTempleTeamMate"/> of the specified index.
     /// </summary>
-        public IllusionTemplePartyEntry this[int index] => new (this._data.Slice(12 + index * IllusionTemplePartyEntry.Length));
+        public IllusionTempleTeamMate this[int index] => new (this._data.Slice(14 + index * IllusionTempleTeamMate.Length));
 
     /// <summary>
     /// Performs an implicit conversion from a Memory of bytes to a <see cref="IllusionTempleState"/>.
@@ -25777,25 +25777,25 @@ public readonly struct IllusionTempleState
     public static implicit operator Memory<byte>(IllusionTempleState packet) => packet._data; 
 
     /// <summary>
-    /// Calculates the size of the packet for the specified count of <see cref="IllusionTemplePartyEntry"/>.
+    /// Calculates the size of the packet for the specified count of <see cref="IllusionTempleTeamMate"/>.
     /// </summary>
-    /// <param name="partyMembersCount">The count of <see cref="IllusionTemplePartyEntry"/> from which the size will be calculated.</param>
+    /// <param name="teamMatesCount">The count of <see cref="IllusionTempleTeamMate"/> from which the size will be calculated.</param>
         
-    public static int GetRequiredSize(int partyMembersCount) => partyMembersCount * IllusionTemplePartyEntry.Length + 12;
+    public static int GetRequiredSize(int teamMatesCount) => teamMatesCount * IllusionTempleTeamMate.Length + 14;
 
 
 /// <summary>
-/// Contains the info about a party member in illusion temple..
+/// Contains the info about a team mate in the illusion temple, so that the client can show him on its mini map. Only PartyCount entries are sent - there are no unused/zeroed slots..
 /// </summary>
-public readonly struct IllusionTemplePartyEntry
+public readonly struct IllusionTempleTeamMate
 {
     private readonly Memory<byte> _data;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="IllusionTemplePartyEntry"/> struct.
+    /// Initializes a new instance of the <see cref="IllusionTempleTeamMate"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public IllusionTemplePartyEntry(Memory<byte> data)
+    public IllusionTempleTeamMate(Memory<byte> data)
     {
         this._data = data;
     }
@@ -25817,10 +25817,10 @@ public readonly struct IllusionTemplePartyEntry
     /// <summary>
     /// Gets or sets the map number.
     /// </summary>
-    public ushort MapNumber
+    public byte MapNumber
     {
-        get => ReadUInt16LittleEndian(this._data.Span[2..]);
-        set => WriteUInt16LittleEndian(this._data.Span[2..], value);
+        get => this._data.Span[2];
+        set => this._data.Span[2] = value;
     }
 
     /// <summary>
@@ -26174,7 +26174,7 @@ public readonly struct IllusionTempleResult
     /// <summary>
     /// Gets the <see cref="PlayerResult"/> of the specified index.
     /// </summary>
-        public PlayerResult this[int index] => new (this._data.Slice(10 + index * PlayerResult.Length));
+        public PlayerResult this[int index] => new (this._data.Slice(7 + index * PlayerResult.Length));
 
     /// <summary>
     /// Performs an implicit conversion from a Memory of bytes to a <see cref="IllusionTempleResult"/>.
@@ -26195,7 +26195,7 @@ public readonly struct IllusionTempleResult
     /// </summary>
     /// <param name="playersCount">The count of <see cref="PlayerResult"/> from which the size will be calculated.</param>
         
-    public static int GetRequiredSize(int playersCount) => playersCount * PlayerResult.Length + 10;
+    public static int GetRequiredSize(int playersCount) => playersCount * PlayerResult.Length + 7;
 
 
 /// <summary>
@@ -26217,15 +26217,15 @@ public readonly struct PlayerResult
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 17;
+    public static int Length => 20;
 
     /// <summary>
     /// Gets or sets the name.
     /// </summary>
     public string Name
     {
-        get => this._data.Span.ExtractString(0, this._data.Length - 0, System.Text.Encoding.UTF8);
-        set => this._data.Slice(0).Span.WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.Span.ExtractString(0, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(0, 10).Span.WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
@@ -26260,21 +26260,9 @@ public readonly struct PlayerResult
     /// </summary>
     public uint AddedExperience
     {
-        get => ReadUInt32LittleEndian(this._data.Span[13..]);
-        set => WriteUInt32LittleEndian(this._data.Span[13..], value);
+        get => ReadUInt32LittleEndian(this._data.Span[16..]);
+        set => WriteUInt32LittleEndian(this._data.Span[16..], value);
     }
-
-    /// <summary>
-    /// Calculates the size of the packet for the specified field content.
-    /// </summary>
-    /// <param name="content">The content of the variable 'Name' field from which the size will be calculated.</param>
-    public static int GetRequiredSize(string content) => System.Text.Encoding.UTF8.GetByteCount(content) + 1 + 0;
-
-    /// <summary>
-    /// Calculates the size of the packet for the specified field content.
-    /// </summary>
-    /// <param name="contentLength">The content length in bytes of the variable 'Name' field from which the size will be calculated.</param>
-    public static int GetRequiredSize(int contentLength) => contentLength + 1 + 0;
 }
 }
 
@@ -26564,6 +26552,127 @@ public readonly struct IllusionTempleHolyItemRelics
     /// </summary>
     /// <param name="contentLength">The content length in bytes of the variable 'Name' field from which the size will be calculated.</param>
     public static int GetRequiredSize(int contentLength) => contentLength + 1 + 6;
+}
+
+
+/// <summary>
+/// Is sent by the server when: The state of an illusion temple event changed, e.g. when the battle starts.
+/// Causes reaction on client side: The client shows or hides the user interface of the event - the score board, the timer and the mini map - and applies the barriers of the arena, which are hardcoded at client side.
+/// </summary>
+public readonly struct IllusionTempleEventState
+{
+    /// <summary>
+    /// Defines the state of an illusion temple event.
+    /// </summary>
+    public enum EventState
+    {
+        /// <summary>
+        /// The player entered the event and waits for it to start. It's only sent to the entering player, not to all participants.
+        /// </summary>
+            WaitingRoom = 0,
+
+        /// <summary>
+        /// The preparation started: the players have been moved into the arena and assigned to their teams. The client opens the event interface with the score board, the timer and the mini map.
+        /// </summary>
+            Preparation = 1,
+
+        /// <summary>
+        /// The battle started: the statues are up and the barriers of the arena are removed, so that the players can reach the cursed statue.
+        /// </summary>
+            BattleStarted = 2,
+
+        /// <summary>
+        /// The battle ended - the client closes the event interface.
+        /// </summary>
+            Ended = 3,
+    }
+
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="IllusionTempleEventState"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public IllusionTempleEventState(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="IllusionTempleEventState"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private IllusionTempleEventState(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xBF;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x09;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 6;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the temple number.
+    /// </summary>
+    public byte TempleNumber
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the state.
+    /// </summary>
+    public IllusionTempleEventState.EventState State
+    {
+        get => (EventState)this._data.Span[5];
+        set => this._data.Span[5] = (byte)value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="IllusionTempleEventState"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator IllusionTempleEventState(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="IllusionTempleEventState"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(IllusionTempleEventState packet) => packet._data; 
 }
 
 

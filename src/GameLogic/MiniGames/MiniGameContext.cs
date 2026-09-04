@@ -137,16 +137,17 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     protected IDropGenerator DropGenerator { get; set; }
 
     /// <summary>
-    /// Gets the minimum player count to start the game.
+    /// Gets the minimum player count to start the game. Reads <see cref="MiniGameDefinition.MinimumPlayerCount"/>
+    /// when it's configured (greater than 0); otherwise falls back to the game type's built-in default.
     /// </summary>
-    protected virtual int MinimumPlayerCount => 1;
+    protected virtual int MinimumPlayerCount => this.Definition.MinimumPlayerCount > 0 ? this.Definition.MinimumPlayerCount : 1;
 
     /// <summary>
     /// Tries to enter the mini game. It will fail, if it's full, of if it's not in an open state.
     /// </summary>
     /// <param name="player">The player which tries to enter.</param>
     /// <returns>A value indicating whether entering had success.</returns>
-    public async ValueTask<EnterResult> TryEnterAsync(Player player)
+    public virtual async ValueTask<EnterResult> TryEnterAsync(Player player)
     {
         using (await this._enterLock.WriterLockAsync().ConfigureAwait(false))
         {
@@ -201,6 +202,13 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         // Additional checks can be implemented in specific mini games.
         return true;
     }
+
+    /// <summary>
+    /// Gets the spawn gate at which the specified player should be placed on this game's map.
+    /// </summary>
+    /// <param name="player">The player for which the spawn gate is requested.</param>
+    /// <returns>The spawn gate, or <c>null</c> if this game doesn't define one for the player.</returns>
+    public virtual ExitGate? GetSpawnGate(Player player) => null;
 
     /// <inheritdoc />
     public override string ToString()
@@ -558,7 +566,13 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         await this.ForEachPlayerAsync(player => player.ShowLocalizedGoldenMessageAsync(messageKey, args).AsTask()).ConfigureAwait(false);
     }
 
-    private async ValueTask<(int BonusScore, int GivenMoney)> GiveRewardAsync(Player player, MiniGameReward reward)
+    /// <summary>
+    /// Gives a single reward to the player.
+    /// </summary>
+    /// <param name="player">The player who should receive the reward.</param>
+    /// <param name="reward">The reward.</param>
+    /// <returns>The bonus score and the given money.</returns>
+    protected async ValueTask<(int BonusScore, int GivenMoney)> GiveRewardAsync(Player player, MiniGameReward reward)
     {
         switch (reward.RewardType)
         {
@@ -740,6 +754,11 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
                     await this.ForEachPlayerAsync(async player => player.TryAddMoney(this.Definition.EntranceFee)).ConfigureAwait(false);
                 }
 
+                // The players who did enter would otherwise be stuck on the event map forever - the
+                // game never starts, so StartAsync/StopAsync/ShutdownGameAsync (which would normally
+                // move them back out) never run either.
+                await this.MovePlayersToSafezoneAsync().ConfigureAwait(false);
+
                 return;
             }
 
@@ -871,7 +890,38 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         }
     }
 
-    private bool DoesRewardApply(Player player, int playerRank, MiniGameReward reward)
+    /// <summary>
+    /// Determines whether the specified player is a winner of this game.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <returns><c>true</c>, if the player is a winner; otherwise, <c>false</c>.</returns>
+    protected virtual bool IsWinner(Player player) => this.Winner == player;
+
+    /// <summary>
+    /// Determines whether the specified player belongs to the winning party. Games which don't decide
+    /// their winners by party (e.g. the team based illusion temple) override this accordingly.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <returns><c>true</c>, if the player belongs to the winning party; otherwise, <c>false</c>.</returns>
+    protected virtual bool IsInWinningParty(Player player)
+        => this.Winner?.Party is { } winningParty && winningParty == player.Party;
+
+    /// <summary>
+    /// Determines whether the specified player is a winner himself, or belongs to the winning party.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <returns><c>true</c>, if the player won or belongs to the winning party; otherwise, <c>false</c>.</returns>
+    protected virtual bool IsWinnerOrInWinningParty(Player player)
+        => this.IsWinner(player) || this.IsInWinningParty(player);
+
+    /// <summary>
+    /// Determines whether the specified reward applies to the specified player.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="playerRank">The rank of the player in this game.</param>
+    /// <param name="reward">The reward.</param>
+    /// <returns><c>true</c>, if the reward applies; otherwise, <c>false</c>.</returns>
+    protected bool DoesRewardApply(Player player, int playerRank, MiniGameReward reward)
     {
         if (reward.Rank is not null && reward.Rank != playerRank)
         {
@@ -898,26 +948,22 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
             return false;
         }
 
-        if (reward.RequiredSuccess.HasFlag(MiniGameSuccessFlags.Winner) && this.Winner != player)
+        if (reward.RequiredSuccess.HasFlag(MiniGameSuccessFlags.Winner) && !this.IsWinner(player))
         {
             return false;
         }
 
-        if (reward.RequiredSuccess.HasFlag(MiniGameSuccessFlags.Loser)
-            && (this.Winner == player || (player.Party == this.Winner?.Party && player.Party is not null)))
+        if (reward.RequiredSuccess.HasFlag(MiniGameSuccessFlags.Loser) && this.IsWinnerOrInWinningParty(player))
         {
             return false;
         }
 
-        if (reward.RequiredSuccess.HasFlag(MiniGameSuccessFlags.WinningParty)
-            && (this.Winner?.Party is null || this.Winner.Party != player.Party))
+        if (reward.RequiredSuccess.HasFlag(MiniGameSuccessFlags.WinningParty) && !this.IsInWinningParty(player))
         {
             return false;
         }
 
-        if (reward.RequiredSuccess.HasFlag(MiniGameSuccessFlags.WinnerOrInWinningParty)
-            && (this.Winner?.Party is null || this.Winner.Party != player.Party)
-            && this.Winner != player)
+        if (reward.RequiredSuccess.HasFlag(MiniGameSuccessFlags.WinnerOrInWinningParty) && !this.IsWinnerOrInWinningParty(player))
         {
             return false;
         }

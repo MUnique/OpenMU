@@ -1454,6 +1454,33 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("ChaosCastleStateViewPlugIn_Description", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to IllusionTemple Enter Handler.
+        /// </summary>
+        public static string IllusionTempleEnterHandlerPlugIn_Description {
+            get {
+                                return ResourceManager.GetString("IllusionTempleEnterHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to IllusionTemple Enter Handler.
+        /// </summary>
+        public static string IllusionTempleEnterHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("IllusionTempleEnterHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The default implementation of the IChaosCastleStateViewPlugin which is forwarding everything to the game client with specific data packets..
+        /// </summary>
+        public static string IllusionTempleStateViewPlugIn_Description {
+            get {
+                return ResourceManager.GetString("IllusionTempleStateViewPlugIn_Description", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Chaos Castle State View.

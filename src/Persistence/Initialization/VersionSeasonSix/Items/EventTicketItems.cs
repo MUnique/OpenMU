@@ -36,8 +36,9 @@ internal class EventTicketItems : InitializerBase
 
         // Illusion Temple:
         this.CreateEventItem(49, 13, 1, 1, "Old Scroll", false, 6, 66, 72, 78, 84, 90, 96);
-        this.CreateEventItem(50, 13, 1, 2, "Illusion Sorcerer Covenant", false, 6, 70, 76, 82, 88, 94, 100);
-        this.CreateEventItem(51, 13, 2, 2, "Scroll of Blood", false, 6);
+        this.CreateEventItem(51, 13, 1, 2, "Illusion Sorcerer Covenant", false, 6, 70, 76, 82, 88, 94, 100);
+        this.CreateEventItem(50, 13, 2, 2, "Scroll of Blood", false, 6);
+        this.CreateEventItem(64, 14, 1, 1, "Cursed Castle Water", false);
 
         // Devil Square:
         this.CreateEventItem(17, 14, 1, 1, "Devil's Eye", false, 7, 2, 36, 47, 60, 70, 80, 90);

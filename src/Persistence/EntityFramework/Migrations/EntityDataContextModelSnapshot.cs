@@ -2946,6 +2946,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<int>("MinimumCharacterLevel")
                         .HasColumnType("integer");
 
+                    b.Property<int>("MinimumPlayerCount")
+                        .HasColumnType("integer");
+
                     b.Property<int>("MinimumSpecialCharacterLevel")
                         .HasColumnType("integer");
 

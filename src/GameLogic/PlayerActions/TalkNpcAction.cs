@@ -8,6 +8,7 @@ using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlayerActions.Quests;
 using MUnique.OpenMU.GameLogic.PlugIns;
+using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Guild;
 using MUnique.OpenMU.GameLogic.Views.NPC;
@@ -78,6 +79,22 @@ public class TalkNpcAction
                     {
                         await bloodCastle.TalkToNpcArchangelAsync(player).ConfigureAwait(false);
                     }
+                    else if (player.CurrentMiniGame is IllusionTempleContext illusionTemple)
+                    {
+                        switch (player.OpenedNpc.Definition.Number)
+                        {
+                            case 380: // Stone Statue
+                                await illusionTemple.TalkToNpcStoneStatueAsync(player).ConfigureAwait(false);
+                                break;
+                            case 383: // Alliance Item Storage
+                            case 384: // Illusion Item Storage
+                                await illusionTemple.TalkToNpcTeamStorageAsync(player.OpenedNpc.Definition.Number, player).ConfigureAwait(false);
+                                break;
+                            default:
+                                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.TalkingNotImplementedFormat), npcStats.Number, npcStats.Designation).ConfigureAwait(false);
+                                break;
+                        }
+                    }
                     else
                     {
                         await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.TalkingNotImplementedFormat), npcStats.Number, npcStats.Designation).ConfigureAwait(false);
@@ -133,6 +150,23 @@ public class TalkNpcAction
             case NpcWindow.RemoveJohOption:
                 await player.InvokeViewPlugInAsync<IOpenNpcWindowPlugIn>(p => p.OpenNpcWindowAsync(npcStats.NpcWindow)).ConfigureAwait(false);
                 break;
+            case NpcWindow.IllusionTemple:
+                try
+                {
+                    await player.InvokeViewPlugInAsync<IOpenNpcWindowPlugIn>(p => p.OpenNpcWindowAsync(npcStats.NpcWindow)).ConfigureAwait(false);
+                    await this.ShowIllusionTempleUserCountsAsync(player).ConfigureAwait(false);
+                }
+                finally
+                {
+                    // The client doesn't tell the server when this window is closed, so the state is reset
+                    // right away - otherwise the player would be stuck in the NpcDialogOpened state and
+                    // couldn't open the window a second time. That has to happen even when showing the
+                    // dialog failed, for the same reason. The npc itself stays assigned, so that the
+                    // entry can still report its refusals as a message of the npc.
+                    await player.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
+                }
+
+                break;
             default:
                 await player.InvokeViewPlugInAsync<IOpenNpcWindowPlugIn>(p => p.OpenNpcWindowAsync(npcStats.NpcWindow)).ConfigureAwait(false);
                 break;
@@ -142,6 +176,37 @@ public class TalkNpcAction
         {
             player.BackupInventory = new BackupItemStorage(player.Inventory!.ItemStorage);
         }
+    }
+
+    /// <summary>
+    /// Sends the number of players of each illusion temple to the client, so that it can show them
+    /// in the entrance dialog next to the temples the player can enter.
+    /// </summary>
+    /// <param name="player">The player which opened the illusion temple dialog.</param>
+    private async ValueTask ShowIllusionTempleUserCountsAsync(Player player)
+    {
+        if (player.GameContext.PlugInManager.GetStrategy<MiniGameType, IPeriodicMiniGameStartPlugIn>(MiniGameType.IllusionTemple) is not { } startPlugIn)
+        {
+            // The event is not enabled on this server - the dialog then just shows no members at all.
+            return;
+        }
+
+        var definitions = player.GameContext.Configuration.MiniGameDefinitions
+            .Where(definition => definition.Type == MiniGameType.IllusionTemple)
+            .OrderBy(definition => definition.GameLevel)
+            .ToList();
+
+        var userCounts = new List<int>(definitions.Count);
+        foreach (var definition in definitions)
+        {
+            // GetMiniGameContextAsync returns null when the event isn't running - in contrast to
+            // IGameContext.GetMiniGameAsync, which would create a context and thereby start all
+            // six temples just by asking for their player count.
+            var miniGameContext = await startPlugIn.GetMiniGameContextAsync(player.GameContext, definition).ConfigureAwait(false);
+            userCounts.Add(miniGameContext?.PlayerCount ?? 0);
+        }
+
+        await player.InvokeViewPlugInAsync<IShowIllusionTempleUserCountViewPlugIn>(p => p.ShowUserCountAsync(userCounts)).ConfigureAwait(false);
     }
 
     private async ValueTask ShowLegacyQuestDialogAsync(Player player)

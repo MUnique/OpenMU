@@ -591,6 +591,12 @@
   <data name="ChaosCastleEnterHandlerPlugIn_Description" xml:space="preserve">
     <value>Handler for chaos castle enter request packets.</value>
   </data>
+  <data name="IllusionTempleEnterHandlerPlugIn_Name" xml:space="preserve">
+    <value>IllusionTemple Enter Handler</value>
+  </data>
+  <data name="IllusionTempleEnterHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for illusion temple enter request packets.</value>
+  </data>
   <data name="DevilSquareEnterHandlerPlugIn_Name" xml:space="preserve">
     <value>Devil Square Enter Handler</value>
   </data>

@@ -70,4 +70,41 @@ public static class Extensions
             _ => ChaosCastleEnterResult.EnterResult.Failed,
         };
     }
+
+    /// <summary>
+    /// Converts the <see cref="EnterResult"/> to the result value of the <see cref="IllusionTempleEnterResult"/>.
+    /// </summary>
+    /// <param name="enterResult">The enter result.</param>
+    /// <returns>The converted result.</returns>
+    /// <remarks>
+    /// Unlike the other mini games, the illusion temple result is an undocumented plain byte, so there is no
+    /// generated enum to map to. Only the success value (0) is known for sure, because it's consistent over
+    /// all other mini games; every failure is reported as 1 until the client's distinct failure codes are known.
+    /// </remarks>
+    public static byte ToIllusionTempleEnterResult(this EnterResult enterResult)
+    {
+        return enterResult == EnterResult.Success ? (byte)0 : (byte)1;
+    }
+
+    /// <summary>
+    /// Converts the internal character class number into the number the game client expects in the
+    /// illusion temple result packet, so the score board shows the right class next to each player.
+    /// </summary>
+    /// <param name="characterClassNumber">The internal character class number.</param>
+    /// <returns>The class number as the client knows it.</returns>
+    /// <remarks>
+    /// The client reads the class line from the lower nibble (0 Dark Wizard, 1 Dark Knight, 2 Fairy
+    /// Elf, 3 Magic Gladiator, 4 Dark Lord, 5 Summoner, 6 Rage Fighter) and the evolution step from
+    /// the upper one (0 base class, 2 second class, 3 master class), while the internal numbering
+    /// packs both the other way around. This was confirmed on a live client: two players of different
+    /// lines were shown as the same class, because the values sent at the time happened to share their
+    /// lower nibble.
+    /// </remarks>
+    public static byte ToIllusionTempleCharacterClass(this byte characterClassNumber)
+    {
+        // The internal number is line * 4 + evolution step.
+        var line = (byte)(characterClassNumber / 4);
+        var evolution = (byte)(characterClassNumber % 4);
+        return (byte)((evolution << 4) | (line & 0x0F));
+    }
 }

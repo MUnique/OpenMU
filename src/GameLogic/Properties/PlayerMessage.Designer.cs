@@ -1508,7 +1508,133 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("TalkingNotImplementedFormat", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to {0} has taken the holy relic!.
+        /// </summary>
+        public static string IllusionTempleRelicPickedUpFormat {
+            get {
+                return ResourceManager.GetString("IllusionTempleRelicPickedUpFormat", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to {0} dropped the holy relic!.
+        /// </summary>
+        public static string IllusionTempleRelicDroppedFormat {
+            get {
+                return ResourceManager.GetString("IllusionTempleRelicDroppedFormat", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Score - Allied Forces: {0} | Illusion Forces: {1}.
+        /// </summary>
+        public static string IllusionTempleScoreFormat {
+            get {
+                return ResourceManager.GetString("IllusionTempleScoreFormat", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to A new sacred relic has appeared!.
+        /// </summary>
+        public static string IllusionTempleStatueSpawnedMessage {
+            get {
+                return ResourceManager.GetString("IllusionTempleStatueSpawnedMessage", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to You can&apos;t enter this event..
+        /// </summary>
+        public static string MiniGameEnterFailed {
+            get {
+                return ResourceManager.GetString("MiniGameEnterFailed", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to This event isn&apos;t configured on this server and can&apos;t be started..
+        /// </summary>
+        public static string MiniGameNotConfigured {
+            get {
+                return ResourceManager.GetString("MiniGameNotConfigured", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Your level is too low. You need to be at least level {0} to enter this event..
+        /// </summary>
+        public static string MiniGameCharacterLevelTooLowFormat {
+            get {
+                return ResourceManager.GetString("MiniGameCharacterLevelTooLowFormat", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Your level is too high. You need to be at most level {0} to enter this event..
+        /// </summary>
+        public static string MiniGameCharacterLevelTooHighFormat {
+            get {
+                return ResourceManager.GetString("MiniGameCharacterLevelTooHighFormat", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to You need a ticket to enter this event..
+        /// </summary>
+        public static string MiniGameTicketRequired {
+            get {
+                return ResourceManager.GetString("MiniGameTicketRequired", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to You need {0} zen to enter this event..
+        /// </summary>
+        public static string MiniGameEntranceFeeRequiredFormat {
+            get {
+                return ResourceManager.GetString("MiniGameEntranceFeeRequiredFormat", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Killers can&apos;t enter!.
+        /// </summary>
+        public static string MiniGamePlayerKillersCantEnter {
+            get {
+                return ResourceManager.GetString("MiniGamePlayerKillersCantEnter", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to You can&apos;t enter this event during a guild war..
+        /// </summary>
+        public static string MiniGameNotDuringGuildWar {
+            get {
+                return ResourceManager.GetString("MiniGameNotDuringGuildWar", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to {0} is not open right now..
+        /// </summary>
+        public static string MiniGameNotOpenFormat {
+            get {
+                return ResourceManager.GetString("MiniGameNotOpenFormat", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The battle has begun!.
+        /// </summary>
+        public static string IllusionTempleBattleStartedMessage {
+            get {
+                return ResourceManager.GetString("IllusionTempleBattleStartedMessage", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Your account has been temporarily banned by a game master..
         /// </summary>
