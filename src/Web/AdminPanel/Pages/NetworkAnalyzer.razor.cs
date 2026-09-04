@@ -19,6 +19,17 @@ using MUnique.OpenMU.Web.Shared.Components.Modal;
 public partial class NetworkAnalyzer : IAsyncDisposable
 {
     /// <summary>
+/// <summary>
+    /// The route to this page for a player of a server. The identifier of the server and the
+    /// name of the account or character are appended to it.
+    /// </summary>
+    /// <remarks>
+    /// The connection is searched when the link is opened, so a link doesn't get stale while
+    /// the page which offers it is shown.
+    /// </remarks>
+    internal const string PlayerRoute = "network-analyzer/player/";
+
+    /// <summary>
     /// The route which downloads an archived session, with its identifier appended.
     /// </summary>
     internal const string ArchiveDownloadRoute = "api/network-archive/";
@@ -65,6 +76,8 @@ public partial class NetworkAnalyzer : IAsyncDisposable
 
     private bool _isSidebarCollapsed;
 
+    private bool _isPreselectedConnectionMissing;
+
     private IPacketCaptureService? _captureService;
 
     private IPacketArchive? _archive;
@@ -99,6 +112,21 @@ public partial class NetworkAnalyzer : IAsyncDisposable
     /// </summary>
     [Parameter]
     public Guid? ConnectionId { get; set; }
+
+    /// <summary>
+/// <summary>
+    /// Gets or sets the identifier of the server whose connection should be selected
+    /// initially. It's used together with the <see cref="PlayerName"/>.
+    /// </summary>
+    [Parameter]
+    public int? ServerId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the name of the account or character whose connection should be selected
+    /// initially. It's used together with the <see cref="ServerId"/>.
+    /// </summary>
+    [Parameter]
+    public string? PlayerName { get; set; }
 
     /// <summary>
     /// Gets or sets the identifier of the archived session which should be opened initially.
@@ -234,6 +262,39 @@ public partial class NetworkAnalyzer : IAsyncDisposable
         this._filteredPackets = packets.ToList();
     }
 
+/// <inheritdoc />
+    public async ValueTask DisposeAsync()
+    {
+        await this._disposeCts.CancelAsync().ConfigureAwait(false);
+        this.StopCapture();
+        this._disposeCts.Dispose();
+    }
+
+    /// <inheritdoc />
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync().ConfigureAwait(true);
+        this._captureService = this.ServiceProvider.GetService(typeof(IPacketCaptureService)) as IPacketCaptureService;
+        if (this._captureService is null)
+        {
+            return;
+        }
+
+        _ = await this.RefreshConnectionsAsync().ConfigureAwait(true);
+        if (await this.FindPreselectedConnectionAsync().ConfigureAwait(true) is { } preselected)
+        {
+            await this.OnConnectionSelectedAsync(preselected).ConfigureAwait(true);
+            this._isSidebarCollapsed = true;
+        }
+        else
+        {
+            // A link may be opened when the player is already gone, e.g. because it was
+            // rendered in a list which isn't up to date anymore.
+            this._isPreselectedConnectionMissing = this.ConnectionId is not null || this.PlayerName is not null;
+        }
+
+        _ = this.RefreshPeriodicallyAsync();
+    }
     /// <summary>
     /// Refreshes the list of the connections.
     /// </summary>
@@ -260,6 +321,49 @@ public partial class NetworkAnalyzer : IAsyncDisposable
         return true;
     }
 
+private static bool HasChanged(IReadOnlyList<ICapturedConnectionInfo> current, IReadOnlyList<ICapturedConnectionInfo> updated)
+    {
+        if (current.Count != updated.Count)
+        {
+            return true;
+        }
+
+        for (int i = 0; i < current.Count; i++)
+        {
+            if (current[i].Id != updated[i].Id
+                || current[i].DisplayName != updated[i].DisplayName)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Finds the connection which should be selected initially, if the page was opened for a
+    /// specific connection or player.
+    /// </summary>
+    /// <returns>The connection, if one was requested and found; Otherwise, <see langword="null"/>.</returns>
+    private async ValueTask<ICapturedConnectionInfo?> FindPreselectedConnectionAsync()
+    {
+        if (this._captureService is not { } captureService)
+        {
+            return null;
+        }
+
+        if (this.ConnectionId is { } connectionId)
+        {
+            return this._connections.FirstOrDefault(connection => connection.Id == connectionId);
+        }
+
+        if (this.ServerId is { } serverId && !string.IsNullOrWhiteSpace(this.PlayerName))
+        {
+            return await captureService.FindConnectionAsync(serverId, this.PlayerName).ConfigureAwait(true);
+        }
+
+        return null;
+    }
     private async Task OnConnectionSelectedAsync(ICapturedConnectionInfo connection)
     {
         if (this._captureService is not { } captureService || this._selectedConnection?.Id == connection.Id)
@@ -269,6 +373,7 @@ public partial class NetworkAnalyzer : IAsyncDisposable
 
         this.StopCapture();
         this._selectedSession = null;
+        this._isPreselectedConnectionMissing = false;
 
         this._selectedConnection = connection;
         this._capture = await captureService.StartCaptureAsync(connection.Id).ConfigureAwait(true);

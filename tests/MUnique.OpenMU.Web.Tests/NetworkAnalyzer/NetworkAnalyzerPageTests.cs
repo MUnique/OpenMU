@@ -104,6 +104,60 @@ public class NetworkAnalyzerPageTests
     }
 
     /// <summary>
+    /// Tests if the connection of a player is captured when the page is opened with the deep
+    /// link of another page, e.g. the list of the online accounts.
+    /// </summary>
+    [Test]
+    public void ConnectionOfAPlayerIsCaptured()
+    {
+        var connection = new TestConnectionInfo(serverId: 3) { CharacterName = "TestCharacter" };
+        using var context = CreateContext(new TestCaptureService(connection));
+
+        var component = context.Render<NetworkAnalyzer>(parameters => parameters
+            .Add(page => page.ServerId, 3)
+            .Add(page => page.PlayerName, "TestCharacter"));
+
+        Assert.That(connection.Sinks, Has.Count.EqualTo(1), "The capture should be registered at the connection.");
+        Assert.That(component.Markup, Does.Contain("No packets captured yet"));
+    }
+
+    /// <summary>
+    /// Tests if a note is shown when the player of a deep link isn't connected anymore. Such a
+    /// link is rendered in another page, which may not be up to date anymore when it's used.
+    /// </summary>
+    [Test]
+    public void NoteIsShownWhenThePlayerOfTheLinkIsGone()
+    {
+        var connection = new TestConnectionInfo(serverId: 3) { CharacterName = "TestCharacter" };
+        using var context = CreateContext(new TestCaptureService(connection));
+
+        var component = context.Render<NetworkAnalyzer>(parameters => parameters
+            .Add(page => page.ServerId, 3)
+            .Add(page => page.PlayerName, "AnotherCharacter"));
+
+        Assert.That(component.Markup, Does.Contain("isn't available"));
+        Assert.That(connection.Sinks, Is.Empty, "Nothing should be captured.");
+    }
+
+    /// <summary>
+    /// Tests if the note about a missing connection disappears when another connection is
+    /// selected.
+    /// </summary>
+    [Test]
+    public void NoteAboutAMissingConnectionDisappearsOnSelection()
+    {
+        var connection = new TestConnectionInfo(serverId: 3) { CharacterName = "TestCharacter" };
+        using var context = CreateContext(new TestCaptureService(connection));
+
+        var component = context.Render<NetworkAnalyzer>(parameters => parameters
+            .Add(page => page.ServerId, 3)
+            .Add(page => page.PlayerName, "AnotherCharacter"));
+        component.Find(".list-group-item").Click();
+
+        Assert.That(component.Markup, Does.Not.Contain("isn't available"));
+    }
+
+    /// <summary>
     /// Tests if the packets are shown in chronological order, and that the grid scrolls to
     /// the newest one while the traffic is followed.
     /// </summary>
