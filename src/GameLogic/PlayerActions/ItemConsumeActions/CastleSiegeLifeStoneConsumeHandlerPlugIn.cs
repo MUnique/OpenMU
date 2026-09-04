@@ -17,6 +17,25 @@ using MUnique.OpenMU.PlugIns;
 [Display(Name = nameof(PlugInResources.CastleSiegeLifeStoneConsumeHandlerPlugIn_Name), Description = nameof(PlugInResources.CastleSiegeLifeStoneConsumeHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 public sealed class CastleSiegeLifeStoneConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn
 {
+    private readonly Func<Player, CastleSiegeContext?> _contextResolver;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeLifeStoneConsumeHandlerPlugIn"/> class.
+    /// </summary>
+    public CastleSiegeLifeStoneConsumeHandlerPlugIn()
+        : this(CastleSiegeContextResolver.GetContext)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeLifeStoneConsumeHandlerPlugIn"/> class.
+    /// </summary>
+    /// <param name="contextResolver">The Castle Siege context resolver.</param>
+    internal CastleSiegeLifeStoneConsumeHandlerPlugIn(Func<Player, CastleSiegeContext?> contextResolver)
+    {
+        this._contextResolver = contextResolver;
+    }
+
     /// <inheritdoc />
     public override ItemIdentifier Key => ItemConstants.CastleSiegeLifeStone;
 
@@ -25,7 +44,7 @@ public sealed class CastleSiegeLifeStoneConsumeHandlerPlugIn : BaseConsumeHandle
     {
         if (!this.CheckPreconditions(player, item)
             || !await CastleSiegeSummonLifeStoneAction
-                .SummonAsync(player, CastleSiegeTaxProvider.GetContext(player))
+                .SummonAsync(player, this._contextResolver.Invoke(player))
                 .ConfigureAwait(false))
         {
             return false;

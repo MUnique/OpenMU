@@ -26,11 +26,16 @@ public static class CastleSiegeSummonLifeStoneAction
         try
         {
             var side = context.GetPlayerJoinSide(player);
+            var map = player.CurrentMap;
             if (context.CurrentState != CastleSiegeState.Start
                 || !player.IsAlive
                 || player.GuildStatus is not { } guildStatus
                 || side == CastleSiegeJoinSide.None
-                || context.Configuration.CastleSiegeMapDefinition?.Number != player.CurrentMap?.Definition.Number
+                || map is null
+                || context.Configuration.CastleSiegeMapDefinition?.Number != map.Definition.Number
+                || !map.Terrain.WalkMap[player.Position.X, player.Position.Y]
+                || map.Terrain.SafezoneMap[player.Position.X, player.Position.Y]
+                || map.GetNpcsInRange(player.Position, 0).Count > 0
                 || context.LifeStones.Any(lifeStone => lifeStone.OwnerGuildId == guildStatus.GuildId))
             {
                 return false;

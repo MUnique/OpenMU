@@ -7,7 +7,6 @@ namespace MUnique.OpenMU.GameLogic.CastleSiege.NPC;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
-using MUnique.OpenMU.GameLogic.CastleSiege.Intelligence;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Views.CastleSiege;
 using MUnique.OpenMU.GameLogic.Views.World;
@@ -16,11 +15,19 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// An attackable, guild-owned Life Stone which heals nearby allies after its creation phase.
 /// </summary>
+/// <remarks>
+/// The guild identity is captured when the stone is placed. Player movement and later guild-roster changes do not
+/// remove it; it remains until it is destroyed, its guild captures the Crown, or the battle ends.
+/// </remarks>
 public sealed class CastleSiegeLifeStone : AttackableNpcBase
 {
     private const byte CompletedBuildTime = 5;
+    private const int HealingRange = 3;
+    private const int HealingPercentage = 1;
+    private const int PercentageBase = 100;
     private static readonly TimeSpan BuildStageInterval = TimeSpan.FromSeconds(12);
-    private readonly CastleSiegeLifeStoneIntelligence _intelligence;
+    private static readonly TimeSpan HealingInterval = TimeSpan.FromSeconds(1);
+    private DateTime _nextHealingUtc;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CastleSiegeLifeStone"/> class.
@@ -50,10 +57,6 @@ public sealed class CastleSiegeLifeStone : AttackableNpcBase
         this.OwnerGuildId = ownerGuildId;
         this.JoinSide = joinSide;
         this.CreatedAtUtc = createdAtUtc;
-        this._intelligence = new CastleSiegeLifeStoneIntelligence
-        {
-            Npc = this,
-        };
     }
 
     /// <summary>
@@ -72,16 +75,6 @@ public sealed class CastleSiegeLifeStone : AttackableNpcBase
     public CastleSiegeJoinSide JoinSide { get; }
 
     /// <summary>
-    /// Gets the Castle Siege context which owns this Life Stone.
-    /// </summary>
-    internal CastleSiegeContext Context { get; }
-
-    /// <summary>
-    /// Gets the UTC time at which the creation phase began.
-    /// </summary>
-    internal DateTime CreatedAtUtc { get; }
-
-    /// <summary>
     /// Gets the client-visible Life Stone creation stage.
     /// </summary>
     public byte BuildTime { get; private set; }
@@ -91,6 +84,16 @@ public sealed class CastleSiegeLifeStone : AttackableNpcBase
     /// </summary>
     public bool IsActive => this.BuildTime >= CompletedBuildTime;
 
+    /// <summary>
+    /// Gets the Castle Siege context which owns this Life Stone.
+    /// </summary>
+    internal CastleSiegeContext Context { get; }
+
+    /// <summary>
+    /// Gets the UTC time at which the creation phase began.
+    /// </summary>
+    internal DateTime CreatedAtUtc { get; }
+
     /// <inheritdoc />
     public override void Initialize()
     {
@@ -99,13 +102,6 @@ public sealed class CastleSiegeLifeStone : AttackableNpcBase
         {
             throw new InvalidOperationException("The Life Stone monster definition requires a positive maximum health.");
         }
-    }
-
-    /// <inheritdoc />
-    public override void OnSpawn()
-    {
-        base.OnSpawn();
-        this._intelligence.Start();
     }
 
     /// <inheritdoc />
@@ -129,17 +125,6 @@ public sealed class CastleSiegeLifeStone : AttackableNpcBase
     }
 
     /// <summary>
-    /// Sends the current creation phase to a player which entered the siege map.
-    /// </summary>
-    /// <param name="player">The player to synchronize.</param>
-    /// <returns>A task that represents the notification.</returns>
-    internal ValueTask SynchronizeBuildTimeAsync(Player player)
-    {
-        return player.InvokeViewPlugInAsync<ICastleSiegeLifeStoneStatePlugIn>(
-            view => view.ShowLifeStoneBuildTimeAsync(this.Id, this.BuildTime));
-    }
-
-    /// <summary>
     /// Destroys this Life Stone without creating loot or experience rewards.
     /// </summary>
     /// <returns>A task that represents the destruction operation.</returns>
@@ -152,6 +137,7 @@ public sealed class CastleSiegeLifeStone : AttackableNpcBase
         }
 
         this.Dispose();
+        this.OnRemoveFromMap();
     }
 
     /// <summary>
@@ -159,7 +145,42 @@ public sealed class CastleSiegeLifeStone : AttackableNpcBase
     /// </summary>
     /// <param name="utcNow">The current UTC time.</param>
     /// <returns>A task that represents the update operation.</returns>
-    internal ValueTask TickAsync(DateTime utcNow) => this._intelligence.TickAsync(utcNow);
+    internal async ValueTask TickAsync(DateTime utcNow)
+    {
+        if (!this.IsAlive || this.Context.CurrentState != CastleSiegeState.Start)
+        {
+            return;
+        }
+
+        var buildTime = (byte)Math.Min(
+            CompletedBuildTime,
+            Math.Max(0, (utcNow - this.CreatedAtUtc).Ticks / BuildStageInterval.Ticks));
+        if (buildTime > this.BuildTime)
+        {
+            this.BuildTime = buildTime;
+            await this.BroadcastBuildTimeAsync().ConfigureAwait(false);
+        }
+
+        if (!this.IsActive || utcNow < this._nextHealingUtc)
+        {
+            return;
+        }
+
+        this._nextHealingUtc = utcNow + HealingInterval;
+        foreach (var player in this.Context.GetSiegePlayers())
+        {
+            if (player is not { IsAlive: true, Attributes: { } attributes }
+                || this.Context.GetPlayerJoinSide(player) != this.JoinSide
+                || !player.IsInRange(this.Position, HealingRange))
+            {
+                continue;
+            }
+
+            RestorePercentage(attributes, Stats.CurrentHealth, Stats.MaximumHealth);
+            RestorePercentage(attributes, Stats.CurrentMana, Stats.MaximumMana);
+            RestorePercentage(attributes, Stats.CurrentAbility, Stats.MaximumAbility);
+        }
+    }
 
     /// <inheritdoc />
     protected override bool CanBeAttackedBy(IAttacker attacker)
@@ -177,6 +198,8 @@ public sealed class CastleSiegeLifeStone : AttackableNpcBase
     /// <inheritdoc />
     protected override async ValueTask OnDeathAsync(IAttacker attacker)
     {
+        // Deliberately skip the base implementation: Life Stones must not respawn, grant experience, drop loot,
+        // or invoke generic attackable-kill rewards. Observers still need the standard death notification.
         this.Context.RemoveLifeStone(this);
         await this.ForEachWorldObserverAsync<IObjectGotKilledPlugIn>(
                 view => view.ObjectGotKilledAsync(this, attacker),
@@ -190,46 +213,9 @@ public sealed class CastleSiegeLifeStone : AttackableNpcBase
         if (managed)
         {
             this.Context.RemoveLifeStone(this);
-            this._intelligence.Pause();
         }
 
         base.Dispose(managed);
-    }
-
-    internal async ValueTask TickCoreAsync(DateTime utcNow)
-    {
-        if (!this.IsAlive || this.Context.CurrentState != CastleSiegeState.Start)
-        {
-            return;
-        }
-
-        var buildTime = (byte)Math.Min(
-            CompletedBuildTime,
-            Math.Max(0, (utcNow - this.CreatedAtUtc).Ticks / BuildStageInterval.Ticks));
-        if (buildTime > this.BuildTime)
-        {
-            this.BuildTime = buildTime;
-            await this.BroadcastBuildTimeAsync().ConfigureAwait(false);
-        }
-
-        if (!this.IsActive)
-        {
-            return;
-        }
-
-        foreach (var player in this.Context.GetSiegePlayers())
-        {
-            if (player is not { IsAlive: true, Attributes: { } attributes }
-                || this.Context.GetPlayerJoinSide(player) != this.JoinSide
-                || !player.IsInRange(this.Position, 3))
-            {
-                continue;
-            }
-
-            RestorePercentage(attributes, Stats.CurrentHealth, Stats.MaximumHealth);
-            RestorePercentage(attributes, Stats.CurrentMana, Stats.MaximumMana);
-            RestorePercentage(attributes, Stats.CurrentAbility, Stats.MaximumAbility);
-        }
     }
 
     private static void RestorePercentage(
@@ -243,7 +229,7 @@ public sealed class CastleSiegeLifeStone : AttackableNpcBase
             return;
         }
 
-        var restored = maximum / 100;
+        var restored = maximum * HealingPercentage / PercentageBase;
         attributes[currentAttribute] = Math.Min(maximum, attributes[currentAttribute] + restored);
     }
 }

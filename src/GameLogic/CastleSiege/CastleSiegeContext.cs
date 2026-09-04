@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.CastleSiege;
 
 using System.Threading;
+using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.CastleSiege.NPC;
@@ -319,13 +320,13 @@ public class CastleSiegeContext : IEventStateProvider
             lifeStone.Initialize();
             await map.AddAsync(lifeStone).ConfigureAwait(false);
             lifeStone.OnSpawn();
-            await lifeStone.BroadcastBuildTimeAsync().ConfigureAwait(false);
             return lifeStone;
         }
-        catch
+        catch (Exception ex)
         {
             await lifeStone.DestroyAsync().ConfigureAwait(false);
-            throw;
+            player.Logger.LogError(ex, "Castle Siege Life Stone placement failed.");
+            return null;
         }
     }
 
@@ -353,19 +354,6 @@ public class CastleSiegeContext : IEventStateProvider
         foreach (var lifeStone in this._lifeStones.Values.ToArray())
         {
             await lifeStone.TickAsync(utcNow).ConfigureAwait(false);
-        }
-    }
-
-    /// <summary>
-    /// Sends the active Life Stone creation states to a player entering the siege map.
-    /// </summary>
-    /// <param name="player">The player to synchronize.</param>
-    /// <returns>A task that represents the synchronization operation.</returns>
-    internal async ValueTask SynchronizeLifeStonesAsync(Player player)
-    {
-        foreach (var lifeStone in this._lifeStones.Values.ToArray())
-        {
-            await lifeStone.SynchronizeBuildTimeAsync(player).ConfigureAwait(false);
         }
     }
 

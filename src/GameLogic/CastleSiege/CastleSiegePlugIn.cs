@@ -275,7 +275,6 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
         }
 
         await context.NpcController.SynchronizePlayerAsync(player).ConfigureAwait(false);
-        await context.SynchronizeLifeStonesAsync(player).ConfigureAwait(false);
         if (context.CurrentState is CastleSiegeState.Ready or CastleSiegeState.Start
             && context.Configuration.CastleSiegeMapDefinition?.Number == player.CurrentMap?.Definition.Number)
         {

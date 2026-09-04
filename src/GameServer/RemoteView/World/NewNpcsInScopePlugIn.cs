@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World;
 
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.CastleSiege.NPC;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Network;
@@ -44,7 +45,7 @@ public class NewNpcsInScopePlugIn : INewNpcsInScopePlugIn
 
         if (npcs.Any())
         {
-            await NpcsInScopeAsync(isSpawned, connection, npcs).ConfigureAwait(false);
+            await NpcsInScopeAsync(isSpawned, connection, npcs, this._player.GuildStatus?.GuildId).ConfigureAwait(false);
         }
 
         if (summons.Any())
@@ -53,7 +54,11 @@ public class NewNpcsInScopePlugIn : INewNpcsInScopePlugIn
         }
     }
 
-    private static async ValueTask NpcsInScopeAsync(bool isSpawned, IConnection connection, ICollection<NonPlayerCharacter> npcs)
+    private static async ValueTask NpcsInScopeAsync(
+        bool isSpawned,
+        IConnection connection,
+        ICollection<NonPlayerCharacter> npcs,
+        uint? observerGuildId)
     {
         int Write()
         {
@@ -74,7 +79,7 @@ public class NewNpcsInScopePlugIn : INewNpcsInScopePlugIn
                     npcBlock.Id |= 0x8000;
                 }
 
-                npcBlock.TypeNumber = (ushort)(npc.Definition?.Number ?? 0);
+                npcBlock.TypeNumber = GetNpcTypeNumber(npc, observerGuildId);
                 npcBlock.CurrentPositionX = npc.Position.X;
                 npcBlock.CurrentPositionY = npc.Position.Y;
 
@@ -99,6 +104,24 @@ public class NewNpcsInScopePlugIn : INewNpcsInScopePlugIn
         }
 
         await connection.SendAsync(Write).ConfigureAwait(false);
+    }
+
+    private static ushort GetNpcTypeNumber(NonPlayerCharacter npc, uint? observerGuildId)
+    {
+        var typeNumber = (ushort)(npc.Definition?.Number ?? 0);
+        if (npc is not CastleSiegeLifeStone lifeStone)
+        {
+            return typeNumber;
+        }
+
+        // MuMain reserves bits 4-6 of the high byte for the build stage and bit 7 for the owning guild marker.
+        typeNumber |= (ushort)((lifeStone.BuildTime & 0x07) << 12);
+        if (lifeStone.OwnerGuildId == observerGuildId)
+        {
+            typeNumber |= 0x8000;
+        }
+
+        return typeNumber;
     }
 
     private static async ValueTask SummonedMonstersInScopeAsync(bool isSpawned, IConnection connection, ICollection<ISummonable> summons)
