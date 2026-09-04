@@ -1,11 +1,13 @@
 ﻿@page "/logged-in"
 @using MUnique.OpenMU.DataModel
 @using MUnique.OpenMU.DataModel.Entities
+@using MUnique.OpenMU.Network.Analyzer
 @using MUnique.OpenMU.Web.AdminPanel.Properties
 @using MUnique.OpenMU.Web.Shared.Services
 
 @inject LoggedInAccountService AccountService;
 @inject OfflineAccountService OfflineService;
+@inject IServiceProvider ServiceProvider;
 
 <PageTitle>OpenMU: @Resources.OnlineAccounts</PageTitle>
 <Breadcrumb IsFirstFromRoot="true" Caption="@Resources.OnlineAccounts"/>
@@ -25,6 +27,13 @@
         <button class="btn btn-warning btn-sm" type="button" @onclick="() => this.AccountService.SetAccountOfflineAsync(item)">
           <span class="oi oi-bolt" aria-hidden="true" /> @Resources.Disconnect
         </button>
+        @if (this.IsNetworkAnalyzerAvailable)
+        {
+          <a class="btn btn-secondary btn-sm ms-1" title="@Resources.AnalyzeTraffic"
+             href="@($"{NetworkAnalyzer.PlayerRoute}{item.Server}/{Uri.EscapeDataString(item.LoginName)}")">
+            <span class="oi oi-pulse" aria-hidden="true" /> @Resources.NetworkAnalyzer
+          </a>
+        }
       </td>
     </ItemTemplate>
   </DataTable>
@@ -52,3 +61,12 @@
     </ItemTemplate>
   </DataTable>
 </div>
+
+@code {
+
+    /// <summary>
+    /// Gets a value indicating whether the network analyzer is available. It needs the servers
+    /// in the same process, so it's only registered in the all-in-one deployment.
+    /// </summary>
+    private bool IsNetworkAnalyzerAvailable => this.ServiceProvider.GetService(typeof(IPacketCaptureService)) is not null;
+}

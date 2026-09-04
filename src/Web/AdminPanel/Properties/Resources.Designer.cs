@@ -187,6 +187,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Analyze the network traffic.
+        /// </summary>
+        public static string AnalyzeTraffic {
+            get {
+                return ResourceManager.GetString("AnalyzeTraffic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to An error occurred while processing your request.
         /// </summary>
         public static string AnErrorOccurredWhileProcessingYourRequest {
@@ -489,6 +498,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string ConfirmSetupHint {
             get {
                 return ResourceManager.GetString("ConfirmSetupHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The requested connection isn&apos;t available (anymore). Please select one of the listed connections..
+        /// </summary>
+        public static string ConnectionNotFound {
+            get {
+                return ResourceManager.GetString("ConnectionNotFound", resourceCulture);
             }
         }
         

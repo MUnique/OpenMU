@@ -1,5 +1,6 @@
 ﻿@page "/network-analyzer"
 @page "/network-analyzer/{ConnectionId:guid}"
+@page "/network-analyzer/player/{ServerId:int}/{PlayerName}"
 
 @using MUnique.OpenMU.Network.Analyzer
 @using MUnique.OpenMU.Web.AdminPanel.Components.NetworkAnalyzer
@@ -15,6 +16,10 @@
 }
 else
 {
+  @if (this._isPreselectedConnectionMissing)
+  {
+    <div class="alert alert-warning">@Resources.ConnectionNotFound</div>
+  }
   <div class="container">
     <div class="row g-2 network-analyzer">
       <div class="@(this._isSidebarCollapsed ? "col-auto" : "col-2")">

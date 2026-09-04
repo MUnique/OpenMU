@@ -14,6 +14,16 @@ using MUnique.OpenMU.Network.Analyzer;
 public partial class NetworkAnalyzer : IAsyncDisposable
 {
     /// <summary>
+    /// The route to this page for a player of a server. The identifier of the server and the
+    /// name of the account or character are appended to it.
+    /// </summary>
+    /// <remarks>
+    /// The connection is searched when the link is opened, so a link doesn't get stale while
+    /// the page which offers it is shown.
+    /// </remarks>
+    internal const string PlayerRoute = "network-analyzer/player/";
+
+    /// <summary>
     /// The interval in which the list of the connections is refreshed.
     /// </summary>
     private static readonly TimeSpan ConnectionRefreshInterval = TimeSpan.FromSeconds(5);
@@ -49,6 +59,8 @@ public partial class NetworkAnalyzer : IAsyncDisposable
 
     private bool _isSidebarCollapsed;
 
+    private bool _isPreselectedConnectionMissing;
+
     private IPacketCaptureService? _captureService;
 
     /// <summary>
@@ -77,6 +89,20 @@ public partial class NetworkAnalyzer : IAsyncDisposable
     /// </summary>
     [Parameter]
     public Guid? ConnectionId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the identifier of the server whose connection should be selected
+    /// initially. It's used together with the <see cref="PlayerName"/>.
+    /// </summary>
+    [Parameter]
+    public int? ServerId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the name of the account or character whose connection should be selected
+    /// initially. It's used together with the <see cref="ServerId"/>.
+    /// </summary>
+    [Parameter]
+    public string? PlayerName { get; set; }
 
     /// <summary>
     /// Gets or sets the service provider, used to resolve the capture service optionally:
@@ -136,10 +162,16 @@ public partial class NetworkAnalyzer : IAsyncDisposable
         }
 
         _ = await this.RefreshConnectionsAsync().ConfigureAwait(true);
-        if (this.ConnectionId is { } connectionId
-            && this._connections.FirstOrDefault(connection => connection.Id == connectionId) is { } preselected)
+        if (await this.FindPreselectedConnectionAsync().ConfigureAwait(true) is { } preselected)
         {
             await this.OnConnectionSelectedAsync(preselected).ConfigureAwait(true);
+            this._isSidebarCollapsed = true;
+        }
+        else
+        {
+            // A link may be opened when the player is already gone, e.g. because it was
+            // rendered in a list which isn't up to date anymore.
+            this._isPreselectedConnectionMissing = this.ConnectionId is not null || this.PlayerName is not null;
         }
 
         _ = this.RefreshPeriodicallyAsync();
@@ -190,6 +222,31 @@ public partial class NetworkAnalyzer : IAsyncDisposable
         return false;
     }
 
+    /// <summary>
+    /// Finds the connection which should be selected initially, if the page was opened for a
+    /// specific connection or player.
+    /// </summary>
+    /// <returns>The connection, if one was requested and found; Otherwise, <see langword="null"/>.</returns>
+    private async ValueTask<ICapturedConnectionInfo?> FindPreselectedConnectionAsync()
+    {
+        if (this._captureService is not { } captureService)
+        {
+            return null;
+        }
+
+        if (this.ConnectionId is { } connectionId)
+        {
+            return this._connections.FirstOrDefault(connection => connection.Id == connectionId);
+        }
+
+        if (this.ServerId is { } serverId && !string.IsNullOrWhiteSpace(this.PlayerName))
+        {
+            return await captureService.FindConnectionAsync(serverId, this.PlayerName).ConfigureAwait(true);
+        }
+
+        return null;
+    }
+
     private async Task OnConnectionSelectedAsync(ICapturedConnectionInfo connection)
     {
         if (this._captureService is not { } captureService || this._selectedConnection?.Id == connection.Id)
@@ -198,6 +255,7 @@ public partial class NetworkAnalyzer : IAsyncDisposable
         }
 
         this.StopCapture();
+        this._isPreselectedConnectionMissing = false;
 
         this._selectedConnection = connection;
         this._capture = await captureService.StartCaptureAsync(connection.Id).ConfigureAwait(true);
