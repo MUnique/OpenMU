@@ -12,12 +12,19 @@ export class Attackable<TData extends ObjectData> extends THREE.Mesh implements 
     public material: THREE.Material;
     public readonly nameLabel: NameLabel;
 
-    private moveTween: TWEEN.Tween;
+    /*
+     * All tweens of the current movement - the tween of the first step and the
+     * step tweens which are chained to it. They are all kept, because stopping
+     * the first tween doesn't stop the chained ones anymore as soon as it finished.
+     */
+    private moveTweens: TWEEN.Tween[] = [];
+    private rotateTween: TWEEN.Tween | null = null;
+    private scaleTween: TWEEN.Tween | null = null;
+    private fadeTween: TWEEN.Tween | null = null;
 
     constructor(data: TData, geometry: THREE.Geometry, material: THREE.Material) {
         super(geometry, material);
         this.data = data;
-        this.moveTween = null;
         this.nameLabel = new NameLabel();
         this.nameLabel.position.z = NAME_LABEL_Z_POSITION;
         this.add(this.nameLabel);
@@ -31,14 +38,26 @@ export class Attackable<TData extends ObjectData> extends THREE.Mesh implements 
         this.nameLabel.hide();
     }
 
+    /**
+     * Stops all running animations and releases the resources of this object.
+     * The geometry is not disposed, because it's shared between all objects of the same type.
+     */
+    public dispose(): void {
+        this.stopTweens();
+        this.remove(this.nameLabel);
+        this.nameLabel.dispose();
+        this.material.dispose();
+    }
+
     public gotKilled(): void {
         // we fade the color out
         const fadeOutDurationMs = 1000;
         const startingOpacity = 1;
         const fadedOutOpacity = 0.1;
-        
+
+        this.fadeTween?.stop();
         const state = { opacity: startingOpacity };
-        const tween = new TWEEN.Tween(state)
+        this.fadeTween = new TWEEN.Tween(state)
             .to({ opacity: fadedOutOpacity }, fadeOutDurationMs)
             .onUpdate(() => this.material.opacity = state.opacity)
             .easing(TWEEN.Easing.Circular.Out)
@@ -49,8 +68,12 @@ export class Attackable<TData extends ObjectData> extends THREE.Mesh implements 
         const scaleUpDurationMs = 500;
         this.data = newData;
         this.material.opacity = 1.0;
+
+        this.fadeTween?.stop();
+        this.fadeTween = null;
+        this.scaleTween?.stop();
         const state = { scale: 0 };
-        const tween = new TWEEN.Tween(state)
+        this.scaleTween = new TWEEN.Tween(state)
             .to({ scale: 1 }, scaleUpDurationMs)
             .onUpdate(() => this.scale.setScalar(state.scale))
             .easing(TWEEN.Easing.Back.Out)
@@ -61,38 +84,41 @@ export class Attackable<TData extends ObjectData> extends THREE.Mesh implements 
 
     public moveTo(newX: number, newY: number, moveType: any, walkDelay: number, steps: Step[]): void {
         const state = { x: this.data.x, y: this.data.y };
-        this.data = this.data = Object.assign({}, this.data, { x: newX, y: newY });
+        this.data = Object.assign({}, this.data, { x: newX, y: newY });
 
-        if (this.moveTween !== null) {
-            this.moveTween.stop();
-        }
+        this.stopMoveTweens();
 
-        this.moveTween = new TWEEN.Tween(state)
-            .onUpdate(() => this.setObjectPositionOnMap(state.x, state.y));
-
-        if (moveType === "Instant" || moveType === 1) {
+        const isWalking = moveType !== "Instant" && moveType !== 1
+            && steps !== undefined && steps !== null && steps.length > 0;
+        if (!isWalking) {
             const moveDurationMs = 300;
-            this.moveTween = this.moveTween.easing(TWEEN.Easing.Elastic.Out)
-                .to({ x: newX, y: newY }, moveDurationMs);
-        } else {
-            for (const i in steps) {
-                if (steps.hasOwnProperty(i)) {
-                    const step = steps[i];
-                    const stepTween = new TWEEN.Tween(state)
-                        .to({ x: step.x, y: step.y }, walkDelay)
-                        .onStart(() => this.rotateTo(step.direction))
-                        .onUpdate(() => this.setObjectPositionOnMap(state.x, state.y));
-                    this.moveTween.chain(stepTween);
-                }
-            }
+            const moveTween = new TWEEN.Tween(state)
+                .to({ x: newX, y: newY }, moveDurationMs)
+                .onUpdate(() => this.setObjectPositionOnMap(state.x, state.y))
+                .easing(TWEEN.Easing.Elastic.Out);
+            this.moveTweens.push(moveTween);
+            moveTween.start();
+            return;
         }
 
-        this.moveTween.start();
+        // Each step tween is chained to its predecessor, so that the steps are walked one after another.
+        let previousTween: TWEEN.Tween | null = null;
+        for (const step of steps) {
+            const stepTween = new TWEEN.Tween(state)
+                .to({ x: step.x, y: step.y }, walkDelay)
+                .onStart(() => this.rotateTo(step.direction))
+                .onUpdate(() => this.setObjectPositionOnMap(state.x, state.y));
+            previousTween?.chain(stepTween);
+            previousTween = stepTween;
+            this.moveTweens.push(stepTween);
+        }
+
+        this.moveTweens[0].start();
     }
 
     public rotateTo(rotation: Direction): void {
         if (this.data !== undefined) {
-            this.data = Object.assign({}, this.data, rotation);
+            this.data = Object.assign({}, this.data, { direction: rotation });
         }
 
         const degreesOfOneTurn = 360;
@@ -100,12 +126,32 @@ export class Attackable<TData extends ObjectData> extends THREE.Mesh implements 
         const targetAngle = THREE.Math.degToRad((rotation * degreesOfOneTurn) / numberOfDirectionValues);
         const rotateDurationMs = 200;
 
+        this.rotateTween?.stop();
         const state = { z: this.rotation.z };
-        new TWEEN.Tween(state)
+        this.rotateTween = new TWEEN.Tween(state)
             .to({ z: targetAngle }, rotateDurationMs)
             .onUpdate(() => this.rotation.z = state.z)
             .easing(TWEEN.Easing.Quadratic.Out)
             .start();
+    }
+
+    private stopTweens(): void {
+        this.stopMoveTweens();
+
+        this.rotateTween?.stop();
+        this.rotateTween = null;
+        this.scaleTween?.stop();
+        this.scaleTween = null;
+        this.fadeTween?.stop();
+        this.fadeTween = null;
+    }
+
+    private stopMoveTweens(): void {
+        for (const moveTween of this.moveTweens) {
+            moveTween.stop();
+        }
+
+        this.moveTweens = [];
     }
 
     private setRotation(value: Direction): void {
