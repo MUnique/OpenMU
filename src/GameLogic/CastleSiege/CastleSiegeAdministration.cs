@@ -254,7 +254,8 @@ public sealed class CastleSiegeAdministration
     {
         if (chaosTax > CastleSiegeTaxProvider.MaximumPercentageTax
             || storeTax > CastleSiegeTaxProvider.MaximumPercentageTax
-            || huntTax is < 0 or > CastleSiegeTaxProvider.MaximumHuntTax)
+            || huntTax < 0
+            || huntTax > CastleSiegeTaxProvider.MaximumHuntTax)
         {
             return CastleSiegeAdministrationResult.Failed(CastleSiegeAdministrationError.TaxOutOfRange);
         }

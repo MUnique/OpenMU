@@ -205,6 +205,10 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
                 var forcedState = (CastleSiegeState)Volatile.Read(ref this._forcedState);
                 await this.ChangeStateAsync(context, context.Schedule.CreatePeriod(forcedState, utcNow), logger).ConfigureAwait(false);
             }
+            else
+            {
+                // No requested transition is pending; continue with the regular schedule below.
+            }
 
             await this.AdvanceExpiredStatesAsync(context, utcNow, logger).ConfigureAwait(false);
             await this.OnTickAsync(context, utcNow).ConfigureAwait(false);
