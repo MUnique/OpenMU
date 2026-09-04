@@ -564,7 +564,7 @@ public enum UpdateVersion
     /// The version of the <see cref="RemoveDuplicateStatAttributesPlugInSeason6"/>.
     /// </summary>
     RemoveDuplicateStatAttributesSeason6 = 111,
-    
+
     /// <summary>
     /// The version of the <see cref="ConfigureCastleSiegeLifeStoneUpdatePlugIn"/>.
     /// </summary>

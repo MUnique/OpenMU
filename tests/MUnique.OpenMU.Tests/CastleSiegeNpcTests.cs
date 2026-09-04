@@ -996,6 +996,43 @@ public class CastleSiegeNpcTests
     }
 
     /// <summary>
+    /// Verifies that an invalid Life Stone definition rejects placement without consuming the item.
+    /// </summary>
+    [Test]
+    public async ValueTask LifeStoneMisconfigurationDoesNotEscapeConsumeHandlerAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        await AddSiegePlayerAsync(fixture, CastleSiegeJoinSide.Attack1, 60, 60).ConfigureAwait(false);
+        try
+        {
+            fixture.Context.CurrentState = CastleSiegeState.Start;
+            fixture.GameServerContext.Configuration.Monsters
+                .Single(monster => monster.Number == CastleSiegeLifeStone.MonsterNumber)
+                .Attributes
+                .Single(attribute => attribute.AttributeDefinition == Stats.MaximumHealth)
+                .Value = 0;
+            var item = fixture.Player.PersistenceContext.CreateNew<Item>();
+            item.Durability = 1;
+            var handler = new CastleSiegeLifeStoneConsumeHandlerPlugIn(_ => fixture.Context);
+
+            Assert.That(
+                await handler.ConsumeItemAsync(fixture.Player, item, null, FruitUsage.Undefined).ConfigureAwait(false),
+                Is.False);
+            Assert.Multiple(() =>
+            {
+                Assert.That(item.Durability, Is.EqualTo(1));
+                Assert.That(fixture.Context.LifeStones, Is.Empty);
+            });
+        }
+        finally
+        {
+            await fixture.GameServerContext.RemovePlayerAsync(fixture.Player).ConfigureAwait(false);
+            await fixture.Context.KillAllLifeStonesAsync().ConfigureAwait(false);
+            await fixture.Context.NpcController.DespawnAllAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
     /// Verifies that leaving the battle state removes all active Life Stones.
     /// </summary>
     [Test]
