@@ -325,6 +325,21 @@ public sealed class CastleSiegeNpcController
         }
     }
 
+    /// <summary>
+    /// Releases every warfare machine operated by the specified player.
+    /// </summary>
+    /// <param name="player">The player whose machine operation ended.</param>
+    internal void ClearMachineOperator(Player player)
+    {
+        foreach (var machine in this.GetRuntimeSnapshot()
+                     .Select(runtime => runtime.SpawnedInstance)
+                     .OfType<CastleSiegeMachine>()
+                     .Where(machine => ReferenceEquals(machine.Operator, player)))
+        {
+            machine.Operator = null;
+        }
+    }
+
     private static bool IsMachine(CastleSiegeNpcDefinition definition)
     {
         var monsterNumber = definition.MonsterDefinition?.Number;
@@ -542,13 +557,20 @@ public sealed class CastleSiegeNpcController
                 this._context,
                 runtime,
                 new CastleSiegeLeverIntelligence()),
-            var number when number == CastleSiegeMachine.AttackMonsterNumber
-                            || number == CastleSiegeMachine.DefenseMonsterNumber => new CastleSiegeMachine(
+            var number when number == CastleSiegeMachine.AttackMonsterNumber => new CastleSiegeMachine(
                 spawnArea,
                 definition,
                 map,
                 runtime,
-                new CastleSiegeMachineIntelligence()),
+                new CastleSiegeMachineIntelligence(),
+                CastleSiegeMachineType.Attack),
+            var number when number == CastleSiegeMachine.DefenseMonsterNumber => new CastleSiegeMachine(
+                spawnArea,
+                definition,
+                map,
+                runtime,
+                new CastleSiegeMachineIntelligence(),
+                CastleSiegeMachineType.Defense),
             _ => throw new NotSupportedException($"Castle Siege NPC {definition.Number} is not supported."),
         };
     }

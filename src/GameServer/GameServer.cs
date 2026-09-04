@@ -27,7 +27,7 @@ using Nito.AsyncEx;
 /// <summary>
 /// The game server to which game clients can connect.
 /// </summary>
-public sealed class GameServer : IGameServer, IDisposable, IGameServerContextProvider, IConnectionSource
+public sealed class GameServer : IGameServer, IDisposable, IAsyncDisposable, IGameServerContextProvider, IConnectionSource
 {
     private readonly ILogger<GameServer> _logger;
 
@@ -456,6 +456,22 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
     public void Dispose()
     {
         (this._gameContext as IDisposable)?.Dispose();
+    }
+
+    /// <inheritdoc />
+    /// <remarks>
+    /// In contrast to <see cref="Dispose"/>, this also stops the periodic tasks of the game context.
+    /// </remarks>
+    public async ValueTask DisposeAsync()
+    {
+        if (this._gameContext is IAsyncDisposable asyncDisposable)
+        {
+            await asyncDisposable.DisposeAsync().ConfigureAwait(false);
+        }
+        else
+        {
+            this.Dispose();
+        }
     }
 
     private async ValueTask RemovePlayerFromGuildAsync(Player player, bool unregisterFromContext = true)

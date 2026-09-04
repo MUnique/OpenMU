@@ -18,4 +18,14 @@ public static class StringExtensions
     {
         return name.Substring(0, 1).ToLowerInvariant() + name.Substring(1);
     }
+
+    /// <summary>
+    /// Converts the name to pascal case.
+    /// </summary>
+    /// <param name="name">The name which should be converted.</param>
+    /// <returns>The converted name in pascal case.</returns>
+    internal static string ToPascalCase(this string name)
+    {
+        return name.Substring(0, 1).ToUpperInvariant() + name.Substring(1);
+    }
 }

@@ -176,6 +176,16 @@ public class CastleSiegeContext : IEventStateProvider
     internal DateTime NextNpcSaveUtc { get; set; } = DateTime.MaxValue;
 
     /// <summary>
+    /// Gets or sets the next economy persistence time.
+    /// </summary>
+    internal DateTime NextEconomySaveUtc { get; set; } = DateTime.MinValue;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the in-memory economy state needs to be persisted.
+    /// </summary>
+    internal bool IsEconomyPersistencePending { get; set; }
+
+    /// <summary>
     /// Gets or sets the next participant tracking time.
     /// </summary>
     internal DateTime NextParticipantUpdateUtc { get; set; } = DateTime.MaxValue;
@@ -272,6 +282,7 @@ public class CastleSiegeContext : IEventStateProvider
 
         CopyScalarState(this.SiegeData, persistentData);
         await context.SaveChangesAsync().ConfigureAwait(false);
+        this.IsEconomyPersistencePending = false;
     }
 
     /// <summary>
