@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using MUnique.OpenMU.AdminPanel.Host;
 using MUnique.OpenMU.Dapr.Common;
 using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
 using MUnique.OpenMU.ServerClients;
 using MUnique.OpenMU.Persistence.EntityFramework.AdminAuth;
@@ -25,6 +26,7 @@ services.AddPeristenceProvider(true)
     .AddSingleton<ILoginServer, LoginServer>()
     .AddSingleton<IGameServerInstanceManager, DockerGameServerInstanceManager>()
     .AddSingleton<IConnectServerInstanceManager, DockerConnectServerInstanceManager>()
+    .AddSingleton<IBackupService, BackupService>()
     .AddAdminUserRepository();
 
 builder.AddAdminPanel();

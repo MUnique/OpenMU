@@ -14,13 +14,15 @@ using MUnique.OpenMU.Persistence.AdminAuth;
 public static class AdminAuthServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds the database backed <see cref="IAdminUserRepository"/> to the service collection.
+    /// Adds the database backed <see cref="IAdminUserRepository"/> and <see cref="IApiKeyRepository"/>
+    /// to the service collection.
     /// </summary>
     /// <param name="services">The service collection.</param>
     /// <returns>The same instance, to allow chaining of further calls.</returns>
     public static IServiceCollection AddAdminUserRepository(this IServiceCollection services)
     {
         services.TryAddSingleton<IAdminUserRepository, AdminUserRepository>();
+        services.TryAddSingleton<IApiKeyRepository, ApiKeyRepository>();
         return services;
     }
 }

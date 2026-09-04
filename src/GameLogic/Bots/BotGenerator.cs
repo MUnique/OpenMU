@@ -392,7 +392,11 @@ internal sealed class BotGenerator
         character.CreateDate = DateTime.UtcNow;
         character.KeyConfiguration = CreateDefaultKeyConfiguration();
 
-        foreach (var attribute in characterClass.StatAttributes.Select(a => context.CreateNew<StatAttribute>(a.Attribute, a.BaseValue)))
+        // Distinct, because a character class may define the same stat attribute more than once (data
+        // which got duplicated by an update); a character must never hold an attribute twice.
+        foreach (var attribute in characterClass.StatAttributes
+                     .DistinctBy(a => a.Attribute)
+                     .Select(a => context.CreateNew<StatAttribute>(a.Attribute, a.BaseValue)))
         {
             character.Attributes.Add(attribute);
         }

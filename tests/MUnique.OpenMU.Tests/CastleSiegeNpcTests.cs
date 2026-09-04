@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using System.Threading;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
@@ -827,6 +828,259 @@ public class CastleSiegeNpcTests
     }
 
     /// <summary>
+    /// Verifies machine-side authorization, exclusive operation, and stale-operator replacement.
+    /// </summary>
+    [Test]
+    public async ValueTask MachineInteractionRequiresCorrectSideAndSingleOperatorAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var contender = await PlayerTestHelper.CreatePlayerAsync(fixture.GameServerContext).ConfigureAwait(false);
+        contender.SelectedCharacter!.Id = Guid.NewGuid();
+        try
+        {
+            fixture.Context.CurrentState = CastleSiegeState.Start;
+            await fixture.Context.NpcController.SpawnMachinesAsync().ConfigureAwait(false);
+            await AddSiegePlayerAsync(fixture, CastleSiegeJoinSide.Attack1, 20, 20).ConfigureAwait(false);
+            await AddSiegePlayerAsync(fixture, contender, CastleSiegeJoinSide.Attack2, 20, 21).ConfigureAwait(false);
+            var attackMachine = fixture.Context.NpcController
+                .GetRuntimeSnapshot()
+                .Select(runtime => runtime.SpawnedInstance)
+                .OfType<CastleSiegeMachine>()
+                .Single(machine => machine.MachineType == CastleSiegeMachineType.Attack);
+            var talkPlugIn = new CastleSiegeMachineTalkPlugIn(_ => fixture.Context);
+            var firstInteraction = new NpcTalkEventArgs();
+
+            await talkPlugIn.PlayerTalksToNpcAsync(fixture.Player, attackMachine, firstInteraction).ConfigureAwait(false);
+            var contenderInteraction = new NpcTalkEventArgs();
+            await talkPlugIn.PlayerTalksToNpcAsync(contender, attackMachine, contenderInteraction).ConfigureAwait(false);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(firstInteraction.HasBeenHandled, Is.True);
+                Assert.That(firstInteraction.LeavesDialogOpen, Is.True);
+                Assert.That(contenderInteraction.HasBeenHandled, Is.True);
+                Assert.That(contenderInteraction.LeavesDialogOpen, Is.False);
+                Assert.That(attackMachine.Operator, Is.SameAs(fixture.Player));
+            });
+            Mock.Get(fixture.Player.ViewPlugIns.GetPlugIn<ICastleSiegeMachineInterfacePlugIn>()!)
+                .Verify(view => view.ShowMachineInterfaceAsync(true, CastleSiegeMachineType.Attack, attackMachine.Id), Times.Once);
+
+            fixture.Player.IsAlive = false;
+            await talkPlugIn.PlayerTalksToNpcAsync(contender, attackMachine, new NpcTalkEventArgs()).ConfigureAwait(false);
+            Assert.That(attackMachine.Operator, Is.SameAs(contender));
+
+            fixture.Context.NpcController.ClearMachineOperator(contender);
+            Assert.That(attackMachine.Operator, Is.Null);
+
+            fixture.Context.PlayerJoinSides[contender.SelectedCharacter!.Id] = CastleSiegeJoinSide.Defense;
+            var wrongSideInteraction = new NpcTalkEventArgs();
+            await talkPlugIn.PlayerTalksToNpcAsync(contender, attackMachine, wrongSideInteraction).ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(wrongSideInteraction.HasBeenHandled, Is.True);
+                Assert.That(wrongSideInteraction.LeavesDialogOpen, Is.False);
+                Assert.That(attackMachine.Operator, Is.Null);
+            });
+            Mock.Get(contender.ViewPlugIns.GetPlugIn<ICastleSiegeMachineInterfacePlugIn>()!)
+                .Verify(view => view.ShowMachineInterfaceAsync(false, CastleSiegeMachineType.Attack, attackMachine.Id), Times.Exactly(2));
+        }
+        finally
+        {
+            await fixture.GameServerContext.RemovePlayerAsync(contender).ConfigureAwait(false);
+            await fixture.GameServerContext.RemovePlayerAsync(fixture.Player).ConfigureAwait(false);
+            await fixture.Context.NpcController.DespawnAllAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Verifies that leaving any NPC dialog on the siege map releases an operated warfare machine.
+    /// </summary>
+    [Test]
+    public async ValueTask LeavingAnotherNpcDialogReleasesMachineOperatorAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var battleTimeUtc = new DateTime(2026, 8, 4, 12, 0, 0, DateTimeKind.Utc);
+        var plugIn = new CastleSiegePlugIn(new FixedTimeProvider(battleTimeUtc));
+        CastleSiegeContext? context = null;
+        try
+        {
+            await AddSiegePlayerAsync(fixture, CastleSiegeJoinSide.Attack1, 20, 20).ConfigureAwait(false);
+            await plugIn.ExecuteTaskAsync(fixture.GameServerContext).ConfigureAwait(false);
+            context = plugIn.GetContext(fixture.GameServerContext);
+            var machine = context!.NpcController
+                .GetRuntimeSnapshot()
+                .Select(runtime => runtime.SpawnedInstance)
+                .OfType<CastleSiegeMachine>()
+                .Single(candidate => candidate.MachineType == CastleSiegeMachineType.Attack);
+            machine.Operator = fixture.Player;
+            fixture.Player.OpenedNpc = null;
+
+            await plugIn
+                .PlayerStateChangedAsync(fixture.Player, PlayerState.NpcDialogOpened, PlayerState.EnteredWorld)
+                .ConfigureAwait(false);
+
+            Assert.That(machine.Operator, Is.Null);
+        }
+        finally
+        {
+            if (context is not null)
+            {
+                await context.NpcController.DespawnAllAsync().ConfigureAwait(false);
+            }
+
+            await fixture.GameServerContext.RemovePlayerAsync(fixture.Player).ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Verifies machine validation, configured-zone targeting, visual ranges, delayed damage, and cooldown.
+    /// </summary>
+    [Test]
+    public async ValueTask MachineFireTargetsConfiguredZoneAndDamagesAfterCooldownAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var observer = await PlayerTestHelper.CreatePlayerAsync(fixture.GameServerContext).ConfigureAwait(false);
+        observer.SelectedCharacter!.Id = Guid.NewGuid();
+        var target = new Mock<IAttackable>();
+        var friendlyStructure = new Mock<IAttackable>();
+        var targetHit = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var idSupport = target.As<ISupportIdUpdate>();
+        idSupport.SetupProperty(identifiable => identifiable.Id);
+        target.SetupGet(attackable => attackable.Id).Returns(() => idSupport.Object.Id);
+        target.SetupProperty(attackable => attackable.Position, new Point(30, 30));
+        target.SetupGet(attackable => attackable.CurrentMap).Returns(fixture.Map);
+        target.SetupGet(attackable => attackable.IsAlive).Returns(true);
+        target.Setup(attackable => attackable.AttackByAsync(
+                It.IsAny<IAttacker>(),
+                It.IsAny<SkillEntry?>(),
+                It.IsAny<bool>(),
+                It.IsAny<double>(),
+                It.IsAny<bool?>()))
+            .Returns(() =>
+            {
+                targetHit.TrySetResult();
+                return ValueTask.FromResult<HitInfo?>(null);
+            });
+        var friendlyIdSupport = friendlyStructure.As<ISupportIdUpdate>();
+        friendlyIdSupport.SetupProperty(identifiable => identifiable.Id);
+        friendlyStructure.SetupGet(attackable => attackable.Id).Returns(() => friendlyIdSupport.Object.Id);
+        friendlyStructure.SetupProperty(attackable => attackable.Position, new Point(30, 30));
+        friendlyStructure.SetupGet(attackable => attackable.CurrentMap).Returns(fixture.Map);
+        friendlyStructure.SetupGet(attackable => attackable.IsAlive).Returns(true);
+        friendlyStructure.As<ICastleSiegeNpc>()
+            .SetupGet(npc => npc.Runtime)
+            .Returns(new CastleSiegeNpcRuntime
+            {
+                Definition = new CastleSiegeNpcDefinition { DefaultSide = CastleSiegeJoinSide.Defense },
+            });
+
+        try
+        {
+            await fixture.Context.NpcController.SpawnMachinesAsync().ConfigureAwait(false);
+            await AddSiegePlayerAsync(fixture, CastleSiegeJoinSide.Defense, 30, 20).ConfigureAwait(false);
+            await AddSiegePlayerAsync(fixture, observer, CastleSiegeJoinSide.None, 35, 30).ConfigureAwait(false);
+            await fixture.Map.AddAsync(target.Object).ConfigureAwait(false);
+            await fixture.Map.AddAsync(friendlyStructure.Object).ConfigureAwait(false);
+            var machine = fixture.Context.NpcController
+                .GetRuntimeSnapshot()
+                .Select(runtime => runtime.SpawnedInstance)
+                .OfType<CastleSiegeMachine>()
+                .Single(candidate => candidate.MachineType == CastleSiegeMachineType.Defense);
+            machine.Operator = fixture.Player;
+            var randomizer = new Mock<IRandomizer>();
+            randomizer
+                .Setup(source => source.NextInt(It.IsAny<int>(), It.IsAny<int>()))
+                .Returns((int minimum, int _) => minimum);
+            var impactDelay = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            var action = new CastleSiegeMachineUseAction(
+                randomizer.Object,
+                _ => new ValueTask(impactDelay.Task));
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(fixture.Player.CurrentMap, Is.SameAs(fixture.Map));
+                Assert.That(fixture.Map.GetObject(machine.Id), Is.SameAs(machine));
+                Assert.That(
+                    fixture.Context.PlayerJoinSides[fixture.Player.SelectedCharacter!.Id],
+                    Is.EqualTo(CastleSiegeJoinSide.Defense));
+                Assert.That(fixture.Context.GetPlayerJoinSide(fixture.Player), Is.EqualTo(CastleSiegeJoinSide.Defense));
+            });
+
+            fixture.Context.CurrentState = CastleSiegeState.Start;
+            Assert.That(await action.UseAsync(fixture.Player, fixture.Context, machine.Id, 1).ConfigureAwait(false), Is.False);
+
+            fixture.Player.OpenedNpc = machine;
+            fixture.Player.Position = new Point(
+                checked((byte)(machine.Position.X + CastleSiegeMachine.OperationRange + 1)),
+                machine.Position.Y);
+            Assert.That(await action.UseAsync(fixture.Player, fixture.Context, machine.Id, 1).ConfigureAwait(false), Is.False);
+            fixture.Player.Position = machine.Position;
+
+            fixture.Context.CurrentState = CastleSiegeState.Ready;
+            Assert.That(await action.UseAsync(fixture.Player, fixture.Context, machine.Id, 1).ConfigureAwait(false), Is.False);
+            fixture.Context.CurrentState = CastleSiegeState.Start;
+            Assert.That(await action.UseAsync(fixture.Player, fixture.Context, machine.Id, 0).ConfigureAwait(false), Is.False);
+            Assert.That(await action.UseAsync(fixture.Player, fixture.Context, machine.Id, 2).ConfigureAwait(false), Is.False);
+
+            Assert.That(await action.UseAsync(fixture.Player, fixture.Context, machine.Id, 1).ConfigureAwait(false), Is.True);
+            Assert.That(machine.IsActive, Is.True);
+            Assert.That(await action.UseAsync(fixture.Player, fixture.Context, machine.Id, 1).ConfigureAwait(false), Is.False);
+            Mock.Get(fixture.Player.ViewPlugIns.GetPlugIn<ICastleSiegeMachineUseResultPlugIn>()!)
+                .Verify(
+                    view => view.ShowMachineUseResultAsync(
+                        true,
+                        machine.Id,
+                        CastleSiegeMachineType.Defense,
+                        new Point(30, 30)),
+                    Times.Once);
+            Mock.Get(fixture.Player.ViewPlugIns.GetPlugIn<ICastleSiegeMachineUseResultPlugIn>()!)
+                .Verify(
+                    view => view.ShowMachineUseResultAsync(
+                        false,
+                        machine.Id,
+                        CastleSiegeMachineType.Defense,
+                        default),
+                    Times.Exactly(6));
+            Mock.Get(observer.ViewPlugIns.GetPlugIn<ICastleSiegeMachineRegionNotifyPlugIn>()!)
+                .Verify(
+                    view => view.ShowMachineRegionAsync(CastleSiegeMachineType.Defense, new Point(30, 30)),
+                    Times.Once);
+            target.Verify(
+                attackable => attackable.AttackByAsync(
+                    It.IsAny<IAttacker>(),
+                    It.IsAny<SkillEntry?>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<double>(),
+                    It.IsAny<bool?>()),
+                Times.Never);
+
+            impactDelay.SetResult();
+            await targetHit.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            target.Verify(
+                attackable => attackable.AttackByAsync(fixture.Player, null, false, 1.0, null),
+                Times.Once);
+            friendlyStructure.Verify(
+                attackable => attackable.AttackByAsync(
+                    It.IsAny<IAttacker>(),
+                    It.IsAny<SkillEntry?>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<double>(),
+                    It.IsAny<bool?>()),
+                Times.Never);
+            await WaitForMachineCooldownAsync(machine).ConfigureAwait(false);
+            Assert.That(machine.IsActive, Is.False);
+        }
+        finally
+        {
+            await fixture.Map.RemoveAsync(friendlyStructure.Object).ConfigureAwait(false);
+            await fixture.Map.RemoveAsync(target.Object).ConfigureAwait(false);
+            await fixture.GameServerContext.RemovePlayerAsync(observer).ConfigureAwait(false);
+            await fixture.GameServerContext.RemovePlayerAsync(fixture.Player).ConfigureAwait(false);
+            await fixture.Context.NpcController.DespawnAllAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
     /// Verifies all client request identifiers required by the NPC issue.
     /// </summary>
     [Test]
@@ -840,6 +1094,8 @@ public class CastleSiegeNpcTests
             Assert.That(new CastleSiegeGateOperateHandlerPlugIn().Key, Is.EqualTo(0x12));
             Assert.That(new CastleSiegeGateListHandlerPlugIn().Key, Is.EqualTo(0x01));
             Assert.That(new CastleSiegeStatueListHandlerPlugIn().Key, Is.EqualTo(0x02));
+            Assert.That(CastleSiegeMachineGroupHandlerPlugIn.GroupKey, Is.EqualTo(0xB7));
+            Assert.That(new CastleSiegeMachineUseHandlerPlugIn().Key, Is.EqualTo(0x01));
         });
     }
 
@@ -862,6 +1118,9 @@ public class CastleSiegeNpcTests
                 .HandlePacketAsync(fixture.Player, Memory<byte>.Empty)
                 .ConfigureAwait(false);
             await new CastleSiegeGateOperateHandlerPlugIn()
+                .HandlePacketAsync(fixture.Player, Memory<byte>.Empty)
+                .ConfigureAwait(false);
+            await new CastleSiegeMachineUseHandlerPlugIn()
                 .HandlePacketAsync(fixture.Player, Memory<byte>.Empty)
                 .ConfigureAwait(false);
         }
@@ -898,6 +1157,20 @@ public class CastleSiegeNpcTests
             configuration.GateBuyPrice = 500;
             configuration.StatueBuyPrice = 400;
             configuration.CrownHoldTimeSeconds = 2;
+            configuration.AttackMachineZones.Add(new BasicModel.CastleSiegeZoneDefinition
+            {
+                X1 = 40,
+                Y1 = 40,
+                X2 = 40,
+                Y2 = 40,
+            });
+            configuration.DefenseMachineZones.Add(new BasicModel.CastleSiegeZoneDefinition
+            {
+                X1 = 30,
+                Y1 = 30,
+                X2 = 30,
+                Y2 = 30,
+            });
             configuration.StateSchedule.Add(new BasicModel.CastleSiegeStateScheduleEntry
             {
                 State = CastleSiegeState.Ready,
@@ -1087,15 +1360,35 @@ public class CastleSiegeNpcTests
         }
     }
 
+    private static async ValueTask WaitForMachineCooldownAsync(CastleSiegeMachine machine)
+    {
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+        while (machine.IsActive)
+        {
+            await Task.Delay(10, timeout.Token).ConfigureAwait(false);
+        }
+    }
+
     private static async ValueTask AddSiegePlayerAsync(
         TestFixture fixture,
         CastleSiegeJoinSide side,
         byte x,
         byte y)
     {
-        fixture.Player.IsAlive = true;
-        await fixture.GameServerContext.AddPlayerAsync(fixture.Player).ConfigureAwait(false);
-        await fixture.Player.WarpToAsync(new ExitGate
+        await AddSiegePlayerAsync(fixture, fixture.Player, side, x, y).ConfigureAwait(false);
+        SetPlayerJoinSide(fixture, side);
+    }
+
+    private static async ValueTask AddSiegePlayerAsync(
+        TestFixture fixture,
+        Player player,
+        CastleSiegeJoinSide side,
+        byte x,
+        byte y)
+    {
+        player.IsAlive = true;
+        await fixture.GameServerContext.AddPlayerAsync(player).ConfigureAwait(false);
+        await player.WarpToAsync(new ExitGate
         {
             Map = fixture.SiegeMap,
             X1 = x,
@@ -1104,9 +1397,9 @@ public class CastleSiegeNpcTests
             Y2 = y,
             Direction = Direction.South,
         }).ConfigureAwait(false);
-        await fixture.Player.ClientReadyAfterMapChangeAsync().ConfigureAwait(false);
-        fixture.Context.TrackPlayer(fixture.Player, fixture.Map);
-        SetPlayerJoinSide(fixture, side);
+        await player.ClientReadyAfterMapChangeAsync().ConfigureAwait(false);
+        fixture.Context.TrackPlayer(player, fixture.Map);
+        fixture.Context.PlayerJoinSides[player.SelectedCharacter!.Id] = side;
     }
 
     private static async ValueTask AddGuardianJewelsAsync(TestFixture fixture, int count)
@@ -1128,6 +1421,7 @@ public class CastleSiegeNpcTests
             GuildName = "Owner",
             Side = side,
         };
+        fixture.Context.PlayerJoinSides[fixture.Player.SelectedCharacter!.Id] = side;
     }
 
     private sealed record TestFixture(

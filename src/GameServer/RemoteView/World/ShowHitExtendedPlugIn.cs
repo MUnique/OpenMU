@@ -56,7 +56,7 @@ public class ShowHitExtendedPlugIn : IShowHitPlugIn
             hitInfo.Attributes.HasFlag(DamageAttributes.RageFighterStreakHit),
             hitInfo.Attributes.HasFlag(DamageAttributes.RageFighterStreakFinalHit),
             hitInfo.Attributes.HasFlag(DamageAttributes.Double),
-            hitInfo.Attributes.HasFlag(DamageAttributes.Triple),
+            hitInfo.Attributes.HasFlag(DamageAttributes.Triple) || hitInfo.Attributes.HasFlag(DamageAttributes.Combo),
             targetId,
             healthStatus,
             shieldStatus,

@@ -15,8 +15,8 @@ using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Analyzer.Archive;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Persistence.Initialization;
 using MUnique.OpenMU.PlugIns;
-using MUnique.OpenMU.Web.AdminPanel.Services;
 
 /// <summary>
 /// A container which keeps all <see cref="IGameServer"/>s in one <see cref="IHostedService"/>.
@@ -163,6 +163,14 @@ public sealed class GameServerContainer : ServerContainerBase, IGameServerInstan
         foreach (var gameServer in this._gameServers.Values)
         {
             await gameServer.StopAsync(cancellationToken).ConfigureAwait(false);
+
+            // The game servers are created again when this container is started, so we dispose them here.
+            // Otherwise, the periodic tasks of their game context (e.g. of the castle siege) would still run.
+            if (gameServer is IAsyncDisposable asyncDisposable)
+            {
+                await asyncDisposable.DisposeAsync().ConfigureAwait(false);
+            }
+
             this._servers.Remove(gameServer);
         }
 

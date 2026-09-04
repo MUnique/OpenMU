@@ -28,15 +28,85 @@ else if (this.SetupService.IsUpdateRequired)
 }
 else
 {
-    <p>@Resources.DatabaseStatus: <span class="badge bg-success">@Resources.UpToDate</span></p>
-    @if (!this._isDataInitialized)
-    {
-        <p>@Resources.InitializedGameVersion: <span class="badge bg-warning text-dark">@Resources.NoInitializedDataFound</span></p>
-    }
-    else
-    {
-        <p>@Resources.InitializedGameVersion: <span class="badge bg-success">@this._gameClientVersion</span></p>
-    }
+  <p>@Resources.DatabaseStatus: <span class="badge bg-success">@Resources.UpToDate</span></p>
+  @if (!this._isDataInitialized)
+  {
+    <p>@Resources.InitializedGameVersion: <span class="badge bg-warning text-dark">@Resources.NoInitializedDataFound</span></p>
+  }
+  else
+  {
+    <p>@Resources.InitializedGameVersion: <span class="badge bg-success">@this._gameClientVersion</span></p>
+  }
 
-    <button class="btn btn-warning" @onclick="this.OnReInstallClickAsync">@Resources.ReInstall</button>
+  <button class="btn btn-warning" @onclick="this.OnReInstallClickAsync">@Resources.ReInstall</button>
+}
+
+
+@if (this.SetupService.IsInstalled)
+{
+  <hr/>
+
+  <div class="accordion" id="backupAccordion">
+    @if (this.SnapshotService is not null)
+    {
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingOne">
+          <button class="accordion-button" type="button"
+                            @onclick="() => this._showSnapshotBackup = !this._showSnapshotBackup"
+                  data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+            @Resources.DatabaseSnapshot
+          </button>
+        </h2>
+        <div id="collapseOne" class="accordion-collapse collapse @(this._showSnapshotBackup ? "show" : "")" aria-labelledby="headingOne" data-bs-parent="#backupAccordion">
+          <div class="accordion-body">
+            <p class="text-muted">@Resources.DatabaseSnapshotDescription</p>
+            <a href="/admin/backup/snapshot" class="btn btn-secondary">@Resources.ExportSnapshot</a>
+            <p class="text-muted mt-2">@Resources.SelectZipFileToRestoreSnapshot</p>
+            <Microsoft.AspNetCore.Components.Forms.InputFile OnChange="this.OnSnapshotFileChangeAsync" accept=".zip" class="form-control mb-2" disabled="@this._isImporting"/>
+          </div>
+        </div>
+      </div>
+    }
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingTwo">
+        <button class="accordion-button collapsed"
+        type="button"
+                        @onclick="() => this._showJsonBackup = !this._showJsonBackup"
+        data-bs-toggle="collapse" 
+        data-bs-target="#collapseTwo" 
+        aria-expanded="false"
+        aria-controls="collapseTwo">
+          @Resources.JsonBackup
+        </button>
+      </h2>
+      <div id="collapseTwo" class="accordion-collapse collapse @(this._showJsonBackup ? "show" : "")" aria-labelledby="headingTwo" data-bs-parent="#backupAccordion">
+        <div class="accordion-body">
+          <h5>@Resources.ExportJsonBackup</h5>
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="includeAccounts" checked="@this._includeAccounts" @onchange="@(args => this._includeAccounts = args.Value is true)"/>
+            <label class="form-check-label" for="includeAccounts">@Resources.IncludeAccounts</label>
+          </div>
+          <a href="@($"/admin/backup?includeAccounts={(this._includeAccounts ? "true" : "false")}")" class="btn btn-secondary">@Resources.ExportJsonBackup</a>
+          <hr/>
+          <h5>@Resources.ImportJsonBackup</h5>
+          @if (this._isImporting)
+          {
+            <div class="d-flex align-items-center gap-2">
+              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              <span>@Resources.ImportingBackupPleaseWait</span>
+            </div>
+          }
+          else if (this._importMessage is not null)
+          {
+            <p class="@this._importMessageCssClass">@this._importMessage</p>
+          }
+          else
+          {
+            <p class="text-muted">@Resources.SelectZipFileToRestore</p>
+          }
+          <Microsoft.AspNetCore.Components.Forms.InputFile OnChange="this.OnImportFileChangeAsync" accept=".zip" class="form-control mb-2" disabled="@this._isImporting"/>
+        </div>
+      </div>
+    </div>
+  </div>
 }

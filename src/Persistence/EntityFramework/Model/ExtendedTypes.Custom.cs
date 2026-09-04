@@ -54,6 +54,17 @@ internal partial class PowerUpDefinitionValue
 internal partial class ConstValueAttribute
 {
     /// <summary>
+    /// Initializes a new instance of the <see cref="ConstValueAttribute"/> class
+    /// using the default <see cref="AggregateType.AddRaw"/> aggregation mode.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <param name="definition">The attribute definition.</param>
+    public ConstValueAttribute(float value, AttributeDefinition definition)
+        : base(value, definition)
+    {
+    }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="ConstValueAttribute"/> class.
     /// </summary>
     public ConstValueAttribute()
@@ -262,4 +273,58 @@ internal partial class LetterHeader
     /// Gets or sets the receiver identifier.
     /// </summary>
     public Guid ReceiverId { get; set; }
+}
+
+internal partial class ChatServerDefinition : IConvertibleTo<BasicModel.ChatServerDefinition>
+{
+    public BasicModel.ChatServerDefinition Convert()
+    {
+        MapsterConfigurator.EnsureConfigured();
+        return this.Adapt<BasicModel.ChatServerDefinition>();
+    }
+}
+
+internal partial class GameServerDefinition : IConvertibleTo<BasicModel.GameServerDefinition>
+{
+    public BasicModel.GameServerDefinition Convert()
+    {
+        MapsterConfigurator.EnsureConfigured();
+        return this.Adapt<BasicModel.GameServerDefinition>();
+    }
+}
+
+internal partial class SystemConfiguration : IConvertibleTo<BasicModel.SystemConfiguration>
+{
+    public BasicModel.SystemConfiguration Convert()
+    {
+        MapsterConfigurator.EnsureConfigured();
+        return this.Adapt<BasicModel.SystemConfiguration>();
+    }
+}
+
+internal partial class ConfigurationUpdate : IConvertibleTo<BasicModel.ConfigurationUpdate>
+{
+    public BasicModel.ConfigurationUpdate Convert()
+    {
+        MapsterConfigurator.EnsureConfigured();
+        return this.Adapt<BasicModel.ConfigurationUpdate>();
+    }
+}
+
+internal partial class ConfigurationUpdateState : IConvertibleTo<BasicModel.ConfigurationUpdateState>
+{
+    public BasicModel.ConfigurationUpdateState Convert()
+    {
+        MapsterConfigurator.EnsureConfigured();
+        return this.Adapt<BasicModel.ConfigurationUpdateState>();
+    }
+}
+
+internal partial class CastleSiegeData : IConvertibleTo<BasicModel.CastleSiegeData>
+{
+    public BasicModel.CastleSiegeData Convert()
+    {
+        MapsterConfigurator.EnsureConfigured();
+        return this.Adapt<BasicModel.CastleSiegeData>();
+    }
 }

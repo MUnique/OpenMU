@@ -118,9 +118,14 @@ public static class CastleSiegeCrownMechanics
             }
         }
 
-        ApplyOwner(context, capturingGuild);
+        var ownershipChanged = ApplyOwner(context, capturingGuild);
         await context.SaveFinalGuildListAsync().ConfigureAwait(false);
         await context.SaveOwnerAsync().ConfigureAwait(false);
+        if (ownershipChanged)
+        {
+            await CastleSiegeEconomyNotifier.BroadcastTaxRatesAsync(context).ConfigureAwait(false);
+        }
+
         await context.SetPlayerJoinSideAsync().ConfigureAwait(false);
         await RespawnAttackersAsync(context).ConfigureAwait(false);
 
@@ -170,12 +175,14 @@ public static class CastleSiegeCrownMechanics
             }
         }
 
-        if (winner is not null)
-        {
-            ApplyOwner(context, winner);
-        }
+        var ownershipChanged = winner is not null && ApplyOwner(context, winner);
 
         await context.SaveOwnerAsync().ConfigureAwait(false);
+        if (ownershipChanged)
+        {
+            await CastleSiegeEconomyNotifier.BroadcastTaxRatesAsync(context).ConfigureAwait(false);
+        }
+
         var ownerName = winner?.GuildName
                         ?? await GetOwnerGuildNameAsync(context).ConfigureAwait(false)
                         ?? string.Empty;
@@ -290,12 +297,12 @@ public static class CastleSiegeCrownMechanics
                 ?.Name;
     }
 
-    private static void ApplyOwner(CastleSiegeContext context, CastleSiegeGuildParticipant winner)
+    private static bool ApplyOwner(CastleSiegeContext context, CastleSiegeGuildParticipant winner)
     {
         if (context.SiegeData.IsOccupied
             && context.SiegeData.OwnerGuildId == winner.PersistentGuildId)
         {
-            return;
+            return false;
         }
 
         // A successful seal changes the castle lord immediately. The previous ownership tenure's economy must not
@@ -306,6 +313,8 @@ public static class CastleSiegeCrownMechanics
         context.SiegeData.TaxStore = 0;
         context.SiegeData.TaxHunt = 0;
         context.SiegeData.TributeMoney = 0;
+        context.SiegeData.IsHuntZoneEnabled = false;
+        return true;
     }
 
     private static async ValueTask BroadcastOwnershipAsync(CastleSiegeContext context, string guildName)

@@ -19,6 +19,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("B7F62FA9-59E6-49E9-B499-0358A14957CF")]
 public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, IObjectRemovedFromMapPlugIn, IPlayerStateChangedPlugIn
 {
+    private static readonly TimeSpan EconomySaveInterval = TimeSpan.FromSeconds(30);
     private static readonly TimeSpan NpcSaveInterval = TimeSpan.FromMinutes(2);
     private static readonly TimeSpan ParticipantUpdateInterval = TimeSpan.FromSeconds(5);
 
@@ -81,15 +82,28 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
             context,
             player,
             this._timeProvider.GetUtcNow().UtcDateTime);
+        await this.ClearMachineOperatorAsync(context, player).ConfigureAwait(false);
         await context.ClearPlayerJoinSideAsync(player).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
     public async ValueTask PlayerStateChangedAsync(Player player, State previousState, State currentState)
     {
+        var context = this.GetContext(player.GameContext);
+        if (context is null)
+        {
+            return;
+        }
+
+        if (previousState == PlayerState.NpcDialogOpened
+            && currentState == PlayerState.EnteredWorld
+            && player.CurrentMap?.Definition.Number == context.Configuration.CastleSiegeMapDefinition?.Number)
+        {
+            await this.ClearMachineOperatorAsync(context, player).ConfigureAwait(false);
+        }
+
         if (currentState == PlayerState.EnteredWorld
-            && player.CurrentMap is { } map
-            && this.GetContext(player.GameContext) is { } context)
+            && player.CurrentMap is { } map)
         {
             await this.SynchronizePlayerAsync(player, map, context).ConfigureAwait(false);
         }
@@ -113,6 +127,22 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
     public CastleSiegeContext? GetContext(IGameContext gameContext)
     {
         return this._contexts.TryGetValue(gameContext, out var context) ? context : null;
+    }
+
+    /// <summary>
+    /// Persists accumulated Castle Siege economy changes when the batch interval is due.
+    /// </summary>
+    /// <param name="context">The Castle Siege context.</param>
+    /// <param name="utcNow">The current UTC time.</param>
+    internal static async ValueTask PersistEconomyIfDueAsync(CastleSiegeContext context, DateTime utcNow)
+    {
+        if (!context.IsEconomyPersistencePending || context.NextEconomySaveUtc > utcNow)
+        {
+            return;
+        }
+
+        await context.SaveOwnerAsync().ConfigureAwait(false);
+        context.NextEconomySaveUtc = utcNow + EconomySaveInterval;
     }
 
     /// <summary>
@@ -151,8 +181,10 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
             if (!context.IsInitialized)
             {
                 await context.InitializeAsync(utcNow).ConfigureAwait(false);
+                context.NextEconomySaveUtc = utcNow + EconomySaveInterval;
                 this.ConfigureNotifications(context, utcNow);
                 await this.OnEnterStateAsync(context, true).ConfigureAwait(false);
+                await CastleSiegeEconomyNotifier.BroadcastTaxRatesAsync(context).ConfigureAwait(false);
                 await this.BroadcastStateUpdateAsync(context).ConfigureAwait(false);
                 logger.LogInformation(
                     "Castle Siege initialized in state {state}; the state ends at {stateEndUtc}.",
@@ -210,11 +242,25 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
         return stateStartUtc.AddTicks((completedIntervals + 1) * interval.Ticks);
     }
 
+    private async ValueTask ClearMachineOperatorAsync(CastleSiegeContext context, Player player)
+    {
+        await context.ExecutionLock.WaitAsync().ConfigureAwait(false);
+        try
+        {
+            context.NpcController.ClearMachineOperator(player);
+        }
+        finally
+        {
+            context.ExecutionLock.Release();
+        }
+    }
+
     private async ValueTask SynchronizePlayerAsync(
         Player player,
         GameMap map,
         CastleSiegeContext context)
     {
+        await CastleSiegeEconomyNotifier.SynchronizePlayerAsync(context, player).ConfigureAwait(false);
         if (context.CurrentState is not (CastleSiegeState.Ready or CastleSiegeState.Start)
             || context.Configuration.CastleSiegeMapDefinition?.Number != map.Definition.Number)
         {
@@ -388,6 +434,8 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
 
     private async ValueTask OnTickAsync(CastleSiegeContext context, DateTime utcNow)
     {
+        await PersistEconomyIfDueAsync(context, utcNow).ConfigureAwait(false);
+
         if (context.NextNotificationUtc <= utcNow)
         {
             await this.SendStateNotificationAsync(context).ConfigureAwait(false);

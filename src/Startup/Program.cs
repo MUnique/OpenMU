@@ -27,16 +27,15 @@ using MUnique.OpenMU.LoginServer;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Analyzer;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Persistence.AdminAuth;
 using MUnique.OpenMU.Persistence.EntityFramework;
 using MUnique.OpenMU.Persistence.EntityFramework.AdminAuth;
 using MUnique.OpenMU.Persistence.EntityFramework.Json;
-using MUnique.OpenMU.Persistence.Initialization;
 using MUnique.OpenMU.Persistence.Initialization.Version075;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
 using MUnique.OpenMU.Web.AdminPanel;
-using MUnique.OpenMU.Web.AdminPanel.Services;
-using MUnique.OpenMU.Web.API;
+using MUnique.OpenMU.Web.AdminPanel.API;
 using MUnique.OpenMU.Web.Map.Map;
 using MUnique.OpenMU.Web.Shared;
 using Nito.AsyncEx.Synchronous;
@@ -259,6 +258,22 @@ internal sealed class Program : IDisposable
             // The storage of the admin panel users has to be registered before the panel itself,
             // which only adds a fallback when nothing else is registered.
             builder.Services.AddAdminUserRepository();
+            builder.Services.AddSingleton<IBackupService>(s =>
+            {
+                var contextProvider = s.GetRequiredService<IMigratableDatabaseContextProvider>();
+                if (contextProvider is IPersistenceContextProvider persistenceContextProvider)
+                {
+                    return new BackupService(persistenceContextProvider, s.GetRequiredService<IAdminUserRepository>());
+                }
+
+                return new InMemoryBackupService(s.GetRequiredService<IPersistenceContextProvider>(), s.GetRequiredService<IAdminUserRepository>());
+            });
+            if (!args.Contains("-demo"))
+            {
+                // A snapshot of the database is only possible when there is a real database.
+                builder.Services.AddSingleton<IDatabaseSnapshotService, DatabaseSnapshotService>();
+            }
+
             builder.AddAdminPanel(includeMapApp: true);
         }
 

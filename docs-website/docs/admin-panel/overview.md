@@ -59,6 +59,7 @@ with `-adminpanel:disabled`.
 | [Live map](live-map.md) | Watch what happens on a map in real time |
 | [Logs and monitoring](logs-and-monitoring.md) | Log files, Grafana, Prometheus, Zipkin |
 | [Users](users.md) | The users which may log into the admin panel |
+| [API keys](authentication.md#api-keys-for-external-applications) | The keys with which external applications use the public API |
 
 Server features which are configured through the panel have their own pages, for
 example the [server-side AI bots](../server-features/bots.md).
