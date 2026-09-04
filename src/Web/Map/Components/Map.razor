@@ -3,7 +3,6 @@
 @using Nito.AsyncEx
 
 @implements IAsyncDisposable
-@implements IDisposable
 
 <div class="livemap">
     <LiveMap
@@ -104,9 +103,6 @@
             this.Logger.LogDebug(ex, "Unexpected JS interop error while selecting map object {ObjectId}.", objectId);
         }
     }
-
-    /// <inheritdoc />
-    public void Dispose() => Task.Run(this.DisposeAsync).Wait();
 
     /// <inheritdoc />
     public async ValueTask DisposeAsync()
