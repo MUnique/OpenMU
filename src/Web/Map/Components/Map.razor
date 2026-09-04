@@ -23,7 +23,7 @@
                 </div>
             </div>
             <div>
-                <MapPlayerList MapController="@this._controller" FollowedPlayerName="@FollowedPlayerName" OnFollowPlayer="@OnFollowPlayer" OnSelectPlayer="@SelectPlayerAsync"/>
+                <MapPlayerList MapController="@this._controller" ServerId="@this.Server.Id" FollowedPlayerName="@FollowedPlayerName" OnFollowPlayer="@OnFollowPlayer" OnSelectPlayer="@SelectPlayerAsync"/>
             </div>
         </div>
     }

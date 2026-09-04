@@ -5,6 +5,7 @@
 @using MUnique.OpenMU.Web.Map.Components
 @using MUnique.OpenMU.Web.Map
 @using MUnique.OpenMU.Interfaces
+@using MUnique.OpenMU.Network.Analyzer
 @using MUnique.OpenMU.GameLogic
 @using System.Threading
 @using Microsoft.AspNetCore.Components
@@ -29,7 +30,9 @@
     </div>
 
     <CascadingValue Value="@_gameServer">
-        <Map Server="@_gameServer" MapId="@MapId" FollowedPlayerName="@_followedPlayerName" OnFollowPlayer="@HandleFollowPlayer"></Map>
+        <CascadingValue Name="NetworkAnalyzerRoute" Value="@_networkAnalyzerRoute">
+            <Map Server="@_gameServer" MapId="@MapId" FollowedPlayerName="@_followedPlayerName" OnFollowPlayer="@HandleFollowPlayer"></Map>
+        </CascadingValue>
     </CascadingValue>
 }
 
@@ -43,6 +46,8 @@
     private IGameServerContext? _gameContext;
 
     private string? _followedPlayerName;
+
+    private string _networkAnalyzerRoute = string.Empty;
 
     private Timer? _followTimer;
 
@@ -67,6 +72,14 @@
     [Inject]
     private NavigationManager NavigationManager { get; set; } = null!;
 
+    /// <summary>
+    /// Gets or sets the service provider, to check if the network analyzer is available. It
+    /// needs the servers in the same process, so it's only registered in the all-in-one
+    /// deployment.
+    /// </summary>
+    [Inject]
+    private IServiceProvider ServiceProvider { get; set; } = null!;
+
     [Inject]
     private IJSRuntime JsRuntime { get; set; } = null!;
 
@@ -87,6 +100,9 @@
 
         this._gameContext = context;
         this._gameServer = adapter;
+        this._networkAnalyzerRoute = this.ServiceProvider.GetService(typeof(IPacketCaptureService)) is null
+            ? string.Empty
+            : NetworkAnalyzer.PlayerRoute;
         this._map = this._gameServer.Maps.First(m => m.Id == this.MapId);
 
         var uri = new Uri(this.NavigationManager.Uri);
