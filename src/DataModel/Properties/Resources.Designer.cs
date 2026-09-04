@@ -235,5 +235,104 @@ namespace MUnique.OpenMU.DataModel.Properties {
                 return ResourceManager.GetString("SystemConfiguration_TimeZoneId_Description", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Network Analyzer.
+        /// </summary>
+        public static string SystemConfiguration_NetworkAnalyzer_Name {
+            get {
+                return ResourceManager.GetString("SystemConfiguration_NetworkAnalyzer_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Live buffer size.
+        /// </summary>
+        public static string SystemConfiguration_NetworkAnalyzerLiveBufferSize_Name {
+            get {
+                return ResourceManager.GetString("SystemConfiguration_NetworkAnalyzerLiveBufferSize_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The number of data packets which are kept in memory per connection which is watched in the network analyzer page. When more packets arrive, the oldest ones are dropped..
+        /// </summary>
+        public static string SystemConfiguration_NetworkAnalyzerLiveBufferSize_Description {
+            get {
+                return ResourceManager.GetString("SystemConfiguration_NetworkAnalyzerLiveBufferSize_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Observation archive path.
+        /// </summary>
+        public static string SystemConfiguration_NetworkObservationArchivePath_Name {
+            get {
+                return ResourceManager.GetString("SystemConfiguration_NetworkObservationArchivePath_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The path in which the traffic of the observed accounts is archived. A relative path is resolved against the directory of the application. It must not point into a folder which is served by the web server - an archived session contains the login packet of the player in plain text..
+        /// </summary>
+        public static string SystemConfiguration_NetworkObservationArchivePath_Description {
+            get {
+                return ResourceManager.GetString("SystemConfiguration_NetworkObservationArchivePath_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Maximum session size (MB).
+        /// </summary>
+        public static string SystemConfiguration_NetworkObservationMaxSessionSizeMb_Name {
+            get {
+                return ResourceManager.GetString("SystemConfiguration_NetworkObservationMaxSessionSizeMb_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The maximum size of one file of an archived session, in megabytes. A session which grows bigger is continued in another file..
+        /// </summary>
+        public static string SystemConfiguration_NetworkObservationMaxSessionSizeMb_Description {
+            get {
+                return ResourceManager.GetString("SystemConfiguration_NetworkObservationMaxSessionSizeMb_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Maximum archive size (MB).
+        /// </summary>
+        public static string SystemConfiguration_NetworkObservationMaxTotalSizeMb_Name {
+            get {
+                return ResourceManager.GetString("SystemConfiguration_NetworkObservationMaxTotalSizeMb_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The maximum size of the whole observation archive, in megabytes. When it&apos;s exceeded, the oldest sessions are removed. A value of 0 means that the size is unlimited..
+        /// </summary>
+        public static string SystemConfiguration_NetworkObservationMaxTotalSizeMb_Description {
+            get {
+                return ResourceManager.GetString("SystemConfiguration_NetworkObservationMaxTotalSizeMb_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Archive retention (days).
+        /// </summary>
+        public static string SystemConfiguration_NetworkObservationRetentionDays_Name {
+            get {
+                return ResourceManager.GetString("SystemConfiguration_NetworkObservationRetentionDays_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The number of days after which an archived session is removed. A value of 0 means that the sessions are kept forever..
+        /// </summary>
+        public static string SystemConfiguration_NetworkObservationRetentionDays_Description {
+            get {
+                return ResourceManager.GetString("SystemConfiguration_NetworkObservationRetentionDays_Description", resourceCulture);
+            }
+        }
     }
 }

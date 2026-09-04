@@ -138,6 +138,13 @@ public class Account
     public bool IsBot { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the network traffic of this account is
+    /// observed. The game server then archives the traffic of each of its sessions, so that
+    /// it can be analyzed later - for example when the account is suspected of cheating.
+    /// </summary>
+    public bool IsNetworkObservationActive { get; set; }
+
+    /// <summary>
     /// Gets or sets the characters.
     /// </summary>
     [MemberOfAggregate]

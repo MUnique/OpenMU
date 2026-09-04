@@ -20,6 +20,7 @@ using MUnique.OpenMU.GameLogic.Views.Messenger;
 using MUnique.OpenMU.GameServer.RemoteView;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Network.Analyzer;
+using MUnique.OpenMU.Network.Analyzer.Archive;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
 using Nito.AsyncEx;
@@ -35,6 +36,8 @@ public sealed class GameServer : IGameServer, IDisposable, IAsyncDisposable, IGa
 
     private readonly ICollection<IGameServerListener> _listeners = new List<IGameServerListener>();
 
+    private readonly NetworkObservationHandler? _observationHandler;
+
     private ServerState _serverState;
 
     /// <summary>
@@ -49,6 +52,8 @@ public sealed class GameServer : IGameServer, IDisposable, IAsyncDisposable, IGa
     /// <param name="loggerFactory">The logger factory.</param>
     /// <param name="plugInManager">The plug in manager.</param>
     /// <param name="changeMediator"> The change mediatior.</param>
+    /// <param name="packetArchive">The archive for the traffic of observed accounts. It's only
+    /// available when the network observation is configured.</param>
     public GameServer(
         GameServerDefinition gameServerDefinition,
         IGuildServer guildServer,
@@ -58,12 +63,16 @@ public sealed class GameServer : IGameServer, IDisposable, IAsyncDisposable, IGa
         IFriendServer friendServer,
         ILoggerFactory loggerFactory,
         PlugInManager plugInManager,
-        IConfigurationChangeMediator changeMediator)
+        IConfigurationChangeMediator changeMediator,
+        IPacketArchive? packetArchive = null)
     {
         this.Id = gameServerDefinition.ServerID;
         this.Description = gameServerDefinition.Description;
         this.ConfigurationId = gameServerDefinition.GetId();
         this._logger = loggerFactory.CreateLogger<GameServer>();
+        this._observationHandler = packetArchive is null
+            ? null
+            : new NetworkObservationHandler(packetArchive, this.Id, this.Description, loggerFactory.CreateLogger<NetworkObservationHandler>());
         try
         {
             var gameConfiguration = gameServerDefinition.GameConfiguration ?? throw Error.NotInitializedProperty(gameServerDefinition, nameof(gameServerDefinition.GameConfiguration));
@@ -489,6 +498,7 @@ public sealed class GameServer : IGameServer, IDisposable, IAsyncDisposable, IGa
     private async ValueTask OnPlayerConnectedAsync(PlayerConnectedEventArgs e)
     {
         var player = e.ConntectedPlayer;
+        this._observationHandler?.Watch(player);
         await this._gameContext.AddPlayerAsync(player).ConfigureAwait(false);
         await player.InvokeViewPlugInAsync<IShowLoginWindowPlugIn>(p => p.ShowLoginWindowAsync()).ConfigureAwait(false);
         await player.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
