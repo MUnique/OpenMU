@@ -1,4 +1,5 @@
 /* Data grid styling: QuickGrid striping, row hover, and cell padding. */
+/* Note: the old staggered row fade-in animation was intentionally removed with the SCSS build. */
 .quickgrid {
   width: 100%;
   border-color: var(--bs-table-border-color);

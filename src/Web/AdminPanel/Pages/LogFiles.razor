@@ -143,6 +143,7 @@
     private const long LogReadBufferSizeBytes = 102400; // 100 KB
     private const int LiveUpdateIntervalMs = 2000;
     private const string TerminalElementId = "log-terminal";
+    private const string JsModulePath = "./_content/MUnique.OpenMU.Web.AdminPanel/Pages/LogFiles.razor.js";
 
     private readonly List<FileInfo> _files = new();
     private FileInfo? _selectedFile;
@@ -188,7 +189,7 @@
         {
             try
             {
-                this._jsModule = await this.JSRuntime.InvokeAsync<IJSObjectReference>("import", $"./_content/{typeof(LogFiles).Assembly.GetName().Name}/Pages/{nameof(LogFiles)}.razor.js");
+                this._jsModule = await this.JSRuntime.InvokeAsync<IJSObjectReference>("import", JsModulePath);
             }
             catch (JSException ex)
             {

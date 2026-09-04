@@ -15,9 +15,6 @@ Windows; it runs under Linux and macOS as well.
 * [PostgreSQL](https://www.postgresql.org/download/) installed
 * Visual Studio 2026, with the workloads for *ASP.NET Web development* and
   *.NET Desktop development*. Please keep it up-to-date to prevent issues.
-* The Visual Studio extension
-  [Web Compiler 2022+](https://marketplace.visualstudio.com/items?itemName=Failwyn.WebCompiler64),
-  if you plan to edit SCSS files of the admin panel
 * [.NET SDK 10](https://dotnet.microsoft.com/download/dotnet/10.0) — it should
   already be included in Visual Studio 2026
   ```powershell

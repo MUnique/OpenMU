@@ -1,5 +1,7 @@
 /* Form layout and validation styling: Blazor valid/invalid states, expandable details sections, info popups, sticky form actions, and the auto-form search field. */
-/* Blazor validation states mapped onto Bootstrap's default validation colors. */
+/* Blazor validation states mapped onto Bootstrap's default validation colors.
+   Note: Bootstrap's own validation visuals (is-valid/is-invalid icons and padding) are intentionally
+   unused - no markup applies those classes, so stock Bootstrap stays at its defaults. */
 .invalid.modified {
   border-color: var(--bs-form-invalid-border-color);
 }
@@ -84,7 +86,7 @@ label > details.info-popup > div {
   position: relative;
 }
 
-.auto-form-search-group .form-control, .auto-form-search-group .valid.modified {
+.auto-form-search-group .form-control {
   padding-left: 2.25rem;
 }
 
