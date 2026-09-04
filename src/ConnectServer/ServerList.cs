@@ -160,6 +160,7 @@ internal class ServerList
                     var serverBlock = response[i];
                     serverBlock.ServerId = (byte)server.ServerId;
                     serverBlock.LoadPercentage = server.ServerLoadPercentage;
+                    server.LoadIndex = ServerListResponseOld.GetRequiredSize(i) + 1;
                     i++;
                 }
             }
@@ -176,6 +177,7 @@ internal class ServerList
                     var serverBlock = response[i];
                     serverBlock.ServerId = server.ServerId;
                     serverBlock.LoadPercentage = server.ServerLoadPercentage;
+                    server.LoadIndex = ServerListResponse.GetRequiredSize(i) + 2;
                     i++;
                 }
             }
