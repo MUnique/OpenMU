@@ -44,7 +44,7 @@ internal sealed class BotGenerator
     /// <summary>Number of inventory extensions (each 4 rows of 8 slots) a bot gets, so loot does not clog its backpack.</summary>
     private const int BotInventoryExtensions = 4;
 
-    /// <summary>Highest item group that is a melee weapon (0 sword, 1 axe, 2 mace, 3 spear).</summary>
+    /// <summary>The highest item group that is a melee weapon (0 sword, 1 axe, 2 mace, 3 spear).</summary>
     private const byte MaxMeleeGroup = 3;
 
     /// <summary>Item group of bows (need ammunition).</summary>
@@ -78,10 +78,31 @@ internal sealed class BotGenerator
     }
 
     /// <summary>
+    /// The outcome of deleting a single bot account.
+    /// </summary>
+    private enum BotAccountDeleteOutcome
+    {
+        /// <summary>
+        /// The account was deleted.
+        /// </summary>
+        Deleted,
+
+        /// <summary>
+        /// The account was already gone; nothing had to be deleted.
+        /// </summary>
+        NotFound,
+
+        /// <summary>
+        /// The account could not be deleted.
+        /// </summary>
+        Failed,
+    }
+
+    /// <summary>
     /// Gets the deterministic, internal login name of the bot account with the given one-based index.
     /// </summary>
     /// <param name="index">The one-based account index.</param>
-    /// <returns>The login name, e.g. <c>bot0001</c> (kept within the 10 character account name limit).</returns>
+    /// <returns>The login name, e.g. <c>bot0001</c> (kept within the 10-character account name limit).</returns>
     public static string GetLoginName(int index) => $"{LoginPrefix}{index:D4}";
 
     /// <summary>
@@ -171,77 +192,35 @@ internal sealed class BotGenerator
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The number of deleted bot accounts.</returns>
+    /// <exception cref="InvalidOperationException">At least one bot account could not be deleted.</exception>
     public async ValueTask<int> DeleteAllBotsAsync(CancellationToken cancellationToken = default)
     {
         using var context = this._gameContext.PersistenceContextProvider.CreateNewPlayerContext(this._gameContext.Configuration);
-
-        // Collect first, delete afterwards: the paging query orders by login name, so deleting while
-        // paging would shift the accounts which are not visited yet into the pages already passed.
-        var loginNames = new List<string>();
-        const int pageSize = 100;
-        var skip = 0;
-        while (true)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            var page = (await context.GetAccountsOrderedByLoginNameAsync(skip, pageSize, cancellationToken).ConfigureAwait(false)).ToList();
-            if (page.Count == 0)
-            {
-                break;
-            }
-
-            loginNames.AddRange(page.Where(account => account.IsBot).Select(account => account.LoginName));
-            skip += page.Count;
-        }
+        var loginNames = await this.CollectBotLoginNamesAsync(context, cancellationToken).ConfigureAwait(false);
 
         var deleted = 0;
+        var failed = 0;
         foreach (var loginName in loginNames)
         {
             cancellationToken.ThrowIfCancellationRequested();
-
-            try
+            var outcome = await this.TryDeleteBotAccountAsync(loginName, context, cancellationToken).ConfigureAwait(false);
+            if (outcome == BotAccountDeleteOutcome.Deleted)
             {
-                // Load the account again, this time with its whole graph: the paging query returns the
-                // accounts untracked and without their characters, and deleting such a shallow account
-                // leaves its item storages behind. A character's inventory is referenced BY the character,
-                // so no delete cascade ever reaches it - those storages, and every item lying in them, would
-                // stay in the database forever as unreachable rows.
-                var account = await context.GetAccountByLoginNameAsync(loginName, cancellationToken).ConfigureAwait(false);
-                if (account is null)
-                {
-                    continue;
-                }
-
-                foreach (var character in account.Characters)
-                {
-                    if (character.Inventory is { } inventory)
-                    {
-                        await context.DeleteAsync(inventory).ConfigureAwait(false);
-                    }
-                }
-
-                if (account.Vault is { } vault)
-                {
-                    await context.DeleteAsync(vault).ConfigureAwait(false);
-                }
-
-                if (await context.DeleteAsync(account).ConfigureAwait(false))
-                {
-                    deleted++;
-                }
-                else
-                {
-                    // Not silent: a bot account which survives the purge is spawned again right after it.
-                    this._logger.LogWarning("Bot account '{LoginName}' could not be deleted.", loginName);
-                }
-
-                // Save per account, so a single failure does not roll back the accounts already deleted.
-                await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+                deleted++;
             }
-            catch (Exception ex)
+            else if (outcome == BotAccountDeleteOutcome.Failed)
             {
-                // One unreadable account must not abort the whole purge; the next purge retries it.
-                this._logger.LogError(ex, "Failed to delete bot account '{LoginName}', skipping it.", loginName);
+                failed++;
             }
+            else
+            {
+                // NotFound: the account was already gone, nothing to count.
+            }
+        }
+
+        if (failed > 0)
+        {
+            throw new InvalidOperationException($"{failed} of {loginNames.Count} bot account(s) could not be deleted.");
         }
 
         return deleted;
@@ -378,6 +357,108 @@ internal sealed class BotGenerator
         return resetPoints + firstCyclePoints + laterCyclesPoints + currentCyclePoints;
     }
 
+    /// <summary>
+    /// Collects the login names of all bot accounts, ordered by login name.
+    /// </summary>
+    /// <param name="context">The persistence context.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The login names of the bot accounts.</returns>
+    /// <remarks>
+    /// Collected first, deleted afterwards: the paging query orders by login name, so deleting while
+    /// paging would shift the accounts which are not visited yet into the pages already passed.
+    /// </remarks>
+    private async ValueTask<List<string>> CollectBotLoginNamesAsync(IPlayerContext context, CancellationToken cancellationToken)
+    {
+        var loginNames = new List<string>();
+        const int pageSize = 100;
+        var skip = 0;
+        while (true)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var page = (await context.GetAccountsOrderedByLoginNameAsync(skip, pageSize, cancellationToken).ConfigureAwait(false)).ToList();
+            if (page.Count == 0)
+            {
+                break;
+            }
+
+            loginNames.AddRange(page.Where(account => account.IsBot).Select(account => account.LoginName));
+            skip += page.Count;
+        }
+
+        return loginNames;
+    }
+
+    /// <summary>
+    /// Tries to delete a single bot account with its characters, item storages, and items.
+    /// </summary>
+    /// <param name="loginName">The login name of the bot account.</param>
+    /// <param name="context">The persistence context.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The outcome of the deletion.</returns>
+    /// <remarks>
+    /// One bad account returns <see cref="BotAccountDeleteOutcome.Failed"/> instead of aborting the
+    /// whole purge; the caller fails the purge as a whole, so the flags stay set and it gets retried
+    /// instead of switching the feature off with the bot accounts still in the database.
+    /// Cancellation is never swallowed.
+    /// </remarks>
+    private async ValueTask<BotAccountDeleteOutcome> TryDeleteBotAccountAsync(string loginName, IPlayerContext context, CancellationToken cancellationToken)
+    {
+        Account? account = null;
+        try
+        {
+            // Load the account again, this time with its whole graph: the paging query returns the
+            // accounts untracked and without their characters, and deleting such a shallow account
+            // leaves its item storages behind. A character's inventory is referenced by the character,
+            // so no delete cascade ever reaches it - those storages, and every item lying in them, would
+            // stay in the database forever as unreachable rows.
+            account = await context.GetAccountByLoginNameAsync(loginName, cancellationToken).ConfigureAwait(false);
+            if (account is null)
+            {
+                return BotAccountDeleteOutcome.NotFound;
+            }
+
+            foreach (var character in account.Characters)
+            {
+                if (character.Inventory is { } inventory)
+                {
+                    await context.DeleteAsync(inventory).ConfigureAwait(false);
+                }
+            }
+
+            if (account.Vault is { } vault)
+            {
+                await context.DeleteAsync(vault).ConfigureAwait(false);
+            }
+
+            var deleteQueued = await context.DeleteAsync(account).ConfigureAwait(false);
+
+            // Save per account, so a single failure does not roll back the accounts already deleted.
+            // Only counted after the save went through: an account whose save throws must not count as deleted.
+            await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            if (!deleteQueued)
+            {
+                // Not silent: a bot account which survives the purge is spawned again right after it.
+                this._logger.LogWarning("Bot account '{LoginName}' could not be deleted.", loginName);
+                return BotAccountDeleteOutcome.Failed;
+            }
+
+            return BotAccountDeleteOutcome.Deleted;
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            this._logger.LogError(ex, "Failed to delete bot account '{LoginName}', skipping it.", loginName);
+
+            if (account is not null)
+            {
+                // A failed save leaves the account graph in the change tracker as Deleted, which would
+                // fail every following save as well - detach it so the next account starts clean.
+                context.Detach(account);
+            }
+
+            return BotAccountDeleteOutcome.Failed;
+        }
+    }
+
     private void CreateCharacter(IPlayerContext context, Account account, string name, CharacterClass characterClass, int level, byte slot, long[] experienceTable, int seededResets, byte starterItemLevel, ResetConfiguration? resetConfiguration)
     {
         // A character generated beyond the class evolution level was created as its second-generation
@@ -433,7 +514,7 @@ internal sealed class BotGenerator
         DistributeStatPoints(character, characterClass, resetConfiguration is not null);
 
         // Skills survive resets, so a seeded veteran knows everything the highest level of its past
-        // cycles unlocked - level-gated skills are checked against that level, not the current one.
+        // cycles unlocked; level-gated skills are checked against that level, not the current one.
         var highestLevelReached = seededResets > 0 && resetConfiguration is not null
             ? Math.Max(level, resetConfiguration.RequiredLevel)
             : level;
@@ -499,13 +580,13 @@ internal sealed class BotGenerator
         var inventory = character.Inventory!;
         var characterClass = character.CharacterClass!;
 
-        // Data-driven so every class gets gear it is actually QUALIFIED to wear (a Dark Lord must never
+        // Data-driven, so every class gets gear it is actually QUALIFIED to wear (a Dark Lord must never
         // end up in a Pad/wizard set). We pick the most basic options (lowest DropLevel) the class can use:
         // - a weapon from the weapon groups (0 sword, 1 axe, 2 mace, 3 spear, 4 bow, 5 staff),
         // - the armor set whose chest piece (group 8) has the lowest DropLevel; its NUMBER identifies the set,
         //   and the equipment type is the GROUP (7 helm, 8 armor, 9 pants, 10 gloves, 11 boots).
         // The weapon type follows the bot's BUILD (BotProgression.IsPreferredWeaponGroup - the same rule the
-        // later upgrades use), so an energy-specced Magic Gladiator starts with a staff instead of a blade.
+        // later upgrades use), so an energy-specked Magic Gladiator starts with a staff instead of a blade.
         // The Small Axe is qualified for almost every class, so without this filter casters and archers would
         // all end up with one.
         bool IsPreferredWeapon(ItemDefinition definition)
