@@ -63,11 +63,11 @@
   <Target Name="FixNetSdkDiscoverAssetsBug" BeforeTargets="ResolveBuildCompressedStaticWebAssetsConfiguration">
     <!-- Workaround for:
    The "DiscoverPrecompressedAssets" task failed unexpectedly.
-   System.ArgumentException: An item with the same key has already been added. Key: C:\Users\[user]\.nuget\packages\microsoft.aspnetcore.app.internal.assets\10.0.0\_framework\blazor.web.js
+    System.ArgumentException: An item with the same key has already been added. Key: C:\Users\[user]\.nuget\packages\microsoft.aspnetcore.app.internal.assets\10.0.0\_framework\blazor.web.js
     
-   https://github.com/dotnet/sdk/issues/52089
+    https://github.com/dotnet/sdk/issues/52089
     
-   This is caused by a Microsoft.NET.Sdk.Web project (like this) referencing another project that also uses Microsoft.NET.Sdk.Web.
+    This is caused by a Microsoft.NET.Sdk.Web project (like this) referencing another project that also uses Microsoft.NET.Sdk.Web.
    It appears to be a .NET SDK bug, and we're not the only one hitting it.
    -->
     <ItemGroup>
@@ -77,4 +77,9 @@
       <StaticWebAsset Include="@(_StaticWebAsset-&gt;Distinct())" />
     </ItemGroup>
   </Target>
+
+  <!-- Rewrites the SDK's root-relative scoped-css bundle @imports so they resolve
+       from this project's StaticWebAssetBasePath (and under UsePathBase).
+       See the shared targets file for the full explanation. -->
+  <Import Project="..\ScopedCssBundleImports.targets" />
 </Project>

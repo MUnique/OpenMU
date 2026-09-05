@@ -1,0 +1,43 @@
+<Project>
+  <!--
+    The SDK emits root-relative @import rules (e.g. @import '_content/...') in a project's
+    scoped css bundle, assuming the bundle is served from the web root. Projects served from
+    a StaticWebAssetBasePath instead (like the importers of this file) break that assumption:
+    browsers resolve the imports against the bundle URL and request a doubled path
+    (/_content/<Project>/_content/...), which returns 404.
+
+    The imports are rewritten as base-relative (../../_content/...) after bundling. The bundle
+    is always served exactly two segments deep (<base>/<Project>/x.styles.css), so this works
+    both at the site root and under UsePathBase (e.g. PATH_BASE=/map in the Dapr hosts).
+    The replace is idempotent: rewritten lines no longer match the _content/ pattern.
+
+    Matching covers single- and double-quoted forms; a future url() form would silently
+    no-op - check here first if these 404s ever come back.
+
+    Note: the bundle path below is reconstructed from SDK internals
+    ($(IntermediateOutputPath)scopedcss/bundle/$(PackageId).styles.css). If the SDK moves it,
+    or if PackageId ever differs from the bundle file name, the Exists condition silently
+    skips this target - look here first if these 404s ever come back.
+  -->
+  <UsingTask TaskName="AbsolutizeScopedCssBundleImports" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <BundleFile ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.Text.RegularExpressions" />
+      <Code Type="Fragment" Language="cs"><![CDATA[
+var text = File.ReadAllText(BundleFile);
+var fixedText = Regex.Replace(text, @"@import\s+['""]_content/", "@import '../../_content/");
+if (fixedText != text)
+{
+    File.WriteAllText(BundleFile, fixedText);
+}
+      ]]></Code>
+    </Task>
+  </UsingTask>
+
+  <Target Name="_AbsolutizeScopedCssBundleImports" AfterTargets="BundleScopedCssFiles" Condition="Exists('$(IntermediateOutputPath)scopedcss/bundle/$(PackageId).styles.css')">
+    <AbsolutizeScopedCssBundleImports BundleFile="$(IntermediateOutputPath)scopedcss/bundle/$(PackageId).styles.css" />
+  </Target>
+</Project>

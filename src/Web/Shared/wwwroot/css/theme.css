@@ -1,0 +1,145 @@
+/* Color and surface tokens (--omu-*) for light and dark mode, plus dark-mode styling for custom components (sidebar, dropdown menus, error UI, lookup fields, grid navigation icons). */
+:root,
+[data-bs-theme=light] {
+  --omu-bg: #ffffff;
+  --omu-surface: #f8f9fa;
+  --omu-surface-2: #ffffff;
+  --omu-surface-muted: #f7f7f7;
+  --omu-surface-hover: #e9e9e9;
+  --omu-text: #212529;
+  --omu-text-muted: #5f6368;
+  --omu-text-secondary: #6c757d;
+  --omu-border: #d6d5d5;
+  --omu-link: #0366d6;
+  --omu-link-primary: #0d6efd;
+  --omu-link-primary-border: #0b5ed7;
+  --omu-mark-bg: #ffff00;
+  --omu-error-bg: lightyellow;
+  --omu-error-text: #212529;
+  --omu-sidebar-gradient: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+  --omu-nav-link: #d7d7d7;
+  --omu-spinner-dot: rgb(5, 39, 103);
+  --omu-overlay-bg: rgba(0, 0, 0, 0.5);
+  --omu-overlay-spinner: #ffffff;
+}
+
+[data-bs-theme=dark] {
+  --omu-bg: #121417;
+  --omu-surface: #1c1f24;
+  --omu-surface-2: #1a1d22;
+  --omu-surface-muted: #23272d;
+  --omu-surface-hover: #2a2f36;
+  --omu-text: #e6e6e6;
+  --omu-text-muted: #a0a4ab;
+  --omu-text-secondary: #b0b4bb;
+  --omu-border: #2a2f36;
+  --omu-link: #66b2ff;
+  --omu-link-primary: #0d6efd;
+  --omu-link-primary-border: #0b5ed7;
+  --omu-mark-bg: #6b5e00;
+  --omu-error-bg: #3a2f00;
+  --omu-error-text: #f5e9b3;
+  --omu-sidebar-gradient: linear-gradient(180deg, #0a1330 0%, #1a0322 70%);
+  --omu-nav-link: #d7d7d7;
+  --omu-spinner-dot: #66b2ff;
+  --omu-overlay-bg: rgba(0, 0, 0, 0.5);
+  --omu-overlay-spinner: #ffffff;
+}
+
+html,
+body {
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
+}
+
+[data-bs-theme=dark] .oi {
+  color: inherit;
+}
+
+[data-bs-theme=dark] .sidebar .nav-link {
+  color: var(--omu-nav-link);
+}
+
+[data-bs-theme=dark] .sidebar > nav > div > ul > li.dropdown > div {
+  background-color: var(--omu-surface);
+  color: var(--omu-text);
+  border-color: var(--omu-border);
+}
+
+[data-bs-theme=dark] .sidebar > nav > div > ul > li.dropdown > div > a {
+  color: var(--omu-text);
+}
+
+[data-bs-theme=dark] .sidebar > nav > div > ul > li.dropdown > div > a:hover, [data-bs-theme=dark] .sidebar > nav > div > ul > li.dropdown > div > a:focus {
+  background-color: var(--omu-surface-hover);
+  color: var(--omu-text);
+}
+
+[data-bs-theme=dark] .sidebar > nav > div > ul > li.dropdown > div > a.active {
+  background-color: var(--omu-surface-hover);
+  color: var(--omu-text);
+}
+
+[data-bs-theme=dark] .sidebar > nav > div > ul > li.dropdown > div hr {
+  border-color: var(--omu-border);
+}
+
+[data-bs-theme=dark] #blazor-error-ui {
+  background: var(--omu-error-bg);
+  color: var(--omu-error-text);
+}
+
+[data-bs-theme=dark] .creation-panel-body .form-actions {
+  background-color: var(--omu-surface) !important;
+  border-top: 1px solid var(--omu-border) !important;
+}
+
+[data-bs-theme=dark] .add-new-bar {
+  background-color: var(--omu-surface) !important;
+  border-top: var(--bs-border-width) solid var(--omu-border) !important;
+}
+
+[data-bs-theme=dark] .multi-lookup-field__selected-items {
+  background: var(--omu-surface-2);
+  border-color: var(--omu-border);
+  color: var(--omu-text);
+}
+
+[data-bs-theme=dark] .multi-lookup-field__tag {
+  background-color: var(--omu-surface-hover);
+  border-color: var(--omu-border);
+  color: var(--omu-text);
+}
+
+[data-bs-theme=dark] .multi-lookup-field__tag-remove {
+  color: var(--omu-text-muted);
+}
+
+[data-bs-theme=dark] .multi-lookup-field__dropdown {
+  background: var(--omu-surface-2);
+  border-color: var(--omu-border);
+}
+
+[data-bs-theme=dark] .multi-lookup-field__dropdown-item {
+  color: var(--omu-text);
+}
+
+[data-bs-theme=dark] .multi-lookup-field__dropdown-item:hover, [data-bs-theme=dark] .multi-lookup-field__dropdown-item--selected {
+  background-color: var(--omu-surface-hover);
+}
+
+[data-bs-theme=dark] .multi-lookup-field__dropdown-item--selected:hover {
+  background-color: var(--omu-surface-muted);
+}
+
+[data-bs-theme=dark] .multi-lookup-field__dropdown-item--loading, [data-bs-theme=dark] .multi-lookup-field__dropdown-item--empty {
+  color: var(--omu-text-muted);
+}
+
+[data-bs-theme=dark] .sort-indicator,
+[data-bs-theme=dark] .go-first,
+[data-bs-theme=dark] .go-previous,
+[data-bs-theme=dark] .go-next,
+[data-bs-theme=dark] .go-last {
+  filter: invert(1);
+}
