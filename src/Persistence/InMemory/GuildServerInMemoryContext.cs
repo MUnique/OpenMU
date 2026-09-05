@@ -27,6 +27,23 @@ public class GuildServerInMemoryContext : InMemoryContext, IGuildServerContext
     }
 
     /// <inheritdoc/>
+    public async ValueTask<Guid?> GetPersistentGuildIdByNameAsync(string name)
+    {
+        return (await this.Provider.GetRepository<DataModel.Entities.Guild>().GetAllAsync().ConfigureAwait(false))
+            .FirstOrDefault(guild => guild.Name == name)
+            ?.Id;
+    }
+
+    /// <inheritdoc/>
+    public async ValueTask<IReadOnlyDictionary<Guid, string>> GetPersistentGuildNamesAsync(IReadOnlyCollection<Guid> guildIds)
+    {
+        var guildIdSet = guildIds.ToHashSet();
+        return (await this.Provider.GetRepository<DataModel.Entities.Guild>().GetAllAsync().ConfigureAwait(false))
+            .Where(guild => guildIdSet.Contains(guild.Id) && guild.Name is not null)
+            .ToDictionary(guild => guild.Id, guild => guild.Name!);
+    }
+
+    /// <inheritdoc/>
     public async ValueTask<IReadOnlyDictionary<Guid, string>> GetMemberNamesAsync(Guid guildId)
     {
         var members = (await this.Provider.GetRepository<GuildMember>().GetAllAsync().ConfigureAwait(false))

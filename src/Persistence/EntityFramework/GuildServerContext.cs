@@ -31,6 +31,26 @@ internal class GuildServerContext : CachingEntityFrameworkContext, IGuildServerC
     }
 
     /// <inheritdoc/>
+    public async ValueTask<Guid?> GetPersistentGuildIdByNameAsync(string name)
+    {
+        return await this.Context.Set<Guild>()
+            .Where(guild => guild.Name == name)
+            .Select(guild => (Guid?)guild.Id)
+            .FirstOrDefaultAsync()
+            .ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    public async ValueTask<IReadOnlyDictionary<Guid, string>> GetPersistentGuildNamesAsync(IReadOnlyCollection<Guid> guildIds)
+    {
+        return await this.Context.Set<Guild>()
+            .Where(guild => guildIds.Contains(guild.Id) && guild.Name != null)
+            .Select(guild => new { guild.Id, guild.Name })
+            .ToDictionaryAsync(guild => guild.Id, guild => guild.Name!)
+            .ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
     public async ValueTask<IReadOnlyDictionary<Guid, string>> GetMemberNamesAsync(Guid guildId)
     {
         return await (from member in this.Context.Set<GuildMember>()

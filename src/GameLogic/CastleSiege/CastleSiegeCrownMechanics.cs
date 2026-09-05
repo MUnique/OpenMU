@@ -118,7 +118,7 @@ public static class CastleSiegeCrownMechanics
             }
         }
 
-        var ownershipChanged = ApplyOwner(context, capturingGuild);
+        var ownershipChanged = ApplyOwner(context, capturingGuild.PersistentGuildId);
         await context.SaveFinalGuildListAsync().ConfigureAwait(false);
         await context.SaveOwnerAsync().ConfigureAwait(false);
         if (ownershipChanged)
@@ -148,7 +148,7 @@ public static class CastleSiegeCrownMechanics
             siegeSwitch.Occupant = null;
         }
 
-        await BroadcastOwnershipAsync(context, capturingGuild.GuildName).ConfigureAwait(false);
+        await BroadcastOwnershipChangeAsync(context, capturingGuild.GuildName).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -175,7 +175,7 @@ public static class CastleSiegeCrownMechanics
             }
         }
 
-        var ownershipChanged = winner is not null && ApplyOwner(context, winner);
+        var ownershipChanged = winner is not null && ApplyOwner(context, winner.PersistentGuildId);
 
         await context.SaveOwnerAsync().ConfigureAwait(false);
         if (ownershipChanged)
@@ -186,7 +186,49 @@ public static class CastleSiegeCrownMechanics
         var ownerName = winner?.GuildName
                         ?? await GetOwnerGuildNameAsync(context).ConfigureAwait(false)
                         ?? string.Empty;
-        await BroadcastOwnershipAsync(context, ownerName).ConfigureAwait(false);
+        await BroadcastOwnershipChangeAsync(context, ownerName).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Applies a new owner and resets the economy inherited from the preceding tenure.
+    /// </summary>
+    /// <param name="context">The Castle Siege context.</param>
+    /// <param name="ownerGuildId">The persistent identifier of the new owner guild.</param>
+    /// <returns>A value indicating whether the owner changed.</returns>
+    internal static bool ApplyOwner(CastleSiegeContext context, Guid ownerGuildId)
+    {
+        if (context.SiegeData.IsOccupied
+            && context.SiegeData.OwnerGuildId == ownerGuildId)
+        {
+            return false;
+        }
+
+        // A successful seal changes the castle lord immediately. The previous ownership tenure's economy must not
+        // survive that handover, even when the former defender captures the Crown again before the battle ends.
+        context.SiegeData.OwnerGuildId = ownerGuildId;
+        context.SiegeData.IsOccupied = true;
+        context.SiegeData.TaxChaos = 0;
+        context.SiegeData.TaxStore = 0;
+        context.SiegeData.TaxHunt = 0;
+        context.SiegeData.TributeMoney = 0;
+        context.SiegeData.IsHuntZoneEnabled = false;
+        return true;
+    }
+
+    /// <summary>
+    /// Broadcasts a Castle Siege ownership change to players on the siege map.
+    /// </summary>
+    /// <param name="context">The Castle Siege context.</param>
+    /// <param name="guildName">The name of the new owner guild.</param>
+    /// <returns>A task that represents the asynchronous broadcast.</returns>
+    internal static async ValueTask BroadcastOwnershipChangeAsync(CastleSiegeContext context, string guildName)
+    {
+        await context.ForEachSiegePlayerAsync(async player =>
+        {
+            await player.InvokeViewPlugInAsync<ICastleSiegeOwnershipChangePlugIn>(
+                    plugIn => plugIn.ShowOwnershipChangeAsync(guildName))
+                .ConfigureAwait(false);
+        }).ConfigureAwait(false);
     }
 
     private static CastleSiegeJoinSide? GetCaptureSide(CastleSiegeContext context, Player? crownUser)
@@ -295,35 +337,5 @@ public static class CastleSiegeCrownMechanics
                     .GetGuildAsync(runtimeGuildId)
                     .ConfigureAwait(false))
                 ?.Name;
-    }
-
-    private static bool ApplyOwner(CastleSiegeContext context, CastleSiegeGuildParticipant winner)
-    {
-        if (context.SiegeData.IsOccupied
-            && context.SiegeData.OwnerGuildId == winner.PersistentGuildId)
-        {
-            return false;
-        }
-
-        // A successful seal changes the castle lord immediately. The previous ownership tenure's economy must not
-        // survive that handover, even when the former defender captures the Crown again before the battle ends.
-        context.SiegeData.OwnerGuildId = winner.PersistentGuildId;
-        context.SiegeData.IsOccupied = true;
-        context.SiegeData.TaxChaos = 0;
-        context.SiegeData.TaxStore = 0;
-        context.SiegeData.TaxHunt = 0;
-        context.SiegeData.TributeMoney = 0;
-        context.SiegeData.IsHuntZoneEnabled = false;
-        return true;
-    }
-
-    private static async ValueTask BroadcastOwnershipAsync(CastleSiegeContext context, string guildName)
-    {
-        await context.ForEachSiegePlayerAsync(async player =>
-        {
-            await player.InvokeViewPlugInAsync<ICastleSiegeOwnershipChangePlugIn>(
-                    plugIn => plugIn.ShowOwnershipChangeAsync(guildName))
-                .ConfigureAwait(false);
-        }).ConfigureAwait(false);
     }
 }

@@ -23,6 +23,7 @@ public class CastleSiegeContext : IEventStateProvider
     private readonly IGameContext _gameContext;
     private readonly System.Collections.Concurrent.ConcurrentDictionary<Player, CastleSiegeJoinSide> _notifiedPlayerJoinSides = new();
     private readonly System.Collections.Concurrent.ConcurrentDictionary<Player, byte> _siegeMapPlayers = new();
+    private int _requestedState = -1;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CastleSiegeContext"/> class.
@@ -199,6 +200,27 @@ public class CastleSiegeContext : IEventStateProvider
     /// Gets or sets the last force-state request processed by this context.
     /// </summary>
     internal int LastForceRequestVersion { get; set; }
+
+    /// <summary>
+    /// Requests a state transition for this game context on its next periodic task tick.
+    /// </summary>
+    /// <param name="state">The requested state.</param>
+    internal void RequestState(CastleSiegeState state)
+    {
+        Interlocked.Exchange(ref this._requestedState, (int)state);
+    }
+
+    /// <summary>
+    /// Gets and clears a context-specific pending state request.
+    /// </summary>
+    /// <param name="state">The requested state when a request was pending.</param>
+    /// <returns>A value indicating whether a request was pending.</returns>
+    internal bool TryTakeRequestedState(out CastleSiegeState state)
+    {
+        var requestedState = Interlocked.Exchange(ref this._requestedState, -1);
+        state = (CastleSiegeState)requestedState;
+        return requestedState >= 0;
+    }
 
     /// <inheritdoc />
     public bool IsSpawnWaveActive(byte waveNumber) => false;
