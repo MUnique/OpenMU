@@ -268,7 +268,7 @@ internal sealed class BotNavigator : AsyncDisposable
     private int _isEvaluating;
     private Point _destination;
     private bool _hasDestination;
-    private DateTime _lastWarpUtc = DateTime.MinValue;
+    private DateTimeOffset _lastWarpUtc = DateTimeOffset.MinValue;
     private Point _lastPosition;
     private DateTime _lastMoveUtc = DateTime.MinValue;
     private DateTime _nextEquipCheckUtc = DateTime.MinValue;
@@ -453,11 +453,11 @@ internal sealed class BotNavigator : AsyncDisposable
             // fall back to the warp list gate - the same spot the leader warped to. Without the
             // fallback a follower could neither warp after its leader nor hunt (following consumed
             // its ticks), and only the stuck watchdog kept it twitching between hunting grounds.
-            if (DateTime.UtcNow - this._lastWarpUtc >= FollowWarpCooldown
+            if (this._timeProvider.GetUtcNow() - this._lastWarpUtc >= FollowWarpCooldown
                 && leader.CurrentMap is { } leaderMap
                 && (leaderMap.Definition.ExitGates.Where(g => g.IsSpawnGate).SelectRandom() ?? warpListGate) is { } leaderGate)
             {
-                this._lastWarpUtc = DateTime.UtcNow;
+                this._lastWarpUtc = this._timeProvider.GetUtcNow();
                 this._hasDestination = false;
                 this._travelPath = null;
                 this._player.Logger.LogDebug(
@@ -484,11 +484,11 @@ internal sealed class BotNavigator : AsyncDisposable
             // Some maps represent several floors as disconnected regions on the same map id
             // (Dungeon, Lost Tower, ...). If walking cannot reach the leader, regroup through the
             // legal warp entry nearest to him instead of re-issuing an impossible path every tick.
-            if (DateTime.UtcNow - this._lastWarpUtc >= FollowWarpCooldown
+            if (this._timeProvider.GetUtcNow() - this._lastWarpUtc >= FollowWarpCooldown
                 && this.TryGetNearestLegalWarp(map.Definition, leader.Position, out var leaderWarp)
                 && leaderWarp.Gate is { } leaderGate)
             {
-                this._lastWarpUtc = DateTime.UtcNow;
+                this._lastWarpUtc = this._timeProvider.GetUtcNow();
                 this._hasDestination = false;
                 this._travelPath = null;
                 this._player.Logger.LogDebug(
@@ -991,7 +991,7 @@ internal sealed class BotNavigator : AsyncDisposable
             {
                 this._travelPath = null;
                 this._hasDestination = false;
-                this._lastWarpUtc = DateTime.UtcNow;
+                this._lastWarpUtc = this._timeProvider.GetUtcNow();
                 this._nextShoppingCheckUtc = DateTime.UtcNow; // start the trip on the new map right away
                 this._player.Logger.LogDebug("Bot '{Name}' warps home to {Map} for a shopping trip - no merchant on its map.", this._player.Name, homeMap.Name);
                 await this._player.WarpToAsync(homeGate).ConfigureAwait(false);
@@ -1096,7 +1096,7 @@ internal sealed class BotNavigator : AsyncDisposable
             {
                 this._travelPath = null;
                 this._hasDestination = false;
-                this._lastWarpUtc = DateTime.UtcNow;
+                this._lastWarpUtc = this._timeProvider.GetUtcNow();
                 this._nextBuffCheckUtc = DateTime.UtcNow; // start the trip on the new map right away
                 this._player.Logger.LogDebug("Bot '{Name}' warps home to {Map} for its buff - no buff NPC on its map.", this._player.Name, homeMap.Name);
                 await this._player.WarpToAsync(homeGate).ConfigureAwait(false);
@@ -1399,7 +1399,7 @@ internal sealed class BotNavigator : AsyncDisposable
         this._hasDestination = false;
         this._travelPath = null;
         this._emptyGroundSince = null;
-        this._lastWarpUtc = DateTime.MinValue;
+        this._lastWarpUtc = DateTimeOffset.MinValue;
         return true;
     }
 
@@ -1433,7 +1433,7 @@ internal sealed class BotNavigator : AsyncDisposable
         var mapIsBarren = DateTime.UtcNow - this._player.LastAttackUtc > BarrenMapDuration;
 
         if ((plainLevel < MinWarpLevel && !mustEscape && !mapIsBarren)
-            || DateTime.UtcNow - this._lastWarpUtc < WarpCooldown)
+            || this._timeProvider.GetUtcNow() - this._lastWarpUtc < WarpCooldown)
         {
             return false;
         }
@@ -1466,7 +1466,7 @@ internal sealed class BotNavigator : AsyncDisposable
         // The barren timer restarts with the move: the new map deserves the same chance to prove itself
         // before it is judged, and without this every following tick would warp again.
         this._player.LastAttackUtc = DateTime.UtcNow;
-        this._lastWarpUtc = DateTime.UtcNow;
+        this._lastWarpUtc = this._timeProvider.GetUtcNow();
         this._hasDestination = false;
         this._travelPath = null;
         this._player.Logger.LogDebug(
@@ -1852,8 +1852,7 @@ internal sealed class BotNavigator : AsyncDisposable
         return this._player.GameContext.Configuration.WarpList
             .Where(w => w.Gate?.Map is { } gateMap
                         && IsSameMapDefinition(gateMap, mapDefinition)
-                        && character.GetEffectiveMoveLevelRequirement(w.LevelRequirement) <= plainLevel)
-            .ToList();
+                        && character.GetEffectiveMoveLevelRequirement(w.LevelRequirement) <= plainLevel);
     }
 
     /// <summary>

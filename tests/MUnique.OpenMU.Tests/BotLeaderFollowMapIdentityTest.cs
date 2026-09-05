@@ -58,7 +58,8 @@ public class BotLeaderFollowMapIdentityTest
         var gameContext = GameContextTestHelper.CreateGameContext();
         var bot = await PlayerTestHelper.CreateOfflineLevelingPlayerAsync(gameContext).ConfigureAwait(false);
         var leader = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
-        var navigator = new BotNavigator(bot);
+        var timeProvider = new ManualTimeProvider(new DateTimeOffset(2026, 8, 31, 1, 0, 0, TimeSpan.Zero));
+        var navigator = new BotNavigator(bot, timeProvider);
 
         var mapDefinition = CreateBlockedTwoFloorMap(4);
         gameContext.Configuration.Maps.Add(mapDefinition);
@@ -80,6 +81,21 @@ public class BotLeaderFollowMapIdentityTest
         var consumed = await navigator.TryFollowLeaderAsync(map, leader, CancellationToken.None).ConfigureAwait(false);
 
         Assert.That(consumed, Is.True);
+        Assert.That(bot.SelectedCharacter.PositionX, Is.InRange(200, 201));
+        Assert.That(bot.SelectedCharacter.PositionY, Is.InRange(200, 201));
+
+        bot.SetCurrentMapSilently(map);
+        bot.SelectedCharacter.PositionX = 10;
+        bot.SelectedCharacter.PositionY = 10;
+
+        await navigator.TryFollowLeaderAsync(map, leader, CancellationToken.None).ConfigureAwait(false);
+
+        Assert.That(bot.SelectedCharacter.PositionX, Is.EqualTo(10));
+        Assert.That(bot.SelectedCharacter.PositionY, Is.EqualTo(10));
+
+        timeProvider.Advance(TimeSpan.FromSeconds(20));
+        await navigator.TryFollowLeaderAsync(map, leader, CancellationToken.None).ConfigureAwait(false);
+
         Assert.That(bot.SelectedCharacter.PositionX, Is.InRange(200, 201));
         Assert.That(bot.SelectedCharacter.PositionY, Is.InRange(200, 201));
     }
