@@ -2439,4 +2439,22 @@
   <data name="CastleSiegeHuntZoneResultPlugIn_Description" xml:space="preserve">
     <value>Sends Castle Siege hunting-zone request results to the game client.</value>
   </data>
+  <data name="CastleSiegeCommandHandlerPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege Guild Command Handler</value>
+  </data>
+  <data name="CastleSiegeCommandHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles directional guild commands issued by Castle Siege alliance masters.</value>
+  </data>
+  <data name="CastleSiegeCommandPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege Guild Command View</value>
+  </data>
+  <data name="CastleSiegeCommandPlugIn_Description" xml:space="preserve">
+    <value>Forwards an alliance master's directional guild command to same-side players.</value>
+  </data>
+  <data name="CastleSiegeMiniMapPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege Mini-Map View</value>
+  </data>
+  <data name="CastleSiegeMiniMapPlugIn_Description" xml:space="preserve">
+    <value>Sends Castle Siege player and NPC mini-map positions to alliance masters.</value>
+  </data>
 </root>

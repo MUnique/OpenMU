@@ -22,6 +22,7 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
     private static readonly TimeSpan EconomySaveInterval = TimeSpan.FromSeconds(30);
     private static readonly TimeSpan NpcSaveInterval = TimeSpan.FromMinutes(2);
     private static readonly TimeSpan ParticipantUpdateInterval = TimeSpan.FromSeconds(5);
+    private static readonly TimeSpan MiniMapUpdateInterval = TimeSpan.FromSeconds(3);
 
     private readonly ConditionalWeakTable<IGameContext, CastleSiegeContext> _contexts = new();
     private readonly TimeProvider _timeProvider;
@@ -394,6 +395,7 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
                 context.LastCrownUpdateUtc = utcNow;
                 await CastleSiegeParticipantTracker.TrackAsync(context, utcNow).ConfigureAwait(false);
                 context.NextParticipantUpdateUtc = utcNow + ParticipantUpdateInterval;
+                context.NextMiniMapUpdateUtc = utcNow + MiniMapUpdateInterval;
                 break;
             case CastleSiegeState.End:
                 await CastleSiegeCrownMechanics.CheckResultAsync(context).ConfigureAwait(false);
@@ -424,6 +426,7 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
                 context.LastBroadcastSwitchInfos.Clear();
                 context.LastBroadcastCrownAvailability = null;
                 context.NextParticipantUpdateUtc = DateTime.MaxValue;
+                context.NextMiniMapUpdateUtc = DateTime.MaxValue;
                 break;
         }
 
@@ -467,6 +470,16 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
         {
             await CastleSiegeSwitchMechanics.SendSwitchInfoAsync(context).ConfigureAwait(false);
             await CastleSiegeCrownMechanics.CheckMiddleWinnerAsync(context, utcNow).ConfigureAwait(false);
+        }
+
+        if (context.CurrentState == CastleSiegeState.Start
+            && context.NextMiniMapUpdateUtc <= utcNow)
+        {
+            await CastleSiegeMiniMap.BroadcastAsync(context).ConfigureAwait(false);
+            context.NextMiniMapUpdateUtc = GetNextInterval(
+                context.StateStartTimeUtc,
+                utcNow,
+                MiniMapUpdateInterval);
         }
 
         if (!context.IsEventRunning && context.NextNpcSaveUtc <= utcNow)
