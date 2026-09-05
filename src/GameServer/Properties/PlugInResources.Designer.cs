@@ -617,7 +617,43 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("CancelGuildCreationHandlerPlugIn_Name", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Handles directional guild commands issued by Castle Siege alliance masters..
+        /// </summary>
+        public static string CastleSiegeCommandHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeCommandHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Guild Command Handler.
+        /// </summary>
+        public static string CastleSiegeCommandHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeCommandHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Forwards an alliance master's directional guild command to same-side players..
+        /// </summary>
+        public static string CastleSiegeCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeCommandPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Guild Command View.
+        /// </summary>
+        public static string CastleSiegeCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeCommandPlugIn_Name", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Sends Castle Siege Crown capture progress to the game client..
         /// </summary>
@@ -1031,7 +1067,25 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("CastleSiegeMarkRegistrationResultPlugIn_Name", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Sends Castle Siege player and NPC mini-map positions to alliance masters..
+        /// </summary>
+        public static string CastleSiegeMiniMapPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeMiniMapPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Mini-Map View.
+        /// </summary>
+        public static string CastleSiegeMiniMapPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeMiniMapPlugIn_Name", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Routes Castle Siege NPC-list packet subcodes..
         /// </summary>
