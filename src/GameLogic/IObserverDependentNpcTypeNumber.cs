@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameLogic;
 /// </summary>
 /// <remarks>
 /// This contract is consumed by the extended NPC scope view. Legacy views intentionally keep their original encoding.
+/// Implementations may only set bits covered by the reserved upper masks <c>0x7000</c> and <c>0x8000</c>; the lower bits contain the NPC type number.
 /// </remarks>
 public interface IObserverDependentNpcTypeNumber
 {
