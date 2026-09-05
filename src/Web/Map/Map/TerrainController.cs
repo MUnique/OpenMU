@@ -46,10 +46,8 @@ public class TerrainController : Controller
             return this.NotFound();
         }
 
-        // TODO: Do this without creating an ObservableGameServerAdapter, because that's a very expensive operation.
-        using var gameServer = new ObservableGameServerAdapter(server.Context);
-        await gameServer.InitializeAsync().ConfigureAwait(false);
-        var map = gameServer.Maps.FirstOrDefault(m => m.Id == mapId);
+        var maps = await server.Context.GetMapsAsync().ConfigureAwait(false);
+        var map = maps.FirstOrDefault(m => m.Id == mapId);
         if (map is null)
         {
             this._logger.LogWarning($"requested map not available. map id: {mapId}");

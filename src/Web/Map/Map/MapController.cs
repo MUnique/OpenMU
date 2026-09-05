@@ -115,7 +115,7 @@ public sealed class MapController : IMapController, IWorldObserver, ILocateable,
     {
         await this._disposeCts.CancelAsync().ConfigureAwait(false);
         await this._gameServer.UnregisterMapObserverAsync(this._mapId, this.Id).ConfigureAwait(false);
-        this._adapterToWorldView.Dispose();
+        await this._adapterToWorldView.DisposeAsync().ConfigureAwait(false);
         try
         {
             await this._jsRuntime.InvokeVoidAsync("DisposeMap", this._identifier).ConfigureAwait(false);
