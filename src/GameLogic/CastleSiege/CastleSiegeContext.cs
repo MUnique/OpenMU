@@ -5,8 +5,10 @@
 namespace MUnique.OpenMU.GameLogic.CastleSiege;
 
 using System.Threading;
+using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.GameLogic.CastleSiege.NPC;
 using MUnique.OpenMU.GameLogic.Views.CastleSiege;
 
 /// <summary>
@@ -21,8 +23,10 @@ public class CastleSiegeContext : IEventStateProvider
     private static readonly TimeSpan JoinSideEffectDuration = TimeSpan.FromDays(7);
 
     private readonly IGameContext _gameContext;
+    private readonly TimeProvider _timeProvider;
     private readonly System.Collections.Concurrent.ConcurrentDictionary<Player, CastleSiegeJoinSide> _notifiedPlayerJoinSides = new();
     private readonly System.Collections.Concurrent.ConcurrentDictionary<Player, byte> _siegeMapPlayers = new();
+    private readonly System.Collections.Concurrent.ConcurrentDictionary<uint, CastleSiegeLifeStone> _lifeStones = new();
     private int _requestedState = -1;
 
     /// <summary>
@@ -30,9 +34,11 @@ public class CastleSiegeContext : IEventStateProvider
     /// </summary>
     /// <param name="gameContext">The game context.</param>
     /// <param name="configuration">The Castle Siege configuration.</param>
-    public CastleSiegeContext(IGameContext gameContext, CastleSiegeConfiguration configuration)
+    /// <param name="timeProvider">The time provider used for runtime Castle Siege objects.</param>
+    public CastleSiegeContext(IGameContext gameContext, CastleSiegeConfiguration configuration, TimeProvider? timeProvider = null)
     {
         this._gameContext = gameContext;
+        this._timeProvider = timeProvider ?? TimeProvider.System;
         this.Configuration = configuration;
         this.Schedule = new CastleSiegeSchedule(configuration.StateSchedule);
         this.NpcController = new CastleSiegeNpcController(this);
@@ -107,6 +113,11 @@ public class CastleSiegeContext : IEventStateProvider
     /// Gets the players which currently operate the Crown switches.
     /// </summary>
     public Player?[] SwitchUsers { get; } = new Player?[2];
+
+    /// <summary>
+    /// Gets a snapshot of the Life Stones which are currently placed by participating guilds.
+    /// </summary>
+    internal IReadOnlyCollection<CastleSiegeLifeStone> LifeStones => this._lifeStones.Values.ToArray();
 
     /// <summary>
     /// Gets or sets the accumulated Crown operation time.
@@ -273,6 +284,116 @@ public class CastleSiegeContext : IEventStateProvider
         foreach (var characterId in this.PlayerJoinSides.Keys.Where(id => !activeCharacterIds.Contains(id)))
         {
             this.PlayerJoinSides.TryRemove(characterId, out _);
+        }
+    }
+
+    /// <summary>
+    /// Tries to place a Life Stone for the specified guild at the player's current position.
+    /// </summary>
+    /// <param name="player">The player placing the Life Stone.</param>
+    /// <param name="guildId">The runtime identifier of the player's guild.</param>
+    /// <param name="side">The player's Castle Siege side.</param>
+    /// <returns>The placed Life Stone, or <see langword="null"/> when it could not be created.</returns>
+    internal async ValueTask<CastleSiegeLifeStone?> CreateLifeStoneAsync(
+        Player player,
+        uint guildId,
+        CastleSiegeJoinSide side)
+    {
+        var map = player.CurrentMap;
+        var definition = this._gameContext.Configuration.Monsters
+            .FirstOrDefault(candidate => candidate.Number == CastleSiegeLifeStone.MonsterNumber);
+        if (map is null
+            || definition is null
+            || map.Definition.Number != this.Configuration.CastleSiegeMapDefinition?.Number)
+        {
+            return null;
+        }
+
+        var spawnArea = new MonsterSpawnArea
+        {
+            MonsterDefinition = definition,
+            GameMap = map.Definition,
+            X1 = player.Position.X,
+            X2 = player.Position.X,
+            Y1 = player.Position.Y,
+            Y2 = player.Position.Y,
+            Direction = player.Rotation,
+            Quantity = 1,
+            SpawnTrigger = SpawnTrigger.ManuallyForEvent,
+        };
+        var lifeStone = new CastleSiegeLifeStone(
+            spawnArea,
+            definition,
+            map,
+            this,
+            guildId,
+            side,
+            this._timeProvider.GetUtcNow().UtcDateTime,
+            this._gameContext.DropGenerator,
+            this._gameContext.PlugInManager);
+        if (!this._lifeStones.TryAdd(guildId, lifeStone))
+        {
+            lifeStone.Dispose();
+            return null;
+        }
+
+        try
+        {
+            lifeStone.Initialize();
+            await map.AddAsync(lifeStone).ConfigureAwait(false);
+            lifeStone.OnSpawn();
+            return lifeStone;
+        }
+        catch (OperationCanceledException)
+        {
+            await lifeStone.DestroyAsync().ConfigureAwait(false);
+            throw;
+        }
+        catch (Exception ex)
+        {
+            await lifeStone.DestroyAsync().ConfigureAwait(false);
+            player.Logger.LogError(ex, "Castle Siege Life Stone placement failed.");
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Removes all active Life Stones and clears their guild mappings.
+    /// </summary>
+    /// <returns>A task that represents the destruction operation.</returns>
+    internal async ValueTask KillAllLifeStonesAsync()
+    {
+        var lifeStones = this._lifeStones.Values.ToArray();
+        this._lifeStones.Clear();
+        foreach (var lifeStone in lifeStones)
+        {
+            await lifeStone.DestroyAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Advances all active Life Stones by one Castle Siege task tick.
+    /// </summary>
+    /// <param name="utcNow">The current UTC time.</param>
+    /// <returns>A task that represents the update operation.</returns>
+    internal async ValueTask TickLifeStonesAsync(DateTime utcNow)
+    {
+        foreach (var lifeStone in this._lifeStones.Values.ToArray())
+        {
+            await lifeStone.TickAsync(utcNow).ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Removes a Life Stone from its guild mapping.
+    /// </summary>
+    /// <param name="lifeStone">The Life Stone to remove.</param>
+    internal void RemoveLifeStone(CastleSiegeLifeStone lifeStone)
+    {
+        if (this._lifeStones.TryGetValue(lifeStone.OwnerGuildId, out var tracked)
+            && ReferenceEquals(tracked, lifeStone))
+        {
+            this._lifeStones.TryRemove(lifeStone.OwnerGuildId, out _);
         }
     }
 

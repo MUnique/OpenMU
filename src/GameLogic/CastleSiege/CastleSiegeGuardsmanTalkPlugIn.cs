@@ -24,7 +24,7 @@ public sealed class CastleSiegeGuardsmanTalkPlugIn : IPlayerTalkToNpcPlugIn
     /// <inheritdoc />
     public async ValueTask PlayerTalksToNpcAsync(Player player, NonPlayerCharacter npc, NpcTalkEventArgs eventArgs)
     {
-        var context = CastleSiegeTaxProvider.GetContext(player);
+        var context = CastleSiegeContextResolver.GetContext(player);
         if (npc.Definition.Number != GuardsmanNumber
             || context is not { Configuration.Enabled: true }
             || player.CurrentMap?.Definition.Number != context.Configuration.CastleSiegeMapDefinition?.Number)
