@@ -97,7 +97,7 @@ internal static class BotBuffHandler
         {
             return effects.Values.ToArray().Any(e => e?.Definition == effectDef);
         }
-        catch (InvalidOperationException ex)
+        catch (Exception ex) when (ex is InvalidOperationException || ex is ArgumentException)
         {
             player.Logger.LogDebug(ex, "Bot '{Name}' encountered a concurrent modification while inspecting active effects.", player.Name);
             return true;
