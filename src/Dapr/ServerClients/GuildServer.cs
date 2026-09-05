@@ -73,6 +73,53 @@ public class GuildServer : IGuildServer
     }
 
     /// <inheritdoc />
+    public async ValueTask<Guid?> GetPersistentGuildIdByNameAsync(string guildName)
+    {
+        try
+        {
+            return await this._daprClient.InvokeMethodAsync<string, Guid?>(this._targetAppId, nameof(this.GetPersistentGuildIdByNameAsync), guildName).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Unexpected error when retrieving a persistent guild identifier by name.");
+            throw;
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<string?> GetPersistentGuildNameAsync(Guid guildId)
+    {
+        try
+        {
+            return await this._daprClient.InvokeMethodAsync<Guid, string?>(this._targetAppId, nameof(this.GetPersistentGuildNameAsync), guildId).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Unexpected error when retrieving a persistent guild name.");
+            throw;
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<IReadOnlyDictionary<Guid, string>> GetPersistentGuildNamesAsync(IReadOnlyCollection<Guid> guildIds)
+    {
+        try
+        {
+            return await this._daprClient
+                .InvokeMethodAsync<Guid[], Dictionary<Guid, string>>(
+                    this._targetAppId,
+                    nameof(this.GetPersistentGuildNamesAsync),
+                    guildIds.ToArray())
+                .ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Unexpected error when retrieving persistent guild names.");
+            throw;
+        }
+    }
+
+    /// <inheritdoc />
     public async ValueTask<uint> GetGuildIdAsync(Guid guildId)
     {
         try

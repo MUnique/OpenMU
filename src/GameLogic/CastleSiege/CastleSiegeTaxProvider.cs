@@ -14,19 +14,19 @@ using MUnique.OpenMU.Interfaces;
 public sealed class CastleSiegeTaxProvider
 {
     /// <summary>
-    /// The maximum percentage which can be configured for Chaos Machine and NPC store taxes.
+    /// Gets the maximum percentage which can be configured for Chaos Machine and NPC store taxes.
     /// </summary>
-    internal const int MaximumPercentageTax = 3;
+    public static int MaximumPercentageTax { get; } = 3;
 
     /// <summary>
-    /// The maximum Land of Trials entry fee.
+    /// Gets the maximum Land of Trials entry fee.
     /// </summary>
-    internal const int MaximumHuntTax = 300_000;
+    public static int MaximumHuntTax { get; } = 300_000;
 
     /// <summary>
-    /// The increment used when changing the Land of Trials entry fee.
+    /// Gets the increment used when changing the Land of Trials entry fee.
     /// </summary>
-    internal const int HuntTaxStep = 10_000;
+    internal static int HuntTaxStep { get; } = 10_000;
 
     /// <summary>
     /// Gets the Chaos Machine tax rate which applies to a player.
