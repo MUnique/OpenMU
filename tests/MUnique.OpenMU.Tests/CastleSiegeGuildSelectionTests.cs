@@ -201,7 +201,7 @@ public class CastleSiegeGuildSelectionTests
             Assert.That(fixture.Context.FinalGuildList, Does.ContainKey(ReconnectedAlphaGuildId));
             Assert.That(fixture.Context.FinalGuildList, Does.Not.ContainKey(AlphaGuildId));
             Assert.That(
-                player.MagicEffectList.ActiveEffects.Keys,
+                player.MagicEffectList.GetActiveEffectsSnapshot().Select(effect => effect.Id),
                 Does.Contain((short)CastleSiegeMagicEffectNumber.Attack1));
         });
 
@@ -282,7 +282,7 @@ public class CastleSiegeGuildSelectionTests
         {
             Assert.That(fixture.Context.GetPlayerJoinSide(player), Is.EqualTo(CastleSiegeJoinSide.None));
             Assert.That(
-                player.MagicEffectList.ActiveEffects.Keys,
+                player.MagicEffectList.GetActiveEffectsSnapshot().Select(effect => effect.Id),
                 Does.Not.Contain((short)CastleSiegeMagicEffectNumber.Attack1));
         });
     }

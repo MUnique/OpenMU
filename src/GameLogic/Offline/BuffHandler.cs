@@ -296,22 +296,7 @@ public sealed class BuffHandler
             return false;
         }
 
-        try
-        {
-            // Eager snapshot, like the other readers of ActiveEffects (see MagicEffectsList): the
-            // list is mutated by the effect expiry timers, and a lazy enumeration from this
-            // (unsynchronized) helper tick raced them regularly at scale. A list shrinking in the
-            // middle of the copy can still leave null holes in the snapshot (hence the tolerant
-            // predicate) or throw out of the copy itself (hence the catch-all around this pure
-            // read) - any torn read simply counts as "active", and the next tick retries.
-            var activeEffects = target.MagicEffectList.ActiveEffects.Values.ToArray();
-            return activeEffects.Any(e => e?.Definition == effectDef);
-        }
-        catch (Exception ex) when (ex is InvalidOperationException || ex is ArgumentException)
-        {
-            this._player.Logger.LogDebug(ex, "Bot '{Name}' encountered a concurrent modification while inspecting active effects on target.", this._player.Name);
-            return true;
-        }
+        return target.MagicEffectList.HasEffect(effectDef);
     }
 
     private void UpdatePeriodicBuffTimer()

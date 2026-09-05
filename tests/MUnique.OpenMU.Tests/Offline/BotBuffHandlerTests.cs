@@ -90,7 +90,7 @@ public class BotBuffHandlerTests
         var player = await PlayerTestHelper.CreateOfflineLevelingPlayerAsync(this._gameContext).ConfigureAwait(false);
         var effectDef = new MagicEffectDefinition { Number = 1 };
         var effect = new MagicEffect(TimeSpan.FromMinutes(10), effectDef);
-        player.MagicEffectList.ActiveEffects.Add(effect.Id, effect);
+        await player.MagicEffectList.AddEffectAsync(effect).ConfigureAwait(false);
 
         Assert.That(BotBuffHandler.HasEffect(player, effectDef), Is.True);
     }
@@ -105,7 +105,7 @@ public class BotBuffHandlerTests
         var effectDef1 = new MagicEffectDefinition { Number = 1 };
         var effectDef2 = new MagicEffectDefinition { Number = 2 };
         var effect = new MagicEffect(TimeSpan.FromMinutes(10), effectDef1);
-        player.MagicEffectList.ActiveEffects.Add(effect.Id, effect);
+        await player.MagicEffectList.AddEffectAsync(effect).ConfigureAwait(false);
 
         Assert.That(BotBuffHandler.HasEffect(player, effectDef2), Is.False);
     }

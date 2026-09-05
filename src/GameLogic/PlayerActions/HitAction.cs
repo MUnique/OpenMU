@@ -101,7 +101,7 @@ public class HitAction
         // Currently, we just support one effect for monsters.
         // E.g. Poison for Poison BullFighters.
         if (skill.MagicEffectDef is { Duration: not null } effectDefinition
-            && !target.MagicEffectList.ActiveEffects.ContainsKey(effectDefinition.Number)
+            && !target.MagicEffectList.ContainsEffect(effectDefinition.Number)
             && effectDefinition.PowerUpDefinitions.FirstOrDefault() is { Boost: not null } powerUpDef)
         {
             var powerUp = target.Attributes.CreateElement(powerUpDef);

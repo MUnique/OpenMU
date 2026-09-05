@@ -78,10 +78,10 @@ public class NewNpcsInScopePlugIn075 : INewNpcsInScopePlugIn
                 npcBlock.CurrentPositionY = npc.Position.Y;
                 if (npc is Monster monster)
                 {
-                    npcBlock.IsPoisoned = monster.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.Poisoned);
-                    npcBlock.IsIced = monster.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.Iced);
-                    npcBlock.IsDamageBuffed = monster.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.DamageBuff);
-                    npcBlock.IsDefenseBuffed = monster.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.DefenseBuff);
+                    npcBlock.IsPoisoned = monster.MagicEffectList.ContainsEffect(EffectNumbers.Poisoned);
+                    npcBlock.IsIced = monster.MagicEffectList.ContainsEffect(EffectNumbers.Iced);
+                    npcBlock.IsDamageBuffed = monster.MagicEffectList.ContainsEffect(EffectNumbers.DamageBuff);
+                    npcBlock.IsDefenseBuffed = monster.MagicEffectList.ContainsEffect(EffectNumbers.DefenseBuff);
                 }
 
                 var supportWalk = npc as ISupportWalk;
@@ -130,10 +130,10 @@ public class NewNpcsInScopePlugIn075 : INewNpcsInScopePlugIn
                 block.TypeNumber = (byte)summon.Definition.Number;
                 block.CurrentPositionX = summon.Position.X;
                 block.CurrentPositionY = summon.Position.Y;
-                block.IsPoisoned = summon.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.Poisoned);
-                block.IsIced = summon.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.Iced);
-                block.IsDamageBuffed = summon.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.DamageBuff);
-                block.IsDefenseBuffed = summon.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.DefenseBuff);
+                block.IsPoisoned = summon.MagicEffectList.ContainsEffect(EffectNumbers.Poisoned);
+                block.IsIced = summon.MagicEffectList.ContainsEffect(EffectNumbers.Iced);
+                block.IsDamageBuffed = summon.MagicEffectList.ContainsEffect(EffectNumbers.DamageBuff);
+                block.IsDefenseBuffed = summon.MagicEffectList.ContainsEffect(EffectNumbers.DefenseBuff);
 
                 var supportWalk = summon as ISupportWalk;
                 if (supportWalk?.IsWalking ?? false)
