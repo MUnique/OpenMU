@@ -79,6 +79,39 @@ public class GuildServerController : ControllerBase
     }
 
     /// <summary>
+    /// Gets the persistent identifier of a guild by its name.
+    /// </summary>
+    /// <param name="guildName">The guild name.</param>
+    /// <returns>The persistent guild identifier, or <see langword="null"/> if the guild was not found.</returns>
+    [HttpPost(nameof(IGuildServer.GetPersistentGuildIdByNameAsync))]
+    public ValueTask<Guid?> GetPersistentGuildIdByNameAsync([FromBody] string guildName)
+    {
+        return this._guildServer.GetPersistentGuildIdByNameAsync(guildName);
+    }
+
+    /// <summary>
+    /// Gets the name of a guild by its persistent identifier.
+    /// </summary>
+    /// <param name="guildId">The persistent guild identifier.</param>
+    /// <returns>The canonical guild name, or <see langword="null"/> if the guild was not found.</returns>
+    [HttpPost(nameof(IGuildServer.GetPersistentGuildNameAsync))]
+    public ValueTask<string?> GetPersistentGuildNameAsync([FromBody] Guid guildId)
+    {
+        return this._guildServer.GetPersistentGuildNameAsync(guildId);
+    }
+
+    /// <summary>
+    /// Gets the canonical names of guilds by their persistent identifiers.
+    /// </summary>
+    /// <param name="guildIds">The persistent guild identifiers.</param>
+    /// <returns>The names keyed by persistent guild identifier. Missing guilds are omitted.</returns>
+    [HttpPost(nameof(IGuildServer.GetPersistentGuildNamesAsync))]
+    public ValueTask<IReadOnlyDictionary<Guid, string>> GetPersistentGuildNamesAsync([FromBody] Guid[] guildIds)
+    {
+        return this._guildServer.GetPersistentGuildNamesAsync(guildIds);
+    }
+
+    /// <summary>
     /// Gets the persistent alliance master identifier of a guild by its runtime identifier.
     /// </summary>
     /// <param name="guildId">The runtime guild identifier.</param>

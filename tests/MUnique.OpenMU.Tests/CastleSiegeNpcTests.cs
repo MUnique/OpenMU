@@ -17,15 +17,18 @@ using MUnique.OpenMU.GameLogic.CastleSiege.Actions;
 using MUnique.OpenMU.GameLogic.CastleSiege.Intelligence;
 using MUnique.OpenMU.GameLogic.CastleSiege.NPC;
 using MUnique.OpenMU.GameLogic.MiniGames;
+using MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.CastleSiege;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.GameServer;
 using MUnique.OpenMU.GameServer.MessageHandler.CastleSiege;
+using MUnique.OpenMU.GameServer.RemoteView.World;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
+using AddNpcsToScopePacket = MUnique.OpenMU.Network.Packets.ServerToClient.AddNpcsToScope;
 using BasicModel = MUnique.OpenMU.Persistence.BasicModel;
 using RuntimeGuild = MUnique.OpenMU.Interfaces.Guild;
 
@@ -828,6 +831,314 @@ public class CastleSiegeNpcTests
     }
 
     /// <summary>
+    /// Verifies Life Stone placement, construction, timed same-side healing, and late-scope spawn state.
+    /// </summary>
+    [Test]
+    public async ValueTask LifeStoneBuildsHealsAndEncodesLateScopeStateAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        await AddSiegePlayerAsync(fixture, CastleSiegeJoinSide.Attack1, 60, 60).ConfigureAwait(false);
+        try
+        {
+            fixture.Context.CurrentState = CastleSiegeState.Start;
+            var attributes = fixture.Player.Attributes!;
+            attributes[Stats.CurrentHealth] = attributes[Stats.MaximumHealth] / 2;
+            attributes[Stats.CurrentMana] = attributes[Stats.MaximumMana] / 2;
+            var healthBeforeHealing = attributes[Stats.CurrentHealth];
+            var manaBeforeHealing = attributes[Stats.CurrentMana];
+
+            Assert.That(
+                await CastleSiegeSummonLifeStoneAction
+                    .SummonAsync(fixture.Player, fixture.Context)
+                    .ConfigureAwait(false),
+                Is.True);
+            Assert.That(
+                await CastleSiegeSummonLifeStoneAction
+                    .SummonAsync(fixture.Player, fixture.Context)
+                    .ConfigureAwait(false),
+                Is.False,
+                "A guild must not place a second Life Stone while its first one exists.");
+
+            var lifeStone = fixture.Context.LifeStones.Single();
+            await lifeStone.TickAsync(lifeStone.CreatedAtUtc.AddSeconds(12)).ConfigureAwait(false);
+            Assert.That(lifeStone.BuildTime, Is.EqualTo(1));
+            Assert.That(lifeStone.IsActive, Is.False);
+
+            await lifeStone.TickAsync(lifeStone.CreatedAtUtc.AddSeconds(60)).ConfigureAwait(false);
+            var healthAfterFirstHealing = attributes[Stats.CurrentHealth];
+            var manaAfterFirstHealing = attributes[Stats.CurrentMana];
+            Assert.Multiple(() =>
+            {
+                Assert.That(lifeStone.BuildTime, Is.EqualTo(5));
+                Assert.That(lifeStone.IsActive, Is.True);
+                Assert.That(healthAfterFirstHealing, Is.EqualTo(healthBeforeHealing + (attributes[Stats.MaximumHealth] / 100)));
+                Assert.That(manaAfterFirstHealing, Is.EqualTo(manaBeforeHealing + (attributes[Stats.MaximumMana] / 100)));
+            });
+
+            await lifeStone.TickAsync(lifeStone.CreatedAtUtc.AddSeconds(60.5)).ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(attributes[Stats.CurrentHealth], Is.EqualTo(healthAfterFirstHealing));
+                Assert.That(attributes[Stats.CurrentMana], Is.EqualTo(manaAfterFirstHealing));
+            });
+
+            await lifeStone.TickAsync(lifeStone.CreatedAtUtc.AddSeconds(61)).ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(attributes[Stats.CurrentHealth], Is.GreaterThan(healthAfterFirstHealing));
+                Assert.That(attributes[Stats.CurrentMana], Is.GreaterThan(manaAfterFirstHealing));
+            });
+
+            var (observer, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer(fixture.GameServerContext);
+            observer.GuildStatus = new GuildMemberStatus(OwnerRuntimeGuildId, GuildPosition.NormalMember);
+            await new NewNpcsInScopePlugIn(observer)
+                .NewNpcsInScopeAsync([lifeStone])
+                .ConfigureAwait(false);
+            var spawnPacket = (AddNpcsToScopePacket)output.ToArray().AsMemory();
+            var spawnType = spawnPacket[0].TypeNumber;
+            Assert.Multiple(() =>
+            {
+                Assert.That(spawnType & 0x03FF, Is.EqualTo(CastleSiegeLifeStone.MonsterNumber));
+                Assert.That((spawnType & 0x7000) >> 12, Is.EqualTo(5));
+                Assert.That(spawnType & 0x8000, Is.EqualTo(0x8000));
+            });
+
+            await fixture.Context.KillAllLifeStonesAsync().ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(fixture.Context.LifeStones, Is.Empty);
+                Assert.That(fixture.Map.GetObject(lifeStone.Id), Is.Null);
+            });
+        }
+        finally
+        {
+            await fixture.GameServerContext.RemovePlayerAsync(fixture.Player).ConfigureAwait(false);
+            await fixture.Context.KillAllLifeStonesAsync().ConfigureAwait(false);
+            await fixture.Context.NpcController.DespawnAllAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Verifies that every guild on the Life Stone's side receives its friendly spawn marker.
+    /// </summary>
+    [Test]
+    public async ValueTask LifeStoneSpawnMarksSameSideObserversAsFriendlyAsync()
+    {
+        const uint alliedGuildId = 11;
+        const uint opposingGuildId = 12;
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        await AddSiegePlayerAsync(fixture, CastleSiegeJoinSide.Attack1, 60, 60).ConfigureAwait(false);
+        try
+        {
+            fixture.Context.CurrentState = CastleSiegeState.Start;
+            fixture.Context.FinalGuildList[alliedGuildId] = new CastleSiegeGuildParticipant
+            {
+                GuildId = alliedGuildId,
+                PersistentGuildId = Guid.NewGuid(),
+                GuildName = "Ally",
+                Side = CastleSiegeJoinSide.Attack1,
+            };
+            fixture.Context.FinalGuildList[opposingGuildId] = new CastleSiegeGuildParticipant
+            {
+                GuildId = opposingGuildId,
+                PersistentGuildId = Guid.NewGuid(),
+                GuildName = "Opponent",
+                Side = CastleSiegeJoinSide.Attack2,
+            };
+            Assert.That(
+                await CastleSiegeSummonLifeStoneAction.SummonAsync(fixture.Player, fixture.Context).ConfigureAwait(false),
+                Is.True);
+            var lifeStone = fixture.Context.LifeStones.Single();
+
+            var (alliedObserver, alliedOutput) = CastleSiegeRemoteViewTestHelper.CreatePlayer(fixture.GameServerContext);
+            alliedObserver.GuildStatus = new GuildMemberStatus(alliedGuildId, GuildPosition.NormalMember);
+            await new NewNpcsInScopePlugIn(alliedObserver).NewNpcsInScopeAsync([lifeStone]).ConfigureAwait(false);
+
+            var (opposingObserver, opposingOutput) = CastleSiegeRemoteViewTestHelper.CreatePlayer(fixture.GameServerContext);
+            opposingObserver.GuildStatus = new GuildMemberStatus(opposingGuildId, GuildPosition.NormalMember);
+            await new NewNpcsInScopePlugIn(opposingObserver).NewNpcsInScopeAsync([lifeStone]).ConfigureAwait(false);
+
+            var alliedSpawn = (AddNpcsToScopePacket)alliedOutput.ToArray().AsMemory();
+            var opposingSpawn = (AddNpcsToScopePacket)opposingOutput.ToArray().AsMemory();
+            Assert.Multiple(() =>
+            {
+                Assert.That(alliedSpawn[0].TypeNumber & 0x8000, Is.EqualTo(0x8000));
+                Assert.That(opposingSpawn[0].TypeNumber & 0x8000, Is.Zero);
+            });
+        }
+        finally
+        {
+            await fixture.GameServerContext.RemovePlayerAsync(fixture.Player).ConfigureAwait(false);
+            await fixture.Context.KillAllLifeStonesAsync().ConfigureAwait(false);
+            await fixture.Context.NpcController.DespawnAllAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Verifies that only participating players on an opposing side may attack a Life Stone.
+    /// </summary>
+    [Test]
+    public async ValueTask LifeStoneAttackRequiresOpposingSiegeSideAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var opponent = await PlayerTestHelper.CreatePlayerAsync(fixture.GameServerContext).ConfigureAwait(false);
+        var nonParticipant = await PlayerTestHelper.CreatePlayerAsync(fixture.GameServerContext).ConfigureAwait(false);
+        opponent.SelectedCharacter!.Id = Guid.NewGuid();
+        nonParticipant.SelectedCharacter!.Id = Guid.NewGuid();
+        try
+        {
+            fixture.Context.CurrentState = CastleSiegeState.Start;
+            await AddSiegePlayerAsync(fixture, CastleSiegeJoinSide.Attack1, 60, 60).ConfigureAwait(false);
+            await AddSiegePlayerAsync(fixture, opponent, CastleSiegeJoinSide.Attack2, 61, 60).ConfigureAwait(false);
+            await AddSiegePlayerAsync(fixture, nonParticipant, CastleSiegeJoinSide.None, 62, 60).ConfigureAwait(false);
+            Assert.That(
+                await CastleSiegeSummonLifeStoneAction.SummonAsync(fixture.Player, fixture.Context).ConfigureAwait(false),
+                Is.True);
+            var lifeStone = fixture.Context.LifeStones.Single();
+
+            var ownerHit = await lifeStone.AttackByAsync(fixture.Player, null, false).ConfigureAwait(false);
+            var nonParticipantHit = await lifeStone.AttackByAsync(nonParticipant, null, false).ConfigureAwait(false);
+            var opponentHit = await lifeStone.AttackByAsync(opponent, null, false).ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(ownerHit, Is.Null);
+                Assert.That(nonParticipantHit, Is.Null);
+                Assert.That(opponentHit, Is.Not.Null);
+            });
+        }
+        finally
+        {
+            await fixture.GameServerContext.RemovePlayerAsync(nonParticipant).ConfigureAwait(false);
+            await fixture.GameServerContext.RemovePlayerAsync(opponent).ConfigureAwait(false);
+            await fixture.GameServerContext.RemovePlayerAsync(fixture.Player).ConfigureAwait(false);
+            await fixture.Context.KillAllLifeStonesAsync().ConfigureAwait(false);
+            await fixture.Context.NpcController.DespawnAllAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Verifies that a Life Stone item is consumed only after valid placement.
+    /// </summary>
+    [Test]
+    public async ValueTask LifeStoneItemIsConsumedOnlyAfterSuccessfulPlacementAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        await AddSiegePlayerAsync(fixture, CastleSiegeJoinSide.Attack1, 60, 60).ConfigureAwait(false);
+        try
+        {
+            fixture.Context.CurrentState = CastleSiegeState.Start;
+            var item = fixture.Player.PersistenceContext.CreateNew<Item>();
+            item.Durability = 1;
+            var handler = new CastleSiegeLifeStoneConsumeHandlerPlugIn(_ => fixture.Context);
+
+            fixture.Map.Terrain.SafezoneMap[60, 60] = true;
+            Assert.That(
+                await handler.ConsumeItemAsync(fixture.Player, item, null, FruitUsage.Undefined).ConfigureAwait(false),
+                Is.False);
+            Assert.That(item.Durability, Is.EqualTo(1));
+
+            fixture.Map.Terrain.SafezoneMap[60, 60] = false;
+            Assert.That(
+                await handler.ConsumeItemAsync(fixture.Player, item, null, FruitUsage.Undefined).ConfigureAwait(false),
+                Is.True);
+            Assert.That(item.Durability, Is.EqualTo(0));
+        }
+        finally
+        {
+            await fixture.GameServerContext.RemovePlayerAsync(fixture.Player).ConfigureAwait(false);
+            await fixture.Context.KillAllLifeStonesAsync().ConfigureAwait(false);
+            await fixture.Context.NpcController.DespawnAllAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Verifies that an invalid Life Stone definition rejects placement without consuming the item.
+    /// </summary>
+    [Test]
+    public async ValueTask LifeStoneMisconfigurationDoesNotEscapeConsumeHandlerAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        await AddSiegePlayerAsync(fixture, CastleSiegeJoinSide.Attack1, 60, 60).ConfigureAwait(false);
+        try
+        {
+            fixture.Context.CurrentState = CastleSiegeState.Start;
+            fixture.GameServerContext.Configuration.Monsters
+                .Single(monster => monster.Number == CastleSiegeLifeStone.MonsterNumber)
+                .Attributes
+                .Single(attribute => attribute.AttributeDefinition == Stats.MaximumHealth)
+                .Value = 0;
+            var item = fixture.Player.PersistenceContext.CreateNew<Item>();
+            item.Durability = 1;
+            var handler = new CastleSiegeLifeStoneConsumeHandlerPlugIn(_ => fixture.Context);
+
+            Assert.That(
+                await handler.ConsumeItemAsync(fixture.Player, item, null, FruitUsage.Undefined).ConfigureAwait(false),
+                Is.False);
+            Assert.Multiple(() =>
+            {
+                Assert.That(item.Durability, Is.EqualTo(1));
+                Assert.That(fixture.Context.LifeStones, Is.Empty);
+            });
+        }
+        finally
+        {
+            await fixture.GameServerContext.RemovePlayerAsync(fixture.Player).ConfigureAwait(false);
+            await fixture.Context.KillAllLifeStonesAsync().ConfigureAwait(false);
+            await fixture.Context.NpcController.DespawnAllAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Verifies that leaving the battle state removes all active Life Stones.
+    /// </summary>
+    [Test]
+    public async ValueTask LeavingBattleStateDestroysLifeStonesAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var battleTimeUtc = new DateTime(2026, 8, 4, 12, 0, 0, DateTimeKind.Utc);
+        var plugIn = new CastleSiegePlugIn(new FixedTimeProvider(battleTimeUtc));
+        CastleSiegeContext? context = null;
+        try
+        {
+            await AddSiegePlayerAsync(fixture, CastleSiegeJoinSide.Attack1, 65, 65).ConfigureAwait(false);
+            await plugIn.ExecuteTaskAsync(fixture.GameServerContext).ConfigureAwait(false);
+            context = plugIn.GetContext(fixture.GameServerContext)!;
+            context.FinalGuildList[OwnerRuntimeGuildId] = new CastleSiegeGuildParticipant
+            {
+                GuildId = OwnerRuntimeGuildId,
+                PersistentGuildId = fixture.OwnerPersistentGuildId,
+                GuildName = "Owner",
+                Side = CastleSiegeJoinSide.Attack1,
+            };
+            context.PlayerJoinSides[fixture.Player.SelectedCharacter!.Id] = CastleSiegeJoinSide.Attack1;
+            Assert.That(
+                await CastleSiegeSummonLifeStoneAction.SummonAsync(fixture.Player, context).ConfigureAwait(false),
+                Is.True);
+            var lifeStone = context.LifeStones.Single();
+
+            plugIn.ForceState(CastleSiegeState.Ready);
+            await plugIn.ExecuteTaskAsync(fixture.GameServerContext).ConfigureAwait(false);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(context.LifeStones, Is.Empty);
+                Assert.That(fixture.Map.GetObject(lifeStone.Id), Is.Null);
+            });
+        }
+        finally
+        {
+            await fixture.GameServerContext.RemovePlayerAsync(fixture.Player).ConfigureAwait(false);
+            if (context is not null)
+            {
+                await context.KillAllLifeStonesAsync().ConfigureAwait(false);
+                await context.NpcController.DespawnAllAsync().ConfigureAwait(false);
+            }
+
+            await fixture.Context.NpcController.DespawnAllAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
     /// Verifies machine-side authorization, exclusive operation, and stale-operator replacement.
     /// </summary>
     [Test]
@@ -1202,8 +1513,10 @@ public class CastleSiegeNpcTests
             var defenseMachine = AddMonster(222, NpcObjectKind.PassiveNpc);
             var gate = AddMonster(CastleSiegeGate.MonsterNumber, NpcObjectKind.Gate);
             var statue = AddMonster(CastleSiegeStatue.MonsterNumber, NpcObjectKind.Statue);
+            var lifeStone = AddMonster(CastleSiegeLifeStone.MonsterNumber, NpcObjectKind.Statue);
             AddAttributes(gate);
             AddAttributes(statue);
+            AddAttributes(lifeStone, 1_000);
 
             AddNpc(configuration, crown, 1, false, 60, 60);
             AddNpc(configuration, firstSwitch, 1, false, 70, 60);
@@ -1345,12 +1658,12 @@ public class CastleSiegeNpcTests
             });
         }
 
-        void AddAttributes(BasicModel.MonsterDefinition monster)
+        void AddAttributes(BasicModel.MonsterDefinition monster, int maximumHealth = 1)
         {
             monster.Attributes.Add(new BasicModel.MonsterAttribute
             {
                 AttributeDefinition = Stats.MaximumHealth,
-                Value = 1,
+                Value = maximumHealth,
             });
             monster.Attributes.Add(new BasicModel.MonsterAttribute
             {
