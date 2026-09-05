@@ -16,10 +16,11 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Grows a server-side bot like a real player when it levels up during play: the earned stat points are
 /// invested according to the bot's class build (see <see cref="BotProgression.GetStatWeights"/>), and any
-/// class skill whose learn requirements (total energy, leadership, character level, ...) are now met is
-/// learned - attack skills as well as the class's own buffs and heals. Skills are only ever learned for
-/// the character's own class (<see cref="Skill.QualifiedCharacters"/>), using the same requirements the
-/// game enforces for human players, so a grown bot matches a freshly generated one of the same level.
+/// non-item class skill whose learn requirements (total energy, leadership, character level, ...) are
+/// now met is learned. Orb and scroll skills are excluded on purpose: like a human player, the bot learns
+/// those only by looting and consuming the orb or scroll (see <see cref="BotSkillHandler"/>). Skills are
+/// only ever learned for the character's own class (<see cref="Skill.QualifiedCharacters"/>), using the
+/// same requirements the game enforces for human players.
 /// </summary>
 [PlugIn]
 [Display(Name = "Bot skill progression", Description = "Invests level-up stat points and teaches server-side bots new class- and level-appropriate skills as they level up.")]
@@ -157,10 +158,15 @@ public class BotSkillProgressionPlugIn : ICharacterLevelUpPlugIn
 
         float? GetValue(AttributeDefinition attribute) => player.Attributes?[attribute];
 
+        // Orb and scroll skills are deliberately NOT granted here: like a human player, the bot learns
+        // those only by finding the orb or scroll on the ground and consuming it (see BotSkillHandler).
+        // Handing them out on every level-up is what put scroll skills the bot could not yet own into
+        // low-level hunting grounds.
         var itemGrantedSkillNumbers = BotProgression.GetItemGrantedSkillNumbers(player.GameContext.Configuration);
         foreach (var skill in player.GameContext.Configuration.Skills)
         {
-            if (!BotProgression.IsBotLearnableSkill(skill, itemGrantedSkillNumbers)
+            if (itemGrantedSkillNumbers.Contains(skill.Number)
+                || !BotProgression.IsBotLearnableSkill(skill, itemGrantedSkillNumbers)
                 || !skill.QualifiedCharacters.Contains(characterClass)
                 || skillList.ContainsSkill((ushort)skill.Number)
                 || !BotProgression.MeetsRequirements(skill, GetValue))

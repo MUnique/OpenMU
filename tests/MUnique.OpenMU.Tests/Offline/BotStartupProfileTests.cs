@@ -13,8 +13,9 @@ using MUnique.OpenMU.GameLogic.Bots;
 public class BotStartupProfileTests
 {
     /// <summary>
-    /// Tests that the fresh profile always generates a level-1 character with level-0 starter gear and
-    /// no reset history, regardless of the veteran level bounds or the configured reset seeding.
+    /// Tests that the fresh profile always generates a level-1 character with level-0 starter gear, no
+    /// starter armor (weapon only, like a regular player's new character) and no reset history,
+    /// regardless of the veteran level bounds or the configured reset seeding.
     /// </summary>
     [Test]
     public void FreshProfile_AlwaysStartsAtLevelOne()
@@ -28,6 +29,7 @@ public class BotStartupProfileTests
         {
             Assert.That(level, Is.EqualTo(1));
             Assert.That(profile.StarterItemLevel, Is.EqualTo(0));
+            Assert.That(profile.EquipStarterArmor, Is.False);
             Assert.That(resets, Is.EqualTo(0));
             Assert.That(profile.MinLevel, Is.EqualTo(1));
             Assert.That(profile.MaxLevel, Is.EqualTo(1));
@@ -35,7 +37,8 @@ public class BotStartupProfileTests
     }
 
     /// <summary>
-    /// Tests that the veteran profile rolls a level within the given bounds and keeps the +6 starter gear.
+    /// Tests that the veteran profile rolls a level within the given bounds and keeps the +6 starter
+    /// gear including the basic armor set.
     /// </summary>
     [Test]
     public void VeteranProfile_LevelStaysWithinBounds()
@@ -48,6 +51,7 @@ public class BotStartupProfileTests
         {
             Assert.That(level, Is.InRange(10, 250));
             Assert.That(profile.StarterItemLevel, Is.EqualTo(6));
+            Assert.That(profile.EquipStarterArmor, Is.True);
         });
     }
 

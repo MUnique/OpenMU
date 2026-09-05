@@ -143,10 +143,15 @@ range are three tiles at any level. Skills the game only activates during a
 castle siege are left out, and so are a pet's skills unless the pet is actually
 equipped: Plasma Storm draws its damage from the Fenrir, but the attribute behind
 it is derived from the character's own stats, so nothing but the pet slot tells a
-mounted character from one riding nothing. Skills are learned against the
-game's own requirements — total energy, leadership, character level — at
-generation and again on every level-up, and the class buffs are kept up on their
-own.
+mounted character from one riding nothing. Mount-bound skills stay out entirely
+instead: bots neither learn nor use them (even if a looted pet ends up in the
+pet slot). Skills are learned like a human
+player learns them: a freshly generated bot starts with the skills its start
+level and stats entitle it to (a fresh level-1 character almost none, a veteran
+a plausible kit up to its level), and from then on it loots skill orbs and
+scrolls from the ground and consumes them - never granted magically on level-up.
+A scroll which does not drop yet where the bot hunts stays unknown until the bot
+gets there. Once learned, the class buffs are kept up on their own.
 
 A skill the character cannot currently cast is passed over, in the attack
 rotation and in the buffs alike. That is not the same as not having learned it: a
