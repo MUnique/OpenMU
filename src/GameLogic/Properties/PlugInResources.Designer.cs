@@ -3490,5 +3490,23 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("WeatherUpdatePlugIn_Name", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Consumes Life Stones after they are successfully placed during Castle Siege.
+        /// </summary>
+        public static string CastleSiegeLifeStoneConsumeHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeLifeStoneConsumeHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Life Stone consume handler.
+        /// </summary>
+        public static string CastleSiegeLifeStoneConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeLifeStoneConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
     }
 }

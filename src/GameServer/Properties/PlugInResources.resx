@@ -2457,4 +2457,10 @@
   <data name="CastleSiegeMiniMapPlugIn_Description" xml:space="preserve">
     <value>Sends Castle Siege player and NPC mini-map positions to alliance masters.</value>
   </data>
+  <data name="CastleSiegeLifeStoneStatePlugIn_Name" xml:space="preserve">
+    <value>Castle Siege Life Stone state view</value>
+  </data>
+  <data name="CastleSiegeLifeStoneStatePlugIn_Description" xml:space="preserve">
+    <value>Sends Castle Siege Life Stone creation progress to the game client.</value>
+  </data>
 </root>

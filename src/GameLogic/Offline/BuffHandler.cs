@@ -307,7 +307,7 @@ public sealed class BuffHandler
             var activeEffects = target.MagicEffectList.ActiveEffects.Values.ToArray();
             return activeEffects.Any(e => e?.Definition == effectDef);
         }
-        catch (InvalidOperationException ex)
+        catch (Exception ex) when (ex is InvalidOperationException || ex is ArgumentException)
         {
             this._player.Logger.LogDebug(ex, "Bot '{Name}' encountered a concurrent modification while inspecting active effects on target.", this._player.Name);
             return true;

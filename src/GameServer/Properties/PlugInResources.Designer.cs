@@ -7079,5 +7079,23 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("WhisperedChatMessageHandlerPlugIn_Name", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Sends Castle Siege Life Stone creation progress to the game client.
+        /// </summary>
+        public static string CastleSiegeLifeStoneStatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeLifeStoneStatePlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Life Stone state view.
+        /// </summary>
+        public static string CastleSiegeLifeStoneStatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeLifeStoneStatePlugIn_Name", resourceCulture);
+            }
+        }
     }
 }
