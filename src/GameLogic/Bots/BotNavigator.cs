@@ -604,19 +604,6 @@ internal sealed class BotNavigator : AsyncDisposable
         return Math.Abs(from.X - centerX) + Math.Abs(from.Y - centerY);
     }
 
-    private static bool IsSameMapDefinition(GameMapDefinition left, GameMapDefinition right)
-    {
-        var leftId = left.GetId();
-        var rightId = right.GetId();
-        if (leftId != Guid.Empty && rightId != Guid.Empty)
-        {
-            return leftId == rightId;
-        }
-
-        return ReferenceEquals(left, right)
-               || (left.Number == right.Number && left.Discriminator == right.Discriminator);
-    }
-
     private static int GateDistance(Gate gate, Point target)
     {
         var centerX = (gate.X1 + gate.X2) / 2;
@@ -1908,11 +1895,23 @@ internal sealed class BotNavigator : AsyncDisposable
             return [];
         }
 
+        // Runtime/instanced maps are not guaranteed to reference the same persisted entity as the
+        // global warp list, so map-number matching remains the compatibility fallback. When the exact
+        // definition is present, however, use only its entries to avoid mixing distinct definitions
+        // which happen to share a number.
+        var sameNumberWarps = this._player.GameContext.Configuration.WarpList
+            .Where(w => w.Gate?.Map?.Number == mapDefinition.Number)
+            .ToArray();
+        var mapDefinitionId = mapDefinition.GetId();
+        var exactMapWarps = mapDefinitionId == Guid.Empty
+            ? []
+            : sameNumberWarps.Where(w => w.Gate!.Map!.GetId() == mapDefinitionId).ToArray();
+        var mapWarps = exactMapWarps.Length > 0 ? exactMapWarps : sameNumberWarps;
+
+        // Select the identity tier before applying access requirements. Otherwise an exact entry
+        // which is too high-level could incorrectly fall through to an easier same-number entry.
         var plainLevel = (int)(this._player.Attributes?[Stats.Level] ?? 1);
-        return this._player.GameContext.Configuration.WarpList
-            .Where(w => w.Gate?.Map is { } gateMap
-                        && IsSameMapDefinition(gateMap, mapDefinition)
-                        && character.GetEffectiveMoveLevelRequirement(w.LevelRequirement) <= plainLevel);
+        return mapWarps.Where(w => character.GetEffectiveMoveLevelRequirement(w.LevelRequirement) <= plainLevel);
     }
 
     /// <summary>

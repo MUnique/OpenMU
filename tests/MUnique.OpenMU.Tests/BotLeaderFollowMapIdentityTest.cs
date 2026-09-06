@@ -172,6 +172,102 @@ public class BotLeaderFollowMapIdentityTest
         Assert.That(bot.SelectedCharacter.PositionY, Is.InRange(200, 201));
     }
 
+    /// <summary>
+    /// Warp eligibility is defined by the map number, as it was before party following was added.
+    /// The runtime map and the warp-list configuration may be separate entity instances.
+    /// </summary>
+    [Test]
+    public async ValueTask SameMapFollowerAcceptsWarpFromEquivalentMapDefinitionAsync()
+    {
+        var gameContext = GameContextTestHelper.CreateGameContext();
+        var bot = await PlayerTestHelper.CreateOfflineLevelingPlayerAsync(gameContext).ConfigureAwait(false);
+        var leader = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        var navigator = new BotNavigator(bot);
+
+        var runtimeDefinition = CreateBlockedTwoFloorMap(4);
+        var warpListDefinition = CreateBlockedTwoFloorMap(4);
+        var map = new GameMap(runtimeDefinition, TimeSpan.FromMinutes(1), 8);
+        var leaderFloorGate = CreateGate(warpListDefinition, 200, 200);
+        gameContext.Configuration.WarpList.Add(CreateWarpInfo("EquivalentMap", leaderFloorGate));
+
+        bot.Attributes![Stats.Level] = 100;
+        bot.SetCurrentMapSilently(map);
+        bot.SelectedCharacter!.CurrentMap = runtimeDefinition;
+        bot.SelectedCharacter.PositionX = 10;
+        bot.SelectedCharacter.PositionY = 10;
+        leader.SetCurrentMapSilently(map);
+        leader.Position = new Point(200, 200);
+
+        await navigator.TryFollowLeaderAsync(map, leader, CancellationToken.None).ConfigureAwait(false);
+
+        Assert.That(bot.SelectedCharacter.PositionX, Is.InRange(200, 201));
+        Assert.That(bot.SelectedCharacter.PositionY, Is.InRange(200, 201));
+    }
+
+    /// <summary>
+    /// When the warp list contains entries for distinct map definitions with the same number, entries
+    /// for the requested definition take precedence over the compatibility fallback.
+    /// </summary>
+    [Test]
+    public async ValueTask SameMapFollowerPrefersExactMapDefinitionOverSameNumberFallbackAsync()
+    {
+        var gameContext = GameContextTestHelper.CreateGameContext();
+        var bot = await PlayerTestHelper.CreateOfflineLevelingPlayerAsync(gameContext).ConfigureAwait(false);
+        var leader = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        var navigator = new BotNavigator(bot);
+
+        var runtimeDefinition = CreateMapWithMisleadingCloserGate(4);
+        var otherDefinition = CreateMapWithMisleadingCloserGate(4);
+        var map = new GameMap(runtimeDefinition, TimeSpan.FromMinutes(1), 8);
+        gameContext.Configuration.WarpList.Add(CreateWarpInfo("SameNumber", CreateGate(otherDefinition, 190, 200)));
+        gameContext.Configuration.WarpList.Add(CreateWarpInfo("Exact", CreateGate(runtimeDefinition, 150, 200)));
+
+        bot.Attributes![Stats.Level] = 100;
+        bot.SetCurrentMapSilently(map);
+        bot.SelectedCharacter!.CurrentMap = runtimeDefinition;
+        bot.SelectedCharacter.PositionX = 200;
+        bot.SelectedCharacter.PositionY = 189;
+        leader.SetCurrentMapSilently(map);
+        leader.Position = new Point(200, 200);
+
+        await navigator.TryFollowLeaderAsync(map, leader, CancellationToken.None).ConfigureAwait(false);
+
+        Assert.That(bot.SelectedCharacter.PositionX, Is.InRange(150, 151));
+        Assert.That(bot.SelectedCharacter.PositionY, Is.InRange(200, 201));
+    }
+
+    /// <summary>
+    /// Finding an exact map entry selects the map identity tier before checking access. An under-level
+    /// bot must not bypass that entry by falling back to a lower-level entry with the same map number.
+    /// </summary>
+    [Test]
+    public async ValueTask SameMapFollowerDoesNotBypassExactWarpLevelThroughSameNumberFallbackAsync()
+    {
+        var gameContext = GameContextTestHelper.CreateGameContext();
+        var bot = await PlayerTestHelper.CreateOfflineLevelingPlayerAsync(gameContext).ConfigureAwait(false);
+        var leader = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        var navigator = new BotNavigator(bot);
+
+        var runtimeDefinition = CreateMapWithMisleadingCloserGate(4);
+        var otherDefinition = CreateMapWithMisleadingCloserGate(4);
+        var map = new GameMap(runtimeDefinition, TimeSpan.FromMinutes(1), 8);
+        gameContext.Configuration.WarpList.Add(CreateWarpInfo("SameNumber", CreateGate(otherDefinition, 190, 200)));
+        gameContext.Configuration.WarpList.Add(CreateWarpInfo("Exact", CreateGate(runtimeDefinition, 150, 200), 400));
+
+        bot.Attributes![Stats.Level] = 100;
+        bot.SetCurrentMapSilently(map);
+        bot.SelectedCharacter!.CurrentMap = runtimeDefinition;
+        bot.SelectedCharacter.PositionX = 200;
+        bot.SelectedCharacter.PositionY = 189;
+        leader.SetCurrentMapSilently(map);
+        leader.Position = new Point(200, 200);
+
+        await navigator.TryFollowLeaderAsync(map, leader, CancellationToken.None).ConfigureAwait(false);
+
+        Assert.That(bot.SelectedCharacter.PositionX, Is.EqualTo(200));
+        Assert.That(bot.SelectedCharacter.PositionY, Is.EqualTo(189));
+    }
+
     private static GameMap CreateMap(byte number, byte discriminator)
     {
         var definition = new MUnique.OpenMU.Persistence.BasicModel.GameMapDefinition
@@ -262,13 +358,14 @@ public class BotLeaderFollowMapIdentityTest
         return gate;
     }
 
-    private static WarpInfo CreateWarpInfo(string name, ExitGate gate)
+    private static WarpInfo CreateWarpInfo(string name, ExitGate gate, int levelRequirement = 0)
     {
         return new MUnique.OpenMU.Persistence.BasicModel.WarpInfo
         {
             Id = Guid.NewGuid(),
             Name = name,
             Gate = gate,
+            LevelRequirement = levelRequirement,
         };
     }
 
