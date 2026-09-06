@@ -413,7 +413,8 @@ internal sealed class BotNavigator : AsyncDisposable
     /// <param name="map">The bot's current map.</param>
     /// <param name="leader">The party leader.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>True, if following consumed this tick; false, if the bot is close enough and should hunt normally.</returns>
+    /// <returns>True, if evaluation should stop because a follow action was taken or the leader is on
+    /// another map; false, if the bot can continue its normal local behavior.</returns>
     internal async ValueTask<bool> TryFollowLeaderAsync(GameMap map, Player leader, CancellationToken cancellationToken)
     {
         if (!ReferenceEquals(leader.CurrentMap, map))
@@ -474,10 +475,13 @@ internal sealed class BotNavigator : AsyncDisposable
 
         if (this._player.GetDistanceTo(leader.Position) > FollowDistance)
         {
-            this._destination = leader.Position;
-            this._hasDestination = true;
+            // Discard any previous hunting destination before resolving the moving leader again. Only
+            // publish the leader as a destination after a route was found and a walk was actually issued.
+            this._hasDestination = false;
             if (await this.TravelTowardAsync(map, leader.Position, cancellationToken).ConfigureAwait(false))
             {
+                this._destination = leader.Position;
+                this._hasDestination = true;
                 return true;
             }
 
@@ -500,9 +504,12 @@ internal sealed class BotNavigator : AsyncDisposable
                     leaderWarp.Name);
                 await this._player.WarpToAsync(leaderGate).ConfigureAwait(false);
                 await this.TryPersistCurrentMapAsync(map.Definition).ConfigureAwait(false);
+                return true;
             }
 
-            return true;
+            // Walking failed and no warp was performed (none is reachable, or the cooldown is active).
+            // Let the remaining evaluation hunt locally while following retries on a later tick.
+            return false;
         }
 
         return false;
