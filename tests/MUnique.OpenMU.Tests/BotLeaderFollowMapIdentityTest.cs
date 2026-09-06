@@ -62,7 +62,7 @@ public class BotLeaderFollowMapIdentityTest
         var leader = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
         var timeProvider = new ManualTimeProvider(new DateTimeOffset(2026, 8, 31, 1, 0, 0, TimeSpan.Zero));
         var navigator = new BotNavigator(bot, timeProvider);
-        var mapChangeRecorder = new MapChangeRecordingPlugIn();
+        var mapChangeRecorder = new MapChangeRecordingPlugIn(bot);
         gameContext.PlugInManager.RegisterPlugInAtPlugInPoint<IPlayerStateChangedPlugIn>(mapChangeRecorder);
 
         var mapDefinition = CreateBlockedTwoFloorMap(4);
@@ -120,7 +120,7 @@ public class BotLeaderFollowMapIdentityTest
         var bot = await PlayerTestHelper.CreateOfflineLevelingPlayerAsync(gameContext).ConfigureAwait(false);
         var leader = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
         var navigator = new BotNavigator(bot);
-        var mapChangeRecorder = new MapChangeRecordingPlugIn();
+        var mapChangeRecorder = new MapChangeRecordingPlugIn(bot);
         gameContext.PlugInManager.RegisterPlugInAtPlugInPoint<IPlayerStateChangedPlugIn>(mapChangeRecorder);
 
         var mapDefinition = CreateBlockedTwoFloorMap(4);
@@ -154,7 +154,7 @@ public class BotLeaderFollowMapIdentityTest
         var bot = await PlayerTestHelper.CreateOfflineLevelingPlayerAsync(gameContext).ConfigureAwait(false);
         var leader = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
         var navigator = new BotNavigator(bot);
-        var mapChangeRecorder = new MapChangeRecordingPlugIn();
+        var mapChangeRecorder = new MapChangeRecordingPlugIn(bot);
         gameContext.PlugInManager.RegisterPlugInAtPlugInPoint<IPlayerStateChangedPlugIn>(mapChangeRecorder);
 
         var mapDefinition = CreateBlockedTwoFloorMap(4);
@@ -444,11 +444,20 @@ public class BotLeaderFollowMapIdentityTest
     [Guid("609DE0CD-938A-46CC-8731-C5CF1C791ED5")]
     private sealed class MapChangeRecordingPlugIn : IPlayerStateChangedPlugIn
     {
+        private readonly Player _observedPlayer;
+
+        public MapChangeRecordingPlugIn(Player observedPlayer)
+        {
+            this._observedPlayer = observedPlayer;
+        }
+
         public int MapChangeCount { get; private set; }
 
         public ValueTask PlayerStateChangedAsync(Player player, State previousState, State currentState)
         {
-            if (currentState == PlayerState.ChangingMap)
+            if (ReferenceEquals(player, this._observedPlayer)
+                && previousState != PlayerState.ChangingMap
+                && currentState == PlayerState.ChangingMap)
             {
                 this.MapChangeCount++;
             }
