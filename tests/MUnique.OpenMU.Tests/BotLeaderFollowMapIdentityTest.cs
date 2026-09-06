@@ -4,12 +4,14 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using System.Runtime.InteropServices;
 using System.Threading;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Bots;
 using MUnique.OpenMU.GameLogic.Offline;
+using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.Pathfinding;
 
 /// <summary>
@@ -49,17 +51,19 @@ public class BotLeaderFollowMapIdentityTest
     /// <summary>
     /// Multi-floor maps such as Dungeon and Lost Tower are represented as one game map with several
     /// warp entries into isolated regions. When the leader is on another floor of the same map and
-    /// walking cannot reach him, the follower should regroup through the legal warp entry closest to
-    /// the leader.
+    /// walking cannot reach him, the follower should regroup through a legal warp entry whose landing
+    /// area can reach the leader.
     /// </summary>
     [Test]
-    public async ValueTask SameMapFollowerWarpsToNearestLeaderFloorWhenWalkingIsImpossibleAsync()
+    public async ValueTask SameMapFollowerWarpsThroughReachableGateWhenWalkingIsImpossibleAsync()
     {
         var gameContext = GameContextTestHelper.CreateGameContext();
         var bot = await PlayerTestHelper.CreateOfflineLevelingPlayerAsync(gameContext).ConfigureAwait(false);
         var leader = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
         var timeProvider = new ManualTimeProvider(new DateTimeOffset(2026, 8, 31, 1, 0, 0, TimeSpan.Zero));
         var navigator = new BotNavigator(bot, timeProvider);
+        var mapChangeRecorder = new MapChangeRecordingPlugIn();
+        gameContext.PlugInManager.RegisterPlugInAtPlugInPoint<IPlayerStateChangedPlugIn>(mapChangeRecorder);
 
         var mapDefinition = CreateBlockedTwoFloorMap(4);
         gameContext.Configuration.Maps.Add(mapDefinition);
@@ -81,6 +85,7 @@ public class BotLeaderFollowMapIdentityTest
         var consumed = await navigator.TryFollowLeaderAsync(map, leader, CancellationToken.None).ConfigureAwait(false);
 
         Assert.That(consumed, Is.True);
+        Assert.That(mapChangeRecorder.MapChangeCount, Is.EqualTo(1), "the follower must execute a warp, not only change its stored position");
         Assert.That(bot.SelectedCharacter.PositionX, Is.InRange(200, 201));
         Assert.That(bot.SelectedCharacter.PositionY, Is.InRange(200, 201));
 
@@ -90,12 +95,14 @@ public class BotLeaderFollowMapIdentityTest
 
         await navigator.TryFollowLeaderAsync(map, leader, CancellationToken.None).ConfigureAwait(false);
 
+        Assert.That(mapChangeRecorder.MapChangeCount, Is.EqualTo(1), "the cooldown must suppress a second warp");
         Assert.That(bot.SelectedCharacter.PositionX, Is.EqualTo(10));
         Assert.That(bot.SelectedCharacter.PositionY, Is.EqualTo(10));
 
         timeProvider.Advance(TimeSpan.FromSeconds(20));
         await navigator.TryFollowLeaderAsync(map, leader, CancellationToken.None).ConfigureAwait(false);
 
+        Assert.That(mapChangeRecorder.MapChangeCount, Is.EqualTo(2), "the follower must warp again after the cooldown");
         Assert.That(bot.SelectedCharacter.PositionX, Is.InRange(200, 201));
         Assert.That(bot.SelectedCharacter.PositionY, Is.InRange(200, 201));
     }
@@ -367,6 +374,22 @@ public class BotLeaderFollowMapIdentityTest
             Gate = gate,
             LevelRequirement = levelRequirement,
         };
+    }
+
+    [Guid("609DE0CD-938A-46CC-8731-C5CF1C791ED5")]
+    private sealed class MapChangeRecordingPlugIn : IPlayerStateChangedPlugIn
+    {
+        public int MapChangeCount { get; private set; }
+
+        public ValueTask PlayerStateChangedAsync(Player player, State previousState, State currentState)
+        {
+            if (currentState == PlayerState.ChangingMap)
+            {
+                this.MapChangeCount++;
+            }
+
+            return ValueTask.CompletedTask;
+        }
     }
 
     private sealed class ManualTimeProvider(DateTimeOffset utcNow) : TimeProvider
