@@ -82,7 +82,7 @@ public class BotLeaderFollowMapIdentityTest
         leader.SetCurrentMapSilently(map);
         leader.Position = new Point(200, 200);
 
-        var consumed = await navigator.TryRegroupWithLeaderAsync(map, leader, CancellationToken.None).ConfigureAwait(false);
+        var consumed = await navigator.TryRegroupWithLeaderOnSameMapAsync(map, leader, CancellationToken.None).ConfigureAwait(false);
 
         Assert.That(consumed, Is.True);
         Assert.That(mapChangeRecorder.MapChangeCount, Is.EqualTo(1), "the follower must execute a warp, not only change its stored position");
@@ -93,7 +93,7 @@ public class BotLeaderFollowMapIdentityTest
         bot.SelectedCharacter.PositionX = 10;
         bot.SelectedCharacter.PositionY = 10;
 
-        var consumedDuringCooldown = await navigator.TryRegroupWithLeaderAsync(map, leader, CancellationToken.None).ConfigureAwait(false);
+        var consumedDuringCooldown = await navigator.TryRegroupWithLeaderOnSameMapAsync(map, leader, CancellationToken.None).ConfigureAwait(false);
 
         Assert.That(consumedDuringCooldown, Is.False, "no follow action was taken while the warp cooldown was active");
         Assert.That(mapChangeRecorder.MapChangeCount, Is.EqualTo(1), "the cooldown must suppress a second warp");
@@ -101,7 +101,7 @@ public class BotLeaderFollowMapIdentityTest
         Assert.That(bot.SelectedCharacter.PositionY, Is.EqualTo(10));
 
         timeProvider.Advance(TimeSpan.FromSeconds(20));
-        var consumedAfterCooldown = await navigator.TryRegroupWithLeaderAsync(map, leader, CancellationToken.None).ConfigureAwait(false);
+        var consumedAfterCooldown = await navigator.TryRegroupWithLeaderOnSameMapAsync(map, leader, CancellationToken.None).ConfigureAwait(false);
 
         Assert.That(consumedAfterCooldown, Is.True);
         Assert.That(mapChangeRecorder.MapChangeCount, Is.EqualTo(2), "the follower must warp again after the cooldown");
@@ -136,7 +136,7 @@ public class BotLeaderFollowMapIdentityTest
         leader.SetCurrentMapSilently(map);
         leader.Position = new Point(200, 200);
 
-        var consumed = await navigator.TryFollowLeaderAsync(map, leader, CancellationToken.None).ConfigureAwait(false);
+        var consumed = await navigator.TryHandleCrossMapLeaderFollowAsync(map, leader, CancellationToken.None).ConfigureAwait(false);
 
         Assert.That(consumed, Is.False);
         Assert.That(mapChangeRecorder.MapChangeCount, Is.Zero);
@@ -166,7 +166,7 @@ public class BotLeaderFollowMapIdentityTest
         leader.SetCurrentMapSilently(map);
         leader.Position = new Point(200, 200);
 
-        var consumed = await navigator.TryRegroupWithLeaderAsync(map, leader, CancellationToken.None).ConfigureAwait(false);
+        var consumed = await navigator.TryRegroupWithLeaderOnSameMapAsync(map, leader, CancellationToken.None).ConfigureAwait(false);
 
         Assert.That(consumed, Is.False);
         Assert.That(mapChangeRecorder.MapChangeCount, Is.Zero);
@@ -201,7 +201,7 @@ public class BotLeaderFollowMapIdentityTest
         leader.SetCurrentMapSilently(map);
         leader.Position = new Point(200, 200);
 
-        await navigator.TryRegroupWithLeaderAsync(map, leader, CancellationToken.None).ConfigureAwait(false);
+        await navigator.TryRegroupWithLeaderOnSameMapAsync(map, leader, CancellationToken.None).ConfigureAwait(false);
 
         Assert.That(bot.SelectedCharacter.PositionX, Is.InRange(150, 151));
         Assert.That(bot.SelectedCharacter.PositionY, Is.InRange(200, 201));
@@ -238,7 +238,7 @@ public class BotLeaderFollowMapIdentityTest
         leader.SetCurrentMapSilently(map);
         leader.Position = new Point(200, 200);
 
-        await navigator.TryRegroupWithLeaderAsync(map, leader, CancellationToken.None).ConfigureAwait(false);
+        await navigator.TryRegroupWithLeaderOnSameMapAsync(map, leader, CancellationToken.None).ConfigureAwait(false);
 
         Assert.That(bot.SelectedCharacter.PositionX, Is.InRange(150, 151));
         Assert.That(bot.SelectedCharacter.PositionY, Is.InRange(200, 201));
@@ -270,7 +270,7 @@ public class BotLeaderFollowMapIdentityTest
         leader.SetCurrentMapSilently(map);
         leader.Position = new Point(200, 200);
 
-        await navigator.TryRegroupWithLeaderAsync(map, leader, CancellationToken.None).ConfigureAwait(false);
+        await navigator.TryRegroupWithLeaderOnSameMapAsync(map, leader, CancellationToken.None).ConfigureAwait(false);
 
         Assert.That(bot.SelectedCharacter.PositionX, Is.InRange(200, 201));
         Assert.That(bot.SelectedCharacter.PositionY, Is.InRange(200, 201));
@@ -302,7 +302,7 @@ public class BotLeaderFollowMapIdentityTest
         leader.SetCurrentMapSilently(map);
         leader.Position = new Point(200, 200);
 
-        await navigator.TryRegroupWithLeaderAsync(map, leader, CancellationToken.None).ConfigureAwait(false);
+        await navigator.TryRegroupWithLeaderOnSameMapAsync(map, leader, CancellationToken.None).ConfigureAwait(false);
 
         Assert.That(bot.SelectedCharacter.PositionX, Is.InRange(150, 151));
         Assert.That(bot.SelectedCharacter.PositionY, Is.InRange(200, 201));
@@ -334,7 +334,7 @@ public class BotLeaderFollowMapIdentityTest
         leader.SetCurrentMapSilently(map);
         leader.Position = new Point(200, 200);
 
-        await navigator.TryRegroupWithLeaderAsync(map, leader, CancellationToken.None).ConfigureAwait(false);
+        await navigator.TryRegroupWithLeaderOnSameMapAsync(map, leader, CancellationToken.None).ConfigureAwait(false);
 
         Assert.That(bot.SelectedCharacter.PositionX, Is.EqualTo(200));
         Assert.That(bot.SelectedCharacter.PositionY, Is.EqualTo(189));

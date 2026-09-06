@@ -414,7 +414,7 @@ internal sealed class BotNavigator : AsyncDisposable
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>True, if evaluation should stop because a follow action was taken or the leader is on
     /// another map; false, if the bot can continue its normal local behavior.</returns>
-    internal async ValueTask<bool> TryFollowLeaderAsync(GameMap map, Player leader, CancellationToken cancellationToken)
+    internal async ValueTask<bool> TryHandleCrossMapLeaderFollowAsync(GameMap map, Player leader, CancellationToken cancellationToken)
     {
         if (ReferenceEquals(leader.CurrentMap, map))
         {
@@ -483,7 +483,7 @@ internal sealed class BotNavigator : AsyncDisposable
     /// <param name="leader">The party leader to regroup with.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>True if a walk or warp was performed; otherwise false.</returns>
-    internal async ValueTask<bool> TryRegroupWithLeaderAsync(GameMap map, Player leader, CancellationToken cancellationToken)
+    internal async ValueTask<bool> TryRegroupWithLeaderOnSameMapAsync(GameMap map, Player leader, CancellationToken cancellationToken)
     {
         // Discard any previous hunting destination before resolving the moving leader again. Only
         // publish the leader as a destination after a route was found and a walk was actually issued.
@@ -831,7 +831,7 @@ internal sealed class BotNavigator : AsyncDisposable
         }
 
         // Party members follow their leader instead of roaming on their own: to the leader's map when
-        // it warped away (see TryFollowLeaderAsync), and around him while on the same map (see
+        // it warped away (see TryHandleCrossMapLeaderFollowAsync), and around him while on the same map (see
         // EvaluateFollowerHuntingAsync - hunt within range while there is something to fight, regroup
         // into formation when idle). Followers never roam to independent hunting grounds, warp on
         // their own, or step down barren maps - the leader (the lowest-level member, so it only ever
@@ -839,7 +839,7 @@ internal sealed class BotNavigator : AsyncDisposable
         // if the leader idles in town or is wedged, its followers idle with him.
         if (leaderToFollow is not null)
         {
-            if (await this.TryFollowLeaderAsync(map, leaderToFollow, cancellationToken).ConfigureAwait(false))
+            if (await this.TryHandleCrossMapLeaderFollowAsync(map, leaderToFollow, cancellationToken).ConfigureAwait(false))
             {
                 return;
             }
@@ -1328,7 +1328,7 @@ internal sealed class BotNavigator : AsyncDisposable
         // Nothing to fight around the leader: only now close back into formation.
         if (this._player.GetDistanceTo(leader.Position) > PartyRegroupDistance)
         {
-            await this.TryRegroupWithLeaderAsync(map, leader, cancellationToken).ConfigureAwait(false);
+            await this.TryRegroupWithLeaderOnSameMapAsync(map, leader, cancellationToken).ConfigureAwait(false);
             return;
         }
 
