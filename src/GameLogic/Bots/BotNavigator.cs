@@ -483,9 +483,10 @@ internal sealed class BotNavigator : AsyncDisposable
 
             // Some maps represent several floors as disconnected regions on the same map id
             // (Dungeon, Lost Tower, ...). If walking cannot reach the leader, regroup through the
-            // legal warp entry nearest to him instead of re-issuing an impossible path every tick.
+            // closest legal warp entry whose complete landing area can reach him instead of re-issuing
+            // an impossible path every tick.
             if (this._timeProvider.GetUtcNow() - this._lastWarpUtc >= FollowWarpCooldown
-                && this.TryGetNearestLegalWarp(map.Definition, leader.Position, out var leaderWarp)
+                && await this.FindBestReachableLegalWarpAsync(map, leader.Position, cancellationToken).ConfigureAwait(false) is { } leaderWarp
                 && leaderWarp.Gate is { } leaderGate)
             {
                 this._lastWarpUtc = this._timeProvider.GetUtcNow();
@@ -1519,32 +1520,7 @@ internal sealed class BotNavigator : AsyncDisposable
 
         this._travelPath = null;
 
-        IList<PathResultNode>? path;
-
-        // Observe the navigator's shutdown token while queuing for a shared pathfinder: on disposal the
-        // wait is abandoned at once (the OperationCanceledException is expected and handled in
-        // SafeEvaluateAsync) instead of holding the tick until a finder frees up.
-        await TravelPathFinderPool.WaitAsync(cancellationToken).ConfigureAwait(false);
-        PathFinder? finder = null;
-        try
-        {
-            if (!TravelPathFinders.TryTake(out finder))
-            {
-                finder = CreateTravelPathFinder();
-            }
-
-            finder.ResetPathFinder();
-            path = finder.FindPath(position, destination, map.Terrain.AIgrid, true);
-        }
-        finally
-        {
-            if (finder is not null)
-            {
-                TravelPathFinders.Add(finder);
-            }
-
-            TravelPathFinderPool.Release();
-        }
+        var path = await this.FindTravelPathAsync(map, position, destination, cancellationToken).ConfigureAwait(false);
 
         if (path is null || path.Count == 0)
         {
@@ -1558,6 +1534,37 @@ internal sealed class BotNavigator : AsyncDisposable
         this._travelPathTarget = destination;
         await this.WalkCachedStepsAsync(position).ConfigureAwait(false);
         return true;
+    }
+
+    private async ValueTask<IList<PathResultNode>?> FindTravelPathAsync(
+        GameMap map,
+        Point start,
+        Point destination,
+        CancellationToken cancellationToken)
+    {
+        // Observe the navigator's shutdown token while queuing for a shared pathfinder: on disposal the
+        // wait is abandoned at once instead of holding the tick until a finder frees up.
+        await TravelPathFinderPool.WaitAsync(cancellationToken).ConfigureAwait(false);
+        PathFinder? finder = null;
+        try
+        {
+            if (!TravelPathFinders.TryTake(out finder))
+            {
+                finder = CreateTravelPathFinder();
+            }
+
+            finder.ResetPathFinder();
+            return finder.FindPath(start, destination, map.Terrain.AIgrid, true, cancellationToken);
+        }
+        finally
+        {
+            if (finder is not null)
+            {
+                TravelPathFinders.Add(finder);
+            }
+
+            TravelPathFinderPool.Release();
+        }
     }
 
     /// <summary>
@@ -1827,18 +1834,71 @@ internal sealed class BotNavigator : AsyncDisposable
     }
 
     /// <summary>
-    /// Gets the legal warp entry nearest to a target position on the given map.
+    /// Gets the legal warp entry whose landing area has the shortest walkable route to a target.
     /// </summary>
-    /// <param name="mapDefinition">The target map.</param>
+    /// <param name="map">The target map.</param>
     /// <param name="target">The target position.</param>
-    /// <param name="warp">The nearest legal warp info, if any.</param>
-    /// <returns>True, if a legal entry exists.</returns>
-    private bool TryGetNearestLegalWarp(GameMapDefinition mapDefinition, Point target, [MaybeNullWhen(false)] out WarpInfo warp)
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The best reachable warp, or <c>null</c> if no legal gate can reach the target.</returns>
+    private async ValueTask<WarpInfo?> FindBestReachableLegalWarpAsync(GameMap map, Point target, CancellationToken cancellationToken)
     {
-        warp = this.GetLegalWarps(mapDefinition)
-            .OrderBy(w => GateDistance(w.Gate!, target))
-            .FirstOrDefault();
-        return warp is not null;
+        WarpInfo? bestWarp = null;
+        var bestWorstCasePathLength = int.MaxValue;
+        var candidates = this.GetLegalWarps(map.Definition).ToArray();
+        foreach (var candidate in candidates)
+        {
+            if (candidate.Gate is not { } gate)
+            {
+                continue;
+            }
+
+            var landingPoints = gate.GetPossibleLandingPoints().ToArray();
+            if (landingPoints.Contains(this._player.Position))
+            {
+                continue;
+            }
+
+            var worstCasePathLength = await this.GetWorstLandingPathLengthAsync(map, landingPoints, target, cancellationToken).ConfigureAwait(false);
+            if (worstCasePathLength is null
+                || worstCasePathLength > bestWorstCasePathLength
+                || (worstCasePathLength == bestWorstCasePathLength
+                    && bestWarp?.Gate is { } bestGate
+                    && GateDistance(gate, target) >= GateDistance(bestGate, target)))
+            {
+                continue;
+            }
+
+            bestWarp = candidate;
+            bestWorstCasePathLength = worstCasePathLength.Value;
+        }
+
+        return bestWarp;
+    }
+
+    private async ValueTask<int?> GetWorstLandingPathLengthAsync(
+        GameMap map,
+        IReadOnlyCollection<Point> landingPoints,
+        Point target,
+        CancellationToken cancellationToken)
+    {
+        var worstCasePathLength = 0;
+        foreach (var landingPoint in landingPoints)
+        {
+            if (!map.Terrain.WalkMap[landingPoint.X, landingPoint.Y])
+            {
+                return null;
+            }
+
+            var path = await this.FindTravelPathAsync(map, landingPoint, target, cancellationToken).ConfigureAwait(false);
+            if (landingPoint != target && (path is null || path.Count == 0))
+            {
+                return null;
+            }
+
+            worstCasePathLength = Math.Max(worstCasePathLength, path?.Count ?? 0);
+        }
+
+        return worstCasePathLength;
     }
 
     private IEnumerable<WarpInfo> GetLegalWarps(GameMapDefinition mapDefinition)

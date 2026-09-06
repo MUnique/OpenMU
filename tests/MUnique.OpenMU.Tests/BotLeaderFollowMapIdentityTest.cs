@@ -100,6 +100,78 @@ public class BotLeaderFollowMapIdentityTest
         Assert.That(bot.SelectedCharacter.PositionY, Is.InRange(200, 201));
     }
 
+    /// <summary>
+    /// Coordinate distance alone can prefer the gate of the follower's isolated region. The follower
+    /// must instead choose a gate whose landing area has an actual path to the leader.
+    /// </summary>
+    [Test]
+    public async ValueTask SameMapFollowerSkipsCloserWarpWhichCannotReachLeaderAsync()
+    {
+        var gameContext = GameContextTestHelper.CreateGameContext();
+        var bot = await PlayerTestHelper.CreateOfflineLevelingPlayerAsync(gameContext).ConfigureAwait(false);
+        var leader = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        var navigator = new BotNavigator(bot);
+
+        var mapDefinition = CreateMapWithMisleadingCloserGate(4);
+        gameContext.Configuration.Maps.Add(mapDefinition);
+        var map = new GameMap(mapDefinition, TimeSpan.FromMinutes(1), 8);
+        var isolatedGate = CreateGate(mapDefinition, 200, 189);
+        var reachableGate = CreateGate(mapDefinition, 150, 200);
+        gameContext.Configuration.WarpList.Add(CreateWarpInfo("Isolated", isolatedGate));
+        gameContext.Configuration.WarpList.Add(CreateWarpInfo("Reachable", reachableGate));
+
+        bot.Attributes![Stats.Level] = 100;
+        bot.SetCurrentMapSilently(map);
+        bot.SelectedCharacter!.CurrentMap = mapDefinition;
+        bot.SelectedCharacter.PositionX = 200;
+        bot.SelectedCharacter.PositionY = 189;
+
+        leader.SetCurrentMapSilently(map);
+        leader.Position = new Point(200, 200);
+
+        await navigator.TryFollowLeaderAsync(map, leader, CancellationToken.None).ConfigureAwait(false);
+
+        Assert.That(bot.SelectedCharacter.PositionX, Is.InRange(150, 151));
+        Assert.That(bot.SelectedCharacter.PositionY, Is.InRange(200, 201));
+    }
+
+    /// <summary>
+    /// Every coordinate which the production warp can select must be safe: a gate with one blocked
+    /// landing point is rejected even if its other point can reach the leader.
+    /// </summary>
+    [Test]
+    public async ValueTask SameMapFollowerRejectsGateWithBlockedPossibleLandingPointAsync()
+    {
+        var gameContext = GameContextTestHelper.CreateGameContext();
+        var bot = await PlayerTestHelper.CreateOfflineLevelingPlayerAsync(gameContext).ConfigureAwait(false);
+        var leader = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        var navigator = new BotNavigator(bot);
+
+        var mapDefinition = CreateMapWithMisleadingCloserGate(4);
+        gameContext.Configuration.Maps.Add(mapDefinition);
+        var map = new GameMap(mapDefinition, TimeSpan.FromMinutes(1), 8);
+        map.Terrain.WalkMap[191, 200] = false;
+        map.Terrain.UpdateAiGridValue(191, 200);
+        var partiallyBlockedGate = CreateGate(mapDefinition, 190, 200);
+        partiallyBlockedGate.X2 = 192;
+        var fallbackGate = CreateGate(mapDefinition, 150, 200);
+        gameContext.Configuration.WarpList.Add(CreateWarpInfo("PartiallyBlocked", partiallyBlockedGate));
+        gameContext.Configuration.WarpList.Add(CreateWarpInfo("Fallback", fallbackGate));
+
+        bot.Attributes![Stats.Level] = 100;
+        bot.SetCurrentMapSilently(map);
+        bot.SelectedCharacter!.CurrentMap = mapDefinition;
+        bot.SelectedCharacter.PositionX = 200;
+        bot.SelectedCharacter.PositionY = 189;
+        leader.SetCurrentMapSilently(map);
+        leader.Position = new Point(200, 200);
+
+        await navigator.TryFollowLeaderAsync(map, leader, CancellationToken.None).ConfigureAwait(false);
+
+        Assert.That(bot.SelectedCharacter.PositionX, Is.InRange(150, 151));
+        Assert.That(bot.SelectedCharacter.PositionY, Is.InRange(200, 201));
+    }
+
     private static GameMap CreateMap(byte number, byte discriminator)
     {
         var definition = new MUnique.OpenMU.Persistence.BasicModel.GameMapDefinition
@@ -137,6 +209,29 @@ public class BotLeaderFollowMapIdentityTest
         MarkWalkable(terrain, 201, 200);
         MarkWalkable(terrain, 200, 201);
         MarkWalkable(terrain, 201, 201);
+
+        return new MUnique.OpenMU.Persistence.BasicModel.GameMapDefinition
+        {
+            Id = Guid.NewGuid(),
+            Number = number,
+            TerrainData = terrain,
+        };
+    }
+
+    private static GameMapDefinition CreateMapWithMisleadingCloserGate(byte number)
+    {
+        var terrain = new byte[ushort.MaxValue + 3];
+        Array.Fill(terrain, (byte)4, 3, ushort.MaxValue);
+
+        MarkWalkable(terrain, 200, 189);
+        MarkWalkable(terrain, 201, 189);
+        MarkWalkable(terrain, 200, 190);
+        MarkWalkable(terrain, 201, 190);
+        for (var x = 150; x <= 201; x++)
+        {
+            MarkWalkable(terrain, (byte)x, 200);
+            MarkWalkable(terrain, (byte)x, 201);
+        }
 
         return new MUnique.OpenMU.Persistence.BasicModel.GameMapDefinition
         {

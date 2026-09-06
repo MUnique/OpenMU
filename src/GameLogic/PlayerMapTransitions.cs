@@ -339,8 +339,9 @@ internal sealed class PlayerMapTransitions
     internal async ValueTask PlaceAtGateAsync(ExitGate gate)
     {
         var player = this._player;
-        player.SelectedCharacter!.PositionX = (byte)Rand.NextInt(gate.X1, gate.X2);
-        player.SelectedCharacter.PositionY = (byte)Rand.NextInt(gate.Y1, gate.Y2);
+        var landingPoint = gate.GetRandomPoint();
+        player.SelectedCharacter!.PositionX = landingPoint.X;
+        player.SelectedCharacter.PositionY = landingPoint.Y;
         player.SelectedCharacter.CurrentMap = gate.Map;
         player.Rotation = gate.Direction;
 

@@ -18,6 +18,36 @@ public static class ExitGateExtensions
     /// <returns>The random point.</returns>
     public static Point GetRandomPoint(this ExitGate gate)
     {
-        return new Point((byte)Rand.NextInt(gate.X1, gate.X2), (byte)Rand.NextInt(gate.Y1, gate.Y2));
+        var maxXExclusive = GetExclusiveUpperBound(gate.X1, gate.X2, nameof(gate.X2));
+        var maxYExclusive = GetExclusiveUpperBound(gate.Y1, gate.Y2, nameof(gate.Y2));
+        return new Point((byte)Rand.NextInt(gate.X1, maxXExclusive), (byte)Rand.NextInt(gate.Y1, maxYExclusive));
+    }
+
+    /// <summary>
+    /// Gets every coordinate which <see cref="GetRandomPoint"/> can select for the specified gate.
+    /// </summary>
+    /// <param name="gate">The gate.</param>
+    /// <returns>The possible landing points.</returns>
+    internal static IEnumerable<Point> GetPossibleLandingPoints(this ExitGate gate)
+    {
+        var maxXExclusive = GetExclusiveUpperBound(gate.X1, gate.X2, nameof(gate.X2));
+        var maxYExclusive = GetExclusiveUpperBound(gate.Y1, gate.Y2, nameof(gate.Y2));
+        for (int x = gate.X1; x < maxXExclusive; x++)
+        {
+            for (int y = gate.Y1; y < maxYExclusive; y++)
+            {
+                yield return new Point((byte)x, (byte)y);
+            }
+        }
+    }
+
+    private static int GetExclusiveUpperBound(byte lowerBound, byte upperBound, string parameterName)
+    {
+        if (upperBound < lowerBound)
+        {
+            throw new ArgumentOutOfRangeException(parameterName, upperBound, "The upper gate bound must not be lower than its lower bound.");
+        }
+
+        return upperBound == lowerBound ? lowerBound + 1 : upperBound;
     }
 }
