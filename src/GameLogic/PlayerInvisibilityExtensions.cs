@@ -47,8 +47,7 @@ public static class PlayerInvisibilityExtensions
             return;
         }
 
-        if (!player.MagicEffectList.TryGetEffect(invisibleEffect.Number, out var activeEffect)
-            || activeEffect is null)
+        if (!player.MagicEffectList.TryGetEffect(invisibleEffect, out var activeEffect))
         {
             return;
         }
