@@ -263,7 +263,7 @@ public class MagicEffectsList : AsyncDisposable
     /// <param name="stat">The stat produced by effect.</param>
     public async ValueTask ClearAllEffectsProducingSpecificStatAsync(AttributeDefinition stat)
     {
-        var effects = await this.GetActiveEffectsSnapshotAsync().ConfigureAwait(false);
+        var effects = this.GetActiveEffectsSnapshot();
 
         foreach (var effect in effects)
         {
@@ -279,7 +279,7 @@ public class MagicEffectsList : AsyncDisposable
     /// </summary>
     public async ValueTask ClearEffectsAfterDeathAsync()
     {
-        var effectsToRemove = (await this.GetActiveEffectsSnapshotAsync().ConfigureAwait(false)).Where(effect => effect.Definition.StopByDeath).ToList();
+        var effectsToRemove = this.GetActiveEffectsSnapshot().Where(effect => effect.Definition.StopByDeath).ToList();
         foreach (var effect in effectsToRemove)
         {
             await effect.DisposeAsync().ConfigureAwait(false);
@@ -291,28 +291,12 @@ public class MagicEffectsList : AsyncDisposable
     /// </summary>
     /// <param name="subType">The <see cref="MagicEffectDefinition.SubType"/>.</param>
     /// <returns>The effect, if found.</returns>
-    /// <remarks>
-    /// Kept for source compatibility; performs no I/O and completes synchronously.
-    /// </remarks>
-    public ValueTask<MagicEffect?> TryGetActiveEffectOfSubTypeAsync(byte subType)
+    public MagicEffect? TryGetActiveEffectOfSubType(byte subType)
     {
         lock (this._sync)
         {
-            return ValueTask.FromResult(this._activeEffects.Values.FirstOrDefault(e => e.Definition.SubType == subType));
+            return this._activeEffects.Values.FirstOrDefault(e => e.Definition.SubType == subType);
         }
-    }
-
-    /// <summary>
-    /// Gets a snapshot of the active effects.
-    /// </summary>
-    /// <returns>The active effects at the time the snapshot was taken.</returns>
-    /// <remarks>
-    /// Kept for source compatibility; performs no I/O and completes synchronously.
-    /// Prefer <see cref="GetActiveEffectsSnapshot"/> for new code.
-    /// </remarks>
-    public ValueTask<IReadOnlyList<MagicEffect>> GetActiveEffectsSnapshotAsync()
-    {
-        return ValueTask.FromResult(this.GetActiveEffectsSnapshot());
     }
 
     /// <inheritdoc />
