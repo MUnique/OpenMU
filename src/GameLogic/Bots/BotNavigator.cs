@@ -557,6 +557,11 @@ internal sealed class BotNavigator : AsyncDisposable
             this._nextEquipCheckUtc = DateTime.UtcNow + EquipCheckInterval;
             this._player.PendingBotActions.Enqueue(() => BotEquipmentHandler.TryEquipUpgradesAsync(this._player));
 
+            // Looted skill orbs and scrolls are consumed into new skills like a human would (see
+            // BotSkillHandler). Queued for the same reason: learning mutates the skill list the combat
+            // handler may be enumerating on its own timer.
+            this._player.PendingBotActions.Enqueue(() => BotSkillHandler.TryLearnSkillsAsync(this._player));
+
             // Wings don't drop, so the loot-driven equipment progression above never provides them;
             // they are earned at the classic level milestones instead (see BotWingHandler). Queued
             // for the same reason: equipping mount item power-ups.

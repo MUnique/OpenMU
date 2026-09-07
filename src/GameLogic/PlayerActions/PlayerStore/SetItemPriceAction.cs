@@ -21,7 +21,11 @@ public class SetItemPriceAction
     public async ValueTask SetPriceAsync(Player player, byte slot, int price)
     {
         ItemPriceResult result;
-        if (player.Level < 6)
+        if (player.ShopStorage?.StoreOpen ?? false)
+        {
+            result = ItemPriceResult.Failed;
+        }
+        else if (player.Level < 6)
         {
             result = ItemPriceResult.CharacterLevelTooLow;
         }

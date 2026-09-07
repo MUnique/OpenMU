@@ -143,6 +143,15 @@ public sealed class ItemPickupHandler
             return true;
         }
 
+        if (this._config.PickUpgradeItems && this._player.Account?.IsBot == true && Bots.BotSkillHandler.WantsSkillItem(this._player, item))
+        {
+            // The item is an orb or scroll teaching a skill the bot does not know yet and may currently
+            // consume - picked up like a human would; the BotSkillHandler consumes it on its next pass.
+            // Gated by the same upgrade-items toggle as gear: with loot progression off, orb and scroll
+            // skills stay out of reach, just like better gear does.
+            return true;
+        }
+
         if (this._config.PickExtraItems && item.Definition is { } definition)
         {
             return this._config.ExtraItemNames.Any(name => definition.Name.ToString()?.Contains(name, StringComparison.OrdinalIgnoreCase) ?? false);
