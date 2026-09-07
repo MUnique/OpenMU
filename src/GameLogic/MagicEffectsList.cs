@@ -58,21 +58,6 @@ public class MagicEffectsList : AsyncDisposable
     }
 
     /// <summary>
-    /// Determines whether an effect with the specified identifier is active.
-    /// </summary>
-    /// <param name="effectId">The effect identifier.</param>
-    /// <returns>True, if the effect is active.</returns>
-    public bool ContainsEffect(int effectId)
-    {
-        if (effectId < short.MinValue || effectId > short.MaxValue)
-        {
-            return false;
-        }
-
-        return this.ContainsEffect((short)effectId);
-    }
-
-    /// <summary>
     /// Determines whether any of the specified effects is active.
     /// </summary>
     /// <param name="effectIds">The effect identifiers.</param>
@@ -105,7 +90,7 @@ public class MagicEffectsList : AsyncDisposable
             var values = this._activeEffects.Values;
             for (int i = 0; i < values.Count; i++)
             {
-                if (values[i]?.Definition == effectDefinition)
+                if (values[i].Definition == effectDefinition)
                 {
                     return true;
                 }
@@ -130,6 +115,30 @@ public class MagicEffectsList : AsyncDisposable
     }
 
     /// <summary>
+    /// Tries to get the active effect with the specified definition.
+    /// </summary>
+    /// <param name="effectDefinition">The magic effect definition.</param>
+    /// <param name="effect">The effect, if found.</param>
+    /// <returns>True, if the effect is active.</returns>
+    public bool TryGetEffect(MagicEffectDefinition effectDefinition, [NotNullWhen(true)] out MagicEffect? effect)
+    {
+        lock (this._sync)
+        {
+            foreach (var candidate in this._activeEffects.Values)
+            {
+                if (candidate.Definition == effectDefinition)
+                {
+                    effect = candidate;
+                    return true;
+                }
+            }
+
+            effect = null;
+            return false;
+        }
+    }
+
+    /// <summary>
     /// Gets a snapshot of the active effects.
     /// </summary>
     /// <returns>The active effects at the time the snapshot was taken.</returns>
@@ -150,6 +159,14 @@ public class MagicEffectsList : AsyncDisposable
         bool added = false;
         lock (this._sync)
         {
+            if (effect.IsDisposed)
+            {
+                // The effect's timer fired before it was ever published: there
+                // is nothing to track, and subscribing to the corpse would
+                // leave a stuck entry behind.
+                return;
+            }
+
             if (this._contains[effect.Id])
             {
                 this.UpdateEffect(effect);
@@ -159,6 +176,18 @@ public class MagicEffectsList : AsyncDisposable
                 added = true;
                 this._activeEffects.Add(effect.Id, effect);
                 this._contains[effect.Id] = true;
+
+                // Subscribe while still holding the lock, so a concurrently
+                // firing expiry timer blocks on _sync until the add is fully
+                // published and observes a subscribed entry.
+                effect.EffectTimeOut += this.OnEffectTimeOutAsync;
+
+                // The attribute changes stay inside the lock, mirroring the
+                // previous AsyncLock scope: membership and applied power-ups
+                // change atomically, so a concurrent expiry can't observe or
+                // tear down a half-applied effect. The remove path below only
+                // needs the lock for the entry itself, because readers stop
+                // matching the effect the moment it is gone.
                 foreach (var powerUp in effect.PowerUpElements)
                 {
                     this._owner.Attributes.AddElement(powerUp.Element, powerUp.Target);
@@ -168,7 +197,6 @@ public class MagicEffectsList : AsyncDisposable
 
         if (added)
         {
-            effect.EffectTimeOut += this.OnEffectTimeOutAsync;
             if (effect.Id < InvisibleEffectStartIndex && this._owner is IWorldObserver observer)
             {
                 await observer.InvokeViewPlugInAsync<IActivateMagicEffectPlugIn>(p => p.ActivateMagicEffectAsync(effect, this._owner)).ConfigureAwait(false);
@@ -204,6 +232,28 @@ public class MagicEffectsList : AsyncDisposable
             }
 
             await first.DisposeAsync().ConfigureAwait(false);
+
+            // Disposal normally removes the entry through OnEffectTimeOutAsync.
+            // If it didn't (the effect died before it was ever subscribed),
+            // force the removal so we can't spin on the same element forever.
+            List<MagicEffect.ElementWithTarget>? orphanedPowerUps = null;
+            lock (this._sync)
+            {
+                if (this._activeEffects.Count > 0 && ReferenceEquals(this._activeEffects.Values[0], first))
+                {
+                    this._activeEffects.RemoveAt(0);
+                    this._contains[first.Id] = false;
+                    orphanedPowerUps = first.PowerUpElements.ToList();
+                }
+            }
+
+            if (orphanedPowerUps is not null)
+            {
+                foreach (var powerUp in orphanedPowerUps)
+                {
+                    this._owner.Attributes.RemoveElement(powerUp.Element, powerUp.Target);
+                }
+            }
         }
     }
 
@@ -241,6 +291,9 @@ public class MagicEffectsList : AsyncDisposable
     /// </summary>
     /// <param name="subType">The <see cref="MagicEffectDefinition.SubType"/>.</param>
     /// <returns>The effect, if found.</returns>
+    /// <remarks>
+    /// Kept for source compatibility; performs no I/O and completes synchronously.
+    /// </remarks>
     public ValueTask<MagicEffect?> TryGetActiveEffectOfSubTypeAsync(byte subType)
     {
         lock (this._sync)
@@ -253,6 +306,10 @@ public class MagicEffectsList : AsyncDisposable
     /// Gets a snapshot of the active effects.
     /// </summary>
     /// <returns>The active effects at the time the snapshot was taken.</returns>
+    /// <remarks>
+    /// Kept for source compatibility; performs no I/O and completes synchronously.
+    /// Prefer <see cref="GetActiveEffectsSnapshot"/> for new code.
+    /// </remarks>
     public ValueTask<IReadOnlyList<MagicEffect>> GetActiveEffectsSnapshotAsync()
     {
         return ValueTask.FromResult(this.GetActiveEffectsSnapshot());
