@@ -173,6 +173,51 @@ public class BotLeaderFollowMapIdentityTest
     }
 
     /// <summary>
+    /// A failed gate search must not be repeated on every navigation tick. A gate which becomes
+    /// available during the backoff is considered only after the follow-warp search cooldown expires.
+    /// </summary>
+    [Test]
+    public async ValueTask FailedSameMapWarpSearchBacksOffBeforeTryingAgainAsync()
+    {
+        var gameContext = GameContextTestHelper.CreateGameContext();
+        var bot = await PlayerTestHelper.CreateOfflineLevelingPlayerAsync(gameContext).ConfigureAwait(false);
+        var leader = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        var timeProvider = new ManualTimeProvider(new DateTimeOffset(2026, 8, 31, 1, 0, 0, TimeSpan.Zero));
+        var navigator = new BotNavigator(bot, timeProvider);
+        var mapChangeRecorder = new MapChangeRecordingPlugIn(bot);
+        gameContext.PlugInManager.RegisterPlugInAtPlugInPoint<IPlayerStateChangedPlugIn>(mapChangeRecorder);
+
+        var mapDefinition = CreateBlockedTwoFloorMap(4);
+        gameContext.Configuration.Maps.Add(mapDefinition);
+        var map = new GameMap(mapDefinition, TimeSpan.FromMinutes(1), 8);
+        bot.Attributes![Stats.Level] = 100;
+        bot.SetCurrentMapSilently(map);
+        bot.SelectedCharacter!.CurrentMap = mapDefinition;
+        bot.SelectedCharacter.PositionX = 10;
+        bot.SelectedCharacter.PositionY = 10;
+        leader.SetCurrentMapSilently(map);
+        leader.Position = new Point(200, 200);
+
+        var firstAttempt = await navigator.TryRegroupWithLeaderOnSameMapAsync(map, leader, CancellationToken.None).ConfigureAwait(false);
+        gameContext.Configuration.WarpList.Add(CreateWarpInfo("LostTower7", CreateGate(mapDefinition, 200, 200)));
+        var attemptDuringBackoff = await navigator.TryRegroupWithLeaderOnSameMapAsync(map, leader, CancellationToken.None).ConfigureAwait(false);
+
+        Assert.That(firstAttempt, Is.False);
+        Assert.That(attemptDuringBackoff, Is.False);
+        Assert.That(mapChangeRecorder.MapChangeCount, Is.Zero, "the newly available gate must not be searched during backoff");
+        Assert.That(bot.SelectedCharacter.PositionX, Is.EqualTo(10));
+        Assert.That(bot.SelectedCharacter.PositionY, Is.EqualTo(10));
+
+        timeProvider.Advance(TimeSpan.FromSeconds(20));
+        var attemptAfterBackoff = await navigator.TryRegroupWithLeaderOnSameMapAsync(map, leader, CancellationToken.None).ConfigureAwait(false);
+
+        Assert.That(attemptAfterBackoff, Is.True);
+        Assert.That(mapChangeRecorder.MapChangeCount, Is.EqualTo(1));
+        Assert.That(bot.SelectedCharacter.PositionX, Is.InRange(200, 201));
+        Assert.That(bot.SelectedCharacter.PositionY, Is.InRange(200, 201));
+    }
+
+    /// <summary>
     /// Coordinate distance alone can prefer the gate of the follower's isolated region. The follower
     /// must instead choose a gate whose landing area has an actual path to the leader.
     /// </summary>
