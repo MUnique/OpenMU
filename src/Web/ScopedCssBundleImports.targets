@@ -28,7 +28,7 @@
       <Using Namespace="System.Text.RegularExpressions" />
       <Code Type="Fragment" Language="cs"><![CDATA[
 var text = File.ReadAllText(BundleFile);
-var fixedText = Regex.Replace(text, @"@import\s+['""]_content/", "@import '../../_content/");
+var fixedText = Regex.Replace(text, @"@import(\s*)(['""])_content/", "@import$1$2../../_content/");
 if (fixedText != text)
 {
     File.WriteAllText(BundleFile, fixedText);
