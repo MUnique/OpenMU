@@ -28,13 +28,6 @@ internal static class CastleSiegeRemoteViewTestHelper
     /// <returns>The remote player and output stream.</returns>
     internal static (RemotePlayer Player, MemoryStream Output) CreatePlayer()
     {
-        var output = new MemoryStream();
-        var writer = PipeWriter.Create(output, new StreamPipeWriterOptions(leaveOpen: true));
-        var connection = new Mock<IConnection>();
-        connection.SetupGet(c => c.Connected).Returns(true);
-        connection.SetupGet(c => c.Output).Returns(writer);
-        connection.SetupGet(c => c.OutputLock).Returns(new AsyncLock());
-
         var manager = new PlugInManager(null, new NullLoggerFactory(), null, null);
         var gameContext = new Mock<IGameServerContext>();
         gameContext.Setup(c => c.PersistenceContextProvider)
@@ -42,6 +35,22 @@ internal static class CastleSiegeRemoteViewTestHelper
         gameContext.Setup(c => c.Configuration).Returns(new GameConfiguration());
         gameContext.Setup(c => c.PlugInManager).Returns(manager);
         gameContext.Setup(c => c.LoggerFactory).Returns(new NullLoggerFactory());
-        return (new RemotePlayer(gameContext.Object, connection.Object, default), output);
+        return CreatePlayer(gameContext.Object);
+    }
+
+    /// <summary>
+    /// Creates a remote player for an existing game-server context and an in-memory packet output stream.
+    /// </summary>
+    /// <param name="gameContext">The game-server context.</param>
+    /// <returns>The remote player and output stream.</returns>
+    internal static (RemotePlayer Player, MemoryStream Output) CreatePlayer(IGameServerContext gameContext)
+    {
+        var output = new MemoryStream();
+        var writer = PipeWriter.Create(output, new StreamPipeWriterOptions(leaveOpen: true));
+        var connection = new Mock<IConnection>();
+        connection.SetupGet(c => c.Connected).Returns(true);
+        connection.SetupGet(c => c.Output).Returns(writer);
+        connection.SetupGet(c => c.OutputLock).Returns(new AsyncLock());
+        return (new RemotePlayer(gameContext, connection.Object, default), output);
     }
 }

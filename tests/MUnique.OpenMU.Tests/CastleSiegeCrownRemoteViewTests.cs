@@ -112,4 +112,24 @@ public class CastleSiegeCrownRemoteViewTests
             Assert.That(ownership.GuildName, Is.EqualTo("Defender"));
         });
     }
+
+    /// <summary>
+    /// Verifies the Life Stone construction notification packet.
+    /// </summary>
+    [Test]
+    public async ValueTask SerializeLifeStoneBuildTimeAsync()
+    {
+        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+
+        await new CastleSiegeLifeStoneStatePlugIn(player)
+            .ShowLifeStoneBuildTimeAsync(0x1234, 5)
+            .ConfigureAwait(false);
+
+        var packet = (CastleSiegeLifeStoneBuildTime)output.ToArray().AsMemory();
+        Assert.Multiple(() =>
+        {
+            Assert.That(packet.NpcIndex, Is.EqualTo(0x1234));
+            Assert.That(packet.BuildTime, Is.EqualTo(5));
+        });
+    }
 }

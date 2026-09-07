@@ -25,7 +25,7 @@ public sealed class CastleSiegeMachineTalkPlugIn : IPlayerTalkToNpcPlugIn
     /// Initializes a new instance of the <see cref="CastleSiegeMachineTalkPlugIn"/> class.
     /// </summary>
     public CastleSiegeMachineTalkPlugIn()
-        : this(CastleSiegeTaxProvider.GetContext)
+        : this(CastleSiegeContextResolver.GetContext)
     {
     }
 

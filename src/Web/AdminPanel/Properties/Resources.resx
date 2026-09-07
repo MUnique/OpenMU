@@ -993,6 +993,228 @@
   <data name="FollowNewPacketsHint" xml:space="preserve">
     <value>Shows the newest packets and scrolls to them. It's turned off while you scroll up, so that the view doesn't move away.</value>
   </data>
+  <data name="CastleSiege" xml:space="preserve">
+    <value>Castle Siege</value>
+  </data>
+  <data name="CastleSiegeAllInOneHint" xml:space="preserve">
+    <value>Castle Siege management is available only when the admin panel and a game server run in the same process.</value>
+  </data>
+  <data name="CastleSiegeManualRefreshHint" xml:space="preserve">
+    <value>The page shows a snapshot. Use Refresh to load current Castle Siege state.</value>
+  </data>
+  <data name="CastleSiegeStatus" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="CastleSiegeState" xml:space="preserve">
+    <value>State</value>
+  </data>
+  <data name="CastleSiegeStartedUtc" xml:space="preserve">
+    <value>Started (UTC)</value>
+  </data>
+  <data name="CastleSiegeEndsUtc" xml:space="preserve">
+    <value>Ends (UTC)</value>
+  </data>
+  <data name="CastleSiegeOwner" xml:space="preserve">
+    <value>Owner</value>
+  </data>
+  <data name="CastleSiegeUnoccupied" xml:space="preserve">
+    <value>Unoccupied</value>
+  </data>
+  <data name="CastleSiegeRegistrations" xml:space="preserve">
+    <value>Registrations</value>
+  </data>
+  <data name="CastleSiegeEconomy" xml:space="preserve">
+    <value>Economy</value>
+  </data>
+  <data name="CastleSiegeChaosMachineTax" xml:space="preserve">
+    <value>Chaos Machine tax</value>
+  </data>
+  <data name="CastleSiegePersonalStoreTax" xml:space="preserve">
+    <value>Personal store tax</value>
+  </data>
+  <data name="CastleSiegeLandOfTrialsFee" xml:space="preserve">
+    <value>Land of Trials fee</value>
+  </data>
+  <data name="CastleSiegeTribute" xml:space="preserve">
+    <value>Tribute</value>
+  </data>
+  <data name="CastleSiegeStateAndOwner" xml:space="preserve">
+    <value>State and owner</value>
+  </data>
+  <data name="CastleSiegeForceState" xml:space="preserve">
+    <value>Force state</value>
+  </data>
+  <data name="CastleSiegeForce" xml:space="preserve">
+    <value>Force</value>
+  </data>
+  <data name="CastleSiegeForceStateHint" xml:space="preserve">
+    <value>The transition is processed by the next Castle Siege timer tick.</value>
+  </data>
+  <data name="CastleSiegeChangeOwner" xml:space="preserve">
+    <value>Change owner</value>
+  </data>
+  <data name="CastleSiegeGuildName" xml:space="preserve">
+    <value>Guild name</value>
+  </data>
+  <data name="CastleSiegeChangeOwnerHint" xml:space="preserve">
+    <value>Changing the owner starts a new tenure and clears the previous taxes, tribute, and Land of Trials access.</value>
+  </data>
+  <data name="CastleSiegeResetCycle" xml:space="preserve">
+    <value>Clear registrations and reset to Idle1</value>
+  </data>
+  <data name="CastleSiegeTaxesAndTribute" xml:space="preserve">
+    <value>Taxes and tribute</value>
+  </data>
+  <data name="CastleSiegeChaosTaxPercent" xml:space="preserve">
+    <value>Chaos tax (%)</value>
+  </data>
+  <data name="CastleSiegeStoreTaxPercent" xml:space="preserve">
+    <value>Store tax (%)</value>
+  </data>
+  <data name="CastleSiegeHuntFee" xml:space="preserve">
+    <value>Hunt fee</value>
+  </data>
+  <data name="CastleSiegeSaveTaxes" xml:space="preserve">
+    <value>Save taxes</value>
+  </data>
+  <data name="CastleSiegeClearTribute" xml:space="preserve">
+    <value>Clear tribute</value>
+  </data>
+  <data name="CastleSiegeRegisteredGuilds" xml:space="preserve">
+    <value>Registered guilds</value>
+  </data>
+  <data name="CastleSiegeNoRegisteredGuilds" xml:space="preserve">
+    <value>No guilds are registered.</value>
+  </data>
+  <data name="CastleSiegeName" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="CastleSiegeGuildDeleted" xml:space="preserve">
+    <value>Guild deleted</value>
+  </data>
+  <data name="CastleSiegeMarks" xml:space="preserve">
+    <value>Marks</value>
+  </data>
+  <data name="CastleSiegeRegistrationOrder" xml:space="preserve">
+    <value>Registration order</value>
+  </data>
+  <data name="CastleSiegeNpcStatus" xml:space="preserve">
+    <value>NPC status</value>
+  </data>
+  <data name="CastleSiegeMonster" xml:space="preserve">
+    <value>Monster</value>
+  </data>
+  <data name="CastleSiegeInstance" xml:space="preserve">
+    <value>Instance</value>
+  </data>
+  <data name="CastleSiegeDefense" xml:space="preserve">
+    <value>Defense</value>
+  </data>
+  <data name="CastleSiegeRegeneration" xml:space="preserve">
+    <value>Regeneration</value>
+  </data>
+  <data name="CastleSiegeLife" xml:space="preserve">
+    <value>Life</value>
+  </data>
+  <data name="CastleSiegeHitPoints" xml:space="preserve">
+    <value>HP</value>
+  </data>
+  <data name="CastleSiegeAlive" xml:space="preserve">
+    <value>Alive</value>
+  </data>
+  <data name="CastleSiegePersistent" xml:space="preserve">
+    <value>Persistent</value>
+  </data>
+  <data name="CastleSiegeConfirmOwnerTitle" xml:space="preserve">
+    <value>Change Castle Siege owner?</value>
+  </data>
+  <data name="CastleSiegeConfirmOwner" xml:space="preserve">
+    <value>Assign the castle to '{0}'? This clears the previous taxes, tribute, and Land of Trials access.</value>
+  </data>
+  <data name="CastleSiegeConfirmResetTitle" xml:space="preserve">
+    <value>Reset Castle Siege cycle?</value>
+  </data>
+  <data name="CastleSiegeConfirmReset" xml:space="preserve">
+    <value>Clear all registrations and selected guilds, despawn Castle Siege NPCs, and schedule Idle1?</value>
+  </data>
+  <data name="CastleSiegeConfirmClearTributeTitle" xml:space="preserve">
+    <value>Clear Castle Siege tribute?</value>
+  </data>
+  <data name="CastleSiegeConfirmClearTribute" xml:space="preserve">
+    <value>Permanently clear all accumulated Castle Siege tribute?</value>
+  </data>
+  <data name="CastleSiegeConfirmRemoveRegistrationTitle" xml:space="preserve">
+    <value>Remove guild registration?</value>
+  </data>
+  <data name="CastleSiegeConfirmRemoveRegistration" xml:space="preserve">
+    <value>Remove the Castle Siege registration for '{0}'?</value>
+  </data>
+  <data name="CastleSiegeStateScheduled" xml:space="preserve">
+    <value>The Castle Siege state transition has been scheduled.</value>
+  </data>
+  <data name="CastleSiegeOwnerUpdated" xml:space="preserve">
+    <value>The Castle Siege owner has been updated.</value>
+  </data>
+  <data name="CastleSiegeCycleReset" xml:space="preserve">
+    <value>Castle Siege registrations were cleared and Idle1 was scheduled.</value>
+  </data>
+  <data name="CastleSiegeTaxesUpdated" xml:space="preserve">
+    <value>Castle Siege taxes have been updated.</value>
+  </data>
+  <data name="CastleSiegeTributeCleared" xml:space="preserve">
+    <value>Castle Siege tribute has been cleared.</value>
+  </data>
+  <data name="CastleSiegeRegistrationRemoved" xml:space="preserve">
+    <value>The guild registration has been removed.</value>
+  </data>
+  <data name="CastleSiegeErrorInvalidState" xml:space="preserve">
+    <value>The selected Castle Siege state is invalid.</value>
+  </data>
+  <data name="CastleSiegeErrorNotInitialized" xml:space="preserve">
+    <value>Castle Siege has not initialized on this game server.</value>
+  </data>
+  <data name="CastleSiegeErrorGuildNameRequired" xml:space="preserve">
+    <value>Enter a guild name.</value>
+  </data>
+  <data name="CastleSiegeErrorGameServerContextRequired" xml:space="preserve">
+    <value>Changing the owner requires a game-server context.</value>
+  </data>
+  <data name="CastleSiegeErrorGuildNotFound" xml:space="preserve">
+    <value>The guild was not found.</value>
+  </data>
+  <data name="CastleSiegeErrorOwnerChangeDuringBattle" xml:space="preserve">
+    <value>The owner cannot be changed while the siege battle is running.</value>
+  </data>
+  <data name="CastleSiegeErrorResetDuringActiveSiege" xml:space="preserve">
+    <value>The Castle Siege cycle cannot be reset while siege preparation, battle, or result processing is active.</value>
+  </data>
+  <data name="CastleSiegeErrorTaxOutOfRange" xml:space="preserve">
+    <value>One or more tax values are outside the supported range.</value>
+  </data>
+  <data name="CastleSiegeErrorTaxChangeDuringBattle" xml:space="preserve">
+    <value>Taxes cannot be changed while the siege battle is running.</value>
+  </data>
+  <data name="CastleSiegeErrorTributeClearDuringBattle" xml:space="preserve">
+    <value>Tribute cannot be cleared while the siege battle is running.</value>
+  </data>
+  <data name="CastleSiegeErrorRegistrationChangeOutsideRegistration" xml:space="preserve">
+    <value>Guild registrations can only be changed during a registration state.</value>
+  </data>
+  <data name="CastleSiegeErrorRegistrationMissing" xml:space="preserve">
+    <value>The registration no longer exists.</value>
+  </data>
+  <data name="CastleSiegeErrorGameServerUnavailable" xml:space="preserve">
+    <value>The selected game server is no longer available.</value>
+  </data>
+  <data name="CastleSiegeErrorAllInOneDeploymentRequired" xml:space="preserve">
+    <value>Castle Siege management requires an all-in-one game-server deployment.</value>
+  </data>
+  <data name="CastleSiegeErrorPlugInInactive" xml:space="preserve">
+    <value>The Castle Siege plug-in is not active on this game server.</value>
+  </data>
+  <data name="CastleSiegeErrorUnexpected" xml:space="preserve">
+    <value>The Castle Siege operation failed unexpectedly. Check the server log for details.</value>
+  </data>
   <data name="ArchivedSessions" xml:space="preserve">
     <value>Archived sessions</value>
   </data>
