@@ -15,7 +15,7 @@ public class WizardTeleportAction
     private const ushort TeleportSkillId = 6;
     private const ushort TeleportTargetSkillId = 15;
 
-    private static readonly byte[] PreventingMagicEffects =
+    private static readonly short[] PreventingMagicEffects =
     {
         0x39, // Stone
         0x3D, // Stun
@@ -79,20 +79,6 @@ public class WizardTeleportAction
 
     private static bool CanPlayerBeTeleported(Player player)
     {
-        var currentEffects = player.MagicEffectList.ActiveEffects;
-        if (currentEffects.Count == 0)
-        {
-            return true;
-        }
-
-        for (int i = 0; i < PreventingMagicEffects.Length; i++)
-        {
-            if (currentEffects.ContainsKey(PreventingMagicEffects[i]))
-            {
-                return false;
-            }
-        }
-
-        return true;
+        return !player.MagicEffectList.ContainsAnyEffect(PreventingMagicEffects);
     }
 }
