@@ -1242,4 +1242,16 @@
   <data name="DownloadArchivedSession" xml:space="preserve">
     <value>Download the archived session</value>
   </data>
+  <data name="Players" xml:space="preserve">
+    <value>Players</value>
+  </data>
+  <data name="OffLevelPlayers" xml:space="preserve">
+    <value>Off-level Players</value>
+  </data>
+  <data name="BotPlayers" xml:space="preserve">
+    <value>Bot Players</value>
+  </data>
+  <data name="Party" xml:space="preserve">
+    <value>Party</value>
+  </data>
 </root>
