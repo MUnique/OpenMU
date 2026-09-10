@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.Bots;
 
+using System.Buffers;
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
@@ -512,7 +513,7 @@ internal sealed class BotNavigator : AsyncDisposable
         // (Dungeon, Lost Tower, ...). If walking cannot reach the leader, regroup through the
         // closest legal warp entry whose complete landing area can reach him instead of re-issuing
         // an impossible path every tick.
-        var leaderWarp = await this.FindBestReachableLegalWarpAsync(map, leader.Position, cancellationToken).ConfigureAwait(false);
+        var leaderWarp = this.FindBestReachableLegalWarp(map, leader.Position, cancellationToken);
         if (leaderWarp?.Gate is not { } leaderGate)
         {
             // Start the full retry delay after a completed, unsuccessful scan. Keep this separate
@@ -1852,65 +1853,139 @@ internal sealed class BotNavigator : AsyncDisposable
     /// <param name="target">The target position.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The best reachable warp, or <c>null</c> if no legal gate can reach the target.</returns>
-    private async ValueTask<WarpInfo?> FindBestReachableLegalWarpAsync(GameMap map, Point target, CancellationToken cancellationToken)
+    private WarpInfo? FindBestReachableLegalWarp(GameMap map, Point target, CancellationToken cancellationToken)
     {
-        WarpInfo? bestWarp = null;
-        var bestWorstCasePathLength = int.MaxValue;
-        var candidates = this.GetLegalWarps(map.Definition).ToArray();
-        foreach (var candidate in candidates)
+        var candidates = this.GetLegalWarps(map.Definition)
+            .Where(candidate => candidate.Gate is not null)
+            .Select(candidate => (Warp: candidate, Gate: candidate.Gate!, LandingPoints: candidate.Gate!.GetPossibleLandingPoints().ToArray()))
+            .Where(candidate => !candidate.LandingPoints.Contains(this._player.Position))
+            .ToArray();
+        if (candidates.Length == 0)
         {
-            if (candidate.Gate is not { } gate)
-            {
-                continue;
-            }
-
-            var landingPoints = gate.GetPossibleLandingPoints().ToArray();
-            if (landingPoints.Contains(this._player.Position))
-            {
-                continue;
-            }
-
-            var worstCasePathLength = await this.GetWorstLandingPathLengthAsync(map, landingPoints, target, cancellationToken).ConfigureAwait(false);
-            if (worstCasePathLength is null
-                || worstCasePathLength > bestWorstCasePathLength
-                || (worstCasePathLength == bestWorstCasePathLength
-                    && bestWarp?.Gate is { } bestGate
-                    && GateDistance(gate, target) >= GateDistance(bestGate, target)))
-            {
-                continue;
-            }
-
-            bestWarp = candidate;
-            bestWorstCasePathLength = worstCasePathLength.Value;
+            return null;
         }
 
-        return bestWarp;
+        // Movement on the walk map is bidirectional. One reverse flood fill from the leader therefore
+        // gives both reachability and shortest distance for every possible gate landing point, without
+        // acquiring a full-map pathfinder once per point.
+        cancellationToken.ThrowIfCancellationRequested();
+        var walkMap = map.Terrain.WalkMap;
+        var width = walkMap.GetLength(0);
+        var coordinateCount = width * walkMap.GetLength(1);
+        var distancesFromTarget = ArrayPool<int>.Shared.Rent(coordinateCount);
+        var pendingCoordinates = ArrayPool<int>.Shared.Rent(coordinateCount);
+        try
+        {
+            Array.Clear(distancesFromTarget, 0, coordinateCount);
+            this.PopulateWalkableDistancesFrom(
+                walkMap,
+                target,
+                distancesFromTarget,
+                pendingCoordinates,
+                cancellationToken);
+            WarpInfo? bestWarp = null;
+            var bestWorstCaseDistance = int.MaxValue;
+            foreach (var candidate in candidates)
+            {
+                var worstCaseDistance = this.GetWorstLandingDistance(candidate.LandingPoints, distancesFromTarget, width);
+                if (worstCaseDistance is null
+                    || worstCaseDistance > bestWorstCaseDistance
+                    || (worstCaseDistance == bestWorstCaseDistance
+                        && bestWarp?.Gate is { } bestGate
+                        && GateDistance(candidate.Gate, target) >= GateDistance(bestGate, target)))
+                {
+                    continue;
+                }
+
+                bestWarp = candidate.Warp;
+                bestWorstCaseDistance = worstCaseDistance.Value;
+            }
+
+            return bestWarp;
+        }
+        finally
+        {
+            ArrayPool<int>.Shared.Return(distancesFromTarget);
+            ArrayPool<int>.Shared.Return(pendingCoordinates);
+        }
     }
 
-    private async ValueTask<int?> GetWorstLandingPathLengthAsync(
-        GameMap map,
+    private int? GetWorstLandingDistance(
         IReadOnlyCollection<Point> landingPoints,
-        Point target,
-        CancellationToken cancellationToken)
+        int[] distancesFromTarget,
+        int mapWidth)
     {
-        var worstCasePathLength = 0;
+        var worstCaseDistance = 0;
         foreach (var landingPoint in landingPoints)
         {
-            if (!map.Terrain.WalkMap[landingPoint.X, landingPoint.Y])
+            var encodedDistance = distancesFromTarget[(landingPoint.Y * mapWidth) + landingPoint.X];
+            if (encodedDistance == 0)
             {
                 return null;
             }
 
-            var path = await this.FindTravelPathAsync(map, landingPoint, target, cancellationToken).ConfigureAwait(false);
-            if (landingPoint != target && (path is null || path.Count == 0))
-            {
-                return null;
-            }
-
-            worstCasePathLength = Math.Max(worstCasePathLength, path?.Count ?? 0);
+            // Zero means unreachable, so stored distances are offset by one.
+            worstCaseDistance = Math.Max(worstCaseDistance, encodedDistance - 1);
         }
 
-        return worstCasePathLength;
+        return worstCaseDistance;
+    }
+
+    private void PopulateWalkableDistancesFrom(
+        bool[,] walkMap,
+        Point start,
+        int[] distances,
+        int[] pendingCoordinates,
+        CancellationToken cancellationToken)
+    {
+        if (!walkMap[start.X, start.Y])
+        {
+            return;
+        }
+
+        var width = walkMap.GetLength(0);
+        var height = walkMap.GetLength(1);
+        var readIndex = 0;
+        var writeIndex = 0;
+        var startIndex = (start.Y * width) + start.X;
+        distances[startIndex] = 1;
+        pendingCoordinates[writeIndex++] = startIndex;
+        while (readIndex < writeIndex)
+        {
+            if ((readIndex & 0xFF) == 0)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+            }
+
+            var currentIndex = pendingCoordinates[readIndex++];
+            var currentX = currentIndex % width;
+            var currentY = currentIndex / width;
+            var nextEncodedDistance = distances[currentIndex] + 1;
+            for (var offsetX = -1; offsetX <= 1; offsetX++)
+            {
+                for (var offsetY = -1; offsetY <= 1; offsetY++)
+                {
+                    if (offsetX == 0 && offsetY == 0)
+                    {
+                        continue;
+                    }
+
+                    var nextX = currentX + offsetX;
+                    var nextY = currentY + offsetY;
+                    if ((uint)nextX >= width
+                        || (uint)nextY >= height
+                        || !walkMap[nextX, nextY]
+                        || distances[(nextY * width) + nextX] != 0)
+                    {
+                        continue;
+                    }
+
+                    var nextIndex = (nextY * width) + nextX;
+                    distances[nextIndex] = nextEncodedDistance;
+                    pendingCoordinates[writeIndex++] = nextIndex;
+                }
+            }
+        }
     }
 
     private IEnumerable<WarpInfo> GetLegalWarps(GameMapDefinition mapDefinition)

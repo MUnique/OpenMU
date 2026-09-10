@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using System.Diagnostics.Metrics;
 using System.Runtime.InteropServices;
 using System.Threading;
 using MUnique.OpenMU.DataModel.Configuration;
@@ -250,6 +251,62 @@ public class BotLeaderFollowMapIdentityTest
 
         Assert.That(bot.SelectedCharacter.PositionX, Is.InRange(150, 151));
         Assert.That(bot.SelectedCharacter.PositionY, Is.InRange(200, 201));
+    }
+
+    /// <summary>
+    /// Gate selection must derive reachability for all landing points in one terrain traversal instead
+    /// of running another full-map A* for every point. The only pathfinder search here should be the
+    /// initial failed attempt to walk directly from the follower to the leader.
+    /// </summary>
+    [Test]
+    public async ValueTask SameMapGateSelectionDoesNotPathfindPerLandingPointAsync()
+    {
+        var gameContext = GameContextTestHelper.CreateGameContext();
+        var bot = await PlayerTestHelper.CreateOfflineLevelingPlayerAsync(gameContext).ConfigureAwait(false);
+        var leader = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        var navigator = new BotNavigator(bot);
+
+        var mapDefinition = CreateMapWithMisleadingCloserGate(4);
+        gameContext.Configuration.Maps.Add(mapDefinition);
+        var map = new GameMap(mapDefinition, TimeSpan.FromMinutes(1), 8);
+        var isolatedGate = CreateGate(mapDefinition, 200, 189);
+        var reachableGate = CreateGate(mapDefinition, 150, 200);
+        reachableGate.X2 = 153;
+        gameContext.Configuration.WarpList.Add(CreateWarpInfo("Isolated", isolatedGate));
+        gameContext.Configuration.WarpList.Add(CreateWarpInfo("Reachable", reachableGate));
+
+        bot.Attributes![Stats.Level] = 100;
+        bot.SetCurrentMapSilently(map);
+        bot.SelectedCharacter!.CurrentMap = mapDefinition;
+        bot.SelectedCharacter.PositionX = 201;
+        bot.SelectedCharacter.PositionY = 190;
+        leader.SetCurrentMapSilently(map);
+        leader.Position = new Point(200, 200);
+
+        var pathSearchCount = 0;
+        using var meterListener = new MeterListener();
+        meterListener.InstrumentPublished = (instrument, listener) =>
+        {
+            if (instrument.Meter.Name == PathFinder.MeterName && instrument.Name == "CurrentSearches")
+            {
+                listener.EnableMeasurementEvents(instrument);
+            }
+        };
+        meterListener.SetMeasurementEventCallback<long>((_, measurement, _, _) =>
+        {
+            if (measurement > 0)
+            {
+                Interlocked.Add(ref pathSearchCount, (int)measurement);
+            }
+        });
+        meterListener.Start();
+
+        var consumed = await navigator.TryRegroupWithLeaderOnSameMapAsync(map, leader, CancellationToken.None).ConfigureAwait(false);
+
+        Assert.That(consumed, Is.True);
+        Assert.That(bot.SelectedCharacter.PositionX, Is.InRange(150, 152));
+        Assert.That(bot.SelectedCharacter.PositionY, Is.EqualTo(200));
+        Assert.That(pathSearchCount, Is.EqualTo(1), "gate landing points must be evaluated without additional A* searches");
     }
 
     /// <summary>
