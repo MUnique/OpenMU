@@ -1,0 +1,186 @@
+// <copyright file="20260904064500_AddAggregateDeleteTriggers.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+#nullable disable
+
+namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
+{
+    using Microsoft.EntityFrameworkCore.Infrastructure;
+    using Microsoft.EntityFrameworkCore.Migrations;
+
+    /// <inheritdoc />
+    [DbContext(typeof(EntityDataContext))]
+    [Migration("20260904064500_AddAggregateDeleteTriggers")]
+    public partial class AddAggregateDeleteTriggers : Migration
+    {
+        /// <inheritdoc />
+        protected override void Up(MigrationBuilder migrationBuilder)
+        {
+            // Keep this in sync with MUnique.OpenMU.Persistence.EntityFramework.Model.AggregateDeleteTriggers.CreateScript.
+            // It's a copy on purpose: a migration must keep applying what it applied when it was added,
+            // even when the model gains further members of an aggregate later.
+            migrationBuilder.Sql(@"-- Deletes the members of an aggregate which are referenced by their owner (one-to-one).
+-- Collections of an aggregate don't need this, because their foreign key is held by the
+-- child, so 'on delete cascade' already covers them.
+-- This script is generated (see EfCoreModelGenerator) and idempotent.
+
+create or replace function config.delete_owned_row() returns trigger
+    language plpgsql
+as $$
+declare
+    owned_id uuid;
+begin
+    -- The foreign key of a one-to-one member of an aggregate is held by the owner, so the
+    -- database can't cascade into it. tg_argv holds the key column of the deleted owner row
+    -- and the schema and table of the owned row.
+    owned_id := (to_jsonb(old) ->> tg_argv[0])::uuid;
+    if owned_id is not null then
+        execute format('delete from %I.%I where ""Id"" = $1', tg_argv[1], tg_argv[2]) using owned_id;
+    end if;
+
+    return null;
+end;
+$$;
+
+create or replace function data.delete_owned_row() returns trigger
+    language plpgsql
+as $$
+declare
+    owned_id uuid;
+begin
+    -- The foreign key of a one-to-one member of an aggregate is held by the owner, so the
+    -- database can't cascade into it. tg_argv holds the key column of the deleted owner row
+    -- and the schema and table of the owned row.
+    owned_id := (to_jsonb(old) ->> tg_argv[0])::uuid;
+    if owned_id is not null then
+        execute format('delete from %I.%I where ""Id"" = $1', tg_argv[1], tg_argv[2]) using owned_id;
+    end if;
+
+    return null;
+end;
+$$;
+
+drop trigger if exists ""trg_BattleZoneDefinition_DeleteGround"" on config.""BattleZoneDefinition"";
+create trigger ""trg_BattleZoneDefinition_DeleteGround"" after delete on config.""BattleZoneDefinition""
+    for each row execute function config.delete_owned_row('GroundId', 'config', 'Rectangle');
+
+drop trigger if exists ""trg_BattleZoneDefinition_DeleteLeftGoal"" on config.""BattleZoneDefinition"";
+create trigger ""trg_BattleZoneDefinition_DeleteLeftGoal"" after delete on config.""BattleZoneDefinition""
+    for each row execute function config.delete_owned_row('LeftGoalId', 'config', 'Rectangle');
+
+drop trigger if exists ""trg_BattleZoneDefinition_DeleteRightGoal"" on config.""BattleZoneDefinition"";
+create trigger ""trg_BattleZoneDefinition_DeleteRightGoal"" after delete on config.""BattleZoneDefinition""
+    for each row execute function config.delete_owned_row('RightGoalId', 'config', 'Rectangle');
+
+drop trigger if exists ""trg_CastleSiegeConfiguration_DeleteAttackRespawnArea"" on config.""CastleSiegeConfiguration"";
+create trigger ""trg_CastleSiegeConfiguration_DeleteAttackRespawnArea"" after delete on config.""CastleSiegeConfiguration""
+    for each row execute function config.delete_owned_row('AttackRespawnAreaId', 'config', 'CastleSiegeZoneDefinition');
+
+drop trigger if exists ""trg_CastleSiegeConfiguration_DeleteDefenseRespawnArea"" on config.""CastleSiegeConfiguration"";
+create trigger ""trg_CastleSiegeConfiguration_DeleteDefenseRespawnArea"" after delete on config.""CastleSiegeConfiguration""
+    for each row execute function config.delete_owned_row('DefenseRespawnAreaId', 'config', 'CastleSiegeZoneDefinition');
+
+drop trigger if exists ""trg_CharacterClass_DeleteComboDefinition"" on config.""CharacterClass"";
+create trigger ""trg_CharacterClass_DeleteComboDefinition"" after delete on config.""CharacterClass""
+    for each row execute function config.delete_owned_row('ComboDefinitionId', 'config', 'SkillComboDefinition');
+
+drop trigger if exists ""trg_GameConfiguration_DeleteCastleSiegeConfiguration"" on config.""GameConfiguration"";
+create trigger ""trg_GameConfiguration_DeleteCastleSiegeConfiguration"" after delete on config.""GameConfiguration""
+    for each row execute function config.delete_owned_row('CastleSiegeConfigurationId', 'config', 'CastleSiegeConfiguration');
+
+drop trigger if exists ""trg_GameConfiguration_DeleteDuelConfiguration"" on config.""GameConfiguration"";
+create trigger ""trg_GameConfiguration_DeleteDuelConfiguration"" after delete on config.""GameConfiguration""
+    for each row execute function config.delete_owned_row('DuelConfigurationId', 'config', 'DuelConfiguration');
+
+drop trigger if exists ""trg_GameMapDefinition_DeleteBattleZone"" on config.""GameMapDefinition"";
+create trigger ""trg_GameMapDefinition_DeleteBattleZone"" after delete on config.""GameMapDefinition""
+    for each row execute function config.delete_owned_row('BattleZoneId', 'config', 'BattleZoneDefinition');
+
+drop trigger if exists ""trg_IncreasableItemOption_DeletePowerUpDefinition"" on config.""IncreasableItemOption"";
+create trigger ""trg_IncreasableItemOption_DeletePowerUpDefinition"" after delete on config.""IncreasableItemOption""
+    for each row execute function config.delete_owned_row('PowerUpDefinitionId', 'config', 'PowerUpDefinition');
+
+drop trigger if exists ""trg_ItemCrafting_DeleteSimpleCraftingSettings"" on config.""ItemCrafting"";
+create trigger ""trg_ItemCrafting_DeleteSimpleCraftingSettings"" after delete on config.""ItemCrafting""
+    for each row execute function config.delete_owned_row('SimpleCraftingSettingsId', 'config', 'SimpleCraftingSettings');
+
+drop trigger if exists ""trg_ItemOption_DeletePowerUpDefinition"" on config.""ItemOption"";
+create trigger ""trg_ItemOption_DeletePowerUpDefinition"" after delete on config.""ItemOption""
+    for each row execute function config.delete_owned_row('PowerUpDefinitionId', 'config', 'PowerUpDefinition');
+
+drop trigger if exists ""trg_ItemOptionCombinationBonus_DeleteBonus"" on config.""ItemOptionCombinationBonus"";
+create trigger ""trg_ItemOptionCombinationBonus_DeleteBonus"" after delete on config.""ItemOptionCombinationBonus""
+    for each row execute function config.delete_owned_row('BonusId', 'config', 'PowerUpDefinition');
+
+drop trigger if exists ""trg_ItemOptionOfLevel_DeletePowerUpDefinition"" on config.""ItemOptionOfLevel"";
+create trigger ""trg_ItemOptionOfLevel_DeletePowerUpDefinition"" after delete on config.""ItemOptionOfLevel""
+    for each row execute function config.delete_owned_row('PowerUpDefinitionId', 'config', 'PowerUpDefinition');
+
+drop trigger if exists ""trg_MagicEffectDefinition_DeleteChance"" on config.""MagicEffectDefinition"";
+create trigger ""trg_MagicEffectDefinition_DeleteChance"" after delete on config.""MagicEffectDefinition""
+    for each row execute function config.delete_owned_row('ChanceId', 'config', 'PowerUpDefinitionValue');
+
+drop trigger if exists ""trg_MagicEffectDefinition_DeleteChancePvp"" on config.""MagicEffectDefinition"";
+create trigger ""trg_MagicEffectDefinition_DeleteChancePvp"" after delete on config.""MagicEffectDefinition""
+    for each row execute function config.delete_owned_row('ChancePvpId', 'config', 'PowerUpDefinitionValue');
+
+drop trigger if exists ""trg_MagicEffectDefinition_DeleteDuration"" on config.""MagicEffectDefinition"";
+create trigger ""trg_MagicEffectDefinition_DeleteDuration"" after delete on config.""MagicEffectDefinition""
+    for each row execute function config.delete_owned_row('DurationId', 'config', 'PowerUpDefinitionValue');
+
+drop trigger if exists ""trg_MagicEffectDefinition_DeleteDurationPvp"" on config.""MagicEffectDefinition"";
+create trigger ""trg_MagicEffectDefinition_DeleteDurationPvp"" after delete on config.""MagicEffectDefinition""
+    for each row execute function config.delete_owned_row('DurationPvpId', 'config', 'PowerUpDefinitionValue');
+
+drop trigger if exists ""trg_MiniGameChangeEvent_DeleteSpawnArea"" on config.""MiniGameChangeEvent"";
+create trigger ""trg_MiniGameChangeEvent_DeleteSpawnArea"" after delete on config.""MiniGameChangeEvent""
+    for each row execute function config.delete_owned_row('SpawnAreaId', 'config', 'MonsterSpawnArea');
+
+drop trigger if exists ""trg_MonsterDefinition_DeleteMerchantStore"" on config.""MonsterDefinition"";
+create trigger ""trg_MonsterDefinition_DeleteMerchantStore"" after delete on config.""MonsterDefinition""
+    for each row execute function config.delete_owned_row('MerchantStoreId', 'data', 'ItemStorage');
+
+drop trigger if exists ""trg_PowerUpDefinition_DeleteBoost"" on config.""PowerUpDefinition"";
+create trigger ""trg_PowerUpDefinition_DeleteBoost"" after delete on config.""PowerUpDefinition""
+    for each row execute function config.delete_owned_row('BoostId', 'config', 'PowerUpDefinitionValue');
+
+drop trigger if exists ""trg_QuestReward_DeleteItemReward"" on config.""QuestReward"";
+create trigger ""trg_QuestReward_DeleteItemReward"" after delete on config.""QuestReward""
+    for each row execute function config.delete_owned_row('ItemRewardId', 'data', 'Item');
+
+drop trigger if exists ""trg_Skill_DeleteAreaSkillSettings"" on config.""Skill"";
+create trigger ""trg_Skill_DeleteAreaSkillSettings"" after delete on config.""Skill""
+    for each row execute function config.delete_owned_row('AreaSkillSettingsId', 'config', 'AreaSkillSettings');
+
+drop trigger if exists ""trg_Account_DeleteVault"" on data.""Account"";
+create trigger ""trg_Account_DeleteVault"" after delete on data.""Account""
+    for each row execute function data.delete_owned_row('VaultId', 'data', 'ItemStorage');
+
+drop trigger if exists ""trg_Character_DeleteInventory"" on data.""Character"";
+create trigger ""trg_Character_DeleteInventory"" after delete on data.""Character""
+    for each row execute function data.delete_owned_row('InventoryId', 'data', 'ItemStorage');
+
+drop trigger if exists ""trg_LetterBody_DeleteSenderAppearance"" on data.""LetterBody"";
+create trigger ""trg_LetterBody_DeleteSenderAppearance"" after delete on data.""LetterBody""
+    for each row execute function data.delete_owned_row('SenderAppearanceId', 'data', 'AppearanceData');
+");
+
+            // Item storages which were orphaned before the triggers existed - their items are removed
+            // by the cascade of the storage. These are the only three references to an item storage.
+            migrationBuilder.Sql(
+                @"delete from data.""ItemStorage"" s
+                where not exists (select 1 from data.""Character"" c where c.""InventoryId"" = s.""Id"")
+                  and not exists (select 1 from data.""Account"" a where a.""VaultId"" = s.""Id"")
+                  and not exists (select 1 from config.""MonsterDefinition"" m where m.""MerchantStoreId"" = s.""Id"")");
+        }
+
+        /// <inheritdoc />
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            // Dropping the function drops the triggers which depend on it.
+            migrationBuilder.Sql(@"drop function if exists data.delete_owned_row() cascade");
+            migrationBuilder.Sql(@"drop function if exists config.delete_owned_row() cascade");
+        }
+    }
+}

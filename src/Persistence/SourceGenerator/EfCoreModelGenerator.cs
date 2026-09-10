@@ -24,6 +24,10 @@ public class EfCoreModelGenerator : IIncrementalGenerator, IUnboundSourceGenerat
 
     private const string GameConfigurationFullName = "MUnique.OpenMU.DataModel.Configuration.GameConfiguration";
 
+    private const string ConfigurationSchemaName = "config";
+
+    private const string AccountDataSchemaName = "data";
+
     private static readonly Type[] IgnoredTypes = { typeof(SimpleElement) };
 
     /// <summary>
@@ -137,6 +141,7 @@ internal partial class {className} : {fullName}, IIdentifiable
 
         yield return ("ExtendedTypeContext", this.GenerateDbContext());
         yield return ("MapsterConfigurator", this.GenerateMapsterConfigurator());
+        yield return ("AggregateDeleteTriggers", this.GenerateAggregateDeleteTriggers());
         foreach (var (name, source) in this.GenerateJoinEntities())
         {
             yield return (name, source);
@@ -179,6 +184,35 @@ internal partial class {className} : {fullName}, IIdentifiable
 
             return !st.StandaloneForEntityOnly || !ModelGeneratorHelper.IsConfigurationType(referencingType);
         });
+    }
+
+    private static string GetSchemaName(Type type)
+    {
+        return ModelGeneratorHelper.IsConfigurationType(type) ? ConfigurationSchemaName : AccountDataSchemaName;
+    }
+
+    private static string CreateTriggerFunction(string schemaName)
+    {
+        return string.Join(
+            "\n",
+            $"create or replace function {schemaName}.delete_owned_row() returns trigger",
+            "    language plpgsql",
+            "as $$",
+            "declare",
+            "    owned_id uuid;",
+            "begin",
+            "    -- The foreign key of a one-to-one member of an aggregate is held by the owner, so the",
+            "    -- database can't cascade into it. tg_argv holds the key column of the deleted owner row",
+            "    -- and the schema and table of the owned row.",
+            "    owned_id := (to_jsonb(old) ->> tg_argv[0])::uuid;",
+            "    if owned_id is not null then",
+            "        execute format('delete from %I.%I where \"Id\" = $1', tg_argv[1], tg_argv[2]) using owned_id;",
+            "    end if;",
+            string.Empty,
+            "    return null;",
+            "end;",
+            "$$;",
+            string.Empty);
     }
 
     private IEnumerable<(string Name, string Source)> GenerateJoinEntities()
@@ -362,6 +396,116 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
     {{
 {joinDefinitions}
     }}
+}}
+";
+        return source;
+    }
+
+    /// <summary>
+    /// Creates the triggers which delete the members of an aggregate which are referenced by their owner.
+    /// </summary>
+    /// <remarks>
+    /// A member of an aggregate which is a collection holds the foreign key at the child, so
+    /// "on delete cascade" already removes it with its owner. A member which is referenced by
+    /// the owner (one-to-one) holds the foreign key at the owner instead, and a cascade only runs
+    /// from the referenced row to the referencing one - so deleting the owner would leave the
+    /// referenced row behind, unreachable. A trigger at the owner deletes it instead.
+    /// Members which reference a shared type are skipped: deleting them would take data away
+    /// from their other owners.
+    /// </remarks>
+    /// <returns>The source of the class which holds the generated script.</returns>
+    private string GenerateAggregateDeleteTriggers()
+    {
+        var sharedTypes = ModelGeneratorHelper.CustomTypes
+            .Where(type => type.FullName == GameConfigurationFullName)
+            .SelectMany(type => type.GetProperties())
+            .Where(p => p.PropertyType.IsGenericType
+                        && p.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>))
+            .Select(p => p.PropertyType.GetGenericArguments()[0])
+            .ToList();
+
+        var members = ModelGeneratorHelper.CustomTypes
+            .SelectMany(type => type.GetProperties()
+                .Where(p => p.GetCustomAttribute<MemberOfAggregateAttribute>() is { })
+                .Where(p => !IgnoredTypes.Contains(p.PropertyType))
+                .Where(p => !p.PropertyType.IsGenericType)
+                .Select(p => new
+                {
+                    OwnerSchema = GetSchemaName(type),
+                    OwnerTable = type.Name,
+                    PropertyName = p.Name,
+                    Column = p.Name + "Id",
+                    TargetSchema = GetSchemaName(p.PropertyType),
+                    TargetTable = p.PropertyType.Name,
+                    IsShared = sharedTypes.Contains(p.PropertyType) || IsStandaloneType(p.PropertyType.FullName, type),
+                }))
+            .OrderBy(member => member.OwnerSchema, StringComparer.Ordinal)
+            .ThenBy(member => member.OwnerTable, StringComparer.Ordinal)
+            .ThenBy(member => member.Column, StringComparer.Ordinal)
+            .ToList();
+
+        var parts = new List<string>
+        {
+            "-- Deletes the members of an aggregate which are referenced by their owner (one-to-one).",
+            "-- Collections of an aggregate don't need this, because their foreign key is held by the",
+            "-- child, so 'on delete cascade' already covers them.",
+            "-- This script is generated (see EfCoreModelGenerator) and idempotent.",
+            string.Empty,
+            CreateTriggerFunction(ConfigurationSchemaName),
+            CreateTriggerFunction(AccountDataSchemaName),
+        };
+
+        foreach (var member in members.Where(member => !member.IsShared))
+        {
+            var triggerName = $"trg_{member.OwnerTable}_Delete{member.PropertyName}";
+            var ownerTable = member.OwnerSchema + ".\"" + member.OwnerTable + "\"";
+            parts.Add(
+                $"drop trigger if exists \"{triggerName}\" on {ownerTable};\n"
+                + $"create trigger \"{triggerName}\" after delete on {ownerTable}\n"
+                + $"    for each row execute function {member.OwnerSchema}.delete_owned_row('{member.Column}', '{member.TargetSchema}', '{member.TargetTable}');\n");
+        }
+
+        var script = string.Join("\n", parts).TrimEnd('\n') + "\n";
+
+        var skippedMembers = new StringBuilder();
+        foreach (var member in members.Where(member => member.IsShared))
+        {
+            skippedMembers.Append("/// <item>").Append(member.OwnerTable).Append('.').Append(member.PropertyName)
+                .Append(" (").Append(member.TargetSchema).Append('.').Append(member.TargetTable).Append(")</item>\n");
+        }
+
+        var escapedScript = script.Replace("\"", "\"\"");
+        var skippedList = skippedMembers.ToString().TrimEnd('\n');
+
+        var source = $@"{string.Format(ModelGeneratorHelper.FileHeaderTemplate, "AggregateDeleteTriggers")}
+
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+/// <summary>
+/// The generated database triggers which delete the members of an aggregate which are referenced
+/// by their owner.
+/// </summary>
+/// <remarks>
+/// A member of an aggregate which is a collection is covered by 'on delete cascade' already, because
+/// its foreign key is held by the child. For a member which is referenced by the owner (one-to-one),
+/// the foreign key is held by the owner instead - and a cascade only ever runs from the referenced
+/// row to the referencing one. Deleting the owner would leave the referenced row behind as an
+/// unreachable row, so it's deleted by a trigger.
+/// <para>
+/// These members are marked as member of an aggregate, but reference a shared type. They would take
+/// data away from other owners, so no trigger is created for them:
+/// <list type=""bullet"">
+{skippedList}
+/// </list>
+/// </para>
+/// </remarks>
+public static class AggregateDeleteTriggers
+{{
+    /// <summary>
+    /// The script which creates the trigger function and all of the triggers.
+    /// It can be applied more than once.
+    /// </summary>
+    public const string CreateScript = @""{escapedScript}"";
 }}
 ";
         return source;
