@@ -226,7 +226,7 @@ public class GuildService : IGuildService, ISupportDataChangedNotification, IDis
     {
         var items = guilds.Select(ToListItem).ToList();
 
-        // Only guilds without an AllianceGuild of their own are candidates for being a master;
+        // Only guilds without an AllianceGuild of their own are candidates for being a master.
         // this keeps the lookup bounded to the current page instead of scanning the whole guild table.
         var candidateMasterIds = items
             .Where(item => item.AllianceGuildId is null)

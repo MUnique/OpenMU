@@ -31,10 +31,17 @@ public partial class Guild : ComponentBase
     [Inject]
     public IGuildService GuildService { get; set; } = null!;
 
+    /// <summary>
+    /// Gets or sets the loading overlay service.
+    /// </summary>
+    [Inject]
+    public LoadingOverlayService LoadingService { get; set; } = null!;
+
     /// <inheritdoc />
     protected override async Task OnParametersSetAsync()
     {
         await base.OnParametersSetAsync().ConfigureAwait(true);
+        using var loading = this.LoadingService.ShowLoadingIndicator();
         this._isLoading = true;
         this._guild = null;
         this._members = [];
