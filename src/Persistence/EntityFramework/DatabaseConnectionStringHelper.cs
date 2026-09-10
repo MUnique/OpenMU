@@ -17,15 +17,15 @@ public static partial class DatabaseConnectionStringHelper
     /// <summary>
     /// Gets the environment variable name for the database host.
     /// </summary>
-    public const string DbHostVariableName = "DB_HOST";
+    public static string DbHostVariableName { get; } = "DB_HOST";
     /// <summary>
     /// Gets the environment variable name for the admin user.
     /// </summary>
-    public const string DbAdminUserVariableName = "DB_ADMIN_USER";
+    public static string DbAdminUserVariableName { get; } = "DB_ADMIN_USER";
     /// <summary>
     /// Gets the environment variable name for the admin password.
     /// </summary>
-    public const string DbAdminPasswordVariableName = "DB_ADMIN_PW";
+    public static string DbAdminPasswordVariableName { get; } = "DB_ADMIN_PW";
 
     /// <summary>
     /// Applies the environment variables to the connection string of the specified setting, in place.
@@ -54,18 +54,18 @@ public static partial class DatabaseConnectionStringHelper
             connectionString = ServerRegex().Replace(connectionString, $"Server={dbHost};");
         }
 
-        if (connectionString.Contains("User Id=postgres;"))
+        if (connectionString.Contains("User Id=postgres;", StringComparison.Ordinal))
         {
             if (Environment.GetEnvironmentVariable(DbAdminUserVariableName) is { } dbAdminUser
                 && !string.IsNullOrEmpty(dbAdminUser))
             {
-                connectionString = connectionString.Replace("User Id=postgres;", $"User Id={dbAdminUser};");
+                connectionString = connectionString.Replace("User Id=postgres;", $"User Id={dbAdminUser};", StringComparison.Ordinal);
             }
 
             if (Environment.GetEnvironmentVariable(DbAdminPasswordVariableName) is { } dbAdminPassword
                 && !string.IsNullOrEmpty(dbAdminPassword))
             {
-                connectionString = connectionString.Replace("Password=admin;", $"Password={dbAdminPassword};");
+                connectionString = connectionString.Replace("Password=admin;", $"Password={dbAdminPassword};", StringComparison.Ordinal);
             }
         }
 

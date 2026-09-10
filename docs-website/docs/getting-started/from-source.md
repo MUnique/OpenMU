@@ -19,8 +19,8 @@ are shown.
   development* and *.NET Desktop development*), Rider, or VS Code with the C#
   extension. Plain command line with the SDK below works as well. Please keep
   your tools up to date to prevent issues.
-* The Visual Studio extension
-  [Web Compiler 2022+](https://marketplace.visualstudio.com/items?itemName=Failwyn.WebCompiler64),
+* The Visual Studio extension [Web Compiler
+  2022+](https://marketplace.visualstudio.com/items?itemName=Failwyn.WebCompiler64),
   if you plan to edit SCSS files of the admin panel (Visual Studio only)
 * [.NET SDK 10](https://dotnet.microsoft.com/download/dotnet/10.0) (already
   included in Visual Studio 2026)
@@ -42,49 +42,64 @@ are shown.
 1. Open the OpenMU solution in your IDE.
 2. Restore the NuGet packages: Visual Studio offers *Restore NuGet Packages* on
    right click of the solution, or run this from the repository root:
+
    ```bash
    dotnet restore
    ```
+
 3. Configure the postgres admin credentials (pick one option):
    * **Recommended: environment variables.** Set `DB_ADMIN_USER` and
      `DB_ADMIN_PW` to the user/password of your postgres superuser account
      (leave `DB_HOST` unset to use `localhost`). Only the admin credentials
      need to be correct. The server creates the database schemas and the
      other roles (`config`, `account`, `friend`, `guild`) itself.
+
      ```bash
      export DB_ADMIN_USER=postgres
      export DB_ADMIN_PW='s3cret'
      ```
+
      On Windows (PowerShell) instead:
+
      ```powershell
      $env:DB_ADMIN_USER='postgres'
      $env:DB_ADMIN_PW='s3cret'
      ```
+
      When the variables are not set, the defaults (`postgres` / `admin`)
      apply. Avoid `;` in the password, since it separates values in connection
      strings.
-   * **Alternative:** edit `src/Persistence/EntityFramework/ConnectionSettings.xml`
-     so that the connection strings are correct. Only the user/password of the
+   * **Alternative:** edit
+     `src/Persistence/EntityFramework/ConnectionSettings.xml` so that the
+     connection strings are correct. Only the user/password of the
      **first and second** connection string need to be correct. The server
      will try to create the other roles specified by the settings.
 
-   Whichever option you picked, if you run postgres in Docker instead of installing it, start it with a
-   matching user, password and database name (`openmu`):
+   Whichever option you picked, if you run postgres in Docker instead of
+   installing it, start it with a matching user, password and database
+   name (`openmu`):
+
     ```bash
     docker run -d --name openmu-db \
-      -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD='s3cret' -e POSTGRES_DB=openmu \
+      -e POSTGRES_USER=postgres -e POSTGRES_DB=openmu \
+      -e POSTGRES_PASSWORD='s3cret' \
       -p 5432:5432 postgres
     ```
+
 4. Build the solution, in your IDE or from the repository root with:
+
    ```bash
    dotnet build src/MUnique.OpenMU.sln
    ```
+
 5. Start `MUnique.OpenMU.Startup`. The environment variables from step 3 must
    be set wherever you start it (same terminal, or your Debug launch profile).
    From a terminal:
+
    ```bash
    dotnet run --project src/Startup/MUnique.OpenMU.Startup.csproj -- -autostart
    ```
+
    (The `--` passes `-autostart` to the server instead of to `dotnet`.)
    * If required, it creates the database schemas and the required roles, and
      gives permissions to those roles.
