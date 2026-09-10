@@ -8,16 +8,17 @@ using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.Pathfinding;
 
 /// <summary>
-/// Tests the landing-point contract shared by exit-gate consumers.
+/// Tests the placement-specific landing-point contract of exit gates.
 /// </summary>
 [TestFixture]
 public class ExitGateExtensionsTest
 {
     /// <summary>
-    /// The lower bounds are inclusive and the upper bounds are exclusive, matching the random placement logic.
+    /// The possible points must preserve the existing random-placement bounds without defining how other
+    /// consumers interpret the gate rectangle.
     /// </summary>
     [Test]
-    public void PossibleLandingPointsUseExclusiveUpperBounds()
+    public void PossibleLandingPointsMatchRandomPlacementBounds()
     {
         var gate = CreateGate(10, 20, 12, 22);
         var expected = new[]

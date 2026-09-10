@@ -16,6 +16,12 @@ public static class ExitGateExtensions
     /// </summary>
     /// <param name="gate">The gate.</param>
     /// <returns>The random point.</returns>
+    /// <remarks>
+    /// This preserves the existing placement convention: differing upper bounds are exclusive, while
+    /// equal lower and upper bounds describe one coordinate. Other gate operations, such as containment
+    /// checks and terrain painting, treat the upper bounds as inclusive; this convention applies only
+    /// to random placement.
+    /// </remarks>
     public static Point GetRandomPoint(this ExitGate gate)
     {
         var maxXExclusive = GetExclusiveUpperBound(gate.X1, gate.X2, nameof(gate.X2));
@@ -28,6 +34,10 @@ public static class ExitGateExtensions
     /// </summary>
     /// <param name="gate">The gate.</param>
     /// <returns>The possible landing points.</returns>
+    /// <remarks>
+    /// This enumerates the placement domain of <see cref="GetRandomPoint"/>; it is not a general-purpose
+    /// enumeration of the gate rectangle, whose upper bounds are treated as inclusive by other consumers.
+    /// </remarks>
     internal static IEnumerable<Point> GetPossibleLandingPoints(this ExitGate gate)
     {
         var maxXExclusive = GetExclusiveUpperBound(gate.X1, gate.X2, nameof(gate.X2));
