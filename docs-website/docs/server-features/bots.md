@@ -260,8 +260,10 @@ event; the survivors are warped out when the event ends.
 ### Company and rhythm
 
 Bots hunt in parties of two to five, grouped by level so the whole party can
-hunt the leader's maps. The elf heals, the buffs are shared, the party
-experience bonus applies. Parties re-form every hour.
+hunt the leader's maps. Each party holds exactly one energy elf buffer and
+one of each build at most, and buffers never hunt solo. Generation sizes the
+buffer count to the expected party count. The elf heals, the buffs are shared,
+the party experience bonus applies. Parties re-form every hour.
 
 A player may invite a bot into their own party: it accepts after a human-like
 pause of a few seconds, as long as it is not in the middle of an errand. There is
