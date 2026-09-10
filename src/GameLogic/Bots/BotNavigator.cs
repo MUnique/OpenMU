@@ -511,8 +511,9 @@ internal sealed class BotNavigator : AsyncDisposable
 
         // Some maps represent several floors as disconnected regions on the same map id
         // (Dungeon, Lost Tower, ...). If walking cannot reach the leader, regroup through the
-        // closest legal warp entry whose complete landing area can reach him instead of re-issuing
-        // an impossible path every tick.
+        // closest legal warp entry whose complete landing area can reach him. Requiring every possible
+        // landing point is deliberate: the warp performs one unvalidated random placement, so accepting
+        // a partially usable gate would make following succeed or fail by chance.
         var leaderWarp = this.FindBestReachableLegalWarp(map, leader.Position, cancellationToken);
         if (leaderWarp?.Gate is not { } leaderGate)
         {
@@ -1847,12 +1848,21 @@ internal sealed class BotNavigator : AsyncDisposable
     }
 
     /// <summary>
-    /// Gets the legal warp entry whose landing area has the shortest walkable route to a target.
+    /// Gets the legal warp entry whose complete landing area has the shortest walkable route to a target.
     /// </summary>
     /// <param name="map">The target map.</param>
     /// <param name="target">The target position.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The best reachable warp, or <c>null</c> if no legal gate can reach the target.</returns>
+    /// <remarks>
+    /// A candidate is deliberately rejected when any coordinate which
+    /// <see cref="ExitGateExtensions.GetRandomPoint(ExitGate)"/> may select is blocked or cannot reach
+    /// the target. <see cref="Player.WarpToAsync(ExitGate)"/> performs that random placement once and
+    /// does not retry or validate it, so accepting a partially usable gate would make following
+    /// probabilistic. This fail-closed policy can reject a configured gate with many usable coordinates
+    /// and one bad coordinate; keeping that trade-off local avoids changing map-transition behavior for
+    /// other warp features.
+    /// </remarks>
     private WarpInfo? FindBestReachableLegalWarp(GameMap map, Point target, CancellationToken cancellationToken)
     {
         var candidates = this.GetLegalWarps(map.Definition)
