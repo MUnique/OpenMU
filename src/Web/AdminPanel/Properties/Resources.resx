@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -1241,5 +1241,53 @@
   </data>
   <data name="DownloadArchivedSession" xml:space="preserve">
     <value>Download the archived session</value>
+  </data>
+  <data name="Players" xml:space="preserve">
+    <value>Players</value>
+  </data>
+  <data name="OffLevelPlayers" xml:space="preserve">
+    <value>Off-level Players</value>
+  </data>
+  <data name="BotPlayers" xml:space="preserve">
+    <value>Bot Players</value>
+  </data>
+  <data name="Party" xml:space="preserve">
+    <value>Party</value>
+  </data>
+  <data name="Guilds" xml:space="preserve">
+    <value>Guilds</value>
+  </data>
+  <data name="Guild" xml:space="preserve">
+    <value>Guild</value>
+  </data>
+  <data name="Alliance" xml:space="preserve">
+    <value>Alliance</value>
+  </data>
+  <data name="Members" xml:space="preserve">
+    <value>Members</value>
+  </data>
+  <data name="Score" xml:space="preserve">
+    <value>Score</value>
+  </data>
+  <data name="Notice" xml:space="preserve">
+    <value>Notice</value>
+  </data>
+  <data name="Position" xml:space="preserve">
+    <value>Position</value>
+  </data>
+  <data name="CharacterClass" xml:space="preserve">
+    <value>Character Class</value>
+  </data>
+  <data name="Level" xml:space="preserve">
+    <value>Level</value>
+  </data>
+  <data name="MasterLevel" xml:space="preserve">
+    <value>Master Level</value>
+  </data>
+  <data name="Account" xml:space="preserve">
+    <value>Account</value>
+  </data>
+  <data name="GuildNotFound" xml:space="preserve">
+    <value>The guild was not found. It may have been deleted.</value>
   </data>
 </root>

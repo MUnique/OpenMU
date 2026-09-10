@@ -1,0 +1,48 @@
+@page "/guilds"
+@using MUnique.OpenMU.Web.Shared.Models;
+@using Resources = MUnique.OpenMU.Web.AdminPanel.Properties.Resources
+
+@inject GuildService _guildService;
+
+<PageTitle>OpenMU: @Resources.Guilds</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="@Resources.Guilds" />
+<h1>@Resources.Guilds</h1>
+
+<div>
+    <DataTable TItem=@GuildListItem>
+        <TableHeader>
+            <th class="col-3">@Resources.Guild</th>
+            <th class="col-1">@Resources.Members</th>
+            <th class="col-1">@Resources.Score</th>
+            <th class="col-3">@Resources.Alliance</th>
+        </TableHeader>
+        <FilterHeader>
+            <th colspan="4">
+                <div class="input-group">
+                    <span class="input-group-text"><span class="oi oi-magnifying-glass" aria-hidden="true"></span></span>
+                    <input class="form-control small" type="search" autofocus @bind="@this._guildService.SearchFilter" @bind:event="oninput" placeholder="@Resources.Search ..."/>
+                </div>
+            </th>
+        </FilterHeader>
+        <ItemTemplate Context="item">
+            <td>
+                <span class="d-inline-flex align-items-center">
+                    <GuildLogo Logo="@item.Logo" Size="20" class="me-2 border rounded-1" />
+                    <NavLink href="@($"guild/{item.Id}")">@item.Name</NavLink>
+                </span>
+            </td>
+            <td>@item.MemberCount</td>
+            <td>@item.Score</td>
+            <td>
+                @if (item.AllianceGuildId is { } allianceId)
+                {
+                    <NavLink href="@($"alliance/{allianceId}")">@item.AllianceName</NavLink>
+                }
+                else
+                {
+                    <span>—</span>
+                }
+            </td>
+        </ItemTemplate>
+    </DataTable>
+</div>
