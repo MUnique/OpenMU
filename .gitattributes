@@ -8,3 +8,8 @@
 *.cs text
 *.csproj text
 *.sln text
+
+# Packet docs are generated with LF line endings on every platform
+# (see GenerateMarkdownDocs.xslt), so check them out with LF everywhere
+# to avoid phantom diffs after a build.
+docs/Packets/*.md text eol=lf
