@@ -160,6 +160,83 @@ public class GameMapTerrain
     }
 
     /// <summary>
+    /// Determines whether there is a clear line of sight between two coordinates.
+    /// Uses Bresenham's line algorithm over the <see cref="WalkMap"/>; any blocked
+    /// intermediate tile blocks sight. The endpoints themselves are excluded, so
+    /// that the tiles the attacker and target stand on never block the check.
+    /// A diagonal step passing exactly between two blocked tiles that touch only
+    /// at a corner is also treated as blocked.
+    /// </summary>
+    /// <remarks>
+    /// Walkability doubles as opacity here: the map data offers no separate
+    /// transparency layer, so unwalkable tiles (walls, but also water, pits, …)
+    /// all block sight. If a map ever needs shooting across an unwalkable-but-
+    /// transparent area, this needs a dedicated opacity grid.
+    /// </remarks>
+    /// <param name="from">The attacking (viewing) coordinate.</param>
+    /// <param name="to">The target coordinate.</param>
+    /// <returns><c>true</c> when no wall blocks the line between the coordinates; otherwise, <c>false</c>.</returns>
+    public bool HasLineOfSight(Point from, Point to)
+    {
+        int x0 = from.X;
+        int y0 = from.Y;
+        int x1 = to.X;
+        int y1 = to.Y;
+
+        if (x0 == x1 && y0 == y1)
+        {
+            return true;
+        }
+
+        int dx = Math.Abs(x1 - x0);
+        int dy = -Math.Abs(y1 - y0);
+        int sx = x0 < x1 ? 1 : -1;
+        int sy = y0 < y1 ? 1 : -1;
+        int err = dx + dy;
+
+        int x = x0;
+        int y = y0;
+        var walkMap = this.WalkMap;
+        while (true)
+        {
+            int previousX = x;
+            int previousY = y;
+
+            int e2 = 2 * err;
+            if (e2 >= dy)
+            {
+                err += dy;
+                x += sx;
+            }
+
+            if (e2 <= dx)
+            {
+                err += dx;
+                y += sy;
+            }
+
+            // Reached the target tile: endpoints never block sight.
+            if (x == x1 && y == y1)
+            {
+                return true;
+            }
+
+            if (x != previousX && y != previousY
+                && !walkMap[previousX, y] && !walkMap[x, previousY])
+            {
+                // Diagonal step squeezing between two blocked tiles that
+                // touch only at a corner: the line grazes a solid corner.
+                return false;
+            }
+
+            if (!walkMap[x, y])
+            {
+                return false;
+            }
+        }
+    }
+
+    /// <summary>
     /// Updates the ai grid value at the specified coordinate.
     /// </summary>
     /// <param name="x">The x.</param>

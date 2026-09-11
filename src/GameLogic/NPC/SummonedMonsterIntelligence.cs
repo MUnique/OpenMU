@@ -48,13 +48,33 @@ public sealed class SummonedMonsterIntelligence : BasicMonsterIntelligence
     {
         var currentMap = this.Owner.CurrentMap;
 
-        var nextTarget = currentMap?.GetAttackablesInRange(this.Owner.Position, 8)
-            .Where(o => o is Monster { SummonedBy: null, IsAlive: true })
-            .OfType<NonPlayerCharacter>()
-            .OrderBy(o => o.GetDistanceTo(this.Owner))
-            .FirstOrDefault() as IAttackable;
+        // Prefer a target with a clear line of sight, like the base class does.
+        // If nobody is visible, fall back to the nearest target so the summon
+        // still approaches it (and around walls) instead of idling.
+        NonPlayerCharacter? nearest = null;
+        double nearestDistance = double.MaxValue;
+        NonPlayerCharacter? nearestVisible = null;
+        double nearestVisibleDistance = double.MaxValue;
+        foreach (var candidate in currentMap?.GetAttackablesInRange(this.Owner.Position, 8)
+                     .Where(o => o is Monster { SummonedBy: null, IsAlive: true })
+                     .OfType<NonPlayerCharacter>()
+                 ?? [])
+        {
+            var distance = candidate.GetDistanceTo(this.Owner);
+            if (distance < nearestDistance)
+            {
+                nearestDistance = distance;
+                nearest = candidate;
+            }
 
-        return ValueTask.FromResult(nextTarget);
+            if (distance < nearestVisibleDistance && this.Npc.HasLineOfSightTo(candidate))
+            {
+                nearestVisibleDistance = distance;
+                nearestVisible = candidate;
+            }
+        }
+
+        return ValueTask.FromResult((IAttackable?)(nearestVisible ?? nearest));
     }
 
     /// <inheritdoc />

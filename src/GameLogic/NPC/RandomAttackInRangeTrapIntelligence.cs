@@ -44,9 +44,10 @@ public class RandomAttackInRangeTrapIntelligence : TrapIntelligenceBase
             return;
         }
 
-        // Target in Attack Range?
+        // Target in Attack Range with a clear line of sight?
         ushort dist = (ushort)this._currentTarget.GetDistanceTo(this.Trap);
-        if (this.Trap.Definition.AttackRange + 1 >= dist)
+        if (this.Trap.Definition.AttackRange + 1 >= dist
+            && this.Trap.HasLineOfSightTo(this._currentTarget))
         {
             await this.Trap.AttackAsync(this._currentTarget).ConfigureAwait(false);  // yes, attack
         }
@@ -62,6 +63,8 @@ public class RandomAttackInRangeTrapIntelligence : TrapIntelligenceBase
 
         double closestDistance = 100;
         IAttackable? closest = null;
+        double closestVisibleDistance = 100;
+        IAttackable? closestVisible = null;
 
         foreach (var target in tempObservers.OfType<IAttackable>())
         {
@@ -76,9 +79,15 @@ public class RandomAttackInRangeTrapIntelligence : TrapIntelligenceBase
                 closest = target;
                 closestDistance = d;
             }
+
+            if (d < closestVisibleDistance && this.Trap.HasLineOfSightTo(target))
+            {
+                closestVisible = target;
+                closestVisibleDistance = d;
+            }
         }
 
-        return closest;
+        return closestVisible ?? closest;
     }
 
     private async ValueTask<bool> IsTargetInObserversAsync()

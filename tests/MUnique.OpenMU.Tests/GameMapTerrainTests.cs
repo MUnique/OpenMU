@@ -79,4 +79,119 @@ public class GameMapTerrainTests
 
         return data;
     }
+
+    /// <summary>
+    /// Tests that a zero-length line is always visible, so attackers and targets
+    /// sharing a tile (e.g. pressure-plate traps) are never blocked by their own tile.
+    /// </summary>
+    [Test]
+    public void HasLineOfSightSameTileIsTrue()
+    {
+        var terrain = new GameMapTerrain(CreateWalkableTerrainWithWall((5, 5)));
+
+        Assert.That(terrain.HasLineOfSight(new Pathfinding.Point(5, 5), new Pathfinding.Point(5, 5)), Is.True);
+    }
+
+    /// <summary>
+    /// Tests that horizontal, vertical and diagonal lines across fully walkable
+    /// terrain are visible, covering the three Bresenham step directions.
+    /// </summary>
+    [Test]
+    public void HasLineOfSightClearLineIsTrue()
+    {
+        var terrain = new GameMapTerrain(CreateWalkableTerrainWithWall((99, 99)));
+
+        Assert.That(terrain.HasLineOfSight(new Pathfinding.Point(10, 10), new Pathfinding.Point(14, 10)), Is.True);
+        Assert.That(terrain.HasLineOfSight(new Pathfinding.Point(10, 10), new Pathfinding.Point(10, 14)), Is.True);
+        Assert.That(terrain.HasLineOfSight(new Pathfinding.Point(10, 10), new Pathfinding.Point(13, 13)), Is.True);
+    }
+
+    /// <summary>
+    /// Tests that a wall between attacker and target blocks sight in both directions,
+    /// while a line running parallel to the wall stays visible.
+    /// </summary>
+    [Test]
+    public void HasLineOfSightWallBetweenIsFalse()
+    {
+        // Vertical wall at x=12, from y=9 to y=13.
+        var terrain = new GameMapTerrain(CreateWalkableTerrainWithWall((12, 9), (12, 10), (12, 11), (12, 12), (12, 13)));
+
+        Assert.That(terrain.HasLineOfSight(new Pathfinding.Point(10, 11), new Pathfinding.Point(14, 11)), Is.False);
+        // Attacker and target swapped: sight is symmetric.
+        Assert.That(terrain.HasLineOfSight(new Pathfinding.Point(14, 11), new Pathfinding.Point(10, 11)), Is.False);
+        // Parallel to the wall, no crossing: still visible.
+        Assert.That(terrain.HasLineOfSight(new Pathfinding.Point(10, 11), new Pathfinding.Point(10, 13)), Is.True);
+    }
+
+    /// <summary>
+    /// Tests that the endpoints themselves never block sight, so a monster or player
+    /// standing on (or targeting) an impassable tile is still handled instead of
+    /// being stuck in a permanently invisible state.
+    /// </summary>
+    [Test]
+    public void HasLineOfSightEndpointsNeverBlock()
+    {
+        // The wall tile itself is an endpoint: standing on it (or targeting it) never blocks.
+        var terrain = new GameMapTerrain(CreateWalkableTerrainWithWall((12, 11)));
+
+        Assert.That(terrain.HasLineOfSight(new Pathfinding.Point(12, 11), new Pathfinding.Point(14, 11)), Is.True);
+        Assert.That(terrain.HasLineOfSight(new Pathfinding.Point(10, 11), new Pathfinding.Point(12, 11)), Is.True);
+        Assert.That(terrain.HasLineOfSight(new Pathfinding.Point(11, 11), new Pathfinding.Point(12, 11)), Is.True);
+    }
+
+    /// <summary>
+    /// Tests that a diagonal line squeezing exactly between two blocked tiles that
+    /// touch only at a corner is blocked, so sight can't leak through a solid
+    /// diagonal wall corner.
+    /// </summary>
+    [Test]
+    public void HasLineOfSightDiagonalCornerBetweenTwoWallsIsFalse()
+    {
+        var terrain = new GameMapTerrain(CreateWalkableTerrainWithWall((10, 11), (11, 10)));
+
+        Assert.That(terrain.HasLineOfSight(new Pathfinding.Point(10, 10), new Pathfinding.Point(12, 12)), Is.False);
+    }
+
+    /// <summary>
+    /// Tests that a diagonal line passing a corner where only one of the two
+    /// adjacent tiles is blocked stays visible; only a fully closed corner blocks.
+    /// </summary>
+    [Test]
+    public void HasLineOfSightDiagonalCornerWithSingleWallIsTrue()
+    {
+        var terrain = new GameMapTerrain(CreateWalkableTerrainWithWall((10, 11)));
+
+        Assert.That(terrain.HasLineOfSight(new Pathfinding.Point(10, 10), new Pathfinding.Point(12, 12)), Is.True);
+    }
+
+    /// <summary>
+    /// Tests that diagonally adjacent tiles are always visible, even when both
+    /// orthogonal neighbours are blocked, so melee-range targets are never
+    /// considered behind a wall.
+    /// </summary>
+    [Test]
+    public void HasLineOfSightDiagonallyAdjacentTilesAreTrue()
+    {
+        var terrain = new GameMapTerrain(CreateWalkableTerrainWithWall((10, 11), (11, 10)));
+
+        Assert.That(terrain.HasLineOfSight(new Pathfinding.Point(10, 10), new Pathfinding.Point(11, 11)), Is.True);
+    }
+
+    /// <summary>
+    /// Creates fully walkable terrain data with the specified coordinates blocked (wall).
+    /// </summary>
+    /// <param name="blocked">The coordinates to mark as blocked.</param>
+    /// <returns>The terrain data, including its three byte header.</returns>
+    private static byte[] CreateWalkableTerrainWithWall(params (byte X, byte Y)[] blocked)
+    {
+        var data = new byte[ushort.MaxValue + 3];
+        Array.Fill(data, Walkable, 3, ushort.MaxValue);
+
+        foreach (var (x, y) in blocked)
+        {
+            data[3 + (y * 256) + x] = Blocked;
+        }
+
+        return data;
+    }
 }
