@@ -38,15 +38,23 @@ public class GuildRoleAssignAction
             return;
         }
 
+        // The fixed-size name field may be space-padded by the client.
+        var targetName = nickname.Trim();
+        if (string.IsNullOrEmpty(targetName))
+        {
+            player.Logger.LogWarning("Rejected guild role assignment of player {PlayerName}: empty target name.", player.Name);
+            return;
+        }
+
         if (newPosition is not (GuildPosition.NormalMember or GuildPosition.BattleMaster or GuildPosition.AssistantMaster))
         {
-            player.Logger.LogWarning("Rejected guild role assignment of player {PlayerName} to {TargetName}: invalid position {Position}, could be hack attempt.", player.Name, nickname, newPosition);
+            player.Logger.LogWarning("Rejected guild role assignment of player {PlayerName} to {TargetName}: invalid position {Position}.", player.Name, targetName, newPosition);
             return;
         }
 
         if (guildStatus.Position != GuildPosition.GuildMaster)
         {
-            player.Logger.LogWarning("Suspicious role assign request for player with name: {0} (player is not a guild master) to assign {1}, could be hack attempt.", player.Name, nickname);
+            player.Logger.LogWarning("Suspicious role assign request for player with name: {PlayerName} (player is not a guild master) to assign {TargetName}.", player.Name, targetName);
             return;
         }
 
@@ -57,18 +65,10 @@ public class GuildRoleAssignAction
             return;
         }
 
-        // The fixed-size name field may be space-padded by the client.
-        nickname = nickname.Trim();
-        if (string.IsNullOrEmpty(nickname))
-        {
-            player.Logger.LogWarning("Rejected guild role assignment of player {PlayerName}: empty target name.", player.Name);
-            return;
-        }
-
-        var target = player.GameContext.GetPlayerByCharacterName(nickname);
+        var target = player.GameContext.GetPlayerByCharacterName(targetName);
         if (target?.SelectedCharacter is null)
         {
-            player.Logger.LogWarning("Rejected guild role assignment: target {TargetName} is not online on this server.", nickname);
+            player.Logger.LogWarning("Rejected guild role assignment: target {TargetName} is not online on this server.", targetName);
             return;
         }
 
@@ -80,19 +80,19 @@ public class GuildRoleAssignAction
 
         if (target.GuildStatus?.GuildId != guildStatus.GuildId)
         {
-            player.Logger.LogWarning("Rejected guild role assignment: target {TargetName} is not in the same guild.", nickname);
+            player.Logger.LogWarning("Rejected guild role assignment: target {TargetName} is not in the same guild.", targetName);
             return;
         }
 
         if (target.GuildStatus.Position == GuildPosition.GuildMaster)
         {
-            player.Logger.LogWarning("Rejected guild role assignment: target {TargetName} is the guild master, leadership transfer is not supported.", nickname);
+            player.Logger.LogWarning("Rejected guild role assignment: target {TargetName} is the guild master, leadership transfer is not supported.", targetName);
             return;
         }
 
         if (target.GuildStatus.Position == newPosition)
         {
-            player.Logger.LogDebug("Guild role assignment skipped: target {TargetName} already has position {Position}.", nickname, newPosition);
+            player.Logger.LogDebug("Guild role assignment skipped: target {TargetName} already has position {Position}.", targetName, newPosition);
             return;
         }
 
