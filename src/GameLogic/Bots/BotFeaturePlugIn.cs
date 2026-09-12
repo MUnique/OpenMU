@@ -84,6 +84,11 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
     /// <inheritdoc />
     public async ValueTask ExecuteTaskAsync(GameContext gameContext)
     {
+        if (IsServerShuttingDown(gameContext))
+        {
+            return;
+        }
+
         var state = this._states.GetOrAdd(gameContext, _ => new ServerState());
         var configuration = this.Configuration ??= CreateDefaultConfiguration();
 
@@ -645,6 +650,17 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
             logger.LogError(ex, "Failed to persist the bot plugin configuration.");
         }
     }
+
+    /// <summary>
+    /// Determines whether the hosting server is shutting down (or already gone), in which case no bot
+    /// must be spawned, restarted or stopped here: the shutdown disconnects and saves every bot itself,
+    /// and anything spawned now would miss its disconnect snapshot, while stopping would race the
+    /// shutdown's disconnect loop on the same player instances (save vs. dispose).
+    /// </summary>
+    /// <param name="gameContext">The game context.</param>
+    /// <returns><c>true</c> when the server is shutting down or gone.</returns>
+    private static bool IsServerShuttingDown(GameContext gameContext)
+        => gameContext.IsDisposed || gameContext.IsDisposing || gameContext.ArePeriodicTasksStopped;
 
     /// <summary>
     /// The bot feature's state of ONE game server: its own share of the population, its own bots, and
