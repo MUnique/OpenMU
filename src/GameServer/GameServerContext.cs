@@ -106,6 +106,9 @@ public class GameServerContext : GameContext, IGameServerContext
     public override float ExperienceRate => base.ExperienceRate * this._gameServerDefinition.ExperienceRate;
 
     /// <inheritdoc />
+    public override float MoneyRate => base.MoneyRate * this._gameServerDefinition.MoneyRate;
+
+    /// <inheritdoc />
     public override float MasterExperienceRate => base.MasterExperienceRate * this._gameServerDefinition.ExperienceRate;
 
     /// <inheritdoc />

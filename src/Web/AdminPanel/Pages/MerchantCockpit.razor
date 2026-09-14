@@ -1,0 +1,346 @@
+@page "/merchant-cockpit"
+
+@using MUnique.OpenMU.DataModel.Configuration
+@using MUnique.OpenMU.DataModel.Configuration.Items
+@using MUnique.OpenMU.DataModel.Entities
+@using MUnique.OpenMU.Persistence
+
+<PageTitle>OpenMU: Merchant Cockpit</PageTitle>
+<Breadcrumb Caption="Merchant Cockpit" />
+
+<h1>Merchant Cockpit</h1>
+<p class="text-muted">
+    Editor rápido de NPC vendedores para MU Nueva Era. Los cambios se preparan en memoria:
+    revisa la tienda y pulsa <strong>Guardar cambios</strong> cuando estés conforme.
+</p>
+
+@if (this._isLoading)
+{
+    <div class="alert alert-info">Cargando merchants e items…</div>
+    return;
+}
+
+<div class="d-flex flex-wrap gap-2 mb-3">
+    <button class="btn btn-success" disabled="@(!this.HasPendingChanges || this._isSaving)" @onclick="this.SaveAsync">
+        Guardar cambios
+    </button>
+    <button class="btn btn-outline-secondary" disabled="@(!this.HasPendingChanges || this._isSaving)" @onclick="this.DiscardAsync">
+        Descartar cambios
+    </button>
+    <button class="btn btn-outline-primary" disabled="@(this.SelectedMerchant is null)" @onclick="this.AutoArrangeCurrentMerchant">
+        Autoordenar slots
+    </button>
+    <NavLink class="btn btn-outline-dark" href="batch-operations">Operaciones por lote</NavLink>
+
+    @if (this.HasPendingChanges)
+    {
+        <span class="badge text-bg-warning align-self-center">Cambios sin guardar</span>
+    }
+</div>
+
+@if (!string.IsNullOrWhiteSpace(this._message))
+{
+    <div class="alert @this._messageCss">@this._message</div>
+}
+
+<div class="row g-3">
+    <div class="col-xl-3">
+        <div class="card h-100">
+            <div class="card-header">
+                <strong>1. Merchant</strong>
+            </div>
+            <div class="card-body">
+                <label class="form-label">Buscar NPC</label>
+                <input class="form-control mb-2" @bind="this._merchantFilter" @bind:event="oninput" placeholder="Hanzo, Pasi, potion…" />
+
+                <div class="list-group" style="max-height: 650px; overflow:auto;">
+                    @foreach (var merchant in this.FilteredMerchants)
+                    {
+                        var id = merchant.GetId();
+                        var active = this._selectedMerchantId == id;
+                        <button class="list-group-item list-group-item-action @(active ? "active" : "")"
+                                @onclick="() => this.SelectMerchant(id)">
+                            <div class="d-flex justify-content-between">
+                                <strong>@merchant.Designation</strong>
+                                <span class="badge @(active ? "text-bg-light" : "text-bg-secondary")">@merchant.MerchantStore!.Items.Count</span>
+                            </div>
+                            <div class="small opacity-75">#@merchant.Number · @this.GetMerchantMapsText(merchant)</div>
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-5">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <strong>2. Tienda actual</strong>
+                @if (this.SelectedMerchant is { } selectedMerchant)
+                {
+                    <span>@selectedMerchant.Designation · @selectedMerchant.MerchantStore!.Items.Count items</span>
+                }
+            </div>
+            <div class="card-body">
+                @if (this.SelectedMerchant is null)
+                {
+                    <div class="alert alert-secondary">Selecciona un merchant a la izquierda.</div>
+                }
+                else
+                {
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-8">
+                            <input class="form-control" @bind="this._shopFilter" @bind:event="oninput" placeholder="Filtrar la tienda actual…" />
+                        </div>
+                        <div class="col-md-4 d-grid">
+                            <button class="btn btn-outline-danger" @onclick="this.ClearCurrentMerchantAsync">
+                                Vaciar tienda
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive" style="max-height: 430px; overflow:auto;">
+                        <table class="table table-sm table-hover align-middle">
+                            <thead class="sticky-top bg-body">
+                                <tr>
+                                    <th>Slot</th>
+                                    <th>Item</th>
+                                    <th>Nivel</th>
+                                    <th>Precio compra</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in this.FilteredShopItems)
+                                {
+                                    var id = item.GetId();
+                                    var selected = this._selectedShopItemId == id;
+                                    <tr class="@(selected ? "table-primary" : "")">
+                                        <td>@item.ItemSlot</td>
+                                        <td>
+                                            <button class="btn btn-link btn-sm text-start p-0" @onclick="() => this.SelectShopItem(id)">
+                                                @item.Definition?.Name
+                                            </button>
+                                            <div class="small text-muted">
+                                                G@(item.Definition?.Group)/#@(item.Definition?.Number)
+                                                · @item.Definition?.Width×@item.Definition?.Height
+                                            </div>
+                                        </td>
+                                        <td>+@item.Level</td>
+                                        <td>@this.FormatZen(this.GetBuyingPrice(item))</td>
+                                        <td class="text-end">
+                                            <button class="btn btn-outline-danger btn-sm" @onclick="() => this.RemoveShopItemAsync(item)">
+                                                Quitar
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    @if (this.SelectedShopItem is { } editItem)
+                    {
+                        <hr />
+                        <h6>Edición rápida · @editItem.Definition?.Name</h6>
+                        <div class="row g-2">
+                            <div class="col-6 col-md-3">
+                                <label class="form-label">Nivel</label>
+                                <input class="form-control form-control-sm" type="number" min="0" max="15" @bind="this._editLevel" />
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <label class="form-label">Durabilidad</label>
+                                <input class="form-control form-control-sm" type="number" min="0" step="1" @bind="this._editDurability" />
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <label class="form-label">Sockets</label>
+                                <input class="form-control form-control-sm" type="number" min="0" max="5" @bind="this._editSocketCount" />
+                            </div>
+                            <div class="col-6 col-md-3 d-flex align-items-end">
+                                <div class="form-check mb-2">
+                                    <input id="editSkill" class="form-check-input" type="checkbox" @bind="this._editHasSkill" />
+                                    <label class="form-check-label" for="editSkill">Skill</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex flex-wrap gap-2 mt-2">
+                            <button class="btn btn-primary btn-sm" @onclick="this.ApplyQuickItemEdit">Aplicar edición</button>
+                            <button class="btn btn-outline-primary btn-sm" @onclick="this.ToggleLuckAsync">
+                                @(this.SelectedItemHasLuck ? "Quitar Luck" : "Agregar Luck")
+                            </button>
+                        </div>
+
+                        <div class="mt-3">
+                            <label class="form-label">Opciones actuales</label>
+                            @if (!editItem.ItemOptions.Any())
+                            {
+                                <div class="text-muted small">Sin opciones adicionales.</div>
+                            }
+                            else
+                            {
+                                <div class="d-flex flex-wrap gap-1">
+                                    @foreach (var option in editItem.ItemOptions.ToList())
+                                    {
+                                        <button class="btn btn-outline-secondary btn-sm" title="Clic para quitar" @onclick="() => this.RemoveOptionAsync(option)">
+                                            @option
+                                            <span aria-hidden="true">×</span>
+                                        </button>
+                                    }
+                                </div>
+                            }
+                        </div>
+
+                        @if (this.AvailableOptionsForSelectedItem.Any())
+                        {
+                            <div class="row g-2 mt-2">
+                                <div class="col-md-7">
+                                    <select class="form-select form-select-sm" @bind="this._optionToAddId">
+                                        <option value="">Agregar otra opción…</option>
+                                        @foreach (var option in this.AvailableOptionsForSelectedItem)
+                                        {
+                                            <option value="@option.GetId()">@option.OptionType · @option</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control form-control-sm" type="number" min="0" @bind="this._optionLevel" title="Nivel de opción" />
+                                </div>
+                                <div class="col-md-3 d-grid">
+                                    <button class="btn btn-outline-primary btn-sm" @onclick="this.AddSelectedOption">Agregar opción</button>
+                                </div>
+                            </div>
+                        }
+
+                        <div class="small text-muted mt-2">
+                            Precio mostrado: cálculo nativo de OpenMU para compra desde NPC.
+                            No es un precio exclusivo de este merchant.
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4">
+        <div class="card mb-3">
+            <div class="card-header">
+                <strong>3. Catálogo de items</strong>
+            </div>
+            <div class="card-body">
+                <div class="row g-2">
+                    <div class="col-8">
+                        <input class="form-control" @bind="this._catalogFilter" @bind:event="oninput" placeholder="Buscar item…" />
+                    </div>
+                    <div class="col-4">
+                        <select class="form-select" @bind="this._catalogGroup">
+                            <option value="">Todos</option>
+                            @for (var group = 0; group <= 15; group++)
+                            {
+                                <option value="@group">Grupo @group</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row g-2 mt-1">
+                    <div class="col-4">
+                        <label class="form-label small">Nivel</label>
+                        <input class="form-control form-control-sm" type="number" min="0" max="15" @bind="this._newItemLevel" />
+                    </div>
+                    <div class="col-4">
+                        <label class="form-label small">Sockets</label>
+                        <input class="form-control form-control-sm" type="number" min="0" max="5" @bind="this._newItemSocketCount" />
+                    </div>
+                    <div class="col-4 d-flex align-items-end">
+                        <div class="form-check mb-1">
+                            <input id="newItemSkill" class="form-check-input" type="checkbox" @bind="this._newItemHasSkill" />
+                            <label class="form-check-label small" for="newItemSkill">Skill</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2 my-2">
+                    <button class="btn btn-outline-secondary btn-sm" @onclick="() => this.SelectAllVisibleCatalog(true)">Seleccionar visibles</button>
+                    <button class="btn btn-outline-secondary btn-sm" @onclick="() => this.SelectAllVisibleCatalog(false)">Limpiar</button>
+                    <button class="btn btn-primary btn-sm" disabled="@(this._selectedCatalogIds.Count == 0 || this.SelectedMerchant is null)" @onclick="this.AddSelectedCatalogItems">
+                        Agregar @this._selectedCatalogIds.Count
+                    </button>
+                </div>
+
+                <div class="border rounded p-2" style="height: 390px; overflow:auto;">
+                    @foreach (var definition in this.FilteredCatalog)
+                    {
+                        var id = definition.GetId();
+                        <div class="form-check border-bottom py-1">
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   checked="@this._selectedCatalogIds.Contains(id)"
+                                   @onchange="e => this.ToggleCatalog(id, (bool)(e.Value ?? false))" />
+                            <label class="form-check-label">
+                                <strong>@definition.Name</strong>
+                                <span class="text-muted small">G@(definition.Group)/#@definition.Number · @definition.Width×@definition.Height</span>
+                            </label>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <strong>4. Copiar tienda a otros NPC</strong>
+            </div>
+            <div class="card-body">
+                <div class="row g-2 mb-2">
+                    <div class="col-6">
+                        <label class="form-label">Modo</label>
+                        <select class="form-select form-select-sm" @bind="this._cloneMode">
+                            <option value="replace">Reemplazar</option>
+                            <option value="append">Agregar</option>
+                        </select>
+                    </div>
+                    <div class="col-6 d-flex align-items-end">
+                        <div class="form-check mb-1">
+                            <input id="skipDuplicates" class="form-check-input" type="checkbox" @bind="this._skipCloneDuplicates" />
+                            <label class="form-check-label small" for="skipDuplicates">Omitir duplicados</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border rounded p-2 mb-2" style="height: 210px; overflow:auto;">
+                    @foreach (var merchant in this.FilteredCloneTargets)
+                    {
+                        var id = merchant.GetId();
+                        <div class="form-check">
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   checked="@this._cloneTargetIds.Contains(id)"
+                                   @onchange="e => this.ToggleCloneTarget(id, (bool)(e.Value ?? false))" />
+                            <label class="form-check-label">@merchant.Designation (@merchant.MerchantStore!.Items.Count)</label>
+                        </div>
+                    }
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary btn-sm" disabled="@(this.SelectedMerchant is null || this._cloneTargetIds.Count == 0)" @onclick="this.PreviewClone">
+                        Vista previa
+                    </button>
+                    <button class="btn btn-primary btn-sm" disabled="@(this.SelectedMerchant is null || this._cloneTargetIds.Count == 0)" @onclick="this.StageCloneAsync">
+                        Preparar copia
+                    </button>
+                </div>
+
+                @if (this._clonePreviewLines.Count > 0)
+                {
+                    <div class="alert alert-info mt-2 mb-0 small">
+                        @foreach (var line in this._clonePreviewLines)
+                        {
+                            <div>@line</div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

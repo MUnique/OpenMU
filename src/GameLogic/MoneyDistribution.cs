@@ -139,7 +139,10 @@ internal static class MoneyDistribution
 
         // The rate is applied in double precision: a float multiplication would round money amounts
         // above the ~16.7M the float mantissa can represent exactly, before the cast to long.
-        var scaled = (long)(amount * (double)(player.Attributes?[Stats.MoneyAmountRate] ?? 1.0f));
+        var scaled = (long)(
+            amount
+            * (double)(player.Attributes?[Stats.MoneyAmountRate] ?? 1.0f)
+            * (double)(player.GameContext?.MoneyRate ?? 1.0f));
         if (scaled <= 0)
         {
             return false;

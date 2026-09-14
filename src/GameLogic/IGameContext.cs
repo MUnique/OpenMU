@@ -33,6 +33,11 @@ public interface IGameContext
     float ExperienceRate { get; }
 
     /// <summary>
+    /// Gets the effective Zen/money multiplier of this game server.
+    /// </summary>
+    float MoneyRate { get; }
+
+    /// <summary>
     /// Gets the global master experience rate.
     /// </summary>
     float MasterExperienceRate { get; }
