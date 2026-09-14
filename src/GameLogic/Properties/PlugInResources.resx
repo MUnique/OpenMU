@@ -777,6 +777,12 @@
   <data name="RedDragonInvasionPlugIn_Description" xml:space="preserve">
     <value>Handle red dragon invasion event</value>
   </data>
+    <data name="DurabilityDecayPlugIn_Name" xml:space="preserve">
+    <value>Durability Decay</value>
+  </data>
+  <data name="DurabilityDecayPlugIn_Description" xml:space="preserve">
+    <value>Updates the durabilty of time-decaying items.</value>
+  </data>
   <data name="HappyHourPlugIn_Name" xml:space="preserve">
     <value>Happy Hour</value>
   </data>

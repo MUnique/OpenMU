@@ -714,16 +714,19 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
 
         await this.HitAsync(hitInfo, attacker, skill?.Skill, isFinalStreakHit).ConfigureAwait(false);
-        await this.DecreaseItemDurabilityAfterHitAsync(hitInfo, skill).ConfigureAwait(false);
+
+        bool isPvpDamage = attacker is Player or IPlayerSurrogate;
+        float damage = isPvpDamage ? hitInfo.TotalDamage : attacker.Attributes[Stats.MinimumPhysBaseDmg];
+        await this.DecreaseItemDurabilityAfterHitAsync(damage, isPvpDamage, skill).ConfigureAwait(false);
 
         if (attacker as IPlayerSurrogate is { } playerSurrogate)
         {
-            await playerSurrogate.Owner.AfterHitTargetAsync().ConfigureAwait(false);
+            await playerSurrogate.Owner.DecreaseRavenDurabilityAfterHitAsync(hitInfo.TotalDamage).ConfigureAwait(false);
         }
 
         if (attacker is Player attackerPlayer)
         {
-            await attackerPlayer.AfterHitTargetAsync().ConfigureAwait(false);
+            await attackerPlayer.AfterHitTargetAsync(this.Attributes[Stats.DefenseFinal], skill?.Skill?.DamageType).ConfigureAwait(false);
 
             if (this.IsAlive && Rand.NextRandomBool(attackerPlayer.Attributes![Stats.MaceMasteryStunChance]))
             {
@@ -737,11 +740,13 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <summary>
     /// Is called after the player successfully hit a target.
     /// </summary>
-    public async ValueTask AfterHitTargetAsync()
+    /// <param name="targetDefense">The target's defense.</param>
+    /// <param name="damageType">The damage type.</param>
+    public async ValueTask AfterHitTargetAsync(float targetDefense, DamageType? damageType)
     {
         this.Attributes![Stats.CurrentHealth] = Math.Max(this.Attributes[Stats.CurrentHealth] - this.Attributes[Stats.HealthLossAfterHit], 1);
 
-        await this.DecreaseWeaponDurabilityAfterHitAsync().ConfigureAwait(false);
+        await this.DecreaseWeaponDurabilityAfterHitAsync(targetDefense, damageType ?? DamageType.Physical).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -1145,6 +1150,54 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
+    /// Decreases the dark raven durability after it has attacked.
+    /// </summary>
+    /// <remarks>
+    /// A raven's durability only decreases after it attacks, or if it's the target of a fenrir skill effect.
+    /// In other words, it's more like a weapon than a pet.
+    /// </remarks>
+    /// <param name="damage">The damage dealt.</param>
+    public async ValueTask DecreaseRavenDurabilityAfterHitAsync(float damage)
+    {
+        var item = this.Inventory?.GetItem(InventoryConstants.RightHandSlot);
+        if (item is null || !item.IsTrainablePet() || item.Durability == 0 || this.Attributes is not { } attributes)
+        {
+            return;
+        }
+
+        double hitsPerOneItemDurability = this.GameContext.Configuration.HitsPerOneItemDurability;
+        hitsPerOneItemDurability *= 800f / 564; // The original values. We keep the same relative factor.
+        var decrement = damage * 0.02 / (hitsPerOneItemDurability + attributes[Stats.TrainablePetDurationIncrease]);
+        await this.DecreaseItemDurabilityAsync(item, decrement).ConfigureAwait(false);
+
+        if (item.Durability == 0.0)
+        {
+            var minimumExp = item.Definition!.GetExperienceOfPetLevel(item.Level, item.Definition!.MaximumItemLevel);
+            item.PetExperience = (int)Math.Max((int)(item.PetExperience * 0.9), minimumExp);
+            await this.ResetPetBehaviorAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Decreases an item's durability and raises the <see cref="InventoryStorage.EquippedItemsChanged"/> event, if justified.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <param name="decrement">The decrement.</param>
+    public async ValueTask DecreaseItemDurabilityAsync(Item item, double decrement)
+    {
+        var previousFactor = item.GetCurrentDurabilityFactor();
+        if (item.DecreaseDurability(decrement))
+        {
+            await this.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(item, false)).ConfigureAwait(false);
+        }
+
+        if (previousFactor != item.GetCurrentDurabilityFactor())
+        {
+            await ((InventoryStorage?)this._storages.Inventory)!.RaiseEquippedItemsChangedAsync(item, true).ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
     /// Removes the player from the game and saves its state.
     /// </summary>
     public async ValueTask RemoveFromGameAsync()
@@ -1475,7 +1528,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             var reflectPercentage = this.Attributes[Stats.DamageReflection];
             if (reflectPercentage > 0)
             {
-                var reflectedDamage = (hitInfo.HealthDamage + hitInfo.ShieldDamage) * reflectPercentage;
+                var reflectedDamage = hitInfo.TotalDamage * reflectPercentage;
                 ReflectDamage((int)reflectedDamage, attackableAttacker);
             }
 
@@ -1486,7 +1539,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 if (fullReflectPercentage > 0 && Rand.NextRandomBool(fullReflectPercentage))
                 {
                     var reflectedDamage = attackableAttacker is Player
-                        ? hitInfo.HealthDamage + hitInfo.ShieldDamage
+                        ? hitInfo.TotalDamage
                         : attackableAttacker.Attributes[Stats.MaximumPhysBaseDmg];
                     ReflectDamage((int)reflectedDamage, attackableAttacker);
                 }
@@ -1820,85 +1873,218 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
     }
 
-    private async ValueTask DecreaseItemDurabilityAfterHitAsync(HitInfo hitInfo, SkillEntry? skill)
+    private async ValueTask DecreaseItemDurabilityAfterHitAsync(float damage, bool isPvpDamage, SkillEntry? skill)
     {
-        var randomDefensiveItem = this.Inventory?.EquippedItems.Where(ItemExtensions.IsDefensiveItem).SelectRandom();
-        if (randomDefensiveItem is { })
+        if (!isPvpDamage)
         {
-            await this.DecreaseDefenseItemDurabilityAsync(randomDefensiveItem, hitInfo).ConfigureAwait(false);
+            var randomDefensiveItem = this.Inventory?.EquippedItems.Where(ItemExtensions.IsDefensiveItem).SelectRandom();
+            if (randomDefensiveItem is { Durability: > 0.0 })
+            {
+                await this.DecreaseDefenseItemDurabilityAsync(randomDefensiveItem, damage).ConfigureAwait(false);
+            }
+        }
+
+        if (skill?.Skill?.DamageType == DamageType.Fenrir)
+        {
+            var randomItem = this.Inventory?.EquippedItems.Where(i => i.ItemSlot <= InventoryConstants.BootsSlot).SelectRandom();
+            if (randomItem is { Durability: > 0.0 })
+            {
+                await this.DecreaseItemDurabilityAsync(randomItem, randomItem.Durability * 0.5).ConfigureAwait(false);
+            }
         }
 
         if (Rand.NextRandomBool(skill?.Attributes?[Stats.RagefulBlowMasteryDurabilityDecChance] ?? 0))
         {
             var randomArmorItem = this.Inventory?.EquippedItems.Where(ItemExtensions.IsArmorItem).SelectRandom();
-            if (randomArmorItem is { })
+            if (randomArmorItem is { Durability: > 0.0 })
             {
-                if (randomArmorItem.DecreaseDurability(randomArmorItem.GetMaximumDurabilityOfOnePiece() * this.Attributes![Stats.DurabilityReductionFactor]))
-                {
-                    await this.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(randomArmorItem, false)).ConfigureAwait(false);
-                }
+                await this.DecreaseItemDurabilityAsync(
+                    randomArmorItem,
+                    randomArmorItem.GetMaximumDurabilityOfOnePiece() * this.Attributes![Stats.DurabilityReductionFactor])
+                .ConfigureAwait(false);
             }
         }
 
         if (this.Inventory?.GetItem(InventoryConstants.PetSlot) is { Durability: > 0.0 } pet)
         {
-            await this.DecreaseDefenseItemDurabilityAsync(pet, hitInfo).ConfigureAwait(false);
-            if (pet.Durability == 0.0)
-            {
-                if (pet.IsTrainablePet())
-                {
-                    var minimumExp = pet.Definition!.GetExperienceOfPetLevel(pet.Level, pet.Definition!.MaximumItemLevel);
-                    pet.PetExperience = (int)Math.Max((int)(pet.PetExperience * 0.9), minimumExp);
-                }
-                else
-                {
-                    await this.DestroyInventoryItemAsync(pet).ConfigureAwait(false);
-                }
-            }
+            await this.DecreasePetDurabilityAsync(pet, damage).ConfigureAwait(false);
         }
     }
 
-    private async ValueTask DecreaseDefenseItemDurabilityAsync(Item targetItem, HitInfo hitInfo)
+    private async ValueTask DecreaseDefenseItemDurabilityAsync(Item targetItem, float damage)
     {
-        var itemDurationIncrease = targetItem.IsTrainablePet() ? this.Attributes?[Stats.PetDurationIncrease] : this.Attributes?[Stats.ItemDurationIncrease];
+        if (targetItem.Durability == 0 || this.Attributes is not { } attributes)
+        {
+            return;
+        }
+
+        float itemDurationIncrease = attributes[Stats.WeaponAndArmorDurationIncrease];
         if (itemDurationIncrease == 0)
         {
             itemDurationIncrease = 1;
         }
 
-        var damageDivisor = targetItem.IsTrainablePet() ? this.GameContext.Configuration.DamagePerOnePetDurability : this.GameContext.Configuration.DamagePerOneItemDurability;
-        if (itemDurationIncrease.HasValue)
+        float itemDefense;
+        int itemDefenseFactor;
+        if (targetItem.IsShield())
         {
-            damageDivisor *= (double)itemDurationIncrease;
+            itemDefense = attributes[Stats.DefenseShield];
+            itemDefenseFactor = 5;
+        }
+        else
+        {
+            var itemPowerUps = attributes.ItemPowerUps.FirstOrDefault(ipu => ipu.Key == targetItem).Value;
+            itemDefense = attributes.GetComposableAttribute(Stats.DefenseBase)?.Elements
+                .Where(e => e.AggregateType == AggregateType.AddRaw && itemPowerUps.Contains(e))
+                .Sum(e => e.Value) ?? 0;
+
+            itemDefenseFactor = this.SelectedCharacter?.CharacterClass?.Number switch
+            {
+                8 or 10 or 11 => 2, // Elf
+                12 or 13 => 7,      // MG
+                16 or 17 => 6,      // DL
+                _ => 3,
+            };
         }
 
-        var decrement = hitInfo.HealthDamage / damageDivisor;
-        if (targetItem.DecreaseDurability(decrement))
-        {
-            await this.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(targetItem, false)).ConfigureAwait(false);
-        }
-    }
-
-    private async ValueTask DecreaseWeaponDurabilityAfterHitAsync()
-    {
-        var targetItem = this.Inventory?.GetRandomOffensiveItem();
-        if (targetItem is null || targetItem.Durability == 0)
+        if (itemDefense == 0)
         {
             return;
         }
 
-        var decrement = 1.0 / this.GameContext.Configuration.HitsPerOneItemDurability;
-        if (targetItem.DecreaseDurability(decrement))
-        {
-            await this.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(targetItem, false)).ConfigureAwait(false);
+        var damageToDefenseRatio = damage / (itemDefense * itemDefenseFactor);
+        var decrement = damageToDefenseRatio / (this.GameContext.Configuration.DamagePerOneItemDurability * itemDurationIncrease);
+        await this.DecreaseItemDurabilityAsync(targetItem, decrement).ConfigureAwait(false);
+    }
 
-            if (targetItem is { Durability: 0.0 } pet && pet.IsTrainablePet())
+    private async ValueTask DecreasePetDurabilityAsync(Item pet, float damage)
+    {
+        if (pet.Durability == 0 || pet.Definition is null || this.Attributes is not { } attributes)
+        {
+            return;
+        }
+
+        float itemDurationIncrease;
+        var identifier = new ItemIdentifier(pet.Definition.Number, pet.Definition.Group);
+        if (identifier == ItemConstants.DarkHorse)
+        {
+            itemDurationIncrease = attributes[Stats.TrainablePetDurationIncrease];
+        }
+        else
+        {
+            // To-do: exclude cash shop pets: demon, spirit of guardian, rudolf, panda, skeleton
+            itemDurationIncrease = attributes[Stats.PetDurationIncrease];
+        }
+
+        if (itemDurationIncrease == 0)
+        {
+            itemDurationIncrease = 1;
+        }
+
+        double damageFactor = identifier switch
+        {
+            var item when item == ItemConstants.Angel
+                       || item == ItemConstants.Rudolf => 3,
+            var item when item == ItemConstants.Imp
+                       || item == ItemConstants.DarkHorse
+                       || item == ItemConstants.Fenrir => 2,
+            var item when item == ItemConstants.Dinorant => 10,
+            var item when item == ItemConstants.Demon => 1.5,
+            _ => 1,
+        };
+
+        double decrement;
+        double damagePerOnePetDurability = this.GameContext.Configuration.DamagePerOnePetDurability;
+        if (identifier == ItemConstants.DarkHorse)
+        {
+            decrement = 1 + (damage * damageFactor / damagePerOnePetDurability);
+            decrement /= 1500 + itemDurationIncrease;
+        }
+        else if (identifier == ItemConstants.Fenrir)
+        {
+            decrement = 1 + (damage * damageFactor / (damagePerOnePetDurability * itemDurationIncrease));
+            decrement /= attributes[Stats.ArcheryMaxDmg] > 0 ? 160 : 200;
+        }
+        else
+        {
+            decrement = damage * damageFactor / (damagePerOnePetDurability * itemDurationIncrease);
+        }
+
+        await this.DecreaseItemDurabilityAsync(pet, decrement).ConfigureAwait(false);
+
+        if (pet.Durability == 0.0)
+        {
+            if (identifier == ItemConstants.DarkHorse)
             {
-                var minimumExp = pet.Definition!.GetExperienceOfPetLevel(pet.Level, pet.Definition!.MaximumItemLevel);
+                var minimumExp = pet.Definition!.GetExperienceOfPetLevel(pet.Level, pet.Definition.MaximumItemLevel);
                 pet.PetExperience = (int)Math.Max((int)(pet.PetExperience * 0.9), minimumExp);
-                await this.ResetPetBehaviorAsync().ConfigureAwait(false);
+            }
+            else
+            {
+                await this.DestroyInventoryItemAsync(pet).ConfigureAwait(false);
+
+                if ((identifier == ItemConstants.Dinorant || identifier == ItemConstants.Fenrir)
+                    && (this.CurrentMap?.Definition.MapRequirements.Any(req => req.Attribute == Stats.CanFly) ?? false)
+                    && attributes[Stats.CanFly] < 1)
+                {
+                    if (this.GameContext.Configuration.Items.FirstOrDefault(i => i.Group == ItemConstants.Dinorant.Group && i.Number == ItemConstants.Dinorant.Number) is { } dinorantDef
+                        && this.Inventory?.FindItemsByDefinition(dinorantDef).FirstOrDefault() is { } dinorantItem)
+                    {
+                        await new MoveItemAction().MoveItemAsync(this, dinorantItem.ItemSlot, Storages.Inventory, InventoryConstants.PetSlot, Storages.Inventory).ConfigureAwait(false);
+                        await this.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.EquipmentHasChangedMessage)).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        await this._movement.StopWalkingAsync().ConfigureAwait(false);
+                        await this.WarpToSafezoneAsync().ConfigureAwait(false);
+                    }
+                }
             }
         }
+    }
+
+    private async ValueTask DecreaseWeaponDurabilityAfterHitAsync(float targetDefense, DamageType damageType)
+    {
+        var weapon = this.Inventory?.GetRandomWeapon(damageType);
+        if (weapon is null || weapon.Durability == 0 || this.Attributes is not { } attributes)
+        {
+            return;
+        }
+
+        int defenseFactor = 1;
+        double weaponDamageFactor;
+        double hitsPerOneItemDurability = this.GameContext.Configuration.HitsPerOneItemDurability;
+        if (damageType is DamageType.Wizardry or DamageType.Curse)
+        {
+            weaponDamageFactor = 1.33 * (weapon.IsBook(out _) ? attributes[Stats.BookRise] : attributes[Stats.StaffRise]);
+            hitsPerOneItemDurability *= 1056 / 564;
+        }
+        else
+        {
+            defenseFactor = 2;
+            weaponDamageFactor = 1.5 * attributes[Stats.MinimumPhysBaseDmgByWeapon];
+
+            if (attributes[Stats.ArcheryAttackMode] > 0)
+            {
+                hitsPerOneItemDurability *= 780 / 564;
+            }
+        }
+
+        if (weaponDamageFactor == 0)
+        {
+            return;
+        }
+
+        var defenseToDamageRatio = targetDefense * defenseFactor / weaponDamageFactor;
+        if (weapon.ItemOptions.FirstOrDefault(o => o.ItemOption?.PowerUpDefinition?.TargetAttribute == Stats.WeaponDurationIncrease) is { } opt
+            && opt.ItemOption?.LevelDependentOptions.FirstOrDefault(o => o.Level == opt.Level)?.PowerUpDefinition is { } pu
+            && pu.Boost?.ConstantValue is { } socketInc)
+        {
+            defenseToDamageRatio *= socketInc.Value;
+        }
+
+        var decrement = defenseToDamageRatio / (hitsPerOneItemDurability * attributes[Stats.WeaponAndArmorDurationIncrease]);
+        await this.DecreaseItemDurabilityAsync(weapon, decrement).ConfigureAwait(false);
     }
 
     private async ValueTask CloseTradeIfNeededAsync()

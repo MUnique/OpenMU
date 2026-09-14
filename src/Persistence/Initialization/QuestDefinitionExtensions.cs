@@ -97,8 +97,8 @@ internal static class QuestDefinitionExtensions
         var item = context.CreateNew<Item>();
         item.Definition = gameConfiguration.Items.First(def => def.Group == itemGroup && def.Number == itemNumber);
         item.HasSkill = item.Definition.Skill != null && hasSkill;
-        item.Durability = item.IsWearable() ? item.GetMaximumDurabilityOfOnePiece() : item.Durability;
         item.Level = itemLevel;
+        item.Durability = item.IsWearable() ? item.GetMaximumDurabilityOfOnePiece() : item.Durability;
         if (hasLuck
             && item.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions)
                 .FirstOrDefault(o => o.OptionType == ItemOptionTypes.Luck) is { } luckOption)

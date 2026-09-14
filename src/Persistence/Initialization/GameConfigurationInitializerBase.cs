@@ -58,9 +58,9 @@ public abstract class GameConfigurationInitializerBase : InitializerBase
         this.GameConfiguration.ShouldDropMoney = true;
         this.GameConfiguration.ItemDropDuration = TimeSpan.FromSeconds(60);
         this.GameConfiguration.MaximumItemOptionLevelDrop = 3;
-        this.GameConfiguration.DamagePerOneItemDurability = 2000;
-        this.GameConfiguration.DamagePerOnePetDurability = 100000;
-        this.GameConfiguration.HitsPerOneItemDurability = 10000;
+        this.GameConfiguration.DamagePerOneItemDurability = 69;
+        this.GameConfiguration.DamagePerOnePetDurability = 100;
+        this.GameConfiguration.HitsPerOneItemDurability = 564;
 
         this.GameConfiguration.ExperienceFormula = "if(level == 0, 0, if(level < 256, 10 * (level + 8) * (level - 1) * (level - 1), (10 * (level + 8) * (level - 1) * (level - 1)) + (1000 * (level - 247) * (level - 256) * (level - 256))))";
         this.GameConfiguration.MasterExperienceFormula = "(505 * level * level * level) + (35278500 * level) + (228045 * level * level)";

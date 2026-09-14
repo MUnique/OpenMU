@@ -54,11 +54,14 @@ public sealed class PowerUpWrapper : IElement, IDisposable
     /// <param name="powerUpDef">The power up definition.</param>
     /// <param name="attributeHolder">The attribute holder.</param>
     /// <param name="aggregateType">The specific aggregate type. If not specified, the aggregate type of the <paramref name="powerUpDef"/>'s constant value will be used.</param>
+    /// <param name="durabilityFactor">The durability factor, in case the <paramref name="powerUpDef"/> belongs to an item.</param>
     /// <returns>The elements which represent the power-up.</returns>
-    public static IEnumerable<PowerUpWrapper> CreateByPowerUpDefinition(PowerUpDefinition powerUpDef, AttributeSystem attributeHolder, AggregateType? aggregateType = null)
+    public static IEnumerable<PowerUpWrapper> CreateByPowerUpDefinition(PowerUpDefinition powerUpDef, AttributeSystem attributeHolder, AggregateType? aggregateType = null, float durabilityFactor = 1)
     {
         if (powerUpDef.Boost?.ConstantValue != null)
         {
+            powerUpDef.Boost.ConstantValue.Value *= durabilityFactor;
+
             yield return new PowerUpWrapper(
                 powerUpDef.Boost.ConstantValue,
                 powerUpDef.TargetAttribute ?? throw Error.NotInitializedProperty(powerUpDef, nameof(PowerUpDefinition.TargetAttribute)),

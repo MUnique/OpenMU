@@ -15,7 +15,7 @@ internal static class ItemOptionDefinitionNumbers
     public static short Luck => 0x01;
 
     /// <summary>
-    /// Gets the defense option option number.
+    /// Gets the defense option number.
     /// </summary>
     public static short DefenseOption => 0x02;
 
@@ -35,7 +35,7 @@ internal static class ItemOptionDefinitionNumbers
     public static short CurseAttack => 0x05;
 
     /// <summary>
-    /// Gets the defense option option number.
+    /// Gets the defense rate option number.
     /// </summary>
     public static short DefenseRateOption => 0x06;
 
