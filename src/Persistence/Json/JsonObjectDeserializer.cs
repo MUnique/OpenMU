@@ -8,6 +8,7 @@ using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using MUnique.OpenMU.AttributeSystem;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// A json deserializer which is able to resolve circular references.
@@ -30,7 +31,11 @@ public class JsonObjectDeserializer
         var options = new JsonSerializerOptions
         {
             ReferenceHandler = referenceHandler,
-            Converters = { new ReferenceResolvingConverterFactory { IgnoredTypes = IgnoredTypes } },
+            Converters =
+            {
+                new LocalizedStringJsonConverter(),
+                new ReferenceResolvingConverterFactory { IgnoredTypes = IgnoredTypes },
+            },
         };
 
         this.BeforeDeserialize(options);

@@ -1,4 +1,4 @@
-// <copyright file="GameContext.cs" company="MUnique">
+﻿// <copyright file="GameContext.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -10,6 +10,7 @@ using System.Diagnostics.Metrics;
 using System.Globalization;
 using System.Threading;
 using MUnique.OpenMU.GameLogic.MiniGames;
+using MUnique.OpenMU.GameLogic.MiniGames.Kanturu;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.Interfaces;
@@ -282,6 +283,9 @@ public class GameContext : AsyncDisposable, IGameContext
                     break;
                 case MiniGameType.BloodCastle:
                     miniGameContext = new BloodCastleContext(miniGameKey, miniGameDefinition, this, this._mapInitializer);
+                    break;
+                case MiniGameType.Kanturu:
+                    miniGameContext = new KanturuContext(miniGameKey, miniGameDefinition, this, this._mapInitializer);
                     break;
                 default:
                     miniGameContext = new MiniGameContext(miniGameKey, miniGameDefinition, this, this._mapInitializer);

@@ -138,7 +138,7 @@ public static class ItemSerializerHelper
                 return EmptySocket;
             }
 
-            var sphereLevel = optionLink.Level;
+            var sphereLevel = optionLink.Level - 1;
             var elementType = optionLink.ItemOption!.SubOptionType;
             var elementOption = optionLink.ItemOption.Number;
             var optionIndex = SocketOptionIndexOffsets[elementType] + elementOption;
@@ -193,7 +193,7 @@ public static class ItemSerializerHelper
                 continue;
             }
 
-            var sphereLevel = socketByte / MaximumSocketOptions;
+            var sphereLevel = (socketByte / MaximumSocketOptions) + 1;
             var optionIndex = socketByte % MaximumSocketOptions;
             var indexOffset = SocketOptionIndexOffsets.Last(offset => offset <= optionIndex);
             var elementType = Array.IndexOf(SocketOptionIndexOffsets, indexOffset);

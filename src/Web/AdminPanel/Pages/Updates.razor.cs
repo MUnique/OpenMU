@@ -6,8 +6,8 @@ namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
-using MUnique.OpenMU.Web.AdminPanel.Services;
 
 /// <summary>
 /// The set-up page.

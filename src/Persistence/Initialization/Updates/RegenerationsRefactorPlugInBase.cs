@@ -39,9 +39,11 @@ public abstract class RegenerationsRefactorPlugInBase : UpdatePlugInBase
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
-        // Create new Stats
-        var isResting = context.CreateNew<AttributeDefinition>(Stats.IsResting.Id, Stats.IsResting.Designation, Stats.IsResting.Description);
-        gameConfiguration.Attributes.Add(isResting);
+        // Create new Stats. Only when they don't exist yet - a configuration which was initialized after
+        // these attributes were introduced already contains them, and adding them again would create
+        // duplicated attribute definitions.
+        this.AddStatIfNotExists(context, gameConfiguration, Stats.IsResting);
+        var isResting = Stats.IsResting.GetPersistent(gameConfiguration);
 
         var areTwoWeaponsEquipped = Stats.AreTwoWeaponsEquipped.GetPersistent(gameConfiguration);
         var attackSpeedByWeapon = Stats.AttackSpeedByWeapon.GetPersistent(gameConfiguration);
@@ -57,6 +59,14 @@ public abstract class RegenerationsRefactorPlugInBase : UpdatePlugInBase
 
         gameConfiguration.CharacterClasses.ForEach(charClass =>
         {
+            void AddStatAttributeIfNotExists(AttributeDefinition attribute)
+            {
+                if (charClass.StatAttributes.All(sa => sa.Attribute != attribute))
+                {
+                    charClass.StatAttributes.Add(context.CreateNew<StatAttributeDefinition>(attribute, 0, false));
+                }
+            }
+
             var attrCombos = charClass.AttributeCombinations;
 
             // Remove temp attack speed combos
@@ -161,9 +171,11 @@ public abstract class RegenerationsRefactorPlugInBase : UpdatePlugInBase
 
             charClass.BaseAttributeValues.Add(context.CreateNew<ConstValueAttribute>(0.037f, manaRecoveryMultiplier, AggregateType.AddRaw));
 
-            // Create new StatAttributDefinitions
-            charClass.StatAttributes.Add(context.CreateNew<StatAttributeDefinition>(isResting, 0, false));
-            charClass.StatAttributes.Add(context.CreateNew<StatAttributeDefinition>(nearbyPartyMemberCount, 0, false));
+            // Create new StatAttributDefinitions, if the class doesn't have them already. A class which was
+            // initialized after these stats were introduced already has them, and a character of a class
+            // holding the same stat attribute twice can't enter the game at all.
+            AddStatAttributeIfNotExists(isResting);
+            AddStatAttributeIfNotExists(nearbyPartyMemberCount);
 
             // Change base ability recovery multiplier
             if (charClass.Number != 4 && charClass.Number != 6 && charClass.Number != 7) // DK classes

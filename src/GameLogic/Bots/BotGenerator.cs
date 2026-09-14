@@ -9,7 +9,6 @@ using System.Threading;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
-using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Resets;
@@ -44,24 +43,6 @@ internal sealed class BotGenerator
     /// <summary>Number of inventory extensions (each 4 rows of 8 slots) a bot gets, so loot does not clog its backpack.</summary>
     private const int BotInventoryExtensions = 4;
 
-    /// <summary>Highest item group that is a melee weapon (0 sword, 1 axe, 2 mace, 3 spear).</summary>
-    private const byte MaxMeleeGroup = 3;
-
-    /// <summary>Item group of bows (need ammunition).</summary>
-    private const byte BowGroup = 4;
-
-    /// <summary>Item group of staves/sticks (casters).</summary>
-    private const byte StaffGroup = 5;
-
-    /// <summary>Item group of body armor; its item number identifies the armor set.</summary>
-    private const byte ArmorGroup = 8;
-
-    /// <summary>
-    /// Armor set numbers tried in thematic order; the first the class is qualified for (by its chest piece)
-    /// is used: 5 Leather (warriors), 2 Pad (wizards), 10 Vine (elves), 39 Mistery (summoners), then fallbacks.
-    /// </summary>
-    private static readonly byte[] ArmorSetCandidates = { 5, 2, 10, 39, 6, 0, 4, 8 };
-
     private readonly IGameContext _gameContext;
     private readonly ILogger _logger;
     private readonly BotNameGenerator _nameGenerator = new();
@@ -78,10 +59,31 @@ internal sealed class BotGenerator
     }
 
     /// <summary>
+    /// The outcome of deleting a single bot account.
+    /// </summary>
+    private enum BotAccountDeleteOutcome
+    {
+        /// <summary>
+        /// The account was deleted.
+        /// </summary>
+        Deleted,
+
+        /// <summary>
+        /// The account was already gone; nothing had to be deleted.
+        /// </summary>
+        NotFound,
+
+        /// <summary>
+        /// The account could not be deleted.
+        /// </summary>
+        Failed,
+    }
+
+    /// <summary>
     /// Gets the deterministic, internal login name of the bot account with the given one-based index.
     /// </summary>
     /// <param name="index">The one-based account index.</param>
-    /// <returns>The login name, e.g. <c>bot0001</c> (kept within the 10 character account name limit).</returns>
+    /// <returns>The login name, e.g. <c>bot0001</c> (kept within the 10-character account name limit).</returns>
     public static string GetLoginName(int index) => $"{LoginPrefix}{index:D4}";
 
     /// <summary>
@@ -151,7 +153,7 @@ internal sealed class BotGenerator
                 var level = profile.GetStartLevel(minLevel, maxLevel);
                 var seededResets = profile.GetSeededResets(maxSeededResets);
                 var name = await this._nameGenerator.GenerateUniqueAsync(context, reservedNames, cancellationToken).ConfigureAwait(false);
-                this.CreateCharacter(context, account, name, characterClass, level, slot, experienceTable, seededResets, profile.StarterItemLevel, resetConfiguration);
+                this.CreateCharacter(context, account, name, characterClass, level, slot, experienceTable, seededResets, profile.StarterItemLevel, profile.EquipStarterArmor, resetConfiguration);
             }
 
             // Save per account so a single failure does not roll back already generated accounts,
@@ -171,69 +173,35 @@ internal sealed class BotGenerator
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The number of deleted bot accounts.</returns>
+    /// <exception cref="InvalidOperationException">At least one bot account could not be deleted.</exception>
     public async ValueTask<int> DeleteAllBotsAsync(CancellationToken cancellationToken = default)
     {
         using var context = this._gameContext.PersistenceContextProvider.CreateNewPlayerContext(this._gameContext.Configuration);
-
-        // Collect first, delete afterwards: the paging query orders by login name, so deleting while
-        // paging would shift the accounts which are not visited yet into the pages already passed.
-        var loginNames = new List<string>();
-        const int pageSize = 100;
-        var skip = 0;
-        while (true)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            var page = (await context.GetAccountsOrderedByLoginNameAsync(skip, pageSize, cancellationToken).ConfigureAwait(false)).ToList();
-            if (page.Count == 0)
-            {
-                break;
-            }
-
-            loginNames.AddRange(page.Where(account => account.IsBot).Select(account => account.LoginName));
-            skip += page.Count;
-        }
+        var loginNames = await this.CollectBotLoginNamesAsync(context, cancellationToken).ConfigureAwait(false);
 
         var deleted = 0;
+        var failed = 0;
         foreach (var loginName in loginNames)
         {
             cancellationToken.ThrowIfCancellationRequested();
-
-            // Load the account again, this time with its whole graph: the paging query returns the
-            // accounts untracked and without their characters, and deleting such a shallow account
-            // leaves its item storages behind. A character's inventory is referenced BY the character,
-            // so no delete cascade ever reaches it - those storages, and every item lying in them, would
-            // stay in the database forever as unreachable rows.
-            var account = await context.GetAccountByLoginNameAsync(loginName, cancellationToken).ConfigureAwait(false);
-            if (account is null)
-            {
-                continue;
-            }
-
-            foreach (var character in account.Characters)
-            {
-                if (character.Inventory is { } inventory)
-                {
-                    await context.DeleteAsync(inventory).ConfigureAwait(false);
-                }
-            }
-
-            if (account.Vault is { } vault)
-            {
-                await context.DeleteAsync(vault).ConfigureAwait(false);
-            }
-
-            if (await context.DeleteAsync(account).ConfigureAwait(false))
+            var outcome = await this.TryDeleteBotAccountAsync(loginName, context, cancellationToken).ConfigureAwait(false);
+            if (outcome == BotAccountDeleteOutcome.Deleted)
             {
                 deleted++;
             }
+            else if (outcome == BotAccountDeleteOutcome.Failed)
+            {
+                failed++;
+            }
             else
             {
-                // Not silent: a bot account which survives the purge is spawned again right after it.
-                this._logger.LogWarning("Bot account '{LoginName}' could not be deleted.", loginName);
+                // NotFound: the account was already gone, nothing to count.
             }
+        }
 
-            // Save per account, so a single failure does not roll back the accounts already deleted.
-            await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        if (failed > 0)
+        {
+            throw new InvalidOperationException($"{failed} of {loginNames.Count} bot account(s) could not be deleted.");
         }
 
         return deleted;
@@ -370,7 +338,109 @@ internal sealed class BotGenerator
         return resetPoints + firstCyclePoints + laterCyclesPoints + currentCyclePoints;
     }
 
-    private void CreateCharacter(IPlayerContext context, Account account, string name, CharacterClass characterClass, int level, byte slot, long[] experienceTable, int seededResets, byte starterItemLevel, ResetConfiguration? resetConfiguration)
+    /// <summary>
+    /// Collects the login names of all bot accounts, ordered by login name.
+    /// </summary>
+    /// <param name="context">The persistence context.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The login names of the bot accounts.</returns>
+    /// <remarks>
+    /// Collected first, deleted afterwards: the paging query orders by login name, so deleting while
+    /// paging would shift the accounts which are not visited yet into the pages already passed.
+    /// </remarks>
+    private async ValueTask<List<string>> CollectBotLoginNamesAsync(IPlayerContext context, CancellationToken cancellationToken)
+    {
+        var loginNames = new List<string>();
+        const int pageSize = 100;
+        var skip = 0;
+        while (true)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var page = (await context.GetAccountsOrderedByLoginNameAsync(skip, pageSize, cancellationToken).ConfigureAwait(false)).ToList();
+            if (page.Count == 0)
+            {
+                break;
+            }
+
+            loginNames.AddRange(page.Where(account => account.IsBot).Select(account => account.LoginName));
+            skip += page.Count;
+        }
+
+        return loginNames;
+    }
+
+    /// <summary>
+    /// Tries to delete a single bot account with its characters, item storages, and items.
+    /// </summary>
+    /// <param name="loginName">The login name of the bot account.</param>
+    /// <param name="context">The persistence context.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The outcome of the deletion.</returns>
+    /// <remarks>
+    /// One bad account returns <see cref="BotAccountDeleteOutcome.Failed"/> instead of aborting the
+    /// whole purge; the caller fails the purge as a whole, so the flags stay set and it gets retried
+    /// instead of switching the feature off with the bot accounts still in the database.
+    /// Cancellation is never swallowed.
+    /// </remarks>
+    private async ValueTask<BotAccountDeleteOutcome> TryDeleteBotAccountAsync(string loginName, IPlayerContext context, CancellationToken cancellationToken)
+    {
+        Account? account = null;
+        try
+        {
+            // Load the account again, this time with its whole graph: the paging query returns the
+            // accounts untracked and without their characters, and deleting such a shallow account
+            // leaves its item storages behind. A character's inventory is referenced by the character,
+            // so no delete cascade ever reaches it - those storages, and every item lying in them, would
+            // stay in the database forever as unreachable rows.
+            account = await context.GetAccountByLoginNameAsync(loginName, cancellationToken).ConfigureAwait(false);
+            if (account is null)
+            {
+                return BotAccountDeleteOutcome.NotFound;
+            }
+
+            foreach (var character in account.Characters)
+            {
+                if (character.Inventory is { } inventory)
+                {
+                    await context.DeleteAsync(inventory).ConfigureAwait(false);
+                }
+            }
+
+            if (account.Vault is { } vault)
+            {
+                await context.DeleteAsync(vault).ConfigureAwait(false);
+            }
+
+            var deleteQueued = await context.DeleteAsync(account).ConfigureAwait(false);
+
+            // Save per account, so a single failure does not roll back the accounts already deleted.
+            // Only counted after the save went through: an account whose save throws must not count as deleted.
+            await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            if (!deleteQueued)
+            {
+                // Not silent: a bot account which survives the purge is spawned again right after it.
+                this._logger.LogWarning("Bot account '{LoginName}' could not be deleted.", loginName);
+                return BotAccountDeleteOutcome.Failed;
+            }
+
+            return BotAccountDeleteOutcome.Deleted;
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            this._logger.LogError(ex, "Failed to delete bot account '{LoginName}', skipping it.", loginName);
+
+            if (account is not null)
+            {
+                // A failed save leaves the account graph in the change tracker as Deleted, which would
+                // fail every following save as well - detach it so the next account starts clean.
+                context.Detach(account);
+            }
+
+            return BotAccountDeleteOutcome.Failed;
+        }
+    }
+
+    private void CreateCharacter(IPlayerContext context, Account account, string name, CharacterClass characterClass, int level, byte slot, long[] experienceTable, int seededResets, byte starterItemLevel, bool equipStarterArmor, ResetConfiguration? resetConfiguration)
     {
         // A character generated beyond the class evolution level was created as its second-generation
         // class right away - like a player who completed the class quest long ago. Everything downstream
@@ -392,7 +462,11 @@ internal sealed class BotGenerator
         character.CreateDate = DateTime.UtcNow;
         character.KeyConfiguration = CreateDefaultKeyConfiguration();
 
-        foreach (var attribute in characterClass.StatAttributes.Select(a => context.CreateNew<StatAttribute>(a.Attribute, a.BaseValue)))
+        // Distinct, because a character class may define the same stat attribute more than once (data
+        // which got duplicated by an update); a character must never hold an attribute twice.
+        foreach (var attribute in characterClass.StatAttributes
+                     .DistinctBy(a => a.Attribute)
+                     .Select(a => context.CreateNew<StatAttribute>(a.Attribute, a.BaseValue)))
         {
             character.Attributes.Add(attribute);
         }
@@ -421,7 +495,7 @@ internal sealed class BotGenerator
         DistributeStatPoints(character, characterClass, resetConfiguration is not null);
 
         // Skills survive resets, so a seeded veteran knows everything the highest level of its past
-        // cycles unlocked - level-gated skills are checked against that level, not the current one.
+        // cycles unlocked; level-gated skills are checked against that level, not the current one.
         var highestLevelReached = seededResets > 0 && resetConfiguration is not null
             ? Math.Max(level, resetConfiguration.RequiredLevel)
             : level;
@@ -429,7 +503,18 @@ internal sealed class BotGenerator
 
         character.Inventory = context.CreateNew<ItemStorage>();
         character.Inventory.Money = StartMoney;
-        this.EquipStarterGear(context, character, starterItemLevel);
+
+        // A fresh character starts like a regular player's new character - weapon only, no armor -
+        // and loots its first set like everyone else. Veterans keep the basic set, without which
+        // they could not survive the maps their start level puts them on.
+        var starterGear = new BotStarterGearEquipper(context, this._gameContext.Configuration, character, starterItemLevel);
+        starterGear.EquipWeapon();
+        if (equipStarterArmor)
+        {
+            starterGear.EquipArmorSet();
+        }
+
+        starterGear.AddPotions();
 
         account.Characters.Add(character);
     }
@@ -439,7 +524,11 @@ internal sealed class BotGenerator
     /// as the class's own buffs and heals (e.g. elf Heal/Greater Defense/Greater Damage). Only skills the
     /// class is qualified for are ever learned, gated by the skills' real learn requirements from the game
     /// configuration (total energy, leadership, character level, ...) evaluated against the stats the bot
-    /// was just given - exactly the requirements a human player has to meet for the same skill.
+    /// was just given - exactly the requirements a human player has to meet for the same skill. Item-bound
+    /// skills follow the backfill rules (see <see cref="BotProgression.MayBackfillSkill"/>): orb/scroll
+    /// skills only when their granting item is obtainable, so a bot cannot learn a scroll before the
+    /// monster level where it starts to drop - and never when the skill comes from worn equipment or a
+    /// pet, which the server grants temporarily on equip instead.
     /// </summary>
     private void LearnClassSkills(IPlayerContext context, Character character, CharacterClass characterClass, int level)
     {
@@ -456,12 +545,13 @@ internal sealed class BotGenerator
         }
 
         var learnedNumbers = new HashSet<short>(character.LearnedSkills.Select(s => s.Skill!.Number));
-        var itemGrantedSkillNumbers = BotProgression.GetItemGrantedSkillNumbers(this._gameContext.Configuration);
+        var grantingItems = BotProgression.GetGrantingItems(this._gameContext.Configuration);
         foreach (var skill in this._gameContext.Configuration.Skills)
         {
-            if (!BotProgression.IsBotLearnableSkill(skill, itemGrantedSkillNumbers)
+            if (!BotProgression.MayBotOwnSkill(skill)
                 || !skill.QualifiedCharacters.Contains(characterClass)
                 || !BotProgression.MeetsRequirements(skill, GetValue)
+                || !BotProgression.MayBackfillSkill(skill, grantingItems, characterClass, level, GetValue)
                 || !learnedNumbers.Add(skill.Number))
             {
                 continue;
@@ -472,144 +562,5 @@ internal sealed class BotGenerator
             entry.Level = 0;
             character.LearnedSkills.Add(entry);
         }
-    }
-
-    /// <summary>
-    /// Equips the bot with a basic, class-appropriate weapon and armor set (mirrors the low-level test
-    /// account gear), so it is not naked and punching with its fists. The item level scales modestly
-    /// with the bot level for a bit more defense/damage without raising the equip requirements too high.
-    /// </summary>
-    /// <param name="context">The persistence context.</param>
-    /// <param name="character">The character to equip.</param>
-    /// <param name="starterItemLevel">The upgrade level of the starter items (level 0 for fresh characters).</param>
-    private void EquipStarterGear(IPlayerContext context, Character character, byte starterItemLevel)
-    {
-        var inventory = character.Inventory!;
-        var characterClass = character.CharacterClass!;
-
-        // Data-driven so every class gets gear it is actually QUALIFIED to wear (a Dark Lord must never
-        // end up in a Pad/wizard set). We pick the most basic options (lowest DropLevel) the class can use:
-        // - a weapon from the weapon groups (0 sword, 1 axe, 2 mace, 3 spear, 4 bow, 5 staff),
-        // - the armor set whose chest piece (group 8) has the lowest DropLevel; its NUMBER identifies the set,
-        //   and the equipment type is the GROUP (7 helm, 8 armor, 9 pants, 10 gloves, 11 boots).
-        // The weapon type follows the bot's BUILD (BotProgression.IsPreferredWeaponGroup - the same rule the
-        // later upgrades use), so an energy-specced Magic Gladiator starts with a staff instead of a blade.
-        // The Small Axe is qualified for almost every class, so without this filter casters and archers would
-        // all end up with one.
-        bool IsPreferredWeapon(ItemDefinition definition)
-            => BotProgression.IsPreferredWeaponGroup(characterClass, character.Name, (byte)definition.Group);
-
-        // Ammunition shares the bow group (Bolt/Arrows have DropLevel 0), so without this filter every
-        // archer would get a bolt stack as its "weapon" and end up punching with its fists.
-        var weapon = this._gameContext.Configuration.Items
-                .Where(d => IsPreferredWeapon(d) && !d.IsAmmunition && d.QualifiedCharacters.Contains(characterClass))
-                .MinBy(d => d.DropLevel)
-            ?? this._gameContext.Configuration.Items
-                .Where(d => d.Group <= StaffGroup && !d.IsAmmunition && d.QualifiedCharacters.Contains(characterClass))
-                .MinBy(d => d.DropLevel);
-        if (weapon is not null)
-        {
-            if (weapon.Group == BowGroup)
-            {
-                // Bows need ammunition; the arrows go into the left hand.
-                this.AddEquippedItem(context, inventory, characterClass, InventoryConstants.RightHandSlot, weapon, starterItemLevel);
-                this.AddAmmunition(context, inventory);
-            }
-            else
-            {
-                this.AddEquippedItem(context, inventory, characterClass, InventoryConstants.LeftHandSlot, weapon, starterItemLevel);
-            }
-        }
-
-        // Choose a thematically appropriate armor set the class can wear, tried in order (warriors -> Leather,
-        // wizards -> Pad, elves -> Vine, summoners -> Mistery, then fallbacks). Each piece is added only if the
-        // class is qualified for it, so e.g. the Magic Gladiator keeps the set but skips the helm it can't wear.
-        foreach (var set in ArmorSetCandidates)
-        {
-            if (this._gameContext.Configuration.Items.FirstOrDefault(d => d.Group == ArmorGroup && d.Number == set) is not { } chest
-                || !chest.QualifiedCharacters.Contains(characterClass))
-            {
-                continue;
-            }
-
-            this.EquipArmorPiece(context, inventory, characterClass, InventoryConstants.HelmSlot, 7, set, starterItemLevel);
-            this.EquipArmorPiece(context, inventory, characterClass, InventoryConstants.ArmorSlot, 8, set, starterItemLevel);
-            this.EquipArmorPiece(context, inventory, characterClass, InventoryConstants.PantsSlot, 9, set, starterItemLevel);
-            this.EquipArmorPiece(context, inventory, characterClass, InventoryConstants.GlovesSlot, 10, set, starterItemLevel);
-            this.EquipArmorPiece(context, inventory, characterClass, InventoryConstants.BootsSlot, 11, set, starterItemLevel);
-            break;
-        }
-
-        this.AddPotions(context, inventory);
-    }
-
-    private void AddPotions(IPlayerContext context, ItemStorage inventory)
-    {
-        // A stack of Large Healing Potions so the offline HealingHandler has something to drink, and a
-        // stack of Large Mana Potions so casters can keep casting instead of degrading to weak melee once
-        // their mana runs dry. The BotNavigator tops both up at runtime, so the bot never runs out.
-        // Durability holds the stack count.
-        this.AddPotionStack(context, inventory, 3, InventoryConstants.EquippableSlotsCount);      // Large Healing Potion, first backpack slot
-        this.AddPotionStack(context, inventory, 6, (byte)(InventoryConstants.EquippableSlotsCount + 1)); // Large Mana Potion, second backpack slot
-    }
-
-    private void AddPotionStack(IPlayerContext context, ItemStorage inventory, byte potionNumber, byte slot)
-    {
-        var potion = this._gameContext.Configuration.Items.FirstOrDefault(d => d.Group == 14 && d.Number == potionNumber);
-        if (potion is null)
-        {
-            return;
-        }
-
-        var item = context.CreateNew<Item>();
-        item.Definition = potion;
-
-        // Only a handful of charges to start with: fresh bots head to the merchant right away and buy
-        // their supplies with their starting Zen, kicking off the shopping economy from minute one
-        // (kept just above the emergency top-up threshold, so the economy path - not the fallback - runs).
-        item.Durability = Rand.NextInt(10, 16);
-        item.ItemSlot = slot;
-        inventory.Items.Add(item);
-    }
-
-    private void EquipArmorPiece(IPlayerContext context, ItemStorage inventory, CharacterClass characterClass, byte slot, int group, int number, byte starterItemLevel)
-    {
-        var definition = this._gameContext.Configuration.Items.FirstOrDefault(d => d.Group == group && d.Number == number);
-        if (definition is null || !definition.QualifiedCharacters.Contains(characterClass))
-        {
-            return;
-        }
-
-        this.AddEquippedItem(context, inventory, characterClass, slot, definition, starterItemLevel);
-    }
-
-    private void AddEquippedItem(IPlayerContext context, ItemStorage inventory, CharacterClass characterClass, byte slot, ItemDefinition definition, byte starterItemLevel)
-    {
-        if (!definition.QualifiedCharacters.Contains(characterClass))
-        {
-            return;
-        }
-
-        var item = context.CreateNew<Item>();
-        item.Definition = definition;
-        item.Level = starterItemLevel;
-        item.Durability = definition.Durability;
-        item.ItemSlot = slot;
-        inventory.Items.Add(item);
-    }
-
-    private void AddAmmunition(IPlayerContext context, ItemStorage inventory)
-    {
-        var arrows = this._gameContext.Configuration.Items.FirstOrDefault(d => d.Group == 4 && d.Number == 15);
-        if (arrows is null)
-        {
-            return;
-        }
-
-        var item = context.CreateNew<Item>();
-        item.Definition = arrows;
-        item.Durability = 255;
-        item.ItemSlot = InventoryConstants.LeftHandSlot;
-        inventory.Items.Add(item);
     }
 }

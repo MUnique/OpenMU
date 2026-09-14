@@ -20,21 +20,21 @@ using MUnique.OpenMU.ConnectServer;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.FriendServer;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameServer;
 using MUnique.OpenMU.GuildServer;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.LoginServer;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Analyzer;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Persistence.AdminAuth;
 using MUnique.OpenMU.Persistence.EntityFramework;
 using MUnique.OpenMU.Persistence.EntityFramework.AdminAuth;
 using MUnique.OpenMU.Persistence.EntityFramework.Json;
-using MUnique.OpenMU.Persistence.Initialization;
 using MUnique.OpenMU.Persistence.Initialization.Version075;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
 using MUnique.OpenMU.Web.AdminPanel;
-using MUnique.OpenMU.Web.AdminPanel.Services;
 using MUnique.OpenMU.Web.AdminPanel.API;
 using MUnique.OpenMU.Web.Map.Map;
 using MUnique.OpenMU.Web.Shared;
@@ -258,6 +258,22 @@ internal sealed class Program : IDisposable
             // The storage of the admin panel users has to be registered before the panel itself,
             // which only adds a fallback when nothing else is registered.
             builder.Services.AddAdminUserRepository();
+            builder.Services.AddSingleton<IBackupService>(s =>
+            {
+                var contextProvider = s.GetRequiredService<IMigratableDatabaseContextProvider>();
+                if (contextProvider is IPersistenceContextProvider persistenceContextProvider)
+                {
+                    return new BackupService(persistenceContextProvider, s.GetRequiredService<IAdminUserRepository>());
+                }
+
+                return new InMemoryBackupService(s.GetRequiredService<IPersistenceContextProvider>(), s.GetRequiredService<IAdminUserRepository>());
+            });
+            if (!args.Contains("-demo"))
+            {
+                // A snapshot of the database is only possible when there is a real database.
+                builder.Services.AddSingleton<IDatabaseSnapshotService, DatabaseSnapshotService>();
+            }
+
             builder.AddAdminPanel(includeMapApp: true);
         }
 
@@ -296,7 +312,7 @@ internal sealed class Program : IDisposable
             .AddSingleton<IFriendNotifier, FriendNotifierToGameServer>()
             .AddSingleton<PlugInManager>()
             .AddSingleton<IServerProvider, LocalServerProvider>()
-            .AddSingleton<IPacketCaptureService, PacketCaptureService>()
+            .AddSingleton<IPacketCaptureService>(CreatePacketCaptureService)
             .AddSingleton<ICollection<PlugInConfiguration>>(this.PlugInConfigurationsFactory)
             .AddTransient<ReferenceHandler, ByDataSourceReferenceHandler>(provider =>
             {
@@ -314,6 +330,7 @@ internal sealed class Program : IDisposable
             .AddHostedService<GameServerContainer>()
             .AddHostedService(provider => provider.GetService<GameServerContainer>()!)
             .AddHostedService(provider => provider.GetService<ConnectServerContainer>()!)
+            .AddNetworkObservation()
             .AddControllers().AddApplicationPart(typeof(ServerController).Assembly);
 
         var host = builder.Build();
@@ -536,6 +553,16 @@ internal sealed class Program : IDisposable
         }
 
         return contextProvider;
+    }
+
+    private static IPacketCaptureService CreatePacketCaptureService(IServiceProvider serviceProvider)
+    {
+        var serverProvider = serviceProvider.GetService<IServerProvider>()
+                             ?? throw new InvalidOperationException($"{nameof(IServerProvider)} not registered.");
+        var bufferSize = _systemConfiguration?.NetworkAnalyzerLiveBufferSize ?? 0;
+        return new PacketCaptureService(
+            serverProvider,
+            bufferSize > 0 ? bufferSize : LiveCapturedConnection.DefaultMaximumPacketCount);
     }
 
     private async Task ReadSystemConfigurationAsync(IPersistenceContextProvider persistenceContextProvider)

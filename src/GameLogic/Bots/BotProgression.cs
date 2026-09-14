@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.Bots;
 
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
 
 /// <summary>
@@ -22,6 +23,12 @@ internal static class BotProgression
     /// to exactly this assignment (see <c>QuestCompletionAction</c>), so bots take the direct route.
     /// </summary>
     public const int ClassEvolutionLevel = 200;
+
+    /// <summary>The item group of skill orbs.</summary>
+    internal const byte SkillOrbItemGroup = 12;
+
+    /// <summary>The item group of skill scrolls and parchments.</summary>
+    internal const byte SkillScrollItemGroup = 15;
 
     /// <summary>
     /// The character class numbers from the game's data model (<c>CharacterClassNumber</c> lives in the
@@ -84,6 +91,16 @@ internal static class BotProgression
     /// whose granting item is not modeled in the configuration at all, so they stay excluded too.
     /// </summary>
     private static readonly short[] ItemOrWeaponBoundSkillNumbers = [270];
+
+    /// <summary>
+    /// Skills which the game only lets a character cast while riding a mount (see the skill numbers in
+    /// the <c>SkillNumber</c> enum of the initialization assembly). Neither the mount nor, where it
+    /// applies, the required weapon kind is modeled in the skill data, so nothing else tells a mounted
+    /// cast from one on foot. Bots never use these skills - even if a looted pet ends up in the pet
+    /// slot, they are never learned, never looted and never selected (see <see cref="RequiresMount"/>) -
+    /// which keeps the logic free of any mount detection.
+    /// </summary>
+    private static readonly short[] MountRequiredSkillNumbers = [47, 49, 76];
 
     /// <summary>
     /// Gets the class the character evolves into at <see cref="ClassEvolutionLevel"/>, or null when the
@@ -275,46 +292,7 @@ internal static class BotProgression
     /// <param name="gameConfiguration">The game configuration which defines the items.</param>
     /// <returns>The numbers of all skills which are granted by an item.</returns>
     public static IReadOnlySet<short> GetItemGrantedSkillNumbers(GameConfiguration gameConfiguration)
-        => gameConfiguration.Items.Where(item => item.Skill is not null).Select(item => item.Skill!.Number).ToHashSet();
-
-    /// <summary>
-    /// Determines whether the skill is one a bot may learn: an actual attack skill, or a self/party
-    /// buff or heal with a magic effect (which the offline buff/heal handlers know how to cast).
-    /// Passive boosts, event skills, enemy debuffs and utility skills are left out.
-    /// </summary>
-    /// <param name="skill">The skill to check.</param>
-    /// <param name="itemGrantedSkillNumbers">The skills granted through items, see <see cref="GetItemGrantedSkillNumbers"/>.</param>
-    public static bool IsBotLearnableSkill(Skill skill, IReadOnlySet<short> itemGrantedSkillNumbers)
-    {
-        if (skill.MasterDefinition is not null)
-        {
-            // Master skills are never learned for free - they cost the master points earned per master
-            // level and go through the regular action (see BotMasterHandler), like for a human player.
-            return false;
-        }
-
-        if (CastleSiegeOnlySkillNumbers.Contains(skill.Number)
-            || ItemOrWeaponBoundSkillNumbers.Contains(skill.Number)
-            || (itemGrantedSkillNumbers.Contains(skill.Number) && skill.Requirements is not { Count: > 0 }))
-        {
-            return false;
-        }
-
-        if (IsAttackSkill(skill))
-        {
-            // Worth learning if it adds damage of its own, hits more than once, or hits more than one
-            // target. Judging by AttackDamage alone would lock a Rage Fighter out of Chain Drive and
-            // Dragon Roar, which carry a flat bonus of zero and four hits instead, because their damage
-            // comes from the weapon - which is also how the server pays them out.
-            return skill.AttackDamage > 0
-                   || skill.NumberOfHitsPerAttack > 1
-                   || IsAreaSkill(skill);
-        }
-
-        return skill.SkillType is SkillType.Buff or SkillType.Regeneration
-               && skill.MagicEffectDef is not null
-               && !ExcludedBuffSkillNumbers.Contains(skill.Number);
-    }
+        => (gameConfiguration.Items ?? []).Where(item => item.Skill is not null).Select(item => item.Skill!.Number).ToHashSet();
 
     /// <summary>
     /// Determines whether the skill deals damage to a target, as opposed to buffing, summoning or the like.
@@ -356,6 +334,104 @@ internal static class BotProgression
     public static bool RequiresPet(Skill skill) => skill.DamageType == DamageType.Fenrir;
 
     /// <summary>
+    /// Determines whether the skill is bound to a mount and therefore never used by bots. Covers bots
+    /// which had already learned such a skill before the gate existed, too -
+    /// the combat handler skips it without any mount detection.
+    /// </summary>
+    /// <param name="skill">The skill.</param>
+    public static bool RequiresMount(Skill skill) => MountRequiredSkillNumbers.Contains(skill.Number);
+
+    /// <summary>
+    /// Determines whether the skill is one a bot may own at all: an actual attack skill, or a
+    /// self/party buff or heal with a magic effect (which the offline buff/heal handlers know how to
+    /// cast) - but never a master skill (those go through the regular master action like for a human
+    /// player, see <see cref="BotMasterHandler"/>), a castle-siege-only skill, or a mount-bound skill
+    /// (never used by bots). Item-granted skills are welcome here: the orb or scroll in the bot's
+    /// backpack is the gate, exactly as for a human consuming it. Passive boosts, event skills, enemy
+    /// debuffs and utility skills are left out.
+    /// </summary>
+    /// <param name="skill">The skill to check.</param>
+    public static bool MayBotOwnSkill(Skill skill)
+    {
+        if (skill.MasterDefinition is not null
+            || CastleSiegeOnlySkillNumbers.Contains(skill.Number)
+            || ItemOrWeaponBoundSkillNumbers.Contains(skill.Number)
+            || MountRequiredSkillNumbers.Contains(skill.Number))
+        {
+            return false;
+        }
+
+        // Worth owning if it adds damage of its own, hits more than once, or hits more than one
+        // target. Judging by AttackDamage alone would lock a Rage Fighter out of Chain Drive and
+        // Dragon Roar, which carry a flat bonus of zero and four hits instead, because their damage
+        // comes from the weapon - which is also how the server pays them out.
+        if (IsAttackSkill(skill))
+        {
+            return skill.AttackDamage > 0
+                   || skill.NumberOfHitsPerAttack > 1
+                   || IsAreaSkill(skill);
+        }
+
+        return skill.SkillType is SkillType.Buff or SkillType.Regeneration
+               && skill.MagicEffectDef is not null
+               && !ExcludedBuffSkillNumbers.Contains(skill.Number);
+    }
+
+    /// <summary>
+    /// Collects the items granting each skill, for one generation run. Built by the caller alongside
+    /// <see cref="GetItemGrantedSkillNumbers"/> and handed into <see cref="MayBackfillSkill"/> - no
+    /// static cache: generation runs rarely, and a cache keyed by the configuration would pin the whole
+    /// object graph for the process lifetime (and go stale against in-place admin-panel edits).
+    /// </summary>
+    /// <param name="gameConfiguration">The game configuration which defines the items.</param>
+    public static IReadOnlyDictionary<short, List<ItemDefinition>> GetGrantingItems(GameConfiguration gameConfiguration)
+        => (gameConfiguration.Items ?? [])
+            .Where(item => item.Skill is not null)
+            .GroupBy(item => item.Skill!.Number)
+            .ToDictionary(group => group.Key, group => group.ToList());
+
+    /// <summary>
+    /// Determines whether the skill may be granted when a bot is generated (the backfill of what it
+    /// would have looted on its way up). A skill with no granting item at all passes; a skill granted
+    /// only by worn equipment or a pet never passes - those are learned temporarily by equipping the
+    /// item (which the server handles on its own), so writing them into the learned skills would make
+    /// them permanent. A consumable (orb/scroll) grant passes only when the skill carries requirements
+    /// of its own (otherwise the gate lives on the orb alone, and the loot path teaches it) and at
+    /// least one granting orb or scroll is obtainable: class-qualified, drop level reached, and the
+    /// item's own requirements met.
+    /// </summary>
+    /// <param name="skill">The skill to check.</param>
+    /// <param name="grantingItems">The granting items by skill number, see <see cref="GetGrantingItems"/>.</param>
+    /// <param name="characterClass">The bot's character class.</param>
+    /// <param name="level">The bot's character level.</param>
+    /// <param name="getAttributeValue">Resolves an attribute's current value; null means unknown and fails.</param>
+    public static bool MayBackfillSkill(
+        Skill skill,
+        IReadOnlyDictionary<short, List<ItemDefinition>> grantingItems,
+        CharacterClass characterClass,
+        int level,
+        Func<AttributeDefinition, float?> getAttributeValue)
+    {
+        if (!grantingItems.TryGetValue(skill.Number, out var granting) || granting.Count == 0)
+        {
+            return true;
+        }
+
+        var consumable = granting.Where(IsConsumableSkillGrant).ToList();
+        if (consumable.Count == 0)
+        {
+            return false;
+        }
+
+        if (skill.Requirements is not { Count: > 0 })
+        {
+            return false;
+        }
+
+        return consumable.Any(item => IsObtainableGrantingItem(item, characterClass, level, getAttributeValue));
+    }
+
+    /// <summary>
     /// Determines whether the character meets the skill's learn requirements (the same ones the game
     /// enforces when casting, e.g. total energy for wizard spells or character level for knight skills).
     /// <paramref name="getAttributeValue"/> resolves an attribute's current value; returning null means
@@ -389,27 +465,27 @@ internal static class BotProgression
     /// <param name="attribute">The "total" attribute to map.</param>
     public static AttributeDefinition? TotalToBaseStat(AttributeDefinition attribute)
     {
-        if (attribute == Stats.TotalEnergy)
+        if (attribute == Stats.TotalEnergy || attribute == Stats.TotalEnergyRequirementValue)
         {
             return Stats.BaseEnergy;
         }
 
-        if (attribute == Stats.TotalStrength)
+        if (attribute == Stats.TotalStrength || attribute == Stats.TotalStrengthRequirementValue)
         {
             return Stats.BaseStrength;
         }
 
-        if (attribute == Stats.TotalAgility)
+        if (attribute == Stats.TotalAgility || attribute == Stats.TotalAgilityRequirementValue)
         {
             return Stats.BaseAgility;
         }
 
-        if (attribute == Stats.TotalVitality)
+        if (attribute == Stats.TotalVitality || attribute == Stats.TotalVitalityRequirementValue)
         {
             return Stats.BaseVitality;
         }
 
-        if (attribute == Stats.TotalLeadership)
+        if (attribute == Stats.TotalLeadership || attribute == Stats.TotalLeadershipRequirementValue)
         {
             return Stats.BaseLeadership;
         }
@@ -463,6 +539,91 @@ internal static class BotProgression
         }
 
         return itemGroup <= maxMeleeGroup;
+    }
+
+    private static bool IsConsumableSkillGrant(ItemDefinition item)
+        => item.Group == SkillOrbItemGroup || item.Group == SkillScrollItemGroup;
+
+    private static bool IsObtainableGrantingItem(
+        ItemDefinition item,
+        CharacterClass characterClass,
+        int level,
+        Func<AttributeDefinition, float?> getAttributeValue)
+    {
+        if (!item.QualifiedCharacters.Contains(characterClass))
+        {
+            return false;
+        }
+
+        if (level < item.DropLevel)
+        {
+            return false;
+        }
+
+        // The caller's getAttributeValue resolves TOTAL attributes (at generation time from base
+        // stats via TotalToBaseStat) - exactly what MeetsRequirements expects. Item requirements use
+        // the same totals, except scrolls which use the *RequirementValue variants, so those are
+        // normalized first. Level is resolved from the passed level, which is also what the callers
+        // map Stats.Level to.
+        // Comparing the raw MinimumValue matches the real consume gate only because the caller
+        // (MayBackfillSkill) restricts this to non-wearable consumables: there GetRequirement
+        // returns the minimum unchanged, while wearable granting items scale it by item level and
+        // options (see ItemExtensions.GetRequirement) - which is why those never reach this check.
+        foreach (var requirement in item.Requirements)
+        {
+            if (requirement.Attribute is not { } attribute)
+            {
+                continue;
+            }
+
+            if (attribute == Stats.Level)
+            {
+                if (level < requirement.MinimumValue)
+                {
+                    return false;
+                }
+
+                continue;
+            }
+
+            var totalAttribute = NormalizeRequirementValue(attribute);
+            if (getAttributeValue(totalAttribute) is not { } value || value < requirement.MinimumValue)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static AttributeDefinition NormalizeRequirementValue(AttributeDefinition attribute)
+    {
+        if (attribute == Stats.TotalEnergyRequirementValue)
+        {
+            return Stats.TotalEnergy;
+        }
+
+        if (attribute == Stats.TotalStrengthRequirementValue)
+        {
+            return Stats.TotalStrength;
+        }
+
+        if (attribute == Stats.TotalAgilityRequirementValue)
+        {
+            return Stats.TotalAgility;
+        }
+
+        if (attribute == Stats.TotalVitalityRequirementValue)
+        {
+            return Stats.TotalVitality;
+        }
+
+        if (attribute == Stats.TotalLeadershipRequirementValue)
+        {
+            return Stats.TotalLeadership;
+        }
+
+        return attribute;
     }
 
     private static AttributeDefinition GetMainDamageStat(CharacterClass characterClass)

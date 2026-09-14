@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Components;
 using MUnique.OpenMU.Network.Analyzer;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
-using MUnique.OpenMU.Web.AdminPanel.Services;
 using MUnique.OpenMU.Web.Shared.Services;
 
 /// <summary>

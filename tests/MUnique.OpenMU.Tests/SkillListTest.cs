@@ -64,6 +64,65 @@ public class SkillListTest
     }
 
     /// <summary>
+    /// Tests that a skill which is granted by more than one equipped item is only removed from the
+    /// skill list when the last of these items is taken off.
+    /// </summary>
+    [Test]
+    public async ValueTask ItemSkillRemovedWithLastItemAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var characterClass = player.SelectedCharacter!.CharacterClass;
+        await player.Inventory!.AddItemAsync(0, this.CreateItemWithSkill(QualifiedItemSkillId, characterClass)).ConfigureAwait(false);
+        await player.Inventory!.AddItemAsync(1, this.CreateItemWithSkill(QualifiedItemSkillId, characterClass)).ConfigureAwait(false);
+        var skillList = new SkillList(player);
+
+        Assert.That(await skillList.RemoveItemSkillAsync(QualifiedItemSkillId).ConfigureAwait(false), Is.True);
+        Assert.That(skillList.ContainsSkill(QualifiedItemSkillId), Is.True);
+
+        Assert.That(await skillList.RemoveItemSkillAsync(QualifiedItemSkillId).ConfigureAwait(false), Is.True);
+        Assert.That(skillList.ContainsSkill(QualifiedItemSkillId), Is.False);
+    }
+
+    /// <summary>
+    /// Tests that a character which has the same skill twice in its learned skills can still
+    /// create its skill list - the duplicate with the lower level is dropped.
+    /// </summary>
+    [Test]
+    public async ValueTask DuplicateLearnedSkillIsRemovedAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var learnedSkills = player.SelectedCharacter!.LearnedSkills;
+        var lowLevelEntry = this.CreateSkillEntry(LearnedSkillId);
+        var highLevelEntry = this.CreateSkillEntry(LearnedSkillId);
+        highLevelEntry.Level = 5;
+        learnedSkills.Add(lowLevelEntry);
+        learnedSkills.Add(highLevelEntry);
+
+        var skillList = new SkillList(player);
+
+        Assert.That(skillList.ContainsSkill(LearnedSkillId), Is.True);
+        Assert.That(learnedSkills, Is.EquivalentTo(new[] { highLevelEntry }));
+        Assert.That(skillList.GetSkill(LearnedSkillId)!.Level, Is.EqualTo(5));
+    }
+
+    /// <summary>
+    /// Tests that a learned skill isn't lost when an item which grants the same skill is unequipped.
+    /// </summary>
+    [Test]
+    public async ValueTask LearnedSkillKeptWhenItemSkillRemovedAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        player.SelectedCharacter!.LearnedSkills.Add(this.CreateSkillEntry(QualifiedItemSkillId));
+        var item = this.CreateItemWithSkill(QualifiedItemSkillId, player.SelectedCharacter!.CharacterClass);
+        item.Durability = 1;
+        await player.Inventory!.AddItemAsync(0, item).ConfigureAwait(false);
+        var skillList = new SkillList(player);
+
+        Assert.That(await skillList.RemoveItemSkillAsync(QualifiedItemSkillId).ConfigureAwait(false), Is.True);
+        Assert.That(skillList.ContainsSkill(QualifiedItemSkillId), Is.True);
+    }
+
+    /// <summary>
     /// Tests if the skill list does not contain non-learned skills.
     /// </summary>
     [Test]

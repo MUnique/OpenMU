@@ -69,10 +69,20 @@ public sealed class TestConnectionInfo : ICapturedConnectionInfo
     public string DisplayName => this.CharacterName ?? this.AccountName ?? this.RemoteEndPoint ?? this.Id.ToString();
 
     /// <inheritdoc />
+    public bool IsObserved { get; private set; }
+
+    /// <inheritdoc />
     public void AddCaptureSink(IPacketCaptureSink sink) => this.Sinks.Add(sink);
 
     /// <inheritdoc />
     public void RemoveCaptureSink(IPacketCaptureSink sink) => this.Sinks.Remove(sink);
+
+    /// <inheritdoc />
+    public ValueTask<bool> SetObservationAsync(bool isActive)
+    {
+        this.IsObserved = isActive;
+        return ValueTask.FromResult(true);
+    }
 
     /// <inheritdoc />
     public ValueTask DisconnectAsync()

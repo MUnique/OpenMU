@@ -20,6 +20,7 @@ using MUnique.OpenMU.GameLogic.Views.Messenger;
 using MUnique.OpenMU.GameServer.RemoteView;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Network.Analyzer;
+using MUnique.OpenMU.Network.Analyzer.Archive;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
 using Nito.AsyncEx;
@@ -27,13 +28,15 @@ using Nito.AsyncEx;
 /// <summary>
 /// The game server to which game clients can connect.
 /// </summary>
-public sealed class GameServer : IGameServer, IDisposable, IGameServerContextProvider, IConnectionSource
+public sealed class GameServer : IGameServer, IDisposable, IAsyncDisposable, IGameServerContextProvider, IConnectionSource
 {
     private readonly ILogger<GameServer> _logger;
 
     private readonly IGameServerContext _gameContext;
 
     private readonly ICollection<IGameServerListener> _listeners = new List<IGameServerListener>();
+
+    private readonly NetworkObservationHandler? _observationHandler;
 
     private ServerState _serverState;
 
@@ -49,6 +52,8 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
     /// <param name="loggerFactory">The logger factory.</param>
     /// <param name="plugInManager">The plug in manager.</param>
     /// <param name="changeMediator"> The change mediatior.</param>
+    /// <param name="packetArchive">The archive for the traffic of observed accounts. It's only
+    /// available when the network observation is configured.</param>
     public GameServer(
         GameServerDefinition gameServerDefinition,
         IGuildServer guildServer,
@@ -58,12 +63,16 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
         IFriendServer friendServer,
         ILoggerFactory loggerFactory,
         PlugInManager plugInManager,
-        IConfigurationChangeMediator changeMediator)
+        IConfigurationChangeMediator changeMediator,
+        IPacketArchive? packetArchive = null)
     {
         this.Id = gameServerDefinition.ServerID;
         this.Description = gameServerDefinition.Description;
         this.ConfigurationId = gameServerDefinition.GetId();
         this._logger = loggerFactory.CreateLogger<GameServer>();
+        this._observationHandler = packetArchive is null
+            ? null
+            : new NetworkObservationHandler(packetArchive, this.Id, this.Description, loggerFactory.CreateLogger<NetworkObservationHandler>());
         try
         {
             var gameConfiguration = gameServerDefinition.GameConfiguration ?? throw Error.NotInitializedProperty(gameServerDefinition, nameof(gameServerDefinition.GameConfiguration));
@@ -430,7 +439,7 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
         return players
             .OfType<RemotePlayer>()
             .Select(player => player.Connection is { } connection
-                ? new RemotePlayerConnectionInfo(player, connection, this.Id, this.Description)
+                ? new RemotePlayerConnectionInfo(player, connection, this.Id, this.Description, this._observationHandler)
                 : null)
             .Where(info => info is not null)
             .Select(info => (ICapturedConnectionInfo)info!)
@@ -458,6 +467,22 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
         (this._gameContext as IDisposable)?.Dispose();
     }
 
+    /// <inheritdoc />
+    /// <remarks>
+    /// In contrast to <see cref="Dispose"/>, this also stops the periodic tasks of the game context.
+    /// </remarks>
+    public async ValueTask DisposeAsync()
+    {
+        if (this._gameContext is IAsyncDisposable asyncDisposable)
+        {
+            await asyncDisposable.DisposeAsync().ConfigureAwait(false);
+        }
+        else
+        {
+            this.Dispose();
+        }
+    }
+
     private async ValueTask RemovePlayerFromGuildAsync(Player player, bool unregisterFromContext = true)
     {
         if (unregisterFromContext && player.GuildStatus?.GuildId is not null)
@@ -473,6 +498,7 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
     private async ValueTask OnPlayerConnectedAsync(PlayerConnectedEventArgs e)
     {
         var player = e.ConntectedPlayer;
+        this._observationHandler?.Watch(player);
         await this._gameContext.AddPlayerAsync(player).ConfigureAwait(false);
         await player.InvokeViewPlugInAsync<IShowLoginWindowPlugIn>(p => p.ShowLoginWindowAsync()).ConfigureAwait(false);
         await player.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);

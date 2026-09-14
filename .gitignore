@@ -325,3 +325,6 @@ src/AdminPanel/wwwroot/content/js/app.js.map
 .opencode/
 # Keys which are generated when the server runs locally.
 data-protection-keys/
+
+# The archive of the network observation, when the server is started from the repository.
+captures/

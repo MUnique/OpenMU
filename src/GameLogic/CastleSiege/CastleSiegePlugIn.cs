@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.GameLogic.CastleSiege.NPC;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.PlugIns;
 
@@ -66,6 +67,12 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
     /// <inheritdoc />
     public async ValueTask ObjectRemovedFromMapAsync(GameMap map, ILocateable removedObject)
     {
+        if (removedObject is CastleSiegeLifeStone lifeStone)
+        {
+            lifeStone.Context.RemoveLifeStone(lifeStone);
+            return;
+        }
+
         if (removedObject is not Player player
             || this.GetContext(player.GameContext) is not { } context)
         {
@@ -82,15 +89,28 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
             context,
             player,
             this._timeProvider.GetUtcNow().UtcDateTime);
+        await this.ClearMachineOperatorAsync(context, player).ConfigureAwait(false);
         await context.ClearPlayerJoinSideAsync(player).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
     public async ValueTask PlayerStateChangedAsync(Player player, State previousState, State currentState)
     {
+        var context = this.GetContext(player.GameContext);
+        if (context is null)
+        {
+            return;
+        }
+
+        if (previousState == PlayerState.NpcDialogOpened
+            && currentState == PlayerState.EnteredWorld
+            && player.CurrentMap?.Definition.Number == context.Configuration.CastleSiegeMapDefinition?.Number)
+        {
+            await this.ClearMachineOperatorAsync(context, player).ConfigureAwait(false);
+        }
+
         if (currentState == PlayerState.EnteredWorld
-            && player.CurrentMap is { } map
-            && this.GetContext(player.GameContext) is { } context)
+            && player.CurrentMap is { } map)
         {
             await this.SynchronizePlayerAsync(player, map, context).ConfigureAwait(false);
         }
@@ -149,7 +169,7 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
         CastleSiegeContext context;
         try
         {
-            context = this._contexts.GetValue(gameContext, key => new CastleSiegeContext(key, configuration));
+            context = this._contexts.GetValue(gameContext, key => new CastleSiegeContext(key, configuration, this._timeProvider));
         }
         catch (Exception ex)
         {
@@ -180,7 +200,15 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
             }
 
             var forceRequestVersion = Volatile.Read(ref this._forceRequestVersion);
-            if (context.LastForceRequestVersion != forceRequestVersion)
+            var contextStateRequested = context.TryTakeRequestedState(out var requestedState);
+            if (contextStateRequested)
+            {
+                // A context-specific request takes precedence and consumes a simultaneous global request for this context.
+                context.LastForceRequestVersion = forceRequestVersion;
+                await this.ChangeStateAsync(context, context.Schedule.CreatePeriod(requestedState, utcNow), logger).ConfigureAwait(false);
+            }
+
+            if (!contextStateRequested && context.LastForceRequestVersion != forceRequestVersion)
             {
                 context.LastForceRequestVersion = forceRequestVersion;
                 var forcedState = (CastleSiegeState)Volatile.Read(ref this._forcedState);
@@ -229,6 +257,19 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
         return stateStartUtc.AddTicks((completedIntervals + 1) * interval.Ticks);
     }
 
+    private async ValueTask ClearMachineOperatorAsync(CastleSiegeContext context, Player player)
+    {
+        await context.ExecutionLock.WaitAsync().ConfigureAwait(false);
+        try
+        {
+            context.NpcController.ClearMachineOperator(player);
+        }
+        finally
+        {
+            context.ExecutionLock.Release();
+        }
+    }
+
     private async ValueTask SynchronizePlayerAsync(
         Player player,
         GameMap map,
@@ -274,6 +315,10 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
         if (previousState == CastleSiegeState.Start)
         {
             await CastleSiegeParticipantTracker.TrackAsync(context, period.StartUtc).ConfigureAwait(false);
+            if (period.State != CastleSiegeState.Start)
+            {
+                await context.KillAllLifeStonesAsync().ConfigureAwait(false);
+            }
         }
 
         await this.OnExitStateAsync().ConfigureAwait(false);
@@ -439,6 +484,7 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
 
         if (context.CurrentState == CastleSiegeState.Start)
         {
+            await context.TickLifeStonesAsync(utcNow).ConfigureAwait(false);
             await CastleSiegeSwitchMechanics.SendSwitchInfoAsync(context).ConfigureAwait(false);
             await CastleSiegeCrownMechanics.CheckMiddleWinnerAsync(context, utcNow).ConfigureAwait(false);
         }

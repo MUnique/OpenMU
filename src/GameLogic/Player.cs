@@ -123,6 +123,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public event AsyncEventHandler<Player>? PlayerEnteredWorld;
 
     /// <summary>
+    /// Occurs when the player has been logged in, so that its <see cref="Account"/> is known.
+    /// </summary>
+    public event AsyncEventHandler<Player>? PlayerLoggedIn;
+
+    /// <summary>
     /// Occurs when the player left the world with his selected character.
     /// </summary>
     public event AsyncEventHandler<Player>? PlayerLeftWorld;
@@ -580,6 +585,18 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// Gets a value indicating whether opening the player store after entering the game is supported by this instance.
     /// </summary>
     protected virtual bool IsPlayerStoreOpeningAfterEnterSupported => true;
+
+    /// <summary>
+    /// Sets the account of the player after a successful login and notifies the subscribers
+    /// of <see cref="PlayerLoggedIn"/>.
+    /// </summary>
+    /// <param name="account">The account of the player.</param>
+    /// <returns>The async task.</returns>
+    public async ValueTask SetAccountAsync(Account account)
+    {
+        this.Account = account;
+        await this.PlayerLoggedIn.SafeInvokeAsync(this).ConfigureAwait(false);
+    }
 
     /// <summary>
     /// Sets the selected character.
@@ -1704,10 +1721,44 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             throw new InvalidOperationException($"The character {this.SelectedCharacter} has no assigned character class.");
         }
 
-        var missingStats = characterClass.StatAttributes.Where(a => this.SelectedCharacter.Attributes.All(c => c.Definition != a.Attribute));
+        this.RemoveDuplicateStatAttributes(character);
+
+        // The character class itself may define a stat attribute more than once (a data update which
+        // added an attribute the class already had), so the missing ones are taken distinctly - otherwise
+        // we would create the duplicates we just removed all over again.
+        var missingStats = characterClass.StatAttributes
+            .DistinctBy(a => a.Attribute)
+            .Where(a => character.Attributes.All(c => c.Definition != a.Attribute));
 
         var attributes = missingStats.Select(a => this.PersistenceContext.CreateNew<StatAttribute>(a.Attribute, a.BaseValue)).ToList();
         attributes.ForEach(character.Attributes.Add);
+    }
+
+    /// <summary>
+    /// Removes stat attributes which are assigned to the character more than once, keeping the one with
+    /// the highest value. An attribute system holds exactly one attribute per definition, so a duplicate
+    /// would make the character unable to enter the game at all.
+    /// </summary>
+    /// <param name="character">The character.</param>
+    private void RemoveDuplicateStatAttributes(Character character)
+    {
+        var duplicateGroups = character.Attributes
+            .GroupBy(a => a.Definition)
+            .Where(group => group.Count() > 1)
+            .ToList();
+
+        foreach (var duplicates in duplicateGroups)
+        {
+            // The highest value is kept, so a character never loses points that were invested into a stat.
+            var obsolete = duplicates.OrderByDescending(a => a.Value).Skip(1).ToList();
+            obsolete.ForEach(attribute => character.Attributes.Remove(attribute));
+
+            this.Logger.LogWarning(
+                "Removed {Count} duplicate stat attribute(s) '{Attribute}' of character '{Character}'.",
+                obsolete.Count,
+                duplicates.Key,
+                character.Name);
+        }
     }
 
     private async ValueTask OnPlayerEnteredWorldAsync()

@@ -123,6 +123,12 @@
   <data name="CastleSiegeLeverTalkPlugIn_Description" xml:space="preserve">
     <value>Opens the operation interface for a Castle Siege gate lever.</value>
   </data>
+  <data name="CastleSiegeMachineTalkPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege Warfare Machine</value>
+  </data>
+  <data name="CastleSiegeMachineTalkPlugIn_Description" xml:space="preserve">
+    <value>Opens a Castle Siege warfare machine for an authorized player.</value>
+  </data>
   <data name="CastleSiegePlugIn_Name" xml:space="preserve">
     <value>Castle Siege</value>
   </data>
@@ -1259,5 +1265,11 @@
   </data>
   <data name="StatResetConfiguration_LogOut_Name" xml:space="preserve">
     <value>Log out</value>
+  </data>
+  <data name="CastleSiegeLifeStoneConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege Life Stone consume handler</value>
+  </data>
+  <data name="CastleSiegeLifeStoneConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Consumes Life Stones after they are successfully placed during Castle Siege.</value>
   </data>
 </root>

@@ -69,7 +69,7 @@ public class BinaryAsHexJsonConverter : JsonConverter<byte[]>
         {
             var prefixSize = ByteArrayPrefix.Length + 1; // +1 for escaping
             var hexData = reader.ValueSpan.Slice(prefixSize);
-            var data = new byte[(hexData.Length - prefixSize) / 2];
+            var data = new byte[hexData.Length / 2];
             for (var i = 0; i < data.Length; i++)
             {
                 var index = i * 2;

@@ -37,6 +37,11 @@ public sealed class TestCaptureService : IPacketCaptureService
     /// </summary>
     public int RequestedConnectionsCount { get; private set; }
 
+    /// <summary>
+    /// Gets the observation changes which have been requested.
+    /// </summary>
+    public IList<(Guid ConnectionId, bool IsActive)> ObservationChanges { get; } = new List<(Guid, bool)>();
+
     /// <inheritdoc />
     public ValueTask<IReadOnlyList<ICapturedConnectionInfo>> GetConnectionsAsync()
     {
@@ -83,6 +88,18 @@ public sealed class TestCaptureService : IPacketCaptureService
         {
             this.Connections.FirstOrDefault(connection => connection.Id == connectionId)?.RemoveCaptureSink(capture);
         }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<bool> SetObservationAsync(Guid connectionId, bool isActive)
+    {
+        this.ObservationChanges.Add((connectionId, isActive));
+        if (await this.FindConnectionAsync(connectionId).ConfigureAwait(false) is not { } connectionInfo)
+        {
+            return false;
+        }
+
+        return await connectionInfo.SetObservationAsync(isActive).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
