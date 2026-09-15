@@ -18,6 +18,13 @@ public class GameMapTerrain
     private const int MapSize = 256;
 
     /// <summary>
+    /// The terrain attribute bits which block line of sight. Only actual walls
+    /// (<see cref="TerrainAttributeType.Blocked"/>) stop projectiles; holes
+    /// (<c>NoGround</c>) and water can be shot across.
+    /// </summary>
+    private const byte SightBlockingAttributes = (byte)TerrainAttributeType.Blocked;
+
+    /// <summary>
     /// The default terrain where all coordinates are walkable and not a safezone.
     /// </summary>
     private static readonly byte[] DefaultTerrain = Enumerable.Repeat<byte>(0, short.MaxValue).ToArray();
@@ -71,6 +78,16 @@ public class GameMapTerrain
     /// Gets a grid of the walkable coordinates of monsters.
     /// </summary>
     public byte[,] AIgrid { get; } = new byte[MapSize, MapSize];
+
+    /// <summary>
+    /// Gets the raw terrain attribute flags per coordinate, as read from the
+    /// map's <c>.att</c> file (a <see cref="TerrainAttributeType"/> bitmask:
+    /// safezone, blocked, no ground, water, …). While <see cref="WalkMap"/>
+    /// collapses everything unwalkable into one value, this grid preserves the
+    /// distinction between walls (which block sight) and holes or water
+    /// (which can be shot across).
+    /// </summary>
+    public byte[,] AttributeMap { get; } = new byte[MapSize, MapSize];
 
     /// <summary>
     /// Gets a random walkable, non-safezone point anywhere on the map.
@@ -161,18 +178,13 @@ public class GameMapTerrain
 
     /// <summary>
     /// Determines whether there is a clear line of sight between two coordinates.
-    /// Uses Bresenham's line algorithm over the <see cref="WalkMap"/>; any blocked
-    /// intermediate tile blocks sight. The endpoints themselves are excluded, so
-    /// that the tiles the attacker and target stand on never block the check.
-    /// A diagonal step passing exactly between two blocked tiles that touch only
-    /// at a corner is also treated as blocked.
+    /// Uses Bresenham's line algorithm; any intermediate tile with a wall
+    /// (<see cref="TerrainAttributeType.Blocked"/>) blocks sight. Holes (<c>NoGround</c>) and water can be shot across.
+    /// The endpoints themselves are excluded, so that the tiles the attacker
+    /// and target stand on never block the check. A diagonal step passing
+    /// exactly between two wall tiles that touch only at a corner is also
+    /// treated as blocked.
     /// </summary>
-    /// <remarks>
-    /// Walkability doubles as opacity here: the map data offers no separate
-    /// transparency layer, so unwalkable tiles (walls, but also water, pits, …)
-    /// all block sight. If a map ever needs shooting across an unwalkable-but-
-    /// transparent area, this needs a dedicated opacity grid.
-    /// </remarks>
     /// <param name="from">The attacking (viewing) coordinate.</param>
     /// <param name="to">The target coordinate.</param>
     /// <returns><c>true</c> when no wall blocks the line between the coordinates; otherwise, <c>false</c>.</returns>
@@ -196,7 +208,6 @@ public class GameMapTerrain
 
         int x = x0;
         int y = y0;
-        var walkMap = this.WalkMap;
         while (true)
         {
             int previousX = x;
@@ -222,18 +233,66 @@ public class GameMapTerrain
             }
 
             if (x != previousX && y != previousY
-                && !walkMap[previousX, y] && !walkMap[x, previousY])
+                && this.BlocksSight(previousX, y) && this.BlocksSight(x, previousY))
             {
-                // Diagonal step squeezing between two blocked tiles that
+                // Diagonal step squeezing between two wall tiles that
                 // touch only at a corner: the line grazes a solid corner.
                 return false;
             }
 
-            if (!walkMap[x, y])
+            if (this.BlocksSight(x, y))
             {
                 return false;
             }
         }
+    }
+
+    /// <summary>
+    /// Determines whether the tile at the specified coordinate blocks line of
+    /// sight, i.e. carries the <c>Blocked</c> (wall) attribute. Tiles which are
+    /// merely unwalkable for other reasons (holes, water) do not block sight.
+    /// </summary>
+    /// <param name="x">The x coordinate.</param>
+    /// <param name="y">The y coordinate.</param>
+    /// <returns><c>true</c> when the tile is a sight-blocking wall; otherwise, <c>false</c>.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool BlocksSight(int x, int y)
+    {
+        return (this.AttributeMap[x, y] & SightBlockingAttributes) != 0;
+    }
+
+    /// <summary>
+    /// Applies a runtime terrain attribute change to a single tile, e.g. for
+    /// mini games which open or collapse parts of a map. Keeps the raw
+    /// attributes, <see cref="WalkMap"/>, <see cref="SafezoneMap"/> and
+    /// <see cref="AIgrid"/> consistent with each other.
+    /// </summary>
+    /// <param name="x">The x coordinate.</param>
+    /// <param name="y">The y coordinate.</param>
+    /// <param name="attribute">The attribute to set or remove.</param>
+    /// <param name="setAttribute"><c>true</c> to set the attribute, <c>false</c> to remove it.</param>
+    public void ApplyTerrainAttribute(byte x, byte y, TerrainAttributeType attribute, bool setAttribute)
+    {
+        if (attribute == TerrainAttributeType.Safezone)
+        {
+            // Safezone is tracked independently of the walkability bits,
+            // exactly as before: setting it never changes walkability.
+            this.AttributeMap[x, y] = setAttribute
+                ? (byte)(this.AttributeMap[x, y] | (byte)attribute)
+                : (byte)(this.AttributeMap[x, y] & ~(byte)attribute);
+            this.SafezoneMap[x, y] = setAttribute;
+            this.UpdateAiGridValue(x, y);
+            return;
+        }
+
+        this.AttributeMap[x, y] = setAttribute
+            ? (byte)(this.AttributeMap[x, y] | (byte)attribute)
+            : (byte)(this.AttributeMap[x, y] & ~(byte)attribute);
+
+        // SafezoneMap is deliberately left untouched: runtime non-safezone changes
+        // never alter the safezone status, exactly as before.
+        this.WalkMap[x, y] = IsWalkableValue(this.AttributeMap[x, y]);
+        this.UpdateAiGridValue(x, y);
     }
 
     /// <summary>
@@ -257,11 +316,33 @@ public class GameMapTerrain
         {
             byte x = (byte)(i & 0xFF);
             byte y = (byte)((i >> 8) & 0xFF);
-            byte value = data[i];
-            this.WalkMap[x, y] = value == 0 || value == 1;
-            this.SafezoneMap[x, y] = value == 1;
-            this.UpdateAiGridValue(x, y);
+            this.AttributeMap[x, y] = data[i];
+            this.RefreshTile(x, y);
         }
+    }
+
+    /// <summary>
+    /// Recomputes the derived grids of a single tile from its raw attributes.
+    /// A tile is walkable only with no attribute flags (or safezone only).
+    /// </summary>
+    /// <param name="x">The x coordinate.</param>
+    /// <param name="y">The y coordinate.</param>
+    private void RefreshTile(byte x, byte y)
+    {
+        byte value = this.AttributeMap[x, y];
+        this.WalkMap[x, y] = IsWalkableValue(value);
+        this.SafezoneMap[x, y] = value == 1;
+        this.UpdateAiGridValue(x, y);
+    }
+
+    /// <summary>
+    /// Determines whether a raw terrain attribute value describes a walkable tile.
+    /// </summary>
+    /// <param name="value">The raw attribute value.</param>
+    /// <returns><c>true</c> when the tile can be walked on; otherwise, <c>false</c>.</returns>
+    private static bool IsWalkableValue(byte value)
+    {
+        return value == 0 || value == 1;
     }
 
     /// <summary>

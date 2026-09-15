@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 
 /// <summary>
@@ -15,6 +16,8 @@ public class GameMapTerrainTests
     private const byte Walkable = 0;
     private const byte Safezone = 1;
     private const byte Blocked = 4;
+    private const byte NoGround = (byte)TerrainAttributeType.NoGround;
+    private const byte Water = (byte)TerrainAttributeType.Water;
 
     /// <summary>
     /// Tests that a map whose walkable tiles are all safezone still yields a coordinate.
@@ -178,6 +181,134 @@ public class GameMapTerrainTests
     }
 
     /// <summary>
+    /// Tests that a hole (<c>NoGround</c>) between attacker and target does not
+    /// block sight, even though the hole itself can't be walked on. Ranged
+    /// attacks are supposed to fly across pits, e.g. in Dungeon or Chaos Castle.
+    /// </summary>
+    [Test]
+    public void HasLineOfSightHoleDoesNotBlock()
+    {
+        var terrain = new GameMapTerrain(CreateWalkableTerrainWithValues((12, 11, NoGround)));
+
+        Assert.That(terrain.WalkMap[12, 11], Is.False, "precondition: the hole is not walkable");
+        Assert.That(terrain.HasLineOfSight(new Pathfinding.Point(10, 11), new Pathfinding.Point(14, 11)), Is.True);
+    }
+
+    /// <summary>
+    /// Tests that water between attacker and target does not block sight,
+    /// even though it can't be walked on.
+    /// </summary>
+    [Test]
+    public void HasLineOfSightWaterDoesNotBlock()
+    {
+        var terrain = new GameMapTerrain(CreateWalkableTerrainWithValues((12, 11, Water)));
+
+        Assert.That(terrain.WalkMap[12, 11], Is.False, "precondition: water is not walkable");
+        Assert.That(terrain.HasLineOfSight(new Pathfinding.Point(10, 11), new Pathfinding.Point(14, 11)), Is.True);
+    }
+
+    /// <summary>
+    /// Tests that a tile combining the wall and hole flags still blocks sight,
+    /// because the wall bit is what matters for projectiles.
+    /// </summary>
+    [Test]
+    public void HasLineOfSightBlockedHoleCombinationBlocks()
+    {
+        var terrain = new GameMapTerrain(CreateWalkableTerrainWithValues((12, 11, (byte)(Blocked | NoGround))));
+
+        Assert.That(terrain.HasLineOfSight(new Pathfinding.Point(10, 11), new Pathfinding.Point(14, 11)), Is.False);
+    }
+
+    /// <summary>
+    /// Tests that a diagonal line passing between two holes is visible: the
+    /// closed-corner rule only applies to actual walls.
+    /// </summary>
+    [Test]
+    public void HasLineOfSightDiagonalCornerBetweenHolesIsTrue()
+    {
+        var terrain = new GameMapTerrain(CreateWalkableTerrainWithValues((10, 11, NoGround), (11, 10, NoGround)));
+
+        Assert.That(terrain.HasLineOfSight(new Pathfinding.Point(10, 10), new Pathfinding.Point(12, 12)), Is.True);
+    }
+
+    /// <summary>
+    /// Tests that setting the wall attribute at runtime makes a tile unwalkable
+    /// and sight-blocking, e.g. when a castle gate closes.
+    /// </summary>
+    [Test]
+    public void ApplyTerrainAttributeBlockedBlocksSightAndMovement()
+    {
+        var terrain = new GameMapTerrain(CreateWalkableTerrainWithWall((99, 99)));
+
+        terrain.ApplyTerrainAttribute(12, 11, TerrainAttributeType.Blocked, true);
+
+        Assert.That(terrain.WalkMap[12, 11], Is.False);
+        Assert.That(terrain.HasLineOfSight(new Pathfinding.Point(10, 11), new Pathfinding.Point(14, 11)), Is.False);
+
+        terrain.ApplyTerrainAttribute(12, 11, TerrainAttributeType.Blocked, false);
+
+        Assert.That(terrain.WalkMap[12, 11], Is.True);
+        Assert.That(terrain.HasLineOfSight(new Pathfinding.Point(10, 11), new Pathfinding.Point(14, 11)), Is.True);
+    }
+
+    /// <summary>
+    /// Tests that setting the hole attribute at runtime (e.g. collapsing Chaos
+    /// Castle ground) makes a tile unwalkable while sight still passes across it.
+    /// </summary>
+    [Test]
+    public void ApplyTerrainAttributeNoGroundBlocksMovementButNotSight()
+    {
+        var terrain = new GameMapTerrain(CreateWalkableTerrainWithWall((99, 99)));
+
+        terrain.ApplyTerrainAttribute(12, 11, TerrainAttributeType.NoGround, true);
+
+        Assert.That(terrain.WalkMap[12, 11], Is.False);
+        Assert.That(terrain.HasLineOfSight(new Pathfinding.Point(10, 11), new Pathfinding.Point(14, 11)), Is.True);
+    }
+
+    /// <summary>
+    /// Tests that the safezone attribute can be toggled at runtime without
+    /// affecting walkability, as before.
+    /// </summary>
+    [Test]
+    public void ApplyTerrainAttributeSafezoneKeepsWalkability()
+    {
+        var terrain = new GameMapTerrain(CreateWalkableTerrainWithWall((99, 99)));
+
+        terrain.ApplyTerrainAttribute(12, 11, TerrainAttributeType.Safezone, true);
+
+        Assert.That(terrain.WalkMap[12, 11], Is.True);
+        Assert.That(terrain.SafezoneMap[12, 11], Is.True);
+
+        terrain.ApplyTerrainAttribute(12, 11, TerrainAttributeType.Safezone, false);
+
+        Assert.That(terrain.SafezoneMap[12, 11], Is.False);
+    }
+
+    /// <summary>
+    /// Tests that setting a wall on a safezone tile blocks movement and sight
+    /// without dropping the safezone status, and that removing it restores
+    /// walkability while the safezone status is untouched throughout.
+    /// </summary>
+    [Test]
+    public void ApplyTerrainAttributeBlockedOnSafezoneKeepsSafezone()
+    {
+        var terrain = new GameMapTerrain(CreateWalkableTerrainWithValues((12, 11, Safezone)));
+
+        terrain.ApplyTerrainAttribute(12, 11, TerrainAttributeType.Blocked, true);
+
+        Assert.That(terrain.WalkMap[12, 11], Is.False);
+        Assert.That(terrain.SafezoneMap[12, 11], Is.True);
+        Assert.That(terrain.HasLineOfSight(new Pathfinding.Point(10, 11), new Pathfinding.Point(14, 11)), Is.False);
+
+        terrain.ApplyTerrainAttribute(12, 11, TerrainAttributeType.Blocked, false);
+
+        Assert.That(terrain.WalkMap[12, 11], Is.True);
+        Assert.That(terrain.SafezoneMap[12, 11], Is.True);
+        Assert.That(terrain.HasLineOfSight(new Pathfinding.Point(10, 11), new Pathfinding.Point(14, 11)), Is.True);
+    }
+
+    /// <summary>
     /// Creates fully walkable terrain data with the specified coordinates blocked (wall).
     /// </summary>
     /// <param name="blocked">The coordinates to mark as blocked.</param>
@@ -190,6 +321,25 @@ public class GameMapTerrainTests
         foreach (var (x, y) in blocked)
         {
             data[3 + (y * 256) + x] = Blocked;
+        }
+
+        return data;
+    }
+
+    /// <summary>
+    /// Creates fully walkable terrain data with the specified coordinates set to
+    /// the given raw attribute values (a <c>TerrainAttributeType</c> bitmask).
+    /// </summary>
+    /// <param name="tiles">The coordinates and their raw attribute values.</param>
+    /// <returns>The terrain data, including its three byte header.</returns>
+    private static byte[] CreateWalkableTerrainWithValues(params (byte X, byte Y, byte Value)[] tiles)
+    {
+        var data = new byte[ushort.MaxValue + 3];
+        Array.Fill(data, Walkable, 3, ushort.MaxValue);
+
+        foreach (var (x, y, value) in tiles)
+        {
+            data[3 + (y * 256) + x] = value;
         }
 
         return data;
