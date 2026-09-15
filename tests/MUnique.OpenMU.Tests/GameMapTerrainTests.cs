@@ -145,14 +145,15 @@ public class GameMapTerrainTests
     /// <summary>
     /// Tests that a diagonal line squeezing exactly between two blocked tiles that
     /// touch only at a corner is blocked, so sight can't leak through a solid
-    /// diagonal wall corner.
+    /// diagonal wall corner. Both directions are asserted because sight is symmetric.
     /// </summary>
     [Test]
     public void HasLineOfSightDiagonalCornerBetweenTwoWallsIsFalse()
     {
-        var terrain = new GameMapTerrain(CreateWalkableTerrainWithWall((10, 11), (11, 10)));
+        var terrain = new GameMapTerrain(CreateWalkableTerrainWithValues((11, 12, Blocked), (12, 11, Blocked)));
 
         Assert.That(terrain.HasLineOfSight(new Pathfinding.Point(10, 10), new Pathfinding.Point(12, 12)), Is.False);
+        Assert.That(terrain.HasLineOfSight(new Pathfinding.Point(12, 12), new Pathfinding.Point(10, 10)), Is.False);
     }
 
     /// <summary>
@@ -305,6 +306,26 @@ public class GameMapTerrainTests
 
         Assert.That(terrain.WalkMap[12, 11], Is.True);
         Assert.That(terrain.SafezoneMap[12, 11], Is.True);
+        Assert.That(terrain.HasLineOfSight(new Pathfinding.Point(10, 11), new Pathfinding.Point(14, 11)), Is.True);
+    }
+
+    /// <summary>
+    /// Tests that removing an attribute re-opens the area regardless of the raw
+    /// value underneath. The Blood Castle bridge is toggled as <c>NoGround</c>,
+    /// but most levels carry <c>Blocked</c> (or both) on those tiles — the bridge
+    /// must still open there.
+    /// </summary>
+    [Test]
+    public void ApplyTerrainAttributeRemoveOpensAreaRegardlessOfRawValue(
+        [Values(Blocked, NoGround, (byte)(Blocked | NoGround))] byte rawValue)
+    {
+        var terrain = new GameMapTerrain(CreateWalkableTerrainWithValues((12, 11, rawValue)));
+
+        Assert.That(terrain.WalkMap[12, 11], Is.False, "precondition: the tile starts blocked");
+
+        terrain.ApplyTerrainAttribute(12, 11, TerrainAttributeType.NoGround, false);
+
+        Assert.That(terrain.WalkMap[12, 11], Is.True);
         Assert.That(terrain.HasLineOfSight(new Pathfinding.Point(10, 11), new Pathfinding.Point(14, 11)), Is.True);
     }
 

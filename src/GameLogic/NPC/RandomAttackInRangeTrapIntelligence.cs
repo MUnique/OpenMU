@@ -25,9 +25,13 @@ public class RandomAttackInRangeTrapIntelligence : TrapIntelligenceBase
     {
         if (this._currentTarget != null)
         {
-            // Old Target out of Range?
+            // Old Target out of Range or sight?
+            // Unlike a monster, a trap can't walk around a wall, so a target
+            // which lost sight must be dropped; otherwise the trap would stay
+            // latched and stop attacking everyone else in range.
             if (!this._currentTarget.IsActive()
                 || this._currentTarget.IsAtSafezone()
+                || !this.Trap.HasLineOfSightTo(this._currentTarget)
                 || !await this.IsTargetInObserversAsync().ConfigureAwait(false))
             {
                 this._currentTarget = await this.SearchNextTargetAsync().ConfigureAwait(false);
@@ -61,33 +65,13 @@ public class RandomAttackInRangeTrapIntelligence : TrapIntelligenceBase
             tempObservers = new List<IWorldObserver>(this.Trap.Observers);
         }
 
-        double closestDistance = 100;
-        IAttackable? closest = null;
-        double closestVisibleDistance = 100;
-        IAttackable? closestVisible = null;
+        var candidates = tempObservers.OfType<IAttackable>()
+            .Where(target => !this.Map.Terrain.SafezoneMap[target.Position.X, target.Position.Y]);
 
-        foreach (var target in tempObservers.OfType<IAttackable>())
-        {
-            if (this.Map.Terrain.SafezoneMap[target.Position.X, target.Position.Y])
-            {
-                continue;
-            }
-
-            double d = target.GetDistanceTo(this.Trap);
-            if (closestDistance > d)
-            {
-                closest = target;
-                closestDistance = d;
-            }
-
-            if (d < closestVisibleDistance && this.Trap.HasLineOfSightTo(target))
-            {
-                closestVisible = target;
-                closestVisibleDistance = d;
-            }
-        }
-
-        return closestVisible ?? closest;
+        // Prefer a visible target, fall back to the nearest one; a target which
+        // lost sight is dropped by the caller, so the trap re-targets instead of
+        // staying latched.
+        return NpcTargetSelection.GetNearestPreferVisible(candidates, this.Trap, target => target.GetDistanceTo(this.Trap));
     }
 
     private async ValueTask<bool> IsTargetInObserversAsync()

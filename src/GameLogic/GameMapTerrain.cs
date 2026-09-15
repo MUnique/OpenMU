@@ -20,9 +20,22 @@ public class GameMapTerrain
     /// <summary>
     /// The terrain attribute bits which block line of sight. Only actual walls
     /// (<see cref="TerrainAttributeType.Blocked"/>) stop projectiles; holes
-    /// (<c>NoGround</c>) and water can be shot across.
+    /// (<c>NoGround</c>) and water can be shot across. Higher bits observed in
+    /// shipped files (e.g. 32, 64, 128 — client height/camera/action flags)
+    /// carry no wall meaning and don't block either.
     /// </summary>
     private const byte SightBlockingAttributes = (byte)TerrainAttributeType.Blocked;
+
+    /// <summary>
+    /// The terrain attribute bits which block movement: walls, holes and water.
+    /// </summary>
+    private const byte MovementBlockingAttributes =
+        (byte)(TerrainAttributeType.Blocked | TerrainAttributeType.NoGround | TerrainAttributeType.Water);
+
+    /// <summary>
+    /// The terrain attribute bit which marks a safezone.
+    /// </summary>
+    private const byte SafezoneBit = (byte)TerrainAttributeType.Safezone;
 
     /// <summary>
     /// The default terrain where all coordinates are walkable and not a safezone.
@@ -200,6 +213,13 @@ public class GameMapTerrain
             return true;
         }
 
+        // Melee range is always visible: adjacent tiles share at most a corner,
+        // which must never read as a wall.
+        if (Math.Abs(x1 - x0) <= 1 && Math.Abs(y1 - y0) <= 1)
+        {
+            return true;
+        }
+
         int dx = Math.Abs(x1 - x0);
         int dy = -Math.Abs(y1 - y0);
         int sx = x0 < x1 ? 1 : -1;
@@ -226,18 +246,21 @@ public class GameMapTerrain
                 y += sy;
             }
 
-            // Reached the target tile: endpoints never block sight.
-            if (x == x1 && y == y1)
-            {
-                return true;
-            }
-
+            // The closed-corner check runs before the endpoint check on purpose:
+            // a corner pocket next to the target must block exactly like the
+            // same pocket next to the viewer, keeping sight symmetric.
             if (x != previousX && y != previousY
                 && this.BlocksSight(previousX, y) && this.BlocksSight(x, previousY))
             {
                 // Diagonal step squeezing between two wall tiles that
                 // touch only at a corner: the line grazes a solid corner.
                 return false;
+            }
+
+            // Reached the target tile: endpoints never block sight.
+            if (x == x1 && y == y1)
+            {
+                return true;
             }
 
             if (this.BlocksSight(x, y))
@@ -278,16 +301,25 @@ public class GameMapTerrain
             // Safezone is tracked independently of the walkability bits,
             // exactly as before: setting it never changes walkability.
             this.AttributeMap[x, y] = setAttribute
-                ? (byte)(this.AttributeMap[x, y] | (byte)attribute)
-                : (byte)(this.AttributeMap[x, y] & ~(byte)attribute);
+                ? (byte)(this.AttributeMap[x, y] | SafezoneBit)
+                : (byte)(this.AttributeMap[x, y] & ~SafezoneBit);
             this.SafezoneMap[x, y] = setAttribute;
             this.UpdateAiGridValue(x, y);
             return;
         }
 
-        this.AttributeMap[x, y] = setAttribute
-            ? (byte)(this.AttributeMap[x, y] | (byte)attribute)
-            : (byte)(this.AttributeMap[x, y] & ~(byte)attribute);
+        if (setAttribute)
+        {
+            this.AttributeMap[x, y] |= (byte)attribute;
+        }
+        else
+        {
+            // Removing an attribute re-opens the area: the configured attribute
+            // doesn't necessarily match the bits in the terrain file (e.g. the Blood
+            // Castle bridge is toggled as NoGround while most levels carry Blocked),
+            // so every movement-blocking bit is cleared instead of only the configured one.
+            this.AttributeMap[x, y] = (byte)(this.AttributeMap[x, y] & ~MovementBlockingAttributes);
+        }
 
         // SafezoneMap is deliberately left untouched: runtime non-safezone changes
         // never alter the safezone status, exactly as before.
@@ -301,7 +333,7 @@ public class GameMapTerrain
     /// <param name="x">The x.</param>
     /// <param name="y">The y.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void UpdateAiGridValue(byte x, byte y)
+    private void UpdateAiGridValue(byte x, byte y)
     {
         this.AIgrid[x, y] = (byte)((this.WalkMap[x, y] ? 1 : 0) | (this.SafezoneMap[x, y] ? 0b1000_0000 : 0));
     }
@@ -342,7 +374,7 @@ public class GameMapTerrain
     /// <returns><c>true</c> when the tile can be walked on; otherwise, <c>false</c>.</returns>
     private static bool IsWalkableValue(byte value)
     {
-        return value == 0 || value == 1;
+        return (value & ~SafezoneBit) == 0;
     }
 
     /// <summary>

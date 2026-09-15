@@ -48,33 +48,18 @@ public sealed class SummonedMonsterIntelligence : BasicMonsterIntelligence
     {
         var currentMap = this.Owner.CurrentMap;
 
-        // Prefer a target with a clear line of sight, like the base class does.
-        // If nobody is visible, fall back to the nearest target so the summon
-        // still approaches it (and around walls) instead of idling.
-        NonPlayerCharacter? nearest = null;
-        double nearestDistance = double.MaxValue;
-        NonPlayerCharacter? nearestVisible = null;
-        double nearestVisibleDistance = double.MaxValue;
-        foreach (var candidate in currentMap?.GetAttackablesInRange(this.Owner.Position, 8)
-                     .Where(o => o is Monster { SummonedBy: null, IsAlive: true })
-                     .OfType<NonPlayerCharacter>()
-                 ?? [])
-        {
-            var distance = candidate.GetDistanceTo(this.Owner);
-            if (distance < nearestDistance)
-            {
-                nearestDistance = distance;
-                nearest = candidate;
-            }
+        // The search radius is centered on the owner, but sight is checked from the
+        // summon itself: it only attacks what it can actually see, and otherwise
+        // approaches the nearest target instead of idling.
+        var nextTarget = NpcTargetSelection.GetNearestPreferVisible(
+            currentMap?.GetAttackablesInRange(this.Owner.Position, 8)
+                .Where(o => o is Monster { SummonedBy: null, IsAlive: true })
+                .OfType<NonPlayerCharacter>()
+            ?? [],
+            this.Npc,
+            candidate => candidate.GetDistanceTo(this.Owner));
 
-            if (distance < nearestVisibleDistance && this.Npc.HasLineOfSightTo(candidate))
-            {
-                nearestVisibleDistance = distance;
-                nearestVisible = candidate;
-            }
-        }
-
-        return ValueTask.FromResult((IAttackable?)(nearestVisible ?? nearest));
+        return ValueTask.FromResult((IAttackable?)nextTarget);
     }
 
     /// <inheritdoc />
