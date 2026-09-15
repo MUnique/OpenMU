@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.Pathfinding;
 
+using System.Numerics;
+
 /// <summary>
 /// Network which is built of a two-dimensional grid of nodes where
 /// each coordinate has a fixed cost to reach it from any direction.
@@ -72,7 +74,7 @@ public sealed class ScopedGridNetwork : BaseGridNetwork
             this._actualSegmentSideLength *= 2;
         }
 
-        this._bitsPerCoordinate = (int)Math.Log(this._actualSegmentSideLength, 2);
+        this._bitsPerCoordinate = BitOperations.Log2(this._actualSegmentSideLength);
         var avg = (start / 2) + (end / 2);
 
         var offsetX = GetOffset(avg.X, grid.GetUpperBound(0) + 1);
