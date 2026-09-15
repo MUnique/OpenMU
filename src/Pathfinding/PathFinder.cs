@@ -24,6 +24,8 @@ public class PathFinder : IPathFinder
 
     private readonly INetwork _network;
     private readonly IPriorityQueue<Node> _openList;
+    private int _maximumDistance;
+    private int _maximumDistanceSquared;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PathFinder"/> class.
@@ -52,8 +54,17 @@ public class PathFinder : IPathFinder
 
     /// <summary>
     /// Gets or sets the maximum distance until which the path should be resolved.
+    /// A value of 0 disables the check.
     /// </summary>
-    public int MaximumDistance { get; set; }
+    public int MaximumDistance
+    {
+        get => this._maximumDistance;
+        set
+        {
+            this._maximumDistance = value;
+            this._maximumDistanceSquared = value * value;
+        }
+    }
 
     /// <summary>
     /// Gets or sets the search limit.
@@ -78,7 +89,7 @@ public class PathFinder : IPathFinder
         {
             var stopwatch = Stopwatch.StartNew();
             var result = this.FindPathInner(start, end, terrain, includeSafezone, cancellationToken);
-            var elapsedMs = (double)stopwatch.ElapsedTicks / TimeSpan.TicksPerMillisecond;
+            var elapsedMs = stopwatch.Elapsed.TotalMilliseconds;
             if (result is null)
             {
                 FailedSearches.Add(1);
@@ -120,10 +131,7 @@ public class PathFinder : IPathFinder
             return null;
         }
 
-        if (this.Heuristic != null)
-        {
-            this.Heuristic.HeuristicEstimateMultiplier = this.HeuristicEstimate;
-        }
+        this.Heuristic.HeuristicEstimateMultiplier = this.HeuristicEstimate;
 
         var closeNodeCounter = 0;
         var startNode = this._network.GetNodeAt(start);
@@ -163,7 +171,7 @@ public class PathFinder : IPathFinder
 
         if (pathFound)
         {
-            return this.GetCalculatedPath(end).Reverse().ToList();
+            return this.GetCalculatedPath(end);
         }
 
         return null;
@@ -178,7 +186,7 @@ public class PathFinder : IPathFinder
                 continue;
             }
 
-            var heuristicEstimate = this.Heuristic?.CalculateHeuristicDistance(newNode.Position, end) ?? 0;
+            var heuristicEstimate = this.Heuristic.CalculateHeuristicDistance(newNode.Position, end);
             newNode.PredictedTotalCost = newNode.CostUntilNow + heuristicEstimate;
             newNode.Status = NodeStatus.Open;
             newNode.PreviousNode = node;
@@ -186,35 +194,53 @@ public class PathFinder : IPathFinder
         }
     }
 
-    private IEnumerable<PathResultNode> GetCalculatedPath(Point end)
+    private List<PathResultNode> GetCalculatedPath(Point end)
     {
+        var path = new List<PathResultNode>();
         var node = this._network.GetNodeAt(end);
         while (node!.PreviousNode != node)
         {
-            yield return new PathResultNode(node.Position, node.PreviousNode!.Position);
+            path.Add(new PathResultNode(node.Position, node.PreviousNode!.Position));
             node = node.PreviousNode;
         }
+
+        path.Reverse();
+        return path;
     }
 
     private bool MaximumDistanceExceeded(Point start, Point end)
     {
-        if (this.MaximumDistance != 0)
+        if (this._maximumDistance == 0)
         {
-            return start.EuclideanDistanceTo(end) > this.MaximumDistance;
+            return false;
         }
 
-        return false;
+        return start.EuclideanDistanceSquaredTo(end) > this._maximumDistanceSquared;
     }
 
     private bool MaximumDistanceExceeded(Point start, Point end, Node node)
     {
-        if (this.MaximumDistance != 0)
+        if (this._maximumDistance == 0)
         {
-            var distance = start.EuclideanDistanceTo(node.Position);
-            distance += node.Position.EuclideanDistanceTo(end);
-            return distance > this.MaximumDistance;
+            return false;
         }
 
-        return false;
+        // Compare squared distances to avoid the expensive square root.
+        // Triangle inequality on squared values is not exact, so we compare
+        // the sum of roots indirectly: (a + b)^2 > max^2.
+        var startToNodeSquared = start.EuclideanDistanceSquaredTo(node.Position);
+        if (startToNodeSquared > this._maximumDistanceSquared)
+        {
+            return true;
+        }
+
+        var nodeToEndSquared = node.Position.EuclideanDistanceSquaredTo(end);
+        if (nodeToEndSquared > this._maximumDistanceSquared)
+        {
+            return true;
+        }
+
+        var detour = Math.Sqrt(startToNodeSquared) + Math.Sqrt(nodeToEndSquared);
+        return detour > this._maximumDistance;
     }
 }

@@ -85,6 +85,17 @@ public class MonsterAttributeHolder : IAttributeSystem
             return attribute.Value;
         }
 
+        // A spawn area can override the maximum health of its npc (e.g. the blood castle gate
+        // and statue, or summoned monsters). AttackableNpcBase.Initialize starts them off with
+        // that health, so the maximum has to be reported accordingly. Otherwise every
+        // percentage-based readout divides the real health by the unrelated, usually much higher
+        // value of the monster definition.
+        if (attributeDefinition == Stats.MaximumHealth
+            && this._monster.SpawnArea.MaximumHealthOverride is { } maximumHealthOverride)
+        {
+            return maximumHealthOverride;
+        }
+
         if (this._statAttributes.TryGetValue(attributeDefinition, out float value))
         {
             return value;

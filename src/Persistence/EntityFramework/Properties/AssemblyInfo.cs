@@ -10,3 +10,4 @@ using System.Runtime.CompilerServices;
 // associated with an assembly.
 [assembly: AssemblyTitle("MUnique.OpenMU.Persistence.EntityFramework")]
 [assembly: InternalsVisibleTo("MUnique.OpenMU.Persistence.Initialization.Tests")]
+[assembly: InternalsVisibleTo("MUnique.OpenMU.Tests")]
