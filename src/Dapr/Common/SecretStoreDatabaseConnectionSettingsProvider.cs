@@ -14,6 +14,9 @@ using MUnique.OpenMU.Persistence.EntityFramework;
 /// <summary>
 /// Implementation of <see cref="IDatabaseConnectionSettingProvider"/> which retrieves the settings from the
 /// configured Dapr secret storage.
+/// The retrieved connection strings can be influenced by the environment variables <c>DB_HOST</c>, <c>DB_ADMIN_USER</c> and <c>DB_ADMIN_PW</c>,
+/// just like the <see cref="ConfigFileDatabaseConnectionStringProvider"/>. When the variables are not set,
+/// the stored values (default password <c>admin</c>) are used unchanged.
 /// </summary>
 public class SecretStoreDatabaseConnectionSettingsProvider : IDatabaseConnectionSettingProvider
 {
@@ -61,7 +64,7 @@ public class SecretStoreDatabaseConnectionSettingsProvider : IDatabaseConnection
                             var setting = new ConnectionSetting
                             {
                                 ContextTypeName = contextTypeName,
-                                ConnectionString = secret.Value.Values.First()!,
+                                ConnectionString = DatabaseConnectionStringHelper.ApplyEnvironmentVariables(secret.Value.Values.First()!),
                                 DatabaseEngine = DatabaseEngine.Npgsql,
                             };
 
