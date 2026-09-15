@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Network.LoginProbe;
 
 using System;
 using System.Buffers;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -14,7 +15,6 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging.Abstractions;
-using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets.ClientToServer;
 using MUnique.OpenMU.Network.Packets.ConnectServer;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
@@ -101,7 +101,7 @@ public static class Program
         await ReadPacketAsync(stream).ConfigureAwait(false);
 
         var infoRequest = new byte[ConnectionInfoRequest.Length];
-        var request = new ConnectionInfoRequest(infoRequest) { ServerId = (ushort)options.ServerId };
+        _ = new ConnectionInfoRequest(infoRequest) { ServerId = (ushort)options.ServerId };
         await stream.WriteAsync(infoRequest).ConfigureAwait(false);
 
         var response = await ReadPacketAsync(stream).ConfigureAwait(false);
@@ -235,26 +235,40 @@ public static class Program
         public static ProbeOptions? Parse(string[] args)
         {
             var options = new ProbeOptions();
-            for (var i = 0; i < args.Length; i++)
+            var index = 0;
+            while (index < args.Length)
             {
-                if (i + 1 >= args.Length)
+                if (index + 1 >= args.Length)
                 {
                     return null;
                 }
 
-                var value = args[i + 1];
-                switch (args[i])
+                var value = args[index + 1];
+                switch (args[index])
                 {
-                    case "--host": options.Host = value; break;
-                    case "--connect-port": options.ConnectPort = int.Parse(value); break;
-                    case "--server": options.ServerId = int.Parse(value); break;
-                    case "--hold": options.HoldSeconds = int.Parse(value); break;
-                    case "--account": options.Account = value; break;
-                    case "--password": options.Password = value; break;
-                    default: return null;
+                    case "--host":
+                        options.Host = value;
+                        break;
+                    case "--connect-port":
+                        options.ConnectPort = int.Parse(value, CultureInfo.InvariantCulture);
+                        break;
+                    case "--server":
+                        options.ServerId = int.Parse(value, CultureInfo.InvariantCulture);
+                        break;
+                    case "--hold":
+                        options.HoldSeconds = int.Parse(value, CultureInfo.InvariantCulture);
+                        break;
+                    case "--account":
+                        options.Account = value;
+                        break;
+                    case "--password":
+                        options.Password = value;
+                        break;
+                    default:
+                        return null;
                 }
 
-                i++;
+                index += 2;
             }
 
             if (string.IsNullOrEmpty(options.Account))

@@ -9,7 +9,6 @@ using System.Threading;
 using MUnique.OpenMU.GameLogic.TestActors;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.Interfaces;
-using MUnique.OpenMU.Tests;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 
@@ -197,7 +196,7 @@ public class ActorRegistryTests
             var locator = new Mock<IGameServerContextLocator>();
             locator.Setup(l => l.GetContext(0)).Returns(serverContext.Object);
             locator.Setup(l => l.GetContext(It.Is<int>(id => id != 0))).Returns((IGameServerContext?)null);
-            locator.Setup(l => l.GetContexts()).Returns([(0, serverContext.Object), (1, otherContext.Object)]);
+            locator.Setup(l => l.Contexts).Returns([(0, serverContext.Object), (1, otherContext.Object)]);
 
             var factory = new CountingActorFactory(gameContext);
             var registry = new ActorRegistry(locator.Object, factory, new NullLogger<ActorRegistry>());

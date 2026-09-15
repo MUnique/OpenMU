@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic.TestActors;
 
-using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 
 /// <summary>

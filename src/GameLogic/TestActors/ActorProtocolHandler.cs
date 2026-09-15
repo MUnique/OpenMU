@@ -76,11 +76,7 @@ public sealed class ActorProtocolHandler
         {
             await WriteFailureAsync(writer, id, ActorErrorCodes.BadRequest, $"The request is not valid JSON: {ex.Message}").ConfigureAwait(false);
         }
-        catch (OperationCanceledException)
-        {
-            throw;
-        }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is not OperationCanceledException)
         {
             await WriteFailureAsync(writer, id, ActorErrorCodes.Failed, ex.Message).ConfigureAwait(false);
         }

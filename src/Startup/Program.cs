@@ -367,7 +367,7 @@ internal sealed class Program : IDisposable
     /// <param name="services">The service collection.</param>
     private void AddActorControlEndpoint(IServiceCollection services)
     {
-        if (ActorControlService.GetConfiguredPort() is not { } actorPort)
+        if (ActorControlService.ConfiguredPort is not { } actorPort)
         {
             return;
         }

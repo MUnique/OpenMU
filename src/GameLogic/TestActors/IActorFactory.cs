@@ -4,8 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic.TestActors;
 
-using MUnique.OpenMU.GameLogic;
-
 /// <summary>
 /// Creates the actors the <see cref="ActorRegistry"/> manages.
 /// </summary>

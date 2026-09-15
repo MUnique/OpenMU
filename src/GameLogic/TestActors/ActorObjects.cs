@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic.TestActors;
 
-using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.NPC;
 
 /// <summary>
@@ -14,25 +13,25 @@ using MUnique.OpenMU.GameLogic.NPC;
 public static class ActorObjects
 {
     /// <summary>The kind of a scripted actor.</summary>
-    public const string ActorKind = "actor";
+    public static readonly string ActorKind = "actor";
 
     /// <summary>The kind of a server-side population bot.</summary>
-    public const string BotKind = "bot";
+    public static readonly string BotKind = "bot";
 
     /// <summary>The kind of a human player, connected or in an offline session.</summary>
-    public const string PlayerKind = "player";
+    public static readonly string PlayerKind = "player";
 
     /// <summary>The kind of a monster.</summary>
-    public const string MonsterKind = "monster";
+    public static readonly string MonsterKind = "monster";
 
     /// <summary>The kind of a non-attackable NPC.</summary>
-    public const string NpcKind = "npc";
+    public static readonly string NpcKind = "npc";
 
     /// <summary>The kind of a dropped item.</summary>
-    public const string ItemKind = "item";
+    public static readonly string ItemKind = "item";
 
     /// <summary>The kind of anything else.</summary>
-    public const string UnknownKind = "unknown";
+    public static readonly string UnknownKind = "unknown";
 
     /// <summary>
     /// Gets the kind of the given game object.

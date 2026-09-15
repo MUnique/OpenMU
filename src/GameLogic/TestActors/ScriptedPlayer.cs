@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.GameLogic.TestActors;
 
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Entities;
-using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.PlugIns;
 

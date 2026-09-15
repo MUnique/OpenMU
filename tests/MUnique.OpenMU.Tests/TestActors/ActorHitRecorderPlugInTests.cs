@@ -7,7 +7,6 @@ namespace MUnique.OpenMU.Tests.TestActors;
 using System.Threading.Tasks;
 using MUnique.OpenMU.GameLogic.TestActors;
 using MUnique.OpenMU.GameLogic;
-using MUnique.OpenMU.Tests;
 using Moq;
 
 /// <summary>

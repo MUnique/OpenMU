@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.GameLogic.TestActors;
 
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Configuration;
-using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Bots;
 using MUnique.OpenMU.PlugIns;
@@ -26,7 +25,7 @@ public sealed class BotsController
     /// <summary>
     /// The number of animated bot characters <c>bots on</c> asks for when no count is given.
     /// </summary>
-    public const int DefaultBotCount = 4;
+    public static readonly int DefaultBotCount = 4;
 
     private readonly IGameServerContextLocator _locator;
     private readonly ILogger<BotsController> _logger;
@@ -71,7 +70,7 @@ public sealed class BotsController
     /// <returns>The result.</returns>
     public async ValueTask<ActorCommandResult> HandleAsync(string action, int? count)
     {
-        if (this._locator.GetContexts() is not { Count: > 0 } contexts)
+        if (this._locator.Contexts is not { Count: > 0 } contexts)
         {
             return ActorCommandResult.Failure(ActorErrorCodes.UnknownServer, "This process hosts no game server.");
         }
@@ -115,8 +114,9 @@ public sealed class BotsController
     {
         try
         {
-            // A fresh context, so the PlugInConfiguration entity is tracked and the change is saved;
-            // the cached in-memory configuration graph is not tracked.
+            // A fresh persistence context is needed here, because only then the plugin configuration
+            // entity is tracked and the change is saved - the cached in-memory configuration graph
+            // is not tracked.
             using var persistenceContext = context.PersistenceContextProvider.CreateNewContext();
             var typeId = typeof(BotFeaturePlugIn).GUID;
             var gameConfiguration = (await persistenceContext.GetAsync<GameConfiguration>().ConfigureAwait(false)).FirstOrDefault();

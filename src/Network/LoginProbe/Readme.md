@@ -14,7 +14,7 @@ change.
 
 ## Usage
 
-```
+```text
 MUnique.OpenMU.Network.LoginProbe --account <name> [--password <pw>]
                                  [--host 127.0.0.1] [--connect-port 44406]
                                  [--server 0] [--hold <seconds>]

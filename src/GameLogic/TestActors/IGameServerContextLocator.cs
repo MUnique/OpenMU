@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic.TestActors;
 
-using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.Interfaces;
 
 /// <summary>
@@ -13,17 +12,16 @@ using MUnique.OpenMU.Interfaces;
 public interface IGameServerContextLocator
 {
     /// <summary>
+    /// Gets every game server context of this process, by server id.
+    /// </summary>
+    IReadOnlyList<(int ServerId, IGameServerContext Context)> Contexts { get; }
+
+    /// <summary>
     /// Gets the context of the game server with the given id.
     /// </summary>
     /// <param name="serverId">The server id.</param>
     /// <returns>The context, or <c>null</c> when this process does not host that server.</returns>
     IGameServerContext? GetContext(int serverId);
-
-    /// <summary>
-    /// Gets every game server context of this process, by server id.
-    /// </summary>
-    /// <returns>The contexts.</returns>
-    IReadOnlyList<(int ServerId, IGameServerContext Context)> GetContexts();
 }
 
 /// <summary>
@@ -44,20 +42,18 @@ public sealed class GameServerContextLocator : IGameServerContextLocator
     }
 
     /// <inheritdoc />
+    public IReadOnlyList<(int ServerId, IGameServerContext Context)> Contexts =>
+        this._gameServers
+            .Where(pair => pair.Value is IGameServerContextProvider)
+            .Select(pair => (pair.Key, ((IGameServerContextProvider)pair.Value).Context))
+            .OrderBy(pair => pair.Key)
+            .ToList();
+
+    /// <inheritdoc />
     public IGameServerContext? GetContext(int serverId)
     {
         return this._gameServers.TryGetValue(serverId, out var gameServer) && gameServer is IGameServerContextProvider provider
             ? provider.Context
             : null;
-    }
-
-    /// <inheritdoc />
-    public IReadOnlyList<(int ServerId, IGameServerContext Context)> GetContexts()
-    {
-        return this._gameServers
-            .Where(pair => pair.Value is IGameServerContextProvider)
-            .Select(pair => (pair.Key, ((IGameServerContextProvider)pair.Value).Context))
-            .OrderBy(pair => pair.Key)
-            .ToList();
     }
 }

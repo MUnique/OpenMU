@@ -23,10 +23,11 @@ meant for development and test servers, not for a live one.
 **An actor is a player, not a bot.** It derives from `Player` and repeats the
 login sequence of the connection-less offline player (the same class which
 keeps a character playing after its owner logs out, see [bots](bots.md)), but
-it is deliberately *not* an `OfflinePlayer`: the server-side bots only defend themselves against players
-which are not offline players, mini games skip offline party leaders, and the
-admin panel lists them as offline accounts. An actor has to be a human
-stand-in, so everything which asks "is this a real player" answers yes.
+it is deliberately *not* an `OfflinePlayer`: the server-side bots only defend
+themselves against players which are not offline players, mini games skip
+offline party leaders, and the admin panel lists them as offline accounts. An
+actor has to be a human stand-in, so everything which asks "is this a real
+player" answers yes.
 
 **Commands run on the actor's own tick.** Each command executes inside the
 player's persistence lock, so it never overlaps the periodic save or another

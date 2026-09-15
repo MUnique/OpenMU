@@ -141,7 +141,7 @@ public class ActorProtocolHandlerTests
     private static BotsController CreateBotsController()
     {
         var locator = new Mock<IGameServerContextLocator>();
-        locator.Setup(l => l.GetContexts()).Returns([]);
+        locator.Setup(l => l.Contexts).Returns([]);
         return new BotsController(locator.Object, new NullLogger<BotsController>());
     }
 

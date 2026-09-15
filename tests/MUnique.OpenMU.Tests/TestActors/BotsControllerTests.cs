@@ -75,7 +75,7 @@ public class BotsControllerTests
     public async Task UnknownActionIsRefusedAsync()
     {
         var locator = new Mock<IGameServerContextLocator>();
-        locator.Setup(l => l.GetContexts()).Returns([(0, new Mock<MUnique.OpenMU.GameLogic.IGameServerContext>().Object)]);
+        locator.Setup(l => l.Contexts).Returns([(0, new Mock<MUnique.OpenMU.GameLogic.IGameServerContext>().Object)]);
         var controller = new BotsController(locator.Object, new NullLogger<BotsController>());
 
         var result = await controller.HandleAsync("nonsense", null).ConfigureAwait(false);
@@ -93,7 +93,7 @@ public class BotsControllerTests
     public async Task NoGameServerIsReportedAsync()
     {
         var locator = new Mock<IGameServerContextLocator>();
-        locator.Setup(l => l.GetContexts()).Returns([]);
+        locator.Setup(l => l.Contexts).Returns([]);
         var controller = new BotsController(locator.Object, new NullLogger<BotsController>());
 
         var result = await controller.HandleAsync("status", null).ConfigureAwait(false);

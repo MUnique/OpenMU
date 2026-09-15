@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.GameLogic.TestActors;
 
 using System.Threading;
 using Microsoft.Extensions.Logging;
-using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Offline;
 
 /// <summary>
@@ -66,7 +65,7 @@ public sealed class ActorRegistry : IActorRegistry
             // over the servers (BotServerPartition), so a bot animating this account may well live
             // on another one - and two players driving one character means two persistence contexts
             // saving it, which is exactly the corruption the bot code warns about.
-            foreach (var (serverIdOfContext, otherContext) in this._locator.GetContexts())
+            foreach (var (serverIdOfContext, otherContext) in this._locator.Contexts)
             {
                 var players = await otherContext.GetPlayersAsync().ConfigureAwait(false);
                 if (players.FirstOrDefault(p => string.Equals(p.Account?.LoginName, loginName, StringComparison.OrdinalIgnoreCase)) is { } occupant)

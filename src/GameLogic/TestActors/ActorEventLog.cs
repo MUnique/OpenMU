@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic.TestActors;
 
-using System.Threading;
 using System.Threading.Channels;
 
 /// <summary>
@@ -23,12 +22,12 @@ public sealed class ActorEventLog
     /// The number of events kept per actor. The specification asks for at least 1000; 4096 gives a
     /// scenario room to run for a while before it has to read.
     /// </summary>
-    public const int DefaultCapacity = 4096;
+    public static readonly int DefaultCapacity = 4096;
 
     /// <summary>
     /// The number of events a live follower may fall behind before it starts losing the oldest ones.
     /// </summary>
-    public const int DefaultSubscriptionCapacity = 1024;
+    public static readonly int DefaultSubscriptionCapacity = 1024;
 
     private readonly object _syncRoot = new();
     private readonly ActorEvent?[] _ring;
@@ -41,15 +40,16 @@ public sealed class ActorEventLog
     /// <summary>
     /// Initializes a new instance of the <see cref="ActorEventLog"/> class.
     /// </summary>
-    /// <param name="capacity">The number of events to keep; defaults to <see cref="DefaultCapacity"/>.</param>
-    public ActorEventLog(int capacity = DefaultCapacity)
+    /// <param name="capacity">The number of events to keep; <c>null</c> uses <see cref="DefaultCapacity"/>.</param>
+    public ActorEventLog(int? capacity = null)
     {
-        if (capacity < 1)
+        var size = capacity ?? DefaultCapacity;
+        if (size < 1)
         {
-            throw new ArgumentOutOfRangeException(nameof(capacity), capacity, "The event log needs room for at least one event.");
+            throw new ArgumentOutOfRangeException(nameof(capacity), size, "The event log needs room for at least one event.");
         }
 
-        this._ring = new ActorEvent?[capacity];
+        this._ring = new ActorEvent?[size];
     }
 
     /// <summary>
@@ -129,11 +129,11 @@ public sealed class ActorEventLog
     /// When given, the kept events newer than this sequence number are delivered first, so a follower
     /// misses nothing between reading the history and subscribing.
     /// </param>
-    /// <param name="capacity">The follower's buffer size; defaults to <see cref="DefaultSubscriptionCapacity"/>.</param>
+    /// <param name="capacity">The follower's buffer size; <c>null</c> uses <see cref="DefaultSubscriptionCapacity"/>.</param>
     /// <returns>The subscription; disposing it ends the stream.</returns>
-    public ActorEventSubscription Subscribe(long? sinceSequence = null, int capacity = DefaultSubscriptionCapacity)
+    public ActorEventSubscription Subscribe(long? sinceSequence = null, int? capacity = null)
     {
-        var subscription = new ActorEventSubscription(this, capacity);
+        var subscription = new ActorEventSubscription(this, capacity ?? DefaultSubscriptionCapacity);
         lock (this._syncRoot)
         {
             if (sinceSequence is { } since)

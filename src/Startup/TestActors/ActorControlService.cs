@@ -27,7 +27,7 @@ public sealed class ActorControlService : BackgroundService
     /// <summary>
     /// The environment variable which enables the endpoint and names its port.
     /// </summary>
-    public const string EnvironmentVariableName = "OPENMU_ACTOR_PORT";
+    public static readonly string EnvironmentVariableName = "OPENMU_ACTOR_PORT";
 
     /// <summary>
     /// UTF-8 without a byte order mark: the first line of a connection must be plain JSON, or a
@@ -63,13 +63,15 @@ public sealed class ActorControlService : BackgroundService
     }
 
     /// <summary>
-    /// Reads the configured port from the environment.
+    /// Gets the port configured in the environment, or <c>null</c> when the endpoint is off (the default).
     /// </summary>
-    /// <returns>The port, or <c>null</c> when the endpoint is off (the default).</returns>
-    public static int? GetConfiguredPort()
+    public static int? ConfiguredPort
     {
-        var value = Environment.GetEnvironmentVariable(EnvironmentVariableName);
-        return int.TryParse(value, out var port) && port is > 0 and <= 65535 ? port : null;
+        get
+        {
+            var value = Environment.GetEnvironmentVariable(EnvironmentVariableName);
+            return int.TryParse(value, out var port) && port is > 0 and <= 65535 ? port : null;
+        }
     }
 
     /// <summary>

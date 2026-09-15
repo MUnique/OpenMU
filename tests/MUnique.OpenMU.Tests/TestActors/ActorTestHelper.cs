@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using MUnique.OpenMU.GameLogic.TestActors;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.Pathfinding;
-using MUnique.OpenMU.Tests;
 
 /// <summary>
 /// Builds scripted actors on top of the in-memory game context of the upstream test helpers.

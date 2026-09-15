@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.GameLogic.TestActors;
 
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
-using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.PlugIns;
 
