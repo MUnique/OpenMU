@@ -203,13 +203,21 @@ public class NetworkObservationTests
 
     private async ValueTask<ArchivedSession> WaitForPacketsAsync(PacketArchive archive, int packetCount)
     {
-        // The packets are written by another task, so the file needs a moment to catch up.
+        // The packets are written by another task, so the session listing and the packet
+        // file need a moment to catch up. Both can be transiently empty, which is not a
+        // failure — only running out of time is.
         var watch = Stopwatch.StartNew();
-        ArchivedSession? session = null;
-        while (watch.Elapsed < TimeSpan.FromSeconds(10))
+        var timeout = TimeSpan.FromSeconds(10);
+        while (watch.Elapsed < timeout)
         {
             var sessions = await archive.GetSessionsAsync().ConfigureAwait(false);
-            session = await ArchivedSession.LoadAsync(sessions[0], 0).ConfigureAwait(false);
+            if (sessions.Count == 0)
+            {
+                await Task.Delay(50).ConfigureAwait(false);
+                continue;
+            }
+
+            var session = await ArchivedSession.LoadAsync(sessions[0], 0).ConfigureAwait(false);
             if (session.PacketList.Count >= packetCount)
             {
                 return session;
@@ -218,7 +226,7 @@ public class NetworkObservationTests
             await Task.Delay(50).ConfigureAwait(false);
         }
 
-        return session!;
+        throw new TimeoutException($"Timed out after {timeout.TotalSeconds:F0} s waiting for {packetCount} archived packet(s).");
     }
 
     /// <summary>
