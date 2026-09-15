@@ -2025,11 +2025,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         {
             // To-do: exclude cash shop pets: demon, spirit of guardian, rudolf, panda, skeleton
             itemDurationIncrease = attributes[Stats.PetDurationIncrease];
-        }
 
-        if (itemDurationIncrease == 0)
-        {
-            itemDurationIncrease = 1;
+            if (itemDurationIncrease == 0)
+            {
+                itemDurationIncrease = 1;
+            }
         }
 
         double damageFactor = identifier switch

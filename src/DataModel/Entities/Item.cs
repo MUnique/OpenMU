@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.DataModel.Entities;
 
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Globalization;
 using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.DataModel.Configuration.Items;
@@ -37,7 +38,8 @@ public partial class Item
     /// <remarks>
     /// These are related to the client's UI item repair icons, whose colors go from yellow to dark red as durability decreases.
     /// </remarks>
-    public double[] DurabilityThresholds { get; set; } = new double[3];
+    [NotMapped]
+    public double[]? DurabilityThresholds { get; set; }
 
     /// <summary>
     /// Gets or sets the level of the item.

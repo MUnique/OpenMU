@@ -124,7 +124,6 @@ internal partial class CharacterClassInitialization
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(48.5f, Stats.MaximumHealth));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(2, Stats.SkillMultiplier));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0.03f, Stats.AbilityRecoveryMultiplier));
-        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.TrainablePetDurationIncrease));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(MovementSpeedConstants.RunningGearMovementSpeed, Stats.MovementSpeed, AggregateType.Maximum));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(MovementSpeedConstants.RunningGearMovementSpeed, Stats.MovementSpeedUnderwater, AggregateType.Maximum));
 

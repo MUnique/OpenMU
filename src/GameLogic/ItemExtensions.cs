@@ -271,7 +271,7 @@ public static class ItemExtensions
     /// </returns>
     public static bool DegradesWithDurability(this Item item)
     {
-        return item.ItemSlot <= InventoryConstants.WingsSlot && !item.IsTrainablePet();
+        return item.ItemSlot != InventoryConstants.PetSlot && !item.IsTrainablePet();
     }
 
     /// <summary>
@@ -501,12 +501,12 @@ public static class ItemExtensions
             return 1;
         }
 
-        if (item.DurabilityThresholds.Length == 0)
+        if (item.DurabilityThresholds is null)
         {
             item.CalculateDurabilityThresholds();
         }
 
-        for (int i = item.DurabilityThresholds.Length - 1; i >= 0; i--)
+        for (int i = item.DurabilityThresholds!.Length - 1; i >= 0; i--)
         {
             if (item.Durability < item.DurabilityThresholds[i])
             {
@@ -523,8 +523,9 @@ public static class ItemExtensions
     /// <param name="item">The item.</param>
     private static void CalculateDurabilityThresholds(this Item item)
     {
+        item.DurabilityThresholds ??= new double[3];
         var maxDurability = item.GetMaximumDurabilityOfOnePiece();
-        for (int i = 0; i < item.DurabilityThresholds.Length; i++)
+        for (int i = 0; i < DurabilityFactors.Length; i++)
         {
             item.DurabilityThresholds[i] = maxDurability * DurabilityFactors[i];
         }

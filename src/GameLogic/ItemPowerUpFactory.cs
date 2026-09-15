@@ -217,24 +217,22 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
 
     private IEnumerable<PowerUpWrapper> GetBasePowerUpWrappers(Item item, AttributeSystem attributeHolder, ItemBasePowerUpDefinition attribute, AttributeDefinition? targetAttribute = null)
     {
-        attribute.ThrowNotInitializedProperty(attribute.BaseValueElement is null, nameof(attribute.BaseValueElement));
         attribute.ThrowNotInitializedProperty(attribute.TargetAttribute is null, nameof(attribute.TargetAttribute));
 
-        var durabilityFactor = this._durabilityAffectedItemAttributes.Contains(attribute.TargetAttribute) ? item.GetCurrentDurabilityFactor() : 1.0f;
-        attribute.BaseValue *= durabilityFactor;
+        var durabilityFactor = this._durabilityAffectedItemAttributes.Contains(attribute.TargetAttribute) ? item.GetCurrentDurabilityFactor() : 1;
+        var baseValueElmt = attribute.GetBaseValueElement(durabilityFactor);
 
-        var levelBonus = (attribute.BonusPerLevelTable?.BonusPerLevel ?? Enumerable.Empty<LevelBonus>()).FirstOrDefault(bonus => bonus.Level == item.Level);
-        levelBonus?.AdditionalValue *= durabilityFactor;
-
-        var levelBonusElmt = levelBonus?.GetAdditionalValueElement(attribute.AggregateType);
+        var levelBonusElmt = (attribute.BonusPerLevelTable?.BonusPerLevel ?? Enumerable.Empty<LevelBonus>())
+            .FirstOrDefault(bonus => bonus.Level == item.Level)?
+            .GetAdditionalValueElement(attribute.AggregateType, durabilityFactor);
         if (levelBonusElmt is null)
         {
-            yield return new PowerUpWrapper(attribute.BaseValueElement, targetAttribute ?? attribute.TargetAttribute, attributeHolder);
+            yield return new PowerUpWrapper(baseValueElmt, targetAttribute ?? attribute.TargetAttribute, attributeHolder);
         }
         else
         {
             yield return new PowerUpWrapper(
-                new CombinedElement(attribute.BaseValueElement, levelBonusElmt),
+                new CombinedElement(baseValueElmt, levelBonusElmt),
                 targetAttribute ?? attribute.TargetAttribute,
                 attributeHolder);
         }
@@ -311,7 +309,7 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
                 }
             }
 
-            var durabilityFactor = option.OptionType == ItemOptionTypes.Option || option.OptionType == ItemOptionTypes.AncientBonus
+            var durabilityFactor = (option.OptionType == ItemOptionTypes.Option && !item.IsJewelry()) || option.OptionType == ItemOptionTypes.AncientBonus
                 ? item.GetCurrentDurabilityFactor() : 1.0f;
             foreach (var wrapper in PowerUpWrapper.CreateByPowerUpDefinition(powerUp, attributeHolder, aggregateType, durabilityFactor))
             {

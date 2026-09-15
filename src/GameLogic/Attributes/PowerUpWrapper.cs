@@ -60,10 +60,8 @@ public sealed class PowerUpWrapper : IElement, IDisposable
     {
         if (powerUpDef.Boost?.ConstantValue != null)
         {
-            powerUpDef.Boost.ConstantValue.Value *= durabilityFactor;
-
             yield return new PowerUpWrapper(
-                powerUpDef.Boost.ConstantValue,
+                powerUpDef.Boost.GetSimpleValueElement(durabilityFactor),
                 powerUpDef.TargetAttribute ?? throw Error.NotInitializedProperty(powerUpDef, nameof(PowerUpDefinition.TargetAttribute)),
                 attributeHolder,
                 aggregateType);
