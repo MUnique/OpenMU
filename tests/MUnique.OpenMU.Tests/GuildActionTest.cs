@@ -343,6 +343,32 @@ public class GuildActionTest : GuildTestBase
                 It.IsAny<Interfaces.Guild>()), Times.Once());
     }
 
+    /// <summary>
+    /// Tests that registering the same guild member twice does not duplicate guild broadcasts.
+    /// </summary>
+    [Test]
+    public async ValueTask GuildMemberRegistrationIsIdempotentAsync()
+    {
+        await this.PrepareRoleAssignScenarioAsync().ConfigureAwait(false);
+        var context = (GameServerContext)this._guildMasterPlayer.GameContext;
+        var guildId = this._guildMasterPlayer.GuildStatus!.GuildId;
+        await context.RegisterGuildMemberAsync(this._player).ConfigureAwait(false);
+        await context.RegisterGuildMemberAsync(this._player).ConfigureAwait(false);
+
+        var visits = 0;
+        await context.ForEachGuildPlayerAsync(guildId, p =>
+        {
+            if (ReferenceEquals(p, this._player))
+            {
+                visits++;
+            }
+
+            return Task.CompletedTask;
+        }).ConfigureAwait(false);
+
+        Assert.That(visits, Is.EqualTo(1));
+    }
+
     private async ValueTask PrepareRoleAssignScenarioAsync()
     {
         await this.RequestGuildAndRespondAsync(true).ConfigureAwait(false);

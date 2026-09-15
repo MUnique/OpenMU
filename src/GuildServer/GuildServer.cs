@@ -221,14 +221,19 @@ public class GuildServer : IGuildServer
 
             guildMember.Status = role;
             await guild.DatabaseContext.SaveChangesAsync().ConfigureAwait(false);
-            if (guild.Members.TryGetValue(characterId, out var listEntry))
-            {
-                listEntry.PlayerPosition = role;
-                if (listEntry.PlayerName is not null)
-                {
-                    await this._changePublisher.AssignGuildToPlayerAsync(listEntry.ServerId, listEntry.PlayerName, new GuildMemberStatus(guildId, role)).ConfigureAwait(false);
-                }
-            }
+                    if (guild.Members.TryGetValue(characterId, out var listEntry))
+                    {
+                        listEntry.PlayerPosition = role;
+
+                        // Offline members keep their cached name while their server id is
+                        // OfflineServerId; publishing to them is pointless (dropped or, over
+                        // Dapr, an error on every call). They pick up the persisted position
+                        // on next login through PlayerEnteredGameAsync.
+                        if (listEntry.PlayerName is not null && listEntry.ServerId != OfflineServerId)
+                        {
+                            await this._changePublisher.AssignGuildToPlayerAsync(listEntry.ServerId, listEntry.PlayerName, new GuildMemberStatus(guildId, role)).ConfigureAwait(false);
+                        }
+                    }
         }
         catch (Exception ex)
         {
