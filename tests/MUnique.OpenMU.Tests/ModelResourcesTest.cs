@@ -9,6 +9,7 @@ using System.Globalization;
 using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Unit tests for verifying that <see cref="ModelResourceProvider"/> returns expected captions and descriptions
@@ -133,5 +134,20 @@ public class ModelResourcesTest
     {
         var caption = ModelResourceProvider.GetEnumCaption(typeof(AccountState), AccountState.GameMaster, CultureInfo.GetCultureInfo("en"));
         Assert.That(caption, Is.EqualTo("Game Master"));
+    }
+
+    /// <summary>
+    /// Verifies that the captions for <see cref="GuildPosition"/> are properly returned from model resources.
+    /// </summary>
+    /// <param name="position">The guild position.</param>
+    /// <param name="expectedCaption">The expected caption.</param>
+    [TestCase(GuildPosition.NormalMember, "Normal Member")]
+    [TestCase(GuildPosition.GuildMaster, "Guild Master")]
+    [TestCase(GuildPosition.BattleMaster, "Battle Master")]
+    [TestCase(GuildPosition.AssistantMaster, "Assistant Master")]
+    public void GuildPositionCaption(GuildPosition position, string expectedCaption)
+    {
+        var caption = position.GetEnumCaption(CultureInfo.GetCultureInfo("en"));
+        Assert.That(caption, Is.EqualTo(expectedCaption));
     }
 }
