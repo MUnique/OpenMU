@@ -126,10 +126,23 @@ internal sealed class BotGenerator
         var reservedNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var created = 0;
 
+        // One buffer per party, so buffers are planned from parties.
+        var bufferQuota = BotPartyPolicy.EstimatePartyCount(numberOfAccounts * perAccount);
+        var buffersAssigned = 0;
+
         // Build a balanced, shuffled queue of classes so the whole population is evenly split across
         // all creatable classes. Independent random draws leave visible skew at this scale (e.g. 11
         // Summoners vs 4 Elves for 50 bots); the quota queue guarantees ~even counts, drawn per character.
         var classQueue = BuildBalancedClassQueue(creatableClasses, numberOfAccounts * perAccount);
+        if (creatableClasses.FirstOrDefault(c => c.Number == BotClassNumbers.FairyElfNumber) is { } elfClass)
+        {
+            GrowElfSlots(classQueue, elfClass, bufferQuota);
+        }
+        else
+        {
+            bufferQuota = 0;
+            this._logger.LogWarning("No creatable elf class found - bot parties cannot have buffers.");
+        }
 
         for (var i = 1; i <= numberOfAccounts; i++)
         {
@@ -138,6 +151,7 @@ internal sealed class BotGenerator
             var existing = await context.GetAccountByLoginNameAsync(loginName, cancellationToken).ConfigureAwait(false);
             if (existing is not null)
             {
+                buffersAssigned += existing.Characters.Count(c => BotBuild.IsSupportElf(c.CharacterClass, c.Name));
                 continue;
             }
 
@@ -152,7 +166,13 @@ internal sealed class BotGenerator
                 var characterClass = classQueue.Count > 0 ? classQueue.Dequeue() : creatableClasses.SelectRandom()!;
                 var level = profile.GetStartLevel(minLevel, maxLevel);
                 var seededResets = profile.GetSeededResets(maxSeededResets);
-                var name = await this._nameGenerator.GenerateUniqueAsync(context, reservedNames, cancellationToken).ConfigureAwait(false);
+                var wantSupport = BotBuild.IsElf(characterClass) && buffersAssigned < bufferQuota;
+                var name = await this.GenerateBuildNameAsync(context, reservedNames, characterClass, wantSupport, cancellationToken).ConfigureAwait(false);
+                if (BotBuild.IsSupportElf(characterClass, name))
+                {
+                    buffersAssigned++;
+                }
+
                 this.CreateCharacter(context, account, name, characterClass, level, slot, experienceTable, seededResets, profile.StarterItemLevel, profile.EquipStarterArmor, resetConfiguration);
             }
 
@@ -221,6 +241,62 @@ internal sealed class BotGenerator
         keyConfiguration[23] = unbound; // E
         keyConfiguration[25] = unbound; // R
         return keyConfiguration;
+    }
+
+    /// <summary>
+    /// Grows the elf share of the queue to the buffer quota plus archer keep.
+    /// Natural split yields fewer buffers than parties need.
+    /// </summary>
+    private static void GrowElfSlots(Queue<CharacterClass> queue, CharacterClass elfClass, int bufferQuota)
+    {
+        var slots = queue.ToList();
+        var elfCount = slots.Count(c => c.Number == BotClassNumbers.FairyElfNumber);
+        var target = bufferQuota + Math.Max(1, elfCount / 2);
+        if (elfCount >= target)
+        {
+            return;
+        }
+
+        var converted = 0;
+        for (var n = 0; n < slots.Count && elfCount + converted < target; n++)
+        {
+            if (slots[n].Number != BotClassNumbers.FairyElfNumber)
+            {
+                slots[n] = elfClass;
+                converted++;
+            }
+        }
+
+        queue.Clear();
+        foreach (var characterClass in slots)
+        {
+            queue.Enqueue(characterClass);
+        }
+    }
+
+    /// <summary>
+    /// Draws a name with the wanted elf variant. Other classes keep any name.
+    /// </summary>
+    private async ValueTask<string> GenerateBuildNameAsync(
+        IPlayerContext context,
+        ISet<string> reservedNames,
+        CharacterClass characterClass,
+        bool wantSupport,
+        CancellationToken cancellationToken)
+    {
+        var name = await this._nameGenerator.GenerateUniqueAsync(context, reservedNames, cancellationToken).ConfigureAwait(false);
+        if (!BotBuild.IsElf(characterClass))
+        {
+            return name;
+        }
+
+        var wantVariant = wantSupport ? 1 : 0;
+        for (var attempt = 0; attempt < 50 && BotBuild.GetVariant(name) != wantVariant; attempt++)
+        {
+            name = await this._nameGenerator.GenerateUniqueAsync(context, reservedNames, cancellationToken).ConfigureAwait(false);
+        }
+
+        return name;
     }
 
     /// <summary>

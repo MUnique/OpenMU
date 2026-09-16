@@ -31,11 +31,8 @@ internal sealed class BotNavigator : AsyncDisposable
     /// </summary>
     private const int WarpImprovementMargin = 8;
 
-    /// <summary>
-    /// Below this level a bot never warps: it stays on its class starting map (e.g. elves in Noria,
-    /// summoners in Elvenland), so the newbie maps stay populated instead of everyone drifting to one map.
-    /// </summary>
-    private const int MinWarpLevel = 30;
+    /// <summary>Fallback when the server defines no warps: the lowest stock requirement.</summary>
+    private const int FallbackMinWarpLevel = 10;
 
     /// <summary>Width of the level band of areas we randomize between, so bots don't all stack on one spot.</summary>
     private const int BandWidth = 3;
@@ -1372,7 +1369,7 @@ internal sealed class BotNavigator : AsyncDisposable
         // ground to earn its way back up, instead of walking between hunting grounds forever.
         var mapIsBarren = DateTime.UtcNow - this._player.LastAttackUtc > BarrenMapDuration;
 
-        if ((plainLevel < MinWarpLevel && !mustEscape && !mapIsBarren)
+        if ((plainLevel < this.GetMinWarpLevel() && !mustEscape && !mapIsBarren)
             || DateTime.UtcNow - this._lastWarpUtc < WarpCooldown)
         {
             return false;
@@ -1773,6 +1770,18 @@ internal sealed class BotNavigator : AsyncDisposable
                         && character.GetEffectiveMoveLevelRequirement(w.LevelRequirement) <= plainLevel)
             .FirstOrDefault();
         return warp is not null;
+    }
+
+    /// <summary>
+    /// Lowest level at which a bot warps on its own: the lowest requirement
+    /// in the server warp list, so newbies stay on their starting maps.
+    /// </summary>
+    private int GetMinWarpLevel()
+    {
+        return this._player.GameContext.Configuration.WarpList
+            .Select(warp => warp.LevelRequirement)
+            .DefaultIfEmpty(FallbackMinWarpLevel)
+            .Min();
     }
 
     /// <summary>
