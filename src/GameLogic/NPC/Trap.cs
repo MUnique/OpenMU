@@ -9,7 +9,7 @@ using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.World;
 
 /// <summary>
-/// The implementation of a trap, which can attack players.
+/// The implementation of a monster, which can attack players.
 /// </summary>
 public sealed class Trap : NonPlayerCharacter, IAttacker
 {
