@@ -1415,15 +1415,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     private async ValueTask RegenerateHeroStateAsync()
     {
+        // A newly created character has no hero state yet, so there is nothing to count down.
         if (this._selectedCharacter is not { } currentCharacter
-            || currentCharacter.State == HeroState.Normal)
+            || currentCharacter.State is HeroState.Normal or HeroState.New)
         {
-            return;
-        }
-
-        if (currentCharacter.State < HeroState.Normal && currentCharacter.StateRemainingSeconds <= 0)
-        {
-            // A hero state without a running timer, e.g. a newly created character.
             return;
         }
 
@@ -1453,10 +1448,45 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         else
         {
             var stateDuration = currentCharacter.State > HeroState.Normal ? PlayerKillerStateDuration : HeroStateDuration;
-            currentCharacter.StateRemainingSeconds = Math.Max((int)stateDuration.TotalSeconds - surplusSeconds, 0);
+
+            // May still be below zero, if the surplus exceeds this step as well. Then the next tick steps down again.
+            currentCharacter.StateRemainingSeconds = (int)stateDuration.TotalSeconds - surplusSeconds;
         }
 
         await this.ForEachWorldObserverAsync<IUpdateCharacterHeroStatePlugIn>(p => p.UpdateCharacterHeroStateAsync(this), true).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Limits the remaining time of the hero state to the longest time which the current state can
+    /// legitimately have. Characters of servers which ran with the formerly broken countdown can have
+    /// a remaining time which grew by all the time they spent online.
+    /// </summary>
+    private void LimitHeroStateRemainingTime()
+    {
+        if (this._selectedCharacter is not { } character
+            || character.State is HeroState.Normal or HeroState.New)
+        {
+            return;
+        }
+
+        var maximumSeconds = character.State switch
+        {
+            // Every kill after the one which reached the 2nd stage adds another state duration on top.
+            HeroState.PlayerKiller2ndStage => (int)PlayerKillerStateDuration.TotalSeconds * Math.Max(character.PlayerKillCount - 2, 1),
+            > HeroState.Normal => (int)PlayerKillerStateDuration.TotalSeconds,
+            _ => (int)HeroStateDuration.TotalSeconds,
+        };
+
+        if (character.StateRemainingSeconds > maximumSeconds)
+        {
+            this.Logger.LogInformation(
+                "Limited the remaining hero state time of character {CharacterName} ({HeroState}) from {RemainingSeconds} to {MaximumSeconds} seconds.",
+                character.Name,
+                character.State,
+                character.StateRemainingSeconds,
+                maximumSeconds);
+            character.StateRemainingSeconds = maximumSeconds;
+        }
     }
 
     private async ValueTask HitAsync(HitInfo hitInfo, IAttacker attacker, Skill? skill, bool? isFinalStreakHit = null)
@@ -1753,6 +1783,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
 
         await this.ClientReadyAfterMapChangeAsync().ConfigureAwait(false);
+        this.LimitHeroStateRemainingTime();
         this._lastRegenerate = DateTime.UtcNow;
 
         await this.InvokeViewPlugInAsync<IUpdateRotationPlugIn>(p => p.UpdateRotationAsync()).ConfigureAwait(false);
