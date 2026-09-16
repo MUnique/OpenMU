@@ -87,6 +87,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     private DateTime _lastRegenerate = DateTime.UtcNow;
 
+    /// <summary>
+    /// The fraction of a second which elapsed since the last regeneration, but wasn't subtracted from
+    /// <see cref="Character.StateRemainingSeconds"/> yet, because it only counts in whole seconds.
+    /// </summary>
+    private double _heroStateSecondsRemainder;
+
     private GameMap? _currentMap;
 
     private IDisposable? _accountLoggingScope;
@@ -1419,10 +1425,16 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         if (this._selectedCharacter is not { } currentCharacter
             || currentCharacter.State is HeroState.Normal or HeroState.New)
         {
+            this._heroStateSecondsRemainder = 0;
             return;
         }
 
-        currentCharacter.StateRemainingSeconds -= (int)Math.Round(DateTime.UtcNow.Subtract(this._lastRegenerate).TotalSeconds);
+        // Only whole seconds are subtracted and the fraction is kept for the next tick. Rounding each tick
+        // made the countdown depend on the recovery interval, e.g. at 500 ms it never counted down at all.
+        var elapsedSeconds = DateTime.UtcNow.Subtract(this._lastRegenerate).TotalSeconds + this._heroStateSecondsRemainder;
+        var elapsedWholeSeconds = Math.Floor(elapsedSeconds);
+        this._heroStateSecondsRemainder = elapsedSeconds - elapsedWholeSeconds;
+        currentCharacter.StateRemainingSeconds -= (int)elapsedWholeSeconds;
         if (currentCharacter.StateRemainingSeconds > 0)
         {
             return;
@@ -1785,6 +1797,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         await this.ClientReadyAfterMapChangeAsync().ConfigureAwait(false);
         this.LimitHeroStateRemainingTime();
         this._lastRegenerate = DateTime.UtcNow;
+        this._heroStateSecondsRemainder = 0;
 
         await this.InvokeViewPlugInAsync<IUpdateRotationPlugIn>(p => p.UpdateRotationAsync()).ConfigureAwait(false);
         await this.ResetPetBehaviorAsync().ConfigureAwait(false);
