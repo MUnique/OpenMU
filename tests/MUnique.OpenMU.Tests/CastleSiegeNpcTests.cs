@@ -231,7 +231,8 @@ public class CastleSiegeNpcTests
         var fixture = await CreateFixtureAsync().ConfigureAwait(false);
         try
         {
-            fixture.Map.Terrain.WalkMap[GateX - 3, GateY] = false;
+            // A natural wall inside the gate area: opening the gate must restore it.
+            fixture.Map.Terrain.ApplyTerrainAttribute(GateX - 3, GateY, TerrainAttributeType.Blocked, true);
             await fixture.Context.NpcController.PrepareAsync().ConfigureAwait(false);
             await fixture.Context.NpcController.CloseGatesAsync().ConfigureAwait(false);
 
