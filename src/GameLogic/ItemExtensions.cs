@@ -19,7 +19,7 @@ public static class ItemExtensions
 
     private static readonly byte[] AdditionalDurabilityPerLevel = { 0, 1, 2, 3, 4, 6, 8, 10, 12, 14, 17, 21, 26, 32, 39, 47 };
 
-    private static readonly float[] DurabilityFactors = { 0.8f, 0.7f, 0.5f };
+    private static readonly float[] DurabilityFactors = { 0.2f, 0.3f, 0.5f };
 
     private static readonly IDictionary<AttributeDefinition, AttributeDefinition> RequirementAttributeMapping = new Dictionary<AttributeDefinition, AttributeDefinition>
     {
@@ -506,11 +506,11 @@ public static class ItemExtensions
             item.CalculateDurabilityThresholds();
         }
 
-        for (int i = item.DurabilityThresholds!.Length - 1; i >= 0; i--)
+        for (int i = 0; i < item.DurabilityThresholds!.Length; i++)
         {
             if (item.Durability < item.DurabilityThresholds[i])
             {
-                return DurabilityFactors[i];
+                return 1 - DurabilityFactors[^(i + 1)];
             }
         }
 

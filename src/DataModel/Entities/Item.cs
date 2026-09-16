@@ -33,10 +33,10 @@ public partial class Item
     public double Durability { get; set; }
 
     /// <summary>
-    /// Gets or sets the durability thresholds, past which the item's performance is degraded.
+    /// Gets or sets the durability thresholds, past which the item's performance degrades.
     /// </summary>
     /// <remarks>
-    /// These are related to the client's UI item repair icons, whose colors go from yellow to dark red as durability decreases.
+    /// These are directly related to the client's UI item repair icons, whose colors change (yellow, light red, red) as durability decreases.
     /// </remarks>
     [NotMapped]
     public double[]? DurabilityThresholds { get; set; }
