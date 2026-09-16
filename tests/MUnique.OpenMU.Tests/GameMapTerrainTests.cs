@@ -310,16 +310,14 @@ public class GameMapTerrainTests
     }
 
     /// <summary>
-    /// Tests that removing an attribute re-opens the area regardless of the raw
-    /// value underneath. The Blood Castle bridge is toggled as <c>NoGround</c>,
-    /// but most levels carry <c>Blocked</c> (or both) on those tiles — the bridge
-    /// must still open there.
+    /// Tests that removing an attribute only clears the configured bit. The Blood
+    /// Castle bridge is toggled as <c>NoGround</c> on <c>NoGround</c> tiles, so
+    /// removing it re-opens the area.
     /// </summary>
     [Test]
-    public void ApplyTerrainAttributeRemoveOpensAreaRegardlessOfRawValue(
-        [Values(Blocked, NoGround, (byte)(Blocked | NoGround))] byte rawValue)
+    public void ApplyTerrainAttributeRemoveNoGroundOpensHole()
     {
-        var terrain = new GameMapTerrain(CreateWalkableTerrainWithValues((12, 11, rawValue)));
+        var terrain = new GameMapTerrain(CreateWalkableTerrainWithValues((12, 11, NoGround)));
 
         Assert.That(terrain.WalkMap[12, 11], Is.False, "precondition: the tile starts blocked");
 
@@ -327,6 +325,36 @@ public class GameMapTerrainTests
 
         Assert.That(terrain.WalkMap[12, 11], Is.True);
         Assert.That(terrain.HasLineOfSight(new Pathfinding.Point(10, 11), new Pathfinding.Point(14, 11)), Is.True);
+    }
+
+    /// <summary>
+    /// Tests that removing an attribute leaves the other bits alone: a wall bit
+    /// which was already present keeps blocking movement and sight afterwards.
+    /// </summary>
+    [Test]
+    public void ApplyTerrainAttributeRemoveKeepsOtherBits(
+        [Values(Blocked, (byte)(Blocked | NoGround))] byte rawValue)
+    {
+        var terrain = new GameMapTerrain(CreateWalkableTerrainWithValues((12, 11, rawValue)));
+
+        terrain.ApplyTerrainAttribute(12, 11, TerrainAttributeType.NoGround, false);
+
+        Assert.That(terrain.WalkMap[12, 11], Is.False);
+        Assert.That(terrain.HasLineOfSight(new Pathfinding.Point(10, 11), new Pathfinding.Point(14, 11)), Is.False);
+    }
+
+    /// <summary>
+    /// Tests that sight doesn't depend on the viewing direction when the line
+    /// passes exactly through a lattice corner: Bresenham's tie-breaking would
+    /// otherwise walk different tiles from each end. Both directions are asserted.
+    /// </summary>
+    [Test]
+    public void HasLineOfSightTieBreakingIsSymmetric()
+    {
+        var terrain = new GameMapTerrain(CreateWalkableTerrainWithValues((10, 11, Blocked)));
+
+        Assert.That(terrain.HasLineOfSight(new Pathfinding.Point(10, 10), new Pathfinding.Point(11, 12)), Is.True);
+        Assert.That(terrain.HasLineOfSight(new Pathfinding.Point(11, 12), new Pathfinding.Point(10, 10)), Is.True);
     }
 
     /// <summary>

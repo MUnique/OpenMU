@@ -27,12 +27,6 @@ public class GameMapTerrain
     private const byte SightBlockingAttributes = (byte)TerrainAttributeType.Blocked;
 
     /// <summary>
-    /// The terrain attribute bits which block movement: walls, holes and water.
-    /// </summary>
-    private const byte MovementBlockingAttributes =
-        (byte)(TerrainAttributeType.Blocked | TerrainAttributeType.NoGround | TerrainAttributeType.Water);
-
-    /// <summary>
     /// The terrain attribute bit which marks a safezone.
     /// </summary>
     private const byte SafezoneBit = (byte)TerrainAttributeType.Safezone;
@@ -197,6 +191,8 @@ public class GameMapTerrain
     /// and target stand on never block the check. A diagonal step passing
     /// exactly between two wall tiles that touch only at a corner is also
     /// treated as blocked.
+    /// Sight is symmetric: the endpoints are normalized before the walk, so
+    /// both directions always agree.
     /// </summary>
     /// <param name="from">The attacking (viewing) coordinate.</param>
     /// <param name="to">The target coordinate.</param>
@@ -218,6 +214,15 @@ public class GameMapTerrain
         if (Math.Abs(x1 - x0) <= 1 && Math.Abs(y1 - y0) <= 1)
         {
             return true;
+        }
+
+        // Normalize the direction so the traversal doesn't depend on which side is
+        // looking: Bresenham picks a different cell at exact lattice corners
+        // depending on the starting endpoint.
+        if (x1 < x0 || (x1 == x0 && y1 < y0))
+        {
+            (x0, x1) = (x1, x0);
+            (y0, y1) = (y1, y0);
         }
 
         int dx = Math.Abs(x1 - x0);
@@ -314,11 +319,12 @@ public class GameMapTerrain
         }
         else
         {
-            // Removing an attribute re-opens the area: the configured attribute
-            // doesn't necessarily match the bits in the terrain file (e.g. the Blood
-            // Castle bridge is toggled as NoGround while most levels carry Blocked),
-            // so every movement-blocking bit is cleared instead of only the configured one.
-            this.AttributeMap[x, y] = (byte)(this.AttributeMap[x, y] & ~MovementBlockingAttributes);
+            // Only the configured bit is cleared: every configured attribute
+            // matches the bits actually present in the terrain files (e.g. the
+            // Blood Castle bridge is toggled as NoGround on NoGround tiles),
+            // and callers restoring prior state (castle gates) rely on the
+            // other bits surviving the round trip.
+            this.AttributeMap[x, y] &= (byte)~(byte)attribute;
         }
 
         // SafezoneMap is deliberately left untouched: runtime non-safezone changes
