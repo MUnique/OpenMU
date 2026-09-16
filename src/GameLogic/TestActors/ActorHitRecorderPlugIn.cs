@@ -7,7 +7,6 @@ namespace MUnique.OpenMU.GameLogic.TestActors;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic.PlugIns;
-using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// Records every hit an actor deals or receives, with the attribution the client views do not carry.
@@ -18,8 +17,13 @@ using MUnique.OpenMU.PlugIns;
 /// victim are both known. It is therefore the single source of <c>hit</c> events: neither the
 /// recording view container nor a command result appends one, so a hit is recorded exactly once per
 /// involved actor (once on each side when two actors fight each other).
+/// <para>
+/// Deliberately not a <c>[PlugIn]</c>: it is not discovered with the regular plugins, gets no
+/// persisted configuration and does not appear in the admin panel of a server which never enables
+/// the actors. The control endpoint registers it at the plugin point when it starts, so the recorder
+/// exists exactly when actors can.
+/// </para>
 /// </remarks>
-[PlugIn]
 [Display(Name = "Test actor hit recorder", Description = "Records hits dealt and received by scripted test actors in their event stream.")]
 [Guid("2A7C4B18-6E5D-4C93-9F21-8D0B6A3E57C4")]
 public class ActorHitRecorderPlugIn : IAttackableGotHitPlugIn

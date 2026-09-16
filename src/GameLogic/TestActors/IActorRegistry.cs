@@ -35,12 +35,12 @@ public interface IActorRegistry
     /// Gets the currently animated actors.
     /// </summary>
     /// <returns>The actors.</returns>
-    IReadOnlyList<ScriptedPlayer> List();
+    ValueTask<IReadOnlyList<ScriptedPlayer>> ListAsync();
 
     /// <summary>
     /// Gets the actor which animates the given account, if any.
     /// </summary>
     /// <param name="loginName">The login name.</param>
     /// <returns>The actor, or <c>null</c>.</returns>
-    ScriptedPlayer? Find(string loginName);
+    ValueTask<ScriptedPlayer?> FindAsync(string loginName);
 }

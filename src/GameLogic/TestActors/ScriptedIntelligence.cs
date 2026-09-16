@@ -138,6 +138,24 @@ public sealed class ScriptedIntelligence : IAsyncDisposable
         return MeleeAttackRange;
     }
 
+    /// <summary>
+    /// Counts how many steps of a chunk were taken, judged by where the actor stands afterwards:
+    /// the whole chunk when it reached the last node, otherwise the steps up to the node it stands on
+    /// (zero when the engine refused the chunk and the actor did not move).
+    /// </summary>
+    private static int StepsWalked(IList<PathResultNode> chunk, Point position)
+    {
+        for (var i = chunk.Count - 1; i >= 0; i--)
+        {
+            if (chunk[i].Point == position)
+            {
+                return i + 1;
+            }
+        }
+
+        return 0;
+    }
+
     private bool CancelCurrent()
     {
         CancellationTokenSource? source;
@@ -285,14 +303,45 @@ public sealed class ScriptedIntelligence : IAsyncDisposable
                 }
             }
 
-            walked += chunk.Count;
+            // The engine may refuse a chunk (first step blocked) or truncate it (a later step
+            // blocked) without saying so, because the path finder works on the AI grid while the
+            // movement check uses the walk map, and the two disagree on safe zones and temporarily
+            // blocked tiles. Either case ends the walk here: the position is the only reliable
+            // report of what actually happened, and the next chunk would not start where it assumes.
+            var reached = this._player.Position;
+            var chunkEnd = chunk[^1].Point;
+            walked += StepsWalked(chunk, reached);
+            if (reached != chunkEnd)
+            {
+                return ActorCommandResult.Failure(
+                    ActorErrorCodes.NoPath,
+                    $"The walk stopped at {reached}, {walked} of {path.Count} steps in; the tile after it is blocked.",
+                    new ActorEventField("steps", path.Count),
+                    new ActorEventField("walked", walked),
+                    new ActorEventField("x", reached.X),
+                    new ActorEventField("y", reached.Y));
+            }
+        }
+
+        var end = this._player.Position;
+        if (end != target)
+        {
+            // Should not happen after the per-chunk check, but a walk which claims success must have
+            // arrived; anything else is reported as the failure it is.
+            return ActorCommandResult.Failure(
+                ActorErrorCodes.NoPath,
+                $"The walk ended at {end} instead of {target}.",
+                new ActorEventField("steps", path.Count),
+                new ActorEventField("walked", walked),
+                new ActorEventField("x", end.X),
+                new ActorEventField("y", end.Y));
         }
 
         return ActorCommandResult.Success(
             new ActorEventField("steps", path.Count),
             new ActorEventField("walked", walked),
-            new ActorEventField("x", this._player.Position.X),
-            new ActorEventField("y", this._player.Position.Y));
+            new ActorEventField("x", end.X),
+            new ActorEventField("y", end.Y));
     }
 
     private async ValueTask<ActorCommandResult> InterruptWalkAsync(int planned, int walked)

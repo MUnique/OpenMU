@@ -108,7 +108,7 @@ public class ActorRegistryTests
 
         Assert.That(results.Count(r => r.Ok), Is.EqualTo(1));
         Assert.That(results.Where(r => !r.Ok).Select(r => r.Code), Is.All.EqualTo(ActorErrorCodes.InUse));
-        Assert.That(fixture.Registry.List().Count, Is.EqualTo(1));
+        Assert.That((await fixture.Registry.ListAsync().ConfigureAwait(false)).Count, Is.EqualTo(1));
         Assert.That(fixture.FactoryCalls, Is.EqualTo(1));
     }
 
@@ -123,13 +123,13 @@ public class ActorRegistryTests
 
         var spawn = await fixture.Registry.SpawnAsync(0, "test1", null).ConfigureAwait(false);
         Assert.That(spawn.Ok, Is.True, spawn.Error);
-        Assert.That(fixture.Registry.Find("test1"), Is.Not.Null);
+        Assert.That(await fixture.Registry.FindAsync("test1").ConfigureAwait(false), Is.Not.Null);
 
         var stop = await fixture.Registry.StopAsync("test1").ConfigureAwait(false);
 
         Assert.That(stop.Ok, Is.True, stop.Error);
-        Assert.That(fixture.Registry.Find("test1"), Is.Null);
-        Assert.That(fixture.Registry.List(), Is.Empty);
+        Assert.That(await fixture.Registry.FindAsync("test1").ConfigureAwait(false), Is.Null);
+        Assert.That(await fixture.Registry.ListAsync().ConfigureAwait(false), Is.Empty);
 
         var unknown = await fixture.Registry.StopAsync("test1").ConfigureAwait(false);
         Assert.That(unknown.Code, Is.EqualTo(ActorErrorCodes.UnknownActor));
@@ -149,7 +149,7 @@ public class ActorRegistryTests
         var stopped = await fixture.Registry.StopAllAsync().ConfigureAwait(false);
 
         Assert.That(stopped, Is.EqualTo(2));
-        Assert.That(fixture.Registry.List(), Is.Empty);
+        Assert.That(await fixture.Registry.ListAsync().ConfigureAwait(false), Is.Empty);
     }
 
     private sealed class Fixture

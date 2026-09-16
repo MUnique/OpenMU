@@ -125,6 +125,54 @@ public class ScriptedIntelligenceTests
     }
 
     /// <summary>
+    /// When the engine cuts the path short - the path finder's grid and the walk map disagree on a
+    /// tile - the walk does not claim success: it answers <c>no_path</c> with the position it
+    /// actually reached and the steps it actually took.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [Test]
+    public async Task WalkCutShortByTheEngineReportsThePositionReachedAsync()
+    {
+        var gameContext = ActorTestHelper.CreateGameContext();
+        await using var actor = await ActorTestHelper.CreateActorAsync(gameContext, "test1", "Actor1").ConfigureAwait(false);
+        await actor.MoveAsync(new Point(100, 100)).ConfigureAwait(false);
+
+        // Only the movement check sees this block; the path finder still plans through it.
+        actor.CurrentMap!.Terrain.WalkMap[104, 104] = false;
+
+        var result = await actor.Intelligence!.ExecuteAsync(new WalkCommand(104, 104)).ConfigureAwait(false);
+
+        Assert.That(result.Ok, Is.False);
+        Assert.That(result.Code, Is.EqualTo(ActorErrorCodes.NoPath));
+        Assert.That(actor.Position, Is.Not.EqualTo(new Point(104, 104)));
+        Assert.That(result.Fields.First(f => f.Name == "x").Value, Is.EqualTo(actor.Position.X));
+        Assert.That(result.Fields.First(f => f.Name == "y").Value, Is.EqualTo(actor.Position.Y));
+        Assert.That(result.Fields.First(f => f.Name == "walked").Value, Is.EqualTo(3));
+        Assert.That(result.Fields.First(f => f.Name == "steps").Value, Is.EqualTo(4));
+    }
+
+    /// <summary>
+    /// When the engine refuses the walk outright (first step blocked on the walk map), the actor
+    /// has not moved and the command says so instead of counting the chunk as walked.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [Test]
+    public async Task WalkRefusedByTheEngineIsNotReportedAsDoneAsync()
+    {
+        var gameContext = ActorTestHelper.CreateGameContext();
+        await using var actor = await ActorTestHelper.CreateActorAsync(gameContext, "test1", "Actor1").ConfigureAwait(false);
+        await actor.MoveAsync(new Point(100, 100)).ConfigureAwait(false);
+        actor.CurrentMap!.Terrain.WalkMap[100, 101] = false;
+
+        var result = await actor.Intelligence!.ExecuteAsync(new WalkCommand(100, 101)).ConfigureAwait(false);
+
+        Assert.That(result.Ok, Is.False);
+        Assert.That(result.Code, Is.EqualTo(ActorErrorCodes.NoPath));
+        Assert.That(actor.Position, Is.EqualTo(new Point(100, 100)));
+        Assert.That(result.Fields.First(f => f.Name == "walked").Value, Is.EqualTo(0));
+    }
+
+    /// <summary>
     /// A <c>halt</c> during a repeated attack ends the command with <c>interrupted</c> and the hits
     /// performed so far, records an <c>interrupted</c> event, and leaves the actor in the world.
     /// </summary>

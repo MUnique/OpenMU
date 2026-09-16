@@ -18,15 +18,13 @@ using MUnique.OpenMU.PlugIns;
 /// The switch goes through the persisted <see cref="PlugInConfiguration"/> of the bot feature - the
 /// same route the admin panel's plugin dialog takes - so it survives a restart and is visible in the
 /// panel. <see cref="PlugInManager"/> listens to the configuration's <c>PropertyChanged</c> and
-/// pushes it to the live plugin.
+/// pushes it to the live plugin. Because the write is persistent, it is kept to what was asked for:
+/// <see cref="BotConfiguration.Enabled"/>, plus <see cref="BotConfiguration.NumberOfAccounts"/>
+/// when a count is given. The characters per account and the presence rotation stay whatever the
+/// operator configured; <c>status</c> reports them, so a scenario knows what population to expect.
 /// </remarks>
 public sealed class BotsController
 {
-    /// <summary>
-    /// The number of animated bot characters <c>bots on</c> asks for when no count is given.
-    /// </summary>
-    public static readonly int DefaultBotCount = 4;
-
     private readonly IGameServerContextLocator _locator;
     private readonly ILogger<BotsController> _logger;
 
@@ -42,23 +40,17 @@ public sealed class BotsController
     }
 
     /// <summary>
-    /// Applies the requested bot configuration to the given one, so that <paramref name="count"/> is
-    /// the number of animated bot characters in total - not accounts times characters.
+    /// Applies the requested switch to the given configuration, touching nothing which was not asked for.
     /// </summary>
     /// <param name="configuration">The configuration to change.</param>
     /// <param name="enabled">Whether the feature should be on.</param>
-    /// <param name="count">The number of bot characters; ignored when switching off.</param>
+    /// <param name="count">The number of bot accounts to set, or <c>null</c> to keep the configured one.</param>
     public static void Apply(BotConfiguration configuration, bool enabled, int? count)
     {
         configuration.Enabled = enabled;
-        if (enabled)
+        if (count is { } accounts)
         {
-            configuration.NumberOfAccounts = Math.Max(0, count ?? DefaultBotCount);
-
-            // One character per account, so the requested number is what stands in the world, and no
-            // bot logs out again while a scenario runs.
-            configuration.MaxCharactersPerAccount = 1;
-            configuration.PresenceRotation = false;
+            configuration.NumberOfAccounts = Math.Max(0, accounts);
         }
     }
 
@@ -66,7 +58,7 @@ public sealed class BotsController
     /// Handles a <c>bots</c> request.
     /// </summary>
     /// <param name="action">One of <c>on</c>, <c>off</c> and <c>status</c>.</param>
-    /// <param name="count">The requested number of bot characters, for <c>on</c>.</param>
+    /// <param name="count">The number of bot accounts to set, if any.</param>
     /// <returns>The result.</returns>
     public async ValueTask<ActorCommandResult> HandleAsync(string action, int? count)
     {
@@ -95,9 +87,10 @@ public sealed class BotsController
                 }
 
                 this._logger.LogInformation(
-                    "Bots switched {State} ({Count} account(s), one character each).",
+                    "Bots switched {State} ({Accounts} account(s), up to {Characters} character(s) each).",
                     enabled ? "on" : "off",
-                    configuration.NumberOfAccounts);
+                    configuration.NumberOfAccounts,
+                    configuration.MaxCharactersPerAccount);
                 return await this.StatusAsync(contexts).ConfigureAwait(false);
 
             case "status":
@@ -177,6 +170,7 @@ public sealed class BotsController
             new ActorEventField("enabled", configuration?.Enabled ?? false),
             new ActorEventField("accounts", configuration?.NumberOfAccounts ?? 0),
             new ActorEventField("characters_per_account", configuration?.MaxCharactersPerAccount ?? 0),
+            new ActorEventField("presence_rotation", configuration?.PresenceRotation ?? false),
             new ActorEventField("servers", perServer),
             new ActorEventField("animated", total));
     }

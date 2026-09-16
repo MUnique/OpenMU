@@ -16,7 +16,9 @@ using MUnique.OpenMU.GameLogic.Offline;
 /// <see cref="MUnique.OpenMU.Interfaces.ILoginServer.TryLoginAsync"/>, which is the cross-server
 /// lock - and additionally scans the target game server's players for the same login name, because
 /// population bots and offline sessions bypass the login server. Both checks and the insertion run
-/// under one lock, so two concurrent spawns of one account yield exactly one actor.
+/// under one lock, so two concurrent spawns of one account yield exactly one actor. The lock is
+/// therefore held across awaits, which is why even the lookups are asynchronous: a <c>list</c> or
+/// a command arriving during a spawn waits for it without blocking a thread.
 /// </remarks>
 public sealed class ActorRegistry : IActorRegistry
 {
@@ -150,9 +152,9 @@ public sealed class ActorRegistry : IActorRegistry
     }
 
     /// <inheritdoc />
-    public IReadOnlyList<ScriptedPlayer> List()
+    public async ValueTask<IReadOnlyList<ScriptedPlayer>> ListAsync()
     {
-        this._lock.Wait();
+        await this._lock.WaitAsync().ConfigureAwait(false);
         try
         {
             return this._actors.Values.ToList();
@@ -164,9 +166,9 @@ public sealed class ActorRegistry : IActorRegistry
     }
 
     /// <inheritdoc />
-    public ScriptedPlayer? Find(string loginName)
+    public async ValueTask<ScriptedPlayer?> FindAsync(string loginName)
     {
-        this._lock.Wait();
+        await this._lock.WaitAsync().ConfigureAwait(false);
         try
         {
             return this._actors.GetValueOrDefault(loginName);

@@ -71,6 +71,36 @@ public class ActorProtocolHandlerTests
     }
 
     /// <summary>
+    /// A numeric field outside its range is refused as <c>bad_request</c> - never wrapped into a
+    /// plausible-looking value, and never even reaching the registry or the actor.
+    /// </summary>
+    /// <param name="line">The request line.</param>
+    /// <returns>The task.</returns>
+    [TestCase("""{"cmd":"spawn","actor":"test1","slot":-1}""")]
+    [TestCase("""{"cmd":"spawn","actor":"test1","slot":256}""")]
+    [TestCase("""{"cmd":"spawn","actor":"test1","server":1.5}""")]
+    [TestCase("""{"cmd":"walk","actor":"test1","x":300,"y":132}""")]
+    [TestCase("""{"cmd":"skill","actor":"test1","skill":-5,"target":"x"}""")]
+    [TestCase("""{"cmd":"pickup","actor":"test1","id":70000}""")]
+    [TestCase("""{"cmd":"attack","actor":"test1","target":"x","times":0}""")]
+    [TestCase("""{"cmd":"bots","action":"on","count":-1}""")]
+    public async Task NumberOutOfRangeIsRefusedAsync(string line)
+    {
+        var gameContext = ActorTestHelper.CreateGameContext();
+        await using var actor = await ActorTestHelper.CreateActorAsync(gameContext, "test1", "Actor1").ConfigureAwait(false);
+        var registry = new Mock<IActorRegistry>(MockBehavior.Strict);
+        registry.Setup(r => r.FindAsync("test1")).Returns(ValueTask.FromResult<ScriptedPlayer?>(actor));
+        var lines = new ResponseCollector();
+        var handler = new ActorProtocolHandler(registry.Object, CreateBotsController());
+
+        await handler.HandleLineAsync(line, lines.WriteAsync, CancellationToken.None).ConfigureAwait(false);
+
+        Assert.That(lines.Single().GetProperty("ok").GetBoolean(), Is.False);
+        Assert.That(lines.Single().GetProperty("code").GetString(), Is.EqualTo(ActorErrorCodes.BadRequest));
+        registry.Verify(r => r.SpawnAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<byte?>()), Times.Never);
+    }
+
+    /// <summary>
     /// A command for an account which is not animated names the actor in the error.
     /// </summary>
     /// <returns>The task.</returns>
@@ -93,7 +123,7 @@ public class ActorProtocolHandlerTests
     public async Task SpawnPassesTheRegistryResultThroughAsync()
     {
         var registry = new Mock<IActorRegistry>();
-        registry.Setup(r => r.List()).Returns([]);
+        registry.Setup(r => r.ListAsync()).Returns(ValueTask.FromResult<IReadOnlyList<ScriptedPlayer>>([]));
         registry.Setup(r => r.SpawnAsync(0, "test1", null))
             .Returns(ValueTask.FromResult(ActorCommandResult.Failure(ActorErrorCodes.InUse, "The account 'test1' is already in use by a bot.")));
         var lines = new ResponseCollector();
@@ -116,7 +146,7 @@ public class ActorProtocolHandlerTests
         await using var actor = await ActorTestHelper.CreateActorAsync(gameContext, "test1", "Actor1").ConfigureAwait(false);
         actor.EventLog.Append("chat", new ActorEventField("message", "hello"));
         var registry = new Mock<IActorRegistry>();
-        registry.Setup(r => r.Find("test1")).Returns(actor);
+        registry.Setup(r => r.FindAsync("test1")).Returns(ValueTask.FromResult<ScriptedPlayer?>(actor));
         var lines = new ResponseCollector();
         var handler = new ActorProtocolHandler(registry.Object, CreateBotsController());
 
@@ -133,8 +163,8 @@ public class ActorProtocolHandlerTests
     private static (ActorProtocolHandler Handler, ResponseCollector Lines) CreateHandler()
     {
         var registry = new Mock<IActorRegistry>();
-        registry.Setup(r => r.List()).Returns([]);
-        registry.Setup(r => r.Find(It.IsAny<string>())).Returns((ScriptedPlayer?)null);
+        registry.Setup(r => r.ListAsync()).Returns(ValueTask.FromResult<IReadOnlyList<ScriptedPlayer>>([]));
+        registry.Setup(r => r.FindAsync(It.IsAny<string>())).Returns(ValueTask.FromResult<ScriptedPlayer?>(null));
         return (new ActorProtocolHandler(registry.Object, CreateBotsController()), new ResponseCollector());
     }
 

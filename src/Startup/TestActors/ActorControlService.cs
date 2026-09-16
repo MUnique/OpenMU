@@ -7,27 +7,36 @@ namespace MUnique.OpenMU.Startup.TestActors;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.TestActors;
+using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// The local control endpoint: a plain TCP listener which speaks newline-delimited JSON.
 /// </summary>
 /// <remarks>
 /// Development tooling, without any authentication: it is only started when
-/// <see cref="EnvironmentVariableName"/> names a port, the local stack publishes that port on the
-/// host's loopback address only, and the release deployment never sets the variable.
+/// <see cref="PortVariableName"/> names a port, and it binds the loopback address unless
+/// <see cref="AddressVariableName"/> explicitly names another one (see
+/// <see cref="ActorEndpointOptions.TryParse"/>). So setting the port on a host which is run
+/// directly opens the endpoint for local processes only; a container has to ask for
+/// <c>0.0.0.0</c> and rely on its port publishing.
 /// </remarks>
 public sealed class ActorControlService : BackgroundService
 {
     /// <summary>
-    /// The environment variable which enables the endpoint and names its port.
+    /// The environment variable which enables the endpoint by naming its port.
     /// </summary>
-    public static readonly string EnvironmentVariableName = "OPENMU_ACTOR_PORT";
+    public static readonly string PortVariableName = "OPENMU_ACTOR_PORT";
+
+    /// <summary>
+    /// The environment variable which names the address to bind; unset, the loopback address.
+    /// </summary>
+    public static readonly string AddressVariableName = "OPENMU_ACTOR_ADDRESS";
 
     /// <summary>
     /// UTF-8 without a byte order mark: the first line of a connection must be plain JSON, or a
@@ -35,43 +44,46 @@ public sealed class ActorControlService : BackgroundService
     /// </summary>
     private static readonly Encoding LineEncoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
 
-    /// <summary>
-    /// How long the SIGTERM handler waits for the actors to log out before it lets the process die.
-    /// Docker's default grace period is ten seconds.
-    /// </summary>
-    private static readonly TimeSpan SignalStopTimeout = TimeSpan.FromSeconds(8);
-
-    private readonly int _port;
+    private readonly IPEndPoint _endPoint;
     private readonly IActorRegistry _registry;
     private readonly ActorProtocolHandler _handler;
+    private readonly PlugInManager _plugInManager;
     private readonly ILogger<ActorControlService> _logger;
-    private PosixSignalRegistration? _sigTermRegistration;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ActorControlService"/> class.
     /// </summary>
-    /// <param name="options">The endpoint options, i.e. the port.</param>
+    /// <param name="options">The endpoint options, i.e. the address and port.</param>
     /// <param name="registry">The actor registry, so shutdown can stop every actor.</param>
     /// <param name="handler">The protocol handler.</param>
+    /// <param name="plugInManager">The plugin manager of the game servers, to register the hit recorder.</param>
     /// <param name="logger">The logger.</param>
-    public ActorControlService(ActorEndpointOptions options, IActorRegistry registry, ActorProtocolHandler handler, ILogger<ActorControlService> logger)
+    public ActorControlService(ActorEndpointOptions options, IActorRegistry registry, ActorProtocolHandler handler, PlugInManager plugInManager, ILogger<ActorControlService> logger)
     {
-        this._port = options.Port;
+        this._endPoint = options.EndPoint;
         this._registry = registry;
         this._handler = handler;
+        this._plugInManager = plugInManager;
         this._logger = logger;
     }
 
     /// <summary>
-    /// Gets the port configured in the environment, or <c>null</c> when the endpoint is off (the default).
+    /// Gets the endpoint configured in the environment, or <c>null</c> when the endpoint is off (the default).
     /// </summary>
-    public static int? ConfiguredPort
+    public static ActorEndpointOptions? ConfiguredOptions
+        => ActorEndpointOptions.TryParse(
+            Environment.GetEnvironmentVariable(PortVariableName),
+            Environment.GetEnvironmentVariable(AddressVariableName));
+
+    /// <summary>
+    /// Registers the hit recorder, which is not a discoverable plugin on purpose, and starts listening.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The task.</returns>
+    public override Task StartAsync(CancellationToken cancellationToken)
     {
-        get
-        {
-            var value = Environment.GetEnvironmentVariable(EnvironmentVariableName);
-            return int.TryParse(value, out var port) && port is > 0 and <= 65535 ? port : null;
-        }
+        this._plugInManager.RegisterPlugIn<IAttackableGotHitPlugIn, ActorHitRecorderPlugIn>();
+        return base.StartAsync(cancellationToken);
     }
 
     /// <summary>
@@ -91,27 +103,13 @@ public sealed class ActorControlService : BackgroundService
     }
 
     /// <inheritdoc />
-    public override void Dispose()
-    {
-        this._sigTermRegistration?.Dispose();
-        base.Dispose();
-    }
-
-    /// <inheritdoc />
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        // `docker stop` sends SIGTERM, but this host's main loop only stops the services from an
-        // AppDomain.ProcessExit handler, which the runtime cuts short - so the hosted services'
-        // StopAsync usually never runs in a container, and an actor's unsaved progress (anything
-        // since the last periodic save) would be lost on every `dev down`. Logging the actors out
-        // straight from the signal handler makes the shutdown promise hold regardless.
-        this._sigTermRegistration = PosixSignalRegistration.Create(PosixSignal.SIGTERM, _ => this.StopActorsOnSignal());
-
-        var listener = new TcpListener(IPAddress.Any, this._port);
+        var listener = new TcpListener(this._endPoint);
         try
         {
             listener.Start();
-            this._logger.LogInformation("Actor control endpoint listening on 0.0.0.0:{Port}.", this._port);
+            this._logger.LogInformation("Actor control endpoint listening on {EndPoint}.", listener.LocalEndpoint);
 
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -130,32 +128,6 @@ public sealed class ActorControlService : BackgroundService
         finally
         {
             listener.Stop();
-        }
-    }
-
-    private void StopActorsOnSignal()
-    {
-        try
-        {
-            this._logger.LogInformation("SIGTERM received: logging the actors out before the game servers stop.");
-
-            // Blocking is the point: the handler runs on the signal thread and the process is about
-            // to die, so the logout has to finish here rather than on some continuation which will
-            // never be scheduled. Bounded, so a stuck actor cannot hold the shutdown open.
-#pragma warning disable VSTHRD002 // Synchronously waiting on tasks or awaiters may cause deadlocks
-            var stopTask = Task.Run(() => this._registry.StopAllAsync().AsTask());
-            if (!stopTask.Wait(SignalStopTimeout))
-            {
-                this._logger.LogWarning("The actors did not stop within {Timeout}; their last progress may be lost.", SignalStopTimeout);
-                return;
-            }
-
-            this._logger.LogInformation("Stopped {Count} actor(s) on SIGTERM.", stopTask.Result);
-#pragma warning restore VSTHRD002
-        }
-        catch (Exception ex)
-        {
-            this._logger.LogError(ex, "Failed to stop the actors on SIGTERM.");
         }
     }
 

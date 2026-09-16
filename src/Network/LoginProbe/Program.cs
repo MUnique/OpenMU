@@ -34,6 +34,13 @@ using Pipelines.Sockets.Unofficial;
 /// </remarks>
 public static class Program
 {
+    /// <summary>
+    /// The environment variable which carries the password, so it neither shows up in the process
+    /// list nor lands in a shell history. Unset, the password is the account name, which is what
+    /// the shipped test accounts use.
+    /// </summary>
+    public static readonly string PasswordVariableName = "LOGINPROBE_PASSWORD";
+
     /// <summary>The client version a Season 6 Episode 3 client reports ("20404" in ASCII).</summary>
     private static readonly byte[] ClientVersion = [0x32, 0x30, 0x34, 0x30, 0x34];
 
@@ -69,9 +76,11 @@ public static class Program
 
     private static void Usage()
     {
-        Console.Error.WriteLine("usage: MUnique.OpenMU.Network.LoginProbe --account <name> [--password <pw>] [--host 127.0.0.1]");
+        Console.Error.WriteLine("usage: MUnique.OpenMU.Network.LoginProbe --account <name> [--host 127.0.0.1]");
         Console.Error.WriteLine("       [--connect-port 44406] [--server 0] [--hold <seconds>]");
         Console.Error.WriteLine();
+        Console.Error.WriteLine($"The password is read from the environment variable {PasswordVariableName};");
+        Console.Error.WriteLine("when it is unset, the account name is used as the password.");
         Console.Error.WriteLine("Logs into the game server like a real client and holds the session.");
         Console.Error.WriteLine("Writes one JSON object per step to stdout; exit 0 on a successful login.");
     }
@@ -261,9 +270,6 @@ public static class Program
                     case "--account":
                         options.Account = value;
                         break;
-                    case "--password":
-                        options.Password = value;
-                        break;
                     default:
                         return null;
                 }
@@ -276,11 +282,9 @@ public static class Program
                 return null;
             }
 
-            if (string.IsNullOrEmpty(options.Password))
-            {
-                // The test accounts of the local stack use the login name as the password.
-                options.Password = options.Account;
-            }
+            options.Password = Environment.GetEnvironmentVariable(PasswordVariableName) is { Length: > 0 } password
+                ? password
+                : options.Account;
 
             return options;
         }

@@ -25,7 +25,10 @@ public static class ActorErrorCodes
     /// <summary>The character cannot pay the skill's mana or ability cost.</summary>
     public static readonly string InsufficientResources = "insufficient_resources";
 
-    /// <summary>The path finder found no way to the requested position.</summary>
+    /// <summary>
+    /// The path finder found no way to the requested position, or the walk was stopped by a blocked
+    /// tile before reaching it (the result then carries the position actually reached).
+    /// </summary>
     public static readonly string NoPath = "no_path";
 
     /// <summary>The target cannot be attacked (dead, not attackable, or the actor itself).</summary>

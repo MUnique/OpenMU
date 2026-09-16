@@ -18,8 +18,9 @@ using Moq;
 public class BotsControllerTests
 {
     /// <summary>
-    /// <c>bots on --count N</c> writes N accounts with one character each and no presence rotation,
-    /// and that configuration survives the round trip through the persisted plugin configuration.
+    /// <c>bots on --count N</c> switches the feature on and sets N accounts, and that survives the
+    /// round trip through the persisted plugin configuration - while the settings it was not asked
+    /// about (characters per account, presence rotation) are left exactly as the operator had them.
     /// </summary>
     [Test]
     public void BotConfigurationRoundTripsThroughThePlugInConfiguration()
@@ -34,22 +35,24 @@ public class BotsControllerTests
         Assert.That(roundTripped, Is.Not.Null);
         Assert.That(roundTripped!.Enabled, Is.True);
         Assert.That(roundTripped.NumberOfAccounts, Is.EqualTo(2));
-        Assert.That(roundTripped.MaxCharactersPerAccount, Is.EqualTo(1));
-        Assert.That(roundTripped.PresenceRotation, Is.False);
+        Assert.That(roundTripped.MaxCharactersPerAccount, Is.EqualTo(5));
+        Assert.That(roundTripped.PresenceRotation, Is.True);
     }
 
     /// <summary>
-    /// Without a count, the documented default population is requested.
+    /// Without a count, only the switch is written; the configured number of accounts stays.
     /// </summary>
     [Test]
-    public void DefaultCountIsUsedWhenNoneIsGiven()
+    public void SwitchingOnWithoutACountKeepsTheConfiguredAccounts()
     {
-        var configuration = new BotConfiguration();
+        var configuration = new BotConfiguration { NumberOfAccounts = 7, MaxCharactersPerAccount = 3, PresenceRotation = false };
 
         BotsController.Apply(configuration, enabled: true, count: null);
 
-        Assert.That(configuration.NumberOfAccounts, Is.EqualTo(BotsController.DefaultBotCount));
-        Assert.That(configuration.MaxCharactersPerAccount, Is.EqualTo(1));
+        Assert.That(configuration.Enabled, Is.True);
+        Assert.That(configuration.NumberOfAccounts, Is.EqualTo(7));
+        Assert.That(configuration.MaxCharactersPerAccount, Is.EqualTo(3));
+        Assert.That(configuration.PresenceRotation, Is.False);
     }
 
     /// <summary>

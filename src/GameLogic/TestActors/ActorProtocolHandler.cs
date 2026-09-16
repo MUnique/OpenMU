@@ -76,6 +76,10 @@ public sealed class ActorProtocolHandler
         {
             await WriteFailureAsync(writer, id, ActorErrorCodes.BadRequest, $"The request is not valid JSON: {ex.Message}").ConfigureAwait(false);
         }
+        catch (ArgumentException ex)
+        {
+            await WriteFailureAsync(writer, id, ActorErrorCodes.BadRequest, ex.Message).ConfigureAwait(false);
+        }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
             await WriteFailureAsync(writer, id, ActorErrorCodes.Failed, ex.Message).ConfigureAwait(false);
@@ -85,8 +89,42 @@ public sealed class ActorProtocolHandler
     private static string? GetString(JsonElement request, string name)
         => request.TryGetProperty(name, out var value) && value.ValueKind == JsonValueKind.String ? value.GetString() : null;
 
-    private static long? GetNumber(JsonElement request, string name)
-        => request.TryGetProperty(name, out var value) && value.ValueKind == JsonValueKind.Number ? value.GetInt64() : null;
+    /// <summary>
+    /// Reads an optional integer field and checks that it lies within the allowed range.
+    /// </summary>
+    /// <remarks>
+    /// A value outside the range is an <see cref="ArgumentException"/>, which the caller answers with
+    /// <see cref="ActorErrorCodes.BadRequest"/> - never a wrapped cast: a typo like <c>"x":300</c>
+    /// must be refused instead of walking to x=44.
+    /// </remarks>
+    private static long? GetNumber(JsonElement request, string name, long min, long max)
+    {
+        if (!request.TryGetProperty(name, out var value))
+        {
+            return null;
+        }
+
+        if (value.ValueKind != JsonValueKind.Number || !value.TryGetInt64(out var number))
+        {
+            throw new ArgumentException($"'{name}' must be an integer.");
+        }
+
+        if (number < min || number > max)
+        {
+            throw new ArgumentException($"'{name}' must be between {min} and {max}, but is {number}.");
+        }
+
+        return number;
+    }
+
+    private static int? GetInt32(JsonElement request, string name, int min = 0, int max = int.MaxValue)
+        => (int?)GetNumber(request, name, min, max);
+
+    private static byte? GetByte(JsonElement request, string name)
+        => (byte?)GetNumber(request, name, byte.MinValue, byte.MaxValue);
+
+    private static ushort? GetUInt16(JsonElement request, string name)
+        => (ushort?)GetNumber(request, name, ushort.MinValue, ushort.MaxValue);
 
     private static bool GetBool(JsonElement request, string name)
         => request.TryGetProperty(name, out var value) && value.ValueKind == JsonValueKind.True;
@@ -98,7 +136,7 @@ public sealed class ActorProtocolHandler
             return value.ValueKind switch
             {
                 JsonValueKind.String => value.GetString(),
-                JsonValueKind.Number => value.GetInt64().ToString(),
+                JsonValueKind.Number => value.TryGetInt64(out var number) ? number.ToString() : null,
                 _ => null,
             };
         }
@@ -119,14 +157,14 @@ public sealed class ActorProtocolHandler
             case "ping":
                 await WriteResultAsync(writer, id, ActorCommandResult.Success(
                     new ActorEventField("version", Version),
-                    new ActorEventField("actors", this._registry.List().Count))).ConfigureAwait(false);
+                    new ActorEventField("actors", (await this._registry.ListAsync().ConfigureAwait(false)).Count))).ConfigureAwait(false);
                 return;
 
             case "spawn":
                 var spawned = await this._registry.SpawnAsync(
-                    (int)(GetNumber(request, "server") ?? 0),
+                    GetInt32(request, "server") ?? 0,
                     GetString(request, "actor") ?? string.Empty,
-                    GetNumber(request, "slot") is { } slot ? (byte)slot : null).ConfigureAwait(false);
+                    GetByte(request, "slot")).ConfigureAwait(false);
                 await WriteResultAsync(writer, id, spawned).ConfigureAwait(false);
                 return;
 
@@ -135,16 +173,17 @@ public sealed class ActorProtocolHandler
                 return;
 
             case "list":
+                var actors = await this._registry.ListAsync().ConfigureAwait(false);
                 await WriteResultAsync(writer, id, ActorCommandResult.Success(new ActorEventField(
                     "actors",
-                    this._registry.List().Select(a => ActorState.Summary(a.AccountLoginName ?? string.Empty, a)).ToList()))).ConfigureAwait(false);
+                    actors.Select(a => ActorState.Summary(a.AccountLoginName ?? string.Empty, a)).ToList()))).ConfigureAwait(false);
                 return;
 
             case "bots":
                 await WriteResultAsync(
                     writer,
                     id,
-                    await this._bots.HandleAsync(GetString(request, "action") ?? "status", (int?)GetNumber(request, "count")).ConfigureAwait(false)).ConfigureAwait(false);
+                    await this._bots.HandleAsync(GetString(request, "action") ?? "status", GetInt32(request, "count")).ConfigureAwait(false)).ConfigureAwait(false);
                 return;
 
             default:
@@ -156,7 +195,7 @@ public sealed class ActorProtocolHandler
     private async ValueTask DispatchActorCommandAsync(string command, JsonElement request, string? id, Func<string, ValueTask> writer, CancellationToken cancellationToken)
     {
         var loginName = GetString(request, "actor") ?? string.Empty;
-        if (this._registry.Find(loginName) is not { } actor)
+        if (await this._registry.FindAsync(loginName).ConfigureAwait(false) is not { } actor)
         {
             await WriteFailureAsync(writer, id, ActorErrorCodes.UnknownActor, $"No actor animates '{loginName}'.").ConfigureAwait(false);
             return;
@@ -194,15 +233,15 @@ public sealed class ActorProtocolHandler
     {
         ActorCommand? actorCommand = command switch
         {
-            "walk" => new WalkCommand((byte)(GetNumber(request, "x") ?? 0), (byte)(GetNumber(request, "y") ?? 0)),
+            "walk" => new WalkCommand(GetByte(request, "x") ?? 0, GetByte(request, "y") ?? 0),
             "attack" => new AttackCommand(
                 GetTarget(request) ?? string.Empty,
-                (int)(GetNumber(request, "times") ?? 1),
-                (int)(GetNumber(request, "interval") ?? 0)),
-            "skill" => new SkillCommand((ushort)(GetNumber(request, "skill") ?? 0), GetTarget(request) ?? string.Empty),
+                GetInt32(request, "times", min: 1) ?? 1,
+                GetInt32(request, "interval") ?? 0),
+            "skill" => new SkillCommand(GetUInt16(request, "skill") ?? 0, GetTarget(request) ?? string.Empty),
             "say" => new SayCommand(GetString(request, "text") ?? string.Empty),
-            "pickup" => new PickupCommand((ushort)(GetNumber(request, "id") ?? 0)),
-            "warp" => new WarpCommand((int)(GetNumber(request, "gate") ?? -1)),
+            "pickup" => new PickupCommand(GetUInt16(request, "id") ?? 0),
+            "warp" => new WarpCommand(GetInt32(request, "gate") ?? -1),
             _ => null,
         };
 
@@ -223,7 +262,7 @@ public sealed class ActorProtocolHandler
 
     private async ValueTask StreamEventsAsync(ScriptedPlayer actor, JsonElement request, string? id, Func<string, ValueTask> writer, CancellationToken cancellationToken)
     {
-        var since = GetNumber(request, "since") ?? 0;
+        var since = GetNumber(request, "since", 0, long.MaxValue) ?? 0;
         if (!GetBool(request, "follow"))
         {
             await WriteResultAsync(writer, id, ActorCommandResult.Success(

@@ -15,12 +15,14 @@ change.
 ## Usage
 
 ```text
-MUnique.OpenMU.Network.LoginProbe --account <name> [--password <pw>]
-                                 [--host 127.0.0.1] [--connect-port 44406]
-                                 [--server 0] [--hold <seconds>]
+MUnique.OpenMU.Network.LoginProbe --account <name> [--host 127.0.0.1]
+                                 [--connect-port 44406] [--server 0]
+                                 [--hold <seconds>]
 ```
 
-The password defaults to the account name, which is what the shipped test
+The password is taken from the environment variable `LOGINPROBE_PASSWORD`, so
+it neither shows up in the process list nor in a shell history; when the
+variable is unset, the account name is used, which is what the shipped test
 accounts use. One JSON object per step is written to standard output:
 
 ```json

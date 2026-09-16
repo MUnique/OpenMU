@@ -360,21 +360,28 @@ internal sealed class Program : IDisposable
 
     /// <summary>
     /// Adds the test actor control endpoint, but only when <c>OPENMU_ACTOR_PORT</c> names a
-    /// port: it is unauthenticated development tooling and stays off by default. It is registered
-    /// after the server containers on purpose - hosted services are stopped in reverse order, so the
-    /// actors are logged out (and their progress saved) before the game servers go down.
+    /// port; it binds loopback unless <c>OPENMU_ACTOR_ADDRESS</c> says otherwise. It is
+    /// unauthenticated development tooling and stays off by default, and it is registered after
+    /// the server containers on purpose -
+    /// hosted services are stopped in reverse order, so the actors are logged out (and their
+    /// progress saved) before the game servers go down.
     /// </summary>
     /// <param name="services">The service collection.</param>
     private void AddActorControlEndpoint(IServiceCollection services)
     {
-        if (ActorControlService.ConfiguredPort is not { } actorPort)
+        if (ActorControlService.ConfiguredOptions is not { } actorOptions)
         {
+            if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(ActorControlService.PortVariableName)))
+            {
+                this._logger.Warning("{portVariable} is set, but it or {addressVariable} is not valid; the actor control endpoint stays off.", ActorControlService.PortVariableName, ActorControlService.AddressVariableName);
+            }
+
             return;
         }
 
-        this._logger.Information("Actor control endpoint enabled on port {port}", actorPort);
+        this._logger.Information("Actor control endpoint enabled on {endPoint}", actorOptions.EndPoint);
         services
-            .AddSingleton(new ActorEndpointOptions(actorPort))
+            .AddSingleton(actorOptions)
             .AddSingleton<IGameServerContextLocator>(_ => new GameServerContextLocator(this._gameServers))
             .AddSingleton<IActorFactory, ActorFactory>()
             .AddSingleton<IActorRegistry, ActorRegistry>()
