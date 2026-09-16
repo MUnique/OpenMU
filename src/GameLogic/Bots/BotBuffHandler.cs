@@ -85,23 +85,7 @@ internal static class BotBuffHandler
     /// <returns>True, if the effect is active.</returns>
     public static bool HasEffect(OfflinePlayer player, MagicEffectDefinition effectDef)
     {
-        if (player.MagicEffectList.ActiveEffects is not { } effects)
-        {
-            return false;
-        }
-
-        // Eager snapshot, like the other readers of ActiveEffects (see MagicEffectsList): the list is
-        // mutated by the effect expiry timers, and a lazy enumeration from this helper tick raced them regularly at scale.
-        // A torn read simply counts as "active"; the next tick then skips the trip for a moment and re-evaluates.
-        try
-        {
-            return effects.Values.ToArray().Any(e => e?.Definition == effectDef);
-        }
-        catch (Exception ex) when (ex is InvalidOperationException || ex is ArgumentException)
-        {
-            player.Logger.LogDebug(ex, "Bot '{Name}' encountered a concurrent modification while inspecting active effects.", player.Name);
-            return true;
-        }
+        return player.MagicEffectList.HasEffect(effectDef);
     }
 
     /// <summary>
