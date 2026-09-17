@@ -83,11 +83,8 @@ public abstract class UpgradeItemLevelJewelConsumeHandlerPlugIn<TConfig>
         if (this._randomizer.NextRandomBool(percent))
         {
             item.Level += (byte)levelAmount;
-            item.Durability = item.GetMaximumDurabilityOfOnePiece();
-            return true; // true doesn't mean that it was successful, just that the consumption happened.
         }
-
-        if (item.Level >= this.Configuration.ResetToLevel0WhenFailMinLevel)
+        else if (item.Level >= this.Configuration.ResetToLevel0WhenFailMinLevel)
         {
             item.Level = 0;
         }
@@ -96,7 +93,9 @@ public abstract class UpgradeItemLevelJewelConsumeHandlerPlugIn<TConfig>
             item.Level = (byte)Math.Max(item.Level - 1, 0);
         }
 
-        return true;
+        item.DurabilityThresholds = null;
+        item.Durability = item.GetMaximumDurabilityOfOnePiece();
+        return true; // true doesn't mean that it was successful, just that the consumption happened.
     }
 
     private static bool ItemHasLuck(Item item)
