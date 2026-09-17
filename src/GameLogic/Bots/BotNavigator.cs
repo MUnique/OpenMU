@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.Bots;
 
+using System.Buffers;
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
@@ -214,6 +215,9 @@ internal sealed class BotNavigator : AsyncDisposable
     /// <summary>Cooldown for following the party leader to another map (shorter, so the group regroups quickly).</summary>
     private static readonly TimeSpan FollowWarpCooldown = TimeSpan.FromSeconds(20);
 
+    /// <summary>Cooldown between expensive same-map gate searches after walking to the leader failed.</summary>
+    private static readonly TimeSpan FollowWarpSearchCooldown = TimeSpan.FromSeconds(20);
+
     /// <summary>
     /// How long the party leader has to stay on a map before its bots follow him there. A leader who is
     /// only passing through (a town trip for supplies, a gate on the way somewhere) must not drag his
@@ -260,6 +264,7 @@ internal sealed class BotNavigator : AsyncDisposable
     private static readonly ConcurrentBag<PathFinder> TravelPathFinders = CreateTravelPathFinderPool();
 
     private readonly OfflinePlayer _player;
+    private readonly TimeProvider _timeProvider;
     private readonly CancellationTokenSource _cts = new();
 
     private Timer? _timer;
@@ -267,7 +272,8 @@ internal sealed class BotNavigator : AsyncDisposable
     private int _isEvaluating;
     private Point _destination;
     private bool _hasDestination;
-    private DateTime _lastWarpUtc = DateTime.MinValue;
+    private DateTimeOffset _lastWarpUtc = DateTimeOffset.MinValue;
+    private DateTimeOffset _nextFollowWarpSearchUtc = DateTimeOffset.MinValue;
     private Point _lastPosition;
     private DateTime _lastMoveUtc = DateTime.MinValue;
     private DateTime _nextEquipCheckUtc = DateTime.MinValue;
@@ -293,16 +299,27 @@ internal sealed class BotNavigator : AsyncDisposable
     /// </summary>
     private DateTime _nextShoppingCheckUtc = DateTime.UtcNow + (ShoppingCooldown * Rand.NextDouble());
     private DateTime? _resetDueAtUtc;
-    private short _leaderMapNumber;
-    private DateTime _leaderOnMapSinceUtc = DateTime.MinValue;
+    private Guid _leaderMapId;
+    private DateTimeOffset _leaderOnMapSinceUtc = DateTimeOffset.MinValue;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BotNavigator"/> class.
     /// </summary>
     /// <param name="player">The bot player.</param>
     public BotNavigator(OfflinePlayer player)
+        : this(player, TimeProvider.System)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BotNavigator"/> class.
+    /// </summary>
+    /// <param name="player">The bot player.</param>
+    /// <param name="timeProvider">The time provider.</param>
+    internal BotNavigator(OfflinePlayer player, TimeProvider timeProvider)
     {
         this._player = player;
+        this._timeProvider = timeProvider;
     }
 
     /// <summary>
@@ -394,6 +411,153 @@ internal sealed class BotNavigator : AsyncDisposable
         return terrain.GetWalkableCoordinate(safezoneMap.GetSafezoneGate(terrain)) is not null;
     }
 
+    /// <summary>
+    /// Follows the party leader across maps after the leader has settled at the destination.
+    /// </summary>
+    /// <param name="map">The bot's current map.</param>
+    /// <param name="leader">The party leader.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>True, if evaluation should stop because a follow action was taken or the leader is on
+    /// another map; false, if the bot can continue its normal local behavior.</returns>
+    internal async ValueTask<bool> TryHandleCrossMapLeaderFollowAsync(GameMap map, Player leader, CancellationToken cancellationToken)
+    {
+        if (ReferenceEquals(leader.CurrentMap, map))
+        {
+            return false;
+        }
+
+        ExitGate? warpListGate = null;
+        if (leader.CurrentMap is { } targetMap
+            && (this.TryGetLegalWarp(targetMap.Definition, out var leaderWarp)
+                ? (warpListGate = leaderWarp.Gate) is null
+                : targetMap.Definition.Number != this._player.SelectedCharacter?.CharacterClass?.HomeMap?.Number))
+        {
+            // The leader moved to a map the bot's plain character level cannot legally enter
+            // (level gates map access, the same rule as everywhere else). Rather than trail
+            // behind unreachable or sneak in through a back door, the bot leaves the group.
+            if (this._player.Party is { } party)
+            {
+                this._player.Logger.LogDebug(
+                    "Bot {Character} leaves its party: it cannot legally follow '{Leader}' to map {Map}.",
+                    this._player.Name,
+                    leader.Name,
+                    targetMap.Definition.Name);
+                await party.KickMySelfAsync(this._player).ConfigureAwait(false);
+            }
+
+            return true;
+        }
+
+        // Only follow a leader who SETTLED on the new map: a leader in transit (pulling a town
+        // scroll for shopping, passing through a gate, hopping back and forth) used to drag its
+        // whole party along on every hop - and since the followers land on the map's spawn gate
+        // rather than next to him, they were still walking over when he warped away again.
+        if (!this.HasLeaderSettled(leader))
+        {
+            return true;
+        }
+
+        // Prefer a spawn gate of the leader's map; maps without one (the Dungeon has no town)
+        // fall back to the warp list gate - the same spot the leader warped to. Without the
+        // fallback a follower could neither warp after its leader nor hunt (following consumed
+        // its ticks), and only the stuck watchdog kept it twitching between hunting grounds.
+        if (this._timeProvider.GetUtcNow() - this._lastWarpUtc >= FollowWarpCooldown
+            && leader.CurrentMap is { } leaderMap
+            && (leaderMap.Definition.ExitGates.Where(g => g.IsSpawnGate).SelectRandom() ?? warpListGate) is { } leaderGate)
+        {
+            this._lastWarpUtc = this._timeProvider.GetUtcNow();
+            this._nextFollowWarpSearchUtc = DateTimeOffset.MinValue;
+            this._hasDestination = false;
+            this._travelPath = null;
+            this._player.Logger.LogDebug(
+                "Bot {Character} following party leader {Leader} to map {Map}.",
+                this._player.Name,
+                leader.Name,
+                leaderMap.Definition.Name);
+            await this._player.WarpToAsync(leaderGate).ConfigureAwait(false);
+            await this.TryPersistCurrentMapAsync(leaderMap.Definition).ConfigureAwait(false);
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Regroups with a leader on the same map by walking, or by using a reachable legal warp when
+    /// disconnected floors make walking impossible.
+    /// </summary>
+    /// <param name="map">The shared map of the bot and its leader.</param>
+    /// <param name="leader">The party leader to regroup with.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>True if a walk or warp was performed; otherwise false.</returns>
+    internal async ValueTask<bool> TryRegroupWithLeaderOnSameMapAsync(GameMap map, Player leader, CancellationToken cancellationToken)
+    {
+        // Discard any previous hunting destination before resolving the moving leader again. Only
+        // publish the leader as a destination after a route was found and a walk was actually issued.
+        this._hasDestination = false;
+        if (await this.TravelTowardAsync(map, leader.Position, cancellationToken).ConfigureAwait(false))
+        {
+            this._nextFollowWarpSearchUtc = DateTimeOffset.MinValue;
+            this._destination = leader.Position;
+            this._hasDestination = true;
+            return true;
+        }
+
+        var now = this._timeProvider.GetUtcNow();
+        if (now - this._lastWarpUtc < FollowWarpCooldown
+            || now < this._nextFollowWarpSearchUtc)
+        {
+            return false;
+        }
+
+        // Some maps represent several floors as disconnected regions on the same map id
+        // (Dungeon, Lost Tower, ...). If walking cannot reach the leader, regroup through the
+        // closest legal warp entry whose complete landing area can reach him. Requiring every possible
+        // landing point is deliberate: the warp performs one unvalidated random placement, so accepting
+        // a partially usable gate would make following succeed or fail by chance.
+        var leaderWarp = this.FindBestReachableLegalWarp(map, leader.Position, cancellationToken);
+        if (leaderWarp?.Gate is not { } leaderGate)
+        {
+            // Start the full retry delay after a completed, unsuccessful scan. Keep this separate
+            // from _lastWarpUtc, which only records real warps and controls other warp decisions.
+            this._nextFollowWarpSearchUtc = this._timeProvider.GetUtcNow() + FollowWarpSearchCooldown;
+            return false;
+        }
+
+        this._lastWarpUtc = this._timeProvider.GetUtcNow();
+        this._travelPath = null;
+        this._player.Logger.LogDebug(
+            "Bot {Character} following party leader {Leader} within map {Map} through warp {Warp}.",
+            this._player.Name,
+            leader.Name,
+            map.Definition.Name,
+            leaderWarp.Name);
+        await this._player.WarpToAsync(leaderGate).ConfigureAwait(false);
+        await this.TryPersistCurrentMapAsync(map.Definition).ConfigureAwait(false);
+        return true;
+    }
+
+    /// <summary>
+    /// Whether the leader has been on his current map long enough (<see cref="LeaderSettleTime"/>) for the
+    /// bot to follow him there. Tracks the leader's map instance per bot, so each follower makes the call on its own.
+    /// </summary>
+    /// <param name="leader">The party leader.</param>
+    /// <returns>True, if the leader has settled long enough.</returns>
+    internal bool HasLeaderSettled(Player leader)
+    {
+        if (leader.CurrentMap is not { } leaderMap)
+        {
+            return false;
+        }
+
+        if (this._leaderMapId != leaderMap.Id)
+        {
+            this._leaderMapId = leaderMap.Id;
+            this._leaderOnMapSinceUtc = this._timeProvider.GetUtcNow();
+        }
+
+        return this._timeProvider.GetUtcNow() - this._leaderOnMapSinceUtc >= LeaderSettleTime;
+    }
+
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore()
     {
@@ -466,6 +630,13 @@ internal sealed class BotNavigator : AsyncDisposable
         var centerX = (area.X1 + area.X2) / 2;
         var centerY = (area.Y1 + area.Y2) / 2;
         return Math.Abs(from.X - centerX) + Math.Abs(from.Y - centerY);
+    }
+
+    private static int GateDistance(Gate gate, Point target)
+    {
+        var centerX = (gate.X1 + gate.X2) / 2;
+        var centerY = (gate.Y1 + gate.Y2) / 2;
+        return Math.Abs(target.X - centerX) + Math.Abs(target.Y - centerY);
     }
 
     /// <summary>
@@ -680,7 +851,7 @@ internal sealed class BotNavigator : AsyncDisposable
         }
 
         // Party members follow their leader instead of roaming on their own: to the leader's map when
-        // it warped away (see TryFollowLeaderAsync), and around him while on the same map (see
+        // it warped away (see TryHandleCrossMapLeaderFollowAsync), and around him while on the same map (see
         // EvaluateFollowerHuntingAsync - hunt within range while there is something to fight, regroup
         // into formation when idle). Followers never roam to independent hunting grounds, warp on
         // their own, or step down barren maps - the leader (the lowest-level member, so it only ever
@@ -688,7 +859,7 @@ internal sealed class BotNavigator : AsyncDisposable
         // if the leader idles in town or is wedged, its followers idle with him.
         if (leaderToFollow is not null)
         {
-            if (await this.TryFollowLeaderAsync(map, leaderToFollow, cancellationToken).ConfigureAwait(false))
+            if (await this.TryHandleCrossMapLeaderFollowAsync(map, leaderToFollow, cancellationToken).ConfigureAwait(false))
             {
                 return;
             }
@@ -841,7 +1012,7 @@ internal sealed class BotNavigator : AsyncDisposable
             {
                 this._travelPath = null;
                 this._hasDestination = false;
-                this._lastWarpUtc = DateTime.UtcNow;
+                this._lastWarpUtc = this._timeProvider.GetUtcNow();
                 this._nextShoppingCheckUtc = DateTime.UtcNow; // start the trip on the new map right away
                 this._player.Logger.LogDebug("Bot '{Name}' warps home to {Map} for a shopping trip - no merchant on its map.", this._player.Name, homeMap.Name);
                 await this._player.WarpToAsync(homeGate).ConfigureAwait(false);
@@ -946,7 +1117,7 @@ internal sealed class BotNavigator : AsyncDisposable
             {
                 this._travelPath = null;
                 this._hasDestination = false;
-                this._lastWarpUtc = DateTime.UtcNow;
+                this._lastWarpUtc = this._timeProvider.GetUtcNow();
                 this._nextBuffCheckUtc = DateTime.UtcNow; // start the trip on the new map right away
                 this._player.Logger.LogDebug("Bot '{Name}' warps home to {Map} for its buff - no buff NPC on its map.", this._player.Name, homeMap.Name);
                 await this._player.WarpToAsync(homeGate).ConfigureAwait(false);
@@ -1141,76 +1312,6 @@ internal sealed class BotNavigator : AsyncDisposable
     }
 
     /// <summary>
-    /// Follows the party leader across maps: warps to the leader's map when the leader warped away and
-    /// settled there. Same-map spacing is NOT handled here - it is owned by
-    /// <see cref="EvaluateFollowerHuntingAsync"/>, which gates the regroup walk on "nothing to fight",
-    /// so a follower engaged at hunting range is never yanked back mid-fight.
-    /// </summary>
-    /// <returns>True, if cross-map following consumed this tick; false, if on the same map (follower hunting runs next).</returns>
-    private async ValueTask<bool> TryFollowLeaderAsync(GameMap map, Player leader, CancellationToken cancellationToken)
-    {
-        if (!ReferenceEquals(leader.CurrentMap, map))
-        {
-            ExitGate? warpListGate = null;
-            if (leader.CurrentMap is { } targetMap
-                && (this.TryGetLegalWarp(targetMap.Definition, out var leaderWarp)
-                    ? (warpListGate = leaderWarp.Gate) is null
-                    : targetMap.Definition.Number != this._player.SelectedCharacter?.CharacterClass?.HomeMap?.Number))
-            {
-                // The leader moved to a map the bot's plain character level cannot legally enter
-                // (level gates map access, the same rule as everywhere else). Rather than trail
-                // behind unreachable or sneak in through a back door, the bot leaves the group.
-                if (this._player.Party is { } party)
-                {
-                    this._player.Logger.LogDebug(
-                        "Bot {Character} leaves its party: it cannot legally follow '{Leader}' to map {Map}.",
-                        this._player.Name,
-                        leader.Name,
-                        targetMap.Definition.Name);
-                    await party.KickMySelfAsync(this._player).ConfigureAwait(false);
-                }
-
-                return true;
-            }
-
-            // Only follow a leader who SETTLED on the new map: a leader in transit (pulling a town
-            // scroll for shopping, passing through a gate, hopping back and forth) used to drag its
-            // whole party along on every hop - and since the followers land on the map's spawn gate
-            // rather than next to him, they were still walking over when he warped away again.
-            if (!this.HasLeaderSettled(leader))
-            {
-                return true;
-            }
-
-            // Prefer a spawn gate of the leader's map; maps without one (the Dungeon has no town)
-            // fall back to the warp list gate - the same spot the leader warped to. Without the
-            // fallback a follower could neither warp after its leader nor hunt (following consumed
-            // its ticks), and only the stuck watchdog kept it twitching between hunting grounds.
-            if (DateTime.UtcNow - this._lastWarpUtc >= FollowWarpCooldown
-                && leader.CurrentMap is { } leaderMap
-                && (leaderMap.Definition.ExitGates.Where(g => g.IsSpawnGate).SelectRandom() ?? warpListGate) is { } leaderGate)
-            {
-                this._lastWarpUtc = DateTime.UtcNow;
-                this._hasDestination = false;
-                this._travelPath = null;
-                this._player.Logger.LogDebug(
-                    "Bot {Character} following party leader {Leader} to map {Map}.",
-                    this._player.Name,
-                    leader.Name,
-                    leaderMap.Definition.Name);
-                await this._player.WarpToAsync(leaderGate).ConfigureAwait(false);
-                await this.TryPersistCurrentMapAsync(leaderMap.Definition).ConfigureAwait(false);
-            }
-
-            return true;
-        }
-
-        // Same map: spacing is owned by EvaluateFollowerHuntingAsync - return without moving, so the
-        // follower can keep fighting a monster at hunting range instead of being yanked back mid-fight.
-        return false;
-    }
-
-    /// <summary>
     /// Hunts around the party leader on the same map: monsters within hunting range
     /// (<see cref="HuntingRange"/>, mirroring the follower's effective combat range of
     /// <see cref="Bots.BotMuHelperSettings.HuntingRange"/>) of the leader are fought via the combat
@@ -1247,34 +1348,12 @@ internal sealed class BotNavigator : AsyncDisposable
         // Nothing to fight around the leader: only now close back into formation.
         if (this._player.GetDistanceTo(leader.Position) > PartyRegroupDistance)
         {
-            this._destination = leader.Position;
-            this._hasDestination = true;
-            await this.TravelTowardAsync(map, leader.Position, cancellationToken).ConfigureAwait(false);
+            await this.TryRegroupWithLeaderOnSameMapAsync(map, leader, cancellationToken).ConfigureAwait(false);
             return;
         }
 
         this._hasDestination = false;
         this._emptyGroundSince = null;
-    }
-
-    /// <summary>
-    /// Whether the leader has been on his current map long enough (<see cref="LeaderSettleTime"/>) for the
-    /// bot to follow him there. Tracks the leader's map per bot, so each follower makes the call on its own.
-    /// </summary>
-    private bool HasLeaderSettled(Player leader)
-    {
-        if (leader.CurrentMap?.Definition is not { } leaderMap)
-        {
-            return false;
-        }
-
-        if (this._leaderMapNumber != leaderMap.Number)
-        {
-            this._leaderMapNumber = leaderMap.Number;
-            this._leaderOnMapSinceUtc = DateTime.UtcNow;
-        }
-
-        return DateTime.UtcNow - this._leaderOnMapSinceUtc >= LeaderSettleTime;
     }
 
     /// <summary>
@@ -1339,7 +1418,8 @@ internal sealed class BotNavigator : AsyncDisposable
         this._hasDestination = false;
         this._travelPath = null;
         this._emptyGroundSince = null;
-        this._lastWarpUtc = DateTime.MinValue;
+        this._lastWarpUtc = DateTimeOffset.MinValue;
+        this._nextFollowWarpSearchUtc = DateTimeOffset.MinValue;
         return true;
     }
 
@@ -1373,7 +1453,7 @@ internal sealed class BotNavigator : AsyncDisposable
         var mapIsBarren = DateTime.UtcNow - this._player.LastAttackUtc > BarrenMapDuration;
 
         if ((plainLevel < MinWarpLevel && !mustEscape && !mapIsBarren)
-            || DateTime.UtcNow - this._lastWarpUtc < WarpCooldown)
+            || this._timeProvider.GetUtcNow() - this._lastWarpUtc < WarpCooldown)
         {
             return false;
         }
@@ -1406,7 +1486,7 @@ internal sealed class BotNavigator : AsyncDisposable
         // The barren timer restarts with the move: the new map deserves the same chance to prove itself
         // before it is judged, and without this every following tick would warp again.
         this._player.LastAttackUtc = DateTime.UtcNow;
-        this._lastWarpUtc = DateTime.UtcNow;
+        this._lastWarpUtc = this._timeProvider.GetUtcNow();
         this._hasDestination = false;
         this._travelPath = null;
         this._player.Logger.LogDebug(
@@ -1459,32 +1539,7 @@ internal sealed class BotNavigator : AsyncDisposable
 
         this._travelPath = null;
 
-        IList<PathResultNode>? path;
-
-        // Observe the navigator's shutdown token while queuing for a shared pathfinder: on disposal the
-        // wait is abandoned at once (the OperationCanceledException is expected and handled in
-        // SafeEvaluateAsync) instead of holding the tick until a finder frees up.
-        await TravelPathFinderPool.WaitAsync(cancellationToken).ConfigureAwait(false);
-        PathFinder? finder = null;
-        try
-        {
-            if (!TravelPathFinders.TryTake(out finder))
-            {
-                finder = CreateTravelPathFinder();
-            }
-
-            finder.ResetPathFinder();
-            path = finder.FindPath(position, destination, map.Terrain.AIgrid, true);
-        }
-        finally
-        {
-            if (finder is not null)
-            {
-                TravelPathFinders.Add(finder);
-            }
-
-            TravelPathFinderPool.Release();
-        }
+        var path = await this.FindTravelPathAsync(map, position, destination, cancellationToken).ConfigureAwait(false);
 
         if (path is null || path.Count == 0)
         {
@@ -1498,6 +1553,37 @@ internal sealed class BotNavigator : AsyncDisposable
         this._travelPathTarget = destination;
         await this.WalkCachedStepsAsync(position).ConfigureAwait(false);
         return true;
+    }
+
+    private async ValueTask<IList<PathResultNode>?> FindTravelPathAsync(
+        GameMap map,
+        Point start,
+        Point destination,
+        CancellationToken cancellationToken)
+    {
+        // Observe the navigator's shutdown token while queuing for a shared pathfinder: on disposal the
+        // wait is abandoned at once instead of holding the tick until a finder frees up.
+        await TravelPathFinderPool.WaitAsync(cancellationToken).ConfigureAwait(false);
+        PathFinder? finder = null;
+        try
+        {
+            if (!TravelPathFinders.TryTake(out finder))
+            {
+                finder = CreateTravelPathFinder();
+            }
+
+            finder.ResetPathFinder();
+            return finder.FindPath(start, destination, map.Terrain.AIgrid, true, cancellationToken);
+        }
+        finally
+        {
+            if (finder is not null)
+            {
+                TravelPathFinders.Add(finder);
+            }
+
+            TravelPathFinderPool.Release();
+        }
     }
 
     /// <summary>
@@ -1761,18 +1847,186 @@ internal sealed class BotNavigator : AsyncDisposable
     /// <returns>True, if the bot may warp to the map.</returns>
     private bool TryGetLegalWarp(GameMapDefinition mapDefinition, [MaybeNullWhen(false)] out WarpInfo warp)
     {
-        warp = null;
-        if (this._player.SelectedCharacter is not { } character)
-        {
-            return false;
-        }
-
-        var plainLevel = (int)(this._player.Attributes?[Stats.Level] ?? 1);
-        warp = this._player.GameContext.Configuration.WarpList
-            .Where(w => w.Gate?.Map?.Number == mapDefinition.Number
-                        && character.GetEffectiveMoveLevelRequirement(w.LevelRequirement) <= plainLevel)
+        warp = this.GetLegalWarps(mapDefinition)
             .FirstOrDefault();
         return warp is not null;
+    }
+
+    /// <summary>
+    /// Gets the legal warp entry whose complete landing area has the shortest walkable route to a target.
+    /// </summary>
+    /// <param name="map">The target map.</param>
+    /// <param name="target">The target position.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The best reachable warp, or <c>null</c> if no legal gate can reach the target.</returns>
+    /// <remarks>
+    /// A candidate is deliberately rejected when any coordinate which
+    /// <see cref="ExitGateExtensions.GetRandomPoint(ExitGate)"/> may select is blocked or cannot reach
+    /// the target. <see cref="Player.WarpToAsync(ExitGate)"/> performs that random placement once and
+    /// does not retry or validate it, so accepting a partially usable gate would make following
+    /// probabilistic. This fail-closed policy can reject a configured gate with many usable coordinates
+    /// and one bad coordinate; keeping that trade-off local avoids changing map-transition behavior for
+    /// other warp features.
+    /// </remarks>
+    private WarpInfo? FindBestReachableLegalWarp(GameMap map, Point target, CancellationToken cancellationToken)
+    {
+        var candidates = this.GetLegalWarps(map.Definition)
+            .Where(candidate => candidate.Gate is not null)
+            .Select(candidate => (Warp: candidate, Gate: candidate.Gate!, LandingPoints: candidate.Gate!.GetPossibleLandingPoints().ToArray()))
+            .Where(candidate => !candidate.LandingPoints.Contains(this._player.Position))
+            .ToArray();
+        if (candidates.Length == 0)
+        {
+            return null;
+        }
+
+        // Movement on the walk map is bidirectional. One reverse flood fill from the leader therefore
+        // gives both reachability and shortest distance for every possible gate landing point, without
+        // acquiring a full-map pathfinder once per point.
+        cancellationToken.ThrowIfCancellationRequested();
+        var walkMap = map.Terrain.WalkMap;
+        var width = walkMap.GetLength(0);
+        var coordinateCount = width * walkMap.GetLength(1);
+        var distancesFromTarget = ArrayPool<int>.Shared.Rent(coordinateCount);
+        var pendingCoordinates = ArrayPool<int>.Shared.Rent(coordinateCount);
+        try
+        {
+            Array.Clear(distancesFromTarget, 0, coordinateCount);
+            this.PopulateWalkableDistancesFrom(
+                walkMap,
+                target,
+                distancesFromTarget,
+                pendingCoordinates,
+                cancellationToken);
+            WarpInfo? bestWarp = null;
+            var bestWorstCaseDistance = int.MaxValue;
+            foreach (var candidate in candidates)
+            {
+                var worstCaseDistance = this.GetWorstLandingDistance(candidate.LandingPoints, distancesFromTarget, width);
+                if (worstCaseDistance is null
+                    || worstCaseDistance > bestWorstCaseDistance
+                    || (worstCaseDistance == bestWorstCaseDistance
+                        && bestWarp?.Gate is { } bestGate
+                        && GateDistance(candidate.Gate, target) >= GateDistance(bestGate, target)))
+                {
+                    continue;
+                }
+
+                bestWarp = candidate.Warp;
+                bestWorstCaseDistance = worstCaseDistance.Value;
+            }
+
+            return bestWarp;
+        }
+        finally
+        {
+            ArrayPool<int>.Shared.Return(distancesFromTarget);
+            ArrayPool<int>.Shared.Return(pendingCoordinates);
+        }
+    }
+
+    private int? GetWorstLandingDistance(
+        IReadOnlyCollection<Point> landingPoints,
+        int[] distancesFromTarget,
+        int mapWidth)
+    {
+        var worstCaseDistance = 0;
+        foreach (var landingPoint in landingPoints)
+        {
+            var encodedDistance = distancesFromTarget[(landingPoint.Y * mapWidth) + landingPoint.X];
+            if (encodedDistance == 0)
+            {
+                return null;
+            }
+
+            // Zero means unreachable, so stored distances are offset by one.
+            worstCaseDistance = Math.Max(worstCaseDistance, encodedDistance - 1);
+        }
+
+        return worstCaseDistance;
+    }
+
+    private void PopulateWalkableDistancesFrom(
+        bool[,] walkMap,
+        Point start,
+        int[] distances,
+        int[] pendingCoordinates,
+        CancellationToken cancellationToken)
+    {
+        if (!walkMap[start.X, start.Y])
+        {
+            return;
+        }
+
+        var width = walkMap.GetLength(0);
+        var height = walkMap.GetLength(1);
+        var readIndex = 0;
+        var writeIndex = 0;
+        var startIndex = (start.Y * width) + start.X;
+        distances[startIndex] = 1;
+        pendingCoordinates[writeIndex++] = startIndex;
+        while (readIndex < writeIndex)
+        {
+            if ((readIndex & 0xFF) == 0)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+            }
+
+            var currentIndex = pendingCoordinates[readIndex++];
+            var currentX = currentIndex % width;
+            var currentY = currentIndex / width;
+            var nextEncodedDistance = distances[currentIndex] + 1;
+            for (var offsetX = -1; offsetX <= 1; offsetX++)
+            {
+                for (var offsetY = -1; offsetY <= 1; offsetY++)
+                {
+                    if (offsetX == 0 && offsetY == 0)
+                    {
+                        continue;
+                    }
+
+                    var nextX = currentX + offsetX;
+                    var nextY = currentY + offsetY;
+                    if ((uint)nextX >= width
+                        || (uint)nextY >= height
+                        || !walkMap[nextX, nextY]
+                        || distances[(nextY * width) + nextX] != 0)
+                    {
+                        continue;
+                    }
+
+                    var nextIndex = (nextY * width) + nextX;
+                    distances[nextIndex] = nextEncodedDistance;
+                    pendingCoordinates[writeIndex++] = nextIndex;
+                }
+            }
+        }
+    }
+
+    private IEnumerable<WarpInfo> GetLegalWarps(GameMapDefinition mapDefinition)
+    {
+        if (this._player.SelectedCharacter is not { } character)
+        {
+            return [];
+        }
+
+        // Runtime/instanced maps are not guaranteed to reference the same persisted entity as the
+        // global warp list, so map-number matching remains the compatibility fallback. When the exact
+        // definition is present, however, use only its entries to avoid mixing distinct definitions
+        // which happen to share a number.
+        var sameNumberWarps = this._player.GameContext.Configuration.WarpList
+            .Where(w => w.Gate?.Map?.Number == mapDefinition.Number)
+            .ToArray();
+        var mapDefinitionId = mapDefinition.GetId();
+        var exactMapWarps = mapDefinitionId == Guid.Empty
+            ? []
+            : sameNumberWarps.Where(w => w.Gate!.Map!.GetId() == mapDefinitionId).ToArray();
+        var mapWarps = exactMapWarps.Length > 0 ? exactMapWarps : sameNumberWarps;
+
+        // Select the identity tier before applying access requirements. Otherwise an exact entry
+        // which is too high-level could incorrectly fall through to an easier same-number entry.
+        var plainLevel = (int)(this._player.Attributes?[Stats.Level] ?? 1);
+        return mapWarps.Where(w => character.GetEffectiveMoveLevelRequirement(w.LevelRequirement) <= plainLevel);
     }
 
     /// <summary>
