@@ -2108,7 +2108,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         if (damageType is DamageType.Wizardry or DamageType.Curse)
         {
             weaponDamageFactor = 1.33 * (weapon.IsBook(out _) ? attributes[Stats.BookRise] : attributes[Stats.StaffRise]);
-            hitsPerOneItemDurability *= 1056 / 564;
+            hitsPerOneItemDurability *= 1056f / 564;
         }
         else
         {
@@ -2117,7 +2117,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
             if (attributes[Stats.ArcheryAttackMode] > 0)
             {
-                hitsPerOneItemDurability *= 780 / 564;
+                hitsPerOneItemDurability *= 780f / 564;
             }
         }
 

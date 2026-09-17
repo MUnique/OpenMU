@@ -40,7 +40,7 @@ public class DurabilityDecayPlugIn : IPeriodicTaskPlugIn
                         {
                             double decrementWeight = new ItemIdentifier(item.Definition!.Number, item.Definition.Group) switch
                             {
-                                var itm when isTransformationRing => 11.28, // 11.28 / 564 = 0.02
+                                var _ when isTransformationRing => 11.28, // 11.28 / 564 = 0.02
                                 var itm when itm == ItemConstants.WizardsRing => 70,
                                 var itm when itm == ItemConstants.MoonstonePendant => 63,
                                 _ => 1,
