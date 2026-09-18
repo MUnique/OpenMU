@@ -133,18 +133,13 @@ public abstract class MiniGameStartBasePlugIn<TConfiguration, TGameState> : Peri
         foreach (var miniGameDefinition in miniGameDefinitions)
         {
             // we're causing that the event context gets created.
-            MiniGameContext game;
-            for (int attempt = 0; ; attempt++)
+            var game = await state.Context.MiniGames.GetOrCreateAsync(miniGameDefinition, null!).ConfigureAwait(false);
+            for (var attempt = 0; attempt < 2 && game is not { IsDisposed: false, IsDisposing: false, State: MiniGameState.Open }; attempt++)
             {
-                game = await state.Context.MiniGames.GetOrCreateAsync(miniGameDefinition, null!).ConfigureAwait(false);
-                if (game is { IsDisposed: false, IsDisposing: false, State: MiniGameState.Open } || attempt >= 2)
-                {
-                    break;
-                }
-
                 // A stale instance slipped through (e.g. caught mid-dispose): dispose it,
                 // so that the next attempt creates a fresh one.
                 await game.DisposeAsync().ConfigureAwait(false);
+                game = await state.Context.MiniGames.GetOrCreateAsync(miniGameDefinition, null!).ConfigureAwait(false);
             }
 
             enterDuration = miniGameDefinition.EnterDuration;
