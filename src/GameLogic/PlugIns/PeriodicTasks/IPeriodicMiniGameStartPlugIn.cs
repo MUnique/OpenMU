@@ -32,4 +32,20 @@ public interface IPeriodicMiniGameStartPlugIn : IStrategyPlugIn<MiniGameType>, I
     /// <param name="miniGameDefinition">The mini game definition.</param>
     /// <returns>The mini game context, if available.</returns>
     ValueTask<MiniGameContext?> GetMiniGameContextAsync(IGameContext gameContext, MiniGameDefinition miniGameDefinition);
+
+    /// <summary>
+    /// Determines whether an event of this kind is currently active (open, closed for entrance, or playing)
+    /// on the given game context.
+    /// </summary>
+    /// <param name="gameContext">The game context.</param>
+    /// <returns><c>true</c> if an event is currently active; otherwise, <c>false</c>.</returns>
+    bool IsEventActive(IGameContext gameContext);
+
+    /// <summary>
+    /// Disposes all currently tracked game instances of this kind on the given game context.
+    /// Disposing removes all remaining players from the games, so that a new event can be
+    /// started with fresh instances.
+    /// </summary>
+    /// <param name="gameContext">The game context.</param>
+    ValueTask DisposeRunningGamesAsync(IGameContext gameContext);
 }

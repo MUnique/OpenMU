@@ -807,12 +807,9 @@ public sealed class KanturuContext : MiniGameContext
         }
     }
 
-    private async Task DelayAsync(TimeSpan duration, CancellationToken ct)
+    private Task DelayAsync(TimeSpan duration, CancellationToken ct)
     {
-        if (duration > TimeSpan.Zero)
-        {
-            await Task.Delay(duration, ct).ConfigureAwait(false);
-        }
+        return this.DelayWithSkipAsync(duration, ct);
     }
 
     private async ValueTask ShowGoldenMessageIfConfiguredAsync(string? messageKey)
