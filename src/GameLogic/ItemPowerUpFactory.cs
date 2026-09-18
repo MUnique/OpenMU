@@ -17,6 +17,18 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
 {
     private readonly ILogger<ItemPowerUpFactory> _logger;
 
+    private readonly AttributeDefinition[] _durabilityAffectedItemAttributes =
+    [
+        Stats.DefenseBase,
+        Stats.DefenseShield,
+        Stats.DefenseRatePvm,
+        Stats.MinimumPhysBaseDmgByWeapon,
+        Stats.MaximumPhysBaseDmgByWeapon,
+        Stats.StaffRise,
+        Stats.ScepterRise,
+        Stats.BookRise,
+    ];
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ItemPowerUpFactory"/> class.
     /// </summary>
@@ -205,21 +217,22 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
 
     private IEnumerable<PowerUpWrapper> GetBasePowerUpWrappers(Item item, AttributeSystem attributeHolder, ItemBasePowerUpDefinition attribute, AttributeDefinition? targetAttribute = null)
     {
-        attribute.ThrowNotInitializedProperty(attribute.BaseValueElement is null, nameof(attribute.BaseValueElement));
         attribute.ThrowNotInitializedProperty(attribute.TargetAttribute is null, nameof(attribute.TargetAttribute));
+
+        var durabilityFactor = this._durabilityAffectedItemAttributes.Contains(attribute.TargetAttribute) ? item.GetCurrentDurabilityFactor() : 1;
+        var baseValueElmt = attribute.GetBaseValueElement(durabilityFactor);
 
         var levelBonusElmt = (attribute.BonusPerLevelTable?.BonusPerLevel ?? Enumerable.Empty<LevelBonus>())
             .FirstOrDefault(bonus => bonus.Level == item.Level)?
-            .GetAdditionalValueElement(attribute.AggregateType);
-
+            .GetAdditionalValueElement(attribute.AggregateType, durabilityFactor);
         if (levelBonusElmt is null)
         {
-            yield return new PowerUpWrapper(attribute.BaseValueElement, targetAttribute ?? attribute.TargetAttribute, attributeHolder);
+            yield return new PowerUpWrapper(baseValueElmt, targetAttribute ?? attribute.TargetAttribute, attributeHolder);
         }
         else
         {
             yield return new PowerUpWrapper(
-                new CombinedElement(attribute.BaseValueElement, levelBonusElmt),
+                new CombinedElement(baseValueElmt, levelBonusElmt),
                 targetAttribute ?? attribute.TargetAttribute,
                 attributeHolder);
         }
@@ -296,7 +309,9 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
                 }
             }
 
-            foreach (var wrapper in PowerUpWrapper.CreateByPowerUpDefinition(powerUp, attributeHolder, aggregateType))
+            var durabilityFactor = (option.OptionType == ItemOptionTypes.Option && !item.IsJewelry()) || option.OptionType == ItemOptionTypes.AncientBonus
+                ? item.GetCurrentDurabilityFactor() : 1.0f;
+            foreach (var wrapper in PowerUpWrapper.CreateByPowerUpDefinition(powerUp, attributeHolder, aggregateType, durabilityFactor))
             {
                 yield return wrapper;
             }
@@ -321,16 +336,17 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
 
         var baseDropLevel = item.Definition!.DropLevel;
         var ancientDropLevel = item.Definition!.CalculateDropLevel(true, false, 0);
+        var durabilityFactor = item.GetCurrentDurabilityFactor();
 
-        if (InventoryConstants.IsDefenseItemSlot(item.ItemSlot) && !item.IsJewelry())
+        if (item.IsArmorItem())
         {
             var baseDefense = (int)(item.Definition?.BasePowerUpAttributes.FirstOrDefault(a => a.TargetAttribute == Stats.DefenseBase)?.BaseValue ?? 0);
             var additionalDefense = (baseDefense * 12 / baseDropLevel) + (baseDropLevel / 5) + 4;
-            yield return new PowerUpWrapper(new SimpleElement(additionalDefense, AggregateType.AddRaw), Stats.DefenseBase, attributeHolder);
+            yield return new PowerUpWrapper(new SimpleElement(additionalDefense * durabilityFactor, AggregateType.AddRaw), Stats.DefenseBase, attributeHolder);
             if (itemIsAncient)
             {
                 var ancientDefenseBonus = 2 + ((baseDefense + additionalDefense) * 3 / ancientDropLevel) + (ancientDropLevel / 30);
-                yield return new PowerUpWrapper(new SimpleElement(ancientDefenseBonus, AggregateType.AddRaw), Stats.DefenseBase, attributeHolder);
+                yield return new PowerUpWrapper(new SimpleElement(ancientDefenseBonus * durabilityFactor, AggregateType.AddRaw), Stats.DefenseBase, attributeHolder);
             }
         }
 
@@ -338,12 +354,12 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
         {
             var baseDefenseRate = (int)(item.Definition?.BasePowerUpAttributes.FirstOrDefault(a => a.TargetAttribute == Stats.DefenseRatePvm)?.BaseValue ?? 0);
             var additionalRate = (baseDefenseRate * 25 / baseDropLevel) + 5;
-            yield return new PowerUpWrapper(new SimpleElement(additionalRate, AggregateType.AddRaw), Stats.DefenseRatePvm, attributeHolder);
+            yield return new PowerUpWrapper(new SimpleElement(additionalRate * durabilityFactor, AggregateType.AddRaw), Stats.DefenseRatePvm, attributeHolder);
             if (itemIsAncient)
             {
                 var baseDefense = (int)(item.Definition?.BasePowerUpAttributes.FirstOrDefault(a => a.TargetAttribute == Stats.DefenseShield)?.BaseValue ?? 0);
                 var ancientDefenseBonus = 2 + ((baseDefense + item.Level) * 20 / ancientDropLevel);
-                yield return new PowerUpWrapper(new SimpleElement(ancientDefenseBonus, AggregateType.AddRaw), Stats.DefenseShield, attributeHolder);
+                yield return new PowerUpWrapper(new SimpleElement(ancientDefenseBonus * durabilityFactor, AggregateType.AddRaw), Stats.DefenseShield, attributeHolder);
             }
         }
 
@@ -359,13 +375,13 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
             }
 
             var additionalDmg = ((int)minPhysDmg * 25 / baseDropLevel) + 5;
-            yield return new PowerUpWrapper(new SimpleElement(additionalDmg, AggregateType.AddRaw), minDmgAttribute, attributeHolder);
-            yield return new PowerUpWrapper(new SimpleElement(additionalDmg, AggregateType.AddRaw), maxDmgAttribute, attributeHolder);
+            yield return new PowerUpWrapper(new SimpleElement(additionalDmg * durabilityFactor, AggregateType.AddRaw), minDmgAttribute, attributeHolder);
+            yield return new PowerUpWrapper(new SimpleElement(additionalDmg * durabilityFactor, AggregateType.AddRaw), maxDmgAttribute, attributeHolder);
             if (itemIsAncient)
             {
                 var ancientBonus = 5 + (ancientDropLevel / 40);
-                yield return new PowerUpWrapper(new SimpleElement(ancientBonus, AggregateType.AddRaw), minDmgAttribute, attributeHolder);
-                yield return new PowerUpWrapper(new SimpleElement(ancientBonus, AggregateType.AddRaw), maxDmgAttribute, attributeHolder);
+                yield return new PowerUpWrapper(new SimpleElement(ancientBonus * durabilityFactor, AggregateType.AddRaw), minDmgAttribute, attributeHolder);
+                yield return new PowerUpWrapper(new SimpleElement(ancientBonus * durabilityFactor, AggregateType.AddRaw), maxDmgAttribute, attributeHolder);
             }
 
             if (itemIsExcellent
@@ -379,33 +395,33 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
         if (item.IsWizardryWeapon(out var staffRise) && item.ItemSlot == InventoryConstants.LeftHandSlot)
         {
             var additionalRise = (((int)staffRise * 2 * 25 / baseDropLevel) + 5) / 2;
-            yield return new PowerUpWrapper(new SimpleElement(additionalRise, AggregateType.AddRaw), Stats.StaffRise, attributeHolder);
+            yield return new PowerUpWrapper(new SimpleElement(additionalRise * durabilityFactor, AggregateType.AddRaw), Stats.StaffRise, attributeHolder);
             if (itemIsAncient)
             {
                 var ancientRiseBonus = (2 + (ancientDropLevel / 60)) / 2;
-                yield return new PowerUpWrapper(new SimpleElement(ancientRiseBonus, AggregateType.AddRaw), Stats.StaffRise, attributeHolder);
+                yield return new PowerUpWrapper(new SimpleElement(ancientRiseBonus * durabilityFactor, AggregateType.AddRaw), Stats.StaffRise, attributeHolder);
             }
         }
 
         if (item.IsScepter(out var scepterRise))
         {
             var additionalRise = (((int)scepterRise * 2 * 25 / baseDropLevel) + 5) / 2;
-            yield return new PowerUpWrapper(new SimpleElement(additionalRise, AggregateType.AddRaw), Stats.ScepterRise, attributeHolder);
+            yield return new PowerUpWrapper(new SimpleElement(additionalRise * durabilityFactor, AggregateType.AddRaw), Stats.ScepterRise, attributeHolder);
             if (itemIsAncient)
             {
                 var ancientRiseBonus = (2 + (ancientDropLevel / 60)) / 2;
-                yield return new PowerUpWrapper(new SimpleElement(ancientRiseBonus, AggregateType.AddRaw), Stats.ScepterRise, attributeHolder);
+                yield return new PowerUpWrapper(new SimpleElement(ancientRiseBonus * durabilityFactor, AggregateType.AddRaw), Stats.ScepterRise, attributeHolder);
             }
         }
 
         if (item.IsBook(out var curseRise))
         {
             var additionalRise = (((int)curseRise * 2 * 25 / baseDropLevel) + 5) / 2;
-            yield return new PowerUpWrapper(new SimpleElement(additionalRise, AggregateType.AddRaw), Stats.BookRise, attributeHolder);
+            yield return new PowerUpWrapper(new SimpleElement(additionalRise * durabilityFactor, AggregateType.AddRaw), Stats.BookRise, attributeHolder);
             if (itemIsAncient)
             {
                 var ancientRiseBonus = (2 + (ancientDropLevel / 60)) / 2;
-                yield return new PowerUpWrapper(new SimpleElement(ancientRiseBonus, AggregateType.AddRaw), Stats.BookRise, attributeHolder);
+                yield return new PowerUpWrapper(new SimpleElement(ancientRiseBonus * durabilityFactor, AggregateType.AddRaw), Stats.BookRise, attributeHolder);
             }
         }
 
@@ -415,7 +431,7 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
             {
                 if (Stats.ElementResistanceToDamageBonus.Keys.FirstOrDefault(resistance => resistance == baseAttribute.TargetAttribute) is { } key)
                 {
-                    yield return new PowerUpWrapper(new SimpleElement(5, AggregateType.AddRaw), Stats.ElementResistanceToDamageBonus[key], attributeHolder);
+                    yield return new PowerUpWrapper(new SimpleElement(5 * durabilityFactor, AggregateType.AddRaw), Stats.ElementResistanceToDamageBonus[key], attributeHolder);
                 }
             }
         }

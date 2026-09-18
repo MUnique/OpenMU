@@ -15,6 +15,26 @@ public class ItemConstants
     public static ItemIdentifier SummonOrb => new(11, 12);
 
     /// <summary>
+    /// Gets the identifier for the angel.
+    /// </summary>
+    public static ItemIdentifier Angel => new(0, 13);
+
+    /// <summary>
+    /// Gets the identifier for the imp.
+    /// </summary>
+    public static ItemIdentifier Imp => new(1, 13);
+
+    /// <summary>
+    /// Gets the identifier for the dinorant.
+    /// </summary>
+    public static ItemIdentifier Dinorant => new(3, 13);
+
+    /// <summary>
+    /// Gets the identifier for the dark horse.
+    /// </summary>
+    public static ItemIdentifier DarkHorse => new(4, 13);
+
+    /// <summary>
     /// Gets the identifier for the Castle Siege Life Stone.
     /// </summary>
     public static ItemIdentifier CastleSiegeLifeStone => new(11, 13);
@@ -23,6 +43,21 @@ public class ItemConstants
     /// Gets the identifier for the fruits.
     /// </summary>
     public static ItemIdentifier Fruits => new(15, 13);
+
+    /// <summary>
+    /// Gets the identifier for the fenrir.
+    /// </summary>
+    public static ItemIdentifier Fenrir => new(37, 13);
+
+    /// <summary>
+    /// Gets the identifier for the demon.
+    /// </summary>
+    public static ItemIdentifier Demon => new(64, 13);
+
+    /// <summary>
+    /// Gets the identifier for the rudolf pet.
+    /// </summary>
+    public static ItemIdentifier Rudolf => new(67, 13);
 
     /// <summary>
     /// Gets the identifier for the alcohol.
@@ -163,6 +198,11 @@ public class ItemConstants
     /// Gets the identifier for the wizard's ring (group 13, number 20).
     /// </summary>
     public static ItemIdentifier WizardsRing => new(20, 13);
+
+    /// <summary>
+    /// Gets the identifier for the moonstone pendant (group 13, number 38).
+    /// </summary>
+    public static ItemIdentifier MoonstonePendant => new(38, 13);
 
     /// <summary>
     /// Gets all scrolls.

@@ -907,13 +907,13 @@ public static class AttackableExtensions
         }
         else if (magicEffectDefinition.PowerUpDefinitions.Any(e => e.TargetAttribute == Stats.IsBleeding))
         {
-            if (hitInfo is not { } hit || hit.HealthDamage + hit.ShieldDamage < 1)
+            if (hitInfo is not { } hit || hit.TotalDamage < 1)
             {
                 return;
             }
 
             var multiplier = magicEffectDefinition.Number == ExplosionMagicEffectNumber ? attacker.Attributes[Stats.BleedingDamageMultiplier] : 0.6f;
-            var damage = (hit.HealthDamage + hit.ShieldDamage) * multiplier;
+            var damage = hit.TotalDamage * multiplier;
             magicEffect = new BleedingMagicEffect(powerUps[0].Boost, magicEffectDefinition, durationSpan, attacker, target, damage);
         }
         else if (magicEffectDefinition.PowerUpDefinitions.Any(e => e.TargetAttribute == Stats.IsStunned))

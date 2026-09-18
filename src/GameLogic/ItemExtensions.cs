@@ -19,6 +19,8 @@ public static class ItemExtensions
 
     private static readonly byte[] AdditionalDurabilityPerLevel = { 0, 1, 2, 3, 4, 6, 8, 10, 12, 14, 17, 21, 26, 32, 39, 47 };
 
+    private static readonly float[] DurabilityFactors = { 0.2f, 0.3f, 0.5f };
+
     private static readonly IDictionary<AttributeDefinition, AttributeDefinition> RequirementAttributeMapping = new Dictionary<AttributeDefinition, AttributeDefinition>
     {
         { Stats.TotalStrengthRequirementValue, Stats.TotalStrength },
@@ -116,13 +118,13 @@ public static class ItemExtensions
     }
 
     /// <summary>
-    /// Determines whether this item is a defensive item.
+    /// Determines whether this item is a defensive item (armor or shield).
     /// </summary>
     /// <param name="item">The item.</param>
     /// <returns><see langword="true"/>, if the item is defensive.</returns>
     public static bool IsDefensiveItem(this Item item)
     {
-        return InventoryConstants.IsDefenseItemSlot(item.ItemSlot) || item.IsShield();
+        return IsArmorItem(item) || item.IsShield();
     }
 
     /// <summary>
@@ -249,45 +251,83 @@ public static class ItemExtensions
     }
 
     /// <summary>
-    /// Returns a random offensive item of the storage.
+    /// Determines whether this instance's durability decays with time.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <returns>
+    ///   <c>true</c> if this instance's durability decays with time; otherwise, <c>false</c>.
+    /// </returns>
+    public static bool IsTimeDecaying(this Item item)
+    {
+        return item.IsJewelry() || item.IsWing();
+    }
+
+    /// <summary>
+    /// Determines whether this instance's power-ups depend on its current durability.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <returns>
+    ///   <c>true</c> if this instance's power-ups are subject to a durabiity factor; otherwise, <c>false</c>.
+    /// </returns>
+    public static bool DegradesWithDurability(this Item item)
+    {
+        return item.ItemSlot != InventoryConstants.PetSlot && !item.IsTrainablePet();
+    }
+
+    /// <summary>
+    /// Returns a random equipped weapon from the storage.
     /// </summary>
     /// <param name="storage">The storage.</param>
+    /// <param name="damageType">The damage type.</param>
     /// <returns>A randomly selected offensive item.</returns>
-    public static Item? GetRandomOffensiveItem(this IInventoryStorage storage)
+    public static Item? GetRandomWeapon(this IInventoryStorage storage, DamageType damageType)
     {
+        if (damageType == DamageType.Fenrir)
+        {
+            return null;
+        }
+
         var left = storage.GetItem(InventoryConstants.LeftHandSlot);
         var right = storage.GetItem(InventoryConstants.RightHandSlot);
-        var pendant = storage.GetItem(InventoryConstants.PendantSlot);
 
-        if ((left?.Definition?.IsAmmunition ?? false)
-            || left?.Definition?.Group == ShieldItemGroup)
+        if (left?.Definition?.IsAmmunition ?? false)
         {
             left = null;
         }
 
         if ((right?.Definition?.IsAmmunition ?? false)
-            || right?.Definition?.Group == ShieldItemGroup)
+            || right?.Definition?.Group == ShieldItemGroup
+            || (right?.IsTrainablePet() ?? false))
         {
             right = null;
         }
 
-        var random = Rand.NextInt(3, 6);
-        var result = left ?? right ?? pendant;
+        if (damageType is DamageType.Wizardry or DamageType.Curse)
+        {
+            if (!left?.IsWizardryWeapon(out _) ?? false)
+            {
+                left = null;
+            }
+
+            if (!right?.IsBook(out _) ?? false)
+            {
+                right = null;
+            }
+        }
+
+        var result = left ?? right;
         if (result is null)
         {
             return null;
         }
 
-        switch (random % 3)
+        switch (Rand.NextInt(0, 2))
         {
             case 0 when left is { }:
                 result = left;
                 break;
             case 1 when right is { }:
                 result = right;
-                break;
-            case 2 when pendant is { }:
-                result = pendant;
                 break;
             default:
                 // keep first available result
@@ -442,6 +482,53 @@ public static class ItemExtensions
     public static int CalculateDropLevel(this Item item)
     {
         return item.Definition?.CalculateDropLevel(item.IsAncient(), item.IsExcellent(), item.Level) ?? 0;
+    }
+
+    /// <summary>
+    /// Gets the current durability factor for the item.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <returns>The factor.</returns>
+    public static float GetCurrentDurabilityFactor(this Item item)
+    {
+        if (item.Durability == 0)
+        {
+            return 0;
+        }
+
+        if (!item.DegradesWithDurability())
+        {
+            return 1;
+        }
+
+        if (item.DurabilityThresholds is null)
+        {
+            item.CalculateDurabilityThresholds();
+        }
+
+        for (int i = 0; i < item.DurabilityThresholds!.Length; i++)
+        {
+            if (item.Durability < item.DurabilityThresholds[i])
+            {
+                return 1 - DurabilityFactors[^(i + 1)];
+            }
+        }
+
+        return 1;
+    }
+
+    /// <summary>
+    /// Calculates the durability thresholds for the item.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    private static void CalculateDurabilityThresholds(this Item item)
+    {
+        item.DurabilityThresholds ??= new double[3];
+        var maxDurability = item.GetMaximumDurabilityOfOnePiece();
+        for (int i = 0; i < DurabilityFactors.Length; i++)
+        {
+            item.DurabilityThresholds[i] = maxDurability * DurabilityFactors[i];
+        }
     }
 
     private static int CalculateRequirement(this Item item, int requirementValue, int multiplier)

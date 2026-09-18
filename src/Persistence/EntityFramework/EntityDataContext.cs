@@ -99,7 +99,7 @@ public class EntityDataContext : ExtendedTypeContext
         modelBuilder.Entity<ItemSetGroup>().Apply();
         modelBuilder.Entity<ItemSlotType>().Apply();
         modelBuilder.Entity<ItemStorage>().Apply();
-        modelBuilder.Entity<ItemBasePowerUpDefinition>().Apply();
+        modelBuilder.Entity<ItemBasePowerUpDefinition>();
         modelBuilder.Entity<LevelBonus>().Apply();
         modelBuilder.Entity<MagicEffectDefinition>().Apply();
         modelBuilder.Entity<MasterSkillRoot>().Apply();
