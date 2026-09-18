@@ -579,4 +579,19 @@ public enum UpdateVersion
     /// The version of the <see cref="AddKanturuMapContentUpdatePlugIn"/>.
     /// </summary>
     AddKanturuMapContent = 114,
+
+    /// <summary>
+    /// The version of the <see cref="ItemDurabilityRefactorPlugIn075"/>.
+    /// </summary>
+    ItemDurabilityRefactor075 = 115,
+
+    /// <summary>
+    /// The version of the <see cref="ItemDurabilityRefactorPlugIn095D"/>.
+    /// </summary>
+    ItemDurabilityRefactor095d = 116,
+
+    /// <summary>
+    /// The version of the <see cref="ItemDurabilityRefactorPlugInSeason6"/>.
+    /// </summary>
+    ItemDurabilityRefactorSeason6 = 117,
 }

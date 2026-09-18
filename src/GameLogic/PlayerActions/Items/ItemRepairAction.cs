@@ -43,6 +43,7 @@ public class ItemRepairAction
         if (IsMoneySufficient(player, item))
         {
             item.Durability = item.GetMaximumDurabilityOfOnePiece();
+            await ((InventoryStorage?)player.Inventory!).RaiseEquippedItemsChangedAsync(item, true).ConfigureAwait(false);
             await player.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(item, false)).ConfigureAwait(false);
         }
         else
@@ -72,7 +73,7 @@ public class ItemRepairAction
         {
             if (i == InventoryConstants.PetSlot)
             {
-                // Pets are repaired due pet trainer
+                // Pets are repaired in pet trainer
                 continue;
             }
 
@@ -90,6 +91,7 @@ public class ItemRepairAction
             if (IsMoneySufficient(player, item))
             {
                 item.Durability = item.GetMaximumDurabilityOfOnePiece();
+                await ((InventoryStorage?)player.Inventory)!.RaiseEquippedItemsChangedAsync(item, true).ConfigureAwait(false);
                 await player.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(item, false)).ConfigureAwait(false);
             }
             else

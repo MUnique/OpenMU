@@ -44,6 +44,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         StopByDeath = false,
     };
 
+    private readonly MoveItemAction _moveAction = new();
+
     private readonly PlayerExperience _experience;
 
     /// <summary>
@@ -2023,11 +2025,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
         else
         {
-            // To-do: exclude cash shop pets: demon, spirit of guardian, rudolf, panda, skeleton
             itemDurationIncrease = attributes[Stats.PetDurationIncrease];
 
-            if (itemDurationIncrease == 0)
+            if (itemDurationIncrease == 0 || identifier.Number >= ItemConstants.Demon.Number)
             {
+                // Exclude cash shop pets: demon, spirit of guardian, rudolf, panda, unicorn, skeleton
                 itemDurationIncrease = 1;
             }
         }
@@ -2078,17 +2080,20 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                     && (this.CurrentMap?.Definition.MapRequirements.Any(req => req.Attribute == Stats.CanFly) ?? false)
                     && attributes[Stats.CanFly] < 1)
                 {
-                    if (this.GameContext.Configuration.Items.FirstOrDefault(i => i.Group == ItemConstants.Dinorant.Group && i.Number == ItemConstants.Dinorant.Number) is { } dinorantDef
+                    if (this.GameContext.Configuration.Items.FirstOrDefault(i =>
+                            i.Group == ItemConstants.Dinorant.Group && i.Number == ItemConstants.Dinorant.Number) is { } dinorantDef
                         && this.Inventory?.FindItemsByDefinition(dinorantDef).FirstOrDefault() is { } dinorantItem)
                     {
-                        await new MoveItemAction().MoveItemAsync(this, dinorantItem.ItemSlot, Storages.Inventory, InventoryConstants.PetSlot, Storages.Inventory).ConfigureAwait(false);
-                        await this.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.EquipmentHasChangedMessage)).ConfigureAwait(false);
+                        await this._moveAction.MoveItemAsync(this, dinorantItem.ItemSlot, Storages.Inventory, InventoryConstants.PetSlot, Storages.Inventory).ConfigureAwait(false);
+                        if (this.Inventory.GetItem(InventoryConstants.PetSlot) == dinorantItem)
+                        {
+                            await this.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.EquipmentHasChangedMessage)).ConfigureAwait(false);
+                            return;
+                        }
                     }
-                    else
-                    {
-                        await this._movement.StopWalkingAsync().ConfigureAwait(false);
-                        await this.WarpToSafezoneAsync().ConfigureAwait(false);
-                    }
+
+                    await this._movement.StopWalkingAsync().ConfigureAwait(false);
+                    await this.WarpToSafezoneAsync().ConfigureAwait(false);
                 }
             }
         }
