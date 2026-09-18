@@ -12176,7 +12176,7 @@
       <Code>B6</Code>
       <Name>CastleSiegeMiniMapPlayerPositions</Name>
       <Direction>ServerToClient</Direction>
-      <SentWhen>The server sends same-side player positions to a Castle Siege mini-map requester.</SentWhen>
+      <SentWhen>The server pushes same-side player positions to an online Castle Siege alliance master, on a periodic timer while the siege is active.</SentWhen>
       <CausedReaction>The client updates the mini map with the player positions.</CausedReaction>
       <Fields>
         <Field>
@@ -12406,7 +12406,7 @@
       <Code>BB</Code>
       <Name>CastleSiegeMiniMapNpcPositions</Name>
       <Direction>ServerToClient</Direction>
-      <SentWhen>The server sends alive gate and Guardian Statue positions to a Castle Siege mini-map requester.</SentWhen>
+      <SentWhen>The server pushes alive gate and Guardian Statue positions to an online Castle Siege alliance master, on a periodic timer while the siege is active.</SentWhen>
       <CausedReaction>The client updates the mini map with the siege-NPC positions.</CausedReaction>
       <Fields>
         <Field>

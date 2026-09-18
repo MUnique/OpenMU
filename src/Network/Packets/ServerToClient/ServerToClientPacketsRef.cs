@@ -32650,7 +32650,7 @@ public readonly ref struct CastleSiegeGuildEntryRef
 
 
 /// <summary>
-/// Is sent by the server when: The server sends same-side player positions to a Castle Siege mini-map requester.
+/// Is sent by the server when: The server pushes same-side player positions to an online Castle Siege alliance master, on a periodic timer while the siege is active.
 /// Causes reaction on client side: The client updates the mini map with the player positions.
 /// </summary>
 public readonly ref struct CastleSiegeMiniMapPlayerPositionsRef
@@ -33495,7 +33495,7 @@ public readonly ref struct CastleSiegeHuntingZoneEnterResponseRef
 
 
 /// <summary>
-/// Is sent by the server when: The server sends alive gate and Guardian Statue positions to a Castle Siege mini-map requester.
+/// Is sent by the server when: The server pushes alive gate and Guardian Statue positions to an online Castle Siege alliance master, on a periodic timer while the siege is active.
 /// Causes reaction on client side: The client updates the mini map with the siege-NPC positions.
 /// </summary>
 public readonly ref struct CastleSiegeMiniMapNpcPositionsRef
