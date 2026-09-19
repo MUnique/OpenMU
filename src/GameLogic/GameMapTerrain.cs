@@ -27,6 +27,12 @@ public class GameMapTerrain
     private const byte SightBlockingAttributes = (byte)TerrainAttributeType.Blocked;
 
     /// <summary>
+    /// The terrain attribute bits which block movement: walls, holes and water.
+    /// </summary>
+    private const byte MovementBlockingAttributes =
+        (byte)(TerrainAttributeType.Blocked | TerrainAttributeType.NoGround | TerrainAttributeType.Water);
+
+    /// <summary>
     /// The terrain attribute bit which marks a safezone.
     /// </summary>
     private const byte SafezoneBit = (byte)TerrainAttributeType.Safezone;
@@ -319,12 +325,14 @@ public class GameMapTerrain
         }
         else
         {
-            // Only the configured bit is cleared: every configured attribute
-            // matches the bits actually present in the terrain files (e.g. the
-            // Blood Castle bridge is toggled as NoGround on NoGround tiles),
-            // and callers restoring prior state (castle gates) rely on the
-            // other bits surviving the round trip.
-            this.AttributeMap[x, y] &= (byte)~(byte)attribute;
+            // Removing an attribute re-opens the area: the configured attribute
+            // doesn't necessarily match the bits in the terrain file, so every
+            // movement-blocking bit is cleared instead of only the configured one.
+            // This reproduces the previous semantics (removal always opened the
+            // area) and is required where mixed tiles share one rect — e.g. the
+            // Kanturu barrier, whose wall band must open together with the holes
+            // for the Elphis corridor to become passable.
+            this.AttributeMap[x, y] = (byte)(this.AttributeMap[x, y] & ~MovementBlockingAttributes);
         }
 
         // SafezoneMap is deliberately left untouched: runtime non-safezone changes

@@ -310,37 +310,23 @@ public class GameMapTerrainTests
     }
 
     /// <summary>
-    /// Tests that removing an attribute only clears the configured bit. The Blood
-    /// Castle bridge is toggled as <c>NoGround</c> on <c>NoGround</c> tiles, so
-    /// removing it re-opens the area.
+    /// Tests that removing an attribute re-opens the area regardless of the raw
+    /// value underneath. Event configs are authored against "removal opens the
+    /// rect": the Blood Castle bridge is toggled as <c>NoGround</c> on all of
+    /// <c>NoGround</c>, <c>Blocked</c> and combined tiles across levels, and the
+    /// Kanturu barrier mixes walls and holes in one rect whose corridor must
+    /// become passable as a whole.
     /// </summary>
     [Test]
-    public void ApplyTerrainAttributeRemoveNoGroundOpensHole()
-    {
-        var terrain = new GameMapTerrain(CreateWalkableTerrainWithValues((12, 11, NoGround)));
-
-        Assert.That(terrain.WalkMap[12, 11], Is.False, "precondition: the tile starts blocked");
-
-        terrain.ApplyTerrainAttribute(12, 11, TerrainAttributeType.NoGround, false);
-
-        Assert.That(terrain.WalkMap[12, 11], Is.True);
-        Assert.That(terrain.HasLineOfSight(new Pathfinding.Point(10, 11), new Pathfinding.Point(14, 11)), Is.True);
-    }
-
-    /// <summary>
-    /// Tests that removing an attribute leaves the other bits alone: a wall bit
-    /// which was already present keeps blocking movement and sight afterwards.
-    /// </summary>
-    [Test]
-    public void ApplyTerrainAttributeRemoveKeepsOtherBits(
-        [Values(Blocked, (byte)(Blocked | NoGround))] byte rawValue)
+    public void ApplyTerrainAttributeRemoveOpensAreaRegardlessOfRawValue(
+        [Values(Walkable, Blocked, NoGround, (byte)(Blocked | NoGround))] byte rawValue)
     {
         var terrain = new GameMapTerrain(CreateWalkableTerrainWithValues((12, 11, rawValue)));
 
         terrain.ApplyTerrainAttribute(12, 11, TerrainAttributeType.NoGround, false);
 
-        Assert.That(terrain.WalkMap[12, 11], Is.False);
-        Assert.That(terrain.HasLineOfSight(new Pathfinding.Point(10, 11), new Pathfinding.Point(14, 11)), Is.False);
+        Assert.That(terrain.WalkMap[12, 11], Is.True);
+        Assert.That(terrain.HasLineOfSight(new Pathfinding.Point(10, 11), new Pathfinding.Point(14, 11)), Is.True);
     }
 
     /// <summary>
