@@ -48,13 +48,18 @@ public sealed class SummonedMonsterIntelligence : BasicMonsterIntelligence
     {
         var currentMap = this.Owner.CurrentMap;
 
-        var nextTarget = currentMap?.GetAttackablesInRange(this.Owner.Position, 8)
-            .Where(o => o is Monster { SummonedBy: null, IsAlive: true })
-            .OfType<NonPlayerCharacter>()
-            .OrderBy(o => o.GetDistanceTo(this.Owner))
-            .FirstOrDefault() as IAttackable;
+        // The search radius is centered on the owner, but sight is checked from the
+        // summon itself: it only attacks what it can actually see, and otherwise
+        // approaches the nearest target instead of idling.
+        var nextTarget = NpcTargetSelection.GetNearestPreferVisible(
+            currentMap?.GetAttackablesInRange(this.Owner.Position, 8)
+                .Where(o => o is Monster { SummonedBy: null, IsAlive: true })
+                .OfType<NonPlayerCharacter>()
+            ?? [],
+            this.Npc,
+            candidate => candidate.GetDistanceTo(this.Owner));
 
-        return ValueTask.FromResult(nextTarget);
+        return ValueTask.FromResult((IAttackable?)nextTarget);
     }
 
     /// <inheritdoc />
