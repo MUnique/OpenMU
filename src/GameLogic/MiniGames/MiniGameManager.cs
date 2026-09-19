@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.MiniGames;
 
+using System.Collections.Concurrent;
 using System.Diagnostics.Metrics;
 using MUnique.OpenMU.GameLogic.MiniGames.Kanturu;
 using Nito.AsyncEx;
@@ -19,7 +20,7 @@ public sealed class MiniGameManager : IMiniGameManager
 
     private readonly IGameContext _gameContext;
     private readonly IMapInitializer _mapInitializer;
-    private readonly Dictionary<MiniGameMapKey, MiniGameContext> _miniGames = new();
+    private readonly ConcurrentDictionary<MiniGameMapKey, MiniGameContext> _miniGames = new();
     private readonly AsyncLock _lock = new();
 
     /// <summary>
@@ -56,14 +57,16 @@ public sealed class MiniGameManager : IMiniGameManager
         {
             if (this._miniGames.TryGetValue(miniGameKey, out miniGameContext))
             {
-                if (miniGameContext.IsDisposed)
-                {
-                    this._miniGames.Remove(miniGameKey);
-                }
-                else
+                if (miniGameContext is { IsDisposed: false, IsDisposing: false })
                 {
                     return miniGameContext;
                 }
+
+                // A dead entry must not be handed out, and it must not linger either:
+                // RemoveAsync of the dying instance would otherwise find a different
+                // (or no) entry under the key and skew the game counter.
+                this._miniGames.TryRemove(miniGameKey, out _);
+                MiniGameCounter.Add(-1);
             }
 
             switch (miniGameDefinition.Type)
@@ -85,7 +88,7 @@ public sealed class MiniGameManager : IMiniGameManager
                     break;
             }
 
-            this._miniGames.Add(miniGameKey, miniGameContext);
+            this._miniGames[miniGameKey] = miniGameContext;
         }
 
         var createdMap = miniGameContext.Map;
@@ -100,6 +103,12 @@ public sealed class MiniGameManager : IMiniGameManager
     /// <inheritdoc />
     public MiniGameContext? TryGetRunningMiniGame(MiniGameDefinition miniGameDefinition, Player? requester)
     {
+        if (requester is null && miniGameDefinition.MapCreationPolicy != MiniGameMapCreationPolicy.Shared)
+        {
+            // The key of per-player and per-party games is derived from the requester.
+            return null;
+        }
+
         var miniGameKey = MiniGameMapKey.Create(miniGameDefinition, requester!);
         if (this._miniGames.TryGetValue(miniGameKey, out var miniGameContext)
             && miniGameContext is { IsDisposed: false, IsDisposing: false })
@@ -122,9 +131,16 @@ public sealed class MiniGameManager : IMiniGameManager
     public async ValueTask RemoveAsync(MiniGameContext miniGameContext)
     {
         using var l = await this._lock.LockAsync().ConfigureAwait(false);
-        MiniGameCounter.Add(-1);
         miniGameContext.Dispose();
-        this._miniGames.Remove(miniGameContext.Key);
-        this.GameMapRemoved?.Invoke(this, miniGameContext.Map);
+
+        // Only unregister what is actually there: a forced restart may already
+        // have replaced the dying instance, and must not lose the new one.
+        if (this._miniGames.TryGetValue(miniGameContext.Key, out var current)
+            && ReferenceEquals(current, miniGameContext)
+            && this._miniGames.TryRemove(miniGameContext.Key, out _))
+        {
+            MiniGameCounter.Add(-1);
+            this.GameMapRemoved?.Invoke(this, miniGameContext.Map);
+        }
     }
 }

@@ -34,6 +34,7 @@ public abstract class MiniGameStartBasePlugIn<TConfiguration, TGameState> : Peri
     /// <inheritdoc />
     public async ValueTask DisposeRunningGamesAsync(IGameContext gameContext)
     {
+        Announcements.TryRemove((this.GetType(), gameContext), out _);
         var logger = gameContext.LoggerFactory.CreateLogger(this.GetType());
         foreach (var game in gameContext.MiniGames.GetRunningMiniGames(this.Key))
         {
@@ -51,13 +52,13 @@ public abstract class MiniGameStartBasePlugIn<TConfiguration, TGameState> : Peri
     }
 
     /// <inheritdoc />
-    public async ValueTask<TimeSpan?> GetDurationUntilNextStartAsync(IGameContext gameContext, MiniGameDefinition miniGameDefinition)
+    public ValueTask<TimeSpan?> GetDurationUntilNextStartAsync(IGameContext gameContext, MiniGameDefinition miniGameDefinition)
     {
         var state = this.GetStateByGameContext(gameContext);
         if (state.State == PeriodicTaskState.Prepared)
         {
             // That's not totally correct, but should be sufficient.
-            return this.Configuration?.PreStartMessageDelay;
+            return ValueTask.FromResult(this.Configuration?.PreStartMessageDelay);
         }
 
         // Entering is allowed while a live game of this definition is open. The lookup
@@ -65,28 +66,17 @@ public abstract class MiniGameStartBasePlugIn<TConfiguration, TGameState> : Peri
         // entrance query.
         if (gameContext.MiniGames.TryGetRunningMiniGame(miniGameDefinition, null) is { State: MiniGameState.Open })
         {
-            return TimeSpan.Zero;
+            return ValueTask.FromResult<TimeSpan?>(TimeSpan.Zero);
         }
 
         var timeNow = new TimeOnly(DateTime.UtcNow.TimeOfDay.Ticks);
         var nextRun = this.Configuration?.Timetable.Where(time => time > timeNow).Order().FirstOrDefault();
-        return nextRun - timeNow;
+        return ValueTask.FromResult(nextRun - timeNow);
     }
 
     /// <inheritdoc />
     public override async ValueTask ExecuteTaskAsync(GameContext gameContext)
     {
-        var state = this.GetStateByGameContext(gameContext);
-        if (state.State == PeriodicTaskState.Started)
-        {
-            // Finish promptly instead of lingering in Started until NextRunUtc elapses.
-            // Entering is gated by the live game instances (see
-            // GetDurationUntilNextStartAsync), so nothing depends on the lingering state -
-            // and it would block forced restarts behind the task duration.
-            state.State = PeriodicTaskState.NotStarted;
-            await this.OnFinishedAsync(state).ConfigureAwait(false);
-        }
-
         await base.ExecuteTaskAsync(gameContext).ConfigureAwait(false);
         await this.AnnounceEntranceAsync(gameContext).ConfigureAwait(false);
     }
@@ -95,6 +85,58 @@ public abstract class MiniGameStartBasePlugIn<TConfiguration, TGameState> : Peri
     public ValueTask<MiniGameContext?> GetMiniGameContextAsync(IGameContext gameContext, MiniGameDefinition miniGameDefinition)
     {
         return ValueTask.FromResult(gameContext.MiniGames.TryGetRunningMiniGame(miniGameDefinition, null));
+    }
+
+    /// <summary>
+    /// Announces the entrance countdown on every periodic tick, derived from the live
+    /// game state instead of a sleeping timer loop. Because nothing runs in the
+    /// background, there is nothing to skip, cancel, or supersede: skipped and restarted
+    /// runs are observed as a closed entrance on the next tick, at the latest.
+    /// It's internal (rather than private) so that the tick-derived announcement state
+    /// machine can be tested deterministically without driving whole event lifecycles.
+    /// </summary>
+    /// <param name="gameContext">The game context.</param>
+    internal async ValueTask AnnounceEntranceAsync(IGameContext gameContext)
+    {
+        var key = (this.GetType(), gameContext);
+        var maxRemaining = gameContext.MiniGames.GetRunningMiniGames(this.Key)
+            .Where(game => game.State == MiniGameState.Open)
+            .Where(game => game.Definition.MapCreationPolicy == MiniGameMapCreationPolicy.Shared)
+            .Select(game => (TimeSpan?)(game.EnterEndsAtUtc - DateTime.UtcNow))
+            .Max();
+        if (maxRemaining is { } remaining)
+        {
+            var minutesLeft = (int)Math.Ceiling(remaining.TotalMinutes);
+            if (minutesLeft >= 1
+                && Announcements.TryGetValue(key, out var announcement)
+                && announcement.LastAnnouncedMinutes != minutesLeft)
+            {
+                announcement.LastAnnouncedMinutes = minutesLeft;
+                if (this.Configuration?.EntranceOpenedMessage is { } openMessage)
+                {
+                    await gameContext.SendGlobalNotificationAsync(string.Format(openMessage, minutesLeft)).ConfigureAwait(false);
+                }
+            }
+
+            return;
+        }
+
+        // No open entrance left. Clean the entry up in any case, so that runs
+        // without an opening announcement (short entrances) or torn-down games
+        // don't pin the game context forever. The closing message goes out
+        // exactly once per run - no matter if the entrance closed naturally,
+        // was skipped, or the whole run was restarted - like the former loop did,
+        // including for short entrances which never announced an opening.
+        if (Announcements.TryGetValue(key, out var finished) && !finished.CloseAnnounced)
+        {
+            finished.CloseAnnounced = true;
+            if (this.Configuration?.EntranceClosedMessage is { } closedMessage)
+            {
+                await gameContext.SendGlobalNotificationAsync(closedMessage).ConfigureAwait(false);
+            }
+
+            Announcements.TryRemove(key, out _);
+        }
     }
 
     /// <inheritdoc />
@@ -132,30 +174,23 @@ public abstract class MiniGameStartBasePlugIn<TConfiguration, TGameState> : Peri
         var enterDuration = TimeSpan.Zero;
         foreach (var miniGameDefinition in miniGameDefinitions)
         {
-            // we're causing that the event context gets created.
-            var game = await state.Context.MiniGames.GetOrCreateAsync(miniGameDefinition, null!).ConfigureAwait(false);
-            for (var attempt = 0; attempt < 2 && game is not { IsDisposed: false, IsDisposing: false, State: MiniGameState.Open }; attempt++)
-            {
-                // A stale instance slipped through (e.g. caught mid-dispose): dispose it,
-                // so that the next attempt creates a fresh one.
-                await game.DisposeAsync().ConfigureAwait(false);
-                game = await state.Context.MiniGames.GetOrCreateAsync(miniGameDefinition, null!).ConfigureAwait(false);
-            }
+            // We're causing that the event context gets created. Stale (disposed or
+            // disposing) instances are evicted inside GetOrCreateAsync, so what comes
+            // back is always live.
+            await state.Context.MiniGames.GetOrCreateAsync(miniGameDefinition, null!).ConfigureAwait(false);
 
             enterDuration = miniGameDefinition.EnterDuration;
         }
 
         // Announce the full minutes immediately, like the former notification loop did
         // on start. The periodic tick takes over from here and announces each following
-        // minute when it begins.
+        // minute when it begins. The entry is always created, even for short entrances
+        // without an opening message, so that the closing message still goes out.
         var initialMinutes = (int)enterDuration.TotalMinutes;
-        if (initialMinutes >= 1)
+        Announcements[(this.GetType(), state.Context)] = new EntranceAnnouncement { LastAnnouncedMinutes = initialMinutes };
+        if (initialMinutes >= 1 && this.Configuration?.EntranceOpenedMessage is { } openMessage)
         {
-            Announcements[(this.GetType(), state.Context)] = new EntranceAnnouncement { LastAnnouncedMinutes = initialMinutes, OpenAnnounced = true };
-            if (this.Configuration?.EntranceOpenedMessage is { } openMessage)
-            {
-                await state.Context.SendGlobalNotificationAsync(string.Format(openMessage, initialMinutes)).ConfigureAwait(false);
-            }
+            await state.Context.SendGlobalNotificationAsync(string.Format(openMessage, initialMinutes)).ConfigureAwait(false);
         }
     }
 
@@ -182,52 +217,6 @@ public abstract class MiniGameStartBasePlugIn<TConfiguration, TGameState> : Peri
         }
     }
 
-    /// <summary>
-    /// Announces the entrance countdown on every periodic tick, derived from the live
-    /// game state instead of a sleeping timer loop. Because nothing runs in the
-    /// background, there is nothing to skip, cancel, or supersede: skipped and restarted
-    /// runs are observed as a closed entrance on the next tick, at the latest.
-    /// </summary>
-    /// <param name="gameContext">The game context.</param>
-    private async ValueTask AnnounceEntranceAsync(IGameContext gameContext)
-    {
-        var key = (this.GetType(), gameContext);
-        var maxRemaining = gameContext.MiniGames.GetRunningMiniGames(this.Key)
-            .Where(game => game.State == MiniGameState.Open)
-            .Select(game => (TimeSpan?)(game.EnterEndsAtUtc - DateTime.UtcNow))
-            .Max();
-        if (maxRemaining is { } remaining)
-        {
-            var minutesLeft = (int)Math.Ceiling(remaining.TotalMinutes);
-            if (minutesLeft >= 1
-                && Announcements.TryGetValue(key, out var announcement)
-                && announcement.LastAnnouncedMinutes != minutesLeft)
-            {
-                announcement.LastAnnouncedMinutes = minutesLeft;
-                if (this.Configuration?.EntranceOpenedMessage is { } openMessage)
-                {
-                    await gameContext.SendGlobalNotificationAsync(string.Format(openMessage, minutesLeft)).ConfigureAwait(false);
-                }
-            }
-
-            return;
-        }
-
-        // No open entrance left. If this run announced its opening before, announce the
-        // closing exactly once - no matter if the entrance closed naturally, was skipped,
-        // or the whole run was restarted.
-        if (Announcements.TryGetValue(key, out var finished) && finished.OpenAnnounced && !finished.CloseAnnounced)
-        {
-            finished.CloseAnnounced = true;
-            if (this.Configuration?.EntranceClosedMessage is { } closedMessage)
-            {
-                await gameContext.SendGlobalNotificationAsync(closedMessage).ConfigureAwait(false);
-            }
-
-            Announcements.TryRemove(key, out _);
-        }
-    }
-
     private static bool IsActive(MiniGameContext game)
     {
         return !game.IsDisposed && !game.IsDisposing
@@ -236,7 +225,7 @@ public abstract class MiniGameStartBasePlugIn<TConfiguration, TGameState> : Peri
 
     /// <summary>
     /// Tracks the entrance announcements of one run: which minute was announced last, and
-    /// whether the opening and the closing have been announced.
+    /// whether the closing has been announced.
     /// </summary>
     private sealed class EntranceAnnouncement
     {
@@ -244,11 +233,6 @@ public abstract class MiniGameStartBasePlugIn<TConfiguration, TGameState> : Peri
         /// Gets or sets the last announced remaining minutes.
         /// </summary>
         public int LastAnnouncedMinutes { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the opening has been announced.
-        /// </summary>
-        public bool OpenAnnounced { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the closing has been announced.

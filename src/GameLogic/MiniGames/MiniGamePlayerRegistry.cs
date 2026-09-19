@@ -9,25 +9,52 @@ using Nito.AsyncEx;
 
 /// <summary>
 /// Thread-safe registry of the players which entered a mini game.
-/// It owns the player collection and its lock, as well as the entering policy
-/// (the game must be open and must not be full).
+/// It owns the player collection and its lock, the entering policy
+/// (the game must be open and must not be full), and the game state itself:
+/// every state transition goes through <see cref="SetStateAsync"/>, so a player
+/// can never be added while the entrance is closing, starting, or disposing.
 /// </summary>
 internal sealed class MiniGamePlayerRegistry
 {
     private readonly MiniGameDefinition _definition;
-    private readonly Func<MiniGameState> _getState;
     private readonly AsyncReaderWriterLock _lock = new();
     private readonly HashSet<Player> _players = new();
+    private MiniGameState _state = MiniGameState.Open;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MiniGamePlayerRegistry"/> class.
     /// </summary>
     /// <param name="definition">The definition of the mini game.</param>
-    /// <param name="getState">A function which returns the current state of the mini game.</param>
-    public MiniGamePlayerRegistry(MiniGameDefinition definition, Func<MiniGameState> getState)
+    public MiniGamePlayerRegistry(MiniGameDefinition definition)
     {
         this._definition = definition;
-        this._getState = getState;
+    }
+
+    /// <summary>
+    /// Gets the current state of the mini game.
+    /// </summary>
+    public MiniGameState State
+    {
+        get
+        {
+            using (this._lock.ReaderLock())
+            {
+                return this._state;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Sets the state of the mini game. All state transitions (closing, starting,
+    /// ending, disposing) go through here, so they are atomic with player entering.
+    /// </summary>
+    /// <param name="state">The new state.</param>
+    public async ValueTask SetStateAsync(MiniGameState state)
+    {
+        using (await this._lock.WriterLockAsync().ConfigureAwait(false))
+        {
+            this._state = state;
+        }
     }
 
     /// <summary>
@@ -40,7 +67,7 @@ internal sealed class MiniGamePlayerRegistry
     {
         using (await this._lock.WriterLockAsync().ConfigureAwait(false))
         {
-            if (this._getState() != MiniGameState.Open)
+            if (this._state != MiniGameState.Open)
             {
                 return EnterResult.NotOpen;
             }

@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
 using System.Runtime.InteropServices;
-using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -17,37 +16,13 @@ using MUnique.OpenMU.PlugIns;
 [PlugIn]
 [Display(Name = nameof(PlugInResources.StartDevilSquareEventChatCommandPlugIn_Name), Description = nameof(PlugInResources.StartDevilSquareEventChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, CharacterStatus.GameMaster)]
-public class StartDevilSquareEventChatCommandPlugIn : IChatCommandPlugIn
+public class StartDevilSquareEventChatCommandPlugIn : StartMiniGameEventChatCommandPlugInBase
 {
     private const string Command = "/startds";
 
     /// <inheritdoc />
-    public string Key => Command;
-
-    /// <inheritdoc/>
-    public CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
+    public override string Key => Command;
 
     /// <inheritdoc />
-    public async ValueTask HandleCommandAsync(Player player, string command)
-    {
-        var devilSquare = player.GameContext.PlugInManager.GetStrategy<MiniGameType, IPeriodicMiniGameStartPlugIn>(MiniGameType.DevilSquare);
-        if (devilSquare is null)
-        {
-            return;
-        }
-
-        var eventName = player.GameContext.Configuration.MiniGameDefinitions.FirstOrDefault(d => d.Type == MiniGameType.DevilSquare)?.Name
-            ?? MiniGameType.DevilSquare.ToString();
-        if (devilSquare.IsEventActive(player.GameContext))
-        {
-            await devilSquare.DisposeRunningGamesAsync(player.GameContext).ConfigureAwait(false);
-            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MiniGameForceRestartFormat), eventName).ConfigureAwait(false);
-        }
-        else
-        {
-            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MiniGameForceStartInitiatedFormat), eventName).ConfigureAwait(false);
-        }
-
-        devilSquare.ForceStart();
-    }
+    protected override MiniGameType MiniGameType => MiniGameType.DevilSquare;
 }

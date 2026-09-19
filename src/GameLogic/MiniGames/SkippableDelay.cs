@@ -79,6 +79,11 @@ public sealed class SkippableDelay
         TaskCompletionSource skip;
         lock (this._lock)
         {
+            if (this._activeWait is not null)
+            {
+                this._logger.LogWarning("{context}: A wait is started while another wait is still active; the previous wait becomes unskippable.", this._owner);
+            }
+
             skip = this._activeWait = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         }
 
@@ -89,6 +94,15 @@ public sealed class SkippableDelay
             if (await Task.WhenAny(delayTask, skip.Task).ConfigureAwait(false) == skip.Task)
             {
                 await delayCts.CancelAsync().ConfigureAwait(false);
+                try
+                {
+                    // Observe the cancelled delay, so it never surfaces as unobserved.
+                    await delayTask.ConfigureAwait(false);
+                }
+                catch (OperationCanceledException)
+                {
+                    // Expected: we just cancelled it because the wait was skipped.
+                }
 
                 cancellationToken.ThrowIfCancellationRequested();
                 this._logger.LogInformation("{context}: Wait of {duration} skipped.", this._owner, duration);

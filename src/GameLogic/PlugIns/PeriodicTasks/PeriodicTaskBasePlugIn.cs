@@ -28,6 +28,15 @@ public abstract class PeriodicTaskBasePlugIn<TConfiguration, TState> : IPeriodic
     public TConfiguration? Configuration { get; set; }
 
     /// <summary>
+    /// Gets a value indicating whether a started task is finished right away on the
+    /// next tick instead of lingering in <see cref="PeriodicTaskState.Started"/> until
+    /// the task duration elapses. Mini games finish immediately: entering is gated by
+    /// the live game instances, so nothing depends on the lingering state — and it
+    /// would block forced restarts behind the task duration.
+    /// </summary>
+    protected virtual bool FinishImmediatelyAfterStart => true;
+
+    /// <summary>
     /// Forces to start the task on the next start check.
     /// </summary>
     public void ForceStart()
@@ -45,9 +54,11 @@ public abstract class PeriodicTaskBasePlugIn<TConfiguration, TState> : IPeriodic
 
         // A manually forced start bypasses a future NextRunUtc, which is otherwise set to
         // the full task duration on every start and would swallow forced starts until it
-        // elapses. It's limited to the NotStarted state, so that a Prepared run still waits
-        // out its PreStartMessageDelay before starting.
-        var isForcedStartPending = this._isStartForced && state.State == PeriodicTaskState.NotStarted;
+        // elapses. It's limited to NotStarted (a fresh start) and Started (promptly
+        // finishing a stuck previous run, so the start that follows can proceed), so that
+        // a Prepared run still waits out its PreStartMessageDelay before starting.
+        var isForcedStartPending = this._isStartForced
+            && state.State is PeriodicTaskState.NotStarted or PeriodicTaskState.Started;
         if (state.NextRunUtc > DateTime.UtcNow && !isForcedStartPending)
         {
             return;
@@ -114,6 +125,11 @@ public abstract class PeriodicTaskBasePlugIn<TConfiguration, TState> : IPeriodic
 
             case PeriodicTaskState.Started:
                 {
+                    if (!this.FinishImmediatelyAfterStart)
+                    {
+                        break;
+                    }
+
                     state.State = PeriodicTaskState.NotStarted;
 
                     await this.OnFinishedAsync(state).ConfigureAwait(false);

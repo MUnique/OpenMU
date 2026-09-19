@@ -60,7 +60,7 @@ public class KillAllMonstersChatCommandPlugIn : IChatCommandPlugIn
             }
             catch (Exception ex)
             {
-                player.Logger.LogDebug(ex, "Unexpected error killing monster {monster} with /killall.", monster);
+                player.Logger.LogWarning(ex, "Unexpected error killing monster {monster} with /killall.", monster);
             }
         }
 

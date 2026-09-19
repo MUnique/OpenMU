@@ -5,11 +5,10 @@
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
 using System.Runtime.InteropServices;
-using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// A chat command plugin which handles the startds command.
+/// A chat command plugin which handles the startbc command.
 /// If an event is already running, it is stopped (all players are removed from it) and
 /// a new event starts with fresh instances.
 /// </summary>
@@ -17,37 +16,13 @@ using MUnique.OpenMU.PlugIns;
 [PlugIn]
 [Display(Name = nameof(PlugInResources.StartBloodCastleEventChatCommandPlugIn_Name), Description = nameof(PlugInResources.StartBloodCastleEventChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, CharacterStatus.GameMaster)]
-public class StartBloodCastleEventChatCommandPlugIn : IChatCommandPlugIn
+public class StartBloodCastleEventChatCommandPlugIn : StartMiniGameEventChatCommandPlugInBase
 {
     private const string Command = "/startbc";
 
     /// <inheritdoc />
-    public string Key => Command;
-
-    /// <inheritdoc/>
-    public CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
+    public override string Key => Command;
 
     /// <inheritdoc />
-    public async ValueTask HandleCommandAsync(Player player, string command)
-    {
-        var bloodCastle = player.GameContext.PlugInManager.GetStrategy<MiniGameType, IPeriodicMiniGameStartPlugIn>(MiniGameType.BloodCastle);
-        if (bloodCastle is null)
-        {
-            return;
-        }
-
-        var eventName = player.GameContext.Configuration.MiniGameDefinitions.FirstOrDefault(d => d.Type == MiniGameType.BloodCastle)?.Name
-            ?? MiniGameType.BloodCastle.ToString();
-        if (bloodCastle.IsEventActive(player.GameContext))
-        {
-            await bloodCastle.DisposeRunningGamesAsync(player.GameContext).ConfigureAwait(false);
-            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MiniGameForceRestartFormat), eventName).ConfigureAwait(false);
-        }
-        else
-        {
-            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MiniGameForceStartInitiatedFormat), eventName).ConfigureAwait(false);
-        }
-
-        bloodCastle.ForceStart();
-    }
+    protected override MiniGameType MiniGameType => MiniGameType.BloodCastle;
 }

@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
 using System.Runtime.InteropServices;
-using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -17,37 +16,13 @@ using MUnique.OpenMU.PlugIns;
 [PlugIn]
 [Display(Name = nameof(PlugInResources.StartKanturuEventChatCommandPlugIn_Name), Description = nameof(PlugInResources.StartKanturuEventChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, CharacterStatus.GameMaster)]
-public class StartKanturuEventChatCommandPlugIn : IChatCommandPlugIn
+public class StartKanturuEventChatCommandPlugIn : StartMiniGameEventChatCommandPlugInBase
 {
     private const string Command = "/startkanturu";
 
     /// <inheritdoc />
-    public string Key => Command;
-
-    /// <inheritdoc/>
-    public CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
+    public override string Key => Command;
 
     /// <inheritdoc />
-    public async ValueTask HandleCommandAsync(Player player, string command)
-    {
-        var kanturu = player.GameContext.PlugInManager.GetStrategy<MiniGameType, IPeriodicMiniGameStartPlugIn>(MiniGameType.Kanturu);
-        if (kanturu is null)
-        {
-            return;
-        }
-
-        var eventName = player.GameContext.Configuration.MiniGameDefinitions.FirstOrDefault(d => d.Type == MiniGameType.Kanturu)?.Name
-            ?? MiniGameType.Kanturu.ToString();
-        if (kanturu.IsEventActive(player.GameContext))
-        {
-            await kanturu.DisposeRunningGamesAsync(player.GameContext).ConfigureAwait(false);
-            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MiniGameForceRestartFormat), eventName).ConfigureAwait(false);
-        }
-        else
-        {
-            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MiniGameForceStartInitiatedFormat), eventName).ConfigureAwait(false);
-        }
-
-        kanturu.ForceStart();
-    }
+    protected override MiniGameType MiniGameType => MiniGameType.Kanturu;
 }

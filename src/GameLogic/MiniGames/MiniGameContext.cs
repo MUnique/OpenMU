@@ -17,6 +17,12 @@ using MUnique.OpenMU.Interfaces;
 /// </summary>
 public class MiniGameContext : AsyncDisposable, IEventStateProvider
 {
+    /// <summary>
+    /// The duration of the countdown message phase, which also acts as the minimum
+    /// duration of the entering, game, and exit phases.
+    /// </summary>
+    private static readonly TimeSpan CountdownMessageDuration = TimeSpan.FromSeconds(30);
+
     private readonly IGameContext _gameContext;
     private readonly IMapInitializer _mapInitializer;
     private readonly MiniGamePlayerRegistry _players;
@@ -35,7 +41,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     /// </summary>
     /// <param name="key">The key of this context.</param>
     /// <param name="definition">The definition of the mini game.</param>
-    /// <param name="gameContext">The game context, to which this game belongs.</param>
+    /// <param name="gameContext">The game context to which this game belongs.</param>
     /// <param name="mapInitializer">The map initializer, which is used when the event starts.</param>
     public MiniGameContext(MiniGameMapKey key, MiniGameDefinition definition, IGameContext gameContext, IMapInitializer mapInitializer)
     {
@@ -43,15 +49,21 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         this._mapInitializer = mapInitializer;
         this.Key = key;
         this.Definition = definition;
-        this.EnterEndsAtUtc = DateTime.UtcNow.Add(definition.EnterDuration);
+        this.EnterEndsAtUtc = DateTime.UtcNow.Add(definition.EnterDuration.AtLeast(CountdownMessageDuration));
         this.Logger = this._gameContext.LoggerFactory.CreateLogger(this.GetType());
         this.DropGenerator = this._gameContext.DropGenerator;
         this._skipDelay = new SkippableDelay(this.Logger, this);
 
         this.Map = this.CreateMap();
 
-        this._players = new MiniGamePlayerRegistry(this.Definition, () => this.State);
+        this._players = new MiniGamePlayerRegistry(this.Definition);
+
+        // Rewards intentionally follow the game's (possibly overridden) drop generator
+        // instead of the game context one: ChaosCastleDropGenerator only overrides monster
+        // kill drops and delegates reward generation back to the context generator,
+        // so this is behavior-preserving while staying correct for custom generators.
         this._rewards = new MiniGameRewardService(this.Definition, this._gameContext, this.Map, () => this.DropGenerator, () => this.RemainingTime, () => this.Winner, this.Logger, this);
+
         this._changeEvents = new MiniGameChangeEventProcessor(
             this.Definition,
             this.Map,
@@ -71,8 +83,6 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
             this,
             message => this.ShowGoldenMessageAsync(message),
             () => this._elapsedTimeSinceStart?.Elapsed);
-
-        this.State = MiniGameState.Open;
 
         _ = Task.Run(() => this.RunGameAsync(this.GameEndedToken), this.GameEndedToken);
     }
@@ -100,9 +110,11 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     public GameMap Map { get; }
 
     /// <summary>
-    /// Gets the current state of the game.
+    /// Gets the current state of the game. The state is owned by the player
+    /// registry, so reading it here and entering through
+    /// <see cref="TryEnterAsync"/> can never disagree about it.
     /// </summary>
-    public MiniGameState State { get; private set; }
+    public MiniGameState State => this._players.State;
 
     /// <inheritdoc />
     public bool IsEventRunning => this.State == MiniGameState.Playing;
@@ -153,9 +165,9 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     protected virtual int MinimumPlayerCount => 1;
 
     /// <summary>
-    /// Tries to enter the mini game. It will fail, if it's full, of if it's not in an open state.
+    /// Tries to enter the mini game. It fails if it's full or if it's not in an open state.
     /// </summary>
-    /// <param name="player">The player which tries to enter.</param>
+    /// <param name="player">The player that tries to enter.</param>
     /// <returns>A value indicating whether entering had success.</returns>
     public async ValueTask<EnterResult> TryEnterAsync(Player player)
     {
@@ -197,18 +209,6 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         return this.ShowGoldenMessageAsync(nameof(PlayerMessage.SkipWaitAnnouncedFormat), gameMasterName);
     }
 
-    /// <summary>
-    /// Waits for the specified duration, unless the wait is skipped through
-    /// <see cref="SkipCurrentWait"/> or the <paramref name="cancellationToken"/> is cancelled.
-    /// </summary>
-    /// <param name="duration">The duration to wait.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns><c>true</c> when the wait was skipped; otherwise, <c>false</c>.</returns>
-    protected Task<bool> DelayWithSkipAsync(TimeSpan duration, CancellationToken cancellationToken)
-    {
-        return this._skipDelay.WaitAsync(duration, cancellationToken);
-    }
-
     /// <inheritdoc />
     public bool IsSpawnWaveActive(byte waveNumber)
     {
@@ -243,6 +243,18 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         return $"{this.Definition.Name} for {this._gameContext}";
     }
 
+    /// <summary>
+    /// Waits for the specified duration, unless the wait is skipped through
+    /// <see cref="SkipCurrentWait"/> or the <paramref name="cancellationToken"/> is cancelled.
+    /// </summary>
+    /// <param name="duration">The duration to wait.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns><c>true</c> when the wait was skipped; otherwise, <c>false</c>.</returns>
+    protected Task<bool> DelayWithSkipAsync(TimeSpan duration, CancellationToken cancellationToken)
+    {
+        return this._skipDelay.WaitAsync(duration, cancellationToken);
+    }
+
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore()
     {
@@ -251,7 +263,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
             this.Logger.LogDebug("{context}: Disposing mini game...", this);
             await base.DisposeAsyncCore().ConfigureAwait(false);
 
-            this.State = MiniGameState.Disposed;
+            await this._players.SetStateAsync(MiniGameState.Disposed).ConfigureAwait(false);
 
             await this.MovePlayersToSafezoneAsync().ConfigureAwait(false);
 
@@ -536,12 +548,11 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     private async ValueTask RunGameAsync(CancellationToken cancellationToken)
     {
         this.Logger.LogDebug("{context}: Running the game ...", this);
-        var countdownMessageDuration = TimeSpan.FromSeconds(30);
         try
         {
-            var enterDuration = this.Definition.EnterDuration.AtLeast(countdownMessageDuration);
-            var gameDuration = this.Definition.GameDuration.AtLeast(countdownMessageDuration);
-            var exitDuration = this.Definition.ExitDuration.Subtract(countdownMessageDuration).AtLeast(countdownMessageDuration);
+            var enterDuration = this.Definition.EnterDuration.AtLeast(CountdownMessageDuration);
+            var gameDuration = this.Definition.GameDuration.AtLeast(CountdownMessageDuration);
+            var exitDuration = this.Definition.ExitDuration.Subtract(CountdownMessageDuration).AtLeast(CountdownMessageDuration);
 
             this.Logger.LogDebug("{context}: Waiting for entering players for {enterDuration}", this, enterDuration);
 
@@ -579,8 +590,8 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
             }
 
             await this.ShowCountdownMessageAsync().ConfigureAwait(false);
-            this.Logger.LogDebug("{context}: Waiting for the countdown duration of {countdownMessageDuration}", this, countdownMessageDuration);
-            await this.DelayWithSkipAsync(countdownMessageDuration, cancellationToken).ConfigureAwait(false);
+            this.Logger.LogDebug("{context}: Waiting for the countdown duration of {countdownDuration}", this, CountdownMessageDuration);
+            await this.DelayWithSkipAsync(CountdownMessageDuration, cancellationToken).ConfigureAwait(false);
 
             this.Logger.LogDebug("{context}: Starting the game...", this);
             await this.StartAsync().ConfigureAwait(false);
@@ -602,8 +613,8 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
             await Task.Delay(exitDuration, default(CancellationToken)).ConfigureAwait(false);
             await this.ShowCountdownMessageAsync().ConfigureAwait(false);
 
-            this.Logger.LogDebug("{context}: Waiting for the exit countdown duration of {countdownMessageDuration}", this, countdownMessageDuration);
-            await Task.Delay(countdownMessageDuration, default(CancellationToken)).ConfigureAwait(false);
+            this.Logger.LogDebug("{context}: Waiting for the exit countdown duration of {countdownDuration}", this, CountdownMessageDuration);
+            await Task.Delay(CountdownMessageDuration, default(CancellationToken)).ConfigureAwait(false);
 
             this.Logger.LogDebug("{context}: Shutting down event", this);
             await this.ShutdownGameAsync().ConfigureAwait(false);
@@ -622,15 +633,14 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         }
     }
 
-    private ValueTask CloseEntranceAsync()
+    private async ValueTask CloseEntranceAsync()
     {
-        this.State = MiniGameState.Closed;
-        return ValueTask.CompletedTask;
+        await this._players.SetStateAsync(MiniGameState.Closed).ConfigureAwait(false);
     }
 
     private async ValueTask StartAsync()
     {
-        this.State = MiniGameState.Playing;
+        await this._players.SetStateAsync(MiniGameState.Playing).ConfigureAwait(false);
         var players = await this._players.GetSnapshotAsync().ConfigureAwait(false);
 
         await this.OnGameStartAsync(players).ConfigureAwait(false);
@@ -645,7 +655,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
 
     private async ValueTask StopAsync()
     {
-        this.State = MiniGameState.Ended;
+        await this._players.SetStateAsync(MiniGameState.Ended).ConfigureAwait(false);
         await this._gameEndedCts.CancelAsync().ConfigureAwait(false);
 
         this._spawnWaves.Clear();
@@ -687,7 +697,6 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
             await player.WarpToSafezoneAsync().ConfigureAwait(false);
         }
     }
-
 
     private async ValueTask<bool> AreEquippedItemsAllowedAsync(Player player)
     {

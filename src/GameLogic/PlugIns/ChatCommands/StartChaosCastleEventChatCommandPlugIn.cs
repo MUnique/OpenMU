@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
 using System.Runtime.InteropServices;
-using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -17,37 +16,13 @@ using MUnique.OpenMU.PlugIns;
 [PlugIn]
 [Display(Name = nameof(PlugInResources.StartChaosCastleEventChatCommandPlugIn_Name), Description = nameof(PlugInResources.StartChaosCastleEventChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, CharacterStatus.GameMaster)]
-public class StartChaosCastleEventChatCommandPlugIn : IChatCommandPlugIn
+public class StartChaosCastleEventChatCommandPlugIn : StartMiniGameEventChatCommandPlugInBase
 {
     private const string Command = "/startcc";
 
     /// <inheritdoc />
-    public string Key => Command;
-
-    /// <inheritdoc/>
-    public CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
+    public override string Key => Command;
 
     /// <inheritdoc />
-    public async ValueTask HandleCommandAsync(Player player, string command)
-    {
-        var chaosCastle = player.GameContext.PlugInManager.GetStrategy<MiniGameType, IPeriodicMiniGameStartPlugIn>(MiniGameType.ChaosCastle);
-        if (chaosCastle is null)
-        {
-            return;
-        }
-
-        var eventName = player.GameContext.Configuration.MiniGameDefinitions.FirstOrDefault(d => d.Type == MiniGameType.ChaosCastle)?.Name
-            ?? MiniGameType.ChaosCastle.ToString();
-        if (chaosCastle.IsEventActive(player.GameContext))
-        {
-            await chaosCastle.DisposeRunningGamesAsync(player.GameContext).ConfigureAwait(false);
-            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MiniGameForceRestartFormat), eventName).ConfigureAwait(false);
-        }
-        else
-        {
-            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MiniGameForceStartInitiatedFormat), eventName).ConfigureAwait(false);
-        }
-
-        chaosCastle.ForceStart();
-    }
+    protected override MiniGameType MiniGameType => MiniGameType.ChaosCastle;
 }
