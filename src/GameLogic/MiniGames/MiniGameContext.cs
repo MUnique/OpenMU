@@ -688,6 +688,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         }
     }
 
+
     private async ValueTask<bool> AreEquippedItemsAllowedAsync(Player player)
     {
         if (player.Inventory is not { } inventory)

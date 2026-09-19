@@ -595,8 +595,7 @@ public sealed class KanturuContext : MiniGameContext
             {
                 for (int y = area.StartY; y <= area.EndY; y++)
                 {
-                    terrain.WalkMap[x, y] = true;
-                    terrain.UpdateAiGridValue((byte)x, (byte)y);
+                    terrain.ApplyTerrainAttribute((byte)x, (byte)y, TerrainAttributeType.NoGround, false);
                 }
             }
         }
