@@ -531,18 +531,10 @@ public class MiniGameStartPlugInTests
         public MiniGameContext? GameToCreate { get; set; }
 
         /// <inheritdoc />
-        public event EventHandler<GameMap>? GameMapCreated
-        {
-            add { }
-            remove { }
-        }
+        public event EventHandler<GameMap>? GameMapCreated;
 
         /// <inheritdoc />
-        public event EventHandler<GameMap>? GameMapRemoved
-        {
-            add { }
-            remove { }
-        }
+        public event EventHandler<GameMap>? GameMapRemoved;
 
         /// <inheritdoc />
         public IReadOnlyList<GameMap> Maps => this.Games.Select(game => game.Map).ToList();
