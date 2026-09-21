@@ -172,14 +172,25 @@ public abstract class MiniGameStartBasePlugIn<TConfiguration, TGameState> : Peri
         await this.DisposeStaleGamesAsync(state.Context).ConfigureAwait(false);
 
         var enterDuration = TimeSpan.Zero;
+        var gamesCreated = 0;
         foreach (var miniGameDefinition in miniGameDefinitions)
         {
             // We're causing that the event context gets created. Stale (disposed or
             // disposing) instances are evicted inside GetOrCreateAsync, so what comes
             // back is always live.
             await state.Context.MiniGames.GetOrCreateAsync(miniGameDefinition, null!).ConfigureAwait(false);
+            gamesCreated++;
 
             enterDuration = miniGameDefinition.EnterDuration;
+        }
+
+        if (gamesCreated == 0)
+        {
+            // No shared definition is configured for this event (anymore): without a
+            // game there is no entrance to announce, so no announcement entry either.
+            // Otherwise the next tick would send a closing message for a run that
+            // never opened.
+            return;
         }
 
         // Announce the full minutes immediately, like the former notification loop did

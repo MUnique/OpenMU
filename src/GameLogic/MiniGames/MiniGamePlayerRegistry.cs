@@ -19,7 +19,12 @@ internal sealed class MiniGamePlayerRegistry
     private readonly MiniGameDefinition _definition;
     private readonly AsyncReaderWriterLock _lock = new();
     private readonly HashSet<Player> _players = new();
-    private MiniGameState _state = MiniGameState.Open;
+
+    // Lock-free read: correctness only needs check-and-add inside TryEnterAsync to be
+    // atomic, and that stays atomic as long as every write goes through SetStateAsync.
+    // Reads (e.g. every State access on hot paths) must not block on a lock that is
+    // held across I/O elsewhere.
+    private volatile MiniGameState _state = MiniGameState.Open;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MiniGamePlayerRegistry"/> class.
@@ -33,16 +38,7 @@ internal sealed class MiniGamePlayerRegistry
     /// <summary>
     /// Gets the current state of the mini game.
     /// </summary>
-    public MiniGameState State
-    {
-        get
-        {
-            using (this._lock.ReaderLock())
-            {
-                return this._state;
-            }
-        }
-    }
+    public MiniGameState State => this._state;
 
     /// <summary>
     /// Sets the state of the mini game. All state transitions (closing, starting,

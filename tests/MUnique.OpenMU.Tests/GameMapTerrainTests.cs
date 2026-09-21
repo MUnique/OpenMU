@@ -253,6 +253,37 @@ public class GameMapTerrainTests
     }
 
     /// <summary>
+    /// Tests that removing an attribute only clears its own bit: other blocking
+    /// bits on the tile survive, e.g. when a castle gate reopens over an
+    /// original hole or water tile.
+    /// </summary>
+    [Test]
+    public void ApplyTerrainAttributeRemoveKeepsOtherBits()
+    {
+        var terrain = new GameMapTerrain(CreateWalkableTerrainWithValues((12, 11, (byte)(Blocked | NoGround))));
+
+        terrain.ApplyTerrainAttribute(12, 11, TerrainAttributeType.Blocked, false);
+
+        Assert.That(terrain.WalkMap[12, 11], Is.False);
+        Assert.That(terrain.HasLineOfSight(new Pathfinding.Point(10, 11), new Pathfinding.Point(14, 11)), Is.True);
+    }
+
+    /// <summary>
+    /// Tests that removing an attribute with openArea clears every blocking bit,
+    /// so mixed wall/hole rects (e.g. the Kanturu barrier) become passable.
+    /// </summary>
+    [Test]
+    public void ApplyTerrainAttributeRemoveWithOpenAreaClearsAllBits()
+    {
+        var terrain = new GameMapTerrain(CreateWalkableTerrainWithValues((12, 11, (byte)(Blocked | NoGround | Water))));
+
+        terrain.ApplyTerrainAttribute(12, 11, TerrainAttributeType.NoGround, false, openArea: true);
+
+        Assert.That(terrain.WalkMap[12, 11], Is.True);
+        Assert.That(terrain.HasLineOfSight(new Pathfinding.Point(10, 11), new Pathfinding.Point(14, 11)), Is.True);
+    }
+
+    /// <summary>
     /// Tests that setting the hole attribute at runtime (e.g. collapsing Chaos
     /// Castle ground) makes a tile unwalkable while sight still passes across it.
     /// </summary>
@@ -310,16 +341,13 @@ public class GameMapTerrainTests
     }
 
     /// <summary>
-    /// Tests that removing an attribute re-opens the area regardless of the raw
-    /// value underneath. Event configs are authored against "removal opens the
-    /// rect": the Blood Castle bridge is toggled as <c>NoGround</c> on all of
-    /// <c>NoGround</c>, <c>Blocked</c> and combined tiles across levels, and the
-    /// Kanturu barrier mixes walls and holes in one rect whose corridor must
-    /// become passable as a whole.
+    /// Tests that removing an attribute only clears its own bit: a tile holding
+    /// other bits stays as it was. Callers which restore exact previous state
+    /// (e.g. the castle siege gate) rely on this; area opening is opt-in.
     /// </summary>
     [Test]
-    public void ApplyTerrainAttributeRemoveOpensAreaRegardlessOfRawValue(
-        [Values(Walkable, Blocked, NoGround, (byte)(Blocked | NoGround))] byte rawValue)
+    public void ApplyTerrainAttributeRemoveKeepsOwnBitOnly(
+        [Values(Walkable, NoGround)] byte rawValue)
     {
         var terrain = new GameMapTerrain(CreateWalkableTerrainWithValues((12, 11, rawValue)));
 

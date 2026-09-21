@@ -4,9 +4,13 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using Microsoft.Extensions.Logging.Abstractions;
+using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
+using MUnique.OpenMU.Persistence.InMemory;
 
 /// <summary>
 /// Tests for the <see cref="MiniGamePlayerRegistry"/> entering policy: entering is only
@@ -23,7 +27,7 @@ public class MiniGamePlayerRegistryTests
     {
         var registry = new MiniGamePlayerRegistry(this.CreateDefinition());
 
-        var result = await registry.TryEnterAsync(null!, _ => ValueTask.FromResult(true)).ConfigureAwait(false);
+        var result = await registry.TryEnterAsync(CreatePlayer(), _ => ValueTask.FromResult(true)).ConfigureAwait(false);
 
         Assert.That(result, Is.EqualTo(EnterResult.Success));
     }
@@ -37,23 +41,32 @@ public class MiniGamePlayerRegistryTests
         var registry = new MiniGamePlayerRegistry(this.CreateDefinition());
         await registry.SetStateAsync(MiniGameState.Closed).ConfigureAwait(false);
 
-        var result = await registry.TryEnterAsync(null!, _ => ValueTask.FromResult(true)).ConfigureAwait(false);
+        var result = await registry.TryEnterAsync(CreatePlayer(), _ => ValueTask.FromResult(true)).ConfigureAwait(false);
 
         Assert.That(result, Is.EqualTo(EnterResult.NotOpen));
     }
 
     /// <summary>
-    /// Tests that entering fails when the game is full.
+    /// Tests that entering fails when the game is full with other players.
     /// </summary>
     [Test]
     public async Task EnterWhenFullIsRejectedAsync()
     {
         var registry = new MiniGamePlayerRegistry(this.CreateDefinition());
-        Assert.That(await registry.TryEnterAsync(null!, _ => ValueTask.FromResult(true)).ConfigureAwait(false), Is.EqualTo(EnterResult.Success));
+        Assert.That(await registry.TryEnterAsync(CreatePlayer(), _ => ValueTask.FromResult(true)).ConfigureAwait(false), Is.EqualTo(EnterResult.Success));
 
-        var result = await registry.TryEnterAsync(null!, _ => ValueTask.FromResult(true)).ConfigureAwait(false);
+        var result = await registry.TryEnterAsync(CreatePlayer(), _ => ValueTask.FromResult(true)).ConfigureAwait(false);
 
         Assert.That(result, Is.EqualTo(EnterResult.Full));
+    }
+
+    private static Player CreatePlayer()
+    {
+        var contextMock = new Mock<IGameContext>();
+        contextMock.SetupGet(c => c.LoggerFactory).Returns(NullLoggerFactory.Instance);
+        contextMock.SetupGet(c => c.Configuration).Returns(new GameConfiguration());
+        contextMock.SetupGet(c => c.PersistenceContextProvider).Returns(new InMemoryPersistenceContextProvider());
+        return new Player(contextMock.Object);
     }
 
     private MiniGameDefinition CreateDefinition()

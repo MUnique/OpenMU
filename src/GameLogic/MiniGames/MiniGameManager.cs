@@ -135,12 +135,16 @@ public sealed class MiniGameManager : IMiniGameManager
 
         // Only unregister what is actually there: a forced restart may already
         // have replaced the dying instance, and must not lose the new one.
+        // The removal event still fires unconditionally: it's keyed by the map
+        // instance (GameMap.Id), so it can never hit the replacement's entry,
+        // while skipping it would leave a stale map in observers.
         if (this._miniGames.TryGetValue(miniGameContext.Key, out var current)
             && ReferenceEquals(current, miniGameContext)
             && this._miniGames.TryRemove(miniGameContext.Key, out _))
         {
             MiniGameCounter.Add(-1);
-            this.GameMapRemoved?.Invoke(this, miniGameContext.Map);
         }
+
+        this.GameMapRemoved?.Invoke(this, miniGameContext.Map);
     }
 }

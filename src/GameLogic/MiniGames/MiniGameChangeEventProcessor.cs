@@ -150,7 +150,13 @@ internal sealed class MiniGameChangeEventProcessor
             {
                 for (int y = change.StartY; y <= change.EndY; y++)
                 {
-                    this._map.Terrain.ApplyTerrainAttribute((byte)x, (byte)y, change.TerrainAttribute, change.SetTerrainAttribute);
+                    // Event configs author removals as "open this rect": the configured
+                    // attribute doesn't necessarily match the bits in the terrain file
+                    // (e.g. the Blood Castle bridge is toggled as NoGround over Blocked
+                    // tiles), so removals clear the whole tile. Callers which must
+                    // restore exact bits (e.g. the castle siege gate) use the default
+                    // per-bit removal instead.
+                    this._map.Terrain.ApplyTerrainAttribute((byte)x, (byte)y, change.TerrainAttribute, change.SetTerrainAttribute, openArea: !change.SetTerrainAttribute);
                 }
             }
         }

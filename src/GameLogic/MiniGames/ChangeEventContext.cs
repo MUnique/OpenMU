@@ -7,9 +7,12 @@ namespace MUnique.OpenMU.GameLogic.MiniGames;
 using System.Threading;
 
 /// <summary>
-/// The context of the <see cref="MiniGameChangeEvent"/>.
+/// Tracks the kill progress toward a <see cref="MiniGameChangeEvent"/>.
+/// An implementation detail of <see cref="MiniGameChangeEventProcessor"/>; consumers
+/// read progress through <see cref="MiniGameContext.NextEventRequiredKills"/> and
+/// <see cref="MiniGameContext.NextEventActualKills"/> instead.
 /// </summary>
-public sealed class ChangeEventContext
+internal sealed class ChangeEventContext
 {
     private int _actualKills;
 

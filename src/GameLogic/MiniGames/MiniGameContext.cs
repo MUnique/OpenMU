@@ -150,9 +150,16 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     protected CancellationToken GameEndedToken => this._gameEndedCts.Token;
 
     /// <summary>
-    /// Gets the next event which targets should be fulfilled by the players.
+    /// Gets the kills required by the next event which targets should be fulfilled
+    /// by the players, or 0 when there is no next event.
     /// </summary>
-    protected ChangeEventContext? NextEvent => this._changeEvents.Current;
+    protected int NextEventRequiredKills => this._changeEvents.Current?.RequiredKills ?? 0;
+
+    /// <summary>
+    /// Gets the kills already registered toward the next event, or 0 when there is
+    /// no next event.
+    /// </summary>
+    protected int NextEventActualKills => this._changeEvents.Current?.ActualKills ?? 0;
 
     /// <summary>
     /// Gets or sets the drop generator which should be used during the mini game.

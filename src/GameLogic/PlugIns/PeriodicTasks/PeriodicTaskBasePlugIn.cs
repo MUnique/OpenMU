@@ -28,11 +28,11 @@ public abstract class PeriodicTaskBasePlugIn<TConfiguration, TState> : IPeriodic
     public TConfiguration? Configuration { get; set; }
 
     /// <summary>
-    /// Gets a value indicating whether a started task is finished right away on the
-    /// next tick instead of lingering in <see cref="PeriodicTaskState.Started"/> until
-    /// the task duration elapses. Mini games finish immediately: entering is gated by
-    /// the live game instances, so nothing depends on the lingering state — and it
-    /// would block forced restarts behind the task duration.
+    /// Gets a value indicating whether a started task may be finished when a tick
+    /// reaches the state machine. Finishing still requires the tick to get past the
+    /// <c>NextRunUtc</c> gate first: on the automatic path the <c>Started</c> state
+    /// therefore lingers until the task duration elapses, while a forced start
+    /// bypasses the gate and finishes (and restarts) right away.
     /// </summary>
     protected virtual bool FinishImmediatelyAfterStart => true;
 
