@@ -44,6 +44,18 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         StopByDeath = false,
     };
 
+    /// <summary>
+    /// How long an outlaw (player killer) state lasts until it falls back one step. Each player kill
+    /// (re)starts it, and kills which can't escalate the state any further stack on top of it.
+    /// It can be shortened by killing monsters.
+    /// </summary>
+    private static readonly TimeSpan PlayerKillerStateDuration = TimeSpan.FromHours(3);
+
+    /// <summary>
+    /// The duration until a hero state falls back one step.
+    /// </summary>
+    private static readonly TimeSpan HeroStateDuration = TimeSpan.FromHours(1);
+
     private readonly PlayerExperience _experience;
 
     /// <summary>
@@ -74,6 +86,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     private ICustomPlugInContainer<IViewPlugIn>? _viewPlugIns;
 
     private DateTime _lastRegenerate = DateTime.UtcNow;
+
+    /// <summary>
+    /// The fraction of a second which elapsed since the last regeneration, but wasn't subtracted from
+    /// <see cref="Character.StateRemainingSeconds"/> yet, because it only counts in whole seconds.
+    /// </summary>
+    private double _heroStateSecondsRemainder;
 
     private GameMap? _currentMap;
 
@@ -1272,9 +1290,20 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             {
                 this._selectedCharacter.State++;
             }
+
+            // Stepping up to the next outlaw state restarts the clock for that state. Math.Max, so that
+            // a kill can never shorten an already longer remaining time.
+            this._selectedCharacter.StateRemainingSeconds = Math.Max(
+                this._selectedCharacter.StateRemainingSeconds,
+                (int)PlayerKillerStateDuration.TotalSeconds);
+        }
+        else
+        {
+            // Further kills as a 2nd stage outlaw can't escalate the state anymore, so they stack on
+            // top of the remaining time instead.
+            this._selectedCharacter.StateRemainingSeconds += (int)PlayerKillerStateDuration.TotalSeconds;
         }
 
-        this._selectedCharacter.StateRemainingSeconds += (int)TimeSpan.FromHours(1).TotalSeconds;
         this._selectedCharacter.PlayerKillCount += 1;
         await this.ForEachWorldObserverAsync<IUpdateCharacterHeroStatePlugIn>(o => o.UpdateCharacterHeroStateAsync(this), true).ConfigureAwait(false);
     }
@@ -1409,32 +1438,83 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     private async ValueTask RegenerateHeroStateAsync()
     {
-        var currentCharacter = this._selectedCharacter;
-        if (currentCharacter?.StateRemainingSeconds > 0)
+        // A newly created character has no hero state yet, so there is nothing to count down.
+        if (this._selectedCharacter is not { } currentCharacter
+            || currentCharacter.State is HeroState.Normal or HeroState.New)
         {
-            var secondsSinceLastRegenerate = this._lastRegenerate.Subtract(DateTime.UtcNow).TotalSeconds;
-            currentCharacter.StateRemainingSeconds -= (int)Math.Round(secondsSinceLastRegenerate);
-            if (currentCharacter.StateRemainingSeconds <= 0)
-            {
-                // Change the status.
-                if (currentCharacter.State > HeroState.Normal)
-                {
-                    currentCharacter.State--;
-                }
-                else if (currentCharacter.State < HeroState.Normal)
-                {
-                    currentCharacter.State++;
-                }
-                else
-                {
-                    // State is already Normal, no change needed.
-                }
+            this._heroStateSecondsRemainder = 0;
+            return;
+        }
 
-                await this.ForEachWorldObserverAsync<IUpdateCharacterHeroStatePlugIn>(p => p.UpdateCharacterHeroStateAsync(this), true).ConfigureAwait(false);
-                currentCharacter.StateRemainingSeconds = currentCharacter.State == HeroState.Normal
-                    ? 0
-                    : (int)TimeSpan.FromHours(1).TotalSeconds;
-            }
+        // Only whole seconds are subtracted and the fraction is kept for the next tick. Rounding each tick
+        // made the countdown depend on the recovery interval, e.g. at 500 ms it never counted down at all.
+        var elapsedSeconds = DateTime.UtcNow.Subtract(this._lastRegenerate).TotalSeconds + this._heroStateSecondsRemainder;
+        var elapsedWholeSeconds = Math.Floor(elapsedSeconds);
+        this._heroStateSecondsRemainder = elapsedSeconds - elapsedWholeSeconds;
+        currentCharacter.StateRemainingSeconds -= (int)elapsedWholeSeconds;
+        if (currentCharacter.StateRemainingSeconds > 0)
+        {
+            return;
+        }
+
+        // The time is up, so the state falls back one step towards the normal state. Killed monsters may
+        // have pushed the remaining time below zero, so the surplus is carried over to the next step.
+        var surplusSeconds = -currentCharacter.StateRemainingSeconds;
+        if (currentCharacter.State > HeroState.Normal)
+        {
+            currentCharacter.State--;
+        }
+        else
+        {
+            currentCharacter.State++;
+        }
+
+        if (currentCharacter.State == HeroState.Normal)
+        {
+            currentCharacter.StateRemainingSeconds = 0;
+            currentCharacter.PlayerKillCount = 0;
+        }
+        else
+        {
+            var stateDuration = currentCharacter.State > HeroState.Normal ? PlayerKillerStateDuration : HeroStateDuration;
+
+            // May still be below zero, if the surplus exceeds this step as well. Then the next tick steps down again.
+            currentCharacter.StateRemainingSeconds = (int)stateDuration.TotalSeconds - surplusSeconds;
+        }
+
+        await this.ForEachWorldObserverAsync<IUpdateCharacterHeroStatePlugIn>(p => p.UpdateCharacterHeroStateAsync(this), true).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Limits the remaining time of the hero state to the longest time which the current state can
+    /// legitimately have. Characters of servers which ran with the formerly broken countdown can have
+    /// a remaining time which grew by all the time they spent online.
+    /// </summary>
+    private void LimitHeroStateRemainingTime()
+    {
+        if (this._selectedCharacter is not { } character
+            || character.State is HeroState.Normal or HeroState.New)
+        {
+            return;
+        }
+
+        var maximumSeconds = character.State switch
+        {
+            // Every kill after the one which reached the 2nd stage adds another state duration on top.
+            HeroState.PlayerKiller2ndStage => (int)PlayerKillerStateDuration.TotalSeconds * Math.Max(character.PlayerKillCount - 2, 1),
+            > HeroState.Normal => (int)PlayerKillerStateDuration.TotalSeconds,
+            _ => (int)HeroStateDuration.TotalSeconds,
+        };
+
+        if (character.StateRemainingSeconds > maximumSeconds)
+        {
+            this.Logger.LogInformation(
+                "Limited the remaining hero state time of character {CharacterName} ({HeroState}) from {RemainingSeconds} to {MaximumSeconds} seconds.",
+                character.Name,
+                character.State,
+                character.StateRemainingSeconds,
+                maximumSeconds);
+            character.StateRemainingSeconds = maximumSeconds;
         }
     }
 
@@ -1766,7 +1846,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
 
         await this.ClientReadyAfterMapChangeAsync().ConfigureAwait(false);
+        this.LimitHeroStateRemainingTime();
         this._lastRegenerate = DateTime.UtcNow;
+        this._heroStateSecondsRemainder = 0;
 
         await this.InvokeViewPlugInAsync<IUpdateRotationPlugIn>(p => p.UpdateRotationAsync()).ConfigureAwait(false);
         await this.ResetPetBehaviorAsync().ConfigureAwait(false);
