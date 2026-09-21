@@ -54,8 +54,8 @@ These may be helpful when running the server in a container or under Linux.
 | `ASPNETCORE_ENVIRONMENT` | If neither a `-resolveIP` parameter nor a `RESOLVE_IP` variable is defined, this variable is considered to find the optimal IP resolver. If the value is `Development`, `loopback` is used, otherwise `public`. |
 | `ASPNETCORE_URLS` | Defines the address of the admin panel, e.g. `http://+:80` |
 | `DB_HOST` | Host name/address of the postgres database |
-| `DB_ADMIN_USER` | User name of the admin user of the postgres database |
-| `DB_ADMIN_PW` | Password of the admin user of the postgres database |
+| `DB_ADMIN_USER` | User name of the admin user of the postgres database. In docker compose this is also used as `POSTGRES_USER` for the database container (`${DB_ADMIN_USER:-postgres}`). |
+| `DB_ADMIN_PW` | Password of the admin user of the postgres database. In docker compose this is also used as `POSTGRES_PASSWORD` for the database container (`${DB_ADMIN_PW:-admin}`). When unset, the default `admin` keeps working. |
 | `Database__AssumeExternallyProvisioned` | When `true`, an already-provisioned (empty) database is kept and only its schema is built via migrations, instead of dropping and recreating it. Default: `false`. See below. |
 
 ## Externally provisioned database
