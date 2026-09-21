@@ -33,6 +33,6 @@ public class DuelEndedPlugIn : IDuelEndedPlugIn
     public async ValueTask DuelEndedAsync()
     {
         await this._player.Connection.SendDuelEndAsync(0, string.Empty).ConfigureAwait(false);
-        await this._player.Connection.SendMagicEffectStatusAsync(false, this._player.GetId(this._player), EffectNumbers.DuelSpectatorHealthBar).ConfigureAwait(false);
+        await this._player.Connection.SendMagicEffectStatusAsync(false, this._player.GetId(this._player), (byte)EffectNumbers.DuelSpectatorHealthBar).ConfigureAwait(false);
     }
 }
