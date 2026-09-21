@@ -8,9 +8,8 @@ using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlayerActions.Guild;
-using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.GameServer.RemoteView.Guild;
 using MUnique.OpenMU.Network.Packets.ClientToServer;
-using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -38,13 +37,7 @@ internal class GuildRoleAssignHandlerPlugIn : IPacketHandlerPlugIn
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         GuildRoleAssignRequest request = packet;
-        var position = request.Role switch
-        {
-            GuildMemberRole.NormalMember => GuildPosition.NormalMember,
-            GuildMemberRole.BattleMaster => GuildPosition.BattleMaster,
-            GuildMemberRole.AssistantMaster => GuildPosition.AssistantMaster,
-            _ => (GuildPosition?)null,
-        };
+        var position = request.Role.ConvertToPosition();
 
         if (position is null)
         {
