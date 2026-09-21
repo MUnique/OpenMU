@@ -28,15 +28,6 @@ public abstract class PeriodicTaskBasePlugIn<TConfiguration, TState> : IPeriodic
     public TConfiguration? Configuration { get; set; }
 
     /// <summary>
-    /// Gets a value indicating whether a started task may be finished when a tick
-    /// reaches the state machine. Finishing still requires the tick to get past the
-    /// <c>NextRunUtc</c> gate first: on the automatic path the <c>Started</c> state
-    /// therefore lingers until the task duration elapses, while a forced start
-    /// bypasses the gate and finishes (and restarts) right away.
-    /// </summary>
-    protected virtual bool FinishImmediatelyAfterStart => true;
-
-    /// <summary>
     /// Forces to start the task on the next start check.
     /// </summary>
     public void ForceStart()
@@ -125,11 +116,6 @@ public abstract class PeriodicTaskBasePlugIn<TConfiguration, TState> : IPeriodic
 
             case PeriodicTaskState.Started:
                 {
-                    if (!this.FinishImmediatelyAfterStart)
-                    {
-                        break;
-                    }
-
                     state.State = PeriodicTaskState.NotStarted;
 
                     await this.OnFinishedAsync(state).ConfigureAwait(false);
