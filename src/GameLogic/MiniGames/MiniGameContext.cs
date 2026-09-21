@@ -968,15 +968,13 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     {
         foreach (var change in changes)
         {
-            var isSafezone = change.TerrainAttribute is TerrainAttributeType.Safezone;
-            var map = isSafezone ? this.Map.Terrain.SafezoneMap : this.Map.Terrain.WalkMap;
-            var targetValue = isSafezone ? change.SetTerrainAttribute : !change.SetTerrainAttribute;
-            for (var x = change.StartX; x <= change.EndX; x++)
+            // The counters are ints on purpose: an end coordinate of 255 would make
+            // a byte counter wrap around and loop forever.
+            for (int x = change.StartX; x <= change.EndX; x++)
             {
-                for (var y = change.StartY; y <= change.EndY; y++)
+                for (int y = change.StartY; y <= change.EndY; y++)
                 {
-                    map[x, y] = targetValue;
-                    this.Map.Terrain.UpdateAiGridValue(x, y);
+                    this.Map.Terrain.ApplyTerrainAttribute((byte)x, (byte)y, change.TerrainAttribute, change.SetTerrainAttribute);
                 }
             }
         }

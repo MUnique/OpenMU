@@ -151,6 +151,26 @@ public static class LocateableExtensions
     public static Direction GetDirectionTo(this ILocateable objectFrom, ILocateable objectTo) => objectFrom.Position.GetDirectionTo(objectTo.Position);
 
     /// <summary>
+    /// Determines whether the target can be seen from the object, i.e. both are on the same map
+    /// and no wall (blocked terrain tile) lies on the line between them.
+    /// Intended as a second check after <see cref="IsInRange(ILocateable, ILocateable, int)"/>,
+    /// which is the cheaper range pre-filter.
+    /// </summary>
+    /// <param name="objectFrom">The viewing object (e.g. the attacking monster).</param>
+    /// <param name="objectTo">The target object.</param>
+    /// <returns><c>true</c> when both objects share a map and the terrain line of sight is clear; otherwise, <c>false</c>.</returns>
+    public static bool HasLineOfSightTo(this ILocateable objectFrom, ILocateable objectTo)
+    {
+        var map = objectFrom.CurrentMap;
+        if (map is null || map != objectTo.CurrentMap)
+        {
+            return false;
+        }
+
+        return map.Terrain.HasLineOfSight(objectFrom.Position, objectTo.Position);
+    }
+
+    /// <summary>
     /// Determines whether the object is at the safezone of his current map.
     /// </summary>
     /// <param name="obj">The object.</param>

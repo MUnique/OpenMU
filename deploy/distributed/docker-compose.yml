@@ -98,9 +98,9 @@ services:
     container_name: postgres
     restart: always
     environment:
-      POSTGRES_PASSWORD: admin
-      POSTGRES_DB: openmu
-      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_ADMIN_PW:-admin}
+      POSTGRES_DB: ${DB_NAME:-openmu}
+      POSTGRES_USER: ${DB_ADMIN_USER:-postgres}
     ports:
       - "5432"
     volumes:
@@ -123,6 +123,9 @@ services:
     environment:
       APPID: connectServer
       ASPNETCORE_URLS: http://+:8080
+      DB_HOST: ${DB_HOST:-database}
+      DB_ADMIN_USER: ${DB_ADMIN_USER:-}
+      DB_ADMIN_PW: ${DB_ADMIN_PW:-}
     depends_on:
       - rabbit
       - zipkin
@@ -149,6 +152,9 @@ services:
       - "9464" # Prometheus
     environment:
       ASPNETCORE_URLS: http://+:8080
+      DB_HOST: ${DB_HOST:-database}
+      DB_ADMIN_USER: ${DB_ADMIN_USER:-}
+      DB_ADMIN_PW: ${DB_ADMIN_PW:-}
     depends_on:
       - zipkin
       - database
@@ -174,6 +180,9 @@ services:
       - "9464" # Prometheus
     environment:
       ASPNETCORE_URLS: http://+:8080
+      DB_HOST: ${DB_HOST:-database}
+      DB_ADMIN_USER: ${DB_ADMIN_USER:-}
+      DB_ADMIN_PW: ${DB_ADMIN_PW:-}
     depends_on:
       - chatServer-dapr
       - database
@@ -200,6 +209,9 @@ services:
       - "9464" # Prometheus
     environment:
       ASPNETCORE_URLS: http://+:8080
+      DB_HOST: ${DB_HOST:-database}
+      DB_ADMIN_USER: ${DB_ADMIN_USER:-}
+      DB_ADMIN_PW: ${DB_ADMIN_PW:-}
     depends_on:
       - database
       - zipkin
@@ -223,6 +235,9 @@ services:
     environment:
       APPID: chatServer
       ASPNETCORE_URLS: http://+:8080
+      DB_HOST: ${DB_HOST:-database}
+      DB_ADMIN_USER: ${DB_ADMIN_USER:-}
+      DB_ADMIN_PW: ${DB_ADMIN_PW:-}
     ports:
       - "55980:55980"
       - "50001"
@@ -256,6 +271,9 @@ services:
     environment:
       ASPNETCORE_URLS: http://+:8080
       PATH_BASE: /admin/
+      DB_HOST: ${DB_HOST:-database}
+      DB_ADMIN_USER: ${DB_ADMIN_USER:-}
+      DB_ADMIN_PW: ${DB_ADMIN_PW:-}
       # Optional bootstrap admin panel user. Without it, the admin panel is reachable
       # without a login until the first user has been created within the panel itself.
       OPENMU_ADMIN_USER: ${OPENMU_ADMIN_USER:-}
@@ -297,6 +315,9 @@ services:
       APPID: gameServer0
       PATH_BASE: /gameServer/0/
       ASPNETCORE_URLS: http://+:8080
+      DB_HOST: ${DB_HOST:-database}
+      DB_ADMIN_USER: ${DB_ADMIN_USER:-}
+      DB_ADMIN_PW: ${DB_ADMIN_PW:-}
     depends_on:
       - connectServer-dapr
       - loginServer-dapr
@@ -336,6 +357,9 @@ services:
       APPID: gameServer1
       PATH_BASE: /gameServer/1/
       ASPNETCORE_URLS: http://+:8080
+      DB_HOST: ${DB_HOST:-database}
+      DB_ADMIN_USER: ${DB_ADMIN_USER:-}
+      DB_ADMIN_PW: ${DB_ADMIN_PW:-}
     depends_on:
       - connectServer-dapr
       - loginServer-dapr

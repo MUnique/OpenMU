@@ -143,6 +143,13 @@ public sealed class BotManager
         }
 
         var name = bot.Name;
+        if (bot.IsDisposed || bot.IsDisposing)
+        {
+            // Already torn down concurrently (e.g. by the server shutdown disconnecting it) -
+            // nothing left to stop or dispose.
+            return name;
+        }
+
         try
         {
             if (bot.Party is { } party)
@@ -183,6 +190,13 @@ public sealed class BotManager
             return false;
         }
 
+        if (removed.IsDisposed || removed.IsDisposing)
+        {
+            // Already torn down concurrently (e.g. by the server shutdown disconnecting it) - no
+            // stop or dispose left to do, just bring the character back online.
+            return await this.SpawnBotAsync(gameContext, loginName, slot).ConfigureAwait(false);
+        }
+
         if (removed.Party is { } party)
         {
             try
@@ -213,7 +227,14 @@ public sealed class BotManager
 
         // The stopped instance is done for good - release its persistence context and the tracked
         // account graph before the fresh one loads them again.
-        await removed.DisposeAsync().ConfigureAwait(false);
+        try
+        {
+            await removed.DisposeAsync().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            removed.Logger.LogWarning(ex, "Error while disposing bot '{Login}/{Slot}' for a restart; spawning a fresh instance anyway.", loginName, slot);
+        }
 
         return await this.SpawnBotAsync(gameContext, loginName, slot).ConfigureAwait(false);
     }
@@ -296,6 +317,13 @@ public sealed class BotManager
     /// </summary>
     private static async ValueTask StopAndDisposeAsync(BotPlayer bot, string key, string reason)
     {
+        if (bot.IsDisposed || bot.IsDisposing)
+        {
+            // Already torn down concurrently (e.g. by the server shutdown disconnecting it) -
+            // nothing left to stop or dispose.
+            return;
+        }
+
         try
         {
             await bot.StopAsync().ConfigureAwait(false);
@@ -306,7 +334,16 @@ public sealed class BotManager
         }
         finally
         {
-            await bot.DisposeAsync().ConfigureAwait(false);
+            try
+            {
+                await bot.DisposeAsync().ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                // Disposal must not fail the teardown - e.g. Npgsql throws when the underlying
+                // connection is still opening while it is being closed during a shutdown race.
+                bot.Logger.LogWarning(ex, "Error while disposing bot '{Key}' ({Reason}).", key, reason);
+            }
         }
     }
 
