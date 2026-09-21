@@ -24,6 +24,11 @@ public class BotGeneratorTests
         {
             var queue = BalancedQueue(50);
             var elf = new CharacterClass { Number = 8 };
+            var before = queue.ToList();
+            var initialElves = before
+                .Select((c, n) => n)
+                .Where(n => before[n].Number == 8)
+                .ToHashSet();
 
             BotGenerator.GrowElfSlots(queue, elf, 12);
 
@@ -32,9 +37,8 @@ public class BotGeneratorTests
             Assert.That(slots.Count(c => c.Number == 8), Is.EqualTo(15));
 
             var converted = slots
-                .Select((c, n) => (c, n))
-                .Where(x => x.c.Number == 8 && x.n % 7 != 2)
-                .Select(x => x.n)
+                .Select((c, n) => n)
+                .Where(n => slots[n].Number == 8 && !initialElves.Contains(n))
                 .OrderBy(n => n)
                 .ToList();
             Assert.That(converted, Has.Count.EqualTo(8));
