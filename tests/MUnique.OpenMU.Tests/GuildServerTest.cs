@@ -171,4 +171,56 @@ public class GuildServerTest : GuildTestBase
         await this.GuildServer.KickMemberAsync(guildId, testMemberName).ConfigureAwait(false);
         this.GameServer1.Verify(g => g.GuildPlayerKickedAsync(testMemberName), Times.Once);
     }
+
+    /// <summary>
+    /// Tests if a position change is persisted and published to the game server of the member.
+    /// </summary>
+    [Test]
+    public async ValueTask GuildMemberPositionChangePersistsAndPublishesAsync()
+    {
+        const byte serverId = 1;
+        const string testMemberName = "TestMember";
+        var memberId = Guid.NewGuid();
+        await this.GuildServer.PlayerEnteredGameAsync(this.GuildMaster.Id, this.GuildMaster.Name, serverId).ConfigureAwait(false);
+        var guildId = await this.GuildServer.GetGuildIdByNameAsync(GuildName).ConfigureAwait(false);
+        await this.GuildServer.CreateGuildMemberAsync(guildId, memberId, testMemberName, GuildPosition.NormalMember, serverId).ConfigureAwait(false);
+
+        await this.GuildServer.ChangeGuildMemberPositionAsync(guildId, memberId, GuildPosition.BattleMaster).ConfigureAwait(false);
+
+        var entry = (await this.GuildServer.GetGuildListAsync(guildId).ConfigureAwait(false)).First(m => m.PlayerName == testMemberName);
+        var persistedPosition = await this.GuildServer.GetGuildPositionAsync(memberId).ConfigureAwait(false);
+        Assert.Multiple(() =>
+        {
+            Assert.That(entry.PlayerPosition, Is.EqualTo(GuildPosition.BattleMaster));
+            Assert.That(persistedPosition, Is.EqualTo(GuildPosition.BattleMaster));
+        });
+        this.GameServer1.Verify(g => g.AssignGuildToPlayerAsync(testMemberName, It.Is<GuildMemberStatus>(s => s.GuildId == guildId && s.Position == GuildPosition.BattleMaster)), Times.Once);
+    }
+
+    /// <summary>
+    /// Tests that a position change for an offline member is persisted but not published.
+    /// </summary>
+    [Test]
+    public async ValueTask GuildMemberPositionChangeForOfflineMemberDoesNotPublishAsync()
+    {
+        const byte serverId = 1;
+        const string testMemberName = "TestMember";
+        var memberId = Guid.NewGuid();
+        await this.GuildServer.PlayerEnteredGameAsync(this.GuildMaster.Id, this.GuildMaster.Name, serverId).ConfigureAwait(false);
+        var guildId = await this.GuildServer.GetGuildIdByNameAsync(GuildName).ConfigureAwait(false);
+        await this.GuildServer.CreateGuildMemberAsync(guildId, memberId, testMemberName, GuildPosition.NormalMember, serverId).ConfigureAwait(false);
+        await this.GuildServer.GuildMemberLeftGameAsync(guildId, memberId, serverId).ConfigureAwait(false);
+
+        await this.GuildServer.ChangeGuildMemberPositionAsync(guildId, memberId, GuildPosition.BattleMaster).ConfigureAwait(false);
+
+        var entry = (await this.GuildServer.GetGuildListAsync(guildId).ConfigureAwait(false)).First(m => m.PlayerName == testMemberName);
+        var persistedPosition = await this.GuildServer.GetGuildPositionAsync(memberId).ConfigureAwait(false);
+        Assert.Multiple(() =>
+        {
+            Assert.That(entry.PlayerPosition, Is.EqualTo(GuildPosition.BattleMaster));
+            Assert.That(entry.ServerId, Is.EqualTo(OpenMU.GuildServer.GuildServer.OfflineServerId));
+            Assert.That(persistedPosition, Is.EqualTo(GuildPosition.BattleMaster));
+        });
+        this.GameServer1.Verify(g => g.AssignGuildToPlayerAsync(testMemberName, It.Is<GuildMemberStatus>(s => s.Position == GuildPosition.BattleMaster)), Times.Never);
+    }
 }
