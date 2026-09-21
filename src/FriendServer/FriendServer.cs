@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.FriendServer;
 
+using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Interfaces;
@@ -32,7 +33,7 @@ public class FriendServer : IFriendServer
         this._chatServer = chatServer;
         this._persistenceContextProvider = persistenceContextProvider;
         this._logger = logger;
-        this.OnlineFriends = new Dictionary<string, OnlineFriend>();
+        this.OnlineFriends = new ConcurrentDictionary<string, OnlineFriend>();
     }
 
     /// <summary>
@@ -48,7 +49,7 @@ public class FriendServer : IFriendServer
     /// <summary>
     /// Gets the online friends dictionary. The key is the name of the character of the corresponding OnlineFriend object.
     /// </summary>
-    protected IDictionary<string, OnlineFriend> OnlineFriends { get; }
+    protected ConcurrentDictionary<string, OnlineFriend> OnlineFriends { get; }
 
     /// <inheritdoc/>
     public ValueTask ForwardLetterAsync(LetterHeader letter)
@@ -260,11 +261,18 @@ public class FriendServer : IFriendServer
                 return;
             }
 
-            observer = new OnlineFriend(this._friendNotifier, characterName)
+            var candidate = new OnlineFriend(this._friendNotifier, characterName)
             {
                 ServerId = serverId,
             };
-            this.OnlineFriends.Add(characterName, observer);
+            observer = this.OnlineFriends.GetOrAdd(characterName, candidate);
+            if (!ReferenceEquals(observer, candidate))
+            {
+                candidate.Dispose();
+                observer.ChangeServer(serverId == InvisibleServerId ? OfflineServerId : serverId);
+                return;
+            }
+
             IFriendServerContext? newContext = null;
             var context = usedContext ?? (newContext = this._persistenceContextProvider.CreateNewFriendServerContext());
 
@@ -283,7 +291,7 @@ public class FriendServer : IFriendServer
 
         if (serverId == OfflineServerId)
         {
-            this.OnlineFriends.Remove(observer.PlayerName);
+            this.OnlineFriends.TryRemove(observer.PlayerName, out _);
             observer.OnCompleted();
         }
     }
