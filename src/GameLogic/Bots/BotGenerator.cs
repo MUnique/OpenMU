@@ -152,6 +152,14 @@ internal sealed class BotGenerator
             if (existing is not null)
             {
                 buffersAssigned += existing.Characters.Count(c => BotBuild.IsSupportElf(c.CharacterClass, c.Name));
+
+                // Skip the slots this account drew when it was created, so new
+                // accounts continue the queue instead of redrawing its head.
+                for (var slot = 0; slot < perAccount && classQueue.Count > 0; slot++)
+                {
+                    classQueue.Dequeue();
+                }
+
                 continue;
             }
 
@@ -227,6 +235,48 @@ internal sealed class BotGenerator
         return deleted;
     }
 
+    /// <summary>
+    /// Grows the elf share of the queue to the buffer quota plus archer keep.
+    /// Natural split yields fewer buffers than parties need. Converted slots
+    /// are drawn randomly so class and account index stay uncorrelated.
+    /// </summary>
+    /// <param name="queue">The class queue to grow.</param>
+    /// <param name="elfClass">The base elf class to convert slots into.</param>
+    /// <param name="bufferQuota">The wanted buffer count.</param>
+    internal static void GrowElfSlots(Queue<CharacterClass> queue, CharacterClass elfClass, int bufferQuota)
+    {
+        var slots = queue.ToList();
+        var elfCount = slots.Count(c => c.Number == BotClassNumbers.FairyElfNumber);
+        var target = bufferQuota + Math.Max(1, elfCount / 2);
+        if (elfCount >= target)
+        {
+            return;
+        }
+
+        var spots = new List<int>();
+        for (var n = 0; n < slots.Count; n++)
+        {
+            if (slots[n].Number != BotClassNumbers.FairyElfNumber)
+            {
+                spots.Add(n);
+            }
+        }
+
+        var need = Math.Min(target - elfCount, spots.Count);
+        for (var drawn = 0; drawn < need; drawn++)
+        {
+            var pick = Rand.NextInt(drawn, spots.Count);
+            (spots[drawn], spots[pick]) = (spots[pick], spots[drawn]);
+            slots[spots[drawn]] = elfClass;
+        }
+
+        queue.Clear();
+        foreach (var characterClass in slots)
+        {
+            queue.Enqueue(characterClass);
+        }
+    }
+
     private static byte[] CreateDefaultKeyConfiguration()
     {
         // Mirrors CreateCharacterAction: bind Q to the healing potion and W to the mana potion,
@@ -244,37 +294,6 @@ internal sealed class BotGenerator
     }
 
     /// <summary>
-    /// Grows the elf share of the queue to the buffer quota plus archer keep.
-    /// Natural split yields fewer buffers than parties need.
-    /// </summary>
-    private static void GrowElfSlots(Queue<CharacterClass> queue, CharacterClass elfClass, int bufferQuota)
-    {
-        var slots = queue.ToList();
-        var elfCount = slots.Count(c => c.Number == BotClassNumbers.FairyElfNumber);
-        var target = bufferQuota + Math.Max(1, elfCount / 2);
-        if (elfCount >= target)
-        {
-            return;
-        }
-
-        var converted = 0;
-        for (var n = 0; n < slots.Count && elfCount + converted < target; n++)
-        {
-            if (slots[n].Number != BotClassNumbers.FairyElfNumber)
-            {
-                slots[n] = elfClass;
-                converted++;
-            }
-        }
-
-        queue.Clear();
-        foreach (var characterClass in slots)
-        {
-            queue.Enqueue(characterClass);
-        }
-    }
-
-    /// <summary>
     /// Draws a name with the wanted elf variant. Other classes keep any name.
     /// </summary>
     private async ValueTask<string> GenerateBuildNameAsync(
@@ -284,16 +303,25 @@ internal sealed class BotGenerator
         bool wantSupport,
         CancellationToken cancellationToken)
     {
+        var rejected = new List<string>();
         var name = await this._nameGenerator.GenerateUniqueAsync(context, reservedNames, cancellationToken).ConfigureAwait(false);
-        if (!BotBuild.IsElf(characterClass))
+        if (BotBuild.IsElf(characterClass))
         {
-            return name;
+            var wantVariant = BotBuild.WantedVariant(wantSupport);
+            for (var attempt = 0; attempt < 50 && BotBuild.GetVariant(name) != wantVariant; attempt++)
+            {
+                rejected.Add(name);
+                name = await this._nameGenerator.GenerateUniqueAsync(context, reservedNames, cancellationToken).ConfigureAwait(false);
+            }
         }
 
-        var wantVariant = wantSupport ? 1 : 0;
-        for (var attempt = 0; attempt < 50 && BotBuild.GetVariant(name) != wantVariant; attempt++)
+        // Rejected names were verified free, so hand them back for later draws.
+        foreach (var free in rejected)
         {
-            name = await this._nameGenerator.GenerateUniqueAsync(context, reservedNames, cancellationToken).ConfigureAwait(false);
+            if (free != name)
+            {
+                reservedNames.Remove(free);
+            }
         }
 
         return name;

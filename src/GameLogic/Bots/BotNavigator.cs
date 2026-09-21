@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.Bots;
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
+using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
@@ -292,6 +293,9 @@ internal sealed class BotNavigator : AsyncDisposable
     private DateTime? _resetDueAtUtc;
     private short _leaderMapNumber;
     private DateTime _leaderOnMapSinceUtc = DateTime.MinValue;
+    private GameConfiguration? _warpFloorConfiguration;
+    private CharacterClass? _warpFloorClass;
+    private int _minWarpLevel = FallbackMinWarpLevel;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BotNavigator"/> class.
@@ -1773,15 +1777,26 @@ internal sealed class BotNavigator : AsyncDisposable
     }
 
     /// <summary>
-    /// Lowest level at which a bot warps on its own: the lowest requirement
-    /// in the server warp list, so newbies stay on their starting maps.
+    /// Lowest level at which this bot warps on its own: its lowest
+    /// class-reduced warp requirement, so special classes keep their edge.
+    /// Cached per configuration and class; both change rarely.
     /// </summary>
     private int GetMinWarpLevel()
     {
-        return this._player.GameContext.Configuration.WarpList
-            .Select(warp => warp.LevelRequirement)
-            .DefaultIfEmpty(FallbackMinWarpLevel)
-            .Min();
+        var configuration = this._player.GameContext.Configuration;
+        var characterClass = this._player.SelectedCharacter?.CharacterClass;
+        if (!ReferenceEquals(configuration, this._warpFloorConfiguration)
+            || !ReferenceEquals(characterClass, this._warpFloorClass))
+        {
+            this._warpFloorConfiguration = configuration;
+            this._warpFloorClass = characterClass;
+            this._minWarpLevel = configuration.WarpList
+                .Select(warp => this._player.SelectedCharacter?.GetEffectiveMoveLevelRequirement(warp.LevelRequirement) ?? warp.LevelRequirement)
+                .DefaultIfEmpty(FallbackMinWarpLevel)
+                .Min();
+        }
+
+        return this._minWarpLevel;
     }
 
     /// <summary>

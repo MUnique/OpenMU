@@ -241,6 +241,8 @@ public sealed class BotManager
 
     /// <summary>
     /// Groups a share of the active bots into small hunting parties of level-wise similar characters.
+    /// Members follow their leader, the elf heals the group, buffs are shared
+    /// and the party experience bonus applies. The rest keeps hunting solo.
     /// </summary>
     /// <param name="gameContext">The game context (provides the party manager).</param>
     public async ValueTask FormPartiesAsync(IGameContext gameContext)
@@ -260,18 +262,30 @@ public sealed class BotManager
         foreach (var members in parties)
         {
             var party = gameContext.PartyManager.CreateParty();
+            var added = 0;
             foreach (var member in members)
             {
                 if (!await party.AddAsync(member).ConfigureAwait(false))
                 {
                     break;
                 }
+
+                added++;
             }
 
             var leader = members[0];
+            if (added < members.Count)
+            {
+                leader.Logger.LogWarning(
+                    "Bot party around '{Leader}' lost {Missing} of {Count} members on join; they regroup on the next pass.",
+                    leader.Name,
+                    members.Count - added,
+                    members.Count);
+            }
+
             leader.Logger.LogDebug(
                 "Formed bot party of {Count} around '{Leader}' (level {Level}).",
-                members.Count,
+                added,
                 leader.Name,
                 BotResetHandler.GetEffectiveLevel(leader));
         }

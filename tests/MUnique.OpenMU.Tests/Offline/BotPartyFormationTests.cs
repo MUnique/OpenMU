@@ -19,12 +19,19 @@ public class BotPartyFormationTests
 {
     private IGameContext _gameContext = null!;
 
+    /// <summary>
+    /// Sets up a fresh game context before each test.
+    /// </summary>
     [SetUp]
     public void SetUp()
     {
         this._gameContext = GameContextTestHelper.CreateGameContext();
     }
 
+    /// <summary>
+    /// Tests that every buffer is placed with exactly one buffer
+    /// and unique build keys per party.
+    /// </summary>
     [Test]
     public async ValueTask BuffersLeadAndAllArePlacedAsync()
     {
@@ -55,6 +62,9 @@ public class BotPartyFormationTests
         }
     }
 
+    /// <summary>
+    /// Tests that no party forms without a buffer.
+    /// </summary>
     [Test]
     public async ValueTask NoBufferMeansNoPartyAsync()
     {
@@ -74,6 +84,9 @@ public class BotPartyFormationTests
         }
     }
 
+    /// <summary>
+    /// Tests that duplicate build keys never share a party.
+    /// </summary>
     [Test]
     public async ValueTask DuplicateBuildKeysNeverSharePartyAsync()
     {
@@ -94,6 +107,36 @@ public class BotPartyFormationTests
             foreach (var party in formation.Parties)
             {
                 Assert.That(party.Count(m => ReferenceEquals(m, archer1) || ReferenceEquals(m, archer2)), Is.LessThanOrEqualTo(1));
+                Assert.That(party.Count(BotBuild.IsSupportElf), Is.EqualTo(1));
+            }
+        }
+    }
+
+    /// <summary>
+    /// Tests that party span never exceeds the level gap.
+    /// </summary>
+    [Test]
+    public async ValueTask PartySpanNeverExceedsLevelGapAsync()
+    {
+        var candidates = new[]
+        {
+            await this.CreateBotAsync("A", 8, 30).ConfigureAwait(false),
+            await this.CreateBotAsync("C", 8, 31).ConfigureAwait(false),
+            await this.CreateBotAsync("H", 4, 35).ConfigureAwait(false),
+            await this.CreateBotAsync("J", 4, 42).ConfigureAwait(false),
+            await this.CreateBotAsync("L", 12, 47).ConfigureAwait(false),
+            await this.CreateBotAsync("N", 12, 54).ConfigureAwait(false),
+            await this.CreateBotAsync("P", 0, 60).ConfigureAwait(false),
+        }.OrderBy(BotResetHandler.GetEffectiveLevel).ToList();
+
+        for (var i = 0; i < 10; i++)
+        {
+            var formation = BotPartyComposer.Compose(candidates);
+
+            foreach (var party in formation.Parties)
+            {
+                var levels = party.Select(BotResetHandler.GetEffectiveLevel).ToList();
+                Assert.That(levels.Max() - levels.Min(), Is.LessThanOrEqualTo(BotPartyPolicy.MaxLevelGap));
                 Assert.That(party.Count(BotBuild.IsSupportElf), Is.EqualTo(1));
             }
         }

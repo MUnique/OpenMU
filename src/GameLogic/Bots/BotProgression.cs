@@ -30,7 +30,9 @@ internal static class BotProgression
     /// <summary>The item group of skill scrolls and parchments.</summary>
     internal const byte SkillScrollItemGroup = 15;
 
+    /// <summary>
     /// Base classes with a second generation evolution.
+    /// </summary>
     private static readonly byte[] EvolvableClassNumbers =
     [
         BotClassNumbers.DarkWizardNumber,

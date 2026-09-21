@@ -9,18 +9,11 @@ using MUnique.OpenMU.GameLogic.Offline;
 /// <summary>
 /// Groups bot candidates into hunting parties.
 /// Each party holds exactly one buffer and one of each build at most.
+/// Members and buffer all sit within the level gap above the leader,
+/// so party span never exceeds it.
 /// </summary>
 internal static class BotPartyComposer
 {
-    /// <summary>
-    /// The outcome of one formation pass.
-    /// </summary>
-    /// <param name="Parties">The formed parties.</param>
-    /// <param name="UnplacedBuffers">Buffers which found no party and hunt solo.</param>
-    internal sealed record Formation(
-        IReadOnlyList<IReadOnlyList<OfflinePlayer>> Parties,
-        IReadOnlyList<OfflinePlayer> UnplacedBuffers);
-
     /// <summary>
     /// Composes parties from level-ordered candidates.
     /// </summary>
@@ -62,7 +55,7 @@ internal static class BotPartyComposer
                 continue;
             }
 
-            var buffer = FindBuffer(remaining, waitingBuffers, leader);
+            var buffer = FindBuffer(remaining, leader);
             if (buffer is null)
             {
                 leader.Logger.LogDebug("Bot '{Name}' stays solo: no buffer in range.", leader.Name);
@@ -73,7 +66,6 @@ internal static class BotPartyComposer
             members.Add(buffer);
             RemoveAll(remaining, picked);
             remaining.Remove(buffer);
-            waitingBuffers.Remove(buffer);
             parties.Add(members);
         }
 
@@ -111,10 +103,10 @@ internal static class BotPartyComposer
         return picked;
     }
 
-    private static OfflinePlayer? FindBuffer(List<OfflinePlayer> remaining, List<OfflinePlayer> waitingBuffers, OfflinePlayer leader)
+    private static OfflinePlayer? FindBuffer(List<OfflinePlayer> remaining, OfflinePlayer leader)
     {
         var leaderLevel = BotResetHandler.GetEffectiveLevel(leader);
-        return remaining.Concat(waitingBuffers)
+        return remaining
             .Where(BotBuild.IsSupportElf)
             .Where(b => Math.Abs(BotResetHandler.GetEffectiveLevel(b) - leaderLevel) <= BotPartyPolicy.MaxLevelGap)
             .MinBy(b => Math.Abs(BotResetHandler.GetEffectiveLevel(b) - leaderLevel));
@@ -127,4 +119,13 @@ internal static class BotPartyComposer
             remaining.Remove(member);
         }
     }
+
+    /// <summary>
+    /// The outcome of one formation pass.
+    /// </summary>
+    /// <param name="Parties">The formed parties.</param>
+    /// <param name="UnplacedBuffers">Buffers which found no party and hunt solo.</param>
+    internal sealed record Formation(
+        IReadOnlyList<IReadOnlyList<OfflinePlayer>> Parties,
+        IReadOnlyList<OfflinePlayer> UnplacedBuffers);
 }

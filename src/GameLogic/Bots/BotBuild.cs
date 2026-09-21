@@ -10,8 +10,6 @@ using MUnique.OpenMU.DataModel.Configuration;
 /// Single place for bot build variants.
 /// </summary>
 /// <remarks>
-/// Class numbers mirror CharacterClassNumber. GameLogic has no reference
-/// to the initialization assembly, so the values live here.
 /// Variant 1 of the elf is the energy buffer.
 /// </remarks>
 internal static class BotBuild
@@ -22,16 +20,25 @@ internal static class BotBuild
     /// Gets the stable build variant for a character name.
     /// </summary>
     /// <param name="characterName">The character name.</param>
-    public static int GetVariant(string characterName)
+    internal static int GetVariant(string characterName)
     {
         return characterName.Aggregate(0, (acc, c) => acc + c) % 2;
+    }
+
+    /// <summary>
+    /// Gets the variant a generated character name should hit.
+    /// </summary>
+    /// <param name="wantSupport">Whether the buffer build is wanted.</param>
+    internal static int WantedVariant(bool wantSupport)
+    {
+        return wantSupport ? SupportElfVariant : 0;
     }
 
     /// <summary>
     /// Checks for an elf class in any generation.
     /// </summary>
     /// <param name="characterClass">The character class.</param>
-    public static bool IsElf(CharacterClass characterClass)
+    internal static bool IsElf(CharacterClass characterClass)
     {
         return characterClass.Number is BotClassNumbers.FairyElfNumber or BotClassNumbers.MuseElfNumber or BotClassNumbers.HighElfNumber;
     }
@@ -41,7 +48,7 @@ internal static class BotBuild
     /// </summary>
     /// <param name="characterClass">The character class.</param>
     /// <param name="characterName">The character name.</param>
-    public static bool IsSupportElf(CharacterClass? characterClass, string? characterName)
+    internal static bool IsSupportElf(CharacterClass? characterClass, string? characterName)
     {
         return characterClass is not null
             && characterName is not null
@@ -53,7 +60,7 @@ internal static class BotBuild
     /// Checks for the energy elf buffer build of a player.
     /// </summary>
     /// <param name="player">The player.</param>
-    public static bool IsSupportElf(Player player)
+    internal static bool IsSupportElf(Player player)
     {
         return IsSupportElf(player.SelectedCharacter?.CharacterClass, player.Name);
     }
@@ -63,7 +70,7 @@ internal static class BotBuild
     /// </summary>
     /// <param name="characterClass">The character class.</param>
     /// <param name="characterName">The character name.</param>
-    public static (byte Line, int Slot) GetBuildKey(CharacterClass? characterClass, string? characterName)
+    internal static (byte Line, int Slot) GetBuildKey(CharacterClass? characterClass, string? characterName)
     {
         if (characterClass is null || characterName is null)
         {
@@ -87,7 +94,7 @@ internal static class BotBuild
     /// Gets the build key of a player.
     /// </summary>
     /// <param name="player">The player.</param>
-    public static (byte Line, int Slot) GetBuildKey(Player player)
+    internal static (byte Line, int Slot) GetBuildKey(Player player)
     {
         return GetBuildKey(player.SelectedCharacter?.CharacterClass, player.Name);
     }

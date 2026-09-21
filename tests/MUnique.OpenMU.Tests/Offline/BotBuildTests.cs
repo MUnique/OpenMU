@@ -13,6 +13,9 @@ using MUnique.OpenMU.GameLogic.Bots;
 [TestFixture]
 public class BotBuildTests
 {
+    /// <summary>
+    /// Tests that the build variant is stable for the same character name.
+    /// </summary>
     [Test]
     public void GetVariant_IsStablePerName()
     {
@@ -21,6 +24,9 @@ public class BotBuildTests
         Assert.That(BotBuild.GetVariant("A"), Is.EqualTo(BotBuild.GetVariant("A")));
     }
 
+    /// <summary>
+    /// Tests that only the energy elf build counts as a support elf.
+    /// </summary>
     [Test]
     public void IsSupportElf_OnlyEnergyElf()
     {
@@ -34,6 +40,9 @@ public class BotBuildTests
         Assert.That(BotBuild.IsSupportElf(elf, null), Is.False);
     }
 
+    /// <summary>
+    /// Tests that generations of one class line share a build key.
+    /// </summary>
     [Test]
     public void GetBuildKey_NormalizesGenerations()
     {
@@ -46,10 +55,23 @@ public class BotBuildTests
         Assert.That(BotBuild.GetBuildKey(wizard, "A"), Is.EqualTo((0, 0)));
     }
 
+    /// <summary>
+    /// Tests the party count estimate of the party policy.
+    /// </summary>
     [Test]
     public void EstimatePartyCount_MatchesPolicy()
     {
         Assert.That(BotPartyPolicy.EstimatePartyCount(0), Is.EqualTo(0));
-        Assert.That(BotPartyPolicy.EstimatePartyCount(50), Is.EqualTo(12));
+        Assert.That(BotPartyPolicy.EstimatePartyCount(50), Is.EqualTo(14));
+    }
+
+    /// <summary>
+    /// Tests that the wanted variant follows the support flag.
+    /// </summary>
+    [Test]
+    public void WantedVariant_MatchesSupportFlag()
+    {
+        Assert.That(BotBuild.WantedVariant(true), Is.EqualTo(1));
+        Assert.That(BotBuild.WantedVariant(false), Is.EqualTo(0));
     }
 }
