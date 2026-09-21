@@ -7,66 +7,152 @@
 
 @inject LoggedInAccountService AccountService;
 @inject OfflineAccountService OfflineService;
+@inject BotAccountService BotService;
 @inject IServiceProvider ServiceProvider;
 
 <PageTitle>OpenMU: @Resources.OnlineAccounts</PageTitle>
 <Breadcrumb IsFirstFromRoot="true" Caption="@Resources.OnlineAccounts"/>
 <h1>@Resources.OnlineAccounts</h1>
 
-<div class="w-100">
-  <DataTable TItem=@LoggedInAccount>
-    <TableHeader>
-      <th class="col-3">@typeof(Account).GetPropertyCaption(nameof(Account.LoginName))</th>
-      <th class="col-2">@Resources.ServerID</th>
-      <th class="col-2">@Resources.Action</th>
-    </TableHeader>
-    <ItemTemplate Context="item">
-      <td>@item.LoginName</td>
-      <td>@item.Server</td>
-      <td>
-        <button class="btn btn-warning btn-sm" type="button" @onclick="() => this.AccountService.SetAccountOfflineAsync(item)">
-          <span class="oi oi-bolt" aria-hidden="true" /> @Resources.Disconnect
-        </button>
-        @if (this.IsNetworkAnalyzerAvailable)
-        {
-          <a class="btn btn-secondary btn-sm ms-1" title="@Resources.AnalyzeTraffic"
-             href="@($"{NetworkAnalyzer.PlayerRoute}{item.Server}/{Uri.EscapeDataString(item.LoginName)}")">
-            <span class="oi oi-pulse" aria-hidden="true" /> @Resources.NetworkAnalyzer
-          </a>
-        }
-      </td>
-    </ItemTemplate>
-  </DataTable>
-</div>
+<ul class="nav nav-tabs" role="tablist">
+  <li class="nav-item" role="presentation">
+    <button type="button" role="tab" aria-selected="@(_activeTab == Tab.Players)"
+            class="nav-link @(_activeTab == Tab.Players ? "active" : null)"
+            @onclick="() => _activeTab = Tab.Players">
+      @Resources.Players
+    </button>
+  </li>
+  @if (_showOfflevel)
+  {
+    <li class="nav-item" role="presentation">
+      <button type="button" role="tab" aria-selected="@(_activeTab == Tab.Offlevel)"
+              class="nav-link @(_activeTab == Tab.Offlevel ? "active" : null)"
+              @onclick="() => _activeTab = Tab.Offlevel">
+        @Resources.OffLevelPlayers
+      </button>
+    </li>
+  }
+  @if (_showBots)
+  {
+    <li class="nav-item" role="presentation">
+      <button type="button" role="tab" aria-selected="@(_activeTab == Tab.Bots)"
+              class="nav-link @(_activeTab == Tab.Bots ? "active" : null)"
+              @onclick="() => _activeTab = Tab.Bots">
+        @Resources.BotPlayers
+      </button>
+    </li>
+  }
+</ul>
 
-<h2>@Resources.ActiveOfflinePlayer</h2>
-
-<div class="w-100">
-  <DataTable TItem=@OfflineAccount>
-    <TableHeader>
-      <th class="col-3">@typeof(Account).GetPropertyCaption(nameof(Account.LoginName))</th>
-      <th class="col-2">@Resources.ServerID</th>
-      <th class="col-3">@Resources.StartedAt</th>
-      <th class="col-2">@Resources.Action</th>
-    </TableHeader>
-    <ItemTemplate Context="item">
-      <td>@item.LoginName</td>
-      <td>@item.ServerId</td>
-      <td>@item.StartedAt.ToString("yyyy-MM-dd HH:mm:ss") UTC</td>
-      <td>
-        <button class="btn btn-warning btn-sm" type="button" @onclick="() => this.OfflineService.StopOfflinePlayerAsync(item)">
-          <span class="oi oi-media-stop" aria-hidden="true" /> @Resources.Stop
-        </button>
-      </td>
-    </ItemTemplate>
-  </DataTable>
+<div class="tab-content pt-3">
+  @if (_activeTab == Tab.Players)
+  {
+    <div class="w-100" role="tabpanel">
+      <DataTable TItem=@LoggedInAccount>
+        <TableHeader>
+          <th class="col-3">@typeof(Account).GetPropertyCaption(nameof(Account.LoginName))</th>
+          <th class="col-2">@Resources.Character</th>
+          <th class="col-1">@Resources.ServerID</th>
+          <th class="col-3">@Resources.Party</th>
+          <th class="col-3">@Resources.Action</th>
+        </TableHeader>
+        <ItemTemplate Context="item">
+          <td>@item.LoginName</td>
+          <td>@(item.CharacterName ?? "—")</td>
+          <td>@item.Server</td>
+          <td><PartyBadge PartyMaster="@item.PartyMaster" PartySize="@item.PartySize" /></td>
+          <td>
+            <button class="btn btn-warning btn-sm" type="button" @onclick="() => this.AccountService.SetAccountOfflineAsync(item)">
+              <span class="oi oi-bolt" aria-hidden="true" /> @Resources.Disconnect
+            </button>
+            @if (this.IsNetworkAnalyzerAvailable)
+            {
+              <a class="btn btn-secondary btn-sm ms-1" title="@Resources.AnalyzeTraffic"
+                 href="@($"{NetworkAnalyzer.PlayerRoute}{item.Server}/{Uri.EscapeDataString(item.LoginName)}")">
+                <span class="oi oi-pulse" aria-hidden="true" /> @Resources.NetworkAnalyzer
+              </a>
+            }
+          </td>
+        </ItemTemplate>
+      </DataTable>
+    </div>
+  }
+  else if (_activeTab == Tab.Offlevel)
+  {
+    <div class="w-100" role="tabpanel">
+      <DataTable TItem=@OfflineAccount>
+        <TableHeader>
+          <th class="col-2">@typeof(Account).GetPropertyCaption(nameof(Account.LoginName))</th>
+          <th class="col-2">@Resources.Character</th>
+          <th class="col-1">@Resources.ServerID</th>
+          <th class="col-2">@Resources.Party</th>
+          <th class="col-3">@Resources.StartedAt</th>
+          <th class="col-2">@Resources.Action</th>
+        </TableHeader>
+        <ItemTemplate Context="item">
+          <td>@item.LoginName</td>
+          <td>@(item.CharacterName ?? "—")</td>
+          <td>@item.ServerId</td>
+          <td><PartyBadge PartyMaster="@item.PartyMaster" PartySize="@item.PartySize" /></td>
+          <td>@item.StartedAt.ToString("yyyy-MM-dd HH:mm:ss") UTC</td>
+          <td>
+            <button class="btn btn-warning btn-sm" type="button" @onclick="() => this.OfflineService.StopOfflinePlayerAsync(item)">
+              <span class="oi oi-media-stop" aria-hidden="true" /> @Resources.Stop
+            </button>
+          </td>
+        </ItemTemplate>
+      </DataTable>
+    </div>
+  }
+  else
+  {
+    <div class="w-100" role="tabpanel">
+      <DataTable TItem=@BotAccount>
+        <TableHeader>
+          <th class="col-3">@typeof(Account).GetPropertyCaption(nameof(Account.LoginName))</th>
+          <th class="col-2">@Resources.Character</th>
+          <th class="col-1">@Resources.ServerID</th>
+          <th class="col-3">@Resources.Party</th>
+          <th class="col-3">@Resources.StartedAt</th>
+        </TableHeader>
+        <ItemTemplate Context="item">
+          <td>@item.LoginName</td>
+          <td>@(item.CharacterName ?? "—")</td>
+          <td>@item.ServerId</td>
+          <td><PartyBadge PartyMaster="@item.PartyMaster" PartySize="@item.PartySize" /></td>
+          <td>@item.StartedAt.ToString("yyyy-MM-dd HH:mm:ss") UTC</td>
+        </ItemTemplate>
+      </DataTable>
+    </div>
+  }
 </div>
 
 @code {
+    private Tab _activeTab = Tab.Players;
+
+    private bool _showOfflevel;
+
+    private bool _showBots;
 
     /// <summary>
     /// Gets a value indicating whether the network analyzer is available. It needs the servers
     /// in the same process, so it's only registered in the all-in-one deployment.
     /// </summary>
     private bool IsNetworkAnalyzerAvailable => this.ServiceProvider.GetService(typeof(IPacketCaptureService)) is not null;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        // Tabs are only shown when the corresponding feature plugin is active on an in-process game server.
+        // In a distributed deployment the contexts aren't available, so the tabs stay hidden.
+        this._showOfflevel = this.OfflineService.IsOfflevelFeatureAvailable();
+        this._showBots = this.BotService.IsBotFeatureAvailable();
+    }
+
+    private enum Tab
+    {
+        Players,
+        Offlevel,
+        Bots,
+    }
 }

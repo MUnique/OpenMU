@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Web.Shared.Services;
 
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 using MUnique.OpenMU.Interfaces;
 
 /// <summary>
@@ -43,9 +44,20 @@ public class OfflineAccountService : IDataService<OfflineAccount>, ISupportDataC
         this.DataChanged?.Invoke(this, EventArgs.Empty);
     }
 
+    /// <summary>
+    /// Determines whether the <c>/offlevel</c> chat command plugin is active on any in-process game server.
+    /// </summary>
+    public bool IsOfflevelFeatureAvailable()
+    {
+        return this._serverProvider.Servers
+            .OfType<IGameServerContextProvider>()
+            .Any(s => s.Context.PlugInManager.IsPlugInActive(typeof(OfflineLevelingChatCommandPlugIn)));
+    }
+
     /// <inheritdoc />
     public Task<List<OfflineAccount>> GetAsync(int offset, int count)
     {
+        // Note: bots never show up here - they are managed by the BotManager, not the OfflinePlayerManager.
         var result = this._serverProvider.Servers
             .OfType<IGameServerContextProvider>()
             .SelectMany(s => s.Context.OfflinePlayerManager
@@ -53,8 +65,11 @@ public class OfflineAccountService : IDataService<OfflineAccount>, ISupportDataC
                 .Select(p => new OfflineAccount(
                     p.AccountLoginName ?? string.Empty,
                     (byte)((IManageableServer)s).Id,
-                    p.StartTimestamp)))
-            .OrderBy(a => a.LoginName)
+                    p.StartTimestamp,
+                    p.SelectedCharacter?.Name,
+                    p.Party?.PartyMaster?.Name,
+                    p.Party?.PartyList.Count ?? 0)))
+            .OrderPartyGrouped()
             .Skip(offset)
             .Take(count)
             .ToList();

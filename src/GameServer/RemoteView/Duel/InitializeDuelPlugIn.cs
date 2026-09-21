@@ -46,7 +46,7 @@ public class InitializeDuelPlugIn : IInitializeDuelPlugIn
         if (!duelRoom.IsDuelist(this._player))
         {
             await this._player.Connection.SendDuelHealthBarInitAsync().ConfigureAwait(false);
-            await this._player.Connection.SendMagicEffectStatusAsync(true, this._player.GetId(this._player), EffectNumbers.DuelSpectatorHealthBar).ConfigureAwait(false);
+            await this._player.Connection.SendMagicEffectStatusAsync(true, this._player.GetId(this._player), (byte)EffectNumbers.DuelSpectatorHealthBar).ConfigureAwait(false);
         }
     }
 }

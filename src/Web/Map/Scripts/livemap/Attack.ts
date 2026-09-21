@@ -44,6 +44,14 @@ export class Attacks extends THREE.Points {
     public update(): void {
     }
 
+    /**
+     * Releases the geometry and material of the attack particles.
+     */
+    public dispose(): void {
+        this.geometry.dispose();
+        this.material.dispose();
+    }
+
     public addAttack(attacker: GameObject, target: GameObject): void {
         if (this.freeAttackIndexes.peek() === null) {
             return;

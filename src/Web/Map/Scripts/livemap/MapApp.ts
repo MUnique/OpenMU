@@ -18,6 +18,7 @@ export class MapApp {
     private lastHighlightedId: number | null = null;
     private isDisposing: boolean = false;
     private isDisposed: boolean = false;
+    private animationFrameId: number | null = null;
     private resizeEventListener: () => void;
     private readonly onPickObjectHandler: (data: ObjectData) => void;
 
@@ -62,7 +63,6 @@ export class MapApp {
                 }
             },
             (data) => this.onObjectHovered(data));
-        this.container.appendChild(this.renderer.domElement);
 
         this.animate(); //starts the rendering loop
     }
@@ -102,14 +102,30 @@ export class MapApp {
 
         this.isDisposing = true;
         window.removeEventListener("resize", this.resizeEventListener);
-        const webGlRenderer = this.renderer as THREE.WebGLRenderer;
-        if (webGlRenderer != null) {
-            webGlRenderer.dispose();
+        if (this.animationFrameId !== null) {
+            cancelAnimationFrame(this.animationFrameId);
+            this.animationFrameId = null;
         }
+
+        this.picker.dispose();
 
         this.scene.remove(this.world);
         this.world.dispose();
         this.world = null;
+
+        const canvas = this.renderer.domElement;
+        const webGlRenderer = this.renderer as THREE.WebGLRenderer;
+        if (webGlRenderer != null) {
+            webGlRenderer.dispose();
+
+            // Releases the WebGL context. Browsers only allow a limited number of them,
+            // so we don't want to keep it until it's garbage collected.
+            webGlRenderer.forceContextLoss();
+        }
+
+        if (canvas.parentNode !== null) {
+            canvas.parentNode.removeChild(canvas);
+        }
 
         this.renderer = null;
         this.isDisposing = false;
@@ -122,7 +138,8 @@ export class MapApp {
             return;
         }
 
-        requestAnimationFrame(() => this.animate(time)); // request the next frame to be rendered
+        // request the next frame to be rendered, with the timestamp of that frame
+        this.animationFrameId = requestAnimationFrame((frameTime) => this.animate(frameTime));
         this.stats?.update(); // updates the stats (fps and frametimes)
         TWEEN.update(time); // updates all existing Tweens
         this.world.update(); // update world and it's objects

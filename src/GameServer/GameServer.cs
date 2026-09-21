@@ -198,6 +198,12 @@ public sealed class GameServer : IGameServer, IDisposable, IAsyncDisposable, IGa
             listener.Stop();
         }
 
+        // Stop the periodic tasks (bot maintenance, invasions, castle siege, ...) BEFORE
+        // disconnecting the players: otherwise a timer tick starting a maintenance pass races the
+        // disconnect loop below on the same player instances (save vs. dispose), which surfaces as
+        // Npgsql "Can't close, connection is in state Connecting" or ObjectDisposedException errors.
+        this._gameContext.StopPeriodicTasks();
+
         this._logger.LogInformation("Saving all open sessions...");
 
         // Because disconnecting might directly change the internal player list, we first collect all players.

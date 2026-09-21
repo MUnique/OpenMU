@@ -5,7 +5,7 @@
 
   <xsl:output method="text" />
   <xsl:variable name="newline">
-    <xsl:text>&#xD;&#xA;</xsl:text>
+    <xsl:text>&#xA;</xsl:text>
   </xsl:variable>
   
   <xsl:template match="d:PacketDefinitions">
