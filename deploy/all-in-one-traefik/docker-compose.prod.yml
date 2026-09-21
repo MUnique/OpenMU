@@ -14,7 +14,9 @@ services:
       - "44405:44405"
       - "55980:55980"
     environment:
-      DB_HOST: database
+      DB_HOST: ${DB_HOST:-database}
+      DB_ADMIN_USER: ${DB_ADMIN_USER:-}
+      DB_ADMIN_PW: ${DB_ADMIN_PW:-}
     working_dir: /app/
     depends_on:
       - database
@@ -28,9 +30,9 @@ services:
     image: postgres
     container_name: database
     environment:
-      POSTGRES_PASSWORD: admin
-      POSTGRES_DB: openmu
-      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_ADMIN_PW:-admin}
+      POSTGRES_DB: ${DB_NAME:-openmu}
+      POSTGRES_USER: ${DB_ADMIN_USER:-postgres}
     networks:
       - proxy
     ports:

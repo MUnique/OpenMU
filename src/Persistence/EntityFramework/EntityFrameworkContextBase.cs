@@ -257,7 +257,18 @@ internal class EntityFrameworkContextBase : IContext
             return;
         }
 
-        this.Context.Dispose();
+        try
+        {
+            this.Context.Dispose();
+        }
+        catch (Exception ex)
+        {
+            // Disposal must never throw - e.g. Npgsql throws InvalidOperationException when the
+            // underlying connection is still opening ("Can't close, connection is in state
+            // Connecting") while it is being closed during a shutdown race. The context is
+            // unusable afterwards either way, so logging is all there is to do.
+            this._logger.LogWarning(ex, "Error while disposing the entity framework context.");
+        }
     }
 
     /// <summary>
@@ -266,8 +277,17 @@ internal class EntityFrameworkContextBase : IContext
     /// </summary>
     /// <param name="exception">The exception thrown by the save.</param>
     /// <returns><c>true</c> if the save should be retried.</returns>
-    private static bool IsTransientConcurrencyConflict(Exception exception)
+    internal static bool IsTransientConcurrencyConflict(Exception exception)
     {
+        // A disposed context instance is not transient - retrying it can never succeed (e.g. a
+        // save racing the disposal of its own context during a server shutdown). Note that
+        // ObjectDisposedException derives from InvalidOperationException, so it has to be
+        // excluded explicitly before the checks below.
+        if (exception is ObjectDisposedException)
+        {
+            return false;
+        }
+
         // A concurrent entity mutation racing this save corrupts the change tracker mid-enumeration.
         // Depending on exactly where change detection was, it surfaces as one of several types - a
         // modified collection (InvalidOperationException), a transiently-null internal key

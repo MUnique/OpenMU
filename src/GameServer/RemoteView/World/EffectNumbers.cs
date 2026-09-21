@@ -12,30 +12,30 @@ internal static class EffectNumbers
     /// <summary>
     /// The undefined effect. No effect.
     /// </summary>
-    public const int Undefined = 0;
+    public const short Undefined = 0;
 
     /// <summary>
     /// The object has a damage buff.
     /// </summary>
-    public const int DamageBuff = 0x01;
+    public const short DamageBuff = 0x01;
 
     /// <summary>
     /// The object has a defense buff.
     /// </summary>
-    public const int DefenseBuff = 0x02;
+    public const short DefenseBuff = 0x02;
 
     /// <summary>
     /// The object is poisoned.
     /// </summary>
-    public const int Poisoned = 0x37;
+    public const short Poisoned = 0x37;
 
     /// <summary>
     /// The object is iced.
     /// </summary>
-    public const int Iced = 0x38;
+    public const short Iced = 0x38;
 
     /// <summary>
     /// Shows the health bar for duel spectators.
     /// </summary>
-    public const int DuelSpectatorHealthBar = 0x62;
+    public const short DuelSpectatorHealthBar = 0x62;
 }
