@@ -1,11 +1,12 @@
 ﻿import * as THREE from "three";
 
 import { Attacks } from "./Attack";
-import { terrainShader } from "./TerrainShader";
+import { createTerrainShader } from "./TerrainShader";
 import { Player } from "./Player";
 import { Attackable, attackableAlphaMapTexture } from "./Attackable";
 import { GameObject } from "./GameObject";
 import { NonPlayerCharacter as NPC } from "./NonPlayerCharacter";
+import { logDebug } from "./Debug";
 
 import { NpcData, PlayerData, ObjectData, Step } from "./Types";
 
@@ -18,7 +19,11 @@ export class World extends THREE.Object3D {
             [id: number]: GameObject,
         };
     private attacks: Attacks;
+    private terrainMesh: THREE.Mesh;
+    private terrainMaterial: THREE.ShaderMaterial;
+    private terrainTexture: THREE.Texture | null = null;
     private lastLabelObjectId: number | null = null;
+    private isDisposed: boolean = false;
 
     /**
      * Constructs a new World object. Automatically initializes and updates
@@ -37,15 +42,22 @@ export class World extends THREE.Object3D {
 
         const segments = 1;
 
-        const planeMesh = new THREE.Mesh(
+        this.terrainMaterial = new THREE.ShaderMaterial(createTerrainShader());
+        this.terrainMesh = new THREE.Mesh(
             new THREE.PlaneGeometry(World.sideLength, World.sideLength, segments, segments),
-            new THREE.ShaderMaterial(terrainShader));
-        this.add(planeMesh);
+            this.terrainMaterial);
+        this.add(this.terrainMesh);
 
         const textureLoader = new THREE.TextureLoader();
         textureLoader.load("terrain/" + serverId + "/" + mapId, (texture: THREE.Texture) => {
+            if (this.isDisposed) {
+                texture.dispose();
+                return;
+            }
+
             texture.magFilter = THREE.NearestFilter;
-            terrainShader.uniforms.tColor.value = texture;
+            this.terrainTexture = texture;
+            this.terrainMaterial.uniforms.tColor.value = texture;
         });
     }
 
@@ -77,10 +89,10 @@ export class World extends THREE.Object3D {
                 await new Promise((resolve) => setTimeout(resolve, waitTimeMs));
             }
 
-            console.debug("Adding npc", npcData);
+            logDebug("Adding npc", npcData);
             this.addNpc(npcData);
         } else {
-            console.debug("Updating npc", npcData);
+            logDebug("Updating npc", npcData);
             obj.respawn(npcData);
         }
     }
@@ -97,10 +109,10 @@ export class World extends THREE.Object3D {
                 await new Promise((resolve) => setTimeout(resolve, waitTimeMs));
             }
 
-            console.debug("Adding player", playerData);
+            logDebug("Adding player", playerData);
             this.addPlayer(playerData);
         } else {
-            console.debug("Updating player", playerData, obj.data);
+            logDebug("Updating player", playerData, obj.data);
             obj.respawn(playerData);
         }
     }
@@ -188,7 +200,31 @@ export class World extends THREE.Object3D {
      * Cleans up all objects and releases resources.
      */
     public dispose(): void {
-        delete this.objects;
+        if (this.isDisposed) {
+            return;
+        }
+
+        this.isDisposed = true;
+        this.lastLabelObjectId = null;
+
+        for (const id in this.objects) {
+            if (this.objects.hasOwnProperty(id)) {
+                const object = this.objects[id];
+                this.remove(object);
+                object.dispose();
+            }
+        }
+
+        this.objects = {};
+
+        this.remove(this.attacks);
+        this.attacks.dispose();
+
+        this.remove(this.terrainMesh);
+        this.terrainMesh.geometry.dispose();
+        this.terrainMaterial.dispose();
+        this.terrainTexture?.dispose();
+        this.terrainTexture = null;
     }
 
     /**
@@ -260,7 +296,7 @@ export class World extends THREE.Object3D {
      * @param newSize - The new render size in pixels.
      */
     public onSizeChanged(newSize: number): void {
-        terrainShader.uniforms.tPixelSize.value = World.sideLength / newSize;
+        this.terrainMaterial.uniforms.tPixelSize.value = World.sideLength / newSize;
     }
 
     /**
@@ -268,6 +304,10 @@ export class World extends THREE.Object3D {
      * @param data - The NPC data.
      */
     public addNpc(data: NpcData): void {
+        if (this.isDisposed) {
+            return;
+        }
+
         const npc = new NPC(data);
         this.addObjectMesh(npc);
         npc.respawn(data);
@@ -278,6 +318,10 @@ export class World extends THREE.Object3D {
      * @param data - The player data.
      */
     public addPlayer(data: PlayerData): void {
+        if (this.isDisposed) {
+            return;
+        }
+
         const player = new Player(data);
         this.addObjectMesh(player);
         player.respawn(data);
@@ -293,9 +337,14 @@ export class World extends THREE.Object3D {
             return;
         }
 
-        console.debug("Removing object", mesh.data);
+        logDebug("Removing object", mesh.data);
         this.remove(mesh as THREE.Object3D);
         delete this.objects[objectId];
+        if (this.lastLabelObjectId === objectId) {
+            this.lastLabelObjectId = null;
+        }
+
+        mesh.dispose();
     }
 
     /**

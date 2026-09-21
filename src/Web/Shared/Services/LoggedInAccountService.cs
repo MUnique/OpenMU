@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.Web.Shared.Services;
 
+using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Offline;
 using MUnique.OpenMU.Interfaces;
 
 /// <summary>
@@ -50,11 +52,52 @@ public class LoggedInAccountService : IDataService<LoggedInAccount>, ISupportDat
     public async Task<List<LoggedInAccount>> GetAsync(int offset, int count)
     {
         var snapshot = await this._loginServer.GetSnapshotAsync().ConfigureAwait(false);
+        var playerLookup = await this.GetPlayerLookupAsync().ConfigureAwait(false);
         return snapshot
-            .Select(entry => new LoggedInAccount(entry.Key, entry.Value))
-            .OrderBy(e => e.LoginName)
+            .Select(entry =>
+            {
+                if (playerLookup.TryGetValue(entry.Key, out var playerInfo))
+                {
+                    return new LoggedInAccount(entry.Key, entry.Value, playerInfo.CharacterName, playerInfo.PartyMaster, playerInfo.PartySize);
+                }
+
+                return new LoggedInAccount(entry.Key, entry.Value);
+            })
+            .OrderPartyGrouped()
             .Skip(offset)
             .Take(count)
             .ToList();
     }
+
+    /// <summary>
+    /// Builds a lookup of account login name to character and party info from the in-process game servers.
+    /// Empty when the servers run in another process (distributed deployment).
+    /// </summary>
+    private async Task<Dictionary<string, PlayerInfo>> GetPlayerLookupAsync()
+    {
+        var result = new Dictionary<string, PlayerInfo>(StringComparer.OrdinalIgnoreCase);
+        foreach (var context in this._serverProvider.Servers.OfType<IGameServerContextProvider>().Select(s => s.Context))
+        {
+            var players = await context.GetPlayersAsync().ConfigureAwait(false);
+            foreach (var player in players)
+            {
+                if (player is OfflinePlayer)
+                {
+                    continue; // offline sessions and bots are shown on their own tabs.
+                }
+
+                var loginName = player.Account?.LoginName;
+                if (string.IsNullOrEmpty(loginName) || result.ContainsKey(loginName))
+                {
+                    continue;
+                }
+
+                result[loginName] = new PlayerInfo(player.SelectedCharacter?.Name, player.Party?.PartyMaster?.Name, player.Party?.PartyList.Count ?? 0);
+            }
+        }
+
+        return result;
+    }
+
+    private sealed record PlayerInfo(string? CharacterName, string? PartyMaster, int PartySize);
 }
