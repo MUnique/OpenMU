@@ -1,6 +1,7 @@
 ﻿@page "/setup"
 @attribute [Authorize(Policy = AdminPolicies.Administrator)]
 @using MUnique.OpenMU.Web.AdminPanel.Properties
+@using MUnique.OpenMU.Web.AdminPanel.Services
 
 <PageTitle>OpenMU: @Resources.Setup</PageTitle>
 <Breadcrumb IsFirstFromRoot="true" Caption="@Resources.Setup"/>
@@ -26,10 +27,12 @@ else if (this.SetupService.IsUpdateRequired)
     <p>@Resources.DatabaseStatus: <span class="badge bg-warning text-dark">@Resources.UpdateRequired</span></p>
     <button class="btn btn-primary" @onclick="this.OnUpdateClickAsync">@Resources.Update</button>
 }
-else if (!this._isDataInitialized)
+else if (this._dataState == DataInitializationState.NotInitialized)
 {
     @* The database exists, but doesn't contain any data yet. For the user, it's the same
-       as if the database wasn't created yet - it just needs to be installed. *@
+       as if the database wasn't created yet - it just needs to be installed.
+       We only offer to create the data without a confirmation when we know for sure
+       that there is no data which could get lost. *@
     <p>@Resources.DatabaseStatus: <span class="badge bg-success">@Resources.UpToDate</span></p>
     <p>@Resources.InitializedGameVersion: <span class="badge bg-warning text-dark">@Resources.NoInitializedDataFound</span></p>
 
@@ -38,7 +41,14 @@ else if (!this._isDataInitialized)
 else
 {
     <p>@Resources.DatabaseStatus: <span class="badge bg-success">@Resources.UpToDate</span></p>
-    <p>@Resources.InitializedGameVersion: <span class="badge bg-success">@this._gameClientVersion</span></p>
+    @if (this._dataState == DataInitializationState.Initialized)
+    {
+        <p>@Resources.InitializedGameVersion: <span class="badge bg-success">@this._gameClientVersion</span></p>
+    }
+    else
+    {
+        <p>@Resources.InitializedGameVersion: <span class="badge bg-warning text-dark">@Resources.NoInitializedDataFound</span></p>
+    }
 
     <button class="btn btn-warning" @onclick="this.OnReInstallClickAsync">@Resources.ReInstall</button>
 }

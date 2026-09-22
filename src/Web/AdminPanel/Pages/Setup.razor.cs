@@ -17,7 +17,7 @@ using MUnique.OpenMU.Web.AdminPanel.Services;
 /// </summary>
 public partial class Setup
 {
-    private bool _isDataInitialized;
+    private DataInitializationState _dataState;
 
     private ClientVersion? _gameClientVersion;
 
@@ -46,21 +46,26 @@ public partial class Setup
 
     private async Task LoadDataStateAsync()
     {
-        this._isDataInitialized = await this.SetupService.IsDataInitializedAsync().ConfigureAwait(false);
-        this._gameClientVersion = this._isDataInitialized
+        this._dataState = await this.SetupService.GetDataInitializationStateAsync().ConfigureAwait(false);
+        this._gameClientVersion = this._dataState == DataInitializationState.Initialized
             ? await this.SetupService.GetCurrentGameClientVersionAsync().ConfigureAwait(false)
             : null;
     }
 
     private async Task OnInstallationFinishedAsync()
     {
-        this.ShowInstall = false;
+        // We load the state first, so that the page doesn't show the state of the
+        // uninitialized database for a moment when it's rendered again.
         await this.LoadDataStateAsync().ConfigureAwait(false);
+        this.ShowInstall = false;
     }
 
-    private Task OnUpdateClickAsync()
+    private async Task OnUpdateClickAsync()
     {
-        return this.SetupService.InstallUpdatesAsync(default);
+        await this.SetupService.InstallUpdatesAsync(default).ConfigureAwait(false);
+
+        // Before the update, the state could not be determined on the outdated schema.
+        await this.LoadDataStateAsync().ConfigureAwait(false);
     }
 
     private void OnInstallClick()

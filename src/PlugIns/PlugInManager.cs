@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.PlugIns;
 
 using System.Collections.Concurrent;
+using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -25,6 +26,7 @@ public class PlugInManager
     private readonly IDictionary<Guid, Type> _knownPlugIns = new ConcurrentDictionary<Guid, Type>();
     private readonly ConcurrentDictionary<Type, ISet<Type>> _knownPlugInsPerInterfaceType = new();
     private readonly ConcurrentDictionary<Guid, Type> _activePlugIns = new();
+    private readonly List<(PlugInConfiguration Configuration, PropertyChangedEventHandler Handler)> _configurationSubscriptions = new();
     private object? _lastCreatedPlugIn;
 
     /// <summary>
@@ -83,15 +85,26 @@ public class PlugInManager
     /// <summary>
     /// Reads the given plugin configurations and applies them to the known plugins.
     /// It can be called again later, e.g. when the configurations became available
-    /// after the database has been initialized.
+    /// after the database has been initialized. In this case, the previously read
+    /// configurations are not observed anymore.
     /// </summary>
     /// <param name="configurations">The plugin configurations.</param>
     public void ReadConfigurations(IEnumerable<PlugInConfiguration> configurations)
     {
+        this.UnsubscribeFromConfigurations();
+
         var loadedAssemblies = new HashSet<string>();
         foreach (var configuration in configurations)
         {
-            this.ReadConfiguration(configuration, loadedAssemblies);
+            try
+            {
+                this.ReadConfiguration(configuration, loadedAssemblies);
+            }
+            catch (Exception ex)
+            {
+                // A failing configuration must not stop the remaining ones from being applied.
+                this._logger.LogError(ex, "Error when reading the configuration of plugin {TypeId}.", configuration.TypeId);
+            }
         }
     }
 
@@ -461,7 +474,13 @@ public class PlugInManager
 
         if (this._knownPlugIns.TryGetValue(configuration.TypeId, out var plugInType))
         {
-            if (!configuration.IsActive)
+            if (configuration.IsActive)
+            {
+                // Plugins are active by default when they get registered, but that's not
+                // necessarily the case anymore when the configurations are read again.
+                this.ActivatePlugIn(plugInType);
+            }
+            else
             {
                 this.DeactivatePlugIn(plugInType);
             }
@@ -470,12 +489,24 @@ public class PlugInManager
 
             // When the IsActive property changed, we activate/deactivate accordingly.
             // Currently, property changes are only fired for IsActive, so we don't need to check it.
-            configuration.PropertyChanged += (sender, args) => this.OnConfigurationChanged(configuration, plugInType, args.PropertyName);
+            PropertyChangedEventHandler handler = (sender, args) => this.OnConfigurationChanged(configuration, plugInType, args.PropertyName);
+            configuration.PropertyChanged += handler;
+            this._configurationSubscriptions.Add((configuration, handler));
         }
         else
         {
             this._logger.LogWarning("Unknown plugin type for id {TypeId}", configuration.TypeId);
         }
+    }
+
+    private void UnsubscribeFromConfigurations()
+    {
+        foreach (var (configuration, handler) in this._configurationSubscriptions)
+        {
+            configuration.PropertyChanged -= handler;
+        }
+
+        this._configurationSubscriptions.Clear();
     }
 
     private void OnConfigurationChanged(PlugInConfiguration configuration, Type plugInType, string? propertyName)
