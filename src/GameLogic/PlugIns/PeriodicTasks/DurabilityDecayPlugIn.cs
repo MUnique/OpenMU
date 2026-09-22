@@ -16,9 +16,18 @@ using MUnique.OpenMU.PlugIns;
 [Guid("D8F4A1C7-3B9E-4D2F-A6C5-1E7B8F3A9C2D")]
 public class DurabilityDecayPlugIn : IPeriodicTaskPlugIn
 {
+    private int _counter = 0;
+
     /// <inheritdoc />
     public async ValueTask ExecuteTaskAsync(GameContext gameContext)
     {
+        if (this._counter++ < 10)
+        {
+            return;
+        }
+
+        this._counter = 0;
+
         await gameContext.ForEachPlayerAsync(async player =>
         {
             if (player.SelectedCharacter != null
