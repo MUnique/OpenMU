@@ -15,6 +15,7 @@ using MUnique.OpenMU.Persistence;
 /// </summary>
 public static class ItemExtensions
 {
+    private const byte StaffItemGroup = 5;
     private const byte ShieldItemGroup = 6;
 
     private static readonly byte[] AdditionalDurabilityPerLevel = { 0, 1, 2, 3, 4, 6, 8, 10, 12, 14, 17, 21, 26, 32, 39, 47 };
@@ -304,12 +305,19 @@ public static class ItemExtensions
 
         if (damageType is DamageType.Wizardry or DamageType.Curse)
         {
-            if (!left?.IsWizardryWeapon(out _) ?? false)
+            if (!left?.IsWizardryWeapon(out _) ?? true || left.CanHaveSkill())
             {
                 left = null;
             }
 
-            if (!right?.IsBook(out _) ?? false)
+            if (!right?.IsBook(out _) ?? true)
+            {
+                right = null;
+            }
+        }
+        else
+        {
+            if (left?.Definition?.Group == StaffItemGroup || right?.Definition?.Group == StaffItemGroup)
             {
                 right = null;
             }

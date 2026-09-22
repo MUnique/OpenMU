@@ -1991,13 +1991,22 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 .Where(e => e.AggregateType == AggregateType.AddRaw && itemPowerUps.Contains(e))
                 .Sum(e => e.Value) ?? 0;
 
-            itemDefenseFactor = this.SelectedCharacter?.CharacterClass?.Number switch
+            if (attributes[Stats.ArcheryMinDmg] > 0)
             {
-                8 or 10 or 11 => 2, // Elf
-                12 or 13 => 7,      // MG
-                16 or 17 => 6,      // DL
-                _ => 3,
-            };
+                itemDefenseFactor = 2;
+            }
+            else if (attributes[Stats.TotalLeadership] > 0)
+            {
+                itemDefenseFactor = 6;
+            }
+            else if (attributes[Stats.SkillMultiplier] > 1 && attributes[Stats.WizardryAttackDamageIncrease] > 0) // MG
+            {
+                itemDefenseFactor = 7;
+            }
+            else
+            {
+                itemDefenseFactor = 3;
+            }
         }
 
         if (itemDefense == 0)
@@ -2026,10 +2035,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         else
         {
             itemDurationIncrease = attributes[Stats.PetDurationIncrease];
-
             if (itemDurationIncrease == 0 || identifier.Number >= ItemConstants.Demon.Number)
             {
-                // Exclude cash shop pets: demon, spirit of guardian, rudolf, panda, unicorn, skeleton
+                // Excludes cash shop pets: demon, spirit of guardian, rudolf, panda, unicorn, skeleton
                 itemDurationIncrease = 1;
             }
         }
@@ -2087,6 +2095,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                         await this._moveAction.MoveItemAsync(this, dinorantItem.ItemSlot, Storages.Inventory, InventoryConstants.PetSlot, Storages.Inventory).ConfigureAwait(false);
                         if (this.Inventory.GetItem(InventoryConstants.PetSlot) == dinorantItem)
                         {
+                            await this.InvokeViewPlugInAsync<IUpdateInventoryListPlugIn>(p => p.UpdateInventoryListAsync()).ConfigureAwait(false);
                             await this.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.EquipmentHasChangedMessage)).ConfigureAwait(false);
                             return;
                         }
@@ -2107,18 +2116,50 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return;
         }
 
+        float itemDurationIncrease = attributes[Stats.WeaponAndArmorDurationIncrease];
+        if (itemDurationIncrease == 0)
+        {
+            itemDurationIncrease = 1;
+        }
+
+        bool isMagicWeapon = false;
+        AttributeDefinition weaponAttribute;
+        if (weapon.IsWizardryWeapon(out _) && !weapon.CanHaveSkill())
+        {
+            isMagicWeapon = true;
+            weaponAttribute = Stats.StaffRise;
+        }
+        else if (weapon.IsBook(out _))
+        {
+            isMagicWeapon = true;
+            weaponAttribute = Stats.BookRise;
+        }
+        else if (attributes[Stats.HasDoubleWield] > 0 && weapon.ItemSlot == InventoryConstants.RightHandSlot)
+        {
+            weaponAttribute = Stats.MinPhysBaseDmgByRightWeapon;
+        }
+        else
+        {
+            weaponAttribute = Stats.MinimumPhysBaseDmgByWeapon;
+        }
+
+        var itemPowerUps = attributes.ItemPowerUps.FirstOrDefault(ipu => ipu.Key == weapon).Value;
+        var weaponAttributeValue = attributes.GetComposableAttribute(weaponAttribute)?.Elements
+            .Where(e => e.AggregateType == AggregateType.AddRaw && itemPowerUps.Contains(e))
+            .Sum(e => e.Value) ?? 0;
+
         int defenseFactor = 1;
         double weaponDamageFactor;
         double hitsPerOneItemDurability = this.GameContext.Configuration.HitsPerOneItemDurability;
-        if (damageType is DamageType.Wizardry or DamageType.Curse)
+        if (isMagicWeapon)
         {
-            weaponDamageFactor = 1.33 * (weapon.IsBook(out _) ? attributes[Stats.BookRise] : attributes[Stats.StaffRise]);
+            weaponDamageFactor = 1.33 * weaponAttributeValue;
             hitsPerOneItemDurability *= 1056f / 564;
         }
         else
         {
             defenseFactor = 2;
-            weaponDamageFactor = 1.5 * attributes[Stats.MinimumPhysBaseDmgByWeapon];
+            weaponDamageFactor = 1.5 * weaponAttributeValue;
 
             if (attributes[Stats.ArcheryAttackMode] > 0)
             {
@@ -2136,10 +2177,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             && opt.ItemOption?.LevelDependentOptions.FirstOrDefault(o => o.Level == opt.Level)?.PowerUpDefinition is { } pu
             && pu.Boost?.ConstantValue is { } socketInc)
         {
-            defenseToDamageRatio *= socketInc.Value;
+            defenseToDamageRatio -= defenseToDamageRatio * socketInc.Value;
         }
 
-        var decrement = defenseToDamageRatio / (hitsPerOneItemDurability * attributes[Stats.WeaponAndArmorDurationIncrease]);
+        var decrement = defenseToDamageRatio / (hitsPerOneItemDurability * itemDurationIncrease);
         await this.DecreaseItemDurabilityAsync(weapon, decrement).ConfigureAwait(false);
     }
 

@@ -4,12 +4,17 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.Updates;
 
+using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// This update resets some game configuration values which are used for item durability reduction.
 /// </summary>
-public abstract class ItemDurabilityRefactorPlugIn095D : ItemDurabilityRefactorPlugInBase
+[PlugIn]
+[Display(Name = PlugInName, Description = PlugInDescription)]
+[Guid("B6E1C4A8-2F9D-47C3-A5B7-1E8D6F2A9C40")]
+public class ItemDurabilityRefactorPlugIn095D : ItemDurabilityRefactorPlugInBase
 {
     /// <inheritdoc />
     public override UpdateVersion Version => UpdateVersion.ItemDurabilityRefactor095d;

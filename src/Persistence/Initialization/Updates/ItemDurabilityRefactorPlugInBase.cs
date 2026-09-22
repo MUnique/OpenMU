@@ -34,7 +34,7 @@ public abstract class ItemDurabilityRefactorPlugInBase : UpdatePlugInBase
     public override bool IsMandatory => true;
 
     /// <inheritdoc />
-    public override DateTime CreatedAt => new(2026, 9, 18, 16, 0, 0, DateTimeKind.Utc);
+    public override DateTime CreatedAt => new(2026, 9, 22, 16, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)

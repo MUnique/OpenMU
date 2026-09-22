@@ -4,17 +4,22 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.Updates;
 
+using System.Runtime.InteropServices;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix;
+using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// This update resets some game configuration values which are used for item durability reduction. It also fixes the master skill tree durability reduction skills.
 /// </summary>
-public abstract class ItemDurabilityRefactorPlugInSeason6 : ItemDurabilityRefactorPlugInBase
+[PlugIn]
+[Display(Name = PlugInName, Description = PlugInDescription)]
+[Guid("D8A4F1C7-6B2E-49D3-A5F0-1C7E9B4D2A86")]
+public class ItemDurabilityRefactorPlugInSeason6 : ItemDurabilityRefactorPlugInBase
 {
     /// <summary>
     /// The plug in description.
@@ -61,6 +66,8 @@ public abstract class ItemDurabilityRefactorPlugInSeason6 : ItemDurabilityRefact
             foreach (var levelOption in durationIncrease.LevelDependentOptions)
             {
                 levelOption.PowerUpDefinition?.TargetAttribute = weaponDurationIncrease;
+                levelOption.PowerUpDefinition?.Boost?.ConstantValue.Value -= 1.0f;
+                levelOption.PowerUpDefinition?.Boost?.ConstantValue.AggregateType = AggregateType.AddRaw;
             }
         }
 
