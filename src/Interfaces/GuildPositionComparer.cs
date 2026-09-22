@@ -11,15 +11,32 @@ namespace MUnique.OpenMU.Interfaces;
 public sealed class GuildPositionComparer : IComparer<GuildPosition>, IComparer<GuildListEntry>
 {
     /// <summary>
+    /// Initializes a new instance of the <see cref="GuildPositionComparer"/> class.
+    /// </summary>
+    private GuildPositionComparer()
+    {
+    }
+
+    /// <summary>
     /// Gets the shared instance of the <see cref="GuildPositionComparer"/>.
     /// </summary>
     public static GuildPositionComparer Instance { get; } = new();
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="GuildPositionComparer"/> class.
+    /// Gets the numerical rank for ordering purposes. A lower value means a higher rank.
     /// </summary>
-    private GuildPositionComparer()
+    /// <param name="position">The guild position.</param>
+    /// <returns>The rank of the position.</returns>
+    public static int GetRank(GuildPosition position)
     {
+        return position switch
+        {
+            GuildPosition.GuildMaster => 0,
+            GuildPosition.AssistantMaster => 1,
+            GuildPosition.BattleMaster => 2,
+            GuildPosition.NormalMember => 3,
+            _ => 4,
+        };
     }
 
     /// <inheritdoc/>
@@ -53,22 +70,5 @@ public sealed class GuildPositionComparer : IComparer<GuildPosition>, IComparer<
         }
 
         return StringComparer.OrdinalIgnoreCase.Compare(x.PlayerName, y.PlayerName);
-    }
-
-    /// <summary>
-    /// Gets the numerical rank for ordering purposes. A lower value means a higher rank.
-    /// </summary>
-    /// <param name="position">The guild position.</param>
-    /// <returns>The rank of the position.</returns>
-    public static int GetRank(GuildPosition position)
-    {
-        return position switch
-        {
-            GuildPosition.GuildMaster => 0,
-            GuildPosition.AssistantMaster => 1,
-            GuildPosition.BattleMaster => 2,
-            GuildPosition.NormalMember => 3,
-            _ => 4,
-        };
     }
 }
