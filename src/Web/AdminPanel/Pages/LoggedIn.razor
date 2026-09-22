@@ -16,28 +16,28 @@
 
 <ul class="nav nav-tabs" role="tablist">
   <li class="nav-item" role="presentation">
-    <button type="button" role="tab" aria-selected="@(_activeTab == Tab.Players)"
-            class="nav-link @(_activeTab == Tab.Players ? "active" : null)"
-            @onclick="() => _activeTab = Tab.Players">
+    <button type="button" role="tab" id="tab-players" aria-controls="panel-players" aria-selected="@(this._activeTab == Tab.Players ? "true" : "false")"
+            class="nav-link @(this._activeTab == Tab.Players ? "active" : null)"
+            @onclick="() => this._activeTab = Tab.Players">
       @Resources.Players
     </button>
   </li>
-  @if (_showOfflevel)
+  @if (this._showOfflevel)
   {
     <li class="nav-item" role="presentation">
-      <button type="button" role="tab" aria-selected="@(_activeTab == Tab.Offlevel)"
-              class="nav-link @(_activeTab == Tab.Offlevel ? "active" : null)"
-              @onclick="() => _activeTab = Tab.Offlevel">
+      <button type="button" role="tab" id="tab-offlevel" aria-controls="panel-offlevel" aria-selected="@(this._activeTab == Tab.Offlevel ? "true" : "false")"
+              class="nav-link @(this._activeTab == Tab.Offlevel ? "active" : null)"
+              @onclick="() => this._activeTab = Tab.Offlevel">
         @Resources.OffLevelPlayers
       </button>
     </li>
   }
-  @if (_showBots)
+  @if (this._showBots)
   {
     <li class="nav-item" role="presentation">
-      <button type="button" role="tab" aria-selected="@(_activeTab == Tab.Bots)"
-              class="nav-link @(_activeTab == Tab.Bots ? "active" : null)"
-              @onclick="() => _activeTab = Tab.Bots">
+      <button type="button" role="tab" id="tab-bots" aria-controls="panel-bots" aria-selected="@(this._activeTab == Tab.Bots ? "true" : "false")"
+              class="nav-link @(this._activeTab == Tab.Bots ? "active" : null)"
+              @onclick="() => this._activeTab = Tab.Bots">
         @Resources.BotPlayers
       </button>
     </li>
@@ -45,21 +45,23 @@
 </ul>
 
 <div class="tab-content pt-3">
-  @if (_activeTab == Tab.Players)
+  @if (this._activeTab == Tab.Players)
   {
-    <div class="w-100" role="tabpanel">
+    <div class="w-100" role="tabpanel" id="panel-players" aria-labelledby="tab-players">
       <DataTable TItem=@LoggedInAccount>
         <TableHeader>
-          <th class="col-3">@typeof(Account).GetPropertyCaption(nameof(Account.LoginName))</th>
+          <th class="col-2">@typeof(Account).GetPropertyCaption(nameof(Account.LoginName))</th>
           <th class="col-2">@Resources.Character</th>
           <th class="col-1">@Resources.ServerID</th>
-          <th class="col-3">@Resources.Party</th>
+          <th class="col-2">@Resources.Guild</th>
+          <th class="col-2">@Resources.Party</th>
           <th class="col-3">@Resources.Action</th>
         </TableHeader>
         <ItemTemplate Context="item">
           <td>@item.LoginName</td>
-          <td>@(item.CharacterName ?? "—")</td>
+          <td>@(item.CharacterName ?? Resources.EmptyValue)</td>
           <td>@item.Server</td>
+          <td>@(item.GuildName ?? Resources.EmptyValue)</td>
           <td><PartyBadge PartyMaster="@item.PartyMaster" PartySize="@item.PartySize" /></td>
           <td>
             <button class="btn btn-warning btn-sm" type="button" @onclick="() => this.AccountService.SetAccountOfflineAsync(item)">
@@ -77,22 +79,24 @@
       </DataTable>
     </div>
   }
-  else if (_activeTab == Tab.Offlevel)
+  else if (this._activeTab == Tab.Offlevel)
   {
-    <div class="w-100" role="tabpanel">
+    <div class="w-100" role="tabpanel" id="panel-offlevel" aria-labelledby="tab-offlevel">
       <DataTable TItem=@OfflineAccount>
         <TableHeader>
           <th class="col-2">@typeof(Account).GetPropertyCaption(nameof(Account.LoginName))</th>
-          <th class="col-2">@Resources.Character</th>
+          <th class="col-1">@Resources.Character</th>
           <th class="col-1">@Resources.ServerID</th>
+          <th class="col-2">@Resources.Guild</th>
           <th class="col-2">@Resources.Party</th>
-          <th class="col-3">@Resources.StartedAt</th>
+          <th class="col-2">@Resources.StartedAt</th>
           <th class="col-2">@Resources.Action</th>
         </TableHeader>
         <ItemTemplate Context="item">
           <td>@item.LoginName</td>
-          <td>@(item.CharacterName ?? "—")</td>
+          <td>@(item.CharacterName ?? Resources.EmptyValue)</td>
           <td>@item.ServerId</td>
+          <td>@(item.GuildName ?? Resources.EmptyValue)</td>
           <td><PartyBadge PartyMaster="@item.PartyMaster" PartySize="@item.PartySize" /></td>
           <td>@item.StartedAt.ToString("yyyy-MM-dd HH:mm:ss") UTC</td>
           <td>
@@ -104,21 +108,23 @@
       </DataTable>
     </div>
   }
-  else
+  else if (this._activeTab == Tab.Bots)
   {
-    <div class="w-100" role="tabpanel">
+    <div class="w-100" role="tabpanel" id="panel-bots" aria-labelledby="tab-bots">
       <DataTable TItem=@BotAccount>
         <TableHeader>
-          <th class="col-3">@typeof(Account).GetPropertyCaption(nameof(Account.LoginName))</th>
+          <th class="col-2">@typeof(Account).GetPropertyCaption(nameof(Account.LoginName))</th>
           <th class="col-2">@Resources.Character</th>
           <th class="col-1">@Resources.ServerID</th>
-          <th class="col-3">@Resources.Party</th>
+          <th class="col-2">@Resources.Guild</th>
+          <th class="col-2">@Resources.Party</th>
           <th class="col-3">@Resources.StartedAt</th>
         </TableHeader>
         <ItemTemplate Context="item">
           <td>@item.LoginName</td>
-          <td>@(item.CharacterName ?? "—")</td>
+          <td>@(item.CharacterName ?? Resources.EmptyValue)</td>
           <td>@item.ServerId</td>
+          <td>@(item.GuildName ?? Resources.EmptyValue)</td>
           <td><PartyBadge PartyMaster="@item.PartyMaster" PartySize="@item.PartySize" /></td>
           <td>@item.StartedAt.ToString("yyyy-MM-dd HH:mm:ss") UTC</td>
         </ItemTemplate>
@@ -145,6 +151,8 @@
         base.OnInitialized();
         // Tabs are only shown when the corresponding feature plugin is active on an in-process game server.
         // In a distributed deployment the contexts aren't available, so the tabs stay hidden.
+        // An active plugin with no sessions renders as an empty list, so "disabled" (no tab)
+        // stays distinguishable from "enabled but idle" (empty tab).
         this._showOfflevel = this.OfflineService.IsOfflevelFeatureAvailable();
         this._showBots = this.BotService.IsBotFeatureAvailable();
     }

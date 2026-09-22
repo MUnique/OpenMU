@@ -54,6 +54,7 @@
     <PackageReference Include="BCrypt.Net-Next" />
     <PackageReference Include="BlazorInputFile" />
     <PackageReference Include="Mapster" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" />
     <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" />

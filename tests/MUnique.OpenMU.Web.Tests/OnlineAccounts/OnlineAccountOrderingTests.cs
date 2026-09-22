@@ -23,8 +23,8 @@ public class OnlineAccountOrderingTests
         var accounts = new List<LoggedInAccount>
         {
             new("zSolo", 1),
-            new("bMember", 1, "CharB", "Master", 2),
-            new("aMember", 1, "CharA", "Master", 2),
+            new("bMember", 1, "CharB", PartyMaster: "Master", PartySize: 2),
+            new("aMember", 1, "CharA", PartyMaster: "Master", PartySize: 2),
             new("aSolo", 1),
         };
 
@@ -42,9 +42,9 @@ public class OnlineAccountOrderingTests
         var accounts = new List<OfflineAccount>
         {
             new("solo", 1, TestTimestamp),
-            new("m2b", 1, TestTimestamp, "C2", "ZMaster", 2),
-            new("m1a", 1, TestTimestamp, "C1", "AMaster", 2),
-            new("m2a", 1, TestTimestamp, "C3", "ZMaster", 2),
+            new("m2b", 1, TestTimestamp, "C2", PartyMaster: "ZMaster", PartySize: 2),
+            new("m1a", 1, TestTimestamp, "C1", PartyMaster: "AMaster", PartySize: 2),
+            new("m2a", 1, TestTimestamp, "C3", PartyMaster: "ZMaster", PartySize: 2),
         };
 
         var result = accounts.OrderPartyGrouped().Select(a => a.LoginName).ToList();

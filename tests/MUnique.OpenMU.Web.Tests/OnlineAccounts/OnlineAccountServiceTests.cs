@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Web.Tests.OnlineAccounts;
 
 using Moq;
+using Microsoft.Extensions.Caching.Memory;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Web.Shared.Services;
 
@@ -25,12 +26,13 @@ public class OnlineAccountServiceTests
         var loginServer = new Mock<ILoginServer>();
         loginServer.Setup(s => s.GetSnapshotAsync()).Returns(
             new ValueTask<Dictionary<string, byte>>(new Dictionary<string, byte> { ["bUser"] = 1, ["aUser"] = 2 }));
-        var service = new LoggedInAccountService(loginServer.Object, EmptyServerProvider());
+        var service = new LoggedInAccountService(loginServer.Object, EmptyServerProvider(), new MemoryCache(new MemoryCacheOptions()));
 
         var result = await service.GetAsync(0, 20);
 
         Assert.That(result.Select(a => a.LoginName), Is.EqualTo(new[] { "aUser", "bUser" }));
         Assert.That(result.All(a => a.CharacterName is null), Is.True);
+        Assert.That(result.All(a => a.GuildName is null), Is.True);
     }
 
     /// <summary>
@@ -42,7 +44,7 @@ public class OnlineAccountServiceTests
         var loginServer = new Mock<ILoginServer>();
         loginServer.Setup(s => s.GetSnapshotAsync()).Returns(
             new ValueTask<Dictionary<string, byte>>(new Dictionary<string, byte> { ["cUser"] = 1, ["bUser"] = 1, ["aUser"] = 1 }));
-        var service = new LoggedInAccountService(loginServer.Object, EmptyServerProvider());
+        var service = new LoggedInAccountService(loginServer.Object, EmptyServerProvider(), new MemoryCache(new MemoryCacheOptions()));
 
         var result = await service.GetAsync(1, 1);
 
@@ -50,8 +52,8 @@ public class OnlineAccountServiceTests
     }
 
     /// <summary>
-    /// Without in-process game servers there are no offline sessions to list
-    /// and the off-level tab stays hidden.
+    /// Without in-process game servers there are no offline sessions to list,
+    /// and the plugin counts as unavailable so the tab stays hidden.
     /// </summary>
     [Test]
     public async Task OfflineAccounts_WithoutInProcessServers_AreEmpty()
@@ -69,7 +71,7 @@ public class OnlineAccountServiceTests
     [Test]
     public async Task BotAccounts_WithoutInProcessServers_AreEmpty()
     {
-        var service = new BotAccountService(EmptyServerProvider());
+        var service = new BotAccountService(EmptyServerProvider(), new MemoryCache(new MemoryCacheOptions()));
 
         Assert.That(await service.GetAsync(0, 20), Is.Empty);
         Assert.That(service.IsBotFeatureAvailable(), Is.False);

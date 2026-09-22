@@ -23,4 +23,9 @@ public interface IPartyGroupedAccount
     /// Gets the character name of the party master, if the player is in a party.
     /// </summary>
     string? PartyMaster { get; }
+
+    /// <summary>
+    /// Gets the number of party members, if the player is in a party.
+    /// </summary>
+    int PartySize { get; }
 }

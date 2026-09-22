@@ -70,6 +70,8 @@ public static class WebApplicationExtensions
 
         services.AddToasts();
 
+        services.AddMemoryCache();
+
         services.AddScoped<ModalService>();
         services.AddScoped<IModalService>(sp => sp.GetRequiredService<ModalService>());
         services.AddScoped<ILookupController, PersistentObjectsLookupController>();

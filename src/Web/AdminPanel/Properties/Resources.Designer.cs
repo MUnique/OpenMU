@@ -142,15 +142,6 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Active Offline Player.
-        /// </summary>
-        public static string ActiveOfflinePlayer {
-            get {
-                return ResourceManager.GetString("ActiveOfflinePlayer", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Add New.
         /// </summary>
         public static string AddNew {
@@ -1743,33 +1734,6 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string OpenMUAdminPanel {
             get {
                 return ResourceManager.GetString("OpenMUAdminPanel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Off-level Players.
-        /// </summary>
-        public static string OffLevelPlayers {
-            get {
-                return ResourceManager.GetString("OffLevelPlayers", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Bot Players.
-        /// </summary>
-        public static string BotPlayers {
-            get {
-                return ResourceManager.GetString("BotPlayers", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Party.
-        /// </summary>
-        public static string Party {
-            get {
-                return ResourceManager.GetString("Party", resourceCulture);
             }
         }
         
@@ -3570,6 +3534,51 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string CastleSiegeErrorUnexpected {
             get {
                 return ResourceManager.GetString("CastleSiegeErrorUnexpected", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Off-level Players.
+        /// </summary>
+        public static string OffLevelPlayers {
+            get {
+                return ResourceManager.GetString("OffLevelPlayers", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Bot Players.
+        /// </summary>
+        public static string BotPlayers {
+            get {
+                return ResourceManager.GetString("BotPlayers", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Party.
+        /// </summary>
+        public static string Party {
+            get {
+                return ResourceManager.GetString("Party", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to —.
+        /// </summary>
+        public static string EmptyValue {
+            get {
+                return ResourceManager.GetString("EmptyValue", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Party of {0}: {1} members.
+        /// </summary>
+        public static string PartyBadgeTitle {
+            get {
+                return ResourceManager.GetString("PartyBadgeTitle", resourceCulture);
             }
         }
     }

@@ -606,9 +606,6 @@
   <data name="StartedAt" xml:space="preserve">
     <value>Started At</value>
   </data>
-  <data name="ActiveOfflinePlayer" xml:space="preserve">
-    <value>Active Offline Player</value>
-  </data>
   <data name="CouldNotFindToDelete" xml:space="preserve">
     <value>Couldn't find '{0}' to delete.</value>
   </data>
@@ -1289,5 +1286,11 @@
   </data>
   <data name="GuildNotFound" xml:space="preserve">
     <value>The guild was not found. It may have been deleted.</value>
+  </data>
+  <data name="EmptyValue" xml:space="preserve">
+    <value>—</value>
+  </data>
+  <data name="PartyBadgeTitle" xml:space="preserve">
+    <value>Party of {0}: {1} members</value>
   </data>
 </root>
