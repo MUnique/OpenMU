@@ -1123,6 +1123,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handles the chat command &apos;/killall&apos;. Kills all monsters on the current map..
+        /// </summary>
+        public static string KillAllMonstersChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("KillAllMonstersChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Kill all monsters chat command.
+        /// </summary>
+        public static string KillAllMonstersChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("KillAllMonstersChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Plugin which handles the large complex potion consumption..
         /// </summary>
         public static string LargeComplexPotionConsumeHandlerPlugIn_Description {
@@ -2700,6 +2718,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handles the chat command &apos;/skipwait&apos;. Skips the current waiting phase of the mini game event (entering, countdown, standby); skipped waits count as completed..
+        /// </summary>
+        public static string SkipMiniGameWaitChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("SkipMiniGameWaitChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skip mini game wait chat command.
+        /// </summary>
+        public static string SkipMiniGameWaitChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("SkipMiniGameWaitChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Plugin which handles the small complex potion consumption..
         /// </summary>
         public static string SmallComplexPotionConsumeHandlerPlugIn_Description {
@@ -2876,6 +2912,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string StartDevilSquareEventChatCommandPlugIn_Name {
             get {
                 return ResourceManager.GetString("StartDevilSquareEventChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the chat command &apos;/startkanturu&apos;. Starts the kanturu event at the next possible time..
+        /// </summary>
+        public static string StartKanturuEventChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("StartKanturuEventChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start Kanturu Event Chat Command.
+        /// </summary>
+        public static string StartKanturuEventChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("StartKanturuEventChatCommandPlugIn_Name", resourceCulture);
             }
         }
         

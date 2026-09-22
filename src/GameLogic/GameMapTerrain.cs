@@ -299,7 +299,16 @@ public class GameMapTerrain
     /// <param name="y">The y coordinate.</param>
     /// <param name="attribute">The attribute to set or remove.</param>
     /// <param name="setAttribute"><c>true</c> to set the attribute, <c>false</c> to remove it.</param>
-    public void ApplyTerrainAttribute(byte x, byte y, TerrainAttributeType attribute, bool setAttribute)
+    /// <param name="openArea">
+    /// Only used when removing: <c>true</c> clears every movement-blocking bit instead of
+    /// only <paramref name="attribute"/>, guaranteeing the tile becomes walkable. Opt into
+    /// this only where a rect is known to mix tile kinds (e.g. the Kanturu barrier, whose
+    /// wall band must open together with the holes for the corridor to become passable).
+    /// Everywhere else removal must stay per-bit: callers like the castle siege gate
+    /// restore the exact previous state, and clearing foreign bits would permanently
+    /// convert original holes or water into walkable ground.
+    /// </param>
+    public void ApplyTerrainAttribute(byte x, byte y, TerrainAttributeType attribute, bool setAttribute, bool openArea = false)
     {
         if (attribute == TerrainAttributeType.Safezone)
         {
@@ -317,14 +326,16 @@ public class GameMapTerrain
         {
             this.AttributeMap[x, y] |= (byte)attribute;
         }
+        else if (openArea)
+        {
+            // Re-open the whole tile: mixed rects can't rely on the configured
+            // attribute matching the bits in the terrain file, so every
+            // non-safezone bit is cleared instead of only the configured one.
+            this.AttributeMap[x, y] &= SafezoneBit;
+        }
         else
         {
-            // Only the configured bit is cleared: every configured attribute
-            // matches the bits actually present in the terrain files (e.g. the
-            // Blood Castle bridge is toggled as NoGround on NoGround tiles),
-            // and callers restoring prior state (castle gates) rely on the
-            // other bits surviving the round trip.
-            this.AttributeMap[x, y] &= (byte)~(byte)attribute;
+            this.AttributeMap[x, y] = (byte)(this.AttributeMap[x, y] & ~(byte)attribute);
         }
 
         // SafezoneMap is deliberately left untouched: runtime non-safezone changes

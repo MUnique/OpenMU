@@ -34,13 +34,9 @@ public class GameContext : AsyncDisposable, IGameContext
 
     private static readonly Counter<int> MapCounter = Meter.CreateCounter<int>("MapCount");
 
-    private static readonly Counter<int> MiniGameCounter = Meter.CreateCounter<int>("MiniGameCount");
-
     private static readonly IObjectPool<PathFinder> PathFinderPoolInstance = new LimitedObjectPool<PathFinder>(new PathFinderPoolingPolicy());
 
     private readonly Dictionary<ushort, GameMap> _mapList = new();
-
-    private readonly Dictionary<MiniGameMapKey, MiniGameContext> _miniGames = new();
 
     private readonly Timer _recoverTimer;
 
@@ -87,6 +83,9 @@ public class GameContext : AsyncDisposable, IGameContext
             this._recoverTimer = new Timer(this.RecoverTimerElapsed, null, this.Configuration.RecoveryInterval, this.Configuration.RecoveryInterval);
             this._tasksTimer = new Timer(this.ExecutePeriodicTasks, null, 1000, 1000);
             this.FeaturePlugIns = new FeaturePlugInContainer(this.PlugInManager);
+            this.MiniGames = new MiniGameManager(this, mapInitializer);
+            this.MiniGames.GameMapCreated += (_, map) => this.GameMapCreated?.Invoke(this, map);
+            this.MiniGames.GameMapRemoved += (_, map) => this.GameMapRemoved?.Invoke(this, map);
             this._configChangeHandlerRegistration = this.ConfigurationChangeMediator.RegisterObject(this.Configuration, this, this.OnGameConfigurationChangeAsync);
             this.DuelRoomManager = new DuelRoomManager(this.Configuration.DuelConfiguration!);
             this.ExperienceTable = CreateExpTable(this.Configuration.ExperienceFormula ?? DefaultExperienceFormula, this.Configuration.MaximumLevel);
@@ -142,6 +141,9 @@ public class GameContext : AsyncDisposable, IGameContext
 
     /// <inheritdoc/>
     public IDropGenerator DropGenerator { get; }
+
+    /// <inheritdoc />
+    public IMiniGameManager MiniGames { get; }
 
     /// <inheritdoc />
     public FeaturePlugInContainer FeaturePlugIns { get; }
@@ -221,7 +223,7 @@ public class GameContext : AsyncDisposable, IGameContext
     public async ValueTask<IEnumerable<GameMap>> GetMapsAsync()
     {
         using var l = await this._mapInitializerLock.LockAsync();
-        return this._mapList.Values.Concat(this._miniGames.Values.Select(g => g.Map)).ToList();
+        return this._mapList.Values.Concat(this.MiniGames.Maps).ToList();
     }
 
     /// <inheritdoc/>
@@ -274,76 +276,6 @@ public class GameContext : AsyncDisposable, IGameContext
         MapCounter.Add(1);
 
         return createdMap;
-    }
-
-    /// <summary>
-    /// Gets the mini game map which is meant to be hosted by the game.
-    /// </summary>
-    /// <param name="miniGameDefinition">The mini game definition.</param>
-    /// <param name="requester">The requesting player.</param>
-    /// <returns>The hosted mini game instance.</returns>
-    public async ValueTask<MiniGameContext> GetMiniGameAsync(MiniGameDefinition miniGameDefinition, Player requester)
-    {
-        var miniGameKey = MiniGameMapKey.Create(miniGameDefinition, requester);
-
-        if (this._miniGames.TryGetValue(miniGameKey, out var miniGameContext) && miniGameContext is { IsDisposed: false, IsDisposing: false })
-        {
-            return miniGameContext;
-        }
-
-        using (await this._mapInitializerLock.LockAsync().ConfigureAwait(false))
-        {
-            if (this._miniGames.TryGetValue(miniGameKey, out miniGameContext))
-            {
-                if (miniGameContext.IsDisposed)
-                {
-                    this._miniGames.Remove(miniGameKey);
-                }
-                else
-                {
-                    return miniGameContext;
-                }
-            }
-
-            switch (miniGameDefinition.Type)
-            {
-                case MiniGameType.ChaosCastle:
-                    miniGameContext = new ChaosCastleContext(miniGameKey, miniGameDefinition, this, this._mapInitializer);
-                    break;
-                case MiniGameType.DevilSquare:
-                    miniGameContext = new DevilSquareContext(miniGameKey, miniGameDefinition, this, this._mapInitializer);
-                    break;
-                case MiniGameType.BloodCastle:
-                    miniGameContext = new BloodCastleContext(miniGameKey, miniGameDefinition, this, this._mapInitializer);
-                    break;
-                case MiniGameType.Kanturu:
-                    miniGameContext = new KanturuContext(miniGameKey, miniGameDefinition, this, this._mapInitializer);
-                    break;
-                default:
-                    miniGameContext = new MiniGameContext(miniGameKey, miniGameDefinition, this, this._mapInitializer);
-                    break;
-            }
-
-            this._miniGames.Add(miniGameKey, miniGameContext);
-        }
-
-        var createdMap = miniGameContext.Map;
-
-        // ReSharper disable once InconsistentlySynchronizedField it's desired behavior to initialize the map outside the lock to keep locked timespan short.
-        await this._mapInitializer.InitializeStateAsync(createdMap).ConfigureAwait(false);
-        this.GameMapCreated?.Invoke(this, createdMap);
-        MiniGameCounter.Add(1);
-        return miniGameContext;
-    }
-
-    /// <inheritdoc />
-    public async ValueTask RemoveMiniGameAsync(MiniGameContext miniGameContext)
-    {
-        using var l = await this._mapInitializerLock.LockAsync().ConfigureAwait(false);
-        MiniGameCounter.Add(-1);
-        miniGameContext.Dispose();
-        this._miniGames.Remove(miniGameContext.Key);
-        this.GameMapRemoved?.Invoke(this, miniGameContext.Map);
     }
 
     /// <summary>

@@ -1,0 +1,100 @@
+/* Form layout and validation styling: Blazor valid/invalid states, expandable details sections, info popups, sticky form actions, and the auto-form search field. */
+/* Blazor validation states mapped onto Bootstrap's default validation colors.
+   Note: Bootstrap's own validation visuals (is-valid/is-invalid icons and padding) are intentionally
+   unused - no markup applies those classes, so stock Bootstrap stays at its defaults. */
+.invalid.modified {
+  border-color: var(--bs-form-invalid-border-color);
+}
+
+.invalid.modified:focus {
+  border-color: var(--bs-form-invalid-border-color);
+  box-shadow: 0 0 0 0.25rem rgba(var(--bs-danger-rgb), 0.25);
+}
+
+.valid.modified {
+  border-color: var(--bs-form-valid-border-color);
+}
+
+.valid.modified:focus {
+  border-color: var(--bs-form-valid-border-color);
+  box-shadow: 0 0 0 0.25rem rgba(var(--bs-success-rgb), 0.25);
+}
+
+.form-check-input {
+  padding: 0;
+  width: 1em;
+  height: 1em;
+  min-width: 1em;
+  min-height: 1em;
+}
+
+details > summary {
+  list-style: none;
+}
+
+details > summary::-webkit-details-marker {
+  display: none;
+}
+
+details > summary::before {
+  font-family: Icons;
+  content: "\e07c";
+  margin-right: 0.25em;
+}
+
+details[open] > summary::before {
+  content: "\e039";
+}
+
+label > details.info-popup {
+  position: relative;
+  display: inline-block;
+}
+
+label > details[open] {
+  z-index: 5;
+}
+
+label > details.info-popup > div {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 0.25rem;
+  width: max-content;
+  max-width: min(600px, 90vw);
+  white-space: normal;
+}
+
+.form-actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 3;
+  background-color: var(--omu-surface-2);
+  padding: 1rem 1.5rem;
+  border-top: var(--bs-border-width) solid var(--omu-border);
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-start;
+  box-sizing: border-box;
+}
+
+.form-actions .btn-secondary {
+  margin-left: 1rem;
+}
+
+.auto-form-search-group {
+  position: relative;
+}
+
+.auto-form-search-group .form-control {
+  padding-left: 2.25rem;
+}
+
+.auto-form-search-group .search-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--omu-text-muted);
+  pointer-events: none;
+}
