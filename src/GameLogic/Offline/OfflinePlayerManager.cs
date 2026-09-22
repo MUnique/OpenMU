@@ -72,7 +72,7 @@ public sealed class OfflinePlayerManager
     }
 
     /// <summary>
-    /// Stops and removes the offline session for the given account, if one exists.
+    /// Stops and removes the offline session for the given account if one exists.
     /// </summary>
     /// <param name="loginName">The account login name.</param>
     public async ValueTask StopAsync(string loginName)
@@ -186,7 +186,10 @@ public sealed class OfflinePlayerManager
 
     /// <summary>
     /// Removes the sentinel entry from the active players dictionary and disposes the ghost.
-    /// Used when startup fails before the ghost is fully initialized.
+    /// Used when startup fails before the ghost is fully initialized. The ghost is already part of the
+    /// game context when the failure happened after <see cref="Player.SetSelectedCharacterAsync"/> was
+    /// reached, and it is never disconnected on this path - the disposal takes it out of the player
+    /// list (see <see cref="Player.DisposeAsyncCore"/>).
     /// </summary>
     /// <param name="loginName">The account login name.</param>
     /// <param name="sentinel">The ghost player to dispose.</param>

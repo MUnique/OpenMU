@@ -19,7 +19,8 @@ public sealed class CastleSiegeNpcController
 {
     private readonly CastleSiegeContext _context;
     private readonly object _gateTerrainLock = new();
-    private readonly Dictionary<Point, (bool WasWalkable, int ReferenceCount)> _gateTerrain = new();
+    private readonly object _runtimeLock = new();
+    private readonly Dictionary<Point, (bool WasBlocked, int ReferenceCount)> _gateTerrain = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CastleSiegeNpcController"/> class.
@@ -73,7 +74,7 @@ public sealed class CastleSiegeNpcController
     /// <returns>A task that represents the asynchronous close operation.</returns>
     public async ValueTask CloseGatesAsync()
     {
-        foreach (var gate in this._context.ActiveNpcs
+        foreach (var gate in this.GetRuntimeSnapshot()
                      .Select(runtime => runtime.SpawnedInstance)
                      .OfType<CastleSiegeGate>())
         {
@@ -86,7 +87,7 @@ public sealed class CastleSiegeNpcController
     /// </summary>
     public void SynchronizeNpcStates()
     {
-        foreach (var runtime in this._context.ActiveNpcs)
+        foreach (var runtime in this.GetRuntimeSnapshot())
         {
             if (runtime.SpawnedInstance is CastleSiegeAttackableNpc attackable)
             {
@@ -116,7 +117,7 @@ public sealed class CastleSiegeNpcController
     public CastleSiegeNpcRuntime? FindDefenseStructure(uint monsterNumber, uint npcIndex)
     {
         // Management packets use the configured instance id, while the gate interface returns the live map object id.
-        return this._context.ActiveNpcs.FirstOrDefault(runtime =>
+        return this.GetRuntimeSnapshot().FirstOrDefault(runtime =>
             runtime.Definition.MonsterDefinition?.Number == monsterNumber
             && (runtime.Definition.InstanceId == npcIndex || runtime.SpawnedInstance?.Id == npcIndex));
     }
@@ -160,7 +161,7 @@ public sealed class CastleSiegeNpcController
     /// <returns>The matching gate, or <see langword="null"/>.</returns>
     public CastleSiegeGate? FindGate(ushort gateId)
     {
-        return this._context.ActiveNpcs
+        return this.GetRuntimeSnapshot()
             .Where(runtime => runtime.Definition.MonsterDefinition?.Number == CastleSiegeGate.MonsterNumber)
             .Where(runtime => runtime.Definition.InstanceId == gateId || runtime.SpawnedInstance?.Id == gateId)
             .Select(runtime => runtime.SpawnedInstance)
@@ -184,10 +185,10 @@ public sealed class CastleSiegeNpcController
     /// <returns>A task that represents the asynchronous despawn operation.</returns>
     public async ValueTask DespawnMachinesAsync()
     {
-        foreach (var runtime in this._context.ActiveNpcs.Where(runtime => IsMachine(runtime.Definition)).ToList())
+        foreach (var runtime in this.GetRuntimeSnapshot().Where(runtime => IsMachine(runtime.Definition)))
         {
             await DespawnAsync(runtime).ConfigureAwait(false);
-            this._context.ActiveNpcs.Remove(runtime);
+            this.RemoveRuntime(runtime);
         }
     }
 
@@ -197,12 +198,15 @@ public sealed class CastleSiegeNpcController
     /// <returns>A task that represents the asynchronous despawn operation.</returns>
     public async ValueTask DespawnAllAsync()
     {
-        foreach (var runtime in this._context.ActiveNpcs.ToList())
+        foreach (var runtime in this.GetRuntimeSnapshot())
         {
             await DespawnAsync(runtime).ConfigureAwait(false);
         }
 
-        this._context.ActiveNpcs.RemoveAll(runtime => !runtime.Definition.IsPersistedToDatabase);
+        lock (this._runtimeLock)
+        {
+            this._context.ActiveNpcs.RemoveAll(runtime => !runtime.Definition.IsPersistedToDatabase);
+        }
     }
 
     /// <summary>
@@ -216,22 +220,23 @@ public sealed class CastleSiegeNpcController
     {
         lock (this._gateTerrainLock)
         {
-            for (var x = area.StartX; x <= area.EndX; x++)
+            // The counters are ints on purpose: an end coordinate of 255 would make
+            // a byte counter wrap around and loop forever.
+            for (int x = area.StartX; x <= area.EndX; x++)
             {
-                for (var y = area.StartY; y <= area.EndY; y++)
+                for (int y = area.StartY; y <= area.EndY; y++)
                 {
-                    var point = new Point(x, y);
+                    var point = new Point((byte)x, (byte)y);
                     if (this._gateTerrain.TryGetValue(point, out var state))
                     {
-                        this._gateTerrain[point] = (state.WasWalkable, state.ReferenceCount + 1);
+                        this._gateTerrain[point] = (state.WasBlocked, state.ReferenceCount + 1);
                     }
                     else
                     {
-                        this._gateTerrain[point] = (map.Terrain.WalkMap[x, y], 1);
+                        this._gateTerrain[point] = (map.Terrain.BlocksSight(x, y), 1);
                     }
 
-                    map.Terrain.WalkMap[x, y] = false;
-                    map.Terrain.UpdateAiGridValue(x, y);
+                    map.Terrain.ApplyTerrainAttribute((byte)x, (byte)y, TerrainAttributeType.Blocked, true);
                 }
             }
         }
@@ -250,11 +255,12 @@ public sealed class CastleSiegeNpcController
         var blockedAreas = new List<(byte StartX, byte StartY, byte EndX, byte EndY)>();
         lock (this._gateTerrainLock)
         {
-            for (var x = area.StartX; x <= area.EndX; x++)
+            // See BlockGateTerrain for why the counters are ints.
+            for (int x = area.StartX; x <= area.EndX; x++)
             {
-                for (var y = area.StartY; y <= area.EndY; y++)
+                for (int y = area.StartY; y <= area.EndY; y++)
                 {
-                    var point = new Point(x, y);
+                    var point = new Point((byte)x, (byte)y);
                     if (!this._gateTerrain.Remove(point, out var state))
                     {
                         continue;
@@ -262,18 +268,18 @@ public sealed class CastleSiegeNpcController
 
                     if (state.ReferenceCount > 1)
                     {
-                        this._gateTerrain[point] = (state.WasWalkable, state.ReferenceCount - 1);
-                        map.Terrain.WalkMap[x, y] = false;
+                        this._gateTerrain[point] = (state.WasBlocked, state.ReferenceCount - 1);
+                        map.Terrain.ApplyTerrainAttribute((byte)x, (byte)y, TerrainAttributeType.Blocked, true);
                     }
                     else
                     {
-                        map.Terrain.WalkMap[x, y] = state.WasWalkable;
+                        // Restore the wall flag which existed before the gate was closed.
+                        map.Terrain.ApplyTerrainAttribute((byte)x, (byte)y, TerrainAttributeType.Blocked, state.WasBlocked);
                     }
 
-                    map.Terrain.UpdateAiGridValue(x, y);
                     if (!map.Terrain.WalkMap[x, y])
                     {
-                        blockedAreas.Add((x, y, x, y));
+                        blockedAreas.Add(((byte)x, (byte)y, (byte)x, (byte)y));
                     }
                 }
             }
@@ -301,11 +307,38 @@ public sealed class CastleSiegeNpcController
     /// <returns>A task that represents the asynchronous synchronization.</returns>
     internal async ValueTask SynchronizePlayerAsync(Player player)
     {
-        foreach (var gate in this._context.ActiveNpcs
+        foreach (var gate in this.GetRuntimeSnapshot()
                      .Select(runtime => runtime.SpawnedInstance)
                      .OfType<CastleSiegeGate>())
         {
             await gate.SynchronizeStateAsync(player).ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Gets a stable snapshot of the active Castle Siege NPC runtimes.
+    /// </summary>
+    /// <returns>The runtime snapshot.</returns>
+    internal IReadOnlyList<CastleSiegeNpcRuntime> GetRuntimeSnapshot()
+    {
+        lock (this._runtimeLock)
+        {
+            return this._context.ActiveNpcs.ToArray();
+        }
+    }
+
+    /// <summary>
+    /// Releases every warfare machine operated by the specified player.
+    /// </summary>
+    /// <param name="player">The player whose machine operation ended.</param>
+    internal void ClearMachineOperator(Player player)
+    {
+        foreach (var machine in this.GetRuntimeSnapshot()
+                     .Select(runtime => runtime.SpawnedInstance)
+                     .OfType<CastleSiegeMachine>()
+                     .Where(machine => ReferenceEquals(machine.Operator, player)))
+        {
+            machine.Operator = null;
         }
     }
 
@@ -358,7 +391,7 @@ public sealed class CastleSiegeNpcController
             return [];
         }
 
-        return this._context.ActiveNpcs
+        return this.GetRuntimeSnapshot()
             .Where(runtime => runtime.Definition.IsPersistedToDatabase
                               && runtime.Definition.MonsterDefinition?.Number == monsterNumber)
             .OrderBy(runtime => runtime.Definition.InstanceId)
@@ -383,42 +416,45 @@ public sealed class CastleSiegeNpcController
 
     private CastleSiegeNpcRuntime GetOrCreateRuntime(CastleSiegeNpcDefinition definition)
     {
-        var runtime = this._context.ActiveNpcs.FirstOrDefault(candidate =>
-            candidate.Definition.MonsterDefinition?.Number == definition.MonsterDefinition?.Number
-            && candidate.Definition.InstanceId == definition.InstanceId);
-        if (runtime is not null)
+        lock (this._runtimeLock)
         {
+            var runtime = this._context.ActiveNpcs.FirstOrDefault(candidate =>
+                candidate.Definition.MonsterDefinition?.Number == definition.MonsterDefinition?.Number
+                && candidate.Definition.InstanceId == definition.InstanceId);
+            if (runtime is not null)
+            {
+                return runtime;
+            }
+
+            CastleSiegeNpcState? state = null;
+            if (definition.IsPersistedToDatabase)
+            {
+                var monsterNumber = definition.MonsterDefinition?.Number
+                                    ?? throw Error.NotInitializedProperty(definition, nameof(definition.MonsterDefinition));
+                state = this._context.SiegeData.NpcStates.FirstOrDefault(candidate =>
+                    candidate.MonsterNumber == monsterNumber
+                    && candidate.InstanceId == definition.InstanceId);
+                if (state is null)
+                {
+                    state = new CastleSiegeNpcState
+                    {
+                        MonsterNumber = monsterNumber,
+                        InstanceId = definition.InstanceId,
+                        CurrentHp = this.GetInitialHealth(monsterNumber),
+                    };
+                    this._context.SiegeData.NpcStates.Add(state);
+                }
+            }
+
+            runtime = new CastleSiegeNpcRuntime
+            {
+                Definition = definition,
+                PersistedState = state,
+                IsAlive = state?.CurrentHp > 0 || !definition.IsPersistedToDatabase,
+            };
+            this._context.ActiveNpcs.Add(runtime);
             return runtime;
         }
-
-        CastleSiegeNpcState? state = null;
-        if (definition.IsPersistedToDatabase)
-        {
-            var monsterNumber = definition.MonsterDefinition?.Number
-                                ?? throw Error.NotInitializedProperty(definition, nameof(definition.MonsterDefinition));
-            state = this._context.SiegeData.NpcStates.FirstOrDefault(candidate =>
-                candidate.MonsterNumber == monsterNumber
-                && candidate.InstanceId == definition.InstanceId);
-            if (state is null)
-            {
-                state = new CastleSiegeNpcState
-                {
-                    MonsterNumber = monsterNumber,
-                    InstanceId = definition.InstanceId,
-                    CurrentHp = this.GetInitialHealth(monsterNumber),
-                };
-                this._context.SiegeData.NpcStates.Add(state);
-            }
-        }
-
-        runtime = new CastleSiegeNpcRuntime
-        {
-            Definition = definition,
-            PersistedState = state,
-            IsAlive = state?.CurrentHp > 0 || !definition.IsPersistedToDatabase,
-        };
-        this._context.ActiveNpcs.Add(runtime);
-        return runtime;
     }
 
     private int GetInitialHealth(short monsterNumber)
@@ -523,28 +559,44 @@ public sealed class CastleSiegeNpcController
                 this._context,
                 runtime,
                 new CastleSiegeLeverIntelligence()),
-            var number when number == CastleSiegeMachine.AttackMonsterNumber
-                            || number == CastleSiegeMachine.DefenseMonsterNumber => new CastleSiegeMachine(
+            var number when number == CastleSiegeMachine.AttackMonsterNumber => new CastleSiegeMachine(
                 spawnArea,
                 definition,
                 map,
                 runtime,
-                new CastleSiegeMachineIntelligence()),
+                new CastleSiegeMachineIntelligence(),
+                CastleSiegeMachineType.Attack),
+            var number when number == CastleSiegeMachine.DefenseMonsterNumber => new CastleSiegeMachine(
+                spawnArea,
+                definition,
+                map,
+                runtime,
+                new CastleSiegeMachineIntelligence(),
+                CastleSiegeMachineType.Defense),
             _ => throw new NotSupportedException($"Castle Siege NPC {definition.Number} is not supported."),
         };
     }
 
     private void AssociateLevers()
     {
-        var gatesByInstance = this._context.ActiveNpcs
+        var runtimes = this.GetRuntimeSnapshot();
+        var gatesByInstance = runtimes
             .Where(runtime => runtime.Definition.MonsterDefinition?.Number == CastleSiegeGate.MonsterNumber)
             .Where(runtime => runtime.SpawnedInstance is CastleSiegeGate)
             .ToDictionary(runtime => runtime.Definition.InstanceId, runtime => (CastleSiegeGate)runtime.SpawnedInstance!);
-        foreach (var runtime in this._context.ActiveNpcs
+        foreach (var runtime in runtimes
                      .Where(runtime => runtime.SpawnedInstance is CastleSiegeLever))
         {
             ((CastleSiegeLever)runtime.SpawnedInstance!).Gate =
                 gatesByInstance.GetValueOrDefault(runtime.Definition.InstanceId);
+        }
+    }
+
+    private void RemoveRuntime(CastleSiegeNpcRuntime runtime)
+    {
+        lock (this._runtimeLock)
+        {
+            this._context.ActiveNpcs.Remove(runtime);
         }
     }
 }

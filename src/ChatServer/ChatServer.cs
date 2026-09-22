@@ -13,13 +13,14 @@ using System.Timers;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Network;
+using MUnique.OpenMU.Network.Analyzer;
 using MUnique.OpenMU.PlugIns;
 using Timer = System.Timers.Timer;
 
 /// <summary>
 /// Chat Server Listener that accepts incoming connections.
 /// </summary>
-public sealed class ChatServer : IChatServer, IDisposable
+public sealed class ChatServer : IChatServer, IDisposable, IConnectionSource
 {
     private readonly ChatRoomManager _manager;
     private readonly ILogger<ChatServer> _logger;
@@ -94,6 +95,20 @@ public sealed class ChatServer : IChatServer, IDisposable
     public int CurrentConnections => this._connectedClients.Count;
 
     private ChatServerSettings Settings => this._settings ?? throw new InvalidOperationException("The server was not initialized before");
+
+    /// <inheritdoc />
+    public ValueTask<IReadOnlyList<ICapturedConnectionInfo>> GetConnectionsAsync()
+    {
+        IReadOnlyList<ICapturedConnectionInfo> result = this._connectedClients
+            .OfType<ChatClient>()
+            .Select(client => client.Connection is { } connection
+                ? new ChatClientConnectionInfo(client, connection, this.Id, this.Description)
+                : null)
+            .Where(info => info is not null)
+            .Select(info => (ICapturedConnectionInfo)info!)
+            .ToList();
+        return ValueTask.FromResult(result);
+    }
 
     /// <inheritdoc/>
     public async ValueTask<ChatServerAuthenticationInfo?> RegisterClientAsync(ushort roomId, string clientName)

@@ -1,0 +1,40 @@
+/**
+ * OpenMU documentation theme.
+ * Infima variables: https://infima.dev/docs/getting-started/introduction
+ */
+
+:root {
+  --ifm-color-primary: #8a1c1c;
+  --ifm-color-primary-dark: #7c1919;
+  --ifm-color-primary-darker: #751818;
+  --ifm-color-primary-darkest: #601414;
+  --ifm-color-primary-light: #981f1f;
+  --ifm-color-primary-lighter: #9f2020;
+  --ifm-color-primary-lightest: #b42424;
+  --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme='dark'] {
+  --ifm-color-primary: #e26a6a;
+  --ifm-color-primary-dark: #dd4e4e;
+  --ifm-color-primary-darker: #db4040;
+  --ifm-color-primary-darkest: #bf2626;
+  --ifm-color-primary-light: #e78686;
+  --ifm-color-primary-lighter: #e99494;
+  --ifm-color-primary-lightest: #f0bcbc;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
+
+/* The tables which list pages, ports and settings are a big part of these docs,
+   so let them use the full width instead of the default centered narrow block. */
+.markdown table {
+  display: table;
+  width: 100%;
+}
+
+/* Keep inline code (port numbers, parameters, routes) from being wrapped in the
+   middle inside a table cell. */
+.markdown table code {
+  white-space: nowrap;
+}

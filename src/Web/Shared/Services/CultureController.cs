@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 /// A controller which sets the culture to the specified value and redirects to the specified uri.
 /// </summary>
 [Route("[controller]/[action]")]
+[Microsoft.AspNetCore.Authorization.AllowAnonymous]
 public class CultureController : Controller
 {
     /// <summary>

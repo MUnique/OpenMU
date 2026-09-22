@@ -177,4 +177,10 @@
   <data name="Following" xml:space="preserve">
     <value>Following</value>
   </data>
+  <data name="SelectPlayer" xml:space="preserve">
+    <value>Select player on map</value>
+  </data>
+  <data name="AnalyzeTraffic" xml:space="preserve">
+    <value>Analyze the network traffic</value>
+  </data>
 </root>

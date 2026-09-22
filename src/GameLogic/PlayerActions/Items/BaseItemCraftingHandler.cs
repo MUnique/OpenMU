@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items;
 
 using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.GameLogic.CastleSiege;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.GameLogic.Views.NPC;
@@ -15,6 +16,8 @@ using MUnique.OpenMU.GameLogic.Views.NPC;
 /// </summary>
 public abstract class BaseItemCraftingHandler : IItemCraftingHandler
 {
+    private readonly CastleSiegeTaxProvider _castleSiegeTaxProvider = new();
+
     /// <inheritdoc/>
     public async ValueTask<(CraftingResult Result, Item? Item)> DoMixAsync(Player player, byte socketSlot)
     {
@@ -32,7 +35,7 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
         player.Logger.LogInformation("Crafting success chance: {successRate} %", successRate);
 
         var price = this.GetPrice(successRate, items);
-        if (!player.TryRemoveMoney(price))
+        if (!await this._castleSiegeTaxProvider.TryPayChaosCostAsync(player, price).ConfigureAwait(false))
         {
             return (CraftingResult.NotEnoughMoney, null);
         }

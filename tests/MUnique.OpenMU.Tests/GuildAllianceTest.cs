@@ -6,11 +6,14 @@ namespace MUnique.OpenMU.Tests;
 
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
+using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameServer;
+using MUnique.OpenMU.GuildServer;
 using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
 
@@ -184,6 +187,44 @@ public class GuildAllianceTest : GuildTestBase
 
         Assert.That(guilds.Count, Is.EqualTo(3));
         Assert.That(guilds.Select(g => g.Id), Is.EquivalentTo(new[] { this._firstGuildId, this._secondGuildId, this._thirdGuildId }));
+    }
+
+    /// <summary>
+    /// The first alliance lookup completes a newly-created runtime alliance from persistence,
+    /// while subsequent hot-path lookups use the known-complete runtime cache.
+    /// </summary>
+    [Test]
+    public async ValueTask GetAllianceGuilds_IncompleteRuntimeCache_LoadsPersistenceOnce()
+    {
+        var innerProvider = new InMemoryPersistenceContextProvider();
+        var provider = new CountingPersistenceContextProvider(innerProvider);
+        var guildServer = new MUnique.OpenMU.GuildServer.GuildServer(
+            new GuildChangeToGameServerPublisher(this.GameServers),
+            provider,
+            new NullLogger<MUnique.OpenMU.GuildServer.GuildServer>());
+        using var context = provider.CreateNewContext();
+        var firstMaster = context.CreateNew<Character>();
+        firstMaster.Name = "CacheMaster";
+        var secondMaster = context.CreateNew<Character>();
+        secondMaster.Name = "CacheMember";
+        await guildServer.CreateGuildAsync("CacheMasterGuild", firstMaster.Name, firstMaster.Id, new byte[16], 0).ConfigureAwait(false);
+        await guildServer.CreateGuildAsync("CacheMemberGuild", secondMaster.Name, secondMaster.Id, new byte[16], 0).ConfigureAwait(false);
+        var firstGuildId = await guildServer.GetGuildIdByNameAsync("CacheMasterGuild").ConfigureAwait(false);
+        var secondGuildId = await guildServer.GetGuildIdByNameAsync("CacheMemberGuild").ConfigureAwait(false);
+        await guildServer.CreateAllianceAsync(firstGuildId, secondGuildId).ConfigureAwait(false);
+        var contextsBeforeLookup = provider.GuildContextCreationCount;
+
+        var firstResult = await guildServer.GetAllianceGuildsAsync(firstGuildId).ConfigureAwait(false);
+        var contextsAfterFirstLookup = provider.GuildContextCreationCount;
+        var secondResult = await guildServer.GetAllianceGuildsAsync(firstGuildId).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(firstResult.Select(guild => guild.Id), Is.EquivalentTo(new[] { firstGuildId, secondGuildId }));
+            Assert.That(secondResult.Select(guild => guild.Id), Is.EquivalentTo(new[] { firstGuildId, secondGuildId }));
+            Assert.That(contextsAfterFirstLookup, Is.EqualTo(contextsBeforeLookup + 1));
+            Assert.That(provider.GuildContextCreationCount, Is.EqualTo(contextsAfterFirstLookup));
+        });
     }
 
     /// <summary>
@@ -368,6 +409,48 @@ public class GuildAllianceTest : GuildTestBase
                 It.IsAny<bool>()))
             .Returns(ValueTask.CompletedTask);
     }
+
+    private sealed class CountingPersistenceContextProvider : IPersistenceContextProvider
+    {
+        private readonly IPersistenceContextProvider _innerProvider;
+
+        public CountingPersistenceContextProvider(IPersistenceContextProvider innerProvider)
+        {
+            this._innerProvider = innerProvider;
+        }
+
+        public int GuildContextCreationCount { get; private set; }
+
+        public IRepositoryProvider RepositoryProvider => this._innerProvider.RepositoryProvider;
+
+        public IContext CreateNewContext() => this._innerProvider.CreateNewContext();
+
+        public IContext CreateNewContext(GameConfiguration gameConfiguration)
+            => this._innerProvider.CreateNewContext(gameConfiguration);
+
+        public IConfigurationContext CreateNewConfigurationContext()
+            => this._innerProvider.CreateNewConfigurationContext();
+
+        public IContext CreateNewTradeContext() => this._innerProvider.CreateNewTradeContext();
+
+        public IPlayerContext CreateNewPlayerContext(GameConfiguration gameConfiguration)
+            => this._innerProvider.CreateNewPlayerContext(gameConfiguration);
+
+        public IFriendServerContext CreateNewFriendServerContext()
+            => this._innerProvider.CreateNewFriendServerContext();
+
+        public IGuildServerContext CreateNewGuildContext()
+        {
+            this.GuildContextCreationCount++;
+            return this._innerProvider.CreateNewGuildContext();
+        }
+
+        public IContext CreateNewTypedContext(
+            Type editType,
+            bool useCache,
+            GameConfiguration? gameConfiguration = null)
+            => this._innerProvider.CreateNewTypedContext(editType, useCache, gameConfiguration);
+    }
 }
 
 /// <summary>
@@ -489,6 +572,7 @@ public class RivalGuildCacheTest
         mapInitializer.PathFinderPool = ctx.PathFinderPool;
         return ctx;
     }
+
 }
 
 /// <summary>

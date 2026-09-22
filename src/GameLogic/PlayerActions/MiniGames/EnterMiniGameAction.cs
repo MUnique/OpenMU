@@ -60,6 +60,17 @@ public class EnterMiniGameAction
             return;
         }
 
+        // The mini game entrance warps the player directly, so the requirements of the map
+        // are not checked by the usual warp actions. Kanturu, for example, requires an
+        // equipped Moonstone Pendant.
+        if (miniGameDefinition.Entrance?.Map is { } entranceMap
+            && entranceMap.TryGetRequirementError(player, out var requirementError))
+        {
+            await player.ShowBlueMessageAsync(requirementError).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IShowMiniGameEnterResultPlugIn>(p => p.ShowResultAsync(miniGameType, EnterResult.Failed)).ConfigureAwait(false);
+            return;
+        }
+
         if (!this.CheckTicketItem(miniGameDefinition, player, gameTicketInventoryIndex, out var ticketItem))
         {
             await player.InvokeViewPlugInAsync<IShowMiniGameEnterResultPlugIn>(p => p.ShowResultAsync(miniGameType, EnterResult.Failed)).ConfigureAwait(false);
@@ -97,7 +108,7 @@ public class EnterMiniGameAction
         }
 
         var entrance = miniGameDefinition.Entrance ?? throw new InvalidOperationException("mini game entrance not defined");
-        var miniGame = await player.GameContext.GetMiniGameAsync(miniGameDefinition, player).ConfigureAwait(false);
+        var miniGame = await player.GameContext.MiniGames.GetOrCreateAsync(miniGameDefinition, player).ConfigureAwait(false);
 
         // Snapshot before entering: an event which disallows parties (Chaos Castle) kicks the
         // entering player out of its party below, losing the knowledge of who was going to follow.

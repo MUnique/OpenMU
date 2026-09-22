@@ -19,6 +19,20 @@ public interface IGuildServerContext : IContext
     ValueTask<bool> GuildWithNameExistsAsync(string name);
 
     /// <summary>
+    /// Gets the persistent identifier of the guild with the specified name.
+    /// </summary>
+    /// <param name="name">The guild name.</param>
+    /// <returns>The guild identifier, or <see langword="null"/> when no guild has the name.</returns>
+    ValueTask<Guid?> GetPersistentGuildIdByNameAsync(string name);
+
+    /// <summary>
+    /// Gets the canonical names of the guilds with the specified persistent identifiers.
+    /// </summary>
+    /// <param name="guildIds">The persistent guild identifiers.</param>
+    /// <returns>The names keyed by persistent guild identifier. Missing guilds are omitted.</returns>
+    ValueTask<IReadOnlyDictionary<Guid, string>> GetPersistentGuildNamesAsync(IReadOnlyCollection<Guid> guildIds);
+
+    /// <summary>
     /// Gets the member names of a guild.
     /// </summary>
     /// <param name="guildId">The guild identifier.</param>

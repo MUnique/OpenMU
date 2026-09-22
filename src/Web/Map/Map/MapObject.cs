@@ -45,4 +45,14 @@ public class MapObject
     /// Gets or sets the NPC object kind (only set for NonPlayerCharacter instances).
     /// </summary>
     public NpcObjectKind? NpcObjectKind { get; set; }
+
+    /// <summary>
+    /// Gets or sets the character level (only set for player instances).
+    /// </summary>
+    public int Level { get; set; }
+
+    /// <summary>
+    /// Gets or sets the master level (only set for player instances).
+    /// </summary>
+    public int MasterLevel { get; set; }
 }

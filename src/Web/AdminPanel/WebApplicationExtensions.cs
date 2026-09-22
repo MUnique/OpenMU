@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.Web.AdminPanel;
 
-using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,14 +12,18 @@ using Microsoft.Extensions.Hosting;
 using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.Network.Analyzer;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Persistence.AdminAuth;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix;
+using MUnique.OpenMU.Web.AdminPanel.Auth;
 using MUnique.OpenMU.Web.AdminPanel.Components;
 using MUnique.OpenMU.Web.AdminPanel.Services;
 using MUnique.OpenMU.Web.Shared.Components.Modal;
 using MUnique.OpenMU.Web.Shared.Models;
 using MUnique.OpenMU.Web.Shared.Services;
+using System.IO;
 
 /// <summary>
 /// Extensions for the <see cref="WebApplicationBuilder"/>.
@@ -72,6 +75,8 @@ public static class WebApplicationExtensions
         services.AddScoped<ILookupController, PersistentObjectsLookupController>();
         services.AddScoped<CreationPanelService>();
 
+        services.AddAdminPanelAuth(builder.Configuration);
+
         services.AddSingleton<IDataSource<GameConfiguration>, GameConfigurationDataSource>();
         services.AddSingleton<IDataSource<Account>, AccountDataSource>();
         services.AddSingleton<ConfigurationSearchIndexCache>();
@@ -83,14 +88,22 @@ public static class WebApplicationExtensions
         services.AddScoped<IDataService<PlugInConfigurationViewItem>>(serviceProvider => serviceProvider.GetService<PlugInController>()!);
         services.AddScoped<ChatCommandController>();
         services.AddScoped<IDataService<ChatCommandViewItem>>(serviceProvider => serviceProvider.GetService<ChatCommandController>()!);
-        services.AddScoped<IUserService, NginxHtpasswdFileUserService>();
+        services.AddScoped<AdminUserManagementService>();
+        services.AddScoped<CastleSiegeManagementService>();
         services.AddScoped<IChangeNotificationService, ChangeNotificationService>();
+
+        // The analyzers are only created when the network analyzer page is actually used,
+        // which requires an IPacketCaptureService - that's only registered in the all-in-one
+        // deployment.
+        services.AddSingleton<PacketAnalyzerProvider>();
         services.AddScoped<NavigationHistory>();
         services.AddScoped<LoggedInAccountService>();
         services.AddScoped<LoadingOverlayService>();
         services.AddScoped<IDataService<LoggedInAccount>>(serviceProvider => serviceProvider.GetService<LoggedInAccountService>()!);
         services.AddScoped<OfflineAccountService>();
         services.AddScoped<IDataService<OfflineAccount>>(serviceProvider => serviceProvider.GetService<OfflineAccountService>()!);
+        services.AddScoped<BotAccountService>();
+        services.AddScoped<IDataService<BotAccount>>(serviceProvider => serviceProvider.GetService<BotAccountService>()!);
 
         StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
         return builder;
@@ -113,6 +126,12 @@ public static class WebApplicationExtensions
         }
 
         app.UseStaticFiles();
+
+        app.UseRouting();
+        app.UseAdminPanelAuth();
+
+        // The log files may contain sensitive information, so they are only served to authorized users.
+        app.UseAuthorizedPath("/logs");
         app.UseStaticFiles(new StaticFileOptions
         {
             FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "logs")),
@@ -128,7 +147,8 @@ public static class WebApplicationExtensions
         app.MapRazorComponents<App>()
             .AddInteractiveServerRenderMode();
 
-        app.MapControllers();
+        app.MapControllers().RequireAuthorization();
+        app.MapAdminPanelAuthEndpoints();
 
         AdminPanelEnvironment.IsHostingEmbedded = true;
 

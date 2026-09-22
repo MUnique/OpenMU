@@ -200,9 +200,10 @@ public static class CharacterClassHelper
     /// <param name="gameConfiguration">The game configuration.</param>
     /// <param name="value">The value.</param>
     /// <param name="attribute">The attribute.</param>
+    /// <param name="aggregateType">The aggregate type.</param>
     /// <returns>The constant value attribute.</returns>
-    public static ConstValueAttribute CreateConstValueAttribute(IContext context, GameConfiguration gameConfiguration, float value, AttributeDefinition attribute)
+    public static ConstValueAttribute CreateConstValueAttribute(IContext context, GameConfiguration gameConfiguration, float value, AttributeDefinition attribute, AggregateType aggregateType = AggregateType.AddRaw)
     {
-        return context.CreateNew<ConstValueAttribute>(value, attribute.GetPersistent(gameConfiguration));
+        return context.CreateNew<ConstValueAttribute>(value, attribute.GetPersistent(gameConfiguration), aggregateType);
     }
 }

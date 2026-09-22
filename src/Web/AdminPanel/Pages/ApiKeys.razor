@@ -1,0 +1,78 @@
+@page "/api-keys"
+
+@using MUnique.OpenMU.Web.AdminPanel.Properties
+@attribute [Authorize(Policy = AdminPolicies.Administrator)]
+
+@{
+    var title = Resources.ApiKeys;
+}
+<PageTitle>OpenMU: @title</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="@title" />
+<h1>@title</h1>
+
+<p class="text-muted">@Resources.ApiKeysDescription</p>
+
+@if (this._createdKey is { Length: > 0 } createdKey)
+{
+    <div class="alert alert-warning" role="alert">
+        <h5 class="alert-heading">
+            <span class="oi oi-key" aria-hidden="true"></span> @Resources.ApiKeyShownOnce
+        </h5>
+        <p>@Resources.ApiKeyShownOnceDescription</p>
+        <div class="input-group">
+            <input type="text" class="form-control font-monospace" readonly value="@createdKey" aria-label="@Resources.ApiKeys"/>
+            <button type="button" class="btn btn-primary" @onclick="@this.CopyCreatedKeyAsync">
+                <span class="oi oi-clipboard" aria-hidden="true"></span> @Resources.CopyToClipboard
+            </button>
+        </div>
+        <button type="button" class="btn btn-sm btn-secondary mt-3" @onclick="@(() => this._createdKey = null)">@Resources.Close</button>
+    </div>
+}
+
+@if (this._isLoading)
+{
+    <p>@Resources.Loading</p>
+}
+else
+{
+    <div>
+        <table class="table table-striped table-hover">
+            <thead>
+            <tr>
+                <th class="col-4">@Resources.ApiKeyName</th>
+                <th class="col-2">@Resources.ApiKeyPrefix</th>
+                <th class="col-2">@Resources.Role</th>
+                <th class="col-4">@Resources.Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var apiKey in this._apiKeys)
+            {
+                <tr class="@(apiKey.IsDisabled ? "opacity-50" : null)">
+                    <td>@apiKey.Name</td>
+                    <td><code>@apiKey.KeyPrefix…</code></td>
+                    <td>@apiKey.Roles</td>
+                    <td>
+                        @if (apiKey.IsDisabled)
+                        {
+                            <button type="button" class="btn btn-sm btn-success me-1" @onclick="@(() => this.OnSetDisabledAsync(apiKey, false))">@Resources.Enable</button>
+                        }
+                        else
+                        {
+                            <button type="button" class="btn btn-sm btn-warning me-1" @onclick="@(() => this.OnSetDisabledAsync(apiKey, true))">@Resources.Disable</button>
+                        }
+                        <button type="button" class="btn btn-sm btn-danger" @onclick="@(() => this.OnDeleteAsync(apiKey))">@Resources.Delete</button>
+                    </td>
+                </tr>
+            }
+            @if (this._apiKeys.Count == 0)
+            {
+                <tr>
+                    <td colspan="4" class="text-muted">@Resources.NoApiKeys</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        <button type="button" class="btn btn-sm btn-success" @onclick="@this.OnCreateNewAsync">@Resources.CreateApiKey</button>
+    </div>
+}

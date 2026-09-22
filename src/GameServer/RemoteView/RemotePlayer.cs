@@ -116,6 +116,41 @@ public class RemotePlayer : Player, IClientVersionProvider, IHasIpAddress
         }
     }
 
+    /// <inheritdoc/>
+    protected override async ValueTask DisposeAsyncCore()
+    {
+        // The teardown above only reaches the connection when the base teardown succeeded - a throw
+        // out of it (which DisconnectAsync catches and continues from) would otherwise leave the
+        // player disposed while its socket stays open with the packet handler still subscribed,
+        // feeding client packets into the disposed player until the client gives up. And once the
+        // player state advanced to Finished, the connection's own Disconnected -> DisconnectAsync
+        // callback can no longer run the teardown either - so the disposal is the last place which
+        // can still close it.
+        if (this.Connection is { } connection)
+        {
+            this.Connection = null;
+            connection.PacketReceived -= this.PacketReceivedAsync;
+            connection.Disconnected -= this.DisconnectAsync;
+            try
+            {
+                if (connection.Connected)
+                {
+                    await connection.DisconnectAsync().ConfigureAwait(false);
+                }
+            }
+            catch (Exception ex)
+            {
+                this.Logger.LogError(ex, "Error while disconnecting the connection of player {Player} during disposal.", this);
+            }
+            finally
+            {
+                connection.Dispose();
+            }
+        }
+
+        await base.DisposeAsyncCore().ConfigureAwait(false);
+    }
+
     /// <summary>
     /// Is getting called when a packet got received from the connection of the player.
     /// </summary>

@@ -38,5 +38,6 @@
   
   <ItemGroup>
     <ProjectReference Include="..\..\src\Network\MUnique.OpenMU.Network.csproj" />
+    <ProjectReference Include="..\..\src\Network\Analyzer\MUnique.OpenMU.Network.Analyzer.csproj" />
   </ItemGroup>
 </Project>

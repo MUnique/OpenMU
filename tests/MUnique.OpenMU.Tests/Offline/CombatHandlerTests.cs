@@ -112,6 +112,38 @@ public class CombatHandlerTests
         Assert.That(player.Rotation, Is.Not.EqualTo(default(Direction)));
     }
 
+    /// <summary>
+    /// Tests that <see cref="CombatHandler.IsSafeTarget"/> lets a fresh level-1 character engage a
+    /// monster a few levels above it: without the level headroom every monster is above the fresh
+    /// bot's effective level, so it could never acquire a target and just wandered.
+    /// </summary>
+    [Test]
+    public async ValueTask IsSafeTarget_LevelOnePlayer_MayEngageLevelSixMonster()
+    {
+        var player = await this.CreateOfflinePlayerAsync().ConfigureAwait(false);
+        player.Attributes![Stats.Level] = 1;
+        await player.SkillList!.AddLearnedSkillAsync(new TestSkill { AttackDamage = 20 }).ConfigureAwait(false);
+
+        var monster = await this.CreateMonsterAsync(default, 6, 2, 2, 5, 300, 28).ConfigureAwait(false);
+
+        Assert.That(CombatHandler.IsSafeTarget(player, monster.Definition), Is.True);
+    }
+
+    /// <summary>
+    /// Tests that the level headroom of <see cref="CombatHandler.IsSafeTarget"/> does not open the
+    /// floodgates: a level-1 character still rejects a monster far above its tier.
+    /// </summary>
+    [Test]
+    public async ValueTask IsSafeTarget_LevelOnePlayer_RejectsLevelThirtyMonster()
+    {
+        var player = await this.CreateOfflinePlayerAsync().ConfigureAwait(false);
+        player.Attributes![Stats.Level] = 1;
+
+        var monster = await this.CreateMonsterAsync(default, 30, 2, 2, 5, 300, 28).ConfigureAwait(false);
+
+        Assert.That(CombatHandler.IsSafeTarget(player, monster.Definition), Is.False);
+    }
+
     private async ValueTask<OfflinePlayer> CreateOfflinePlayerAsync()
     {
         return await PlayerTestHelper.CreateOfflineLevelingPlayerAsync(this._gameContext).ConfigureAwait(false);
@@ -119,12 +151,21 @@ public class CombatHandlerTests
 
     private async ValueTask<Monster> CreateMonsterAsync(Point position)
     {
+        return await this.CreateMonsterAsync(position, 6, minDamage: 2, maxDamage: 2, defense: 5, health: 300, attackRate: 28).ConfigureAwait(false);
+    }
+
+    private async ValueTask<Monster> CreateMonsterAsync(Point position, int level, float minDamage, float maxDamage, float defense, float health, float attackRate)
+    {
         var monsterDefinition = new MonsterDefinition
         {
             ObjectKind = NpcObjectKind.Monster,
         };
-        monsterDefinition.Attributes.Add(new MonsterAttribute { AttributeDefinition = Stats.MaximumHealth, Value = 1000 });
-        monsterDefinition.Attributes.Add(new MonsterAttribute { AttributeDefinition = Stats.DefenseBase, Value = 100 });
+        monsterDefinition.Attributes.Add(new MonsterAttribute { AttributeDefinition = Stats.Level, Value = level });
+        monsterDefinition.Attributes.Add(new MonsterAttribute { AttributeDefinition = Stats.MinimumPhysBaseDmg, Value = minDamage });
+        monsterDefinition.Attributes.Add(new MonsterAttribute { AttributeDefinition = Stats.MaximumPhysBaseDmg, Value = maxDamage });
+        monsterDefinition.Attributes.Add(new MonsterAttribute { AttributeDefinition = Stats.DefenseBase, Value = defense });
+        monsterDefinition.Attributes.Add(new MonsterAttribute { AttributeDefinition = Stats.MaximumHealth, Value = health });
+        monsterDefinition.Attributes.Add(new MonsterAttribute { AttributeDefinition = Stats.AttackRatePvm, Value = attackRate });
 
         var map = await this._gameContext.GetMapAsync(0).ConfigureAwait(false)!;
         var spawnArea = new MonsterSpawnArea

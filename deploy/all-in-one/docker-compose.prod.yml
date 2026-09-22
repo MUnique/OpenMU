@@ -13,7 +13,6 @@ services:
       DOMAIN_NAME: ${DOMAIN_NAME}
     volumes:
       - ./nginx/nginx.prod80.conf:/etc/nginx/nginx.conf:ro
-      - ./.htpasswd:/etc/nginx/.htpasswd
       - ./certbot/www:/var/www/certbot/:ro
       - ./nginx/templates/nginx.server_name.conf.template:/etc/nginx/templates/nginx.server_name.conf.template:ro
 
@@ -32,7 +31,6 @@ services:
       - "443:443"
     volumes:
       - ./nginx/nginx.prod443.conf:/etc/nginx/nginx.conf:ro
-      - ./.htpasswd:/etc/nginx/.htpasswd
       - ./certbot/conf/:/etc/nginx/ssl/:ro
       - ./nginx/templates/nginx.server_name.conf.template:/etc/nginx/templates/nginx.server_name.conf.template:ro
       - ./nginx/templates/nginx.prod.certificates.conf.template:/etc/nginx/templates/nginx.prod.certificates.conf.template:ro

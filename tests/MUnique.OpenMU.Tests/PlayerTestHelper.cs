@@ -44,6 +44,7 @@ public static class PlayerTestHelper
         map.SetupAllProperties();
         map.Setup(m => m.DropItemGroups).Returns(new List<DropItemGroup>());
         map.Setup(m => m.MonsterSpawns).Returns(new List<MonsterSpawnArea>());
+        map.Setup(m => m.ExitGates).Returns(new List<ExitGate>());
         map.Object.TerrainData = new byte[ushort.MaxValue + 3];
         gameConfig.Object.RecoveryInterval = int.MaxValue;
         gameConfig.Object.Maps.Add(map.Object);
@@ -80,6 +81,7 @@ public static class PlayerTestHelper
             new List<StatAttributeDefinition>
             {
                 new (Stats.Level, 0, false),
+                new (Stats.MasterLevel, 0, false),
                 new (Stats.BaseStrength, 28, true),
                 new (Stats.BaseAgility, 20, true),
                 new (Stats.BaseVitality, 25, true),

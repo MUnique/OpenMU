@@ -7,9 +7,12 @@ using Microsoft.Extensions.DependencyInjection;
 using MUnique.OpenMU.AdminPanel.Host;
 using MUnique.OpenMU.Dapr.Common;
 using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
 using MUnique.OpenMU.ServerClients;
+using MUnique.OpenMU.Persistence.EntityFramework.AdminAuth;
 using MUnique.OpenMU.Web.AdminPanel;
+using MUnique.OpenMU.Web.AdminPanel.Auth;
 
 var builder = DaprService.CreateBuilder("AdminPanel", args);
 
@@ -22,7 +25,9 @@ services.AddPeristenceProvider(true)
     .AddManageableServerRegistry()
     .AddSingleton<ILoginServer, LoginServer>()
     .AddSingleton<IGameServerInstanceManager, DockerGameServerInstanceManager>()
-    .AddSingleton<IConnectServerInstanceManager, DockerConnectServerInstanceManager>();
+    .AddSingleton<IConnectServerInstanceManager, DockerConnectServerInstanceManager>()
+    .AddSingleton<IBackupService, BackupService>()
+    .AddAdminUserRepository();
 
 builder.AddAdminPanel();
 
@@ -33,9 +38,12 @@ builder.AddOpenTelemetryMetrics(metricsRegistry);
 
 var app = builder.BuildAndConfigure(false);
 app.UseStaticFiles();
+app.UseRouting();
+app.UseAdminPanelAuth();
 app.UseAntiforgery();
 app.MapRazorComponents<MUnique.OpenMU.Web.AdminPanel.Components.App>()
     .AddInteractiveServerRenderMode();
+app.MapAdminPanelAuthEndpoints();
 
 await app.WaitForDatabaseConnectionInitializationAsync().ConfigureAwait(false);
 

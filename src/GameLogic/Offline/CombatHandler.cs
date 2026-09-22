@@ -23,6 +23,14 @@ public sealed class CombatHandler
     private const byte DefaultRange = 1;
     private const byte BowRange = 6;
 
+    /// <summary>
+    /// How many levels above its own a bot may still consider a monster: without it, a level-1
+    /// character (0 resets, 0 master level) could never engage anything above its nominal level.
+    /// The real safety net is the damage/defense/hit-budget math below, not this ceiling, so a
+    /// modest headroom is safe.
+    /// </summary>
+    private const int LevelHeadroom = 5;
+
     /// <summary>Item group of the Horn of Fenrir, the pet behind <see cref="DamageType.Fenrir"/>.</summary>
     private const byte FenrirItemGroup = 13;
 
@@ -192,8 +200,8 @@ public sealed class CombatHandler
     /// raises the bot's defense and unlocks tougher maps, exactly like it does for a real player.
     /// The bot's own offense must in turn exceed the monster's defense (<see cref="MinAttackAdvantage"/>),
     /// so it never besieges a tank monster it can barely scratch, and the monster's level must not
-    /// exceed the bot's own (on reset servers: its reset-aware effective level, see
-    /// <see cref="BotResetHandler.GetEffectiveLevel"/>).
+    /// exceed the bot's own by more than <see cref="LevelHeadroom"/> (on reset servers: its reset-aware
+    /// effective level, see <see cref="BotResetHandler.GetEffectiveLevel"/>).
     /// Shared by the combat AI and the bot navigator, so a bot never stops travelling for (or engages)
     /// a monster it should not fight.
     /// </summary>
@@ -209,8 +217,9 @@ public sealed class CombatHandler
 
         // Reset-aware: on servers with the reset feature a freshly reset character is nominally a
         // low level again but keeps the strength of its resets - the effective level keeps it from
-        // being locked out of the maps it just hunted on.
-        if (monsterLevel > BotResetHandler.GetEffectiveLevel(player))
+        // being locked out of the maps it just hunted on. The headroom (<see cref="LevelHeadroom"/>)
+        // lets a low-level character fight monsters a few levels above its own.
+        if (monsterLevel > BotResetHandler.GetEffectiveLevel(player) + LevelHeadroom)
         {
             return false;
         }
@@ -766,6 +775,7 @@ public sealed class CombatHandler
         }
 
         var ridesFenrir = this.RidesFenrir();
+        var isBot = this.IsBot;
         var candidates = new List<(SkillEntry Entry, float Score)>();
         foreach (var entry in skillList.Skills)
         {
@@ -773,6 +783,12 @@ public sealed class CombatHandler
                 || !BotProgression.IsAttackSkill(skill)
                 || BotProgression.IsCastleSiegeOnly(skill)
                 || (BotProgression.RequiresPet(skill) && !ridesFenrir)
+
+                // Mount-bound skills are never selectable for bots - no mount detection needed, even if
+                // a looted pet sits in the pet slot. This also covers bots which had already learned
+                // such a skill before the gate existed. Humans keep their mounted skills: their client
+                // only enables the cast while riding anyway.
+                || (isBot && BotProgression.RequiresMount(skill))
                 || skill.Range == 0
 
                 // Same trap as the buffs: a character keeps its skills across a reset but not the level

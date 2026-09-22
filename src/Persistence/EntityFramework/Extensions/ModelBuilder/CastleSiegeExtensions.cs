@@ -74,6 +74,20 @@ internal static class CastleSiegeExtensions
     }
 
     /// <summary>
+    /// Applies the settings for the <see cref="CastleSiegeGuild"/> entity.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    public static void Apply(this EntityTypeBuilder<CastleSiegeGuild> builder)
+    {
+        builder.Property(guild => guild.GuildName).HasMaxLength(8).IsRequired();
+        builder.HasIndex(guild => guild.GuildId).IsUnique();
+        builder.HasOne<Guild>()
+            .WithMany()
+            .HasForeignKey(guild => guild.GuildId)
+            .OnDelete(DeleteBehavior.Cascade);
+    }
+
+    /// <summary>
     /// Applies the settings for the <see cref="CastleSiegeGuildRegistration"/> entity.
     /// </summary>
     /// <param name="builder">The builder.</param>
@@ -85,5 +99,22 @@ internal static class CastleSiegeExtensions
             .WithMany()
             .HasForeignKey(registration => registration.GuildId)
             .OnDelete(DeleteBehavior.Cascade);
+    }
+
+    /// <summary>
+    /// Applies the settings for the <see cref="CastleSiegePendingReward"/> entity.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    public static void Apply(this EntityTypeBuilder<CastleSiegePendingReward> builder)
+    {
+        builder.HasIndex(reward => reward.CharacterId);
+        builder.HasOne<Character>()
+            .WithMany()
+            .HasForeignKey(reward => reward.CharacterId)
+            .OnDelete(DeleteBehavior.Cascade);
+        builder.HasOne<ItemDefinition>()
+            .WithMany()
+            .HasForeignKey(reward => reward.ItemDefinitionId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

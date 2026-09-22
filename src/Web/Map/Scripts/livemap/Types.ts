@@ -26,10 +26,15 @@ export interface ObjectData {
     readonly x: number;
     readonly y: number;
     readonly direction: Direction;
+
+    readonly level?: number;
+    readonly masterLevel?: number;
 }
 
 export interface PlayerData extends ObjectData {
     readonly isHighlighted: boolean;
+    readonly level: number;
+    readonly masterLevel: number;
 }
 
 export interface NpcData extends ObjectData {

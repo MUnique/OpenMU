@@ -1,16 +1,58 @@
-@using MUnique.OpenMU.Web.AdminPanel.Properties
+﻿@using MUnique.OpenMU.Web.AdminPanel.Properties
 @using MUnique.OpenMU.Web.Shared.Services
+@using Microsoft.Extensions.Options
 
 @inherits LayoutComponentBase
+@inject IOptions<AdminPanelAuthOptions> AuthOptions
+@inject NavigationManager NavigationManager
 
 @code {
     [CascadingParameter]
     public HttpContext? HttpContext { get; set; }
 
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthenticationStateTask { get; set; }
+
+    private bool _isTwoFactorSetupPending;
+
     private bool IsDarkTheme => string.Equals(
         this.HttpContext?.Request.Cookies[ThemeController.CookieName],
         "dark",
         StringComparison.OrdinalIgnoreCase);
+
+    /// <inheritdoc />
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+        this._isTwoFactorSetupPending = await this.IsTwoFactorSetupPendingAsync();
+    }
+
+    /// <summary>
+    /// Determines whether the signed in user still has to set its second factor up.
+    /// </summary>
+    /// <remarks>
+    /// A cookie is only issued after the second factor was checked, so the missing "mfa" claim
+    /// means that this user has no second factor at all - and the configuration demands one.
+    /// </remarks>
+    private async Task<bool> IsTwoFactorSetupPendingAsync()
+    {
+        if (!this.AuthOptions.Value.RequireTwoFactor || this.AuthenticationStateTask is null)
+        {
+            return false;
+        }
+
+        var relativePath = this.NavigationManager.ToBaseRelativePath(this.NavigationManager.Uri);
+        if (relativePath.StartsWith("account/security", StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        var state = await this.AuthenticationStateTask;
+        return state.User.Identity?.IsAuthenticated is true
+            && !state.User.HasClaim(
+                AdminAuthenticationDefaults.AuthenticationMethodClaimType,
+                AdminAuthenticationDefaults.MultiFactorAuthenticationMethod);
+    }
 }
 
 <div class="page">
@@ -27,7 +69,7 @@
                     </div>
                     <div class="header-actions ms-3 d-flex align-items-center">
                         <ThemeSelector IsDark="@this.IsDarkTheme" />
-                        <a href="https://munique.net" target="_blank" class="text-secondary small ms-3">@Resources.About</a>
+                        <div class="ms-3"><LoginDisplay /></div>
                     </div>
                 </div>
             </div>
@@ -42,7 +84,18 @@
         <ToastContainer />
 
         <article class="content px-4 py-3">
-            @Body
+            @if (this._isTwoFactorSetupPending)
+            {
+                <div class="alert alert-warning" role="alert">
+                    <h2 class="h5">@Resources.TwoFactorRequiredTitle</h2>
+                    <p class="mb-2">@Resources.TwoFactorRequiredDescription</p>
+                    <a class="btn btn-primary btn-sm" href="account/security">@Resources.SetUpAuthenticator</a>
+                </div>
+            }
+            else
+            {
+                @Body
+            }
         </article>
     </main>
     <CreationPanel />

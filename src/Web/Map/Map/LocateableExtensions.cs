@@ -1,10 +1,11 @@
-﻿// <copyright file="LocateableExtensions.cs" company="MUnique">
+// <copyright file="LocateableExtensions.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
 namespace MUnique.OpenMU.Web.Map.Map;
 
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 
 /// <summary>
@@ -28,6 +29,14 @@ public static class LocateableExtensions
             X = locateable.Position.X,
             Y = locateable.Position.Y,
             NpcObjectKind = (locateable as NonPlayerCharacter)?.Definition.ObjectKind,
+            Level = GetLevel(locateable),
+            MasterLevel = GetMasterLevel(locateable),
         };
     }
+
+    private static int GetLevel(ILocateable locateable) =>
+        (int)((locateable as IAttackable)?.Attributes?[Stats.Level] ?? 0);
+
+    private static int GetMasterLevel(ILocateable locateable) =>
+        (int)((locateable as Player)?.Attributes?[Stats.MasterLevel] ?? 0);
 }

@@ -14,10 +14,10 @@ services:
       - "44405:44405"
       - "55980:55980"
     environment:
-      DB_HOST: database
+      DB_HOST: ${DB_HOST:-database}
+      DB_ADMIN_USER: ${DB_ADMIN_USER:-}
+      DB_ADMIN_PW: ${DB_ADMIN_PW:-}
     working_dir: /app/
-    volumes:
-      - ./.htpasswd:/etc/nginx/.htpasswd
     depends_on:
       - database
     labels:
@@ -25,16 +25,14 @@ services:
       - "traefik.docker.network=proxy"
       - "traefik.http.routers.openmu.entrypoints=websecure"
       - "traefik.http.routers.openmu.rule=Host(`${DOMAIN}`)"
-      - "traefik.http.routers.openmu.middlewares=auth"
-      - "traefik.http.middlewares.auth.basicauth.usersfile=.htpasswd"
 
   database:
     image: postgres
     container_name: database
     environment:
-      POSTGRES_PASSWORD: admin
-      POSTGRES_DB: openmu
-      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_ADMIN_PW:-admin}
+      POSTGRES_DB: ${DB_NAME:-openmu}
+      POSTGRES_USER: ${DB_ADMIN_USER:-postgres}
     networks:
       - proxy
     ports:
@@ -57,7 +55,6 @@ services:
       - ./data-traefik/traefik.yml:/traefik.yml:ro
       - ./data-traefik/acme.json:/acme.json
       - ./data-traefik/configurations:/configurations
-      - "./.htpasswd:/.htpasswd"
     networks:
       - proxy
     labels:

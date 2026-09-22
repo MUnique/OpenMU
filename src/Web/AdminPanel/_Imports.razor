@@ -1,4 +1,4 @@
-@using System.Net.Http
+﻿@using System.Net.Http
 @using System.Net.Http.Json
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
@@ -13,6 +13,7 @@
 @using BlazorInputFile
 
 @using MUnique.OpenMU.Web.AdminPanel
+@using MUnique.OpenMU.Web.AdminPanel.Auth
 @using MUnique.OpenMU.Web.AdminPanel.Components
 
 @using MUnique.OpenMU.Web.Shared
@@ -22,3 +23,5 @@
 @using MUnique.OpenMU.Web.Shared.Components.Form
 @using MUnique.OpenMU.Web.Shared.Components.Form.Modal
 @using MUnique.OpenMU.Web.Shared.Services
+
+@attribute [Authorize]

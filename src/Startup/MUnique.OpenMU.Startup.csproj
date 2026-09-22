@@ -36,6 +36,7 @@
     <ProjectReference Include="..\GameServer\MUnique.OpenMU.GameServer.csproj" /> 
     <ProjectReference Include="..\GuildServer\MUnique.OpenMU.GuildServer.csproj" />
     <ProjectReference Include="..\Interfaces\MUnique.OpenMU.Interfaces.csproj" />    
+    <ProjectReference Include="..\Network\Analyzer\MUnique.OpenMU.Network.Analyzer.csproj" />
     <ProjectReference Include="..\LoginServer\MUnique.OpenMU.LoginServer.csproj" />
     <ProjectReference Include="..\Persistence\InMemory\MUnique.OpenMU.Persistence.InMemory.csproj" />
     <ProjectReference Include="..\Persistence\EntityFramework\MUnique.OpenMU.Persistence.EntityFramework.csproj" />

@@ -13,7 +13,7 @@ using MUnique.OpenMU.GameLogic.PlayerActions.Party;
 
 /// <summary>
 /// Tests <see cref="BotPartyHandler"/> - how a server-side bot answers party invitations from
-/// players and when it leaves the party again.
+/// players and how long it stays in a party.
 /// </summary>
 [TestFixture]
 public class BotPartyHandlerTest
@@ -45,7 +45,7 @@ public class BotPartyHandlerTest
 
     /// <summary>
     /// There is no level gate (matching OpenMU's own party action): a bot accepts an inviter of any
-    /// level, since it is the player who invites and the bot leaves again once it gets bored. The
+    /// level, since it is the player who invites and the bot stays with the party once it joined. The
     /// inviter here is a maxed veteran (character level 400 plus the master level cap of 200, i.e. the
     /// ceiling of the Season 6 seed) inviting a low-level bot - the widest gap a stock server produces.
     /// </summary>
@@ -125,10 +125,12 @@ public class BotPartyHandlerTest
     }
 
     /// <summary>
-    /// After its rolled party time is up, the bot gets bored of the party with a human and leaves.
+    /// The bot stays in a party with a human instead of leaving on its own: a player who groups a
+    /// bot keeps a companion for the whole session, and the bot only leaves on the engine's own
+    /// terms (party disbands, kicked, or it cannot legally follow the leader anymore).
     /// </summary>
     [Test]
-    public async ValueTask LeavesPartyWithHumanWhenBoredAsync()
+    public async ValueTask StaysInPartyWithHumanAsync()
     {
         var gameContext = GameContextTestHelper.CreateGameContext();
         var bot = await CreateBotAsync(gameContext, "Bot").ConfigureAwait(false);
@@ -137,16 +139,15 @@ public class BotPartyHandlerTest
         await party.AddAsync(requester).ConfigureAwait(false);
         await party.AddAsync(bot).ConfigureAwait(false);
 
-        bot.PartyBoredomAtUtc = DateTime.UtcNow - TimeSpan.FromSeconds(1);
         await BotPartyHandler.ProcessAsync(bot).ConfigureAwait(false);
 
-        Assert.That(bot.Party, Is.Null);
-        Assert.That(bot.PartyBoredomAtUtc, Is.Null);
+        Assert.That(bot.Party, Is.SameAs(party));
+        Assert.That(requester.Party, Is.SameAs(party));
     }
 
     /// <summary>
-    /// Bot-only parties are managed by the hourly re-formation instead - no boredom timer runs, and
-    /// the bot stays with its group.
+    /// Bot-only parties are managed by the hourly re-formation (see <see cref="BotManager"/>), and a
+    /// bot never leaves such a party on its own - it stays with its group.
     /// </summary>
     [Test]
     public async ValueTask StaysInBotOnlyPartyAsync()
@@ -158,11 +159,90 @@ public class BotPartyHandlerTest
         await party.AddAsync(otherBot).ConfigureAwait(false);
         await party.AddAsync(bot).ConfigureAwait(false);
 
-        bot.PartyBoredomAtUtc = DateTime.UtcNow - TimeSpan.FromSeconds(1);
         await BotPartyHandler.ProcessAsync(bot).ConfigureAwait(false);
 
         Assert.That(bot.Party, Is.SameAs(party));
-        Assert.That(bot.PartyBoredomAtUtc, Is.Null);
+    }
+
+    /// <summary>
+    /// When the player who grouped the bot disconnects, the engine swaps them for an offline snapshot
+    /// to keep the slot reserved. The bot must not leave immediately - it waits out the grace period,
+    /// so a quick reconnect (or the player starting off-level) does not strand or churn the party.
+    /// </summary>
+    [Test]
+    public async ValueTask StaysInPartyDuringGracePeriodAfterHumanDisconnectsAsync()
+    {
+        var gameContext = GameContextTestHelper.CreateGameContext();
+        var bot = await CreateBotAsync(gameContext, "Bot").ConfigureAwait(false);
+        var requester = await CreateHumanAsync(gameContext, "Human").ConfigureAwait(false);
+        var party = gameContext.PartyManager.CreateParty();
+        await party.AddAsync(requester).ConfigureAwait(false);
+        await party.AddAsync(bot).ConfigureAwait(false);
+
+        // The human disconnects: the engine keeps the slot by replacing them with an offline snapshot.
+        await party.LeaveTemporarilyAsync(requester).ConfigureAwait(false);
+
+        await BotPartyHandler.ProcessAsync(bot).ConfigureAwait(false);
+
+        Assert.That(bot.Party, Is.SameAs(party));
+    }
+
+    /// <summary>
+    /// Once the human who grouped the bot has been gone for longer than the grace period - and is
+    /// neither reconnected nor off-leveling - the bot leaves the dead party so it returns to the
+    /// party-less pool the hourly re-formation draws from, instead of being stranded forever.
+    /// </summary>
+    [Test]
+    public async ValueTask LeavesPartyAfterGracePeriodWhenHumanStaysGoneAsync()
+    {
+        var gameContext = GameContextTestHelper.CreateGameContext();
+        var bot = await CreateBotAsync(gameContext, "Bot").ConfigureAwait(false);
+        var requester = await CreateHumanAsync(gameContext, "Human").ConfigureAwait(false);
+        var party = gameContext.PartyManager.CreateParty();
+        await party.AddAsync(requester).ConfigureAwait(false);
+        await party.AddAsync(bot).ConfigureAwait(false);
+
+        await party.LeaveTemporarilyAsync(requester).ConfigureAwait(false);
+
+        // Simulate the human having been gone past the grace period.
+        var pastGracePeriod = DateTime.UtcNow + TimeSpan.FromMinutes(11);
+
+        await BotPartyHandler.ProcessAsync(bot, pastGracePeriod).ConfigureAwait(false);
+
+        Assert.That(bot.Party, Is.Null);
+    }
+
+    /// <summary>
+    /// Mastership moves off the disconnected human when a live member leaves the party properly
+    /// (<see cref="Party"/> hands the master slot to the first remaining member), so a dead party can
+    /// end up with a live bot as master while a human's snapshot is still seated in it. The bot must
+    /// still leave once the grace period elapses - keying off the master's type instead of whether any
+    /// human snapshot remains would let this shape through.
+    /// </summary>
+    [Test]
+    public async ValueTask LeavesPartyWhenMasterIsBotButHumanSnapshotRemainsAsync()
+    {
+        var gameContext = GameContextTestHelper.CreateGameContext();
+        var master = await CreateHumanAsync(gameContext, "Master").ConfigureAwait(false);
+        var bot = await CreateBotAsync(gameContext, "Bot").ConfigureAwait(false);
+        var other = await CreateHumanAsync(gameContext, "Other").ConfigureAwait(false);
+        var party = gameContext.PartyManager.CreateParty();
+        await party.AddAsync(master).ConfigureAwait(false);
+        await party.AddAsync(bot).ConfigureAwait(false);
+        await party.AddAsync(other).ConfigureAwait(false);
+
+        // The master leaves properly: mastership moves to the first remaining member, the bot.
+        await party.KickMySelfAsync(master).ConfigureAwait(false);
+        Assert.That(party.PartyMaster, Is.SameAs(bot));
+
+        // The remaining human then disconnects, leaving a snapshot behind a live bot master.
+        await party.LeaveTemporarilyAsync(other).ConfigureAwait(false);
+
+        var pastGracePeriod = DateTime.UtcNow + TimeSpan.FromMinutes(11);
+
+        await BotPartyHandler.ProcessAsync(bot, pastGracePeriod).ConfigureAwait(false);
+
+        Assert.That(bot.Party, Is.Null);
     }
 
     /// <summary>

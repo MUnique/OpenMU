@@ -139,17 +139,18 @@ public class OfflinePlayer : Player
     internal Bots.PendingPartyInvite? PendingPartyInvite { get; set; }
 
     /// <summary>
-    /// Gets or sets the time at which the bot gets bored of its current party with a human player
-    /// and politely leaves it (managed by <see cref="Bots.BotPartyHandler"/>).
-    /// </summary>
-    internal DateTime? PartyBoredomAtUtc { get; set; }
-
-    /// <summary>
     /// Gets or sets a value indicating whether the bot is currently on a shopping trip (walking to
     /// or trading with a merchant), maintained by <see cref="Bots.BotNavigator"/>. While on an errand
     /// the bot declines party invitations, like a busy player would.
     /// </summary>
     internal bool IsOnShoppingTrip { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the bot is currently walking to a buff NPC to claim the
+    /// free buff it offers (e.g. the Elf Soldier), maintained by <see cref="Bots.BotNavigator"/>.
+    /// While on an errand the bot declines party invitations, like a busy player would.
+    /// </summary>
+    internal bool IsOnBuffTrip { get; set; }
 
     /// <summary>
     /// Gets a value indicating whether a revenge against a player killer is pending or armed - the

@@ -14,6 +14,17 @@ public class AttributeSystem : IAttributeSystem, IEnumerable<IAttribute>
     private readonly IDictionary<AttributeDefinition, IAttribute> _attributes = new Dictionary<AttributeDefinition, IAttribute>();
 
     /// <summary>
+    /// Synchronizes every access to <see cref="_attributes"/>. The dictionary is read on the game logic
+    /// thread (damage calculations, stat lookups) while an attribute can be removed from a thread pool
+    /// thread when a magic effect expires on its timer (see <see cref="RemoveElement"/>). Concurrent
+    /// mutation of a plain <see cref="Dictionary{TKey,TValue}"/> during reads is undefined - wrong
+    /// results, exceptions, or an infinite spin inside a resizing lookup. Only the dictionary operations
+    /// are guarded; element aggregation and value-changed dispatch run outside this lock, so it never
+    /// nests into another attribute system's lock and cannot deadlock.
+    /// </summary>
+    private readonly object _attributesLock = new();
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="AttributeSystem" /> class.
     /// </summary>
     /// <param name="statAttributes">The stat attributes. These attributes are added just as-is and are not wrapped by a <see cref="ComposableAttribute"/>.</param>
@@ -86,8 +97,13 @@ public class AttributeSystem : IAttributeSystem, IEnumerable<IAttribute>
             return false;
         }
 
-        if (this._attributes.TryGetValue(attributeDefinition, out var attribute)
-            && attribute is StatAttribute statAttribute)
+        IAttribute? attribute;
+        lock (this._attributesLock)
+        {
+            this._attributes.TryGetValue(attributeDefinition, out attribute);
+        }
+
+        if (attribute is StatAttribute statAttribute)
         {
             statAttribute.Value = newValue;
 
@@ -128,39 +144,62 @@ public class AttributeSystem : IAttributeSystem, IEnumerable<IAttribute>
     /// <inheritdoc/>
     public void AddElement(IElement element, AttributeDefinition targetAttribute)
     {
-        if (!this._attributes.TryGetValue(targetAttribute, out var attribute))
+        // The get-or-create is atomic under the lock so two threads racing the first add of the same
+        // attribute cannot both create it (which would make the second Dictionary.Add throw). The
+        // element is then added - and its ValueChanged dispatched - outside the lock, so the lock is
+        // never held across a call that could reach another attribute system's lock.
+        IComposableAttribute composableAttribute;
+        ComposableAttribute? created = null;
+        lock (this._attributesLock)
         {
-            attribute = new ComposableAttribute(targetAttribute);
-            this._attributes.Add(targetAttribute, attribute);
-            this.OnAttributeAdded(attribute);
+            if (this._attributes.TryGetValue(targetAttribute, out var attribute))
+            {
+                composableAttribute = attribute as IComposableAttribute
+                    ?? throw new ArgumentException($"Attribute {targetAttribute} is not a composable attribute.");
+            }
+            else
+            {
+                var composable = new ComposableAttribute(targetAttribute);
+                this._attributes.Add(targetAttribute, composable);
+                composableAttribute = composable;
+                created = composable;
+            }
         }
 
-        if (attribute is IComposableAttribute composableAttribute)
+        if (created is not null)
         {
-            composableAttribute.AddElement(element);
+            this.OnAttributeAdded(created);
         }
-        else
-        {
-            throw new ArgumentException($"Attribute {targetAttribute} is not a composable attribute.");
-        }
+
+        composableAttribute.AddElement(element);
     }
 
     /// <inheritdoc/>
     public void RemoveElement(IElement element, AttributeDefinition targetAttribute)
     {
-        if (this._attributes.TryGetValue(targetAttribute, out var attribute))
+        IComposableAttribute composableAttribute;
+        lock (this._attributesLock)
         {
-            if (attribute is IComposableAttribute composableAttribute)
+            if (!this._attributes.TryGetValue(targetAttribute, out var attribute))
             {
-                composableAttribute.RemoveElement(element);
-                if (!composableAttribute.Elements.Any())
-                {
-                    this._attributes.Remove(targetAttribute);
-                }
+                return;
             }
-            else
+
+            composableAttribute = attribute as IComposableAttribute
+                ?? throw new ArgumentException($"Attribute {targetAttribute} is not a composable attribute.");
+        }
+
+        composableAttribute.RemoveElement(element);
+
+        lock (this._attributesLock)
+        {
+            // Only drop the attribute when it is still empty and still the very instance we just mutated,
+            // so a concurrent AddElement that repopulated it does not get its element discarded (TOCTOU).
+            if (!composableAttribute.Elements.Any()
+                && this._attributes.TryGetValue(targetAttribute, out var current)
+                && ReferenceEquals(current, composableAttribute))
             {
-                throw new ArgumentException($"Attribute {targetAttribute} is not a composable attribute.");
+                this._attributes.Remove(targetAttribute);
             }
         }
     }
@@ -168,15 +207,16 @@ public class AttributeSystem : IAttributeSystem, IEnumerable<IAttribute>
     /// <inheritdoc/>
     public override string ToString()
     {
+        var snapshot = this.GetAttributeSnapshot();
         var stringBuilder = new StringBuilder();
         stringBuilder.AppendLine("Stat Attributes:");
-        foreach (var statAttribute in this._attributes.Values.OfType<StatAttribute>())
+        foreach (var statAttribute in snapshot.OfType<StatAttribute>())
         {
             stringBuilder.AppendLine($"  {statAttribute.Definition}: {statAttribute.Value}");
         }
 
         stringBuilder.AppendLine("Others:");
-        foreach (var attribute in this._attributes.Values.OfType<IComposableAttribute>())
+        foreach (var attribute in snapshot.OfType<IComposableAttribute>())
         {
             stringBuilder.AppendLine($"  {attribute.Definition}: {attribute.Value}");
         }
@@ -187,7 +227,7 @@ public class AttributeSystem : IAttributeSystem, IEnumerable<IAttribute>
     /// <inheritdoc />
     public IEnumerator<IAttribute> GetEnumerator()
     {
-        return this._attributes.Values.GetEnumerator();
+        return ((IEnumerable<IAttribute>)this.GetAttributeSnapshot()).GetEnumerator();
     }
 
     /// <inheritdoc />
@@ -203,13 +243,26 @@ public class AttributeSystem : IAttributeSystem, IEnumerable<IAttribute>
     /// <returns>The element of the attribute.</returns>
     public IElement GetOrCreateAttribute(AttributeDefinition attributeDefinition)
     {
-        var element = this.GetAttribute(attributeDefinition);
-        if (element is null)
+        IElement element;
+        ComposableAttribute? created = null;
+        lock (this._attributesLock)
         {
-            var composableAttribute = new ComposableAttribute(attributeDefinition);
-            element = composableAttribute;
-            this._attributes.Add(attributeDefinition, composableAttribute);
-            this.OnAttributeAdded(composableAttribute);
+            if (this._attributes.TryGetValue(attributeDefinition, out var existing))
+            {
+                element = existing;
+            }
+            else
+            {
+                var composableAttribute = new ComposableAttribute(attributeDefinition);
+                this._attributes.Add(attributeDefinition, composableAttribute);
+                element = composableAttribute;
+                created = composableAttribute;
+            }
+        }
+
+        if (created is not null)
+        {
+            this.OnAttributeAdded(created);
         }
 
         return element;
@@ -249,11 +302,17 @@ public class AttributeSystem : IAttributeSystem, IEnumerable<IAttribute>
             return null;
         }
 
-        if (this._attributes.TryGetValue(attributeDefinition, out var attribute))
+        lock (this._attributesLock)
         {
-            return attribute;
+            return this._attributes.TryGetValue(attributeDefinition, out var attribute) ? attribute : null;
         }
+    }
 
-        return null;
+    private IAttribute[] GetAttributeSnapshot()
+    {
+        lock (this._attributesLock)
+        {
+            return this._attributes.Values.ToArray();
+        }
     }
 }

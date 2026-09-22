@@ -1,12 +1,12 @@
-<Project>
+﻿<Project>
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
+    <PackageVersion Include="bunit" Version="2.9.0" />
     <PackageVersion Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageVersion Include="BenchmarkDotNet" Version="0.15.8" />
     <PackageVersion Include="BlazorInputFile" Version="0.2.0" />
-    <PackageVersion Include="BuildWebCompiler2022" Version="1.14.15" />
     <PackageVersion Include="DG.AdvancedDataGridView" Version="1.2.30115.18" />
     <PackageVersion Include="Dapr.AspNetCore" Version="1.16.1" />
     <PackageVersion Include="Dapr.Client" Version="1.16.1" />
@@ -43,6 +43,7 @@
     <PackageVersion Include="OpenTelemetry.Exporter.Zipkin" Version="1.10.0" />
     <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.10.0" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.9.0" />
+    <PackageVersion Include="QRCoder" Version="1.8.0" />
     <PackageVersion Include="Pipelines.Sockets.Unofficial" Version="2.2.8" />
     <PackageVersion Include="Serilog" Version="4.3.0" />
     <PackageVersion Include="Serilog.Extensions.Hosting" Version="10.0.0" />

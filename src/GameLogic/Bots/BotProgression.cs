@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.Bots;
 
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
 
 /// <summary>
@@ -23,41 +24,22 @@ internal static class BotProgression
     /// </summary>
     public const int ClassEvolutionLevel = 200;
 
-    /// <summary>
-    /// The character class numbers from the game's data model (<c>CharacterClassNumber</c> lives in the
-    /// initialization assembly which GameLogic does not reference, so the relevant values are mirrored here).
-    /// </summary>
-    private const byte DarkWizardNumber = 0;
-    private const byte SoulMasterNumber = 2;
-    private const byte GrandMasterNumber = 3;
-    private const byte DarkKnightNumber = 4;
-    private const byte BladeKnightNumber = 6;
-    private const byte BladeMasterNumber = 7;
-    private const byte FairyElfNumber = 8;
-    private const byte MuseElfNumber = 10;
-    private const byte HighElfNumber = 11;
-    private const byte MagicGladiatorNumber = 12;
-    private const byte DuelMasterNumber = 13;
-    private const byte DarkLordNumber = 16;
-    private const byte LordEmperorNumber = 17;
-    private const byte SummonerNumber = 20;
-    private const byte BloodySummonerNumber = 22;
-    private const byte DimensionMasterNumber = 23;
-    private const byte RageFighterNumber = 24;
-    private const byte FistMasterNumber = 25;
+    /// <summary>The item group of skill orbs.</summary>
+    internal const byte SkillOrbItemGroup = 12;
+
+    /// <summary>The item group of skill scrolls and parchments.</summary>
+    internal const byte SkillScrollItemGroup = 15;
 
     /// <summary>
-    /// The share of each invested batch that goes into vitality on reset-meta servers, until the bot's
-    /// personal <see cref="GetVitalityTarget"/> is reached (out of a nominal weight total of ~100).
+    /// Base classes with a second generation evolution.
     /// </summary>
-    private const int ResetMetaVitalityWeight = 5;
-
-    /// <summary>
-    /// The base classes which evolve into a second-generation class at <see cref="ClassEvolutionLevel"/>:
-    /// Dark Wizard, Dark Knight, Fairy Elf and Summoner. The Magic Gladiator, Dark Lord and Rage Fighter
-    /// have no second generation - their next class is the level-400 master evolution, out of bot scope.
-    /// </summary>
-    private static readonly byte[] EvolvableClassNumbers = [0, 4, 8, 20];
+    private static readonly byte[] EvolvableClassNumbers =
+    [
+        BotClassNumbers.DarkWizardNumber,
+        BotClassNumbers.DarkKnightNumber,
+        BotClassNumbers.FairyElfNumber,
+        BotClassNumbers.SummonerNumber,
+    ];
 
     /// <summary>
     /// Skills of the buff type which must never enter a bot's auto-buff rotation: the summoner's
@@ -68,20 +50,38 @@ internal static class BotProgression
     private static readonly short[] ExcludedBuffSkillNumbers = [18, 219, 221, 222];
 
     /// <summary>
-    /// The skills which the game only activates on the castle siege map. Nothing in the skill data marks
-    /// them, but the client does not let a player cast them anywhere else, so a bot hunting with one is a
-    /// bot doing something no player can do. They are also the strongest numbers each class has - they are
-    /// meant to be - which is exactly why a "pick the strongest" rule walks straight into them: a Dark
-    /// Knight fought with Crescent Moon Slash, every elf with Starfall and every Rage Fighter with Charge.
-    /// (44 Crescent Moon Slash, 45 Lance, 46 Starfall, 57 Spiral Slash, 73 Mana Rays, 74 Fire Blast,
-    /// 269 Charge - the same set the client refuses outside a siege.)
-    /// The second group are the skills of the siege roles - the guild's battle masters and its master -
-    /// which are handed out for the siege and are not attacks at all: 67 Stun, 68 Cancel Stun,
-    /// 69 Swell Mana, 70 Invisibility, 71 Cancel Invisibility, 72 Abolish Magic. Stun in particular is
-    /// indistinguishable from a real attack skill by its data alone: like Twisting Slash and Power Slash
-    /// it is an area skill with no damage of its own and a single hit.
+    /// The skills the game only activates on the castle siege map: the client refuses to cast them
+    /// anywhere else, so a hunting bot using one does something no player can do. They are also the
+    /// strongest numbers each class has - which is exactly why a "pick the strongest" rule walked into
+    /// them - and the initialization marks them "active in castle siege" (see the character-created
+    /// skill plugins) while handing them to every created character, so each player has them when a
+    /// siege begins. The second group are the siege role skills - Stun, Cancel Stun, Swell Mana,
+    /// Invisibility, Cancel Invisibility and Abolish Magic - which are not attacks at all; Stun in
+    /// particular is an area skill with no damage and a single hit, so only its number sets it apart.
     /// </summary>
     private static readonly short[] CastleSiegeOnlySkillNumbers = [44, 45, 46, 57, 67, 68, 69, 70, 71, 72, 73, 74, 269];
+
+    /// <summary>
+    /// Skills a player only ever gets from an item - an orb or scroll consumed in the learnables
+    /// handler (see <c>LearnablesConsumeHandlerPlugIn</c>), or a weapon or pet carrying the skill. The
+    /// gate lives on that item (its level and stat requirements), not on the skill, so
+    /// <see cref="MeetsRequirements"/> finds nothing to check and would hand them out for free. A bot
+    /// never consumes orbs, and it only gets a weapon or pet skill by equipping the item - which the
+    /// server handles on its own - so none of these is ever learned. <see cref="GetItemGrantedSkillNumbers"/>
+    /// collects every such skill the configuration grants through an item; the numbers here are the ones
+    /// whose granting item is not modeled in the configuration at all, so they stay excluded too.
+    /// </summary>
+    private static readonly short[] ItemOrWeaponBoundSkillNumbers = [270];
+
+    /// <summary>
+    /// Skills which the game only lets a character cast while riding a mount (see the skill numbers in
+    /// the <c>SkillNumber</c> enum of the initialization assembly). Neither the mount nor, where it
+    /// applies, the required weapon kind is modeled in the skill data, so nothing else tells a mounted
+    /// cast from one on foot. Bots never use these skills - even if a looted pet ends up in the pet
+    /// slot, they are never learned, never looted and never selected (see <see cref="RequiresMount"/>) -
+    /// which keeps the logic free of any mount detection.
+    /// </summary>
+    private static readonly short[] MountRequiredSkillNumbers = [47, 49, 76];
 
     /// <summary>
     /// Gets the class the character evolves into at <see cref="ClassEvolutionLevel"/>, or null when the
@@ -113,81 +113,47 @@ internal static class BotProgression
     }
 
     /// <summary>
-    /// How a bot invests its stat points, per class and per bot, in one of two meta profiles chosen
-    /// by the server type (see <see cref="BotResetHandler.GetResetConfiguration"/> at the call sites):
-    /// <list type="bullet">
-    /// <item><b>Reset meta</b> (reset feature enabled) - modeled on the actual endgame characters of a
-    /// reset server: everything goes into the class's combat stats (shield and agility-based defense do
-    /// the tanking there), vitality only receives a token share until the bot's personal
-    /// <see cref="GetVitalityTarget"/> is reached (enforce via <see cref="SplitPoints"/> capacities).</item>
-    /// <item><b>Classic meta</b> (no reset feature) - the builds of community stat guides for classic
-    /// servers, where point pools are small and vitality is a plain percentage of the build.</item>
-    /// </list>
-    /// Where a class has two established builds (knight agility/PK, gladiator warrior/mage, elf
-    /// archer/supporter), each bot picks one deterministically from its character name, so the
-    /// population is diverse but every bot keeps the same build across sessions and re-invests
-    /// consistently after each reset. The first entry is always the build's primary stat - it absorbs
-    /// rounding remainders and overflow from capped stats.
+    /// How a bot invests its stat points, per class and per bot, following the builds of community
+    /// stat guides: the class decides the stats, and where a class has two established builds
+    /// (knight agility/PK, gladiator warrior/mage, elf archer/supporter) each bot picks one
+    /// deterministically from its character name, so the population is diverse but every bot keeps
+    /// the same build across sessions and re-invests consistently after each reset. The first entry
+    /// is always the build's primary stat - it absorbs rounding remainders and overflow from capped
+    /// stats.
+    /// The weights are the same on every server; only the vitality a bot actually receives differs -
+    /// the callers cap it at the bot's personal <see cref="GetVitalityTarget"/> on reset servers
+    /// (shield and agility-based defense tank there, so vitality is left near its base), while classic
+    /// servers keep the guide's plain vitality percentage.
     /// </summary>
     /// <param name="characterClass">The character class.</param>
     /// <param name="characterName">The character name; decides the build variant for two-build classes.</param>
-    /// <param name="resetMeta">Whether the reset-server meta profile applies.</param>
-    public static IReadOnlyList<(AttributeDefinition Stat, int Weight)> GetStatWeights(CharacterClass characterClass, string characterName, bool resetMeta)
+    public static IReadOnlyList<(AttributeDefinition Stat, int Weight)> GetStatWeights(CharacterClass characterClass, string characterName)
     {
-        // Stable across processes (string.GetHashCode is randomized per run, which would re-spec
-        // the bot on every server restart).
-        var variant = characterName.Aggregate(0, (acc, c) => acc + c) % 2;
+        var variant = BotBuild.GetVariant(characterName);
         var vit = Stats.BaseVitality;
         var str = Stats.BaseStrength;
         var agi = Stats.BaseAgility;
         var ene = Stats.BaseEnergy;
         var cmd = Stats.BaseLeadership;
 
-        if (resetMeta)
-        {
-            const int v = ResetMetaVitalityWeight;
-            return characterClass.Number switch
-            {
-                DarkKnightNumber or BladeKnightNumber or BladeMasterNumber => variant == 0
-                    ? new[] { (str, 59), (agi, 39), (ene, 2), (vit, v) }
-                    : new[] { (str, 52), (agi, 35), (ene, 13), (vit, v) },
-                DarkWizardNumber or SoulMasterNumber or GrandMasterNumber =>
-                    new[] { (ene, 49), (agi, 47), (str, 4), (vit, v) },
-                FairyElfNumber or MuseElfNumber or HighElfNumber =>
-                    new[] { (agi, 67), (ene, 27), (str, 6), (vit, v) },
-                MagicGladiatorNumber or DuelMasterNumber => variant == 0
-                    ? new[] { (str, 57), (agi, 26), (ene, 17), (vit, v) }
-                    : new[] { (ene, 66), (agi, 18), (str, 16), (vit, v) },
-                DarkLordNumber or LordEmperorNumber =>
-                    new[] { (str, 54), (cmd, 23), (agi, 18), (ene, 5), (vit, v) },
-                SummonerNumber or BloodySummonerNumber or DimensionMasterNumber =>
-                    new[] { (ene, 70), (agi, 18), (str, 12), (vit, v) },
-                RageFighterNumber or FistMasterNumber =>
-                    new[] { (str, 64), (agi, 18), (ene, 18), (vit, v) },
-                _ when GetMainDamageStat(characterClass) == str =>
-                    new[] { (str, 60), (agi, 35), (vit, v) },
-                _ => new[] { (GetMainDamageStat(characterClass), 65), (agi, 30), (vit, v) },
-            };
-        }
-
         return characterClass.Number switch
         {
-            DarkKnightNumber or BladeKnightNumber or BladeMasterNumber => variant == 0
+            BotClassNumbers.DarkKnightNumber or BotClassNumbers.BladeKnightNumber or BotClassNumbers.BladeMasterNumber => variant == 0
                 ? new[] { (str, 62), (agi, 26), (vit, 8), (ene, 4) }
                 : new[] { (str, 50), (vit, 28), (agi, 18), (ene, 4) },
-            DarkWizardNumber or SoulMasterNumber or GrandMasterNumber =>
+            BotClassNumbers.DarkWizardNumber or BotClassNumbers.SoulMasterNumber or BotClassNumbers.GrandMasterNumber =>
                 new[] { (ene, 66), (vit, 22), (agi, 8), (str, 4) },
-            FairyElfNumber or MuseElfNumber or HighElfNumber => variant == 0
+            BotClassNumbers.FairyElfNumber or BotClassNumbers.MuseElfNumber or BotClassNumbers.HighElfNumber => variant == 0
                 ? new[] { (agi, 62), (vit, 23), (ene, 10), (str, 5) }
                 : new[] { (ene, 65), (vit, 22), (agi, 8), (str, 5) },
-            MagicGladiatorNumber or DuelMasterNumber => variant == 0
+            BotClassNumbers.MagicGladiatorNumber or BotClassNumbers.DuelMasterNumber => variant == 0
                 ? new[] { (str, 57), (agi, 22), (vit, 15), (ene, 6) }
                 : new[] { (ene, 58), (vit, 26), (agi, 11), (str, 5) },
-            DarkLordNumber or LordEmperorNumber =>
+            BotClassNumbers.DarkLordNumber or BotClassNumbers.LordEmperorNumber =>
                 new[] { (str, 38), (cmd, 30), (vit, 22), (agi, 8), (ene, 2) },
-            SummonerNumber or BloodySummonerNumber or DimensionMasterNumber =>
+            BotClassNumbers.SummonerNumber or BotClassNumbers.BloodySummonerNumber or BotClassNumbers.DimensionMasterNumber =>
                 new[] { (ene, 64), (vit, 24), (agi, 8), (str, 4) },
-            RageFighterNumber or FistMasterNumber =>
+            BotClassNumbers.RageFighterNumber or BotClassNumbers.FistMasterNumber =>
                 new[] { (str, 45), (vit, 35), (ene, 20) },
             _ => new[] { (GetMainDamageStat(characterClass), 50), (vit, 50) },
         };
@@ -296,41 +262,16 @@ internal static class BotProgression
     }
 
     /// <summary>
-    /// Determines whether the skill is one a bot may learn: an actual attack skill, or a self/party
-    /// buff or heal with a magic effect (which the offline buff/heal handlers know how to cast).
-    /// Passive boosts, event skills, enemy debuffs and utility skills are left out.
+    /// Collects the skills the configuration hands out through items - an orb or scroll consumed to
+    /// learn it (see <c>LearnablesConsumeHandlerPlugIn</c>), or a weapon or pet carrying the skill.
+    /// Such a skill is only ever free if it also carries requirements of its own (e.g. Rageful Blow,
+    /// which is granted by an orb yet demands level 170), which <see cref="MeetsRequirements"/> then
+    /// gates; a skill without requirements of its own is gated by the item alone and never learned.
     /// </summary>
-    /// <param name="skill">The skill to check.</param>
-    public static bool IsBotLearnableSkill(Skill skill)
-    {
-        if (skill.MasterDefinition is not null)
-        {
-            // Master skills are never learned for free - they cost the master points earned per master
-            // level and go through the regular action (see BotMasterHandler), like for a human player.
-            return false;
-        }
-
-        if (CastleSiegeOnlySkillNumbers.Contains(skill.Number))
-        {
-            return false;
-        }
-
-        if (IsAttackSkill(skill))
-        {
-            // Worth learning if it adds damage of its own, hits more than once, or hits more than one
-            // target. Judging by AttackDamage alone locked a Rage Fighter out of its entire arsenal:
-            // Killing Blow, Chain Drive, Dragon Roar and Phoenix Shot all carry a flat bonus of zero and
-            // four hits instead, because their damage comes from the weapon - which is also how the
-            // server pays them out.
-            return skill.AttackDamage > 0
-                   || skill.NumberOfHitsPerAttack > 1
-                   || IsAreaSkill(skill);
-        }
-
-        return skill.SkillType is SkillType.Buff or SkillType.Regeneration
-               && skill.MagicEffectDef is not null
-               && !ExcludedBuffSkillNumbers.Contains(skill.Number);
-    }
+    /// <param name="gameConfiguration">The game configuration which defines the items.</param>
+    /// <returns>The numbers of all skills which are granted by an item.</returns>
+    public static IReadOnlySet<short> GetItemGrantedSkillNumbers(GameConfiguration gameConfiguration)
+        => (gameConfiguration.Items ?? []).Where(item => item.Skill is not null).Select(item => item.Skill!.Number).ToHashSet();
 
     /// <summary>
     /// Determines whether the skill deals damage to a target, as opposed to buffing, summoning or the like.
@@ -372,6 +313,104 @@ internal static class BotProgression
     public static bool RequiresPet(Skill skill) => skill.DamageType == DamageType.Fenrir;
 
     /// <summary>
+    /// Determines whether the skill is bound to a mount and therefore never used by bots. Covers bots
+    /// which had already learned such a skill before the gate existed, too -
+    /// the combat handler skips it without any mount detection.
+    /// </summary>
+    /// <param name="skill">The skill.</param>
+    public static bool RequiresMount(Skill skill) => MountRequiredSkillNumbers.Contains(skill.Number);
+
+    /// <summary>
+    /// Determines whether the skill is one a bot may own at all: an actual attack skill, or a
+    /// self/party buff or heal with a magic effect (which the offline buff/heal handlers know how to
+    /// cast) - but never a master skill (those go through the regular master action like for a human
+    /// player, see <see cref="BotMasterHandler"/>), a castle-siege-only skill, or a mount-bound skill
+    /// (never used by bots). Item-granted skills are welcome here: the orb or scroll in the bot's
+    /// backpack is the gate, exactly as for a human consuming it. Passive boosts, event skills, enemy
+    /// debuffs and utility skills are left out.
+    /// </summary>
+    /// <param name="skill">The skill to check.</param>
+    public static bool MayBotOwnSkill(Skill skill)
+    {
+        if (skill.MasterDefinition is not null
+            || CastleSiegeOnlySkillNumbers.Contains(skill.Number)
+            || ItemOrWeaponBoundSkillNumbers.Contains(skill.Number)
+            || MountRequiredSkillNumbers.Contains(skill.Number))
+        {
+            return false;
+        }
+
+        // Worth owning if it adds damage of its own, hits more than once, or hits more than one
+        // target. Judging by AttackDamage alone would lock a Rage Fighter out of Chain Drive and
+        // Dragon Roar, which carry a flat bonus of zero and four hits instead, because their damage
+        // comes from the weapon - which is also how the server pays them out.
+        if (IsAttackSkill(skill))
+        {
+            return skill.AttackDamage > 0
+                   || skill.NumberOfHitsPerAttack > 1
+                   || IsAreaSkill(skill);
+        }
+
+        return skill.SkillType is SkillType.Buff or SkillType.Regeneration
+               && skill.MagicEffectDef is not null
+               && !ExcludedBuffSkillNumbers.Contains(skill.Number);
+    }
+
+    /// <summary>
+    /// Collects the items granting each skill, for one generation run. Built by the caller alongside
+    /// <see cref="GetItemGrantedSkillNumbers"/> and handed into <see cref="MayBackfillSkill"/> - no
+    /// static cache: generation runs rarely, and a cache keyed by the configuration would pin the whole
+    /// object graph for the process lifetime (and go stale against in-place admin-panel edits).
+    /// </summary>
+    /// <param name="gameConfiguration">The game configuration which defines the items.</param>
+    public static IReadOnlyDictionary<short, List<ItemDefinition>> GetGrantingItems(GameConfiguration gameConfiguration)
+        => (gameConfiguration.Items ?? [])
+            .Where(item => item.Skill is not null)
+            .GroupBy(item => item.Skill!.Number)
+            .ToDictionary(group => group.Key, group => group.ToList());
+
+    /// <summary>
+    /// Determines whether the skill may be granted when a bot is generated (the backfill of what it
+    /// would have looted on its way up). A skill with no granting item at all passes; a skill granted
+    /// only by worn equipment or a pet never passes - those are learned temporarily by equipping the
+    /// item (which the server handles on its own), so writing them into the learned skills would make
+    /// them permanent. A consumable (orb/scroll) grant passes only when the skill carries requirements
+    /// of its own (otherwise the gate lives on the orb alone, and the loot path teaches it) and at
+    /// least one granting orb or scroll is obtainable: class-qualified, drop level reached, and the
+    /// item's own requirements met.
+    /// </summary>
+    /// <param name="skill">The skill to check.</param>
+    /// <param name="grantingItems">The granting items by skill number, see <see cref="GetGrantingItems"/>.</param>
+    /// <param name="characterClass">The bot's character class.</param>
+    /// <param name="level">The bot's character level.</param>
+    /// <param name="getAttributeValue">Resolves an attribute's current value; null means unknown and fails.</param>
+    public static bool MayBackfillSkill(
+        Skill skill,
+        IReadOnlyDictionary<short, List<ItemDefinition>> grantingItems,
+        CharacterClass characterClass,
+        int level,
+        Func<AttributeDefinition, float?> getAttributeValue)
+    {
+        if (!grantingItems.TryGetValue(skill.Number, out var granting) || granting.Count == 0)
+        {
+            return true;
+        }
+
+        var consumable = granting.Where(IsConsumableSkillGrant).ToList();
+        if (consumable.Count == 0)
+        {
+            return false;
+        }
+
+        if (skill.Requirements is not { Count: > 0 })
+        {
+            return false;
+        }
+
+        return consumable.Any(item => IsObtainableGrantingItem(item, characterClass, level, getAttributeValue));
+    }
+
+    /// <summary>
     /// Determines whether the character meets the skill's learn requirements (the same ones the game
     /// enforces when casting, e.g. total energy for wizard spells or character level for knight skills).
     /// <paramref name="getAttributeValue"/> resolves an attribute's current value; returning null means
@@ -405,27 +444,27 @@ internal static class BotProgression
     /// <param name="attribute">The "total" attribute to map.</param>
     public static AttributeDefinition? TotalToBaseStat(AttributeDefinition attribute)
     {
-        if (attribute == Stats.TotalEnergy)
+        if (attribute == Stats.TotalEnergy || attribute == Stats.TotalEnergyRequirementValue)
         {
             return Stats.BaseEnergy;
         }
 
-        if (attribute == Stats.TotalStrength)
+        if (attribute == Stats.TotalStrength || attribute == Stats.TotalStrengthRequirementValue)
         {
             return Stats.BaseStrength;
         }
 
-        if (attribute == Stats.TotalAgility)
+        if (attribute == Stats.TotalAgility || attribute == Stats.TotalAgilityRequirementValue)
         {
             return Stats.BaseAgility;
         }
 
-        if (attribute == Stats.TotalVitality)
+        if (attribute == Stats.TotalVitality || attribute == Stats.TotalVitalityRequirementValue)
         {
             return Stats.BaseVitality;
         }
 
-        if (attribute == Stats.TotalLeadership)
+        if (attribute == Stats.TotalLeadership || attribute == Stats.TotalLeadershipRequirementValue)
         {
             return Stats.BaseLeadership;
         }
@@ -451,9 +490,8 @@ internal static class BotProgression
     /// </summary>
     /// <param name="characterClass">The character class.</param>
     /// <param name="characterName">The character name; decides the build variant, see <see cref="GetStatWeights"/>.</param>
-    /// <param name="resetMeta">Whether the reset-server meta profile applies.</param>
     /// <param name="itemGroup">The item group of the weapon.</param>
-    public static bool IsPreferredWeaponGroup(CharacterClass characterClass, string characterName, bool resetMeta, byte itemGroup)
+    public static bool IsPreferredWeaponGroup(CharacterClass characterClass, string characterName, byte itemGroup)
     {
         const byte maxMeleeGroup = 3;
         const byte bowGroup = 4;
@@ -473,13 +511,98 @@ internal static class BotProgression
 
         // The build's primary stat (the first weight, see GetStatWeights) tells a caster from a fighter;
         // the class fallback covers classes without an energy build of their own.
-        var primaryStat = GetStatWeights(characterClass, characterName, resetMeta)[0].Stat;
+        var primaryStat = GetStatWeights(characterClass, characterName)[0].Stat;
         if (primaryStat == Stats.BaseEnergy || energy > strength)
         {
             return itemGroup == staffGroup;
         }
 
         return itemGroup <= maxMeleeGroup;
+    }
+
+    private static bool IsConsumableSkillGrant(ItemDefinition item)
+        => item.Group == SkillOrbItemGroup || item.Group == SkillScrollItemGroup;
+
+    private static bool IsObtainableGrantingItem(
+        ItemDefinition item,
+        CharacterClass characterClass,
+        int level,
+        Func<AttributeDefinition, float?> getAttributeValue)
+    {
+        if (!item.QualifiedCharacters.Contains(characterClass))
+        {
+            return false;
+        }
+
+        if (level < item.DropLevel)
+        {
+            return false;
+        }
+
+        // The caller's getAttributeValue resolves TOTAL attributes (at generation time from base
+        // stats via TotalToBaseStat) - exactly what MeetsRequirements expects. Item requirements use
+        // the same totals, except scrolls which use the *RequirementValue variants, so those are
+        // normalized first. Level is resolved from the passed level, which is also what the callers
+        // map Stats.Level to.
+        // Comparing the raw MinimumValue matches the real consume gate only because the caller
+        // (MayBackfillSkill) restricts this to non-wearable consumables: there GetRequirement
+        // returns the minimum unchanged, while wearable granting items scale it by item level and
+        // options (see ItemExtensions.GetRequirement) - which is why those never reach this check.
+        foreach (var requirement in item.Requirements)
+        {
+            if (requirement.Attribute is not { } attribute)
+            {
+                continue;
+            }
+
+            if (attribute == Stats.Level)
+            {
+                if (level < requirement.MinimumValue)
+                {
+                    return false;
+                }
+
+                continue;
+            }
+
+            var totalAttribute = NormalizeRequirementValue(attribute);
+            if (getAttributeValue(totalAttribute) is not { } value || value < requirement.MinimumValue)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static AttributeDefinition NormalizeRequirementValue(AttributeDefinition attribute)
+    {
+        if (attribute == Stats.TotalEnergyRequirementValue)
+        {
+            return Stats.TotalEnergy;
+        }
+
+        if (attribute == Stats.TotalStrengthRequirementValue)
+        {
+            return Stats.TotalStrength;
+        }
+
+        if (attribute == Stats.TotalAgilityRequirementValue)
+        {
+            return Stats.TotalAgility;
+        }
+
+        if (attribute == Stats.TotalVitalityRequirementValue)
+        {
+            return Stats.TotalVitality;
+        }
+
+        if (attribute == Stats.TotalLeadershipRequirementValue)
+        {
+            return Stats.TotalLeadership;
+        }
+
+        return attribute;
     }
 
     private static AttributeDefinition GetMainDamageStat(CharacterClass characterClass)

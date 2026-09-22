@@ -57,6 +57,12 @@ public class CastleSiegeData
     [MemberOfAggregate]
     public virtual ICollection<CastleSiegeNpcState> NpcStates { get; protected set; } = null!;
 
+    /// <summary>
+    /// Gets or sets the guilds which participate in the current Castle Siege cycle.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<CastleSiegeGuild> Guilds { get; protected set; } = null!;
+
     /// <inheritdoc />
     public override string ToString()
     {

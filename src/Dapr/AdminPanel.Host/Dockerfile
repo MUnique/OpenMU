@@ -18,5 +18,8 @@ RUN dotnet publish "MUnique.OpenMU.AdminPanel.Host.csproj" -c Release -o /app/pu
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+# The container runs as a non-root user, but /app belongs to root. The data protection
+# key ring, which protects the admin panel sessions, needs a writable directory.
+RUN mkdir -p /app/data-protection-keys && chmod 777 /app/data-protection-keys
 USER $APP_UID
 ENTRYPOINT ["dotnet", "MUnique.OpenMU.AdminPanel.Host.dll"]

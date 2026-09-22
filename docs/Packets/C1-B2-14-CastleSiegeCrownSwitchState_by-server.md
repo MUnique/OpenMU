@@ -16,7 +16,7 @@ The client updates the crown switch interaction state.
 | 1 | 1 |    Byte   |   9   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xB2  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x14  | Packet header - sub packet type identifier |
-| 4 | 2 | ShortBigEndian |  | SwitchIndex |
+| 4 | 2 | ShortBigEndian |  | SwitchIndex; The network object identifier of the Crown switch. |
 | 6 | 2 | ShortBigEndian |  | PlayerIndex |
 | 8 | 1 | CastleSiegeCrownSwitchStateType |  | State |
 

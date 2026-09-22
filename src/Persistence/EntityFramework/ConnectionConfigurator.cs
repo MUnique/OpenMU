@@ -96,6 +96,18 @@ public static class ConnectionConfigurator
     }
 
     /// <summary>
+    /// Gets the configured connection string of the specified context type.
+    /// </summary>
+    /// <typeparam name="TContext">The type of the context.</typeparam>
+    /// <returns>The configured connection string of the specified context type.</returns>
+    internal static string GetConnectionString<TContext>()
+        where TContext : DbContext
+    {
+        Provider.Initialization?.WaitWithoutException();
+        return Provider.GetConnectionSetting(typeof(TContext)).ConnectionString!;
+    }
+
+    /// <summary>
     /// Configures the specified options builder.
     /// </summary>
     /// <param name="context">The context.</param>

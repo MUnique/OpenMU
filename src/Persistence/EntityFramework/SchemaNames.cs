@@ -28,4 +28,12 @@ internal static class SchemaNames
     /// The schema name for the guild server data.
     /// </summary>
     internal const string Guild = "guild";
+
+    /// <summary>
+    /// The schema name for the admin panel users.
+    /// </summary>
+    /// <remarks>
+    /// It is deliberately not granted to any of the game server database roles.
+    /// </remarks>
+    internal const string AdminPanel = "admin";
 }

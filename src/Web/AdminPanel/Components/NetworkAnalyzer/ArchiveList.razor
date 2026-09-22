@@ -1,0 +1,65 @@
+@using MUnique.OpenMU.Network.Analyzer.Archive
+@using MUnique.OpenMU.Web.AdminPanel.Properties
+
+<div class="d-flex flex-column mt-3 archive-list">
+    <div class="d-flex justify-content-between align-items-center mb-1">
+        <strong class="small">@Resources.ArchivedSessions</strong>
+        <button type="button" class="btn btn-outline-secondary btn-sm py-0" title="@Resources.Refresh" @onclick="this.OnRefresh">
+            <span class="oi oi-reload" aria-hidden="true"></span>
+        </button>
+    </div>
+
+    @if (!this.AccountGroups.Any())
+    {
+        <p class="text-muted small"><em>@Resources.NoArchivedSessions</em></p>
+    }
+    else
+    {
+        <div class="accordion accordion-flush overflow-auto">
+            @foreach (var group in this.AccountGroups)
+            {
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button @(this.IsCollapsed(group.Key) ? "collapsed" : string.Empty) py-2"
+                                type="button" @onclick="() => this.ToggleGroup(group.Key)">
+                            <span class="text-truncate">@group.Key</span>
+                            <span class="badge text-bg-secondary ms-2">@group.Count()</span>
+                        </button>
+                    </h2>
+                    <div class="accordion-collapse collapse @(this.IsCollapsed(group.Key) ? string.Empty : "show")">
+                        <div class="list-group list-group-flush">
+                            @foreach (var session in group)
+                            {
+                                <button type="button"
+                                        class="list-group-item list-group-item-action py-1 @(this.SelectedSessionId == session.Id ? "active" : string.Empty)"
+                                        @onclick="() => this.OnSelect.InvokeAsync(session)">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="text-truncate">
+                                            @session.Metadata.StartTimestamp.ToString("yyyy-MM-dd HH:mm")
+                                            @if (session.IsRunning)
+                                            {
+                                                <span class="oi oi-media-record text-danger ms-1" aria-hidden="true"
+                                                      title="@Resources.SessionIsRunning"></span>
+                                            }
+                                        </span>
+                                        <span class="text-nowrap">
+                                            <a class="oi oi-data-transfer-download ms-1" role="button"
+                                               href="@($"{this.DownloadRoute}{EscapeSessionId(session.Id)}")" target="_blank"
+                                               title="@Resources.DownloadArchivedSession" @onclick:stopPropagation="true"></a>
+                                            <span class="oi oi-trash ms-1" role="button" title="@Resources.Delete"
+                                                  @onclick:stopPropagation="true"
+                                                  @onclick="() => this.OnDelete.InvokeAsync(session)"></span>
+                                        </span>
+                                    </div>
+                                    <small class="text-truncate d-block @(this.SelectedSessionId == session.Id ? string.Empty : "text-muted")">
+                                        @GetDescription(session)
+                                    </small>
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

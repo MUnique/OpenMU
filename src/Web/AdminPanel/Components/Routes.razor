@@ -1,7 +1,21 @@
 ﻿<Router AppAssembly="@typeof(Program).Assembly" NotFoundPage="@typeof(Pages.NotFound)">
   <Found Context="routeData">
     <ModalContainer>
-      <RouteView RouteData="routeData" DefaultLayout="@typeof(Layout.MainLayout)"/>
+      <AuthorizeRouteView RouteData="routeData" DefaultLayout="@typeof(Layout.MainLayout)">
+        <NotAuthorized>
+          @if (context.User.Identity?.IsAuthenticated is true)
+          {
+            <Pages.AccessDenied />
+          }
+          else
+          {
+            <RedirectToLogin />
+          }
+        </NotAuthorized>
+        <Authorizing>
+          <div class="p-4">@MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Loading</div>
+        </Authorizing>
+      </AuthorizeRouteView>
       <FocusOnNavigate RouteData="routeData" Selector="h1"/>
     </ModalContainer>
   </Found>
