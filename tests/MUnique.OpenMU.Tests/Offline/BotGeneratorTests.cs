@@ -26,7 +26,7 @@ public class BotGeneratorTests
             var elf = new CharacterClass { Number = 8 };
             var before = queue.ToList();
             var initialElves = before
-                .Select((c, n) => n)
+                .Select((_, n) => n)
                 .Where(n => before[n].Number == 8)
                 .ToHashSet();
 
@@ -37,7 +37,7 @@ public class BotGeneratorTests
             Assert.That(slots.Count(c => c.Number == 8), Is.EqualTo(15));
 
             var converted = slots
-                .Select((c, n) => n)
+                .Select((_, n) => n)
                 .Where(n => slots[n].Number == 8 && !initialElves.Contains(n))
                 .OrderBy(n => n)
                 .ToList();
