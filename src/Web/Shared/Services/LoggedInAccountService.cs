@@ -67,7 +67,7 @@ public class LoggedInAccountService : IDataService<LoggedInAccount>, ISupportDat
             {
                 if (playerLookup.TryGetValue(entry.Key, out var playerInfo))
                 {
-                    return new LoggedInAccount(entry.Key, entry.Value, playerInfo.CharacterName, playerInfo.GuildName, playerInfo.PartyMaster, playerInfo.PartySize);
+                    return new LoggedInAccount(entry.Key, entry.Value, playerInfo.CharacterName, playerInfo.GuildName, playerInfo.PartyMaster, playerInfo.PartySize, playerInfo.PersistentGuildId);
                 }
 
                 return new LoggedInAccount(entry.Key, entry.Value);
@@ -116,16 +116,22 @@ public class LoggedInAccountService : IDataService<LoggedInAccount>, ISupportDat
             }
         }
 
-        var guildNames = await GuildNames.ResolveAsync(
-                GuildNames.FindServer(this._serverProvider),
-                result.Values.Select(v => v.GuildId).OfType<uint>())
-            .ConfigureAwait(false);
+        var guildIds = result.Values.Select(v => v.GuildId).OfType<uint>().ToList();
+        var guildServer = GuildNames.FindServer(this._serverProvider);
+        var guildNames = await GuildNames.ResolveAsync(guildServer, guildIds).ConfigureAwait(false);
+        var persistentGuildIds = await GuildNames.ResolvePersistentIdsAsync(guildServer, guildIds).ConfigureAwait(false);
         foreach (var key in result.Keys.ToList())
         {
             var info = result[key];
-            if (info.GuildId is { } guildId && guildNames.TryGetValue(guildId, out var guildName))
+            if (info.GuildId is { } guildId)
             {
-                result[key] = info with { GuildName = guildName };
+                guildNames.TryGetValue(guildId, out var guildName);
+                persistentGuildIds.TryGetValue(guildId, out var persistentGuildId);
+                result[key] = info with
+                {
+                    GuildName = guildName,
+                    PersistentGuildId = persistentGuildId == Guid.Empty ? null : persistentGuildId,
+                };
             }
         }
 
@@ -133,5 +139,5 @@ public class LoggedInAccountService : IDataService<LoggedInAccount>, ISupportDat
         return result;
     }
 
-    private sealed record PlayerInfo(string? CharacterName, string? PartyMaster, int PartySize, uint? GuildId, string? GuildName);
+    private sealed record PlayerInfo(string? CharacterName, string? PartyMaster, int PartySize, uint? GuildId, string? GuildName, Guid? PersistentGuildId = null);
 }

@@ -61,7 +61,7 @@
           <td>@item.LoginName</td>
           <td>@(item.CharacterName ?? Resources.EmptyValue)</td>
           <td>@item.Server</td>
-          <td>@(item.GuildName ?? Resources.EmptyValue)</td>
+          <td><GuildLink GuildId="@item.GuildId" GuildName="@item.GuildName" EmptyText="@Resources.EmptyValue" /></td>
           <td><PartyBadge PartyMaster="@item.PartyMaster" PartySize="@item.PartySize" /></td>
           <td>
             <button class="btn btn-warning btn-sm" type="button" @onclick="() => this.AccountService.SetAccountOfflineAsync(item)">

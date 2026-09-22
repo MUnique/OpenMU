@@ -55,4 +55,38 @@ public static class GuildNames
 
         return result;
     }
+
+    /// <summary>
+    /// Resolves the persistent identifiers of the given guilds. These are required to link
+    /// to the guild detail page, which is addressed by persistent identifier.
+    /// </summary>
+    /// <param name="guildServer">The guild server, if available (all-in-one deployment only).</param>
+    /// <param name="guildIds">The guild identifiers to resolve.</param>
+    /// <returns>The persistent identifiers by guild identifier; unknown or failed lookups are absent.</returns>
+    public static async Task<Dictionary<uint, Guid>> ResolvePersistentIdsAsync(IGuildServer? guildServer, IEnumerable<uint> guildIds)
+    {
+        var result = new Dictionary<uint, Guid>();
+        if (guildServer is null)
+        {
+            return result;
+        }
+
+        foreach (var guildId in guildIds.Distinct())
+        {
+            try
+            {
+                if (await guildServer.GetPersistentGuildIdAsync(guildId).ConfigureAwait(false) is { } persistentId
+                    && persistentId != Guid.Empty)
+                {
+                    result[guildId] = persistentId;
+                }
+            }
+            catch (Exception)
+            {
+                // A single failed lookup resolves to "no guild" (see above).
+            }
+        }
+
+        return result;
+    }
 }

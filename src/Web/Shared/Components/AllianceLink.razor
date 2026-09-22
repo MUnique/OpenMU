@@ -1,0 +1,28 @@
+@if (this.AllianceId is { } allianceId)
+{
+    <NavLink href="@AdminRoutes.Alliance(allianceId)">@(this.AllianceName ?? this.EmptyText)</NavLink>
+}
+else
+{
+    @(this.AllianceName ?? this.EmptyText)
+}
+
+@code {
+    /// <summary>
+    /// Gets or sets the persistent identifier of the alliance master guild. If <c>null</c>, the name is rendered as plain text.
+    /// </summary>
+    [Parameter]
+    public Guid? AllianceId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the name of the alliance (its master guild).
+    /// </summary>
+    [Parameter]
+    public string? AllianceName { get; set; }
+
+    /// <summary>
+    /// Gets or sets the text which is rendered when no alliance name is available.
+    /// </summary>
+    [Parameter]
+    public string EmptyText { get; set; } = "—";
+}

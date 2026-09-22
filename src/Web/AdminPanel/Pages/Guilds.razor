@@ -34,14 +34,7 @@
             <td>@item.MemberCount</td>
             <td>@item.Score</td>
             <td>
-                @if (item.AllianceGuildId is { } allianceId)
-                {
-                    <NavLink href="@($"alliance/{allianceId}")">@item.AllianceName</NavLink>
-                }
-                else
-                {
-                    <span>—</span>
-                }
+                <AllianceLink AllianceId="@item.AllianceGuildId" AllianceName="@item.AllianceName" />
             </td>
         </ItemTemplate>
     </DataTable>

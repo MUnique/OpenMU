@@ -34,14 +34,7 @@ else if (this._guild is { } guild)
         }
         <dt class="col-sm-2">@Resources.Alliance</dt>
         <dd class="col-sm-10">
-            @if (guild.AllianceGuildId is { } allianceId)
-            {
-                <NavLink href="@($"alliance/{allianceId}")">@guild.AllianceName</NavLink>
-            }
-            else
-            {
-                <span>—</span>
-            }
+            <AllianceLink AllianceId="@guild.AllianceGuildId" AllianceName="@guild.AllianceName" />
         </dd>
     </dl>
 
