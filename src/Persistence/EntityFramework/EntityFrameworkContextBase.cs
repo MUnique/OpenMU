@@ -333,9 +333,19 @@ internal class EntityFrameworkContextBase : IContext
 
         var previousState = entry.State;
         entry.State = EntityState.Detached;
-        this.ForEachAggregate(item, obj => this.DetachInternal(obj));
+
+        // ForEachAggregate goes through the whole aggregate, so the action must not recurse itself.
+        this.ForEachAggregate(item, this.DetachSingle);
 
         return previousState != EntityState.Added;
+    }
+
+    private void DetachSingle(object item)
+    {
+        if (this.Context.Entry(item) is { } entry)
+        {
+            entry.State = EntityState.Detached;
+        }
     }
 
     private IRepository<T> GetRepository<T>()
@@ -359,7 +369,24 @@ internal class EntityFrameworkContextBase : IContext
         throw new RepositoryNotFoundException(type);
     }
 
+    /// <summary>
+    /// Executes the given action for every member of the aggregate of the given object, including
+    /// the members of these members.
+    /// </summary>
+    /// <param name="obj">The aggregate root.</param>
+    /// <param name="action">The action to execute for each member.</param>
+    /// <remarks>
+    /// The recursion matters for the deletion: a member which is referenced BY its owner (e.g. the
+    /// inventory of a character) holds its foreign key at the owner, so no delete cascade of the
+    /// database ever reaches it. Deleting an account removed its characters, but their inventories -
+    /// and every item lying in them - stayed in the database as unreachable rows.
+    /// </remarks>
     private void ForEachAggregate(object obj, Action<object> action)
+    {
+        this.ForEachAggregate(obj, action, new HashSet<object>(ReferenceEqualityComparer.Instance));
+    }
+
+    private void ForEachAggregate(object obj, Action<object> action, HashSet<object> handledMembers)
     {
         var aggregateProperties = obj.GetType()
             .GetProperties(BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.Instance)
@@ -372,14 +399,28 @@ internal class EntityFrameworkContextBase : IContext
             {
                 foreach (var value in enumerable)
                 {
-                    action(value);
+                    this.HandleAggregateMember(value, action, handledMembers);
                 }
             }
             else if (propertyValue is { })
             {
-                action(propertyValue);
+                this.HandleAggregateMember(propertyValue, action, handledMembers);
             }
         }
+    }
+
+    private void HandleAggregateMember(object member, Action<object> action, HashSet<object> handledMembers)
+    {
+        // By reference: the entities compare equal by their id, and freshly created ones share the
+        // default id. Handling a member twice would be wrong anyway, and a graph which references
+        // itself would recurse forever.
+        if (!handledMembers.Add(member))
+        {
+            return;
+        }
+
+        action(member);
+        this.ForEachAggregate(member, action, handledMembers);
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]

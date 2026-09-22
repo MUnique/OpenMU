@@ -406,12 +406,11 @@ internal sealed class BotGenerator
         Account? account = null;
         try
         {
-            // Load the account again: the paging query returns the accounts untracked, and only a
-            // tracked one can be deleted. Its item storages (the vault and the inventories of its
-            // characters) are referenced by their owner, so no delete cascade reaches them - they are
-            // removed by the delete triggers of the database instead (see AggregateDeleteTriggers).
-            // Deleting them here as well would fail the save, because the trigger has already removed
-            // the rows by the time the delete of the storage is executed.
+            // Load the account again, this time with its whole graph: the paging query returns the
+            // accounts untracked and without their characters, and only a loaded member of the
+            // aggregate can be deleted with it. DeleteAsync goes through the whole graph now, so the
+            // item storages (the vault and the inventories of the characters) are deleted with the
+            // account - they are referenced BY their owner, so no delete cascade reaches them.
             account = await context.GetAccountByLoginNameAsync(loginName, cancellationToken).ConfigureAwait(false);
             if (account is null)
             {
