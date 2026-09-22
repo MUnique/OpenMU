@@ -365,6 +365,8 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
             {
                 if (selectedCharacter.State > HeroState.Normal)
                 {
+                    // An outlaw can shorten its remaining state time by hunting monsters, on any map:
+                    // the level of the killed monster is subtracted in seconds.
                     selectedCharacter.StateRemainingSeconds -= (int)this.Attributes[Stats.Level];
                 }
 

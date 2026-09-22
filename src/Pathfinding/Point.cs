@@ -51,7 +51,20 @@ public record struct Point(byte X, byte Y)
     /// <returns>The distance between this point and another point.</returns>
     public double EuclideanDistanceTo(Point otherPoint)
     {
-        return Math.Sqrt(Math.Pow(Math.Abs(this.X - otherPoint.X), 2) + Math.Pow(Math.Abs(this.Y - otherPoint.Y), 2));
+        return Math.Sqrt(this.EuclideanDistanceSquaredTo(otherPoint));
+    }
+
+    /// <summary>
+    /// Gets the squared euclidean distance between this point and another point.
+    /// Use this for distance comparisons to avoid the expensive square root.
+    /// </summary>
+    /// <param name="otherPoint">The other point.</param>
+    /// <returns>The squared distance between this point and another point.</returns>
+    public int EuclideanDistanceSquaredTo(Point otherPoint)
+    {
+        var dx = this.X - otherPoint.X;
+        var dy = this.Y - otherPoint.Y;
+        return (dx * dx) + (dy * dy);
     }
 
     /// <inheritdoc/>

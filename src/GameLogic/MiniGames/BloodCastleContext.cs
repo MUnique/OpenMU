@@ -311,8 +311,8 @@ public sealed class BloodCastleContext : MiniGameContext
                 p.UpdateStateAsync(
                     status,
                     this._remainingTime,
-                    this.NextEvent?.RequiredKills ?? 0,
-                    this.NextEvent?.ActualKills ?? 0,
+                    this.NextEventRequiredKills,
+                    this.NextEventActualKills,
                     this._questItemOwner,
                     this._questItem));
     }

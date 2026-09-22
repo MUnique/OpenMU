@@ -66,5 +66,24 @@ environment variables:
 | `DB_ADMIN_USER` | The user name of the postgres admin account. If the local configuration file is still configured to use `postgres` for the user name of the admin (first entry in the `ConnectionSettings.xml`), the value of this variable replaces it. |
 | `DB_ADMIN_PW` | The password of the postgres admin account. If the local configuration file is still configured to use `admin` for the password of the admin (first entry in the `ConnectionSettings.xml`), the value of this variable replaces it. |
 
+The `docker-compose.yml` files take these variables (e.g. from a local `.env`
+file, see `deploy/*/.env.example`) and wire them to both sides:
+
+* the `database` service as `POSTGRES_PASSWORD: ${DB_ADMIN_PW:-admin}` and
+  `POSTGRES_USER: ${DB_ADMIN_USER:-postgres}`,
+* the app container(s) as `DB_ADMIN_USER` / `DB_ADMIN_PW` (and
+  `DB_HOST: ${DB_HOST:-database}`).
+
+When the variables are not set, the defaults (`postgres` / `admin`) apply, so
+existing installations keep working without any change. The same override
+applies to the distributed deployment, where the Dapr secret store connection
+strings are adjusted at runtime with the same variables.
+
+Note: `POSTGRES_PASSWORD` is only honored by the official postgres image when
+the `dbdata` volume is created for the first time. Changing `DB_ADMIN_PW`
+later does not change an existing database. Change the password inside
+postgres first (e.g. `ALTER ROLE postgres PASSWORD 'new'`), then restart the
+containers with the new value.
+
 More variables and the start parameters are listed under
 [Startup parameters and environment variables](../deployment/startup-parameters.md).

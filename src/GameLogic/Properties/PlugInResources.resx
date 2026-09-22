@@ -627,6 +627,12 @@
   <data name="ItemChatCommandPlugIn_Description" xml:space="preserve">
     <value>Handles the chat command '/item &lt;group&gt; &lt;number&gt; &lt;lvl?&gt; &lt;exc?&gt; &lt;sk?&gt; &lt;lu?&gt; &lt;opt?&gt; &lt;anc?&gt; &lt;ancBonuslvl?&gt;'. Drops a specific item next to the character.</value>
   </data>
+  <data name="KillAllMonstersChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Kill all monsters chat command</value>
+  </data>
+  <data name="KillAllMonstersChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/killall'. Kills all monsters on the current map.</value>
+  </data>
   <data name="ListCommand_Name" xml:space="preserve">
     <value>List command</value>
   </data>
@@ -711,6 +717,12 @@
   <data name="SkinChatCommandPlugIn_Description" xml:space="preserve">
     <value>Handles the chat command '/skin &lt;number&gt;'. Applies a monster skin to the game masters character.</value>
   </data>
+  <data name="SkipMiniGameWaitChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Skip mini game wait chat command</value>
+  </data>
+  <data name="SkipMiniGameWaitChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/skipwait'. Skips the current waiting phase of the mini game event (entering, countdown, standby); skipped waits count as completed.</value>
+  </data>
   <data name="StartBloodCastleEventChatCommandPlugIn_Name" xml:space="preserve">
     <value>Start Blood Castle Event Chat Command</value>
   </data>
@@ -728,6 +740,12 @@
   </data>
   <data name="StartDevilSquareEventChatCommandPlugIn_Description" xml:space="preserve">
     <value>Handles the chat command '/startds'. Starts the devil square event at the next possible time.</value>
+  </data>
+  <data name="StartKanturuEventChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Start Kanturu Event Chat Command</value>
+  </data>
+  <data name="StartKanturuEventChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/startkanturu'. Starts the kanturu event at the next possible time.</value>
   </data>
   <data name="TeleportChatCommandPlugIn_Name" xml:space="preserve">
     <value>Teleport chat command</value>

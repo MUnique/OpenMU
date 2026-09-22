@@ -57,9 +57,11 @@ public class NetworkAnalyzerLinkTests
         context.Services.AddSingleton<NavigationHistory>();
         context.Services.AddSingleton(new LoggedInAccountService(Mock.Of<ILoginServer>(), serverProvider.Object));
         context.Services.AddSingleton(new OfflineAccountService(serverProvider.Object));
+        context.Services.AddSingleton(new BotAccountService(serverProvider.Object));
         context.Services.AddSingleton<IDataService<LoggedInAccount>>(
             new TestDataService<LoggedInAccount>([new LoggedInAccount("Test Account", 3)]));
         context.Services.AddSingleton<IDataService<OfflineAccount>>(new TestDataService<OfflineAccount>([]));
+        context.Services.AddSingleton<IDataService<BotAccount>>(new TestDataService<BotAccount>([]));
         if (captureService is not null)
         {
             context.Services.AddSingleton(captureService);

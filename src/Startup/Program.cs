@@ -20,6 +20,7 @@ using MUnique.OpenMU.ConnectServer;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.FriendServer;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.TestActors;
 using MUnique.OpenMU.GameServer;
 using MUnique.OpenMU.GuildServer;
 using MUnique.OpenMU.Interfaces;
@@ -34,6 +35,7 @@ using MUnique.OpenMU.Persistence.EntityFramework.Json;
 using MUnique.OpenMU.Persistence.Initialization.Version075;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
+using MUnique.OpenMU.Startup.TestActors;
 using MUnique.OpenMU.Web.AdminPanel;
 using MUnique.OpenMU.Web.AdminPanel.API;
 using MUnique.OpenMU.Web.Map.Map;
@@ -333,6 +335,8 @@ internal sealed class Program : IDisposable
             .AddNetworkObservation()
             .AddControllers().AddApplicationPart(typeof(ServerController).Assembly);
 
+        this.AddActorControlEndpoint(builder.Services);
+
         var host = builder.Build();
 
         // NpgsqlLoggingConfiguration.InitializeLogging(host.Services.GetRequiredService<ILoggerFactory>())
@@ -352,6 +356,38 @@ internal sealed class Program : IDisposable
         this._logger.Information("Host started, elapsed time: {elapsed}", stopwatch.Elapsed);
         this._logger.Information("Admin Panel bound to urls: {urls}", string.Join("; ", host.Urls));
         return host;
+    }
+
+    /// <summary>
+    /// Adds the test actor control endpoint, but only when <c>OPENMU_ACTOR_PORT</c> names a
+    /// port; it binds loopback unless <c>OPENMU_ACTOR_ADDRESS</c> says otherwise. It is
+    /// unauthenticated development tooling and stays off by default, and it is registered after
+    /// the server containers on purpose -
+    /// hosted services are stopped in reverse order, so the actors are logged out (and their
+    /// progress saved) before the game servers go down.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    private void AddActorControlEndpoint(IServiceCollection services)
+    {
+        if (ActorControlService.ConfiguredOptions is not { } actorOptions)
+        {
+            if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(ActorControlService.PortVariableName)))
+            {
+                this._logger.Warning("{portVariable} is set, but it or {addressVariable} is not valid; the actor control endpoint stays off.", ActorControlService.PortVariableName, ActorControlService.AddressVariableName);
+            }
+
+            return;
+        }
+
+        this._logger.Information("Actor control endpoint enabled on {endPoint}", actorOptions.EndPoint);
+        services
+            .AddSingleton(actorOptions)
+            .AddSingleton<IGameServerContextLocator>(_ => new GameServerContextLocator(this._gameServers))
+            .AddSingleton<IActorFactory, ActorFactory>()
+            .AddSingleton<IActorRegistry, ActorRegistry>()
+            .AddSingleton<BotsController>()
+            .AddSingleton<ActorProtocolHandler>()
+            .AddHostedService<ActorControlService>();
     }
 
     private IIpAddressResolver CreateIpResolver(IServiceProvider serviceProvider, string[] args)

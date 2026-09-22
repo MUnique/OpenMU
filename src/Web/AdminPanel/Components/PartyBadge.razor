@@ -1,0 +1,31 @@
+@if (PartyMaster is null || PartySize <= 0)
+{
+  <span class="text-muted">—</span>
+}
+else
+{
+  <span class="badge" title="Party of @PartyMaster: @PartySize members" style="background-color: @GetPartyColor(); color: #fff;">@PartyMaster (@PartySize)</span>
+}
+
+@code {
+    /// <summary>
+    /// Gets or sets the character name of the party master.
+    /// </summary>
+    [Parameter]
+    public string? PartyMaster { get; set; }
+
+    /// <summary>
+    /// Gets or sets the number of party members.
+    /// </summary>
+    [Parameter]
+    public int PartySize { get; set; }
+
+    private string GetPartyColor()
+    {
+        // Deterministic hue per party master, so all members of one party share the same badge color
+        // and different parties are visually distinct.
+        var hash = System.HashCode.Combine(this.PartyMaster!.ToUpperInvariant());
+        var hue = ((hash % 360) + 360) % 360;
+        return $"hsl({hue}, 45%, 45%)";
+    }
+}
