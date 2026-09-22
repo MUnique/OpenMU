@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Items;
 
+using MUnique.OpenMU.GameLogic.CastleSiege;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 
@@ -12,6 +13,7 @@ using MUnique.OpenMU.GameLogic.Views.Inventory;
 /// </summary>
 public class BuyNpcItemAction
 {
+    private readonly CastleSiegeTaxProvider _castleSiegeTaxProvider = new();
     private readonly ItemPriceCalculator _priceCalculator;
 
     /// <summary>
@@ -53,7 +55,7 @@ public class BuyNpcItemAction
         // Inventory Update:
         if (storeItem.IsStackable() && player.Inventory!.Items.FirstOrDefault(item => storeItem.CanCompletelyStackOn(item)) is { } targetItem)
         {
-            if (!this.CheckMoney(player, storeItem))
+            if (!await this.CheckMoneyAsync(player, storeItem).ConfigureAwait(false))
             {
                 return;
             }
@@ -72,7 +74,7 @@ public class BuyNpcItemAction
                 return;
             }
 
-            if (!this.CheckMoney(player, storeItem))
+            if (!await this.CheckMoneyAsync(player, storeItem).ConfigureAwait(false))
             {
                 await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.NotEnoughMoney)).ConfigureAwait(false);
                 await player.InvokeViewPlugInAsync<IBuyNpcItemFailedPlugIn>(p => p.BuyNpcItemFailedAsync()).ConfigureAwait(false);
@@ -90,14 +92,9 @@ public class BuyNpcItemAction
         await player.InvokeViewPlugInAsync<IUpdateMoneyPlugIn>(p => p.UpdateMoneyAsync()).ConfigureAwait(false);
     }
 
-    private bool CheckMoney(Player player, Item item)
+    private ValueTask<bool> CheckMoneyAsync(Player player, Item item)
     {
         var price = this._priceCalculator.CalculateFinalBuyingPrice(item);
-        if (!player.TryRemoveMoney((int)price))
-        {
-            return false;
-        }
-
-        return true;
+        return this._castleSiegeTaxProvider.TryPayStoreCostAsync(player, price);
     }
 }

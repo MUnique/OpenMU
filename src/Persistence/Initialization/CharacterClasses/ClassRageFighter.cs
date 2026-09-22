@@ -13,13 +13,6 @@ using MUnique.OpenMU.GameLogic.Attributes;
 /// </summary>
 internal partial class CharacterClassInitialization
 {
-    private CharacterClass CreateFistMaster()
-    {
-        var result = this.CreateRageFighter(CharacterClassNumber.FistMaster, "Fist Master", true, null, false);
-        result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.MasterLevel, 0, false));
-        return result;
-    }
-
     private CharacterClass CreateRageFighter(CharacterClassNumber number, string name, bool isMaster, CharacterClass? nextGenerationClass, bool canGetCreated)
     {
         var result = this.Context.CreateNew<CharacterClass>();
@@ -45,7 +38,9 @@ internal partial class CharacterClassInitialization
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.CurrentAbility, 1, false));
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.CurrentShield, 1, false));
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.IsInSafezone, 1, false));
+        result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.IsResting, 0, false));
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.Resets, 0, false));
+        result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.NearbyPartyMemberCount, 0, false));
 
         this.AddCommonAttributeRelationships(result.AttributeCombinations);
         this.AddDoubleWieldAttributeRelationships(result.AttributeCombinations);
@@ -101,10 +96,19 @@ internal partial class CharacterClassInitialization
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(7, Stats.MaximumMana));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0.5f, Stats.SkillMultiplier));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0.5f, Stats.VitalitySkillMultiplier));
-        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 33f, Stats.AbilityRecoveryMultiplier));
+        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0.03f, Stats.AbilityRecoveryMultiplier));
+        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(MovementSpeedConstants.RunningGearMovementSpeed, Stats.MovementSpeed, AggregateType.Maximum));
+        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(MovementSpeedConstants.RunningGearMovementSpeed, Stats.MovementSpeedUnderwater, AggregateType.Maximum));
 
         this.AddCommonBaseAttributeValues(result.BaseAttributeValues, isMaster);
 
+        return result;
+    }
+
+    private CharacterClass CreateFistMaster()
+    {
+        var result = this.CreateRageFighter(CharacterClassNumber.FistMaster, "Fist Master", true, null, false);
+        result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.MasterLevel, 0, false));
         return result;
     }
 }

@@ -21,9 +21,9 @@ using MUnique.OpenMU.Persistence;
 [Table(nameof(CastleSiegeGuild), Schema = SchemaNames.AccountData)]
 internal partial class CastleSiegeGuild : MUnique.OpenMU.DataModel.Entities.CastleSiegeGuild, IIdentifiable
 {
-
-
-
+    
+    
+    
 
     /// <inheritdoc/>
     public override bool Equals(object obj)
@@ -43,5 +43,5 @@ internal partial class CastleSiegeGuild : MUnique.OpenMU.DataModel.Entities.Cast
         return this.Id.GetHashCode();
     }
 
-
+    
 }

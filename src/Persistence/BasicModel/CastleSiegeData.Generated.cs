@@ -48,7 +48,7 @@ public partial class CastleSiegeData : MUnique.OpenMU.DataModel.Entities.CastleS
     /// </summary>
     [System.Text.Json.Serialization.JsonPropertyName("guilds")]
     public ICollection<CastleSiegeGuild> RawGuilds { get; } = new List<CastleSiegeGuild>();
-
+    
     /// <inheritdoc/>
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Entities.CastleSiegeGuild> Guilds

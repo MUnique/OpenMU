@@ -284,7 +284,25 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("BlessJewelConsumeHandlerPlugIn_Name", resourceCulture);
             }
         }
-
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shows Land of Trials availability and its applicable entry fee..
+        /// </summary>
+        public static string CastleSiegeGuardsmanTalkPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeGuardsmanTalkPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Guardsman.
+        /// </summary>
+        public static string CastleSiegeGuardsmanTalkPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeGuardsmanTalkPlugIn_Name", resourceCulture);
+            }
+        }
+        
         /// <summary>
         ///   Looks up a localized string similar to Opens the operation interface for a Castle Siege gate lever..
         /// </summary>
@@ -293,7 +311,7 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("CastleSiegeLeverTalkPlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Castle Siege Gate Lever.
         /// </summary>
@@ -302,25 +320,25 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("CastleSiegeLeverTalkPlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to Drives the weekly Castle Siege state cycle..
+        ///   Looks up a localized string similar to Opens a Castle Siege warfare machine for an authorized player..
         /// </summary>
-        public static string CastleSiegePlugIn_Description {
+        public static string CastleSiegeMachineTalkPlugIn_Description {
             get {
-                return ResourceManager.GetString("CastleSiegePlugIn_Description", resourceCulture);
+                return ResourceManager.GetString("CastleSiegeMachineTalkPlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to Castle Siege.
+        ///   Looks up a localized string similar to Castle Siege Warfare Machine.
         /// </summary>
-        public static string CastleSiegePlugIn_Name {
+        public static string CastleSiegeMachineTalkPlugIn_Name {
             get {
-                return ResourceManager.GetString("CastleSiegePlugIn_Name", resourceCulture);
+                return ResourceManager.GetString("CastleSiegeMachineTalkPlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Delivers queued Castle Siege participant rewards when a character enters the game..
         /// </summary>
@@ -329,13 +347,31 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("CastleSiegePendingRewardPlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Castle Siege Pending Reward Delivery.
         /// </summary>
         public static string CastleSiegePendingRewardPlugIn_Name {
             get {
                 return ResourceManager.GetString("CastleSiegePendingRewardPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Drives the weekly Castle Siege state cycle..
+        /// </summary>
+        public static string CastleSiegePlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege.
+        /// </summary>
+        public static string CastleSiegePlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegePlugIn_Name", resourceCulture);
             }
         }
         
@@ -1087,6 +1123,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handles the chat command &apos;/killall&apos;. Kills all monsters on the current map..
+        /// </summary>
+        public static string KillAllMonstersChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("KillAllMonstersChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Kill all monsters chat command.
+        /// </summary>
+        public static string KillAllMonstersChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("KillAllMonstersChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Plugin which handles the large complex potion consumption..
         /// </summary>
         public static string LargeComplexPotionConsumeHandlerPlugIn_Description {
@@ -1317,6 +1371,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string MiniGameStartConfiguration_EntranceOpenedMessage_Name {
             get {
                 return ResourceManager.GetString("MiniGameStartConfiguration_EntranceOpenedMessage_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Increases all monster base stats by a configurable percentage..
+        /// </summary>
+        public static string MonsterAttributeScaler_Description {
+            get {
+                return ResourceManager.GetString("MonsterAttributeScaler_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Monster Attribute Scaler.
+        /// </summary>
+        public static string MonsterAttributeScaler_Name {
+            get {
+                return ResourceManager.GetString("MonsterAttributeScaler_Name", resourceCulture);
             }
         }
         
@@ -1699,24 +1771,6 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The text which prints as a golden message in the game when task starts..
-        /// </summary>
-        public static string PeriodicTaskConfiguration_StartMessage_Description {
-            get {
-                return ResourceManager.GetString("PeriodicTaskConfiguration_StartMessage_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Start message.
-        /// </summary>
-        public static string PeriodicTaskConfiguration_StartMessage_Name {
-            get {
-                return ResourceManager.GetString("PeriodicTaskConfiguration_StartMessage_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
         ///   Looks up a localized string similar to The text which prints as a golden message in the game when task ends..
         /// </summary>
         public static string PeriodicTaskConfiguration_EndMessage_Description {
@@ -1740,6 +1794,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string PeriodicTaskConfiguration_PreStartMessageDelay_Name {
             get {
                 return ResourceManager.GetString("PeriodicTaskConfiguration_PreStartMessageDelay_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The text which prints as a golden message in the game when task starts..
+        /// </summary>
+        public static string PeriodicTaskConfiguration_StartMessage_Description {
+            get {
+                return ResourceManager.GetString("PeriodicTaskConfiguration_StartMessage_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start message.
+        /// </summary>
+        public static string PeriodicTaskConfiguration_StartMessage_Name {
+            get {
+                return ResourceManager.GetString("PeriodicTaskConfiguration_StartMessage_Name", resourceCulture);
             }
         }
         
@@ -2322,6 +2394,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Reset Feature.
+        /// </summary>
+        public static string ResetFeaturePlugIn_Name {
+            get {
+                return ResourceManager.GetString("ResetFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the chat command &apos;/resetinfo&apos;. Shows the required costs and the granted points for the next reset..
         /// </summary>
         public static string ResetInfoChatCommandPlugIn_Description {
@@ -2340,11 +2421,20 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Reset Feature.
+        ///   Looks up a localized string similar to Handles the chat command &apos;/resetstats&apos;..
         /// </summary>
-        public static string ResetFeaturePlugIn_Name {
+        public static string ResetStatsChatCommandPlugIn_Description {
             get {
-                return ResourceManager.GetString("ResetFeaturePlugIn_Name", resourceCulture);
+                return ResourceManager.GetString("ResetStatsChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset Stats chat command.
+        /// </summary>
+        public static string ResetStatsChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ResetStatsChatCommandPlugIn_Name", resourceCulture);
             }
         }
         
@@ -2502,6 +2592,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Updates and resets the shield recovery hiatus attribute..
+        /// </summary>
+        public static string ShieldRecoveryHiatusPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ShieldRecoveryHiatusPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shield Recovery Hiatus.
+        /// </summary>
+        public static string ShieldRecoveryHiatusPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ShieldRecoveryHiatusPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the chat command &apos;/fireworks &lt;x&gt; &lt;y&gt;&apos;. Shows an fireworks effect at the specified coordinates..
         /// </summary>
         public static string ShowFireworksEffectChatCommandPlugIn_Description {
@@ -2606,6 +2714,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string SkinChatCommandPlugIn_Name {
             get {
                 return ResourceManager.GetString("SkinChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the chat command &apos;/skipwait&apos;. Skips the current waiting phase of the mini game event (entering, countdown, standby); skipped waits count as completed..
+        /// </summary>
+        public static string SkipMiniGameWaitChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("SkipMiniGameWaitChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skip mini game wait chat command.
+        /// </summary>
+        public static string SkipMiniGameWaitChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("SkipMiniGameWaitChatCommandPlugIn_Name", resourceCulture);
             }
         }
         
@@ -2786,6 +2912,96 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string StartDevilSquareEventChatCommandPlugIn_Name {
             get {
                 return ResourceManager.GetString("StartDevilSquareEventChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the chat command &apos;/startkanturu&apos;. Starts the kanturu event at the next possible time..
+        /// </summary>
+        public static string StartKanturuEventChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("StartKanturuEventChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start Kanturu Event Chat Command.
+        /// </summary>
+        public static string StartKanturuEventChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("StartKanturuEventChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chat command enabled.
+        /// </summary>
+        public static string StatResetConfiguration_ChatCommandEnabled_Name {
+            get {
+                return ResourceManager.GetString("StatResetConfiguration_ChatCommandEnabled_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Log out.
+        /// </summary>
+        public static string StatResetConfiguration_LogOut_Name {
+            get {
+                return ResourceManager.GetString("StatResetConfiguration_LogOut_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Move home.
+        /// </summary>
+        public static string StatResetConfiguration_MoveHome_Name {
+            get {
+                return ResourceManager.GetString("StatResetConfiguration_MoveHome_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Required level.
+        /// </summary>
+        public static string StatResetConfiguration_RequiredLevel_Name {
+            get {
+                return ResourceManager.GetString("StatResetConfiguration_RequiredLevel_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Required money.
+        /// </summary>
+        public static string StatResetConfiguration_RequiredMoney_Name {
+            get {
+                return ResourceManager.GetString("StatResetConfiguration_RequiredMoney_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Required reset item.
+        /// </summary>
+        public static string StatResetConfiguration_RequiredResetItem_Name {
+            get {
+                return ResourceManager.GetString("StatResetConfiguration_RequiredResetItem_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Provides configuration for the stat reset feature..
+        /// </summary>
+        public static string StatResetFeaturePlugIn_Description {
+            get {
+                return ResourceManager.GetString("StatResetFeaturePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stat Reset Feature.
+        /// </summary>
+        public static string StatResetFeaturePlugIn_Name {
+            get {
+                return ResourceManager.GetString("StatResetFeaturePlugIn_Name", resourceCulture);
             }
         }
         
@@ -3330,110 +3546,20 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
 
         /// <summary>
-        ///   Looks up a localized string similar to Increases all monster base stats by a configurable percentage..
+        ///   Looks up a localized string similar to Consumes Life Stones after they are successfully placed during Castle Siege.
         /// </summary>
-        public static string MonsterAttributeScaler_Description {
+        public static string CastleSiegeLifeStoneConsumeHandlerPlugIn_Description {
             get {
-                return ResourceManager.GetString("MonsterAttributeScaler_Description", resourceCulture);
+                return ResourceManager.GetString("CastleSiegeLifeStoneConsumeHandlerPlugIn_Description", resourceCulture);
             }
         }
 
         /// <summary>
-        ///   Looks up a localized string similar to Monster Attribute Scaler.
+        ///   Looks up a localized string similar to Castle Siege Life Stone consume handler.
         /// </summary>
-        public static string MonsterAttributeScaler_Name {
+        public static string CastleSiegeLifeStoneConsumeHandlerPlugIn_Name {
             get {
-                return ResourceManager.GetString("MonsterAttributeScaler_Name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Provides configuration for the stat reset feature..
-        /// </summary>
-        public static string StatResetFeaturePlugIn_Description {
-            get {
-                return ResourceManager.GetString("StatResetFeaturePlugIn_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Stat Reset Feature.
-        /// </summary>
-        public static string StatResetFeaturePlugIn_Name {
-            get {
-                return ResourceManager.GetString("StatResetFeaturePlugIn_Name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Handles the chat command &apos;/resetstats&apos;..
-        /// </summary>
-        public static string ResetStatsChatCommandPlugIn_Description {
-            get {
-                return ResourceManager.GetString("ResetStatsChatCommandPlugIn_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Reset Stats chat command.
-        /// </summary>
-        public static string ResetStatsChatCommandPlugIn_Name {
-            get {
-                return ResourceManager.GetString("ResetStatsChatCommandPlugIn_Name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Required level.
-        /// </summary>
-        public static string StatResetConfiguration_RequiredLevel_Name {
-            get {
-                return ResourceManager.GetString("StatResetConfiguration_RequiredLevel_Name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Required money.
-        /// </summary>
-        public static string StatResetConfiguration_RequiredMoney_Name {
-            get {
-                return ResourceManager.GetString("StatResetConfiguration_RequiredMoney_Name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Required reset item.
-        /// </summary>
-        public static string StatResetConfiguration_RequiredResetItem_Name {
-            get {
-                return ResourceManager.GetString("StatResetConfiguration_RequiredResetItem_Name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Chat command enabled.
-        /// </summary>
-        public static string StatResetConfiguration_ChatCommandEnabled_Name {
-            get {
-                return ResourceManager.GetString("StatResetConfiguration_ChatCommandEnabled_Name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Move home.
-        /// </summary>
-        public static string StatResetConfiguration_MoveHome_Name {
-            get {
-                return ResourceManager.GetString("StatResetConfiguration_MoveHome_Name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Log out.
-        /// </summary>
-        public static string StatResetConfiguration_LogOut_Name {
-            get {
-                return ResourceManager.GetString("StatResetConfiguration_LogOut_Name", resourceCulture);
+                return ResourceManager.GetString("CastleSiegeLifeStoneConsumeHandlerPlugIn_Name", resourceCulture);
             }
         }
     }

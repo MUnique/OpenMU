@@ -4,8 +4,10 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Events;
 
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 
 /// <summary>
@@ -14,7 +16,9 @@ using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 internal sealed class CastleSiegeInitializer : InitializerBase
 {
     private const short GateMonsterNumber = 277;
+    private const short LifeStoneMonsterNumber = 278;
     private const short StatueMonsterNumber = 283;
+    private const int LifeStoneMaximumHealth = 10_000;
     private const byte SignOfLordItemGroup = 14;
     private const short SignOfLordItemNumber = 21;
     private const byte SignOfLordItemLevel = 3;
@@ -43,6 +47,7 @@ internal sealed class CastleSiegeInitializer : InitializerBase
     internal CastleSiegeConfiguration InitializeConfiguration()
     {
         this.InitializeParticipantData();
+        this.InitializeLifeStoneData();
         if (this.GameConfiguration.CastleSiegeConfiguration is { } existingConfiguration)
         {
             this.InitializeRegistration(existingConfiguration);
@@ -121,6 +126,35 @@ internal sealed class CastleSiegeInitializer : InitializerBase
             effect.SendDuration = false;
             effect.StopByDeath = false;
             this.GameConfiguration.MagicEffects.Add(effect);
+        }
+    }
+
+    /// <summary>
+    /// Initializes the combat attributes of the Life Stone NPC.
+    /// </summary>
+    internal void InitializeLifeStoneData()
+    {
+        var lifeStone = this.GameConfiguration.Monsters.SingleOrDefault(
+            monster => monster.Number == LifeStoneMonsterNumber);
+        if (lifeStone is null)
+        {
+            return;
+        }
+
+        var missingAttributes = new Dictionary<AttributeDefinition, float>();
+        if (!lifeStone.Attributes.Any(attribute => attribute.AttributeDefinition?.Id == Stats.MaximumHealth.Id))
+        {
+            missingAttributes.Add(Stats.MaximumHealth, LifeStoneMaximumHealth);
+        }
+
+        if (!lifeStone.Attributes.Any(attribute => attribute.AttributeDefinition?.Id == Stats.DefenseBase.Id))
+        {
+            missingAttributes.Add(Stats.DefenseBase, 0);
+        }
+
+        if (missingAttributes.Count > 0)
+        {
+            lifeStone.AddAttributes(missingAttributes, this.Context, this.GameConfiguration);
         }
     }
 

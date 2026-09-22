@@ -395,6 +395,7 @@ internal partial class NpcInitialization : Version095d.NpcInitialization
             def.Number = 223;
             def.Designation = "Senior";
             def.ObjectKind = NpcObjectKind.PassiveNpc;
+            def.NpcWindow = NpcWindow.CastleSeniorNPC;
             this.GameConfiguration.Monsters.Add(def);
             def.SetGuid(def.Number);
         }

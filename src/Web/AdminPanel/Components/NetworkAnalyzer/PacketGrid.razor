@@ -1,0 +1,44 @@
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using MUnique.OpenMU.Network.Analyzer
+@using MUnique.OpenMU.Web.AdminPanel.Properties
+
+@if (this._visiblePackets.Count == 0)
+{
+    <p class="text-muted"><em>@Resources.NoPacketsCaptured</em></p>
+}
+else
+{
+    <div @ref="this.ScrollContainer" class="packet-grid" style="height: @(this.GridHeight)px">
+        <QuickGrid Items="@this._visiblePackets.AsQueryable()" Theme="none"
+                   Class="table table-sm table-striped table-hover">
+            <TemplateColumn Title="@Resources.Timestamp" Class="text-nowrap">
+                @context.Timestamp.ToString(@"hh\:mm\:ss\.fff")
+            </TemplateColumn>
+            <TemplateColumn Title="@Resources.Direction" Class="text-nowrap">
+                @if (context.ToServer)
+                {
+                    <span class="badge text-bg-primary">C&rarr;S</span>
+                }
+                else
+                {
+                    <span class="badge text-bg-success">S&rarr;C</span>
+                }
+            </TemplateColumn>
+            <PropertyColumn Title="@Resources.Size" Property="@(packet => packet.Size)" Class="text-nowrap"/>
+            <TemplateColumn Title="@Resources.PacketCode" Class="text-nowrap">
+                @context.DisplayCode.ToString("X2")
+            </TemplateColumn>
+            <TemplateColumn Title="@Resources.PacketMessage">
+                @{ var message = this.GetMessage(context); }
+                <span role="button" @onclick="() => this.OnSelect.InvokeAsync(context)" title="@message"
+                      class="packet-message @(this.SelectedPacket == context ? "fw-bold" : string.Empty)">
+                    @message
+                </span>
+                @if (this.SelectedPacket == context)
+                {
+                    <PacketDetail Packet="@context" Analyzer="@this.Analyzer" ClientVersion="@this.ClientVersion"/>
+                }
+            </TemplateColumn>
+        </QuickGrid>
+    </div>
+}

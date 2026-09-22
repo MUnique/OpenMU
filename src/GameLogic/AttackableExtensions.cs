@@ -422,7 +422,7 @@ public static class AttackableExtensions
         var applied = false;
 
         if (skillEntry.Skill.MagicEffectDef is { } effectDefinition
-            && !target.MagicEffectList.ActiveEffects.ContainsKey(effectDefinition.Number))
+            && !target.MagicEffectList.ContainsEffect(effectDefinition.Number))
         {
             // power-up is the wrong term here... it's more like a power-down ;-)
             await target.ApplyMagicEffectAsync(attacker, skillEntry, hitInfo).ConfigureAwait(false);
@@ -470,7 +470,7 @@ public static class AttackableExtensions
         var applied = false;
 
         if (skill.MagicEffectDef is { } effectDefinition
-            && !target.MagicEffectList.ActiveEffects.ContainsKey(effectDefinition.Number)
+            && !target.MagicEffectList.ContainsEffect(effectDefinition.Number)
             && duration is not null
             && powerUps.Count > 0)
         {

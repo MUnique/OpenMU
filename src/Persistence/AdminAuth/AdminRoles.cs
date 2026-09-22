@@ -10,21 +10,21 @@ namespace MUnique.OpenMU.Persistence.AdminAuth;
 public static class AdminRoles
 {
     /// <summary>
-    /// The role which is allowed to see the state of the servers and the game data, but can't change anything.
+    /// Gets the role which is allowed to see the state of the servers and the game data, but can't change anything.
     /// </summary>
-    public const string Viewer = nameof(AdminRole.Viewer);
+    public static string Viewer => nameof(AdminRole.Viewer);
 
     /// <summary>
-    /// The role which is additionally allowed to operate the servers, e.g. start and stop them,
+    /// Gets the role which is additionally allowed to operate the servers, e.g. start and stop them,
     /// disconnect players and edit accounts.
     /// </summary>
-    public const string Operator = nameof(AdminRole.Operator);
+    public static string Operator => nameof(AdminRole.Operator);
 
     /// <summary>
-    /// The role which is additionally allowed to change the game configuration, install updates,
+    /// Gets the role which is additionally allowed to change the game configuration, install updates,
     /// set the database up and manage the admin panel users.
     /// </summary>
-    public const string Administrator = nameof(AdminRole.Administrator);
+    public static string Administrator => nameof(AdminRole.Administrator);
 
     /// <summary>
     /// Gets all defined roles, from the least to the most privileged one.

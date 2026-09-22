@@ -19,9 +19,9 @@ using MUnique.OpenMU.Persistence.Json;
 /// </summary>
 public partial class CastleSiegeGuild : MUnique.OpenMU.DataModel.Entities.CastleSiegeGuild, IIdentifiable, IConvertibleTo<CastleSiegeGuild>
 {
-
-
-
+    
+    
+    
 
     /// <inheritdoc/>
     public override bool Equals(object obj)

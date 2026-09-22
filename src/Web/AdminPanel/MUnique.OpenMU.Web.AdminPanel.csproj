@@ -36,6 +36,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\DataModel\MUnique.OpenMU.DataModel.csproj" />
     <ProjectReference Include="..\..\GameLogic\MUnique.OpenMU.GameLogic.csproj" />
+    <ProjectReference Include="..\..\Network\Analyzer\MUnique.OpenMU.Network.Analyzer.csproj" />
     <ProjectReference Include="..\..\Persistence\Initialization\MUnique.OpenMU.Persistence.Initialization.csproj" />
     <ProjectReference Include="..\..\Persistence\MUnique.OpenMU.Persistence.csproj" />
     <ProjectReference Include="..\Map\MUnique.OpenMU.Web.Map.csproj" />
@@ -76,4 +77,9 @@
       <StaticWebAsset Include="@(_StaticWebAsset-&gt;Distinct())" />
     </ItemGroup>
   </Target>
+
+  <!-- Rewrites the SDK's root-relative scoped-css bundle @imports so they resolve
+       from this project's StaticWebAssetBasePath (and under UsePathBase).
+       See the shared targets file for the full explanation. -->
+  <Import Project="..\ScopedCssBundleImports.targets" />
 </Project>

@@ -20,7 +20,7 @@ public sealed class CastleSiegeNpcController
     private readonly CastleSiegeContext _context;
     private readonly object _gateTerrainLock = new();
     private readonly object _runtimeLock = new();
-    private readonly Dictionary<Point, (bool WasWalkable, int ReferenceCount)> _gateTerrain = new();
+    private readonly Dictionary<Point, (bool WasBlocked, int ReferenceCount)> _gateTerrain = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CastleSiegeNpcController"/> class.
@@ -220,22 +220,23 @@ public sealed class CastleSiegeNpcController
     {
         lock (this._gateTerrainLock)
         {
-            for (var x = area.StartX; x <= area.EndX; x++)
+            // The counters are ints on purpose: an end coordinate of 255 would make
+            // a byte counter wrap around and loop forever.
+            for (int x = area.StartX; x <= area.EndX; x++)
             {
-                for (var y = area.StartY; y <= area.EndY; y++)
+                for (int y = area.StartY; y <= area.EndY; y++)
                 {
-                    var point = new Point(x, y);
+                    var point = new Point((byte)x, (byte)y);
                     if (this._gateTerrain.TryGetValue(point, out var state))
                     {
-                        this._gateTerrain[point] = (state.WasWalkable, state.ReferenceCount + 1);
+                        this._gateTerrain[point] = (state.WasBlocked, state.ReferenceCount + 1);
                     }
                     else
                     {
-                        this._gateTerrain[point] = (map.Terrain.WalkMap[x, y], 1);
+                        this._gateTerrain[point] = (map.Terrain.BlocksSight(x, y), 1);
                     }
 
-                    map.Terrain.WalkMap[x, y] = false;
-                    map.Terrain.UpdateAiGridValue(x, y);
+                    map.Terrain.ApplyTerrainAttribute((byte)x, (byte)y, TerrainAttributeType.Blocked, true);
                 }
             }
         }
@@ -254,11 +255,12 @@ public sealed class CastleSiegeNpcController
         var blockedAreas = new List<(byte StartX, byte StartY, byte EndX, byte EndY)>();
         lock (this._gateTerrainLock)
         {
-            for (var x = area.StartX; x <= area.EndX; x++)
+            // See BlockGateTerrain for why the counters are ints.
+            for (int x = area.StartX; x <= area.EndX; x++)
             {
-                for (var y = area.StartY; y <= area.EndY; y++)
+                for (int y = area.StartY; y <= area.EndY; y++)
                 {
-                    var point = new Point(x, y);
+                    var point = new Point((byte)x, (byte)y);
                     if (!this._gateTerrain.Remove(point, out var state))
                     {
                         continue;
@@ -266,18 +268,18 @@ public sealed class CastleSiegeNpcController
 
                     if (state.ReferenceCount > 1)
                     {
-                        this._gateTerrain[point] = (state.WasWalkable, state.ReferenceCount - 1);
-                        map.Terrain.WalkMap[x, y] = false;
+                        this._gateTerrain[point] = (state.WasBlocked, state.ReferenceCount - 1);
+                        map.Terrain.ApplyTerrainAttribute((byte)x, (byte)y, TerrainAttributeType.Blocked, true);
                     }
                     else
                     {
-                        map.Terrain.WalkMap[x, y] = state.WasWalkable;
+                        // Restore the wall flag which existed before the gate was closed.
+                        map.Terrain.ApplyTerrainAttribute((byte)x, (byte)y, TerrainAttributeType.Blocked, state.WasBlocked);
                     }
 
-                    map.Terrain.UpdateAiGridValue(x, y);
                     if (!map.Terrain.WalkMap[x, y])
                     {
-                        blockedAreas.Add((x, y, x, y));
+                        blockedAreas.Add(((byte)x, (byte)y, (byte)x, (byte)y));
                     }
                 }
             }
@@ -322,6 +324,21 @@ public sealed class CastleSiegeNpcController
         lock (this._runtimeLock)
         {
             return this._context.ActiveNpcs.ToArray();
+        }
+    }
+
+    /// <summary>
+    /// Releases every warfare machine operated by the specified player.
+    /// </summary>
+    /// <param name="player">The player whose machine operation ended.</param>
+    internal void ClearMachineOperator(Player player)
+    {
+        foreach (var machine in this.GetRuntimeSnapshot()
+                     .Select(runtime => runtime.SpawnedInstance)
+                     .OfType<CastleSiegeMachine>()
+                     .Where(machine => ReferenceEquals(machine.Operator, player)))
+        {
+            machine.Operator = null;
         }
     }
 
@@ -542,13 +559,20 @@ public sealed class CastleSiegeNpcController
                 this._context,
                 runtime,
                 new CastleSiegeLeverIntelligence()),
-            var number when number == CastleSiegeMachine.AttackMonsterNumber
-                            || number == CastleSiegeMachine.DefenseMonsterNumber => new CastleSiegeMachine(
+            var number when number == CastleSiegeMachine.AttackMonsterNumber => new CastleSiegeMachine(
                 spawnArea,
                 definition,
                 map,
                 runtime,
-                new CastleSiegeMachineIntelligence()),
+                new CastleSiegeMachineIntelligence(),
+                CastleSiegeMachineType.Attack),
+            var number when number == CastleSiegeMachine.DefenseMonsterNumber => new CastleSiegeMachine(
+                spawnArea,
+                definition,
+                map,
+                runtime,
+                new CastleSiegeMachineIntelligence(),
+                CastleSiegeMachineType.Defense),
             _ => throw new NotSupportedException($"Castle Siege NPC {definition.Number} is not supported."),
         };
     }

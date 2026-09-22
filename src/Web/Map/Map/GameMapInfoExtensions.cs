@@ -24,15 +24,17 @@ public static class GameMapInfoExtensions
     /// <returns>The stream with the terrain as image.</returns>
     public static Stream GetTerrainStream(this IGameMapInfo map)
     {
-        if (CachedMapTerrainsPng.TryGetValue(map.MapNumber, out var data))
-        {
-            return new MemoryStream(data);
-        }
+        return GetTerrainStream(map.MapNumber, map.TerrainData);
+    }
 
-        data = RenderTerrain(map);
-        CachedMapTerrainsPng.TryAdd(map.MapNumber, data);
-
-        return new MemoryStream(data);
+    /// <summary>
+    /// Gets the terrain stream of the map image.
+    /// </summary>
+    /// <param name="map">The map.</param>
+    /// <returns>The stream with the terrain as image.</returns>
+    public static Stream GetTerrainStream(this GameMap map)
+    {
+        return GetTerrainStream(map.Definition.Number, map.Definition.TerrainData);
     }
 
     /// <summary>
@@ -47,20 +49,32 @@ public static class GameMapInfoExtensions
             return base64String;
         }
 
-        if (!CachedMapTerrainsPng.TryGetValue(map.MapNumber, out var rawData))
-        {
-            rawData = RenderTerrain(map);
-            CachedMapTerrainsPng.TryAdd(map.MapNumber, rawData);
-        }
-
-        base64String = "data:image/png;base64," + Convert.ToBase64String(rawData);
+        base64String = "data:image/png;base64," + Convert.ToBase64String(GetTerrainPng(map.MapNumber, map.TerrainData));
         CachedMapTerrainsBase64.TryAdd(map.MapNumber, base64String);
         return base64String;
     }
 
-    private static byte[] RenderTerrain(IGameMapInfo map)
+    private static Stream GetTerrainStream(short mapNumber, byte[]? terrainData)
     {
-        var terrain = new GameMapTerrain(map.TerrainData);
+        return new MemoryStream(GetTerrainPng(mapNumber, terrainData));
+    }
+
+    private static byte[] GetTerrainPng(short mapNumber, byte[]? terrainData)
+    {
+        if (CachedMapTerrainsPng.TryGetValue(mapNumber, out var data))
+        {
+            return data;
+        }
+
+        data = RenderTerrain(terrainData);
+        CachedMapTerrainsPng.TryAdd(mapNumber, data);
+
+        return data;
+    }
+
+    private static byte[] RenderTerrain(byte[]? terrainData)
+    {
+        var terrain = new GameMapTerrain(terrainData);
         using var bitmap = terrain.ToImage();
         using var memoryStream = new MemoryStream();
         bitmap.SaveAsPng(memoryStream);

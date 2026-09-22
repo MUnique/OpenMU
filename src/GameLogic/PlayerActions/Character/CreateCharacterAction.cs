@@ -103,7 +103,13 @@ public class CreateCharacterAction
         character.CharacterSlot = freeSlot.Value;
         character.CreateDate = DateTime.UtcNow;
         character.KeyConfiguration = CreateDefaultKeyConfiguration();
-        var attributes = character.CharacterClass.StatAttributes.Select(a => player.PersistenceContext.CreateNew<StatAttribute>(a.Attribute, a.BaseValue)).ToList();
+
+        // Distinct, because a character class may define the same stat attribute more than once (data
+        // which got duplicated by an update); a character must never hold an attribute twice.
+        var attributes = character.CharacterClass.StatAttributes
+            .DistinctBy(a => a.Attribute)
+            .Select(a => player.PersistenceContext.CreateNew<StatAttribute>(a.Attribute, a.BaseValue))
+            .ToList();
         attributes.ForEach(character.Attributes.Add);
         character.CurrentMap = characterClass.HomeMap;
         var randomSpawnGate = character.CurrentMap!.ExitGates.Where(g => g.IsSpawnGate).SelectRandom();

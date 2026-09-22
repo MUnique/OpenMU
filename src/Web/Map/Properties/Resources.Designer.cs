@@ -248,5 +248,14 @@ namespace MUnique.OpenMU.Web.Map.Properties {
                 return ResourceManager.GetString("SelectPlayer", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Analyze the network traffic.
+        /// </summary>
+        public static string AnalyzeTraffic {
+            get {
+                return ResourceManager.GetString("AnalyzeTraffic", resourceCulture);
+            }
+        }
     }
 }

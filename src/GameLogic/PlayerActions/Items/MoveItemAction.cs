@@ -399,7 +399,7 @@ public class MoveItemAction
             Storages.Inventory => state == PlayerState.EnteredWorld
                                   || state == PlayerState.NpcDialogOpened
                                   || state == PlayerState.TradeOpened,
-            Storages.PersonalStore => state == PlayerState.EnteredWorld,
+            Storages.PersonalStore => state == PlayerState.EnteredWorld && !(player.ShopStorage?.StoreOpen ?? true),
             Storages.Vault => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.VaultStorage,
             Storages.Trade => state == PlayerState.TradeOpened,
             Storages.ChaosMachine => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.ChaosMachine,

@@ -143,6 +143,21 @@ internal partial class {className} : {fullName}, IIdentifiable
         }
     }
 
+    /// <summary>
+    /// Gets the constructor which Mapster should use to create the target object, if there is one.
+    /// It's only usable when all of its parameters can be taken from a property of the same name.
+    /// </summary>
+    /// <param name="type">The type of the data model.</param>
+    /// <returns>The constructor which should be used; otherwise, <c>null</c>.</returns>
+    private static ConstructorInfo GetConstructorToMapWith(Type type)
+    {
+        return type.GetConstructors()
+            .Where(c => c.IsPublic && c.GetParameters().Length > 0)
+            .FirstOrDefault(c => c.GetParameters().All(parameter =>
+                type.GetProperty(parameter.Name.ToPascalCase()) is { CanRead: true } property
+                && parameter.ParameterType.IsAssignableFrom(property.PropertyType)));
+    }
+
     private static bool IsMemberOfAggregate(PropertyInfo propertyInfo)
     {
         if (propertyInfo?.Name.StartsWith("Raw") ?? false)
@@ -210,12 +225,25 @@ internal partial class {propertyInfo.ReflectedType.Name}
                 .AppendLine($"        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<{type.FullName}, {type.FullName}>()")
                 .AppendLine($"            .Include<{type.Name}, BasicModel.{type.Name}>();")
                 .AppendLine();
+
+            // Properties which can only be set through a constructor (e.g. ConstValueAttribute.Value)
+            // would be lost, because Mapster creates the target with its parameterless constructor.
+            // We can only do that when each parameter has a property of the same name to take the value from.
+            if (GetConstructorToMapWith(type) is { } constructor)
+            {
+                var arguments = string.Join(", ", constructor.GetParameters().Select(p => $"source.{p.Name.ToPascalCase()}"));
+                configs
+                    .AppendLine($"        Mapster.TypeAdapterConfig.GlobalSettings.ForType<{type.FullName}, BasicModel.{type.Name}>()")
+                    .AppendLine($"            .ConstructUsing(source => new BasicModel.{type.Name}({arguments}));")
+                    .AppendLine();
+            }
         }
 
         var source = $@"{string.Format(ModelGeneratorHelper.FileHeaderTemplate, "MapsterConfigurator")}
 
 namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
 
+using MUnique.OpenMU.DataModel.Composition;
 using MUnique.OpenMU.Persistence;
 using Mapster;
 
@@ -238,6 +266,18 @@ public static class MapsterConfigurator
 
         Mapster.TypeAdapterConfig.GlobalSettings.Default.PreserveReference(true);
         Mapster.TypeAdapterConfig.GlobalSettings.Default.IgnoreMember((member, side) => member.Name.StartsWith(""Raw""));
+
+        // Transient properties just hold run-time information and are not persisted.
+        // Some of them (e.g. of the SkillEntry) can't be mapped by Mapster at all, because their types are interfaces with events.
+        Mapster.TypeAdapterConfig.GlobalSettings.Default.IgnoreMember(
+            (member, side) => member.GetCustomAttributes(true).OfType<TransientAttribute>().Any());
+
+        // Collections of value types (e.g. ItemSlotType.ItemSlots) are only filled when the collection of the
+        // destination is used. Otherwise, Mapster creates a new, empty one and the values would be lost.
+        Mapster.TypeAdapterConfig.GlobalSettings.Default.UseDestinationValue(
+            member => member.Type.IsGenericType
+                      && member.Type.GetGenericTypeDefinition() == typeof(ICollection<>)
+                      && member.Type.GetGenericArguments()[0].IsValueType);
 
 {configs}
         isConfigured = true;

@@ -171,7 +171,7 @@ public class JsonQueryBuilder
         var navigationAlias = this.GetNextAlias(parentAlias);
 
         stringBuilder.AppendLine(", (")
-            .Append("select array_to_json(array_agg(row_to_json(").Append(navigationAlias).AppendLine("))) from (");
+            .Append("select coalesce(array_to_json(array_agg(row_to_json(").Append(navigationAlias).AppendLine("))), '[]'::json) from (");
 
         if (navigation.IsMemberOfAggregate())
         {
@@ -212,7 +212,7 @@ public class JsonQueryBuilder
             ?? throw new InvalidOperationException("No reference column available.");
 
         stringBuilder.AppendLine(", (")
-            .Append("select array_to_json(array_agg(row_to_json(").Append(navigationAlias).AppendLine("))) from (");
+            .Append("select coalesce(array_to_json(array_agg(row_to_json(").Append(navigationAlias).AppendLine("))), '[]'::json) from (");
 
         stringBuilder.Append("select \"").Append(referenceColumnToOtherEntity).AppendLine("\" as \"$ref\"")
             .Append("from ").Append(navigationType.GetSchema()).Append(".\"").Append(navigationType.GetTableName()).AppendLine("\" ")

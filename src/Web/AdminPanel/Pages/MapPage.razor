@@ -5,6 +5,7 @@
 @using MUnique.OpenMU.Web.Map.Components
 @using MUnique.OpenMU.Web.Map
 @using MUnique.OpenMU.Interfaces
+@using MUnique.OpenMU.Network.Analyzer
 @using MUnique.OpenMU.GameLogic
 @using System.Threading
 @using Microsoft.AspNetCore.Components
@@ -20,7 +21,7 @@
         <NavLink href="" Match="NavLinkMatch.All">
             <span>@Resources.All</span>
         </NavLink>
-        <span> / @this._map?.MapName
+        <span> / @this._mapName
             @if (this._followedPlayerName is not null)
             {
                 <span class="ms-2 badge bg-info">@string.Format("Following: {0}", this._followedPlayerName)</span>
@@ -29,20 +30,24 @@
     </div>
 
     <CascadingValue Value="@_gameServer">
-        <Map Server="@_gameServer" MapId="@MapId" FollowedPlayerName="@_followedPlayerName" OnFollowPlayer="@HandleFollowPlayer"></Map>
+        <CascadingValue Name="NetworkAnalyzerRoute" Value="@_networkAnalyzerRoute">
+            <Map Server="@_gameServer" MapId="@MapId" FollowedPlayerName="@_followedPlayerName" OnFollowPlayer="@HandleFollowPlayer"></Map>
+        </CascadingValue>
     </CascadingValue>
 }
 
 @code {
     internal const string LiveMapRoute = "map/";
 
-    private IGameMapInfo? _map;
+    private string? _mapName;
 
     private IObservableGameServer? _gameServer;
 
     private IGameServerContext? _gameContext;
 
     private string? _followedPlayerName;
+
+    private string _networkAnalyzerRoute = string.Empty;
 
     private Timer? _followTimer;
 
@@ -67,6 +72,14 @@
     [Inject]
     private NavigationManager NavigationManager { get; set; } = null!;
 
+    /// <summary>
+    /// Gets or sets the service provider, to check if the network analyzer is available. It
+    /// needs the servers in the same process, so it's only registered in the all-in-one
+    /// deployment.
+    /// </summary>
+    [Inject]
+    private IServiceProvider ServiceProvider { get; set; } = null!;
+
     [Inject]
     private IJSRuntime JsRuntime { get; set; } = null!;
 
@@ -82,12 +95,20 @@
     {
         var gameServer = this.Servers.OfType<IGameServer>().First(gs => gs.Id == this.GameServerId);
         var context = (gameServer as IGameServerContextProvider)?.Context ?? throw new InvalidOperationException("This map page just works in a All-In-One deployment.");
+
+        // We just need the adapter to register the map observer of the shown map, so we can skip
+        // the creation of the map infos - creating them for all maps would be quite expensive.
         var adapter = new ObservableGameServerAdapter(context);
-        await adapter.InitializeAsync();
+        await adapter.InitializeAsync(withMapInfos: false);
 
         this._gameContext = context;
         this._gameServer = adapter;
-        this._map = this._gameServer.Maps.First(m => m.Id == this.MapId);
+        this._networkAnalyzerRoute = this.ServiceProvider.GetService(typeof(IPacketCaptureService)) is null
+            ? string.Empty
+            : NetworkAnalyzer.PlayerRoute;
+
+        var maps = await context.GetMapsAsync();
+        this._mapName = maps.FirstOrDefault(m => m.Id == this.MapId)?.Definition.Name;
 
         var uri = new Uri(this.NavigationManager.Uri);
         var query = QueryHelpers.ParseQuery(uri.Query);

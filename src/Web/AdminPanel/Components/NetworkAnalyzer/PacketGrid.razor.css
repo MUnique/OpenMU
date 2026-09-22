@@ -1,0 +1,47 @@
+.packet-grid {
+    /* The grid scrolls inside its own area, so the page doesn't grow with the traffic. Its
+       height is set by the component, based on the number of rows which should be visible.
+       The vertical scrollbar is always shown, so the width doesn't change when the first
+       packets arrive. A horizontal one would appear and disappear with the arriving packets,
+       so it's never shown - the content is kept inside the width instead. */
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.packet-message {
+    /* The message of a packet is kept on one line, so that the rows keep their height - the
+       virtualization of the grid depends on it. The whole content is shown in the details of
+       the selected packet. */
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: bottom;
+}
+
+/* The rules below apply to the markup of the QuickGrid, which is a child component - the
+   scope of this stylesheet has to be lifted with ::deep for them. */
+.packet-grid ::deep thead th {
+    /* The column headers stay visible while the rows are scrolled. */
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background-color: var(--bs-body-bg);
+
+    /* A sticky header loses the border of the collapsed table, so it's drawn as a shadow. */
+    box-shadow: inset 0 -1px 0 var(--bs-border-color);
+}
+
+.packet-grid ::deep table {
+    margin-bottom: 0;
+}
+
+.packet-grid ::deep tr {
+    /* The application fades in new table rows. Here the rows change with every arriving
+       packet, so they would be animated again and again - and the animation scales them up
+       slightly, which makes a horizontal scrollbar flicker. */
+    animation: none;
+    opacity: 1;
+    transform: none;
+}

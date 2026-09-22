@@ -10,9 +10,9 @@ namespace MUnique.OpenMU.Web.AdminPanel.Auth;
 public class AdminPanelAuthOptions
 {
     /// <summary>
-    /// The name of the configuration section.
+    /// Gets the name of the configuration section.
     /// </summary>
-    public const string SectionName = "AdminPanel:Auth";
+    public static string SectionName => "AdminPanel:Auth";
 
     /// <summary>
     /// Gets or sets a value indicating whether all users must set up a second factor before they can use the panel.

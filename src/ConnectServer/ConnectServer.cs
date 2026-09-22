@@ -119,7 +119,7 @@ public class ConnectServer : IConnectServer, OpenMU.Interfaces.IConnectServer, I
     public ValueTask<IReadOnlyList<ICapturedConnectionInfo>> GetConnectionsAsync()
     {
         IReadOnlyList<ICapturedConnectionInfo> result = this.ClientListener.Clients
-            .Select(client => new ClientConnectionInfo(client, this.Id, this.ClientVersion))
+            .Select(client => new ClientConnectionInfo(client, this.Id, this.ClientVersion, this.Description))
             .ToList();
         return ValueTask.FromResult(result);
     }

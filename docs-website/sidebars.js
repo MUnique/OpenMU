@@ -58,6 +58,7 @@ const sidebars = {
       label: 'Server features',
       items: [
         'server-features/bots',
+        'server-features/test-actors',
       ],
     },
     {

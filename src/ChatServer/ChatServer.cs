@@ -102,7 +102,7 @@ public sealed class ChatServer : IChatServer, IDisposable, IConnectionSource
         IReadOnlyList<ICapturedConnectionInfo> result = this._connectedClients
             .OfType<ChatClient>()
             .Select(client => client.Connection is { } connection
-                ? new ChatClientConnectionInfo(client, connection, this.Id)
+                ? new ChatClientConnectionInfo(client, connection, this.Id, this.Description)
                 : null)
             .Where(info => info is not null)
             .Select(info => (ICapturedConnectionInfo)info!)

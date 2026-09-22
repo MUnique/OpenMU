@@ -25,6 +25,11 @@ public class AdminPanelContext : DbContext
     /// </summary>
     public DbSet<AdminUser> AdminUsers { get; set; } = null!;
 
+    /// <summary>
+    /// Gets or sets the API keys of the public API.
+    /// </summary>
+    public DbSet<ApiKey> ApiKeys { get; set; } = null!;
+
     /// <inheritdoc />
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -53,6 +58,17 @@ public class AdminPanelContext : DbContext
             entity.Property(u => u.PasswordHash).IsRequired();
             entity.Property(u => u.SecurityStamp).IsRequired();
             entity.Property(u => u.Roles).IsRequired().HasMaxLength(200);
+        });
+
+        modelBuilder.Entity<ApiKey>(entity =>
+        {
+            entity.ToTable(nameof(ApiKey), SchemaNames.AdminPanel);
+            entity.HasKey(k => k.Id);
+            entity.Property(k => k.Name).IsRequired().HasMaxLength(100);
+            entity.Property(k => k.KeyHash).IsRequired().HasMaxLength(100);
+            entity.HasIndex(k => k.KeyHash).IsUnique();
+            entity.Property(k => k.KeyPrefix).IsRequired().HasMaxLength(16);
+            entity.Property(k => k.Roles).IsRequired().HasMaxLength(200);
         });
     }
 }

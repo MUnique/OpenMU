@@ -463,7 +463,7 @@ public class CastleSiegeCrownMechanicsTests
             Assert.That(fixture.Context.SiegeData.TaxStore, Is.Zero);
             Assert.That(fixture.Context.SiegeData.TaxHunt, Is.Zero);
             Assert.That(fixture.Context.SiegeData.TributeMoney, Is.Zero);
-            Assert.That(fixture.Context.SiegeData.IsHuntZoneEnabled, Is.True);
+            Assert.That(fixture.Context.SiegeData.IsHuntZoneEnabled, Is.False);
         });
         using (var persistenceContext = fixture.PersistenceContextProvider.CreateNewTypedContext(
                    typeof(CastleSiegeData),

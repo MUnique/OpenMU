@@ -38,6 +38,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<bool>("IsBot")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsNetworkObservationActive")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsTemplate")
                         .HasColumnType("boolean");
 
@@ -1175,6 +1178,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<int>("AggregateType")
+                        .HasColumnType("integer");
 
                     b.Property<Guid?>("CharacterClassId")
                         .HasColumnType("uuid");
@@ -3845,6 +3851,21 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<string>("IpResolverParameter")
                         .HasColumnType("text");
+
+                    b.Property<int>("NetworkAnalyzerLiveBufferSize")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("NetworkObservationArchivePath")
+                        .HasColumnType("text");
+
+                    b.Property<int>("NetworkObservationMaxSessionSizeMb")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("NetworkObservationMaxTotalSizeMb")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("NetworkObservationRetentionDays")
+                        .HasColumnType("integer");
 
                     b.Property<bool>("ReadConsoleInput")
                         .HasColumnType("boolean");

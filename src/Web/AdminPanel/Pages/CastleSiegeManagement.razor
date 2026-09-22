@@ -1,0 +1,226 @@
+@page "/castle-siege"
+
+@attribute [Authorize(Policy = AdminPolicies.Administrator)]
+
+@using MUnique.OpenMU.DataModel.Configuration
+@using MUnique.OpenMU.GameLogic.CastleSiege
+@using MUnique.OpenMU.Web.AdminPanel.Auth
+@using MUnique.OpenMU.Web.AdminPanel.Components
+@using MUnique.OpenMU.Web.AdminPanel.Properties
+
+<PageTitle>OpenMU: @Resources.CastleSiege</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="@Resources.CastleSiege" />
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="mb-0">@Resources.CastleSiege</h1>
+    <button type="button" class="btn btn-outline-secondary" @onclick="this.RefreshAsync" disabled="@this._isWorking">
+        <span class="oi oi-reload" aria-hidden="true"></span> @Resources.Refresh
+    </button>
+</div>
+<p class="text-muted">@Resources.CastleSiegeManualRefreshHint</p>
+
+@if (this._servers.Count == 0)
+{
+    <div class="alert alert-info" role="alert">
+        @Resources.CastleSiegeAllInOneHint
+    </div>
+}
+else
+{
+    <div class="card mb-3">
+        <div class="card-body">
+            <label for="castle-siege-server" class="form-label">@Resources.GameServer</label>
+            <select id="castle-siege-server" class="form-select" value="@this._selectedGameServerId" @onchange="this.OnServerChangedAsync" disabled="@this._isWorking">
+                @foreach (var server in this._servers)
+                {
+                    <option value="@server.Id">@server.Description (@server.Id)</option>
+                }
+            </select>
+        </div>
+    </div>
+
+    @if (this._statusMessage is not null)
+    {
+        <div class="alert alert-warning" role="alert">@this._statusMessage</div>
+    }
+    else if (this._snapshot is { } snapshot)
+    {
+        <div class="row g-3 mb-3">
+            <div class="col-lg-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h2 class="h5">@Resources.CastleSiegeStatus</h2>
+                        <dl class="row mb-0">
+                            <dt class="col-sm-5">@Resources.CastleSiegeState</dt>
+                            <dd class="col-sm-7">@snapshot.State</dd>
+                            <dt class="col-sm-5">@Resources.CastleSiegeStartedUtc</dt>
+                            <dd class="col-sm-7">@snapshot.StateStartTimeUtc.ToString("u")</dd>
+                            <dt class="col-sm-5">@Resources.CastleSiegeEndsUtc</dt>
+                            <dd class="col-sm-7">@snapshot.StateEndTimeUtc.ToString("u")</dd>
+                            <dt class="col-sm-5">@Resources.CastleSiegeOwner</dt>
+                            <dd class="col-sm-7">@(snapshot.IsOccupied ? snapshot.OwnerGuildName ?? snapshot.OwnerGuildId?.ToString() : Resources.CastleSiegeUnoccupied)</dd>
+                            <dt class="col-sm-5">@Resources.CastleSiegeRegistrations</dt>
+                            <dd class="col-sm-7">@snapshot.Registrations.Count</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h2 class="h5">@Resources.CastleSiegeEconomy</h2>
+                        <dl class="row mb-0">
+                            <dt class="col-sm-6">@Resources.CastleSiegeChaosMachineTax</dt>
+                            <dd class="col-sm-6">@snapshot.ChaosTax%</dd>
+                            <dt class="col-sm-6">@Resources.CastleSiegePersonalStoreTax</dt>
+                            <dd class="col-sm-6">@snapshot.StoreTax%</dd>
+                            <dt class="col-sm-6">@Resources.CastleSiegeLandOfTrialsFee</dt>
+                            <dd class="col-sm-6">@snapshot.HuntTax</dd>
+                            <dt class="col-sm-6">@Resources.CastleSiegeTribute</dt>
+                            <dd class="col-sm-6">@snapshot.TributeMoney</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-lg-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h2 class="h5">@Resources.CastleSiegeStateAndOwner</h2>
+                        <div class="mb-3">
+                            <label for="castle-siege-state" class="form-label">@Resources.CastleSiegeForceState</label>
+                            <div class="input-group">
+                                <select id="castle-siege-state" class="form-select" @bind="this._forcedState" disabled="@this._isWorking">
+                                    @foreach (var state in Enum.GetValues<CastleSiegeState>())
+                                    {
+                                        <option value="@state">@state</option>
+                                    }
+                                </select>
+                                <button type="button" class="btn btn-warning" @onclick="this.ForceStateAsync" disabled="@this._isWorking">@Resources.CastleSiegeForce</button>
+                            </div>
+                            <div class="form-text">@Resources.CastleSiegeForceStateHint</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="castle-siege-owner" class="form-label">@Resources.CastleSiegeChangeOwner</label>
+                            <div class="input-group">
+                                <input id="castle-siege-owner" type="text" class="form-control" placeholder="@Resources.CastleSiegeGuildName" @bind="this.OwnerGuildName" disabled="@this._isWorking" />
+                                <button type="button" class="btn btn-primary" @onclick="this.SetOwnerAsync" disabled="@this._isWorking">@Resources.Save</button>
+                            </div>
+                            <div class="form-text">@Resources.CastleSiegeChangeOwnerHint</div>
+                        </div>
+                        <button type="button" class="btn btn-outline-danger" @onclick="this.ResetCycleAsync" disabled="@this._isWorking">
+                            @Resources.CastleSiegeResetCycle
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h2 class="h5">@Resources.CastleSiegeTaxesAndTribute</h2>
+                        <div class="row g-2 mb-3">
+                            <div class="col-md-4">
+                                <label for="castle-siege-chaos-tax" class="form-label">@Resources.CastleSiegeChaosTaxPercent</label>
+                                <input id="castle-siege-chaos-tax" type="number" min="0" max="@CastleSiegeTaxProvider.MaximumPercentageTax" class="form-control" @bind="this._chaosTax" disabled="@this._isWorking" />
+                            </div>
+                            <div class="col-md-4">
+                                <label for="castle-siege-store-tax" class="form-label">@Resources.CastleSiegeStoreTaxPercent</label>
+                                <input id="castle-siege-store-tax" type="number" min="0" max="@CastleSiegeTaxProvider.MaximumPercentageTax" class="form-control" @bind="this._storeTax" disabled="@this._isWorking" />
+                            </div>
+                            <div class="col-md-4">
+                                <label for="castle-siege-hunt-tax" class="form-label">@Resources.CastleSiegeHuntFee</label>
+                                <input id="castle-siege-hunt-tax" type="number" min="0" max="@CastleSiegeTaxProvider.MaximumHuntTax" class="form-control" @bind="this._huntTax" disabled="@this._isWorking" />
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-primary" @onclick="this.SaveTaxesAsync" disabled="@this._isWorking">@Resources.CastleSiegeSaveTaxes</button>
+                            <button type="button" class="btn btn-outline-danger" @onclick="this.ClearTributeAsync" disabled="@this._isWorking">@Resources.CastleSiegeClearTribute</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-3">
+            <div class="card-body">
+                <h2 class="h5">@Resources.CastleSiegeRegisteredGuilds</h2>
+                @if (snapshot.Registrations.Count == 0)
+                {
+                    <p class="mb-0"><em>@Resources.CastleSiegeNoRegisteredGuilds</em></p>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>@Resources.CastleSiegeName</th>
+                                    <th>@Resources.CastleSiegeMarks</th>
+                                    <th>@Resources.CastleSiegeRegistrationOrder</th>
+                                    <th>@Resources.Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var registration in snapshot.Registrations)
+                                {
+                                    <tr>
+                                        <td>
+                                            @registration.GuildName
+                                            @if (registration.IsGuildDeleted)
+                                            {
+                                                <span class="badge text-bg-warning ms-1">@Resources.CastleSiegeGuildDeleted</span>
+                                            }
+                                        </td>
+                                        <td>@registration.Marks</td>
+                                        <td>@registration.RegistrationOrder</td>
+                                        <td>
+                                            <button type="button" class="btn btn-sm btn-outline-danger" @onclick="() => this.RemoveRegistrationAsync(registration.GuildId, registration.GuildName)" disabled="@this._isWorking">@Resources.Remove</button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h2 class="h5">@Resources.CastleSiegeNpcStatus</h2>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>@Resources.CastleSiegeMonster</th>
+                                <th>@Resources.CastleSiegeInstance</th>
+                                <th>@Resources.CastleSiegeDefense</th>
+                                <th>@Resources.CastleSiegeRegeneration</th>
+                                <th>@Resources.CastleSiegeLife</th>
+                                <th>@Resources.CastleSiegeHitPoints</th>
+                                <th>@Resources.CastleSiegeAlive</th>
+                                <th>@Resources.CastleSiegePersistent</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var npc in snapshot.Npcs)
+                            {
+                                <tr>
+                                    <td>@npc.MonsterNumber</td>
+                                    <td>@npc.InstanceId</td>
+                                    <td>@npc.DefenseLevel</td>
+                                    <td>@npc.RegenerationLevel</td>
+                                    <td>@npc.LifeLevel</td>
+                                    <td>@npc.CurrentHealth / @npc.MaximumHealth</td>
+                                    <td>@(npc.IsAlive ? Resources.Yes : Resources.No)</td>
+                                    <td>@(npc.IsPersisted ? Resources.Yes : Resources.No)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+}

@@ -200,7 +200,7 @@ public class LoginAction
 
     private async ValueTask FinishLoginAsync(Player player, string username, Account account)
     {
-        player.Account = account;
+        await player.SetAccountAsync(account).ConfigureAwait(false);
         player.Logger.LogDebug("Login successful, username: [{Username}].", username);
 
         if (player.IsTemplatePlayer)

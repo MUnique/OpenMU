@@ -15,7 +15,7 @@ namespace MUnique.OpenMU.Persistence.AdminAuth;
 /// Additionally, the admin panel must be usable before the game database has been initialized,
 /// which wouldn't be possible if the credentials were stored in the game data schema.
 /// </remarks>
-public class AdminUser
+public class AdminUser : IIdentifiable
 {
     /// <summary>
     /// Gets or sets the identifier of this user.

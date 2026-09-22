@@ -21,9 +21,9 @@ using MUnique.OpenMU.Persistence;
 [Table(nameof(CastleSiegePendingReward), Schema = SchemaNames.AccountData)]
 internal partial class CastleSiegePendingReward : MUnique.OpenMU.DataModel.Entities.CastleSiegePendingReward, IIdentifiable
 {
-
-
-
+    
+    
+    
 
     /// <inheritdoc/>
     public override bool Equals(object obj)
@@ -43,5 +43,5 @@ internal partial class CastleSiegePendingReward : MUnique.OpenMU.DataModel.Entit
         return this.Id.GetHashCode();
     }
 
-
+    
 }
