@@ -108,7 +108,7 @@ public class EnterMiniGameAction
         }
 
         var entrance = miniGameDefinition.Entrance ?? throw new InvalidOperationException("mini game entrance not defined");
-        var miniGame = await player.GameContext.GetMiniGameAsync(miniGameDefinition, player).ConfigureAwait(false);
+        var miniGame = await player.GameContext.MiniGames.GetOrCreateAsync(miniGameDefinition, player).ConfigureAwait(false);
 
         // Snapshot before entering: an event which disallows parties (Chaos Castle) kicks the
         // entering player out of its party below, losing the knowledge of who was going to follow.

@@ -486,6 +486,27 @@
   <data name="MiniGameCantStartWithLessThanPlayers" xml:space="preserve">
     <value>Can't start with less than {0} players.</value>
   </data>
+  <data name="SkipWaitNotInMiniGame" xml:space="preserve">
+    <value>You need to be inside a mini game event to skip the waiting time.</value>
+  </data>
+  <data name="SkipWaitRequested" xml:space="preserve">
+    <value>The current waiting time was skipped.</value>
+  </data>
+  <data name="SkipWaitAnnouncedFormat" xml:space="preserve">
+    <value>The waiting time was skipped by {0}. The event continues!</value>
+  </data>
+  <data name="SkipWaitNothingToSkip" xml:space="preserve">
+    <value>There is currently no waiting time to skip. The event is already running.</value>
+  </data>
+  <data name="MiniGameForceRestartFormat" xml:space="preserve">
+    <value>The running {0} event was stopped. A new run will start soon.</value>
+  </data>
+  <data name="MiniGameForceStartInitiatedFormat" xml:space="preserve">
+    <value>{0} will start soon.</value>
+  </data>
+  <data name="KillAllMonstersFormat" xml:space="preserve">
+    <value>Killed {0} monster(s).</value>
+  </data>
   <data name="TalkingNotImplementedFormat" xml:space="preserve">
     <value>Talking to this NPC ({0}, {1}) is not implemented yet.</value>
   </data>

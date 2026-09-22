@@ -587,7 +587,9 @@ public sealed class KanturuContext : MiniGameContext
         await this.ShowKanturuStateAsync(KanturuState.Tower, (byte)KanturuTowerDetailState.Revitalization).ConfigureAwait(false);
 
         // Update the server walk map, so the path finder and the movement checks treat the
-        // formerly blocked cells as passable.
+        // formerly blocked cells as passable. The barrier rect mixes walls and holes,
+        // so it explicitly opts into opening the whole tile instead of only removing
+        // the configured attribute.
         var terrain = this.Map.Terrain;
         foreach (var area in this._definition.BarrierAreas)
         {
@@ -595,7 +597,7 @@ public sealed class KanturuContext : MiniGameContext
             {
                 for (int y = area.StartY; y <= area.EndY; y++)
                 {
-                    terrain.ApplyTerrainAttribute((byte)x, (byte)y, TerrainAttributeType.NoGround, false);
+                    terrain.ApplyTerrainAttribute((byte)x, (byte)y, TerrainAttributeType.NoGround, false, openArea: true);
                 }
             }
         }
@@ -806,12 +808,9 @@ public sealed class KanturuContext : MiniGameContext
         }
     }
 
-    private async Task DelayAsync(TimeSpan duration, CancellationToken ct)
+    private Task DelayAsync(TimeSpan duration, CancellationToken ct)
     {
-        if (duration > TimeSpan.Zero)
-        {
-            await Task.Delay(duration, ct).ConfigureAwait(false);
-        }
+        return this.DelayWithSkipAsync(duration, ct);
     }
 
     private async ValueTask ShowGoldenMessageIfConfiguredAsync(string? messageKey)

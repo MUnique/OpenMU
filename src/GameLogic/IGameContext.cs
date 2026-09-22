@@ -161,20 +161,9 @@ public interface IGameContext
     ValueTask<GameMap?> GetMapAsync(ushort mapId, bool createIfNotExists = true);
 
     /// <summary>
-    /// Gets the mini game map which is meant to be hosted by the game.
+    /// Gets the manager which hosts and tracks the mini game instances of the game.
     /// </summary>
-    /// <param name="miniGameDefinition">The mini game definition.</param>
-    /// <param name="requester">The requesting player.</param>
-    /// <returns>
-    /// The state of the mini game which contains the hosted GameMap instance.
-    /// </returns>
-    ValueTask<MiniGameContext> GetMiniGameAsync(MiniGameDefinition miniGameDefinition, Player requester);
-
-    /// <summary>
-    /// Removes the mini game instance from the context.
-    /// </summary>
-    /// <param name="miniGameContext">The context of the mini game.</param>
-    ValueTask RemoveMiniGameAsync(MiniGameContext miniGameContext);
+    IMiniGameManager MiniGames { get; }
 
     /// <summary>
     /// Gets the player object by character name.
