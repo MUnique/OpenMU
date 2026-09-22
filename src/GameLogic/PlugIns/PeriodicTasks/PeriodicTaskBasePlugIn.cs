@@ -36,14 +36,21 @@ public abstract class PeriodicTaskBasePlugIn<TConfiguration, TState> : IPeriodic
     }
 
     /// <inheritdoc />
-    public async ValueTask ExecuteTaskAsync(GameContext gameContext)
+    public virtual async ValueTask ExecuteTaskAsync(GameContext gameContext)
     {
         var logger = gameContext.LoggerFactory.CreateLogger(this.GetType().Name);
         using var scope = logger.BeginScope(gameContext);
 
         var state = this.GetStateByGameContext(gameContext);
 
-        if (state.NextRunUtc > DateTime.UtcNow)
+        // A manually forced start bypasses a future NextRunUtc, which is otherwise set to
+        // the full task duration on every start and would swallow forced starts until it
+        // elapses. It's limited to NotStarted (a fresh start) and Started (promptly
+        // finishing a stuck previous run, so the start that follows can proceed), so that
+        // a Prepared run still waits out its PreStartMessageDelay before starting.
+        var isForcedStartPending = this._isStartForced
+            && state.State is PeriodicTaskState.NotStarted or PeriodicTaskState.Started;
+        if (state.NextRunUtc > DateTime.UtcNow && !isForcedStartPending)
         {
             return;
         }

@@ -15,6 +15,11 @@ public class ItemConstants
     public static ItemIdentifier SummonOrb => new(11, 12);
 
     /// <summary>
+    /// Gets the identifier for the Castle Siege Life Stone.
+    /// </summary>
+    public static ItemIdentifier CastleSiegeLifeStone => new(11, 13);
+
+    /// <summary>
     /// Gets the identifier for the fruits.
     /// </summary>
     public static ItemIdentifier Fruits => new(15, 13);

@@ -144,8 +144,11 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
 
         possibleTargets.AddRange(summons);
 
+        // Prefer a target with a clear line of sight, so monsters don't lock onto
+        // players behind walls. If nobody is visible, fall back to the nearest
+        // target so the monster still walks toward it (and around the wall).
         // todo: check the walk distance
-        return possibleTargets.MinBy(a => a.GetDistanceTo(this.Npc));
+        return NpcTargetSelection.GetNearestPreferVisible(possibleTargets, this.Npc, target => target.GetDistanceTo(this.Npc));
     }
 
     /// <summary>
@@ -234,9 +237,14 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
             return;
         }
 
-        // Target in attack range — attack.
+        // Target in attack range with a clear line of sight — attack.
+        // IsInRange is the cheap pre-filter; HasLineOfSightTo walks the terrain
+        // line only when the target is already in range. Without sight the monster
+        // falls through to WalkToAsync below and paths around the wall instead of
+        // shooting through it.
         if (this.CurrentTarget.IsInRange(this.Monster.Position, this.Monster.Definition.AttackRange)
-            && !this.Monster.IsAtSafezone())
+            && !this.Monster.IsAtSafezone()
+            && this.Monster.HasLineOfSightTo(this.CurrentTarget))
         {
             await this.Monster.AttackAsync(this.CurrentTarget).ConfigureAwait(false);
             return;
@@ -247,7 +255,8 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
             return;
         }
 
-        // Target visible but outside attack range, walk toward it.
+        // Target tracked but outside attack range (or without line of sight),
+        // walk toward it to get into a hittable position.
         if (this.CurrentTarget.IsInRange(this.Monster.Position, this.Monster.Definition.ViewRange + 1))
         {
             var walkTarget = this.Monster.CurrentMap!.Terrain.GetRandomCoordinate(this.CurrentTarget.Position, this.Monster.Definition.AttackRange);
@@ -292,6 +301,7 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
                && this.CurrentTarget is not Player { IsInvisible: true }
                && !this.CurrentTarget.IsTeleporting
                && !this.CurrentTarget.IsAtSafezone()
-               && this.CurrentTarget.IsInRange(this.Monster.Position, this.Npc.Definition.ViewRange);
+               && this.CurrentTarget.IsInRange(this.Monster.Position, this.Npc.Definition.ViewRange)
+               && this.Monster.HasLineOfSightTo(this.CurrentTarget);
     }
 }

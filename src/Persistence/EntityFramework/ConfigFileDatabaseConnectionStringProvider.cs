@@ -17,10 +17,6 @@ using Microsoft.EntityFrameworkCore;
 /// </summary>
 public class ConfigFileDatabaseConnectionStringProvider : IDatabaseConnectionSettingProvider
 {
-    private const string DbHostVariableName = "DB_HOST";
-    private const string DbAdminUserVariableName = "DB_ADMIN_USER";
-    private const string DbAdminPasswordVariableName = "DB_ADMIN_PW";
-
     private readonly string _fileName;
 
     private IDictionary<Type, ConnectionSetting>? _settings;
@@ -128,25 +124,6 @@ public class ConfigFileDatabaseConnectionStringProvider : IDatabaseConnectionSet
 
     private void ApplyEnvironmentVariables(ConnectionSetting setting)
     {
-        if (Environment.GetEnvironmentVariable(DbHostVariableName) is { } dbHost
-            && !string.IsNullOrEmpty(dbHost))
-        {
-            setting.ConnectionString = setting.ConnectionString!.Replace("Server=localhost;", $"Server={dbHost};");
-        }
-
-        if (setting.ConnectionString!.Contains("User Id=postgres;"))
-        {
-            if (Environment.GetEnvironmentVariable(DbAdminUserVariableName) is { } dbAdminUser
-                && !string.IsNullOrEmpty(dbAdminUser))
-            {
-                setting.ConnectionString = setting.ConnectionString.Replace("User Id=postgres;", $"User Id={dbAdminUser};");
-            }
-
-            if (Environment.GetEnvironmentVariable(DbAdminPasswordVariableName) is { } dbAdminPassword
-                && !string.IsNullOrEmpty(dbAdminPassword))
-            {
-                setting.ConnectionString = setting.ConnectionString.Replace("Password=admin;", $"Password={dbAdminPassword};");
-            }
-        }
+        DatabaseConnectionStringHelper.ApplyEnvironmentVariables(setting);
     }
 }

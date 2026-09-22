@@ -8,6 +8,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Bots;
+using MUnique.OpenMU.GameLogic.Offline;
 using NUnit.Framework;
 
 /// <summary>
@@ -17,6 +18,7 @@ using NUnit.Framework;
 public class BotBuffHandlerTests
 {
     private IGameContext _gameContext = null!;
+    private readonly List<OfflinePlayer> _playersWithEffects = new();
 
     /// <summary>
     /// Sets up a fresh game context before each test.
@@ -25,6 +27,21 @@ public class BotBuffHandlerTests
     public void SetUp()
     {
         this._gameContext = GameContextTestHelper.CreateGameContext();
+        this._playersWithEffects.Clear();
+    }
+
+    /// <summary>
+    /// Disposes the effects created by the tests, so their expiry timers don't outlive the test.
+    /// </summary>
+    [TearDown]
+    public async ValueTask TearDownAsync()
+    {
+        foreach (var player in this._playersWithEffects)
+        {
+            await player.MagicEffectList.ClearAllEffectsAsync().ConfigureAwait(false);
+        }
+
+        this._playersWithEffects.Clear();
     }
 
     /// <summary>
@@ -90,7 +107,8 @@ public class BotBuffHandlerTests
         var player = await PlayerTestHelper.CreateOfflineLevelingPlayerAsync(this._gameContext).ConfigureAwait(false);
         var effectDef = new MagicEffectDefinition { Number = 1 };
         var effect = new MagicEffect(TimeSpan.FromMinutes(10), effectDef);
-        player.MagicEffectList.ActiveEffects.Add(effect.Id, effect);
+        await player.MagicEffectList.AddEffectAsync(effect).ConfigureAwait(false);
+        this._playersWithEffects.Add(player);
 
         Assert.That(BotBuffHandler.HasEffect(player, effectDef), Is.True);
     }
@@ -105,7 +123,8 @@ public class BotBuffHandlerTests
         var effectDef1 = new MagicEffectDefinition { Number = 1 };
         var effectDef2 = new MagicEffectDefinition { Number = 2 };
         var effect = new MagicEffect(TimeSpan.FromMinutes(10), effectDef1);
-        player.MagicEffectList.ActiveEffects.Add(effect.Id, effect);
+        await player.MagicEffectList.AddEffectAsync(effect).ConfigureAwait(false);
+        this._playersWithEffects.Add(player);
 
         Assert.That(BotBuffHandler.HasEffect(player, effectDef2), Is.False);
     }

@@ -36,6 +36,70 @@ public class GuildServerTest : GuildTestBase
     }
 
     /// <summary>
+    /// Tests that a persistent guild identifier can be resolved by name without an online guild member.
+    /// </summary>
+    [Test]
+    public async ValueTask GetPersistentGuildIdByNameAsyncFindsOfflineGuild()
+    {
+        using var context = this.PersistenceContextProvider.CreateNewContext();
+        var persistentGuild = (await context
+                .GetAsync<MUnique.OpenMU.DataModel.Entities.Guild>()
+                .ConfigureAwait(false))
+            .Single(guild => guild.Name == GuildName);
+
+        var guildId = await this.GuildServer.GetPersistentGuildIdByNameAsync(GuildName).ConfigureAwait(false);
+
+        Assert.That(guildId, Is.EqualTo(persistentGuild.Id));
+    }
+
+    /// <summary>
+    /// Tests that a persistent guild name can be resolved without creating a runtime guild container.
+    /// </summary>
+    [Test]
+    public async ValueTask GetPersistentGuildNameAsyncFindsOfflineGuild()
+    {
+        using var context = this.PersistenceContextProvider.CreateNewContext();
+        var persistentGuild = (await context
+                .GetAsync<MUnique.OpenMU.DataModel.Entities.Guild>()
+                .ConfigureAwait(false))
+            .Single(guild => guild.Name == GuildName);
+
+        var guildName = await this.GuildServer.GetPersistentGuildNameAsync(persistentGuild.Id).ConfigureAwait(false);
+        var runtimeGuildId = await this.GuildServer.GetGuildIdByNameAsync(GuildName).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(guildName, Is.EqualTo(GuildName));
+            Assert.That(runtimeGuildId, Is.Zero);
+        });
+    }
+
+    /// <summary>
+    /// Tests that persistent guild names are projected in one batch and missing guilds are omitted.
+    /// </summary>
+    [Test]
+    public async ValueTask GetPersistentGuildNamesAsyncFindsOfflineGuilds()
+    {
+        using var context = this.PersistenceContextProvider.CreateNewContext();
+        var persistentGuild = (await context
+                .GetAsync<MUnique.OpenMU.DataModel.Entities.Guild>()
+                .ConfigureAwait(false))
+            .Single(guild => guild.Name == GuildName);
+        var missingGuildId = Guid.NewGuid();
+
+        var guildNames = await this.GuildServer
+            .GetPersistentGuildNamesAsync([persistentGuild.Id, missingGuildId])
+            .ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(guildNames, Has.Count.EqualTo(1));
+            Assert.That(guildNames[persistentGuild.Id], Is.EqualTo(GuildName));
+            Assert.That(guildNames.ContainsKey(missingGuildId), Is.False);
+        });
+    }
+
+    /// <summary>
     /// Tests if the entrance of guild members is registered correctly in the guild member list.
     /// </summary>
     [Test]

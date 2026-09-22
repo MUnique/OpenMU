@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.GameLogic.CastleSiege;
 
 using System.Diagnostics.CodeAnalysis;
 using MUnique.OpenMU.DataModel.Configuration;
-using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.Interfaces;
 
 /// <summary>
@@ -15,19 +14,19 @@ using MUnique.OpenMU.Interfaces;
 public sealed class CastleSiegeTaxProvider
 {
     /// <summary>
-    /// The maximum percentage which can be configured for Chaos Machine and NPC store taxes.
+    /// Gets the maximum percentage which can be configured for Chaos Machine and NPC store taxes.
     /// </summary>
-    internal const int MaximumPercentageTax = 3;
+    public static int MaximumPercentageTax { get; } = 3;
 
     /// <summary>
-    /// The maximum Land of Trials entry fee.
+    /// Gets the maximum Land of Trials entry fee.
     /// </summary>
-    internal const int MaximumHuntTax = 300_000;
+    public static int MaximumHuntTax { get; } = 300_000;
 
     /// <summary>
-    /// The increment used when changing the Land of Trials entry fee.
+    /// Gets the increment used when changing the Land of Trials entry fee.
     /// </summary>
-    internal const int HuntTaxStep = 10_000;
+    internal static int HuntTaxStep { get; } = 10_000;
 
     /// <summary>
     /// Gets the Chaos Machine tax rate which applies to a player.
@@ -35,7 +34,7 @@ public sealed class CastleSiegeTaxProvider
     /// <param name="player">The player.</param>
     /// <returns>The additional percentage, or zero when no tax applies.</returns>
     public ValueTask<int> GetChaosTaxAsync(Player player)
-        => this.GetTaxAsync(player, GetContext(player), CastleSiegeTaxType.ChaosMachine);
+        => this.GetTaxAsync(player, CastleSiegeContextResolver.GetContext(player), CastleSiegeTaxType.ChaosMachine);
 
     /// <summary>
     /// Gets the NPC store tax rate which applies to a player.
@@ -43,7 +42,7 @@ public sealed class CastleSiegeTaxProvider
     /// <param name="player">The player.</param>
     /// <returns>The additional percentage, or zero when no tax applies.</returns>
     public ValueTask<int> GetStoreTaxAsync(Player player)
-        => this.GetTaxAsync(player, GetContext(player), CastleSiegeTaxType.Store);
+        => this.GetTaxAsync(player, CastleSiegeContextResolver.GetContext(player), CastleSiegeTaxType.Store);
 
     /// <summary>
     /// Gets the Land of Trials entry fee which applies to a player.
@@ -51,7 +50,7 @@ public sealed class CastleSiegeTaxProvider
     /// <param name="player">The player.</param>
     /// <returns>The flat entry fee, or zero when the player is exempt.</returns>
     public ValueTask<int> GetHuntEntryFeeAsync(Player player)
-        => this.GetHuntEntryFeeAsync(player, GetContext(player));
+        => this.GetHuntEntryFeeAsync(player, CastleSiegeContextResolver.GetContext(player));
 
     /// <summary>
     /// Determines whether a player belongs to the castle owner's guild or alliance.
@@ -59,7 +58,7 @@ public sealed class CastleSiegeTaxProvider
     /// <param name="player">The player.</param>
     /// <returns><see langword="true"/> when the player is exempt from Castle Siege taxes.</returns>
     public ValueTask<bool> IsExemptAsync(Player player)
-        => this.IsExemptAsync(player, GetContext(player));
+        => this.IsExemptAsync(player, CastleSiegeContextResolver.GetContext(player));
 
     /// <summary>
     /// Removes a Chaos Machine crafting cost, including Castle Siege tax, and persists the tax as tribute.
@@ -68,10 +67,12 @@ public sealed class CastleSiegeTaxProvider
     /// <param name="baseCost">The untaxed crafting cost.</param>
     /// <returns><see langword="true"/> when the player paid the complete cost.</returns>
     public ValueTask<bool> TryPayChaosCostAsync(Player player, int baseCost)
-        => this.TryPayChaosCostAsync(
-            player,
-            baseCost,
-            player.OpenedNpc?.Definition.NpcWindow == NpcWindow.ChaosMachine ? GetContext(player) : null);
+    {
+        var context = player.OpenedNpc?.Definition.NpcWindow == NpcWindow.ChaosMachine
+            ? CastleSiegeContextResolver.GetContext(player)
+            : null;
+        return this.TryPayChaosCostAsync(player, baseCost, context);
+    }
 
     /// <summary>
     /// Removes an NPC store cost, including Castle Siege tax, and persists the tax as tribute.
@@ -80,21 +81,11 @@ public sealed class CastleSiegeTaxProvider
     /// <param name="baseCost">The untaxed store cost.</param>
     /// <returns><see langword="true"/> when the player paid the complete cost.</returns>
     public ValueTask<bool> TryPayStoreCostAsync(Player player, long baseCost)
-        => this.TryPayPercentageCostAsync(player, baseCost, GetContext(player), CastleSiegeTaxType.Store);
-
-    /// <summary>
-    /// Gets the initialized Castle Siege context of a player.
-    /// </summary>
-    /// <param name="player">The player.</param>
-    /// <returns>The context, or <see langword="null"/> when Castle Siege is not active.</returns>
-    internal static CastleSiegeContext? GetContext(Player player)
-    {
-        return player.GameContext.PlugInManager
-            .GetActivePlugInsOf<IPeriodicTaskPlugIn>()
-            .OfType<CastleSiegePlugIn>()
-            .FirstOrDefault()
-            ?.GetContext(player.GameContext);
-    }
+        => this.TryPayPercentageCostAsync(
+            player,
+            baseCost,
+            CastleSiegeContextResolver.GetContext(player),
+            CastleSiegeTaxType.Store);
 
     /// <summary>
     /// Resolves the persistent identifier under which a player's guild participates in alliance events.

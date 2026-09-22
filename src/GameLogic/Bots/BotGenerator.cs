@@ -9,7 +9,6 @@ using System.Threading;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
-using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Resets;
@@ -43,24 +42,6 @@ internal sealed class BotGenerator
 
     /// <summary>Number of inventory extensions (each 4 rows of 8 slots) a bot gets, so loot does not clog its backpack.</summary>
     private const int BotInventoryExtensions = 4;
-
-    /// <summary>The highest item group that is a melee weapon (0 sword, 1 axe, 2 mace, 3 spear).</summary>
-    private const byte MaxMeleeGroup = 3;
-
-    /// <summary>Item group of bows (need ammunition).</summary>
-    private const byte BowGroup = 4;
-
-    /// <summary>Item group of staves/sticks (casters).</summary>
-    private const byte StaffGroup = 5;
-
-    /// <summary>Item group of body armor; its item number identifies the armor set.</summary>
-    private const byte ArmorGroup = 8;
-
-    /// <summary>
-    /// Armor set numbers tried in thematic order; the first the class is qualified for (by its chest piece)
-    /// is used: 5 Leather (warriors), 2 Pad (wizards), 10 Vine (elves), 39 Mistery (summoners), then fallbacks.
-    /// </summary>
-    private static readonly byte[] ArmorSetCandidates = { 5, 2, 10, 39, 6, 0, 4, 8 };
 
     private readonly IGameContext _gameContext;
     private readonly ILogger _logger;
@@ -145,10 +126,23 @@ internal sealed class BotGenerator
         var reservedNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var created = 0;
 
+        // One buffer per party, so buffers are planned from parties.
+        var bufferQuota = BotPartyPolicy.EstimatePartyCount(numberOfAccounts * perAccount);
+        var buffersAssigned = 0;
+
         // Build a balanced, shuffled queue of classes so the whole population is evenly split across
         // all creatable classes. Independent random draws leave visible skew at this scale (e.g. 11
         // Summoners vs 4 Elves for 50 bots); the quota queue guarantees ~even counts, drawn per character.
         var classQueue = BuildBalancedClassQueue(creatableClasses, numberOfAccounts * perAccount);
+        if (creatableClasses.FirstOrDefault(c => c.Number == BotClassNumbers.FairyElfNumber) is { } elfClass)
+        {
+            GrowElfSlots(classQueue, elfClass, bufferQuota);
+        }
+        else
+        {
+            bufferQuota = 0;
+            this._logger.LogWarning("No creatable elf class found - bot parties cannot have buffers.");
+        }
 
         for (var i = 1; i <= numberOfAccounts; i++)
         {
@@ -157,6 +151,15 @@ internal sealed class BotGenerator
             var existing = await context.GetAccountByLoginNameAsync(loginName, cancellationToken).ConfigureAwait(false);
             if (existing is not null)
             {
+                buffersAssigned += existing.Characters.Count(c => BotBuild.IsSupportElf(c.CharacterClass, c.Name));
+
+                // Skip the slots this account drew when it was created, so new
+                // accounts continue the queue instead of redrawing its head.
+                for (var slot = 0; slot < perAccount && classQueue.Count > 0; slot++)
+                {
+                    classQueue.Dequeue();
+                }
+
                 continue;
             }
 
@@ -171,8 +174,14 @@ internal sealed class BotGenerator
                 var characterClass = classQueue.Count > 0 ? classQueue.Dequeue() : creatableClasses.SelectRandom()!;
                 var level = profile.GetStartLevel(minLevel, maxLevel);
                 var seededResets = profile.GetSeededResets(maxSeededResets);
-                var name = await this._nameGenerator.GenerateUniqueAsync(context, reservedNames, cancellationToken).ConfigureAwait(false);
-                this.CreateCharacter(context, account, name, characterClass, level, slot, experienceTable, seededResets, profile.StarterItemLevel, resetConfiguration);
+                var wantSupport = BotBuild.IsElf(characterClass) && buffersAssigned < bufferQuota;
+                var name = await this.GenerateBuildNameAsync(context, reservedNames, characterClass, wantSupport, cancellationToken).ConfigureAwait(false);
+                if (BotBuild.IsSupportElf(characterClass, name))
+                {
+                    buffersAssigned++;
+                }
+
+                this.CreateCharacter(context, account, name, characterClass, level, slot, experienceTable, seededResets, profile.StarterItemLevel, profile.EquipStarterArmor, resetConfiguration);
             }
 
             // Save per account so a single failure does not roll back already generated accounts,
@@ -226,6 +235,48 @@ internal sealed class BotGenerator
         return deleted;
     }
 
+    /// <summary>
+    /// Grows the elf share of the queue to the buffer quota plus archer keep.
+    /// Natural split yields fewer buffers than parties need. Converted slots
+    /// are drawn randomly so class and account index stay uncorrelated.
+    /// </summary>
+    /// <param name="queue">The class queue to grow.</param>
+    /// <param name="elfClass">The base elf class to convert slots into.</param>
+    /// <param name="bufferQuota">The wanted buffer count.</param>
+    internal static void GrowElfSlots(Queue<CharacterClass> queue, CharacterClass elfClass, int bufferQuota)
+    {
+        var slots = queue.ToList();
+        var elfCount = slots.Count(c => c.Number == BotClassNumbers.FairyElfNumber);
+        var target = bufferQuota + Math.Max(1, elfCount / 2);
+        if (elfCount >= target)
+        {
+            return;
+        }
+
+        var spots = new List<int>();
+        for (var n = 0; n < slots.Count; n++)
+        {
+            if (slots[n].Number != BotClassNumbers.FairyElfNumber)
+            {
+                spots.Add(n);
+            }
+        }
+
+        var need = Math.Min(target - elfCount, spots.Count);
+        for (var drawn = 0; drawn < need; drawn++)
+        {
+            var pick = Rand.NextInt(drawn, spots.Count);
+            (spots[drawn], spots[pick]) = (spots[pick], spots[drawn]);
+            slots[spots[drawn]] = elfClass;
+        }
+
+        queue.Clear();
+        foreach (var characterClass in slots)
+        {
+            queue.Enqueue(characterClass);
+        }
+    }
+
     private static byte[] CreateDefaultKeyConfiguration()
     {
         // Mirrors CreateCharacterAction: bind Q to the healing potion and W to the mana potion,
@@ -240,6 +291,40 @@ internal sealed class BotGenerator
         keyConfiguration[23] = unbound; // E
         keyConfiguration[25] = unbound; // R
         return keyConfiguration;
+    }
+
+    /// <summary>
+    /// Draws a name with the wanted elf variant. Other classes keep any name.
+    /// </summary>
+    private async ValueTask<string> GenerateBuildNameAsync(
+        IPlayerContext context,
+        ISet<string> reservedNames,
+        CharacterClass characterClass,
+        bool wantSupport,
+        CancellationToken cancellationToken)
+    {
+        var rejected = new List<string>();
+        var name = await this._nameGenerator.GenerateUniqueAsync(context, reservedNames, cancellationToken).ConfigureAwait(false);
+        if (BotBuild.IsElf(characterClass))
+        {
+            var wantVariant = BotBuild.WantedVariant(wantSupport);
+            for (var attempt = 0; attempt < 50 && BotBuild.GetVariant(name) != wantVariant; attempt++)
+            {
+                rejected.Add(name);
+                name = await this._nameGenerator.GenerateUniqueAsync(context, reservedNames, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        // Rejected names were verified free, so hand them back for later draws.
+        foreach (var free in rejected)
+        {
+            if (free != name)
+            {
+                reservedNames.Remove(free);
+            }
+        }
+
+        return name;
     }
 
     /// <summary>
@@ -446,7 +531,7 @@ internal sealed class BotGenerator
         }
     }
 
-    private void CreateCharacter(IPlayerContext context, Account account, string name, CharacterClass characterClass, int level, byte slot, long[] experienceTable, int seededResets, byte starterItemLevel, ResetConfiguration? resetConfiguration)
+    private void CreateCharacter(IPlayerContext context, Account account, string name, CharacterClass characterClass, int level, byte slot, long[] experienceTable, int seededResets, byte starterItemLevel, bool equipStarterArmor, ResetConfiguration? resetConfiguration)
     {
         // A character generated beyond the class evolution level was created as its second-generation
         // class right away - like a player who completed the class quest long ago. Everything downstream
@@ -509,7 +594,18 @@ internal sealed class BotGenerator
 
         character.Inventory = context.CreateNew<ItemStorage>();
         character.Inventory.Money = StartMoney;
-        this.EquipStarterGear(context, character, starterItemLevel);
+
+        // A fresh character starts like a regular player's new character - weapon only, no armor -
+        // and loots its first set like everyone else. Veterans keep the basic set, without which
+        // they could not survive the maps their start level puts them on.
+        var starterGear = new BotStarterGearEquipper(context, this._gameContext.Configuration, character, starterItemLevel);
+        starterGear.EquipWeapon();
+        if (equipStarterArmor)
+        {
+            starterGear.EquipArmorSet();
+        }
+
+        starterGear.AddPotions();
 
         account.Characters.Add(character);
     }
@@ -519,7 +615,11 @@ internal sealed class BotGenerator
     /// as the class's own buffs and heals (e.g. elf Heal/Greater Defense/Greater Damage). Only skills the
     /// class is qualified for are ever learned, gated by the skills' real learn requirements from the game
     /// configuration (total energy, leadership, character level, ...) evaluated against the stats the bot
-    /// was just given - exactly the requirements a human player has to meet for the same skill.
+    /// was just given - exactly the requirements a human player has to meet for the same skill. Item-bound
+    /// skills follow the backfill rules (see <see cref="BotProgression.MayBackfillSkill"/>): orb/scroll
+    /// skills only when their granting item is obtainable, so a bot cannot learn a scroll before the
+    /// monster level where it starts to drop - and never when the skill comes from worn equipment or a
+    /// pet, which the server grants temporarily on equip instead.
     /// </summary>
     private void LearnClassSkills(IPlayerContext context, Character character, CharacterClass characterClass, int level)
     {
@@ -536,12 +636,13 @@ internal sealed class BotGenerator
         }
 
         var learnedNumbers = new HashSet<short>(character.LearnedSkills.Select(s => s.Skill!.Number));
-        var itemGrantedSkillNumbers = BotProgression.GetItemGrantedSkillNumbers(this._gameContext.Configuration);
+        var grantingItems = BotProgression.GetGrantingItems(this._gameContext.Configuration);
         foreach (var skill in this._gameContext.Configuration.Skills)
         {
-            if (!BotProgression.IsBotLearnableSkill(skill, itemGrantedSkillNumbers)
+            if (!BotProgression.MayBotOwnSkill(skill)
                 || !skill.QualifiedCharacters.Contains(characterClass)
                 || !BotProgression.MeetsRequirements(skill, GetValue)
+                || !BotProgression.MayBackfillSkill(skill, grantingItems, characterClass, level, GetValue)
                 || !learnedNumbers.Add(skill.Number))
             {
                 continue;
@@ -552,144 +653,5 @@ internal sealed class BotGenerator
             entry.Level = 0;
             character.LearnedSkills.Add(entry);
         }
-    }
-
-    /// <summary>
-    /// Equips the bot with a basic, class-appropriate weapon and armor set (mirrors the low-level test
-    /// account gear), so it is not naked and punching with its fists. The item level scales modestly
-    /// with the bot level for a bit more defense/damage without raising the equip requirements too high.
-    /// </summary>
-    /// <param name="context">The persistence context.</param>
-    /// <param name="character">The character to equip.</param>
-    /// <param name="starterItemLevel">The upgrade level of the starter items (level 0 for fresh characters).</param>
-    private void EquipStarterGear(IPlayerContext context, Character character, byte starterItemLevel)
-    {
-        var inventory = character.Inventory!;
-        var characterClass = character.CharacterClass!;
-
-        // Data-driven, so every class gets gear it is actually QUALIFIED to wear (a Dark Lord must never
-        // end up in a Pad/wizard set). We pick the most basic options (lowest DropLevel) the class can use:
-        // - a weapon from the weapon groups (0 sword, 1 axe, 2 mace, 3 spear, 4 bow, 5 staff),
-        // - the armor set whose chest piece (group 8) has the lowest DropLevel; its NUMBER identifies the set,
-        //   and the equipment type is the GROUP (7 helm, 8 armor, 9 pants, 10 gloves, 11 boots).
-        // The weapon type follows the bot's BUILD (BotProgression.IsPreferredWeaponGroup - the same rule the
-        // later upgrades use), so an energy-specked Magic Gladiator starts with a staff instead of a blade.
-        // The Small Axe is qualified for almost every class, so without this filter casters and archers would
-        // all end up with one.
-        bool IsPreferredWeapon(ItemDefinition definition)
-            => BotProgression.IsPreferredWeaponGroup(characterClass, character.Name, (byte)definition.Group);
-
-        // Ammunition shares the bow group (Bolt/Arrows have DropLevel 0), so without this filter every
-        // archer would get a bolt stack as its "weapon" and end up punching with its fists.
-        var weapon = this._gameContext.Configuration.Items
-                .Where(d => IsPreferredWeapon(d) && !d.IsAmmunition && d.QualifiedCharacters.Contains(characterClass))
-                .MinBy(d => d.DropLevel)
-            ?? this._gameContext.Configuration.Items
-                .Where(d => d.Group <= StaffGroup && !d.IsAmmunition && d.QualifiedCharacters.Contains(characterClass))
-                .MinBy(d => d.DropLevel);
-        if (weapon is not null)
-        {
-            if (weapon.Group == BowGroup)
-            {
-                // Bows need ammunition; the arrows go into the left hand.
-                this.AddEquippedItem(context, inventory, characterClass, InventoryConstants.RightHandSlot, weapon, starterItemLevel);
-                this.AddAmmunition(context, inventory);
-            }
-            else
-            {
-                this.AddEquippedItem(context, inventory, characterClass, InventoryConstants.LeftHandSlot, weapon, starterItemLevel);
-            }
-        }
-
-        // Choose a thematically appropriate armor set the class can wear, tried in order (warriors -> Leather,
-        // wizards -> Pad, elves -> Vine, summoners -> Mistery, then fallbacks). Each piece is added only if the
-        // class is qualified for it, so e.g. the Magic Gladiator keeps the set but skips the helm it can't wear.
-        foreach (var set in ArmorSetCandidates)
-        {
-            if (this._gameContext.Configuration.Items.FirstOrDefault(d => d.Group == ArmorGroup && d.Number == set) is not { } chest
-                || !chest.QualifiedCharacters.Contains(characterClass))
-            {
-                continue;
-            }
-
-            this.EquipArmorPiece(context, inventory, characterClass, InventoryConstants.HelmSlot, 7, set, starterItemLevel);
-            this.EquipArmorPiece(context, inventory, characterClass, InventoryConstants.ArmorSlot, 8, set, starterItemLevel);
-            this.EquipArmorPiece(context, inventory, characterClass, InventoryConstants.PantsSlot, 9, set, starterItemLevel);
-            this.EquipArmorPiece(context, inventory, characterClass, InventoryConstants.GlovesSlot, 10, set, starterItemLevel);
-            this.EquipArmorPiece(context, inventory, characterClass, InventoryConstants.BootsSlot, 11, set, starterItemLevel);
-            break;
-        }
-
-        this.AddPotions(context, inventory);
-    }
-
-    private void AddPotions(IPlayerContext context, ItemStorage inventory)
-    {
-        // A stack of Large Healing Potions so the offline HealingHandler has something to drink, and a
-        // stack of Large Mana Potions so casters can keep casting instead of degrading to weak melee once
-        // their mana runs dry. The BotNavigator tops both up at runtime, so the bot never runs out.
-        // Durability holds the stack count.
-        this.AddPotionStack(context, inventory, 3, InventoryConstants.EquippableSlotsCount);      // Large Healing Potion, first backpack slot
-        this.AddPotionStack(context, inventory, 6, (byte)(InventoryConstants.EquippableSlotsCount + 1)); // Large Mana Potion, second backpack slot
-    }
-
-    private void AddPotionStack(IPlayerContext context, ItemStorage inventory, byte potionNumber, byte slot)
-    {
-        var potion = this._gameContext.Configuration.Items.FirstOrDefault(d => d.Group == 14 && d.Number == potionNumber);
-        if (potion is null)
-        {
-            return;
-        }
-
-        var item = context.CreateNew<Item>();
-        item.Definition = potion;
-
-        // Only a handful of charges to start with: fresh bots head to the merchant right away and buy
-        // their supplies with their starting Zen, kicking off the shopping economy from minute one
-        // (kept just above the emergency top-up threshold, so the economy path - not the fallback - runs).
-        item.Durability = Rand.NextInt(10, 16);
-        item.ItemSlot = slot;
-        inventory.Items.Add(item);
-    }
-
-    private void EquipArmorPiece(IPlayerContext context, ItemStorage inventory, CharacterClass characterClass, byte slot, int group, int number, byte starterItemLevel)
-    {
-        var definition = this._gameContext.Configuration.Items.FirstOrDefault(d => d.Group == group && d.Number == number);
-        if (definition is null || !definition.QualifiedCharacters.Contains(characterClass))
-        {
-            return;
-        }
-
-        this.AddEquippedItem(context, inventory, characterClass, slot, definition, starterItemLevel);
-    }
-
-    private void AddEquippedItem(IPlayerContext context, ItemStorage inventory, CharacterClass characterClass, byte slot, ItemDefinition definition, byte starterItemLevel)
-    {
-        if (!definition.QualifiedCharacters.Contains(characterClass))
-        {
-            return;
-        }
-
-        var item = context.CreateNew<Item>();
-        item.Definition = definition;
-        item.Level = starterItemLevel;
-        item.Durability = definition.Durability;
-        item.ItemSlot = slot;
-        inventory.Items.Add(item);
-    }
-
-    private void AddAmmunition(IPlayerContext context, ItemStorage inventory)
-    {
-        var arrows = this._gameContext.Configuration.Items.FirstOrDefault(d => d.Group == 4 && d.Number == 15);
-        if (arrows is null)
-        {
-            return;
-        }
-
-        var item = context.CreateNew<Item>();
-        item.Definition = arrows;
-        item.Durability = 255;
-        item.ItemSlot = InventoryConstants.LeftHandSlot;
-        inventory.Items.Add(item);
     }
 }

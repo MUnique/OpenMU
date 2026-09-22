@@ -1,4 +1,4 @@
-// <copyright file="UpdateVersion.cs" company="MUnique">
+﻿// <copyright file="UpdateVersion.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -564,4 +564,19 @@ public enum UpdateVersion
     /// The version of the <see cref="RemoveDuplicateStatAttributesPlugInSeason6"/>.
     /// </summary>
     RemoveDuplicateStatAttributesSeason6 = 111,
+
+    /// <summary>
+    /// The version of the <see cref="ConfigureCastleSiegeLifeStoneUpdatePlugIn"/>.
+    /// </summary>
+    ConfigureCastleSiegeLifeStone = 112,
+
+    /// <summary>
+    /// The version of the <see cref="AddKanturuDataUpdatePlugIn"/>.
+    /// </summary>
+    AddKanturuData = 113,
+
+    /// <summary>
+    /// The version of the <see cref="AddKanturuMapContentUpdatePlugIn"/>.
+    /// </summary>
+    AddKanturuMapContent = 114,
 }

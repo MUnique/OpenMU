@@ -84,6 +84,11 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
     /// <inheritdoc />
     public async ValueTask ExecuteTaskAsync(GameContext gameContext)
     {
+        if (IsServerShuttingDown(gameContext))
+        {
+            return;
+        }
+
         var state = this._states.GetOrAdd(gameContext, _ => new ServerState());
         var configuration = this.Configuration ??= CreateDefaultConfiguration();
 
@@ -368,6 +373,29 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
         {
             logger.LogError(ex, "Failed to form bot parties.");
         }
+
+        this.LogBufferShortage(state, logger);
+    }
+
+    /// <summary>
+    /// Warns when the population holds fewer buffers than parties need.
+    /// Happens with populations generated before buffer planning:
+    /// parties refuse to form without a buffer, so most bots hunt solo
+    /// until the population is regenerated with Reset bots.
+    /// </summary>
+    private void LogBufferShortage(ServerState state, ILogger logger)
+    {
+        var online = state.Manager.BotCount;
+        var buffers = state.Manager.Bots.Count(BotBuild.IsSupportElf);
+        var needed = BotPartyPolicy.EstimatePartyCount(online);
+        if (online > 0 && buffers < needed)
+        {
+            logger.LogWarning(
+                "Only {Buffers} of {Online} bots are buffers, but parties need about {Needed}. Set Reset bots to regenerate the population.",
+                buffers,
+                online,
+                needed);
+        }
     }
 
     /// <summary>
@@ -645,6 +673,17 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
             logger.LogError(ex, "Failed to persist the bot plugin configuration.");
         }
     }
+
+    /// <summary>
+    /// Determines whether the hosting server is shutting down (or already gone), in which case no bot
+    /// must be spawned, restarted or stopped here: the shutdown disconnects and saves every bot itself,
+    /// and anything spawned now would miss its disconnect snapshot, while stopping would race the
+    /// shutdown's disconnect loop on the same player instances (save vs. dispose).
+    /// </summary>
+    /// <param name="gameContext">The game context.</param>
+    /// <returns><c>true</c> when the server is shutting down or gone.</returns>
+    private static bool IsServerShuttingDown(GameContext gameContext)
+        => gameContext.IsDisposed || gameContext.IsDisposing || gameContext.ArePeriodicTasksStopped;
 
     /// <summary>
     /// The bot feature's state of ONE game server: its own share of the population, its own bots, and

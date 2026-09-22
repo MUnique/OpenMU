@@ -89,6 +89,7 @@ public static class WebApplicationExtensions
         services.AddScoped<ChatCommandController>();
         services.AddScoped<IDataService<ChatCommandViewItem>>(serviceProvider => serviceProvider.GetService<ChatCommandController>()!);
         services.AddScoped<AdminUserManagementService>();
+        services.AddScoped<CastleSiegeManagementService>();
         services.AddScoped<IChangeNotificationService, ChangeNotificationService>();
 
         // The analyzers are only created when the network analyzer page is actually used,
@@ -101,6 +102,8 @@ public static class WebApplicationExtensions
         services.AddScoped<IDataService<LoggedInAccount>>(serviceProvider => serviceProvider.GetService<LoggedInAccountService>()!);
         services.AddScoped<OfflineAccountService>();
         services.AddScoped<IDataService<OfflineAccount>>(serviceProvider => serviceProvider.GetService<OfflineAccountService>()!);
+        services.AddScoped<BotAccountService>();
+        services.AddScoped<IDataService<BotAccount>>(serviceProvider => serviceProvider.GetService<BotAccountService>()!);
 
         StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
         return builder;

@@ -35265,6 +35265,800 @@ public readonly struct MiniMapNpcPosition
     }
 }
 }
+
+
+/// <summary>
+/// Is sent by the server when: The player requests state information from the Kanturu gateway NPC.
+/// Causes reaction on client side: The client shows the Kanturu entry dialog (INTERFACE_KANTURU2ND_ENTERNPC) with event state, detail state, whether entry is possible, current player count and remaining time.
+/// </summary>
+public readonly struct KanturuStateInfo
+{
+    /// <summary>
+    /// Main state of the Kanturu event, matching the client KANTURU_STATE_TYPE enum.
+    /// </summary>
+    public enum StateType
+    {
+        /// <summary>
+        /// No active state.
+        /// </summary>
+            None = 0,
+
+        /// <summary>
+        /// Waiting for players to enter before the event starts.
+        /// </summary>
+            Standby = 1,
+
+        /// <summary>
+        /// Maya battle phase covering Phases 1 through 3 and their boss waves.
+        /// </summary>
+            MayaBattle = 2,
+
+        /// <summary>
+        /// Nightmare battle phase after all three Maya phases are cleared.
+        /// </summary>
+            NightmareBattle = 3,
+
+        /// <summary>
+        /// Tower of Refinement phase; opens after Nightmare is defeated.
+        /// </summary>
+            Tower = 4,
+
+        /// <summary>
+        /// Event has ended.
+        /// </summary>
+            End = 5,
+    }
+
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KanturuStateInfo"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public KanturuStateInfo(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KanturuStateInfo"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private KanturuStateInfo(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xD1;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x00;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 12;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the state.
+    /// </summary>
+    public KanturuStateInfo.StateType State
+    {
+        get => (StateType)this._data.Span[4];
+        set => this._data.Span[4] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets detail state; semantics depend on the main State field. See the game logic enums for per-state values.
+    /// </summary>
+    public byte DetailState
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets 1 = entrance is open (Enter button enabled); 0 = entrance closed.
+    /// </summary>
+    public bool CanEnter
+    {
+        get => this._data.Span[6..].GetBoolean();
+        set => this._data.Span[6..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets number of players currently inside the event map (capped at 255).
+    /// </summary>
+    public byte UserCount
+    {
+        get => this._data.Span[7];
+        set => this._data.Span[7] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets remaining time in seconds. Standby: seconds until event opens. Tower: seconds the tower has been open. Otherwise 0.
+    /// </summary>
+    public uint RemainSeconds
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[8..]);
+        set => WriteUInt32LittleEndian(this._data.Span[8..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="KanturuStateInfo"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator KanturuStateInfo(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="KanturuStateInfo"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(KanturuStateInfo packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: The player attempted to enter the Kanturu event through the gateway NPC.
+/// Causes reaction on client side: The client closes the NPC animation and shows an error popup on failure. On success the player has already been teleported to the event map.
+/// </summary>
+public readonly struct KanturuEnterResult
+{
+    /// <summary>
+    /// Result of the Kanturu enter request.
+    /// </summary>
+    public enum EnterResult
+    {
+        /// <summary>
+        /// Entry failed (generic failure).
+        /// </summary>
+            Failed = 0,
+
+        /// <summary>
+        /// The player has been successfully entered into the event.
+        /// </summary>
+            Success = 1,
+    }
+
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KanturuEnterResult"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public KanturuEnterResult(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KanturuEnterResult"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private KanturuEnterResult(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xD1;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x01;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 5;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public KanturuEnterResult.EnterResult Result
+    {
+        get => (EnterResult)this._data.Span[4];
+        set => this._data.Span[4] = (byte)value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="KanturuEnterResult"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator KanturuEnterResult(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="KanturuEnterResult"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(KanturuEnterResult packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: The Kanturu event transitions to a new phase or sub-phase.
+/// Causes reaction on client side: The client shows or hides the in-map HUD, switches background music, and when entering the Tower state reloads the barrier-open terrain file (EncTerrain_n_01.att) to visually remove the Elphis barrier.
+/// </summary>
+public readonly struct KanturuStateChange
+{
+    /// <summary>
+    /// Main state; see KanturuStateInfo.StateType for value descriptions.
+    /// </summary>
+    public enum StateType
+    {
+        /// <summary>
+        /// No active state.
+        /// </summary>
+            None = 0,
+
+        /// <summary>
+        /// Standby phase; the event is waiting for players to enter.
+        /// </summary>
+            Standby = 1,
+
+        /// <summary>
+        /// Maya battle phase, which consists of three monster waves and the boss fights against her hands.
+        /// </summary>
+            MayaBattle = 2,
+
+        /// <summary>
+        /// Nightmare battle phase after all three Maya phases are cleared.
+        /// </summary>
+            NightmareBattle = 3,
+
+        /// <summary>
+        /// Tower of Refinement phase; opens after Nightmare is defeated.
+        /// </summary>
+            Tower = 4,
+
+        /// <summary>
+        /// Event has ended.
+        /// </summary>
+            End = 5,
+    }
+
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KanturuStateChange"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public KanturuStateChange(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KanturuStateChange"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private KanturuStateChange(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xD1;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x03;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 6;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets refers to the KanturuStateInfo.StateType enum values.
+    /// </summary>
+    public KanturuStateChange.StateType State
+    {
+        get => (StateType)this._data.Span[4];
+        set => this._data.Span[4] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets detail state within the main state. Maya battle: 0=none, 2=notify, 3=monster1, 4=maya1, 8=monster2, 9=maya2, 13=monster3, 14=maya3, 16=endcycle. Nightmare: 0=none, 1=idle, 2=intro, 3=battle, 4=end. Tower: 0=none, 1=revitalization, 2=notify, 3=close.
+    /// </summary>
+    public byte DetailState
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="KanturuStateChange"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator KanturuStateChange(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="KanturuStateChange"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(KanturuStateChange packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: The Kanturu event ends with a victory or defeat outcome.
+/// Causes reaction on client side: The client displays the Success_kantru.tga overlay on victory or the Failure_kantru.tga overlay on defeat.
+/// </summary>
+public readonly struct KanturuBattleResult
+{
+    /// <summary>
+    /// Outcome of the Kanturu battle.
+    /// </summary>
+    public enum BattleResult
+    {
+        /// <summary>
+        /// The event ended in failure; shows Failure_kantru.tga.
+        /// </summary>
+            Failure = 0,
+
+        /// <summary>
+        /// Nightmare was defeated; shows Success_kantru.tga.
+        /// </summary>
+            Victory = 1,
+    }
+
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KanturuBattleResult"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public KanturuBattleResult(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KanturuBattleResult"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private KanturuBattleResult(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xD1;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x04;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 5;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public KanturuBattleResult.BattleResult Result
+    {
+        get => (BattleResult)this._data.Span[4];
+        set => this._data.Span[4] = (byte)value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="KanturuBattleResult"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator KanturuBattleResult(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="KanturuBattleResult"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(KanturuBattleResult packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: A timed phase begins in the Kanturu event.
+/// Causes reaction on client side: The client starts a countdown timer shown in the Kanturu HUD. The value is divided by 1000 to obtain seconds.
+/// </summary>
+public readonly struct KanturuTimeLimit
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KanturuTimeLimit"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public KanturuTimeLimit(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KanturuTimeLimit"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private KanturuTimeLimit(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xD1;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x05;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 8;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets countdown duration in milliseconds.
+    /// </summary>
+    public uint TimeLimitMilliseconds
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[4..]);
+        set => WriteUInt32LittleEndian(this._data.Span[4..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="KanturuTimeLimit"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator KanturuTimeLimit(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="KanturuTimeLimit"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(KanturuTimeLimit packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: The Maya body executes a wide-area attack during the Maya battle phase.
+/// Causes reaction on client side: The client calls MayaSceneMayaAction(type) which plays one of two visual sequences on the Maya body model: storm (0) or stone-rain (1). This is a purely cosmetic packet — damage is handled server-side.
+/// </summary>
+public readonly struct KanturuMayaWideAreaAttack
+{
+    /// <summary>
+    /// Visual type of the Maya wide-area attack.
+    /// </summary>
+    public enum AttackType
+    {
+        /// <summary>
+        /// Stone-storm effect (MODEL_STORM3 plus falling debris around the hero).
+        /// </summary>
+            Storm = 0,
+
+        /// <summary>
+        /// Stone-rain effect (MODEL_MAYASTONE projectiles falling on the hero).
+        /// </summary>
+            Rain = 1,
+    }
+
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KanturuMayaWideAreaAttack"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public KanturuMayaWideAreaAttack(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KanturuMayaWideAreaAttack"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private KanturuMayaWideAreaAttack(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xD1;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x06;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 7;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets high byte of the Maya object class; ignored by the client.
+    /// </summary>
+    public byte ObjClassH
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets low byte of the Maya object class; ignored by the client.
+    /// </summary>
+    public byte ObjClassL
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the type.
+    /// </summary>
+    public KanturuMayaWideAreaAttack.AttackType Type
+    {
+        get => (AttackType)this._data.Span[6];
+        set => this._data.Span[6] = (byte)value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="KanturuMayaWideAreaAttack"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator KanturuMayaWideAreaAttack(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="KanturuMayaWideAreaAttack"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(KanturuMayaWideAreaAttack packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: A monster is killed or the player count changes during the Kanturu event.
+/// Causes reaction on client side: The client updates the monster count and user count numbers displayed in the Kanturu HUD.
+/// </summary>
+public readonly struct KanturuMonsterUserCount
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KanturuMonsterUserCount"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public KanturuMonsterUserCount(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KanturuMonsterUserCount"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private KanturuMonsterUserCount(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xD1;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x07;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 6;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets number of monsters still alive in the current wave (capped at 255).
+    /// </summary>
+    public byte MonsterCount
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets number of players currently inside the event map (capped at 255).
+    /// </summary>
+    public byte UserCount
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="KanturuMonsterUserCount"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator KanturuMonsterUserCount(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="KanturuMonsterUserCount"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(KanturuMonsterUserCount packet) => packet._data; 
+}
     /// <summary>
     /// Defines the role of a guild member.
     /// </summary>

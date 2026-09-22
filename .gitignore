@@ -130,9 +130,6 @@ nCrunchTemp_*
 *.mm.*
 AutoTest.Net/
 
-# Web workbench (sass)
-.sass-cache/
-
 # Installshield output folder
 [Ee]xpress/
 
@@ -325,6 +322,12 @@ src/AdminPanel/wwwroot/content/js/app.js.map
 .opencode/
 # Keys which are generated when the server runs locally.
 data-protection-keys/
+
+# Local environment files with secrets (see deploy/*/.env.example).
+# Templates (*.env.example) stay committable, real values never are.
+.env
+.env.*
+!.env.example
 
 # The archive of the network observation, when the server is started from the repository.
 captures/

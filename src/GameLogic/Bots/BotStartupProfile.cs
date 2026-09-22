@@ -31,6 +31,13 @@ internal abstract class BotStartupProfile
     public abstract byte StarterItemLevel { get; }
 
     /// <summary>
+    /// Gets whether a character of this profile is equipped with a starter armor set. Fresh characters
+    /// start like a regular player's new character - weapon only, no armor - while veterans start with
+    /// a basic set so they can survive the maps their start level puts them on.
+    /// </summary>
+    public abstract bool EquipStarterArmor { get; }
+
+    /// <summary>
     /// Creates the startup profile corresponding to the <see cref="BotConfiguration.StartAsFreshCharacters"/>
     /// flag of the bot feature.
     /// </summary>
@@ -70,6 +77,9 @@ internal abstract class BotStartupProfile
 
         /// <inheritdoc />
         public override byte StarterItemLevel => FreshStarterItemLevel;
+
+        /// <inheritdoc />
+        public override bool EquipStarterArmor => false;
 
         /// <inheritdoc />
         public override int GetStartLevel(int minLevel, int maxLevel)
@@ -121,6 +131,9 @@ internal abstract class BotStartupProfile
 
         /// <inheritdoc />
         public override byte StarterItemLevel => VeteranStarterItemLevel;
+
+        /// <inheritdoc />
+        public override bool EquipStarterArmor => true;
 
         /// <inheritdoc />
         public override int GetStartLevel(int minLevel, int maxLevel)

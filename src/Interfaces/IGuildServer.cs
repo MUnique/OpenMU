@@ -112,6 +112,30 @@ public interface IGuildServer
     ValueTask<Guid?> GetPersistentGuildIdAsync(uint guildId);
 
     /// <summary>
+    /// Gets the persistent identifier of a guild by name.
+    /// </summary>
+    /// <param name="guildName">The guild name.</param>
+    /// <returns>The persistent guild identifier, or <see langword="null"/> if the guild was not found.</returns>
+    /// <remarks>This lookup also finds guilds without online members.</remarks>
+    ValueTask<Guid?> GetPersistentGuildIdByNameAsync(string guildName);
+
+    /// <summary>
+    /// Gets the name of a guild by its persistent identifier.
+    /// </summary>
+    /// <param name="guildId">The persistent guild identifier.</param>
+    /// <returns>The canonical guild name, or <see langword="null"/> if the guild was not found.</returns>
+    /// <remarks>This lookup does not load a runtime guild container.</remarks>
+    ValueTask<string?> GetPersistentGuildNameAsync(Guid guildId);
+
+    /// <summary>
+    /// Gets the canonical names of guilds by their persistent identifiers.
+    /// </summary>
+    /// <param name="guildIds">The persistent guild identifiers.</param>
+    /// <returns>The names keyed by persistent guild identifier. Missing guilds are omitted.</returns>
+    /// <remarks>This lookup does not load runtime guild containers.</remarks>
+    ValueTask<IReadOnlyDictionary<Guid, string>> GetPersistentGuildNamesAsync(IReadOnlyCollection<Guid> guildIds);
+
+    /// <summary>
     /// Gets the persistent identifier under which a guild participates in an alliance event.
     /// </summary>
     /// <param name="guildId">The runtime guild identifier.</param>
