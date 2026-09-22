@@ -10,6 +10,8 @@ using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.Shared.Components;
 using MUnique.OpenMU.Web.Shared.Models;
 
+using GuildPositionComparer = MUnique.OpenMU.Interfaces.GuildPositionComparer;
+
 /// <summary>
 /// Service for guild information in the admin panel.
 /// It reads guild data from the guild context; enrichment of members with character/account
@@ -143,7 +145,13 @@ public class GuildService : IGuildService, ISupportDataChangedNotification, IDis
 
                 await this._memberEnricher.EnrichAsync(result).ConfigureAwait(false);
 
-                result.Sort(GuildPositionComparer.Instance);
+                result.Sort(static (x, y) =>
+                {
+                    var rankComparison = GuildPositionComparer.GetRank(x.Position).CompareTo(GuildPositionComparer.GetRank(y.Position));
+                    return rankComparison != 0
+                        ? rankComparison
+                        : StringComparer.OrdinalIgnoreCase.Compare(x.CharacterName, y.CharacterName);
+                });
                 return result;
             },
             [],
