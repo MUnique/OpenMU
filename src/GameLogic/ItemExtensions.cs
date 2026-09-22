@@ -305,7 +305,7 @@ public static class ItemExtensions
 
         if (damageType is DamageType.Wizardry or DamageType.Curse)
         {
-            if (!left?.IsWizardryWeapon(out _) ?? true || left.CanHaveSkill())
+            if (!(left?.IsWizardryWeapon(out _) ?? true) || (left?.CanHaveSkill() ?? false))
             {
                 left = null;
             }
