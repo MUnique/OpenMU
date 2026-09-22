@@ -38,18 +38,19 @@ public class DurabilityDecayPlugIn : IPeriodicTaskPlugIn
                 {
                     if (item.Durability > 0.0)
                     {
-                        var isTransformationRing = item.Definition?.BasePowerUpAttributes.Any(pu => pu.TargetAttribute == Stats.TransformationSkin) ?? false;
-                        if (!isTransformationRing && item.IsJewelry() && item.Level > 0)
+                        var identifier = new ItemIdentifier(item.Definition!.Number, item.Definition.Group);
+                        if (identifier == ItemConstants.WizardsRing && item.Level > 0)
                         {
-                            // Ring of warrior, etc.
+                            // Rings of warrior
                             continue;
                         }
 
+                        var isTransformationRing = item.Definition?.BasePowerUpAttributes.Any(pu => pu.TargetAttribute == Stats.TransformationSkin) ?? false;
                         if (attributes[Stats.IsInSafezone] < 1 || isTransformationRing || item.IsWing())
                         {
-                            double decrementWeight = new ItemIdentifier(item.Definition!.Number, item.Definition.Group) switch
+                            double decrementWeight = identifier switch
                             {
-                                var _ when isTransformationRing => 11.28, // 11.28 / 564 = 0.02
+                                var _ when isTransformationRing => 11.28 * 10, // 11.28 / 564 = 0.02 (per second)
                                 var itm when itm == ItemConstants.WizardsRing => 70,
                                 var itm when itm == ItemConstants.MoonstonePendant => 63,
                                 _ => 1,
