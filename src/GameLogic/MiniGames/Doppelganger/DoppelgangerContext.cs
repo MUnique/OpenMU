@@ -6,6 +6,8 @@ namespace MUnique.OpenMU.GameLogic.MiniGames.Doppelganger;
 
 using System.Collections.Concurrent;
 using System.Threading;
+using MUnique.OpenMU.AttributeSystem;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.World;
@@ -19,6 +21,8 @@ using MUnique.OpenMU.Pathfinding;
 /// Herds of monsters spawn at the start of the path in a fixed interval, additional stronger
 /// monsters at specific times. At some point, ice walkers appear on the path, which have to
 /// be killed within a limited time.
+/// The monsters get stronger with the level and the number of the players. When the ice walkers
+/// weren't killed in time, the following monsters get even stronger.
 /// Killed butchers leave interim reward chests behind, of which only one can be opened by talking to it.
 /// It contains either items or larvae. When the defense succeeded, a final reward chest appears.
 /// The event fails for everyone when <see cref="DoppelgangerEventDefinition.MaximumGoalCount"/>
@@ -74,6 +78,8 @@ public sealed class DoppelgangerContext : MiniGameContext
     private int _goalCount;
     private int _lastShownMonsterPosition = -1;
     private int _initialPlayerCount;
+    private MonsterMultipliers _monsterMultipliers = MonsterMultipliers.None;
+    private int _isIceWalkerMissionFailed;
     private Destructible? _finalChest;
     private int _isFinalChestOpened;
 
@@ -208,6 +214,7 @@ public sealed class DoppelgangerContext : MiniGameContext
 
         this._gameStartedUtc = DateTime.UtcNow;
         this._initialPlayerCount = players.Count;
+        this._monsterMultipliers = this.GetMonsterMultipliers(players);
         this._gameEndsAtUtc = this._gameStartedUtc.Add(this.Definition.GameDuration);
         await this.ForEachPlayerAsync(player => player.InvokeViewPlugInAsync<IDoppelgangerEventViewPlugIn>(async p =>
         {
@@ -425,7 +432,7 @@ public sealed class DoppelgangerContext : MiniGameContext
                 {
                     foreach (var monsterNumber in pendingSpawns[0].MonsterNumbers)
                     {
-                        await this.SpawnMonsterAsync(monsterNumber, 0, true, true).ConfigureAwait(false);
+                        await this.SpawnMonsterAsync(monsterNumber, 0, true, true, true).ConfigureAwait(false);
                     }
 
                     pendingSpawns.RemoveAt(0);
@@ -462,7 +469,7 @@ public sealed class DoppelgangerContext : MiniGameContext
             var monsterNumber = this._definition.HerdMonsterNumbers[Rand.NextInt(0, this._definition.HerdMonsterNumbers.Count)];
             var attacksFirst = this._definition.AlwaysAttackingMonsterNumbers.Contains(monsterNumber)
                                || Rand.NextRandomBool(this._definition.AttackFirstChance);
-            await this.SpawnMonsterAsync(monsterNumber, 0, true, attacksFirst).ConfigureAwait(false);
+            await this.SpawnMonsterAsync(monsterNumber, 0, true, attacksFirst, true).ConfigureAwait(false);
         }
     }
 
@@ -508,7 +515,8 @@ public sealed class DoppelgangerContext : MiniGameContext
                 return;
             }
 
-            this.Logger.LogDebug("{context}: The ice walkers weren't killed in time.", this);
+            this.Logger.LogDebug("{context}: The ice walkers weren't killed in time, so the following monsters get stronger.", this);
+            Interlocked.Exchange(ref this._isIceWalkerMissionFailed, 1);
             foreach (var iceWalker in remainingIceWalkers)
             {
                 await this.RemoveMonsterAsync(iceWalker).ConfigureAwait(false);
@@ -526,12 +534,12 @@ public sealed class DoppelgangerContext : MiniGameContext
         }
     }
 
-    private ValueTask<Monster?> SpawnMonsterAsync(short monsterNumber, int pathPosition, bool walksAlongPath, bool attacksFirst)
+    private ValueTask<Monster?> SpawnMonsterAsync(short monsterNumber, int pathPosition, bool walksAlongPath, bool attacksFirst, bool isAffectedByMissionFailure = false)
     {
-        return this.SpawnMonsterAsync(monsterNumber, this._path[pathPosition], pathPosition, walksAlongPath, attacksFirst);
+        return this.SpawnMonsterAsync(monsterNumber, this._path[pathPosition], pathPosition, walksAlongPath, attacksFirst, isAffectedByMissionFailure);
     }
 
-    private async ValueTask<Monster?> SpawnMonsterAsync(short monsterNumber, DoppelgangerPathArea area, int pathPosition, bool walksAlongPath, bool attacksFirst)
+    private async ValueTask<Monster?> SpawnMonsterAsync(short monsterNumber, DoppelgangerPathArea area, int pathPosition, bool walksAlongPath, bool attacksFirst, bool isAffectedByMissionFailure = false)
     {
         if (this.CreateSpawnArea(monsterNumber, area) is not { } spawnArea)
         {
@@ -543,6 +551,12 @@ public sealed class DoppelgangerContext : MiniGameContext
         var intelligence = new DoppelgangerMonsterIntelligence(this._path, pathPosition, walksAlongPath, attacksFirst, this.OnMonsterReachedMagicCircleAsync, this.Logger);
         var monster = new Monster(spawnArea, monsterDefinition, this.Map, this.DropGenerator, intelligence, this._gameContext.PlugInManager, this._gameContext.PathFinderPool, this);
         intelligence.Npc = monster;
+
+        // The multipliers have to be applied before the monster is initialized, which sets its health.
+        var penalty = isAffectedByMissionFailure && Volatile.Read(ref this._isIceWalkerMissionFailed) != 0
+            ? this._definition.IceWalkerMissionFailedMultiplier
+            : 1;
+        this._monsterMultipliers.ApplyTo(monster, penalty);
         try
         {
             monster.Initialize();
@@ -683,6 +697,33 @@ public sealed class DoppelgangerContext : MiniGameContext
         npc.Dispose();
     }
 
+    /// <summary>
+    /// Gets the multipliers for the monsters, depending on the highest level of the players and their number.
+    /// </summary>
+    private MonsterMultipliers GetMonsterMultipliers(ICollection<Player> players)
+    {
+        var playerLevel = players
+            .Select(player => (int)((player.Attributes?[Stats.Level] ?? 0) + (player.Attributes?[Stats.MasterLevel] ?? 0)))
+            .DefaultIfEmpty(1)
+            .Max();
+        if (this._definition.GetMonsterScaling(playerLevel) is not { } scaling)
+        {
+            return MonsterMultipliers.None;
+        }
+
+        var index = Math.Clamp(players.Count, 1, 5) - 1;
+        var multipliers = new MonsterMultipliers(
+            GetMultiplier(scaling.LevelMultipliers, index),
+            GetMultiplier(scaling.HealthMultipliers, index),
+            GetMultiplier(scaling.DamageMultipliers, index),
+            GetMultiplier(scaling.DefenseMultipliers, index));
+        this.Logger.LogDebug("{context}: Monster multipliers for player level {playerLevel} and {playerCount} players: {multipliers}", this, playerLevel, players.Count, multipliers);
+        return multipliers;
+
+        static float GetMultiplier(IList<float> multipliers, int index) =>
+            multipliers.Count == 0 ? 1 : multipliers[Math.Min(index, multipliers.Count - 1)];
+    }
+
     private async ValueTask OnMonsterReachedMagicCircleAsync(Monster monster)
     {
         await this.RemoveMonsterAsync(monster).ConfigureAwait(false);
@@ -694,6 +735,43 @@ public sealed class DoppelgangerContext : MiniGameContext
         this._pathMonsters.TryRemove(monster, out _);
         this._iceWalkers.TryRemove(monster, out _);
         await this.RemoveNpcAsync(monster).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// The multipliers for the monsters of a game.
+    /// </summary>
+    /// <param name="Level">The multiplier for the level.</param>
+    /// <param name="Health">The multiplier for the health.</param>
+    /// <param name="Damage">The multiplier for the damage.</param>
+    /// <param name="Defense">The multiplier for the defense.</param>
+    private sealed record MonsterMultipliers(float Level, float Health, float Damage, float Defense)
+    {
+        /// <summary>
+        /// Gets the multipliers which don't change anything.
+        /// </summary>
+        public static MonsterMultipliers None { get; } = new(1, 1, 1, 1);
+
+        /// <summary>
+        /// Applies the multipliers to the monster.
+        /// </summary>
+        /// <param name="monster">The monster.</param>
+        /// <param name="penalty">An additional multiplier for the health, damage and defense.</param>
+        public void ApplyTo(Monster monster, float penalty)
+        {
+            Multiply(monster, Stats.Level, this.Level);
+            Multiply(monster, Stats.MaximumHealth, this.Health * penalty);
+            Multiply(monster, Stats.MinimumPhysBaseDmg, this.Damage * penalty);
+            Multiply(monster, Stats.MaximumPhysBaseDmg, this.Damage * penalty);
+            Multiply(monster, Stats.DefenseBase, this.Defense * penalty);
+        }
+
+        private static void Multiply(Monster monster, AttributeDefinition attribute, float multiplier)
+        {
+            if (Math.Abs(multiplier - 1) > 0.001f)
+            {
+                monster.Attributes.AddElement(new SimpleElement(multiplier, AggregateType.Multiplicate), attribute);
+            }
+        }
     }
 
     /// <summary>

@@ -9,7 +9,7 @@ using MUnique.OpenMU.Pathfinding;
 /// <summary>
 /// Describes the run of the doppelganger event.
 /// </summary>
-public class DoppelgangerEventDefinition
+public partial class DoppelgangerEventDefinition
 {
     /// <summary>
     /// Gets or sets the number of monsters which may reach the magic circle until the event fails.
@@ -82,6 +82,18 @@ public class DoppelgangerEventDefinition
     public int IceWalkerMaximumPosition { get; set; } = 18;
 
     /// <summary>
+    /// Gets or sets the multiplier for the health, damage and defense of the monsters of the herds and
+    /// additional spawns, which spawn after the players failed to kill the ice walkers in time.
+    /// </summary>
+    public float IceWalkerMissionFailedMultiplier { get; set; } = 2;
+
+    /// <summary>
+    /// Gets or sets the multipliers for the monsters, depending on the highest level of the players and their number.
+    /// The level of a player includes its master level.
+    /// </summary>
+    public IList<DoppelgangerMonsterScaling> MonsterScalings { get; set; } = new List<DoppelgangerMonsterScaling>();
+
+    /// <summary>
     /// Gets or sets the numbers of the monsters which leave interim reward chests behind when they die.
     /// </summary>
     public IList<short> InterimChestMonsterNumbers { get; set; } = new List<short>();
@@ -150,8 +162,22 @@ public class DoppelgangerEventDefinition
                 new DoppelgangerMonsterSpawn { SpawnTime = TimeSpan.FromMinutes(4), MonsterNumbers = [madButcher, doppelgangerDarkLord] },
                 new DoppelgangerMonsterSpawn { SpawnTime = TimeSpan.FromMinutes(7), MonsterNumbers = [terribleButcher, doppelgangerDarkLord] },
             ],
+            MonsterScalings = CreateDefaultMonsterScalings(),
             Paths = CreateDefaultPaths(),
         };
+    }
+
+    /// <summary>
+    /// Gets the multipliers for the monsters, which apply to the specified highest player level.
+    /// </summary>
+    /// <param name="playerLevel">The highest level of the players, including the master level.</param>
+    /// <returns>The multipliers, or <c>null</c> if there are none.</returns>
+    public DoppelgangerMonsterScaling? GetMonsterScaling(int playerLevel)
+    {
+        return this.MonsterScalings
+                   .Where(scaling => scaling.MaximumPlayerLevel >= playerLevel)
+                   .MinBy(scaling => scaling.MaximumPlayerLevel)
+               ?? this.MonsterScalings.MaxBy(scaling => scaling.MaximumPlayerLevel);
     }
 
     /// <summary>

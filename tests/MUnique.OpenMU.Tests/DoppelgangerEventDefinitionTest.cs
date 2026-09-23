@@ -73,6 +73,40 @@ public class DoppelgangerEventDefinitionTest
     }
 
     /// <summary>
+    /// Tests that the multipliers of the monsters are chosen by the highest player level, rounded up to the next
+    /// range of ten levels, and that levels above the last range use the last one.
+    /// </summary>
+    /// <param name="playerLevel">The highest player level, including the master level.</param>
+    /// <param name="expectedMaximumPlayerLevel">The expected maximum player level of the chosen multipliers.</param>
+    [TestCase(1, 10)]
+    [TestCase(10, 10)]
+    [TestCase(11, 20)]
+    [TestCase(400, 400)]
+    [TestCase(401, 410)]
+    [TestCase(800, 800)]
+    [TestCase(1000, 800)]
+    public void MonsterScalingByPlayerLevel(int playerLevel, int expectedMaximumPlayerLevel)
+    {
+        Assert.That(this._definition.GetMonsterScaling(playerLevel)?.MaximumPlayerLevel, Is.EqualTo(expectedMaximumPlayerLevel));
+    }
+
+    /// <summary>
+    /// Tests that the default multipliers contain a value for one to five players.
+    /// </summary>
+    [Test]
+    public void DefaultMonsterScalingsAreComplete()
+    {
+        Assert.That(this._definition.MonsterScalings, Has.Count.EqualTo(80));
+        Assert.That(
+            this._definition.MonsterScalings,
+            Has.All.Matches<DoppelgangerMonsterScaling>(scaling =>
+                scaling.LevelMultipliers.Count == 5
+                && scaling.HealthMultipliers.Count == 5
+                && scaling.DamageMultipliers.Count == 5
+                && scaling.DefenseMultipliers.Count == 5));
+    }
+
+    /// <summary>
     /// Tests that there is no position on a map without a path.
     /// </summary>
     [Test]
