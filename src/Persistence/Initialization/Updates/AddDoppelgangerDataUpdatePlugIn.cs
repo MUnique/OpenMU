@@ -1,0 +1,83 @@
+﻿// <copyright file="AddDoppelgangerDataUpdatePlugIn.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.Persistence.Initialization.Updates;
+
+using System.Runtime.InteropServices;
+using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Events;
+using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
+using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
+using MUnique.OpenMU.PlugIns;
+
+/// <summary>
+/// Adds the doppelganger event configuration to an existing Season 6 database.
+/// </summary>
+/// <remarks>
+/// It adds the Mirror of Dimensions as entrance ticket and the <see cref="MiniGameDefinition"/>s,
+/// opens the entrance window when talking to Lugard, and lets players who die inside the
+/// event maps respawn at Elvenland.
+/// </remarks>
+[PlugIn]
+[Display(Name = PlugInName, Description = PlugInDescription)]
+[Guid("8E4D2B17-6A3F-4C95-9D02-B7E15A6C3F48")]
+public class AddDoppelgangerDataUpdatePlugIn : UpdatePlugInBase
+{
+    /// <summary>
+    /// The plug-in name.
+    /// </summary>
+    internal const string PlugInName = "Add Doppelganger data";
+
+    /// <summary>
+    /// The plug-in description.
+    /// </summary>
+    internal const string PlugInDescription = "This update adds the doppelganger event configuration.";
+
+    private const short LugardNumber = 540;
+
+    /// <inheritdoc />
+    public override string Name => PlugInName;
+
+    /// <inheritdoc />
+    public override string Description => PlugInDescription;
+
+    /// <inheritdoc />
+    public override UpdateVersion Version => UpdateVersion.AddDoppelgangerData;
+
+    /// <inheritdoc />
+    public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
+
+    /// <inheritdoc />
+    public override bool IsMandatory => false;
+
+    /// <inheritdoc />
+    public override DateTime CreatedAt => new(2026, 09, 23, 0, 0, 0, DateTimeKind.Utc);
+
+    /// <inheritdoc />
+    protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
+    {
+        if (!gameConfiguration.Items.Any(item => item is { Group: 14, Number: 111 }))
+        {
+            new EventTicketItems(context, gameConfiguration).CreateDoppelgangerItems();
+        }
+
+        if (gameConfiguration.Monsters.FirstOrDefault(monster => monster.Number == LugardNumber) is { } lugard)
+        {
+            lugard.NpcWindow = NpcWindow.LugardDoppelgangerEntry;
+        }
+
+        var elvenland = gameConfiguration.Maps.FirstOrDefault(map => map.Number == Elvenland.Number && map.Discriminator == 0);
+        foreach (var map in gameConfiguration.Maps.Where(map => map.Number is >= Doppelgaenger1.Number and <= Doppelgaenger4.Number))
+        {
+            map.SafezoneMap = elvenland;
+        }
+
+        if (!gameConfiguration.MiniGameDefinitions.Any(definition => definition.Type == MiniGameType.Doppelganger))
+        {
+            new DoppelgangerInitializer(context, gameConfiguration).Initialize();
+        }
+
+        return ValueTask.CompletedTask;
+    }
+}

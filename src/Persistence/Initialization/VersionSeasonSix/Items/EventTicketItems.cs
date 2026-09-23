@@ -39,6 +39,9 @@ internal class EventTicketItems : InitializerBase
         this.CreateEventItem(50, 13, 1, 2, "Illusion Sorcerer Covenant", false, 6, 70, 76, 82, 88, 94, 100);
         this.CreateEventItem(51, 13, 2, 2, "Scroll of Blood", false, 6);
 
+        // Doppelganger:
+        this.CreateDoppelgangerItems();
+
         // Devil Square:
         this.CreateEventItem(17, 14, 1, 1, "Devil's Eye", false, 7, 2, 36, 47, 60, 70, 80, 90);
         this.CreateEventItem(18, 14, 1, 1, "Devil's Key", false, 7, 2, 36, 47, 60, 70, 80, 90);
@@ -55,6 +58,14 @@ internal class EventTicketItems : InitializerBase
         this.CreateEventItem(107, 14, 1, 1, "Fifth Secromicon Fragment", false);
         this.CreateEventItem(108, 14, 1, 1, "Sixth Secromicon Fragment", false);
         this.CreateEventItem(109, 14, 1, 1, "Complete Secromicon", false);
+    }
+
+    /// <summary>
+    /// Creates the items of the doppelganger event.
+    /// </summary>
+    internal void CreateDoppelgangerItems()
+    {
+        this.CreateEventItem(111, 14, 1, 1, "Mirror of Dimensions", false);
     }
 
     private ItemDefinition CreateEventItem(byte number, byte group, byte width, byte height, string name, bool dropsFromMonsters, byte maxItemLevel = 0, params byte[] dropLevels)

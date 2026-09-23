@@ -1335,6 +1335,12 @@
   <data name="ChaosCastleStateViewPlugIn_Description" xml:space="preserve">
     <value>The default implementation of the IChaosCastleStateViewPlugin which is forwarding everything to the game client with specific data packets.</value>
   </data>
+  <data name="DoppelgangerEnterRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Doppelganger Enter Request Handler</value>
+  </data>
+  <data name="DoppelgangerEnterRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for the request to enter the doppelganger event through the NPC Lugard.</value>
+  </data>
   <data name="DoppelgangerEventViewPlugIn_Name" xml:space="preserve">
     <value>Doppelganger Event View</value>
   </data>
