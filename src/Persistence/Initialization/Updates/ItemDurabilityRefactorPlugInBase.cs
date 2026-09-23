@@ -34,7 +34,7 @@ public abstract class ItemDurabilityRefactorPlugInBase : UpdatePlugInBase
     public override bool IsMandatory => true;
 
     /// <inheritdoc />
-    public override DateTime CreatedAt => new(2026, 9, 22, 16, 0, 0, DateTimeKind.Utc);
+    public override DateTime CreatedAt => new(2026, 9, 23, 16, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
@@ -43,20 +43,14 @@ public abstract class ItemDurabilityRefactorPlugInBase : UpdatePlugInBase
         this.AddStatIfNotExists(context, gameConfiguration, Stats.PetDurationIncrease);
         this.AddStatIfNotExists(context, gameConfiguration, Stats.WeaponDurationIncrease);
 
-        var jewelryAndWingsDurationIncrease = Stats.JewelryAndWingsDurationIncrease.GetPersistent(gameConfiguration);
-
-        // Add new base attribute
+        // Remove WeaponAndArmorDurationIncrease (old ItemDurationIncrease)
         gameConfiguration.CharacterClasses.ForEach(charClass =>
         {
-            void AddBaseAttributeIfNotExists(AttributeDefinition attribute)
+            if (charClass.BaseAttributeValues.FirstOrDefault(ba => ba.Definition == Stats.WeaponAndArmorDurationIncrease) is { } weaponAndArmorDurationIncrease)
             {
-                if (charClass.BaseAttributeValues.All(ba => ba.Definition != attribute))
-                {
-                    charClass.BaseAttributeValues.Add(context.CreateNew<ConstValueAttribute>(1f, jewelryAndWingsDurationIncrease, AggregateType.AddRaw));
-                }
+                charClass.BaseAttributeValues.Remove(weaponAndArmorDurationIncrease);
             }
 
-            AddBaseAttributeIfNotExists(jewelryAndWingsDurationIncrease);
         });
 
         gameConfiguration.DamagePerOneItemDurability = 69;
