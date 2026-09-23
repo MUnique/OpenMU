@@ -23,10 +23,26 @@ public class KanturuPhaseRunnerTests
     {
         var order = new List<string>();
         var runner = new KanturuMonsterWaveRunner(
-            (phase, ct) => { order.Add("begin"); return Task.CompletedTask; },
-            phase => { order.Add("announce"); return Task.CompletedTask; },
-            (phase, ct) => { order.Add("wait"); return Task.FromResult(true); },
-            (phase, ct) => { order.Add("standby"); return Task.CompletedTask; });
+            (_, _) =>
+            {
+                order.Add("begin");
+                return Task.CompletedTask;
+            },
+            _ =>
+            {
+                order.Add("announce");
+                return Task.CompletedTask;
+            },
+            (_, _) =>
+            {
+                order.Add("wait");
+                return Task.FromResult(true);
+            },
+            (_, _) =>
+            {
+                order.Add("standby");
+                return Task.CompletedTask;
+            });
 
         Assert.That(runner.Kind, Is.EqualTo(KanturuPhaseKind.MonsterWave));
         var completed = await runner.RunAsync(new KanturuPhaseDefinition(), CancellationToken.None).ConfigureAwait(false);
@@ -43,10 +59,26 @@ public class KanturuPhaseRunnerTests
     {
         var order = new List<string>();
         var runner = new KanturuMonsterWaveRunner(
-            (phase, ct) => { order.Add("begin"); return Task.CompletedTask; },
-            phase => { order.Add("announce"); return Task.CompletedTask; },
-            (phase, ct) => { order.Add("wait"); return Task.FromResult(false); },
-            (phase, ct) => { order.Add("standby"); return Task.CompletedTask; });
+            (_, _) =>
+            {
+                order.Add("begin");
+                return Task.CompletedTask;
+            },
+            _ =>
+            {
+                order.Add("announce");
+                return Task.CompletedTask;
+            },
+            (_, _) =>
+            {
+                order.Add("wait");
+                return Task.FromResult(false);
+            },
+            (_, _) =>
+            {
+                order.Add("standby");
+                return Task.CompletedTask;
+            });
 
         var completed = await runner.RunAsync(new KanturuPhaseDefinition(), CancellationToken.None).ConfigureAwait(false);
 
@@ -65,8 +97,17 @@ public class KanturuPhaseRunnerTests
         var cleared = false;
         var playerCalls = 0;
         var runner = new KanturuTransitionRunner(
-            (state, detail) => { shownState = state; shownDetail = detail; return ValueTask.CompletedTask; },
-            action => { playerCalls++; return ValueTask.CompletedTask; },
+            (state, detail) =>
+            {
+                shownState = state;
+                shownDetail = detail;
+                return ValueTask.CompletedTask;
+            },
+            _ =>
+            {
+                playerCalls++;
+                return ValueTask.CompletedTask;
+            },
             () => cleared = true);
 
         Assert.That(runner.Kind, Is.EqualTo(KanturuPhaseKind.Transition));
@@ -96,13 +137,13 @@ public class KanturuPhaseRunnerTests
 
         // Records "subscribed" synchronously when the wait task is created,
         // like the real waiter subscribes before its first await.
-        Task<Monster?> WaitForSpawn(KanturuNightmareDefinition nightmare, CancellationToken ct)
+        Task<Monster?> WaitForSpawn(KanturuNightmareDefinition _, CancellationToken __)
         {
             order.Add("subscribed");
             return Task.FromResult<Monster?>(null);
         }
 
-        Task Begin(KanturuPhaseDefinition phase, CancellationToken ct)
+        Task Begin(KanturuPhaseDefinition _, CancellationToken __)
         {
             order.Add("begin");
             return Task.CompletedTask;
@@ -110,13 +151,13 @@ public class KanturuPhaseRunnerTests
 
         var runner = new KanturuNightmareRunner(
             Begin,
-            (state, detail) => ValueTask.CompletedTask,
-            messageKey => ValueTask.CompletedTask,
+            (_, _) => ValueTask.CompletedTask,
+            _ => ValueTask.CompletedTask,
             () => ValueTask.CompletedTask,
-            (phase, ct) => Task.FromResult(true),
-            (phase, ct) => Task.CompletedTask,
+            (_, _) => Task.FromResult(true),
+            (_, _) => Task.CompletedTask,
             WaitForSpawn,
-            action => ValueTask.CompletedTask,
+            _ => ValueTask.CompletedTask,
             NullLogger.Instance);
 
         Assert.That(runner.Kind, Is.EqualTo(KanturuPhaseKind.Nightmare));

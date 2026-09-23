@@ -491,6 +491,10 @@ public sealed class KanturuContext : MiniGameContext
             {
                 await this.ShowMonsterUserCountAsync(Math.Max(0, phase.KillTarget - result.KillCount), this.PlayerCount).ConfigureAwait(false);
             }
+            else
+            {
+                // Uncounted kills outside the Nightmare phase change nothing.
+            }
 
             if (result.NightmareBossKilled)
             {

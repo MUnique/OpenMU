@@ -45,7 +45,7 @@ public class KanturuKillTrackerTests
     public void RegisterKill_CountsUntilTarget_ThenCompletes()
     {
         var tracker = new KanturuKillTracker();
-        tracker.BeginPhase(CreateWavePhase(killTarget: 2));
+        tracker.BeginPhase(CreateWavePhase());
 
         var first = tracker.RegisterKill(new MonsterDefinition { Number = 354 });
         var second = tracker.RegisterKill(new MonsterDefinition { Number = 354 });

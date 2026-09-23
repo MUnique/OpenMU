@@ -47,7 +47,7 @@ internal static class KanturuTowerWindow
             configuration.TowerOpenUntilUtc = untilUtc;
 
             using var context = gameContext.PersistenceContextProvider.CreateNewContext();
-            var entity = await FindConfigurationEntityAsync(context, gameContext).ConfigureAwait(false);
+            var entity = await FindConfigurationEntityAsync(context).ConfigureAwait(false);
             if (entity is null)
             {
                 logger.LogWarning("Could not find the Kanturu start plugin configuration row to persist the tower window.");
@@ -82,7 +82,7 @@ internal static class KanturuTowerWindow
         return null;
     }
 
-    private static async ValueTask<PlugInConfiguration?> FindConfigurationEntityAsync(IContext context, IGameContext gameContext)
+    private static async ValueTask<PlugInConfiguration?> FindConfigurationEntityAsync(IContext context)
     {
         var typeId = typeof(KanturuStartPlugIn).GUID;
         var gameConfiguration = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).FirstOrDefault();

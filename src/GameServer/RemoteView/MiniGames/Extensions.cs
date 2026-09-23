@@ -78,10 +78,8 @@ public static class Extensions
     /// <returns>The converted result.</returns>
     public static KanturuEnterResult.EnterResult ToKanturuEnterResult(this EnterResult enterResult)
     {
-        return enterResult switch
-        {
-            EnterResult.Success => KanturuEnterResult.EnterResult.Success,
-            _ => KanturuEnterResult.EnterResult.Failed,
-        };
+        return enterResult == EnterResult.Success
+            ? KanturuEnterResult.EnterResult.Success
+            : KanturuEnterResult.EnterResult.Failed;
     }
 }
