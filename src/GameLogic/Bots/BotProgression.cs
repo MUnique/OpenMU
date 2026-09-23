@@ -31,34 +31,15 @@ internal static class BotProgression
     internal const byte SkillScrollItemGroup = 15;
 
     /// <summary>
-    /// The character class numbers from the game's data model (<c>CharacterClassNumber</c> lives in the
-    /// initialization assembly which GameLogic does not reference, so the relevant values are mirrored here).
+    /// Base classes with a second generation evolution.
     /// </summary>
-    private const byte DarkWizardNumber = 0;
-    private const byte SoulMasterNumber = 2;
-    private const byte GrandMasterNumber = 3;
-    private const byte DarkKnightNumber = 4;
-    private const byte BladeKnightNumber = 6;
-    private const byte BladeMasterNumber = 7;
-    private const byte FairyElfNumber = 8;
-    private const byte MuseElfNumber = 10;
-    private const byte HighElfNumber = 11;
-    private const byte MagicGladiatorNumber = 12;
-    private const byte DuelMasterNumber = 13;
-    private const byte DarkLordNumber = 16;
-    private const byte LordEmperorNumber = 17;
-    private const byte SummonerNumber = 20;
-    private const byte BloodySummonerNumber = 22;
-    private const byte DimensionMasterNumber = 23;
-    private const byte RageFighterNumber = 24;
-    private const byte FistMasterNumber = 25;
-
-    /// <summary>
-    /// The base classes which evolve into a second-generation class at <see cref="ClassEvolutionLevel"/>:
-    /// Dark Wizard, Dark Knight, Fairy Elf and Summoner. The Magic Gladiator, Dark Lord and Rage Fighter
-    /// have no second generation - their next class is the level-400 master evolution, out of bot scope.
-    /// </summary>
-    private static readonly byte[] EvolvableClassNumbers = [0, 4, 8, 20];
+    private static readonly byte[] EvolvableClassNumbers =
+    [
+        BotClassNumbers.DarkWizardNumber,
+        BotClassNumbers.DarkKnightNumber,
+        BotClassNumbers.FairyElfNumber,
+        BotClassNumbers.SummonerNumber,
+    ];
 
     /// <summary>
     /// Skills of the buff type which must never enter a bot's auto-buff rotation: the summoner's
@@ -148,9 +129,7 @@ internal static class BotProgression
     /// <param name="characterName">The character name; decides the build variant for two-build classes.</param>
     public static IReadOnlyList<(AttributeDefinition Stat, int Weight)> GetStatWeights(CharacterClass characterClass, string characterName)
     {
-        // Stable across processes (string.GetHashCode is randomized per run, which would re-spec
-        // the bot on every server restart).
-        var variant = characterName.Aggregate(0, (acc, c) => acc + c) % 2;
+        var variant = BotBuild.GetVariant(characterName);
         var vit = Stats.BaseVitality;
         var str = Stats.BaseStrength;
         var agi = Stats.BaseAgility;
@@ -159,22 +138,22 @@ internal static class BotProgression
 
         return characterClass.Number switch
         {
-            DarkKnightNumber or BladeKnightNumber or BladeMasterNumber => variant == 0
+            BotClassNumbers.DarkKnightNumber or BotClassNumbers.BladeKnightNumber or BotClassNumbers.BladeMasterNumber => variant == 0
                 ? new[] { (str, 62), (agi, 26), (vit, 8), (ene, 4) }
                 : new[] { (str, 50), (vit, 28), (agi, 18), (ene, 4) },
-            DarkWizardNumber or SoulMasterNumber or GrandMasterNumber =>
+            BotClassNumbers.DarkWizardNumber or BotClassNumbers.SoulMasterNumber or BotClassNumbers.GrandMasterNumber =>
                 new[] { (ene, 66), (vit, 22), (agi, 8), (str, 4) },
-            FairyElfNumber or MuseElfNumber or HighElfNumber => variant == 0
+            BotClassNumbers.FairyElfNumber or BotClassNumbers.MuseElfNumber or BotClassNumbers.HighElfNumber => variant == 0
                 ? new[] { (agi, 62), (vit, 23), (ene, 10), (str, 5) }
                 : new[] { (ene, 65), (vit, 22), (agi, 8), (str, 5) },
-            MagicGladiatorNumber or DuelMasterNumber => variant == 0
+            BotClassNumbers.MagicGladiatorNumber or BotClassNumbers.DuelMasterNumber => variant == 0
                 ? new[] { (str, 57), (agi, 22), (vit, 15), (ene, 6) }
                 : new[] { (ene, 58), (vit, 26), (agi, 11), (str, 5) },
-            DarkLordNumber or LordEmperorNumber =>
+            BotClassNumbers.DarkLordNumber or BotClassNumbers.LordEmperorNumber =>
                 new[] { (str, 38), (cmd, 30), (vit, 22), (agi, 8), (ene, 2) },
-            SummonerNumber or BloodySummonerNumber or DimensionMasterNumber =>
+            BotClassNumbers.SummonerNumber or BotClassNumbers.BloodySummonerNumber or BotClassNumbers.DimensionMasterNumber =>
                 new[] { (ene, 64), (vit, 24), (agi, 8), (str, 4) },
-            RageFighterNumber or FistMasterNumber =>
+            BotClassNumbers.RageFighterNumber or BotClassNumbers.FistMasterNumber =>
                 new[] { (str, 45), (vit, 35), (ene, 20) },
             _ => new[] { (GetMainDamageStat(characterClass), 50), (vit, 50) },
         };

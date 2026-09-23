@@ -19,9 +19,6 @@ are shown.
   development* and *.NET Desktop development*), Rider, or VS Code with the C#
   extension. Plain command line with the SDK below works as well. Please keep
   your tools up to date to prevent issues.
-* The Visual Studio extension [Web Compiler
-  2022+](https://marketplace.visualstudio.com/items?itemName=Failwyn.WebCompiler64),
-  if you plan to edit SCSS files of the admin panel (Visual Studio only)
 * [.NET SDK 10](https://dotnet.microsoft.com/download/dotnet/10.0) (already
   included in Visual Studio 2026)
   ```powershell

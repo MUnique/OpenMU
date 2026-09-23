@@ -19,21 +19,21 @@ else
             <div>
                 <span id="major-addon">@Resources.MajorVersion</span>
             </div>
-            <InputNumber id="patchVersionMajorInput" @bind-Value=@this.Configuration.CurrentVersionMajor aria-describedby="major-addon"/>
+            <InputNumber id="patchVersionMajorInput" class="form-control" @bind-Value=@this.Configuration.CurrentVersionMajor aria-describedby="major-addon"/>
             <ValidationMessage For="@(() => this.Configuration.CurrentVersionMajor)"/>
         </div>
         <div>
             <div>
                 <span id="minor-addon">@Resources.MinorVersion</span>
             </div>
-            <InputNumber id="patchVersionMinorInput" @bind-Value=@this.Configuration.CurrentVersionMinor aria-describedby="minor-addon"/>
+            <InputNumber id="patchVersionMinorInput" class="form-control" @bind-Value=@this.Configuration.CurrentVersionMinor aria-describedby="minor-addon"/>
             <ValidationMessage For="@(() => this.Configuration.CurrentVersionMinor)"/>
         </div>
         <div>
             <div>
                 <span id="patch-addon">@Resources.Patch</span>
             </div>
-            <InputNumber id="patchVersionPatchInput" @bind-Value=@this.Configuration.CurrentVersionPatch aria-describedby="patch-addon"/>
+            <InputNumber id="patchVersionPatchInput" class="form-control" @bind-Value=@this.Configuration.CurrentVersionPatch aria-describedby="patch-addon"/>
             <ValidationMessage For="@(() => this.Configuration.CurrentVersionPatch)"/>
         </div>
     </div>
@@ -43,7 +43,7 @@ else
             <div>
                 <span id="ftp-addon">ftp://</span>
             </div>
-            <InputText @bind-Value=@this.Configuration.PatchAddress aria-describedby="ftp-addon"/>
+            <InputText class="form-control" @bind-Value=@this.Configuration.PatchAddress aria-describedby="ftp-addon"/>
         </div>
     </div>
     <BooleanField Id="disconnectOnUnknownPacketInput" Label=@typeof(ConnectServerDefinition).GetPropertyCaption(nameof(ConnectServerDefinition.DisconnectOnUnknownPacket)) @bind-Value="@Configuration.DisconnectOnUnknownPacket"/>
@@ -56,7 +56,7 @@ else
                     <InputCheckbox class="form-check-input" id="checkMaxConnectionsPerAddressInput" @bind-Value=@this.Configuration.CheckMaxConnectionsPerAddress/>
                 </span>
             </div>
-            <InputNumber min="1" @bind-Value=@this.Configuration.MaxConnectionsPerAddress aria-describedby="connections-addon"/>
+            <InputNumber min="1" class="form-control" @bind-Value=@this.Configuration.MaxConnectionsPerAddress aria-describedby="connections-addon"/>
             <ValidationMessage For="@(() => this.Configuration.MaxConnectionsPerAddress)"/>
         </div>
     </div>

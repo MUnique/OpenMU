@@ -253,6 +253,37 @@ public class GameMapTerrainTests
     }
 
     /// <summary>
+    /// Tests that removing an attribute only clears its own bit: other blocking
+    /// bits on the tile survive, e.g. when a castle gate reopens over an
+    /// original hole or water tile.
+    /// </summary>
+    [Test]
+    public void ApplyTerrainAttributeRemoveKeepsOtherBits()
+    {
+        var terrain = new GameMapTerrain(CreateWalkableTerrainWithValues((12, 11, (byte)(Blocked | NoGround))));
+
+        terrain.ApplyTerrainAttribute(12, 11, TerrainAttributeType.Blocked, false);
+
+        Assert.That(terrain.WalkMap[12, 11], Is.False);
+        Assert.That(terrain.HasLineOfSight(new Pathfinding.Point(10, 11), new Pathfinding.Point(14, 11)), Is.True);
+    }
+
+    /// <summary>
+    /// Tests that removing an attribute with openArea clears every blocking bit,
+    /// so mixed wall/hole rects (e.g. the Kanturu barrier) become passable.
+    /// </summary>
+    [Test]
+    public void ApplyTerrainAttributeRemoveWithOpenAreaClearsAllBits()
+    {
+        var terrain = new GameMapTerrain(CreateWalkableTerrainWithValues((12, 11, (byte)(Blocked | NoGround | Water))));
+
+        terrain.ApplyTerrainAttribute(12, 11, TerrainAttributeType.NoGround, false, openArea: true);
+
+        Assert.That(terrain.WalkMap[12, 11], Is.True);
+        Assert.That(terrain.HasLineOfSight(new Pathfinding.Point(10, 11), new Pathfinding.Point(14, 11)), Is.True);
+    }
+
+    /// <summary>
     /// Tests that setting the hole attribute at runtime (e.g. collapsing Chaos
     /// Castle ground) makes a tile unwalkable while sight still passes across it.
     /// </summary>
@@ -310,37 +341,20 @@ public class GameMapTerrainTests
     }
 
     /// <summary>
-    /// Tests that removing an attribute only clears the configured bit. The Blood
-    /// Castle bridge is toggled as <c>NoGround</c> on <c>NoGround</c> tiles, so
-    /// removing it re-opens the area.
+    /// Tests that removing an attribute only clears its own bit: a tile holding
+    /// other bits stays as it was. Callers which restore exact previous state
+    /// (e.g. the castle siege gate) rely on this; area opening is opt-in.
     /// </summary>
     [Test]
-    public void ApplyTerrainAttributeRemoveNoGroundOpensHole()
-    {
-        var terrain = new GameMapTerrain(CreateWalkableTerrainWithValues((12, 11, NoGround)));
-
-        Assert.That(terrain.WalkMap[12, 11], Is.False, "precondition: the tile starts blocked");
-
-        terrain.ApplyTerrainAttribute(12, 11, TerrainAttributeType.NoGround, false);
-
-        Assert.That(terrain.WalkMap[12, 11], Is.True);
-        Assert.That(terrain.HasLineOfSight(new Pathfinding.Point(10, 11), new Pathfinding.Point(14, 11)), Is.True);
-    }
-
-    /// <summary>
-    /// Tests that removing an attribute leaves the other bits alone: a wall bit
-    /// which was already present keeps blocking movement and sight afterwards.
-    /// </summary>
-    [Test]
-    public void ApplyTerrainAttributeRemoveKeepsOtherBits(
-        [Values(Blocked, (byte)(Blocked | NoGround))] byte rawValue)
+    public void ApplyTerrainAttributeRemoveKeepsOwnBitOnly(
+        [Values(Walkable, NoGround)] byte rawValue)
     {
         var terrain = new GameMapTerrain(CreateWalkableTerrainWithValues((12, 11, rawValue)));
 
         terrain.ApplyTerrainAttribute(12, 11, TerrainAttributeType.NoGround, false);
 
-        Assert.That(terrain.WalkMap[12, 11], Is.False);
-        Assert.That(terrain.HasLineOfSight(new Pathfinding.Point(10, 11), new Pathfinding.Point(14, 11)), Is.False);
+        Assert.That(terrain.WalkMap[12, 11], Is.True);
+        Assert.That(terrain.HasLineOfSight(new Pathfinding.Point(10, 11), new Pathfinding.Point(14, 11)), Is.True);
     }
 
     /// <summary>
