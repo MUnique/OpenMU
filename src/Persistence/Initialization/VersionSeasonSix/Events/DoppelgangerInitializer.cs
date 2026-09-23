@@ -32,6 +32,11 @@ internal class DoppelgangerInitializer : InitializerBase
     /// <inheritdoc />
     public override void Initialize()
     {
+        if (!this.GameConfiguration.Monsters.Any(monster => monster.Number == DoppelgangerMonsters.FirstMonsterNumber))
+        {
+            new DoppelgangerMonsters(this.Context, this.GameConfiguration).Initialize();
+        }
+
         var ticket = this.GameConfiguration.Items.Single(item => item is { Group: 14, Number: 111 });
         for (var i = 0; i < MapNumbers.Length; i++)
         {

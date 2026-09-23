@@ -57,6 +57,22 @@ public class DoppelgangerEventDefinitionTest
     }
 
     /// <summary>
+    /// Tests the base count of monsters of a herd, which grows with the elapsed game time.
+    /// </summary>
+    /// <param name="elapsedSeconds">The elapsed game time in seconds.</param>
+    /// <param name="expectedCount">The expected base count.</param>
+    [TestCase(0, 1)]
+    [TestCase(179, 1)]
+    [TestCase(180, 2)]
+    [TestCase(359, 2)]
+    [TestCase(360, 3)]
+    [TestCase(600, 3)]
+    public void HerdBaseCount(int elapsedSeconds, int expectedCount)
+    {
+        Assert.That(this._definition.GetHerdBaseCount(TimeSpan.FromSeconds(elapsedSeconds)), Is.EqualTo(expectedCount));
+    }
+
+    /// <summary>
     /// Tests that there is no position on a map without a path.
     /// </summary>
     [Test]

@@ -56,6 +56,12 @@ public sealed class DoppelgangerEventViewPlugIn : IDoppelgangerEventViewPlugIn
     }
 
     /// <inheritdoc />
+    public async ValueTask ShowIceWalkerCountdownAsync()
+    {
+        await this._player.Connection.SendUpdateMiniGameStateAsync(UpdateMiniGameState.MiniGameTypeState.DoppelgangerIceWalkerCountdown).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
     public async ValueTask ShowPlayInfoAsync(TimeSpan remainingTime, IReadOnlyCollection<(Player Player, int Position)> playerPositions)
     {
         if (this._player.Connection is not { Connected: true } connection)

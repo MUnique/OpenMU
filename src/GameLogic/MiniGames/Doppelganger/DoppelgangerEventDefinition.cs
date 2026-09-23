@@ -23,6 +23,65 @@ public class DoppelgangerEventDefinition
     public TimeSpan PlayInfoInterval { get; set; } = TimeSpan.FromSeconds(1);
 
     /// <summary>
+    /// Gets or sets the interval in which a herd of monsters spawns at the start of the path.
+    /// </summary>
+    public TimeSpan HerdInterval { get; set; } = TimeSpan.FromSeconds(3);
+
+    /// <summary>
+    /// Gets or sets the numbers of the monsters of which a herd consists. Each monster
+    /// of a herd is chosen randomly.
+    /// </summary>
+    public IList<short> HerdMonsterNumbers { get; set; } = new List<short>();
+
+    /// <summary>
+    /// Gets or sets the base count of monsters of a herd, depending on the elapsed game time.
+    /// One monster is added for each player in the event, starting with the second one.
+    /// </summary>
+    public IList<DoppelgangerHerdSize> HerdSizes { get; set; } = new List<DoppelgangerHerdSize>();
+
+    /// <summary>
+    /// Gets or sets the chance (between 0 and 1) that a monster of a herd attacks players in its range,
+    /// without being attacked first.
+    /// </summary>
+    public double AttackFirstChance { get; set; } = 0.7;
+
+    /// <summary>
+    /// Gets or sets the numbers of the monsters which always attack players in their range.
+    /// </summary>
+    public IList<short> AlwaysAttackingMonsterNumbers { get; set; } = new List<short>();
+
+    /// <summary>
+    /// Gets or sets the additional monsters which spawn once at the start of the path at a specific time.
+    /// </summary>
+    public IList<DoppelgangerMonsterSpawn> AdditionalSpawns { get; set; } = new List<DoppelgangerMonsterSpawn>();
+
+    /// <summary>
+    /// Gets or sets the number of the ice walker monster.
+    /// </summary>
+    public short IceWalkerNumber { get; set; } = 531;
+
+    /// <summary>
+    /// Gets or sets the elapsed game time after which the ice walkers appear. One ice walker
+    /// appears for each player in the event. They stay at a random position on the path.
+    /// </summary>
+    public TimeSpan IceWalkerSpawnTime { get; set; } = TimeSpan.FromMinutes(6).Subtract(TimeSpan.FromSeconds(5));
+
+    /// <summary>
+    /// Gets or sets the time in which the players have to kill the ice walkers. Otherwise, they disappear.
+    /// </summary>
+    public TimeSpan IceWalkerMissionDuration { get; set; } = TimeSpan.FromSeconds(60);
+
+    /// <summary>
+    /// Gets or sets the lowest position index on the path at which an ice walker appears.
+    /// </summary>
+    public int IceWalkerMinimumPosition { get; set; } = 3;
+
+    /// <summary>
+    /// Gets or sets the highest position index on the path at which an ice walker appears.
+    /// </summary>
+    public int IceWalkerMaximumPosition { get; set; } = 18;
+
+    /// <summary>
     /// Gets or sets the paths of the monsters, one for each event map.
     /// </summary>
     public IList<DoppelgangerPath> Paths { get; set; } = new List<DoppelgangerPath>();
@@ -33,10 +92,42 @@ public class DoppelgangerEventDefinition
     /// <returns>The created definition.</returns>
     public static DoppelgangerEventDefinition CreateDefault()
     {
+        const short terribleButcher = 529;
+        const short madButcher = 530;
+        const short doppelganger = 533;
+        const short doppelgangerDarkLord = 538;
+
         return new DoppelgangerEventDefinition
         {
+            // The dark lord clone (538) only appears as additional spawn.
+            HerdMonsterNumbers = [doppelganger, 534, 535, 536, 537, 539],
+            AlwaysAttackingMonsterNumbers = [doppelganger],
+            HerdSizes =
+            [
+                new DoppelgangerHerdSize { StartsAfter = TimeSpan.Zero, BaseCount = 1 },
+                new DoppelgangerHerdSize { StartsAfter = TimeSpan.FromMinutes(3), BaseCount = 2 },
+                new DoppelgangerHerdSize { StartsAfter = TimeSpan.FromMinutes(6), BaseCount = 3 },
+            ],
+            AdditionalSpawns =
+            [
+                new DoppelgangerMonsterSpawn { SpawnTime = TimeSpan.FromMinutes(1), MonsterNumbers = [madButcher, doppelgangerDarkLord] },
+                new DoppelgangerMonsterSpawn { SpawnTime = TimeSpan.FromMinutes(4), MonsterNumbers = [madButcher, doppelgangerDarkLord] },
+                new DoppelgangerMonsterSpawn { SpawnTime = TimeSpan.FromMinutes(7), MonsterNumbers = [terribleButcher, doppelgangerDarkLord] },
+            ],
             Paths = CreateDefaultPaths(),
         };
+    }
+
+    /// <summary>
+    /// Gets the base count of monsters of a herd after the specified elapsed game time.
+    /// </summary>
+    /// <param name="elapsed">The elapsed game time.</param>
+    /// <returns>The base count of monsters of a herd.</returns>
+    public int GetHerdBaseCount(TimeSpan elapsed)
+    {
+        return this.HerdSizes
+            .Where(size => size.StartsAfter <= elapsed)
+            .MaxBy(size => size.StartsAfter)?.BaseCount ?? 0;
     }
 
     /// <summary>

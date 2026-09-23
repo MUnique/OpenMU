@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// Adds the doppelganger event configuration to an existing Season 6 database.
 /// </summary>
 /// <remarks>
-/// It adds the Mirror of Dimensions as entrance ticket and the <see cref="MiniGameDefinition"/>s,
+/// It adds the Mirror of Dimensions as entrance ticket, the monsters and the <see cref="MiniGameDefinition"/>s,
 /// opens the entrance window when talking to Lugard, and lets players who die inside the
 /// event maps respawn at Elvenland.
 /// </remarks>
@@ -71,6 +71,11 @@ public class AddDoppelgangerDataUpdatePlugIn : UpdatePlugInBase
         foreach (var map in gameConfiguration.Maps.Where(map => map.Number is >= Doppelgaenger1.Number and <= Doppelgaenger4.Number))
         {
             map.SafezoneMap = elvenland;
+        }
+
+        if (!gameConfiguration.Monsters.Any(monster => monster.Number == DoppelgangerMonsters.FirstMonsterNumber))
+        {
+            new DoppelgangerMonsters(context, gameConfiguration).Initialize();
         }
 
         if (!gameConfiguration.MiniGameDefinitions.Any(definition => definition.Type == MiniGameType.Doppelganger))

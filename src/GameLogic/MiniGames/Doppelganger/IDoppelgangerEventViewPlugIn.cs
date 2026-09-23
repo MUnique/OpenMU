@@ -46,6 +46,11 @@ public interface IDoppelgangerEventViewPlugIn : IViewPlugIn
     ValueTask HideIceWalkerAsync();
 
     /// <summary>
+    /// Shows the countdown of the last 30 seconds in which the ice walkers have to be killed.
+    /// </summary>
+    ValueTask ShowIceWalkerCountdownAsync();
+
+    /// <summary>
     /// Shows the remaining time and the positions of the players on the path.
     /// The client doesn't count down the time by itself, so this should be sent periodically.
     /// Players which are not included are no longer shown.

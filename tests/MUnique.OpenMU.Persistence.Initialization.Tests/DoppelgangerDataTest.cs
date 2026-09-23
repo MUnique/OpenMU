@@ -51,6 +51,11 @@ internal class DoppelgangerDataTest
         }
 
         gameConfiguration.Items.Remove(gameConfiguration.Items.Single(item => item is { Group: 14, Number: 111 }));
+        foreach (var monster in gameConfiguration.Monsters.Where(monster => monster.Number is >= 529 and <= 539).ToList())
+        {
+            gameConfiguration.Monsters.Remove(monster);
+        }
+
         gameConfiguration.Monsters.Single(monster => monster.Number == LugardNumber).NpcWindow = NpcWindow.Undefined;
         foreach (var map in gameConfiguration.Maps.Where(map => EventMapNumbers.Contains(map.Number)))
         {
@@ -60,6 +65,29 @@ internal class DoppelgangerDataTest
         var update = new AddDoppelgangerDataUpdatePlugIn();
         await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
         await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        AssertEventData(gameConfiguration);
+    }
+
+    /// <summary>
+    /// Tests that the update adds the monsters to a database which already got the event
+    /// definitions by an earlier version of the update, without duplicating the definitions.
+    /// </summary>
+    [Test]
+    public async Task UpdateAddsMissingMonstersAsync()
+    {
+        var contextProvider = new InMemoryPersistenceContextProvider();
+        var dataInitialization = new VersionSeasonSix.DataInitialization(contextProvider, new NullLoggerFactory());
+        await dataInitialization.CreateInitialDataAsync(1, true).ConfigureAwait(false);
+
+        using var context = contextProvider.CreateNewContext();
+        var gameConfiguration = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).First();
+        foreach (var monster in gameConfiguration.Monsters.Where(monster => monster.Number is >= 529 and <= 539).ToList())
+        {
+            gameConfiguration.Monsters.Remove(monster);
+        }
+
+        await new AddDoppelgangerDataUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
 
         AssertEventData(gameConfiguration);
     }
@@ -83,6 +111,9 @@ internal class DoppelgangerDataTest
         Assert.That(definitions.Select(d => d.Entrance?.Map?.Number), Is.EquivalentTo(EventMapNumbers.Select(n => (short?)n)));
         Assert.That(definitions, Has.All.Matches<MiniGameDefinition>(d => d.MapCreationPolicy == MiniGameMapCreationPolicy.OnePerParty));
         Assert.That(definitions, Has.All.Matches<MiniGameDefinition>(d => d.TicketItem == ticket));
+        Assert.That(
+            gameConfiguration.Monsters.Where(monster => monster.Number is >= 529 and <= 539).Select(monster => monster.Number),
+            Is.EquivalentTo(Enumerable.Range(529, 11).Select(n => (short)n)));
         Assert.That(gameConfiguration.Monsters.Single(monster => monster.Number == LugardNumber).NpcWindow, Is.EqualTo(NpcWindow.LugardDoppelgangerEntry));
         Assert.That(
             gameConfiguration.Maps.Where(map => EventMapNumbers.Contains(map.Number)).Select(map => map.SafezoneMap?.Number),
