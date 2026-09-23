@@ -8,6 +8,7 @@ using System.Collections.Concurrent;
 using System.Threading;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Views;
+using MUnique.OpenMU.Pathfinding;
 
 /// <summary>
 /// The context of a doppelganger event game.
@@ -17,6 +18,8 @@ using MUnique.OpenMU.GameLogic.Views;
 /// Herds of monsters spawn at the start of the path in a fixed interval, additional stronger
 /// monsters at specific times. At some point, ice walkers appear on the path, which have to
 /// be killed within a limited time.
+/// Killed butchers leave interim reward chests behind, of which only one can be opened. It contains
+/// either items or larvae. When the defense succeeded, a final reward chest appears.
 /// The event fails for everyone when <see cref="DoppelgangerEventDefinition.MaximumGoalCount"/>
 /// monsters reached the magic circle. It fails for a single player when the character
 /// dies or leaves the event map, e.g. by warping or disconnecting.
@@ -45,10 +48,18 @@ public sealed class DoppelgangerContext : MiniGameContext
 
     private readonly ConcurrentDictionary<Monster, byte> _iceWalkers = new();
 
+    /// <summary>
+    /// The interim reward chests, with the group of chests which appeared together.
+    /// </summary>
+    private readonly ConcurrentDictionary<Destructible, InterimChestGroup> _interimChests = new();
+
+    private readonly DoppelgangerDropGenerator _dropGenerator;
+
     private DateTime _gameStartedUtc;
     private DateTime _gameEndsAtUtc;
     private int _goalCount;
     private int _lastShownMonsterPosition = -1;
+    private int _initialPlayerCount;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DoppelgangerContext"/> class.
@@ -68,6 +79,8 @@ public sealed class DoppelgangerContext : MiniGameContext
         this._definition = DoppelgangerEventDefinition.CreateDefault();
         var mapNumber = (short)this.Map.MapId;
         this._path = this._definition.Paths.FirstOrDefault(path => path.MapNumber == mapNumber)?.Areas ?? [];
+        this._dropGenerator = new DoppelgangerDropGenerator(this.DropGenerator, this._definition.InterimRewardChestNumber);
+        this.DropGenerator = this._dropGenerator;
     }
 
     /// <summary>
@@ -113,6 +126,7 @@ public sealed class DoppelgangerContext : MiniGameContext
         await base.OnGameStartAsync(players).ConfigureAwait(false);
 
         this._gameStartedUtc = DateTime.UtcNow;
+        this._initialPlayerCount = players.Count;
         this._gameEndsAtUtc = this._gameStartedUtc.Add(this.Definition.GameDuration);
         await this.ForEachPlayerAsync(player => player.InvokeViewPlugInAsync<IDoppelgangerEventViewPlugIn>(async p =>
         {
@@ -139,6 +153,11 @@ public sealed class DoppelgangerContext : MiniGameContext
             }
 
             this._pathMonsters.TryRemove(monster, out _);
+            if (this.State == MiniGameState.Playing && this._definition.InterimChestMonsterNumbers.Contains(monster.Definition.Number))
+            {
+                await this.SpawnInterimChestsAsync(monster.Position).ConfigureAwait(false);
+            }
+
             if (this._iceWalkers.TryRemove(monster, out _) && this._iceWalkers.IsEmpty)
             {
                 this.Logger.LogDebug("{context}: All ice walkers were killed.", this);
@@ -148,6 +167,52 @@ public sealed class DoppelgangerContext : MiniGameContext
         catch (Exception ex)
         {
             this.Logger.LogError(ex, "{context}: Unexpected error in OnMonsterDied.", this);
+        }
+    }
+
+    /// <inheritdoc />
+#pragma warning disable VSTHRD100 // Avoid async void methods
+    protected override async void OnDestructibleDied(object? sender, DeathInformation e)
+#pragma warning restore VSTHRD100
+    {
+        try
+        {
+            base.OnDestructibleDied(sender, e);
+
+            if (sender is not Destructible chest
+                || !this._interimChests.TryRemove(chest, out var group)
+                || !group.TryOpen())
+            {
+                return;
+            }
+
+            // The content has to be decided before the drop of the chest is generated.
+            var containsLarvae = Rand.NextRandomBool(this._definition.LarvaChance);
+            if (containsLarvae)
+            {
+                this._dropGenerator.SuppressNextInterimChestDrop();
+            }
+
+            foreach (var otherChest in group.Chests.Where(c => c != chest))
+            {
+                if (this._interimChests.TryRemove(otherChest, out _))
+                {
+                    await this.RemoveNpcAsync(otherChest).ConfigureAwait(false);
+                }
+            }
+
+            if (containsLarvae)
+            {
+                var area = GetAreaAround(chest.Position, 2);
+                for (var i = 0; i < Math.Max(1, this._initialPlayerCount); i++)
+                {
+                    await this.SpawnMonsterAsync(this._definition.LarvaNumber, area, 0, false, true).ConfigureAwait(false);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            this.Logger.LogError(ex, "{context}: Unexpected error in OnDestructibleDied.", this);
         }
     }
 
@@ -188,6 +253,7 @@ public sealed class DoppelgangerContext : MiniGameContext
     {
         this._pathMonsters.Clear();
         this._iceWalkers.Clear();
+        this._interimChests.Clear();
 
         var result = this.IsDefenseFailed ? DoppelgangerResult.MonstersReachedMagicCircle : DoppelgangerResult.Success;
         foreach (var player in finishers)
@@ -205,7 +271,22 @@ public sealed class DoppelgangerContext : MiniGameContext
             }).ConfigureAwait(false);
         }
 
+        if (result == DoppelgangerResult.Success && finishers.FirstOrDefault(player => player.IsAlive) is { } firstFinisher)
+        {
+            await this.SpawnDestructibleAsync(this._definition.FinalRewardChestNumber, GetAreaAround(firstFinisher.Position, 1)).ConfigureAwait(false);
+        }
+
         await base.GameEndedAsync(finishers).ConfigureAwait(false);
+    }
+
+    private static DoppelgangerPathArea GetAreaAround(Point point, byte radius)
+    {
+        // The lower bounds of a path area are exclusive.
+        return new DoppelgangerPathArea(
+            (byte)Math.Max(point.X - radius - 1, 0),
+            (byte)Math.Max(point.Y - radius - 1, 0),
+            (byte)Math.Min(point.X + radius, byte.MaxValue),
+            (byte)Math.Min(point.Y + radius, byte.MaxValue));
     }
 
     /// <summary>
@@ -410,26 +491,19 @@ public sealed class DoppelgangerContext : MiniGameContext
         }
     }
 
-    private async ValueTask<Monster?> SpawnMonsterAsync(short monsterNumber, int pathPosition, bool walksAlongPath, bool attacksFirst)
+    private ValueTask<Monster?> SpawnMonsterAsync(short monsterNumber, int pathPosition, bool walksAlongPath, bool attacksFirst)
     {
-        if (this._gameContext.Configuration.Monsters.FirstOrDefault(m => m.Number == monsterNumber) is not { } monsterDefinition)
+        return this.SpawnMonsterAsync(monsterNumber, this._path[pathPosition], pathPosition, walksAlongPath, attacksFirst);
+    }
+
+    private async ValueTask<Monster?> SpawnMonsterAsync(short monsterNumber, DoppelgangerPathArea area, int pathPosition, bool walksAlongPath, bool attacksFirst)
+    {
+        if (this.CreateSpawnArea(monsterNumber, area) is not { } spawnArea)
         {
-            this.Logger.LogWarning("{context}: Monster definition {monsterNumber} not found.", this, monsterNumber);
             return null;
         }
 
-        var area = this._path[pathPosition];
-        var spawnArea = new MonsterSpawnArea
-        {
-            GameMap = this.Map.Definition,
-            MonsterDefinition = monsterDefinition,
-            SpawnTrigger = SpawnTrigger.OnceAtEventStart,
-            Quantity = 1,
-            X1 = (byte)(area.X1 + 1),
-            X2 = area.X2,
-            Y1 = (byte)(area.Y1 + 1),
-            Y2 = area.Y2,
-        };
+        var monsterDefinition = spawnArea.MonsterDefinition!;
 
         var intelligence = new DoppelgangerMonsterIntelligence(this._path, pathPosition, walksAlongPath, attacksFirst, this.OnMonsterReachedMagicCircleAsync, this.Logger);
         var monster = new Monster(spawnArea, monsterDefinition, this.Map, this.DropGenerator, intelligence, this._gameContext.PlugInManager, this._gameContext.PathFinderPool, this);
@@ -452,6 +526,99 @@ public sealed class DoppelgangerContext : MiniGameContext
         return monster;
     }
 
+    private async ValueTask SpawnInterimChestsAsync(Point position)
+    {
+        var group = new InterimChestGroup();
+        var area = GetAreaAround(position, 2);
+        for (var i = 0; i < this._definition.InterimChestCount; i++)
+        {
+            if (await this.SpawnDestructibleAsync(this._definition.InterimRewardChestNumber, area).ConfigureAwait(false) is { } chest)
+            {
+                group.Chests.Add(chest);
+                this._interimChests.TryAdd(chest, group);
+            }
+        }
+
+        if (group.Chests.Count > 0)
+        {
+            _ = Task.Run(() => this.RemoveUnopenedChestsAsync(group, this.GameEndedToken), this.GameEndedToken);
+        }
+    }
+
+    private async Task RemoveUnopenedChestsAsync(InterimChestGroup group, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await Task.Delay(this._definition.InterimChestDuration, cancellationToken).ConfigureAwait(false);
+            foreach (var chest in group.Chests)
+            {
+                if (this._interimChests.TryRemove(chest, out _))
+                {
+                    await this.RemoveNpcAsync(chest).ConfigureAwait(false);
+                }
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // The game ended.
+        }
+        catch (Exception ex)
+        {
+            this.Logger.LogError(ex, "{context}: Unexpected error when removing the unopened chests.", this);
+        }
+    }
+
+    private async ValueTask<Destructible?> SpawnDestructibleAsync(short number, DoppelgangerPathArea area)
+    {
+        if (this.CreateSpawnArea(number, area) is not { } spawnArea)
+        {
+            return null;
+        }
+
+        var destructible = new Destructible(spawnArea, spawnArea.MonsterDefinition!, this.Map, this, this.DropGenerator, this._gameContext.PlugInManager);
+        try
+        {
+            destructible.Initialize();
+        }
+        catch (InvalidOperationException ex)
+        {
+            this.Logger.LogWarning(ex, "{context}: Failed to spawn {number} around {area}.", this, number, area);
+            destructible.Dispose();
+            return null;
+        }
+
+        await this.Map.AddAsync(destructible).ConfigureAwait(false);
+        destructible.OnSpawn();
+        return destructible;
+    }
+
+    private MonsterSpawnArea? CreateSpawnArea(short monsterNumber, DoppelgangerPathArea area)
+    {
+        if (this._gameContext.Configuration.Monsters.FirstOrDefault(m => m.Number == monsterNumber) is not { } monsterDefinition)
+        {
+            this.Logger.LogWarning("{context}: Monster definition {monsterNumber} not found.", this, monsterNumber);
+            return null;
+        }
+
+        return new MonsterSpawnArea
+        {
+            GameMap = this.Map.Definition,
+            MonsterDefinition = monsterDefinition,
+            SpawnTrigger = SpawnTrigger.OnceAtEventStart,
+            Quantity = 1,
+            X1 = (byte)(area.X1 + 1),
+            X2 = area.X2,
+            Y1 = (byte)(area.Y1 + 1),
+            Y2 = area.Y2,
+        };
+    }
+
+    private async ValueTask RemoveNpcAsync(NonPlayerCharacter npc)
+    {
+        await this.Map.RemoveAsync(npc).ConfigureAwait(false);
+        npc.Dispose();
+    }
+
     private async ValueTask OnMonsterReachedMagicCircleAsync(Monster monster)
     {
         await this.RemoveMonsterAsync(monster).ConfigureAwait(false);
@@ -462,7 +629,25 @@ public sealed class DoppelgangerContext : MiniGameContext
     {
         this._pathMonsters.TryRemove(monster, out _);
         this._iceWalkers.TryRemove(monster, out _);
-        await this.Map.RemoveAsync(monster).ConfigureAwait(false);
-        monster.Dispose();
+        await this.RemoveNpcAsync(monster).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// A group of interim reward chests, which appeared together. Only one of them can be opened.
+    /// </summary>
+    private sealed class InterimChestGroup
+    {
+        private int _isOpened;
+
+        /// <summary>
+        /// Gets the chests of the group.
+        /// </summary>
+        public List<Destructible> Chests { get; } = new();
+
+        /// <summary>
+        /// Tries to open the group. It succeeds only once.
+        /// </summary>
+        /// <returns><c>true</c>, if the group was opened; otherwise, <c>false</c>.</returns>
+        public bool TryOpen() => Interlocked.Exchange(ref this._isOpened, 1) == 0;
     }
 }

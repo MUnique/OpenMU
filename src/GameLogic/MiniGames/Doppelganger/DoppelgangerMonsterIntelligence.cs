@@ -151,7 +151,9 @@ public sealed class DoppelgangerMonsterIntelligence : INpcIntelligence, IDisposa
             return;
         }
 
-        if (this.UpdatePathPosition(monster.Position) == this._path.Count - 1)
+        // Only the monsters which walk along the path can reach the magic circle. Others, like the
+        // larvae of a chest, might just be standing next to it.
+        if (this.WalksAlongPath && this.UpdatePathPosition(monster.Position) == this._path.Count - 1)
         {
             if (Interlocked.Exchange(ref this._hasReachedMagicCircle, 1) == 0)
             {

@@ -82,6 +82,41 @@ public class DoppelgangerEventDefinition
     public int IceWalkerMaximumPosition { get; set; } = 18;
 
     /// <summary>
+    /// Gets or sets the numbers of the monsters which leave interim reward chests behind when they die.
+    /// </summary>
+    public IList<short> InterimChestMonsterNumbers { get; set; } = new List<short>();
+
+    /// <summary>
+    /// Gets or sets the number of the interim reward chest.
+    /// </summary>
+    public short InterimRewardChestNumber { get; set; } = 541;
+
+    /// <summary>
+    /// Gets or sets the number of interim reward chests which appear together. Only one of them can be opened.
+    /// </summary>
+    public int InterimChestCount { get; set; } = 3;
+
+    /// <summary>
+    /// Gets or sets the time after which interim reward chests disappear, when none of them was opened.
+    /// </summary>
+    public TimeSpan InterimChestDuration { get; set; } = TimeSpan.FromSeconds(60);
+
+    /// <summary>
+    /// Gets or sets the chance (between 0 and 1) that larvae come out of an interim reward chest instead of items.
+    /// </summary>
+    public double LarvaChance { get; set; } = 0.6;
+
+    /// <summary>
+    /// Gets or sets the number of the larva monster. One larva comes out of a chest for each player which started the event.
+    /// </summary>
+    public short LarvaNumber { get; set; } = 532;
+
+    /// <summary>
+    /// Gets or sets the number of the final reward chest, which appears when the players successfully defended the magic circle.
+    /// </summary>
+    public short FinalRewardChestNumber { get; set; } = 542;
+
+    /// <summary>
     /// Gets or sets the paths of the monsters, one for each event map.
     /// </summary>
     public IList<DoppelgangerPath> Paths { get; set; } = new List<DoppelgangerPath>();
@@ -102,6 +137,7 @@ public class DoppelgangerEventDefinition
             // The dark lord clone (538) only appears as additional spawn.
             HerdMonsterNumbers = [doppelganger, 534, 535, 536, 537, 539],
             AlwaysAttackingMonsterNumbers = [doppelganger],
+            InterimChestMonsterNumbers = [terribleButcher, madButcher],
             HerdSizes =
             [
                 new DoppelgangerHerdSize { StartsAfter = TimeSpan.Zero, BaseCount = 1 },

@@ -23,6 +23,16 @@ internal class DoppelgangerMonsters : InitializerBase
     internal const short FirstMonsterNumber = 529;
 
     /// <summary>
+    /// The number of the interim reward chest.
+    /// </summary>
+    internal const short InterimRewardChestNumber = 541;
+
+    /// <summary>
+    /// The number of the final reward chest.
+    /// </summary>
+    internal const short FinalRewardChestNumber = 542;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="DoppelgangerMonsters" /> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -46,6 +56,62 @@ internal class DoppelgangerMonsters : InitializerBase
         this.CreateMonster(537, "Doppelganger Magic Gladiator", 14, 500, 65, 70, 30, 700, 500, 2, 4, 4, 400, 1400, 2, SkillNumber.PowerSlash, 10, 10);
         this.CreateMonster(538, "Doppelganger Dark Lord", 17, 900, 85, 90, 55, 900, 800, 3, 4, 6, 400, 1600, 2, SkillNumber.Earthshake, 15, 15);
         this.CreateMonster(539, "Doppelganger Summoner", 14, 500, 65, 70, 30, 500, 300, 3, 2, 4, 400, 1600, 2, SkillNumber.LightningShock, 10, 10);
+
+        this.ConfigureRewardChests();
+    }
+
+    /// <summary>
+    /// Configures the reward chests, which were created as passive NPCs before, so that they can
+    /// be opened by attacking them. They drop jewels and with a small chance a Loch's Feather
+    /// or Crest of Monarch, similar to the original item bags.
+    /// </summary>
+    internal void ConfigureRewardChests()
+    {
+        this.ConfigureRewardChest(InterimRewardChestNumber, 2, true);
+        this.ConfigureRewardChest(FinalRewardChestNumber, 5, false);
+    }
+
+    private void ConfigureRewardChest(short number, int numberOfDrops, bool isJewelGuaranteed)
+    {
+        if (this.GameConfiguration.Monsters.FirstOrDefault(monster => monster.Number == number) is not { } chest
+            || chest.ObjectKind == NpcObjectKind.Destructible)
+        {
+            return;
+        }
+
+        chest.ObjectKind = NpcObjectKind.Destructible;
+        chest.NumberOfMaximumItemDrops = numberOfDrops;
+        chest.RespawnDelay = TimeSpan.Zero;
+        var attributes = new Dictionary<AttributeDefinition, float>
+        {
+            { Stats.Level, 2 },
+            { Stats.MaximumHealth, 10 },
+            { Stats.DefenseBase, 10 },
+            { Stats.DefenseRatePvm, 10 },
+        };
+        chest.AddAttributes(attributes, this.Context, this.GameConfiguration);
+
+        var jewels = new[] { (12, 15), (14, 13), (14, 14), (14, 16), (14, 22) };
+        this.AddDropGroup(chest, 1, "Jewel", isJewelGuaranteed ? 1.0 : 0.9, 0, jewels);
+        this.AddDropGroup(chest, 2, "Loch's Feather", 0.08, 0, (13, 14));
+        this.AddDropGroup(chest, 3, "Crest of Monarch", 0.02, 1, (13, 14));
+    }
+
+    private void AddDropGroup(MonsterDefinition chest, short index, string name, double chance, byte itemLevel, params (int Group, int Number)[] items)
+    {
+        var group = this.Context.CreateNew<DropItemGroup>();
+        group.SetGuid(chest.Number, index);
+        group.Description = $"{chest.Designation}: {name}";
+        group.Chance = chance;
+        group.ItemLevel = itemLevel;
+        group.Monster = chest;
+        foreach (var (itemGroup, itemNumber) in items)
+        {
+            group.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == itemGroup && item.Number == itemNumber));
+        }
+
+        chest.DropItemGroups.Add(group);
+        this.GameConfiguration.DropItemGroups.Add(group);
     }
 
     private void CreateMonster(

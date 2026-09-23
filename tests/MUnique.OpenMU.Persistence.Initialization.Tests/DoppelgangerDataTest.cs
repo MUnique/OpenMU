@@ -118,6 +118,14 @@ internal class DoppelgangerDataTest
         Assert.That(
             gameConfiguration.Monsters.Where(monster => monster.Number is >= 529 and <= 539).Select(monster => monster.Number),
             Is.EquivalentTo(Enumerable.Range(529, 11).Select(n => (short)n)));
+        foreach (var chestNumber in new short[] { 541, 542 })
+        {
+            var chest = gameConfiguration.Monsters.Single(monster => monster.Number == chestNumber);
+            Assert.That(chest.ObjectKind, Is.EqualTo(NpcObjectKind.Destructible));
+            Assert.That(chest.DropItemGroups, Has.Count.EqualTo(3));
+            Assert.That(chest.NumberOfMaximumItemDrops, Is.GreaterThan(0));
+        }
+
         Assert.That(gameConfiguration.Monsters.Single(monster => monster.Number == LugardNumber).NpcWindow, Is.EqualTo(NpcWindow.LugardDoppelgangerEntry));
         Assert.That(
             gameConfiguration.Maps.Where(map => EventMapNumbers.Contains(map.Number)).Select(map => map.SafezoneMap?.Number),
