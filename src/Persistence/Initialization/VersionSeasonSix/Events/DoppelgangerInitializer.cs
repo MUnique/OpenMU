@@ -14,6 +14,8 @@ using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 /// There is one definition for each of the four event maps. They don't differ in their
 /// requirements, because the event map is chosen randomly when a party enters.
 /// Each party plays in its own instance of the map.
+/// The definitions don't define a ticket item, because the event accepts two different tickets,
+/// which are checked by the EnterDoppelgangerAction.
 /// </remarks>
 internal class DoppelgangerInitializer : InitializerBase
 {
@@ -37,7 +39,6 @@ internal class DoppelgangerInitializer : InitializerBase
             new DoppelgangerMonsters(this.Context, this.GameConfiguration).Initialize();
         }
 
-        var ticket = this.GameConfiguration.Items.Single(item => item is { Group: 14, Number: 111 });
         for (var i = 0; i < MapNumbers.Length; i++)
         {
             var gameLevel = i + 1;
@@ -56,7 +57,7 @@ internal class DoppelgangerInitializer : InitializerBase
             doppelganger.MaximumSpecialCharacterLevel = 400;
             doppelganger.Entrance = this.GameConfiguration.Maps.First(m => m.Number == MapNumbers[i]).ExitGates.Single(g => g.IsSpawnGate);
             doppelganger.Type = MiniGameType.Doppelganger;
-            doppelganger.TicketItem = ticket;
+            doppelganger.TicketItem = null;
             doppelganger.GameLevel = (byte)gameLevel;
             doppelganger.MapCreationPolicy = MiniGameMapCreationPolicy.OnePerParty;
             doppelganger.SaveRankingStatistics = false;

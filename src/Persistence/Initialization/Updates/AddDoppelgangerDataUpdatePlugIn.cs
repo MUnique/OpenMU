@@ -15,7 +15,8 @@ using MUnique.OpenMU.PlugIns;
 /// Adds the doppelganger event configuration to an existing Season 6 database.
 /// </summary>
 /// <remarks>
-/// It adds the Mirror of Dimensions as entrance ticket, the monsters, the reward chests and the <see cref="MiniGameDefinition"/>s,
+/// It adds the Mirror of Dimensions and the Doppelganger Free Ticket as entrance tickets, the
+/// Sign of Dimensions which drops from monsters, the monsters, the reward chests and the <see cref="MiniGameDefinition"/>s,
 /// opens the entrance window when talking to Lugard, and lets players who die inside the
 /// event maps respawn at Elvenland. Additionally, it reduces the entrance gates of the event maps
 /// to their walkable part, because players who got placed on a non-walkable coordinate were
@@ -59,9 +60,12 @@ public class AddDoppelgangerDataUpdatePlugIn : UpdatePlugInBase
     /// <inheritdoc />
     protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
-        if (!gameConfiguration.Items.Any(item => item is { Group: 14, Number: 111 }))
+        if (new EventTicketItems(context, gameConfiguration).CreateDoppelgangerItems() is { } signOfDimensionsDropGroup)
         {
-            new EventTicketItems(context, gameConfiguration).CreateDoppelgangerItems();
+            foreach (var map in gameConfiguration.Maps)
+            {
+                map.DropItemGroups.Add(signOfDimensionsDropGroup);
+            }
         }
 
         if (gameConfiguration.Monsters.FirstOrDefault(monster => monster.Number == LugardNumber) is { } lugard)
@@ -91,6 +95,12 @@ public class AddDoppelgangerDataUpdatePlugIn : UpdatePlugInBase
         if (!gameConfiguration.MiniGameDefinitions.Any(definition => definition.Type == MiniGameType.Doppelganger))
         {
             new DoppelgangerInitializer(context, gameConfiguration).Initialize();
+        }
+
+        // The event accepts two different tickets, which are checked by the EnterDoppelgangerAction.
+        foreach (var definition in gameConfiguration.MiniGameDefinitions.Where(definition => definition.Type == MiniGameType.Doppelganger))
+        {
+            definition.TicketItem = null;
         }
 
         return ValueTask.CompletedTask;

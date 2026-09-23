@@ -51,6 +51,15 @@ internal class DoppelgangerDataTest
         }
 
         gameConfiguration.Items.Remove(gameConfiguration.Items.Single(item => item is { Group: 14, Number: 111 }));
+        gameConfiguration.Items.Remove(gameConfiguration.Items.Single(item => item is { Group: 13, Number: 125 }));
+        var signDropGroup = gameConfiguration.DropItemGroups.Single(group => group.PossibleItems.Any(item => item is { Group: 14, Number: 110 }));
+        gameConfiguration.DropItemGroups.Remove(signDropGroup);
+        foreach (var map in gameConfiguration.Maps)
+        {
+            map.DropItemGroups.Remove(signDropGroup);
+        }
+
+        gameConfiguration.Items.Remove(gameConfiguration.Items.Single(item => item is { Group: 14, Number: 110 }));
         foreach (var monster in gameConfiguration.Monsters.Where(monster => monster.Number is >= 529 and <= 539).ToList())
         {
             gameConfiguration.Monsters.Remove(monster);
@@ -91,6 +100,12 @@ internal class DoppelgangerDataTest
             gameConfiguration.Monsters.Remove(monster);
         }
 
+        var mirror = gameConfiguration.Items.Single(item => item is { Group: 14, Number: 111 });
+        foreach (var definition in gameConfiguration.MiniGameDefinitions.Where(d => d.Type == MiniGameType.Doppelganger))
+        {
+            definition.TicketItem = mirror;
+        }
+
         await new AddDoppelgangerDataUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
 
         AssertEventData(gameConfiguration);
@@ -108,13 +123,18 @@ internal class DoppelgangerDataTest
 
     private static void AssertEventData(GameConfiguration gameConfiguration)
     {
-        var ticket = gameConfiguration.Items.Single(item => item is { Group: 14, Number: 111 });
+        Assert.That(gameConfiguration.Items.Count(item => item is { Group: 14, Number: 111 }), Is.EqualTo(1), "Mirror of Dimensions");
+        Assert.That(gameConfiguration.Items.Count(item => item is { Group: 13, Number: 125 }), Is.EqualTo(1), "Doppelganger Free Ticket");
+        var sign = gameConfiguration.Items.Single(item => item is { Group: 14, Number: 110 });
+        Assert.That(sign.Durability, Is.EqualTo(5), "A stack of five signs transforms into a mirror.");
+        var signDropGroup = gameConfiguration.DropItemGroups.Single(group => group.PossibleItems.Contains(sign));
+        Assert.That(gameConfiguration.Maps.Single(map => map.Number == 0 && map.Discriminator == 0).DropItemGroups, Does.Contain(signDropGroup));
         var definitions = gameConfiguration.MiniGameDefinitions.Where(d => d.Type == MiniGameType.Doppelganger).ToList();
 
         Assert.That(definitions.Select(d => (short)d.GameLevel), Is.EquivalentTo(new short[] { 1, 2, 3, 4 }));
         Assert.That(definitions.Select(d => d.Entrance?.Map?.Number), Is.EquivalentTo(EventMapNumbers.Select(n => (short?)n)));
         Assert.That(definitions, Has.All.Matches<MiniGameDefinition>(d => d.MapCreationPolicy == MiniGameMapCreationPolicy.OnePerParty));
-        Assert.That(definitions, Has.All.Matches<MiniGameDefinition>(d => d.TicketItem == ticket));
+        Assert.That(definitions, Has.All.Matches<MiniGameDefinition>(d => d.TicketItem is null));
         Assert.That(
             gameConfiguration.Monsters.Where(monster => monster.Number is >= 529 and <= 539).Select(monster => monster.Number),
             Is.EquivalentTo(Enumerable.Range(529, 11).Select(n => (short)n)));
