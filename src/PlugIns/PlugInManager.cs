@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.PlugIns;
 
 using System.Collections.Concurrent;
-using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -26,7 +25,7 @@ public class PlugInManager
     private readonly IDictionary<Guid, Type> _knownPlugIns = new ConcurrentDictionary<Guid, Type>();
     private readonly ConcurrentDictionary<Type, ISet<Type>> _knownPlugInsPerInterfaceType = new();
     private readonly ConcurrentDictionary<Guid, Type> _activePlugIns = new();
-    private readonly List<(PlugInConfiguration Configuration, PropertyChangedEventHandler Handler)> _configurationSubscriptions = new();
+    private readonly List<PlugInConfiguration> _observedConfigurations = new();
     private object? _lastCreatedPlugIn;
 
     /// <summary>
@@ -489,9 +488,8 @@ public class PlugInManager
 
             // When the IsActive property changed, we activate/deactivate accordingly.
             // Currently, property changes are only fired for IsActive, so we don't need to check it.
-            PropertyChangedEventHandler handler = (sender, args) => this.OnConfigurationChanged(configuration, plugInType, args.PropertyName);
-            configuration.PropertyChanged += handler;
-            this._configurationSubscriptions.Add((configuration, handler));
+            configuration.PropertyChanged += this.OnConfigurationPropertyChanged;
+            this._observedConfigurations.Add(configuration);
         }
         else
         {
@@ -501,12 +499,21 @@ public class PlugInManager
 
     private void UnsubscribeFromConfigurations()
     {
-        foreach (var (configuration, handler) in this._configurationSubscriptions)
+        foreach (var configuration in this._observedConfigurations)
         {
-            configuration.PropertyChanged -= handler;
+            configuration.PropertyChanged -= this.OnConfigurationPropertyChanged;
         }
 
-        this._configurationSubscriptions.Clear();
+        this._observedConfigurations.Clear();
+    }
+
+    private void OnConfigurationPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs args)
+    {
+        if (sender is PlugInConfiguration configuration
+            && this._knownPlugIns.TryGetValue(configuration.TypeId, out var plugInType))
+        {
+            this.OnConfigurationChanged(configuration, plugInType, args.PropertyName);
+        }
     }
 
     private void OnConfigurationChanged(PlugInConfiguration configuration, Type plugInType, string? propertyName)
