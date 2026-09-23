@@ -202,10 +202,9 @@ public class DoppelgangerEventDefinition
     {
         return
         [
-            // Doppelganger 1 (Ice), map 65
             new DoppelgangerPath
             {
-                MapNumber = 65,
+                MapNumber = 65, // Doppelganger 1 (Ice)
                 Areas =
                 [
                     new(220, 99, 230, 107),
@@ -233,10 +232,9 @@ public class DoppelgangerEventDefinition
                     new(192, 24, 202, 31),
                 ],
             },
-            // Doppelganger 2 (Fire), map 66
             new DoppelgangerPath
             {
-                MapNumber = 66,
+                MapNumber = 66, // Doppelganger 2 (Fire)
                 Areas =
                 [
                     new(108, 179, 119, 186),
@@ -264,10 +262,9 @@ public class DoppelgangerEventDefinition
                     new(133, 66, 143, 75),
                 ],
             },
-            // Doppelganger 3 (Water), map 67
             new DoppelgangerPath
             {
-                MapNumber = 67,
+                MapNumber = 67, // Doppelganger 3 (Water)
                 Areas =
                 [
                     new(107, 149, 114, 155),
@@ -295,10 +292,9 @@ public class DoppelgangerEventDefinition
                     new(104, 55, 115, 63),
                 ],
             },
-            // Doppelganger 4 (Ground), map 68
             new DoppelgangerPath
             {
-                MapNumber = 68,
+                MapNumber = 68, // Doppelganger 4 (Ground)
                 Areas =
                 [
                     new(38, 105, 48, 113),

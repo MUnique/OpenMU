@@ -8,6 +8,7 @@ using System.Collections.Concurrent;
 using System.Threading;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Views;
+using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Pathfinding;
 
 /// <summary>
@@ -18,8 +19,8 @@ using MUnique.OpenMU.Pathfinding;
 /// Herds of monsters spawn at the start of the path in a fixed interval, additional stronger
 /// monsters at specific times. At some point, ice walkers appear on the path, which have to
 /// be killed within a limited time.
-/// Killed butchers leave interim reward chests behind, of which only one can be opened. It contains
-/// either items or larvae. When the defense succeeded, a final reward chest appears.
+/// Killed butchers leave interim reward chests behind, of which only one can be opened by talking to it.
+/// It contains either items or larvae. When the defense succeeded, a final reward chest appears.
 /// The event fails for everyone when <see cref="DoppelgangerEventDefinition.MaximumGoalCount"/>
 /// monsters reached the magic circle. It fails for a single player when the character
 /// dies or leaves the event map, e.g. by warping or disconnecting.
@@ -28,9 +29,24 @@ using MUnique.OpenMU.Pathfinding;
 public sealed class DoppelgangerContext : MiniGameContext
 {
     /// <summary>
+    /// The health of the chests. They're opened by talking to them, so they shouldn't be destroyed by attacks.
+    /// </summary>
+    private const int ChestHealth = 1_000_000_000;
+
+    /// <summary>
+    /// The maximum distance of a player to a chest to open it.
+    /// </summary>
+    private const int MaximumChestOpenDistance = 4;
+
+    /// <summary>
     /// The duration of the countdown which the client shows for the ice walker mission.
     /// </summary>
     private static readonly TimeSpan IceWalkerCountdownDuration = TimeSpan.FromSeconds(30);
+
+    /// <summary>
+    /// The time after which an opened chest is removed, so that the client can show its opening.
+    /// </summary>
+    private static readonly TimeSpan OpenedChestRemovalDelay = TimeSpan.FromSeconds(2);
 
     private readonly IGameContext _gameContext;
     private readonly DoppelgangerEventDefinition _definition;
@@ -53,13 +69,13 @@ public sealed class DoppelgangerContext : MiniGameContext
     /// </summary>
     private readonly ConcurrentDictionary<Destructible, InterimChestGroup> _interimChests = new();
 
-    private readonly DoppelgangerDropGenerator _dropGenerator;
-
     private DateTime _gameStartedUtc;
     private DateTime _gameEndsAtUtc;
     private int _goalCount;
     private int _lastShownMonsterPosition = -1;
     private int _initialPlayerCount;
+    private Destructible? _finalChest;
+    private int _isFinalChestOpened;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DoppelgangerContext"/> class.
@@ -79,8 +95,6 @@ public sealed class DoppelgangerContext : MiniGameContext
         this._definition = DoppelgangerEventDefinition.CreateDefault();
         var mapNumber = (short)this.Map.MapId;
         this._path = this._definition.Paths.FirstOrDefault(path => path.MapNumber == mapNumber)?.Areas ?? [];
-        this._dropGenerator = new DoppelgangerDropGenerator(this.DropGenerator, this._definition.InterimRewardChestNumber);
-        this.DropGenerator = this._dropGenerator;
     }
 
     /// <summary>
@@ -118,6 +132,73 @@ public sealed class DoppelgangerContext : MiniGameContext
             this.Logger.LogInformation("{context}: The defense failed, because {goalCount} monsters reached the magic circle.", this, goalCount);
             this.FinishEvent();
         }
+    }
+
+    /// <summary>
+    /// Determines whether the destructible is a reward chest of this game, which wasn't opened yet.
+    /// </summary>
+    /// <param name="chest">The chest.</param>
+    /// <returns><c>true</c>, if the destructible is a reward chest of this game; otherwise, <c>false</c>.</returns>
+    public bool IsRewardChest(Destructible chest)
+    {
+        return this._interimChests.ContainsKey(chest) || chest == this._finalChest;
+    }
+
+    /// <summary>
+    /// Opens the reward chest. Of the interim chests which appeared together, only one can be opened.
+    /// An interim chest contains either larvae or items, the final chest always contains items.
+    /// </summary>
+    /// <param name="player">The player who opens the chest.</param>
+    /// <param name="chest">The chest.</param>
+    public async ValueTask OpenRewardChestAsync(Player player, Destructible chest)
+    {
+        if (player.CurrentMiniGame != this
+            || !chest.IsAlive
+            || chest.GetDistanceTo(player) > MaximumChestOpenDistance)
+        {
+            return;
+        }
+
+        var containsLarvae = false;
+        if (this._interimChests.TryRemove(chest, out var group))
+        {
+            if (!group.TryOpen())
+            {
+                return;
+            }
+
+            containsLarvae = Rand.NextRandomBool(this._definition.LarvaChance);
+            foreach (var otherChest in group.Chests.Where(c => c != chest))
+            {
+                if (this._interimChests.TryRemove(otherChest, out _))
+                {
+                    await this.RemoveNpcAsync(otherChest).ConfigureAwait(false);
+                }
+            }
+        }
+        else if (chest != this._finalChest || Interlocked.Exchange(ref this._isFinalChestOpened, 1) != 0)
+        {
+            return;
+        }
+
+        this.Logger.LogDebug("{context}: {player} opened {chest}, which contains {content}.", this, player, chest, containsLarvae ? "larvae" : "items");
+
+        // The client shows the opening of the chest as its death.
+        await chest.ForEachWorldObserverAsync<IObjectGotKilledPlugIn>(p => p.ObjectGotKilledAsync(chest, player), true).ConfigureAwait(false);
+        if (containsLarvae)
+        {
+            var area = GetAreaAround(chest.Position, 2);
+            for (var i = 0; i < Math.Max(1, this._initialPlayerCount); i++)
+            {
+                await this.SpawnMonsterAsync(this._definition.LarvaNumber, area, 0, false, true).ConfigureAwait(false);
+            }
+        }
+        else
+        {
+            await this.DropChestItemsAsync(player, chest).ConfigureAwait(false);
+        }
+
+        _ = Task.Run(() => this.RemoveOpenedChestAsync(chest));
     }
 
     /// <inheritdoc />
@@ -167,52 +248,6 @@ public sealed class DoppelgangerContext : MiniGameContext
         catch (Exception ex)
         {
             this.Logger.LogError(ex, "{context}: Unexpected error in OnMonsterDied.", this);
-        }
-    }
-
-    /// <inheritdoc />
-#pragma warning disable VSTHRD100 // Avoid async void methods
-    protected override async void OnDestructibleDied(object? sender, DeathInformation e)
-#pragma warning restore VSTHRD100
-    {
-        try
-        {
-            base.OnDestructibleDied(sender, e);
-
-            if (sender is not Destructible chest
-                || !this._interimChests.TryRemove(chest, out var group)
-                || !group.TryOpen())
-            {
-                return;
-            }
-
-            // The content has to be decided before the drop of the chest is generated.
-            var containsLarvae = Rand.NextRandomBool(this._definition.LarvaChance);
-            if (containsLarvae)
-            {
-                this._dropGenerator.SuppressNextInterimChestDrop();
-            }
-
-            foreach (var otherChest in group.Chests.Where(c => c != chest))
-            {
-                if (this._interimChests.TryRemove(otherChest, out _))
-                {
-                    await this.RemoveNpcAsync(otherChest).ConfigureAwait(false);
-                }
-            }
-
-            if (containsLarvae)
-            {
-                var area = GetAreaAround(chest.Position, 2);
-                for (var i = 0; i < Math.Max(1, this._initialPlayerCount); i++)
-                {
-                    await this.SpawnMonsterAsync(this._definition.LarvaNumber, area, 0, false, true).ConfigureAwait(false);
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            this.Logger.LogError(ex, "{context}: Unexpected error in OnDestructibleDied.", this);
         }
     }
 
@@ -273,7 +308,7 @@ public sealed class DoppelgangerContext : MiniGameContext
 
         if (result == DoppelgangerResult.Success && finishers.FirstOrDefault(player => player.IsAlive) is { } firstFinisher)
         {
-            await this.SpawnDestructibleAsync(this._definition.FinalRewardChestNumber, GetAreaAround(firstFinisher.Position, 1)).ConfigureAwait(false);
+            this._finalChest = await this.SpawnDestructibleAsync(this._definition.FinalRewardChestNumber, GetAreaAround(firstFinisher.Position, 1)).ConfigureAwait(false);
         }
 
         await base.GameEndedAsync(finishers).ConfigureAwait(false);
@@ -568,12 +603,41 @@ public sealed class DoppelgangerContext : MiniGameContext
         }
     }
 
+    private async ValueTask DropChestItemsAsync(Player player, Destructible chest)
+    {
+        var (items, _) = await this.DropGenerator.GenerateItemDropsAsync(chest.Definition, 0, player).ConfigureAwait(false);
+        var owners = player.Party?.PartyList.AsEnumerable() ?? player.GetAsEnumerable();
+        var isFirstItem = true;
+        foreach (var item in items)
+        {
+            var position = isFirstItem ? chest.Position : this.Map.Terrain.GetRandomCoordinate(chest.Position, 2);
+            isFirstItem = false;
+            var droppedItem = new DroppedItem(item, position, this.Map, null, owners);
+            await this.Map.AddAsync(droppedItem).ConfigureAwait(false);
+        }
+    }
+
+    private async Task RemoveOpenedChestAsync(Destructible chest)
+    {
+        try
+        {
+            await Task.Delay(OpenedChestRemovalDelay).ConfigureAwait(false);
+            await this.RemoveNpcAsync(chest).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this.Logger.LogDebug(ex, "{context}: Failed to remove the opened chest {chest}.", this, chest);
+        }
+    }
+
     private async ValueTask<Destructible?> SpawnDestructibleAsync(short number, DoppelgangerPathArea area)
     {
         if (this.CreateSpawnArea(number, area) is not { } spawnArea)
         {
             return null;
         }
+
+        spawnArea.MaximumHealthOverride = ChestHealth;
 
         var destructible = new Destructible(spawnArea, spawnArea.MonsterDefinition!, this.Map, this, this.DropGenerator, this._gameContext.PlugInManager);
         try
