@@ -249,6 +249,7 @@ public sealed class DoppelgangerContext : MiniGameContext
             if (this._iceWalkers.TryRemove(monster, out _) && this._iceWalkers.IsEmpty)
             {
                 this.Logger.LogDebug("{context}: All ice walkers were killed.", this);
+                await this.ShowGoldenMessageAsync(nameof(PlayerMessage.DoppelgangerIceWalkerKilled)).ConfigureAwait(false);
                 await this.ForEachPlayerAsync(player => player.InvokeViewPlugInAsync<IDoppelgangerEventViewPlugIn>(p => p.HideIceWalkerAsync()).AsTask()).ConfigureAwait(false);
             }
         }
@@ -495,6 +496,7 @@ public sealed class DoppelgangerContext : MiniGameContext
             }
 
             this.Logger.LogDebug("{context}: {count} ice walkers appeared.", this, this._iceWalkers.Count);
+            await this.ShowGoldenMessageAsync(nameof(PlayerMessage.DoppelgangerIceWalkerAppeared)).ConfigureAwait(false);
             await this.ForEachPlayerAsync(player => player.InvokeViewPlugInAsync<IDoppelgangerEventViewPlugIn>(p => p.ShowIceWalkerAsync(shownPosition)).AsTask()).ConfigureAwait(false);
 
             var countdownDuration = this._definition.IceWalkerMissionDuration < IceWalkerCountdownDuration
@@ -523,6 +525,7 @@ public sealed class DoppelgangerContext : MiniGameContext
             }
 
             await this.ForEachPlayerAsync(player => player.InvokeViewPlugInAsync<IDoppelgangerEventViewPlugIn>(p => p.HideIceWalkerAsync()).AsTask()).ConfigureAwait(false);
+            await this.ShowGoldenMessageAsync(nameof(PlayerMessage.DoppelgangerIceWalkerEscaped)).ConfigureAwait(false);
         }
         catch (OperationCanceledException)
         {
