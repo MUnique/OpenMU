@@ -96,10 +96,10 @@ public class NewPlayersInScopePlugIn075 : INewPlayersInScopePlugIn
             playerBlock.CurrentPositionX = transformedPlayer.Position.X;
             playerBlock.CurrentPositionY = transformedPlayer.Position.Y;
 
-            playerBlock.IsPoisoned = transformedPlayer.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.Poisoned);
-            playerBlock.IsIced = transformedPlayer.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.Iced);
-            playerBlock.IsDamageBuffed = transformedPlayer.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.DamageBuff);
-            playerBlock.IsDefenseBuffed = transformedPlayer.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.DefenseBuff);
+            playerBlock.IsPoisoned = transformedPlayer.MagicEffectList.ContainsEffect(EffectNumbers.Poisoned);
+            playerBlock.IsIced = transformedPlayer.MagicEffectList.ContainsEffect(EffectNumbers.Iced);
+            playerBlock.IsDamageBuffed = transformedPlayer.MagicEffectList.ContainsEffect(EffectNumbers.DamageBuff);
+            playerBlock.IsDefenseBuffed = transformedPlayer.MagicEffectList.ContainsEffect(EffectNumbers.DefenseBuff);
             playerBlock.Name = transformedPlayer.SelectedCharacter!.Name;
 
             if (transformedPlayer.IsWalking)
@@ -145,10 +145,10 @@ public class NewPlayersInScopePlugIn075 : INewPlayersInScopePlugIn
             playerBlock.CurrentPositionY = newPlayer.Position.Y;
             appearanceSerializer.WriteAppearanceData(playerBlock.Appearance, newPlayer.AppearanceData, true); // 4 ... 12
 
-            playerBlock.IsPoisoned = newPlayer.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.Poisoned);
-            playerBlock.IsIced = newPlayer.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.Iced);
-            playerBlock.IsDamageBuffed = newPlayer.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.DamageBuff);
-            playerBlock.IsDefenseBuffed = newPlayer.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.DefenseBuff);
+            playerBlock.IsPoisoned = newPlayer.MagicEffectList.ContainsEffect(EffectNumbers.Poisoned);
+            playerBlock.IsIced = newPlayer.MagicEffectList.ContainsEffect(EffectNumbers.Iced);
+            playerBlock.IsDamageBuffed = newPlayer.MagicEffectList.ContainsEffect(EffectNumbers.DamageBuff);
+            playerBlock.IsDefenseBuffed = newPlayer.MagicEffectList.ContainsEffect(EffectNumbers.DefenseBuff);
             playerBlock.Name = newPlayer.SelectedCharacter!.Name;
 
             if (newPlayer.IsWalking)

@@ -37,8 +37,19 @@ public class ObservableGameServerAdapter : Disposable, IObservableGameServer
     /// <summary>
     /// Initializes this instance.
     /// </summary>
-    public async ValueTask InitializeAsync()
+    /// <param name="withMapInfos">
+    /// If set to <c>true</c> (the default), an <see cref="IGameMapInfo"/> is created and kept up-to-date for
+    /// each hosted map, so that <see cref="Maps"/> is populated. That's a rather expensive operation, because
+    /// it attaches to the events of every live game map. Pass <c>false</c> if you just need to register map
+    /// observers and don't access <see cref="Maps"/>.
+    /// </param>
+    public async ValueTask InitializeAsync(bool withMapInfos = true)
     {
+        if (!withMapInfos)
+        {
+            return;
+        }
+
         foreach (var map in await this._gameContext.GetMapsAsync().ConfigureAwait(false))
         {
             var mapAdapter = await this.CreateMapAdapterAsync(map).ConfigureAwait(false);
@@ -88,6 +99,17 @@ public class ObservableGameServerAdapter : Disposable, IObservableGameServer
         base.Dispose(disposing);
         this._gameContext.GameMapCreated -= this.OnGameMapCreated;
         this._gameContext.GameMapRemoved -= this.OnGameMapRemoved;
+
+        // The map adapters are subscribed to the events of the long-living game maps.
+        // If we don't dispose them here, they stay subscribed forever - which is not just a
+        // memory leak, but also slows down the game loop with each leaked instance.
+        foreach (var mapInfo in this._gameMapInfos)
+        {
+            mapInfo.PropertyChanged -= this.OnMapPropertyChanged;
+            (mapInfo as IDisposable)?.Dispose();
+        }
+
+        this._gameMapInfos.Clear();
     }
 
     /// <summary>
@@ -124,6 +146,14 @@ public class ObservableGameServerAdapter : Disposable, IObservableGameServer
             }
 
             var map = await this.CreateMapAdapterAsync(gameMap).ConfigureAwait(false);
+            if (this.IsDisposed || this.IsDisposing)
+            {
+                // We got disposed while the adapter was created - don't leave it subscribed to the map.
+                map.PropertyChanged -= this.OnMapPropertyChanged;
+                map.Dispose();
+                return;
+            }
+
             this._gameMapInfos.Add(map);
             this.RaisePropertyChanged(nameof(this.Maps));
         }

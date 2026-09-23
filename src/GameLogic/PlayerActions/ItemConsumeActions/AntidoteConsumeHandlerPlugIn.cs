@@ -27,7 +27,7 @@ public class AntidoteConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn
     {
         if (await base.ConsumeItemAsync(player, item, targetItem, fruitUsage).ConfigureAwait(false))
         {
-            if (player.MagicEffectList.ActiveEffects.TryGetValue(PoisonEffectNumber, out var effect))
+            if (player.MagicEffectList.TryGetEffect(PoisonEffectNumber, out var effect))
             {
                 effect.Dispose();
             }

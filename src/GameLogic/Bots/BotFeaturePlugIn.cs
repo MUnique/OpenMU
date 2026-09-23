@@ -373,6 +373,29 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
         {
             logger.LogError(ex, "Failed to form bot parties.");
         }
+
+        this.LogBufferShortage(state, logger);
+    }
+
+    /// <summary>
+    /// Warns when the population holds fewer buffers than parties need.
+    /// Happens with populations generated before buffer planning:
+    /// parties refuse to form without a buffer, so most bots hunt solo
+    /// until the population is regenerated with Reset bots.
+    /// </summary>
+    private void LogBufferShortage(ServerState state, ILogger logger)
+    {
+        var online = state.Manager.BotCount;
+        var buffers = state.Manager.Bots.Count(BotBuild.IsSupportElf);
+        var needed = BotPartyPolicy.EstimatePartyCount(online);
+        if (online > 0 && buffers < needed)
+        {
+            logger.LogWarning(
+                "Only {Buffers} of {Online} bots are buffers, but parties need about {Needed}. Set Reset bots to regenerate the population.",
+                buffers,
+                online,
+                needed);
+        }
     }
 
     /// <summary>

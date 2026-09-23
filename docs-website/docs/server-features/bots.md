@@ -260,8 +260,11 @@ event; the survivors are warped out when the event ends.
 ### Company and rhythm
 
 Bots hunt in parties of two to five, grouped by level so the whole party can
-hunt the leader's maps. The elf heals, the buffs are shared, the party
-experience bonus applies. Parties re-form every hour.
+hunt the leader's maps. Each party holds exactly one energy elf buffer and
+one of each build at most, and buffers group up whenever a party can be
+formed around them. Generation sizes the buffer count to the expected party
+count. The elf heals, the buffs are shared,
+the party experience bonus applies. Parties re-form every hour.
 
 A player may invite a bot into their own party: it accepts after a human-like
 pause of a few seconds, as long as it is not in the middle of an errand. There is
@@ -334,6 +337,11 @@ hash dominates); starting an existing one of 1100 bots takes some 15 seconds.
   it before a restart.** Deliberate: moving a bot between two running servers
   would animate one account from two persistence contexts, which corrupts the
   character.
+- **Populations generated before buffer-planned parties hold too few
+  buffers.** Parties need one buffer each and refuse to form without one,
+  so an old population mostly hunts solo. Set `Reset bots` to regenerate
+  with the planned buffer count; the server log warns at startup while
+  buffers are short.
 
 ## Enabling it on a server
 

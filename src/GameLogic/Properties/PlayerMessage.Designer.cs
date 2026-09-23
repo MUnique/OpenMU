@@ -988,6 +988,69 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Killed {0} monster(s)..
+        /// </summary>
+        public static string KillAllMonstersFormat {
+            get {
+                return ResourceManager.GetString("KillAllMonstersFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You need to be inside a mini game event to skip the waiting time..
+        /// </summary>
+        public static string SkipWaitNotInMiniGame {
+            get {
+                return ResourceManager.GetString("SkipWaitNotInMiniGame", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The current waiting time was skipped..
+        /// </summary>
+        public static string SkipWaitRequested {
+            get {
+                return ResourceManager.GetString("SkipWaitRequested", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The waiting time was skipped by {0}. The event continues!..
+        /// </summary>
+        public static string SkipWaitAnnouncedFormat {
+            get {
+                return ResourceManager.GetString("SkipWaitAnnouncedFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is currently no waiting time to skip. The event is already running..
+        /// </summary>
+        public static string SkipWaitNothingToSkip {
+            get {
+                return ResourceManager.GetString("SkipWaitNothingToSkip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The running {0} event was stopped. A new run will start soon..
+        /// </summary>
+        public static string MiniGameForceRestartFormat {
+            get {
+                return ResourceManager.GetString("MiniGameForceRestartFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} will start soon..
+        /// </summary>
+        public static string MiniGameForceStartInitiatedFormat {
+            get {
+                return ResourceManager.GetString("MiniGameForceStartInitiatedFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} starts in {1} minutes..
         /// </summary>
         public static string MiniGameStartsInMinutesFormat {
