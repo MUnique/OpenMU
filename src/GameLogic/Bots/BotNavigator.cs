@@ -1868,6 +1868,9 @@ internal sealed class BotNavigator : AsyncDisposable
     /// probabilistic. This fail-closed policy can reject a configured gate with many usable coordinates
     /// and one bad coordinate; keeping that trade-off local avoids changing map-transition behavior for
     /// other warp features.
+    /// The reverse flood fill can inspect the whole map, whereas the travel pathfinder stops after
+    /// <see cref="TravelSearchLimit"/> expanded nodes. A gate whose shortest landing route already exceeds
+    /// that budget is therefore rejected before warping.
     /// </remarks>
     private WarpInfo? FindBestReachableLegalWarp(GameMap map, Point target, CancellationToken cancellationToken)
     {
@@ -1905,6 +1908,7 @@ internal sealed class BotNavigator : AsyncDisposable
             {
                 var worstCaseDistance = this.GetWorstLandingDistance(candidate.LandingPoints, distancesFromTarget, width);
                 if (worstCaseDistance is null
+                    || worstCaseDistance > TravelSearchLimit
                     || worstCaseDistance > bestWorstCaseDistance
                     || (worstCaseDistance == bestWorstCaseDistance
                         && bestWarp?.Gate is { } bestGate

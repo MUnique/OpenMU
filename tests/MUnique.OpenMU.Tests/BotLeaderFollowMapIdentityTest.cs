@@ -310,6 +310,38 @@ public class BotLeaderFollowMapIdentityTest
     }
 
     /// <summary>
+    /// Flood fill can see a path across a large connected region after the travel pathfinder would exhaust
+    /// its search budget. Such a gate must be rejected before the follower warps to it.
+    /// </summary>
+    [Test]
+    public async ValueTask SameMapFollowerRejectsGateBeyondTravelSearchLimitAsync()
+    {
+        var gameContext = GameContextTestHelper.CreateGameContext();
+        var bot = await PlayerTestHelper.CreateOfflineLevelingPlayerAsync(gameContext).ConfigureAwait(false);
+        var leader = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        var navigator = new BotNavigator(bot);
+        var mapChangeRecorder = new MapChangeRecordingPlugIn(bot);
+        gameContext.PlugInManager.RegisterPlugInAtPlugInPoint<IPlayerStateChangedPlugIn>(mapChangeRecorder);
+
+        var mapDefinition = CreateLongConnectedSnakeMap(4);
+        gameContext.Configuration.Maps.Add(mapDefinition);
+        var map = new GameMap(mapDefinition, TimeSpan.FromMinutes(1), 8);
+        gameContext.Configuration.WarpList.Add(CreateWarpInfo("SnakeGate", CreateGate(mapDefinition, 100, 14)));
+
+        bot.Attributes![Stats.Level] = 100;
+        bot.SetCurrentMapSilently(map);
+        bot.SelectedCharacter!.CurrentMap = mapDefinition;
+        bot.SelectedCharacter.PositionX = 0;
+        bot.SelectedCharacter.PositionY = 0;
+        leader.SetCurrentMapSilently(map);
+        leader.Position = new Point(0, 218);
+
+        await navigator.TryRegroupWithLeaderOnSameMapAsync(map, leader, CancellationToken.None).ConfigureAwait(false);
+
+        Assert.That(mapChangeRecorder.MapChangeCount, Is.Zero, "the follower must not warp beyond its travel search budget");
+    }
+
+    /// <summary>
     /// Every coordinate which the production warp can select must be safe: a gate with one blocked
     /// landing point is rejected even if its other point can reach the leader.
     /// </summary>
@@ -500,6 +532,37 @@ public class BotLeaderFollowMapIdentityTest
         {
             MarkWalkable(terrain, (byte)x, 200);
             MarkWalkable(terrain, (byte)x, 201);
+        }
+
+        return new MUnique.OpenMU.Persistence.BasicModel.GameMapDefinition
+        {
+            Id = Guid.NewGuid(),
+            Number = number,
+            TerrainData = terrain,
+        };
+    }
+
+    private static GameMapDefinition CreateLongConnectedSnakeMap(byte number)
+    {
+        var terrain = new byte[ushort.MaxValue + 3];
+        Array.Fill(terrain, (byte)4, 3, ushort.MaxValue);
+
+        const int lastCorridorY = 218;
+        var corridorIndex = 0;
+        for (var y = 0; y <= lastCorridorY; y += 2)
+        {
+            for (var x = 0; x <= byte.MaxValue; x++)
+            {
+                MarkWalkable(terrain, (byte)x, (byte)y);
+            }
+
+            if (y < lastCorridorY)
+            {
+                var connectorX = corridorIndex % 2 == 0 ? byte.MaxValue : (byte)0;
+                MarkWalkable(terrain, connectorX, (byte)(y + 1));
+            }
+
+            corridorIndex++;
         }
 
         return new MUnique.OpenMU.Persistence.BasicModel.GameMapDefinition
