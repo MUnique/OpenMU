@@ -1,0 +1,45 @@
+/* Main content area and the top row bar, including its responsive behavior on small screens. */
+.main {
+  flex: 1;
+}
+
+.main .top-row {
+  background-color: var(--omu-surface-muted);
+  border-bottom: 1px solid var(--omu-border);
+  justify-content: flex-end;
+}
+
+.main .top-row > a, .main .top-row .btn-link {
+  white-space: nowrap;
+  margin-left: 1.5rem;
+}
+
+.main .top-row a:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 767.98px) {
+  .main .top-row:not(.auth) {
+    display: none;
+  }
+
+  .main .top-row.auth {
+    justify-content: space-between;
+  }
+
+  .main .top-row a, .main .top-row .btn-link {
+    margin-left: 0;
+  }
+}
+
+@media (min-width: 768px) {
+  .main .top-row {
+    top: 0;
+  }
+
+  .main > div {
+    padding-left: 2rem;
+    padding-right: 1.5rem;
+  }
+}

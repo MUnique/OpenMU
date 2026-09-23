@@ -8,6 +8,7 @@ using System.Buffers;
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
+using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
@@ -32,11 +33,8 @@ internal sealed class BotNavigator : AsyncDisposable
     /// </summary>
     private const int WarpImprovementMargin = 8;
 
-    /// <summary>
-    /// Below this level a bot never warps: it stays on its class starting map (e.g. elves in Noria,
-    /// summoners in Elvenland), so the newbie maps stay populated instead of everyone drifting to one map.
-    /// </summary>
-    private const int MinWarpLevel = 30;
+    /// <summary>Fallback when the server defines no warps: the lowest stock requirement.</summary>
+    private const int FallbackMinWarpLevel = 10;
 
     /// <summary>Width of the level band of areas we randomize between, so bots don't all stack on one spot.</summary>
     private const int BandWidth = 3;
@@ -299,6 +297,9 @@ internal sealed class BotNavigator : AsyncDisposable
     /// </summary>
     private DateTime _nextShoppingCheckUtc = DateTime.UtcNow + (ShoppingCooldown * Rand.NextDouble());
     private DateTime? _resetDueAtUtc;
+    private GameConfiguration? _warpFloorConfiguration;
+    private CharacterClass? _warpFloorClass;
+    private int _minWarpLevel = FallbackMinWarpLevel;
     private Guid _leaderMapId;
     private DateTimeOffset _leaderOnMapSinceUtc = DateTimeOffset.MinValue;
 
@@ -727,6 +728,11 @@ internal sealed class BotNavigator : AsyncDisposable
         {
             this._nextEquipCheckUtc = DateTime.UtcNow + EquipCheckInterval;
             this._player.PendingBotActions.Enqueue(() => BotEquipmentHandler.TryEquipUpgradesAsync(this._player));
+
+            // Looted skill orbs and scrolls are consumed into new skills like a human would (see
+            // BotSkillHandler). Queued for the same reason: learning mutates the skill list the combat
+            // handler may be enumerating on its own timer.
+            this._player.PendingBotActions.Enqueue(() => BotSkillHandler.TryLearnSkillsAsync(this._player));
 
             // Wings don't drop, so the loot-driven equipment progression above never provides them;
             // they are earned at the classic level milestones instead (see BotWingHandler). Queued
@@ -1447,7 +1453,7 @@ internal sealed class BotNavigator : AsyncDisposable
         // ground to earn its way back up, instead of walking between hunting grounds forever.
         var mapIsBarren = DateTime.UtcNow - this._player.LastAttackUtc > BarrenMapDuration;
 
-        if ((plainLevel < MinWarpLevel && !mustEscape && !mapIsBarren)
+        if ((plainLevel < this.GetMinWarpLevel() && !mustEscape && !mapIsBarren)
             || this._timeProvider.GetUtcNow() - this._lastWarpUtc < WarpCooldown)
         {
             return false;
@@ -2022,6 +2028,29 @@ internal sealed class BotNavigator : AsyncDisposable
         // which is too high-level could incorrectly fall through to an easier same-number entry.
         var plainLevel = (int)(this._player.Attributes?[Stats.Level] ?? 1);
         return mapWarps.Where(w => character.GetEffectiveMoveLevelRequirement(w.LevelRequirement) <= plainLevel);
+    }
+
+    /// <summary>
+    /// Lowest level at which this bot warps on its own: its lowest
+    /// class-reduced warp requirement, so special classes keep their edge.
+    /// Cached per configuration and class; both change rarely.
+    /// </summary>
+    private int GetMinWarpLevel()
+    {
+        var configuration = this._player.GameContext.Configuration;
+        var characterClass = this._player.SelectedCharacter?.CharacterClass;
+        if (!ReferenceEquals(configuration, this._warpFloorConfiguration)
+            || !ReferenceEquals(characterClass, this._warpFloorClass))
+        {
+            this._warpFloorConfiguration = configuration;
+            this._warpFloorClass = characterClass;
+            this._minWarpLevel = configuration.WarpList
+                .Select(warp => this._player.SelectedCharacter?.GetEffectiveMoveLevelRequirement(warp.LevelRequirement) ?? warp.LevelRequirement)
+                .DefaultIfEmpty(FallbackMinWarpLevel)
+                .Min();
+        }
+
+        return this._minWarpLevel;
     }
 
     /// <summary>

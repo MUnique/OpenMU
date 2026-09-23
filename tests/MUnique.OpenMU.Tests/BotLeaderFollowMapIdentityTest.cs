@@ -324,8 +324,7 @@ public class BotLeaderFollowMapIdentityTest
         var mapDefinition = CreateMapWithMisleadingCloserGate(4);
         gameContext.Configuration.Maps.Add(mapDefinition);
         var map = new GameMap(mapDefinition, TimeSpan.FromMinutes(1), 8);
-        map.Terrain.WalkMap[191, 200] = false;
-        map.Terrain.UpdateAiGridValue(191, 200);
+        map.Terrain.ApplyTerrainAttribute(191, 200, TerrainAttributeType.Blocked, true);
         var partiallyBlockedGate = CreateGate(mapDefinition, 190, 200);
         partiallyBlockedGate.X2 = 192;
         var fallbackGate = CreateGate(mapDefinition, 150, 200);

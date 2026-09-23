@@ -14,7 +14,6 @@ using NUnit.Framework;
 [TestFixture]
 public class BotSkillRepertoireTest
 {
-    private static readonly IReadOnlySet<short> NoItemGrantedSkills = new HashSet<short>();
     /// <summary>
     /// Tests that the castle siege skills are refused. They carry the highest damage numbers of their
     /// classes, so a "strongest first" rule walks straight into them, and the game activates them
@@ -32,7 +31,7 @@ public class BotSkillRepertoireTest
     {
         var skill = CreateAttackSkill(skillNumber, attackDamage: 120, name: name);
 
-        Assert.That(BotProgression.IsBotLearnableSkill(skill, NoItemGrantedSkills), Is.False);
+        Assert.That(BotProgression.MayBotOwnSkill(skill), Is.False);
     }
 
     /// <summary>
@@ -45,7 +44,7 @@ public class BotSkillRepertoireTest
     {
         var stun = CreateAttackSkill(67, attackDamage: 0, skillType: SkillType.AreaSkillAutomaticHits, name: "Stun");
 
-        Assert.That(BotProgression.IsBotLearnableSkill(stun, NoItemGrantedSkills), Is.False);
+        Assert.That(BotProgression.MayBotOwnSkill(stun), Is.False);
     }
 
     /// <summary>
@@ -60,7 +59,7 @@ public class BotSkillRepertoireTest
     {
         var chainDrive = CreateAttackSkill(262, attackDamage: 0, hits: 4, name: "Chain Drive");
 
-        Assert.That(BotProgression.IsBotLearnableSkill(chainDrive, NoItemGrantedSkills), Is.True);
+        Assert.That(BotProgression.MayBotOwnSkill(chainDrive), Is.True);
     }
 
     /// <summary>
@@ -72,7 +71,7 @@ public class BotSkillRepertoireTest
     {
         var tripleShot = CreateAttackSkill(24, attackDamage: 0, skillType: SkillType.AreaSkillAutomaticHits, name: "Triple Shot");
 
-        Assert.That(BotProgression.IsBotLearnableSkill(tripleShot, NoItemGrantedSkills), Is.True);
+        Assert.That(BotProgression.MayBotOwnSkill(tripleShot), Is.True);
     }
 
     /// <summary>
@@ -84,7 +83,7 @@ public class BotSkillRepertoireTest
     {
         var lunge = CreateAttackSkill(20, attackDamage: 0, name: "Lunge");
 
-        Assert.That(BotProgression.IsBotLearnableSkill(lunge, NoItemGrantedSkills), Is.False);
+        Assert.That(BotProgression.MayBotOwnSkill(lunge), Is.False);
     }
 
     /// <summary>
@@ -95,7 +94,7 @@ public class BotSkillRepertoireTest
     {
         var evilSpirit = CreateAttackSkill(9, attackDamage: 45, name: "Evil Spirit");
 
-        Assert.That(BotProgression.IsBotLearnableSkill(evilSpirit, NoItemGrantedSkills), Is.True);
+        Assert.That(BotProgression.MayBotOwnSkill(evilSpirit), Is.True);
     }
 
     /// <summary>

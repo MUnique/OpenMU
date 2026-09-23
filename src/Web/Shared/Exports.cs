@@ -42,7 +42,17 @@ public static class Exports
     {
         get
         {
-            yield return $"{GetPrefix()}/css/shared.css";
+            var prefix = GetPrefix();
+            yield return $"{prefix}/css/bootstrap.min.css";
+            yield return $"{prefix}/css/open-iconic/font/css/open-iconic-bootstrap.min.css";
+            yield return $"{prefix}/css/theme.css";
+            yield return $"{prefix}/css/navigation.css";
+            yield return $"{prefix}/css/main.css";
+            yield return $"{prefix}/css/forms.css";
+            yield return $"{prefix}/css/tables.css";
+            yield return $"{prefix}/css/common.css";
+            yield return $"{prefix}/css/log.css";
+            yield return $"{prefix}/css/map-editor.css";
         }
     }
 

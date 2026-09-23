@@ -5,30 +5,24 @@
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
 using System.Runtime.InteropServices;
-using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// A chat command plugin which handles the startcc command.
+/// If an event is already running, it is stopped (all players are removed from it) and
+/// a new event starts with fresh instances.
 /// </summary>
 [Guid("A990270E-B9C6-4445-BBA9-56367A90D31D")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.StartChaosCastleEventChatCommandPlugIn_Name), Description = nameof(PlugInResources.StartChaosCastleEventChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, CharacterStatus.GameMaster)]
-public class StartChaosCastleEventChatCommandPlugIn : IChatCommandPlugIn
+public class StartChaosCastleEventChatCommandPlugIn : StartMiniGameEventChatCommandPlugInBase
 {
     private const string Command = "/startcc";
 
     /// <inheritdoc />
-    public string Key => Command;
-
-    /// <inheritdoc/>
-    public CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
+    public override string Key => Command;
 
     /// <inheritdoc />
-    public async ValueTask HandleCommandAsync(Player player, string command)
-    {
-        var chaosCastle = player.GameContext.PlugInManager.GetStrategy<MiniGameType, IPeriodicMiniGameStartPlugIn>(MiniGameType.ChaosCastle);
-        chaosCastle?.ForceStart();
-    }
+    protected override MiniGameType MiniGameType => MiniGameType.ChaosCastle;
 }

@@ -8,3 +8,6 @@
 *.cs text
 *.csproj text
 *.sln text
+
+# Generated docs use LF (see GenerateMarkdownDocs.xslt)
+docs/Packets/*.md text eol=lf
