@@ -296,6 +296,16 @@ public class MagicEffectsList : AsyncDisposable
     {
         lock (this._sync)
         {
+            // Identity-aware: the entry may have been replaced since this
+            // effect started expiring (see UpdateEffect). Only tear down
+            // what is ours — a replacement owns the id now, its power-ups
+            // stay applied, and no deactivate is sent for it. Whoever
+            // replaced or force-removed the entry already did its cleanup.
+            if (!this._activeEffects.TryGetValue(effect.Id, out var current) || !ReferenceEquals(current, effect))
+            {
+                return;
+            }
+
             this._activeEffects.Remove(effect.Id);
             this._contains[effect.Id] = false;
         }
