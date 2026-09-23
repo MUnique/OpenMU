@@ -62,6 +62,10 @@ internal class DoppelgangerDataTest
             map.SafezoneMap = map;
         }
 
+        // The original entrance gate of the first event map, which contains non-walkable coordinates.
+        var entrance = gameConfiguration.Maps.Single(map => map.Number == 65).ExitGates.Single(gate => gate.IsSpawnGate);
+        (entrance.X1, entrance.Y1, entrance.X2, entrance.Y2) = ((byte)193, (byte)26, (byte)200, (byte)32);
+
         var update = new AddDoppelgangerDataUpdatePlugIn();
         await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
         await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
@@ -118,5 +122,16 @@ internal class DoppelgangerDataTest
         Assert.That(
             gameConfiguration.Maps.Where(map => EventMapNumbers.Contains(map.Number)).Select(map => map.SafezoneMap?.Number),
             Has.All.EqualTo(ElvenlandNumber));
+        Assert.That(
+            gameConfiguration.Maps.Where(map => EventMapNumbers.Contains(map.Number))
+                .Select(map => map.ExitGates.Single(gate => gate.IsSpawnGate))
+                .Select(gate => (gate.Map!.Number, gate.X1, gate.Y1, gate.X2, gate.Y2)),
+            Is.EquivalentTo(new (short, byte, byte, byte, byte)[]
+            {
+                (65, 194, 26, 199, 32),
+                (66, 134, 69, 139, 74),
+                (67, 106, 60, 111, 62),
+                (68, 92, 13, 97, 17),
+            }));
     }
 }

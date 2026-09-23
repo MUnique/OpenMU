@@ -17,7 +17,9 @@ using MUnique.OpenMU.PlugIns;
 /// <remarks>
 /// It adds the Mirror of Dimensions as entrance ticket, the monsters and the <see cref="MiniGameDefinition"/>s,
 /// opens the entrance window when talking to Lugard, and lets players who die inside the
-/// event maps respawn at Elvenland.
+/// event maps respawn at Elvenland. Additionally, it reduces the entrance gates of the event maps
+/// to their walkable part, because players who got placed on a non-walkable coordinate were
+/// warped out of the event.
 /// </remarks>
 [PlugIn]
 [Display(Name = PlugInName, Description = PlugInDescription)]
@@ -71,6 +73,10 @@ public class AddDoppelgangerDataUpdatePlugIn : UpdatePlugInBase
         foreach (var map in gameConfiguration.Maps.Where(map => map.Number is >= Doppelgaenger1.Number and <= Doppelgaenger4.Number))
         {
             map.SafezoneMap = elvenland;
+            if (map.ExitGates.FirstOrDefault(gate => gate.IsSpawnGate) is { } entrance)
+            {
+                (entrance.X1, entrance.Y1, entrance.X2, entrance.Y2) = GetWalkableEntranceArea(map.Number);
+            }
         }
 
         if (!gameConfiguration.Monsters.Any(monster => monster.Number == DoppelgangerMonsters.FirstMonsterNumber))
@@ -84,5 +90,17 @@ public class AddDoppelgangerDataUpdatePlugIn : UpdatePlugInBase
         }
 
         return ValueTask.CompletedTask;
+    }
+
+    private static (byte X1, byte Y1, byte X2, byte Y2) GetWalkableEntranceArea(short mapNumber)
+    {
+        return mapNumber switch
+        {
+            Doppelgaenger1.Number => (194, 26, 199, 32),
+            Doppelgaenger2.Number => (134, 69, 139, 74),
+            Doppelgaenger3.Number => (106, 60, 111, 62),
+            Doppelgaenger4.Number => (92, 13, 97, 17),
+            _ => throw new ArgumentOutOfRangeException(nameof(mapNumber), mapNumber, null),
+        };
     }
 }
