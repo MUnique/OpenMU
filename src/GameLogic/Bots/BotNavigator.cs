@@ -417,10 +417,9 @@ internal sealed class BotNavigator : AsyncDisposable
     /// </summary>
     /// <param name="map">The bot's current map.</param>
     /// <param name="leader">The party leader.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>True, if evaluation should stop because a follow action was taken or the leader is on
     /// another map; false, if the bot can continue its normal local behavior.</returns>
-    internal async ValueTask<bool> TryHandleCrossMapLeaderFollowAsync(GameMap map, Player leader, CancellationToken cancellationToken)
+    internal async ValueTask<bool> TryHandleCrossMapLeaderFollowAsync(GameMap map, Player leader)
     {
         if (ReferenceEquals(leader.CurrentMap, map))
         {
@@ -490,6 +489,10 @@ internal sealed class BotNavigator : AsyncDisposable
     /// <param name="leader">The party leader to regroup with.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>True if a walk or warp was performed; otherwise false.</returns>
+    /// <remarks>
+    /// The result is observed by focused regression tests. Production follower hunting returns after
+    /// the regroup attempt regardless of whether an action was available.
+    /// </remarks>
     internal async ValueTask<bool> TryRegroupWithLeaderOnSameMapAsync(GameMap map, Player leader, CancellationToken cancellationToken)
     {
         // Discard any previous hunting destination before resolving the moving leader again. Only
@@ -860,7 +863,7 @@ internal sealed class BotNavigator : AsyncDisposable
         // if the leader idles in town or is wedged, its followers idle with him.
         if (leaderToFollow is not null)
         {
-            if (await this.TryHandleCrossMapLeaderFollowAsync(map, leaderToFollow, cancellationToken).ConfigureAwait(false))
+            if (await this.TryHandleCrossMapLeaderFollowAsync(map, leaderToFollow).ConfigureAwait(false))
             {
                 return;
             }
@@ -1349,7 +1352,9 @@ internal sealed class BotNavigator : AsyncDisposable
         // Nothing to fight around the leader: only now close back into formation.
         if (this._player.GetDistanceTo(leader.Position) > PartyRegroupDistance)
         {
-            await this.TryRegroupWithLeaderOnSameMapAsync(map, leader, cancellationToken).ConfigureAwait(false);
+            // The result is used by direct regression tests. This production flow returns after the
+            // regroup attempt either way, so there is no subsequent behavior to condition on it.
+            _ = await this.TryRegroupWithLeaderOnSameMapAsync(map, leader, cancellationToken).ConfigureAwait(false);
             return;
         }
 
@@ -1563,7 +1568,8 @@ internal sealed class BotNavigator : AsyncDisposable
         CancellationToken cancellationToken)
     {
         // Observe the navigator's shutdown token while queuing for a shared pathfinder: on disposal the
-        // wait is abandoned at once instead of holding the tick until a finder frees up.
+        // wait is abandoned at once instead of holding the tick until a finder frees up. Cancellation from
+        // this wait or FindPath is expected during shutdown and handled by SafeEvaluateAsync.
         await TravelPathFinderPool.WaitAsync(cancellationToken).ConfigureAwait(false);
         PathFinder? finder = null;
         try
@@ -1887,6 +1893,7 @@ internal sealed class BotNavigator : AsyncDisposable
         // Movement on the walk map is bidirectional. One reverse flood fill from the leader therefore
         // gives both reachability and shortest distance for every possible gate landing point, without
         // acquiring a full-map pathfinder once per point.
+        // Cancellation from this flood fill is expected during shutdown and handled by SafeEvaluateAsync.
         cancellationToken.ThrowIfCancellationRequested();
         var walkMap = map.Terrain.WalkMap;
         var width = walkMap.GetLength(0);

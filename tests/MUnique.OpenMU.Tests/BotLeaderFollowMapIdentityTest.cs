@@ -22,12 +22,11 @@ using MUnique.OpenMU.Pathfinding;
 public class BotLeaderFollowMapIdentityTest
 {
     /// <summary>
-    /// Multi-level maps can share a map number while using distinct map definitions/terrain. The
-    /// follower must treat such a transition as a new leader location and wait for the settle delay
-    /// again, otherwise it may follow using stale state from the previous floor.
+    /// Leader settle state is keyed by runtime map identity. Moving the leader to another runtime map
+    /// instance must restart the settle delay instead of reusing state from the previous instance.
     /// </summary>
     [Test]
-    public async ValueTask LeaderSettleTrackingDistinguishesMapsWithSameNumberAsync()
+    public async ValueTask LeaderSettleTrackingResetsForDifferentRuntimeMapInstanceAsync()
     {
         var gameContext = GameContextTestHelper.CreateGameContext();
         var bot = await PlayerTestHelper.CreateOfflineLevelingPlayerAsync(gameContext).ConfigureAwait(false);
@@ -137,7 +136,7 @@ public class BotLeaderFollowMapIdentityTest
         leader.SetCurrentMapSilently(map);
         leader.Position = new Point(200, 200);
 
-        var consumed = await navigator.TryHandleCrossMapLeaderFollowAsync(map, leader, CancellationToken.None).ConfigureAwait(false);
+        var consumed = await navigator.TryHandleCrossMapLeaderFollowAsync(map, leader).ConfigureAwait(false);
 
         Assert.That(consumed, Is.False);
         Assert.That(mapChangeRecorder.MapChangeCount, Is.Zero);
