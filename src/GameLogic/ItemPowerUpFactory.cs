@@ -309,7 +309,8 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
                 }
             }
 
-            var durabilityFactor = (option.OptionType == ItemOptionTypes.Option && !item.IsJewelry()) || option.OptionType == ItemOptionTypes.AncientBonus
+            var durabilityFactor = option.OptionType == ItemOptionTypes.AncientBonus ||
+                    (option.OptionType == ItemOptionTypes.Option && powerUp.TargetAttribute != Stats.HealthRecoveryMultiplier && !item.IsJewelry())
                 ? item.GetCurrentDurabilityFactor() : 1.0f;
             foreach (var wrapper in PowerUpWrapper.CreateByPowerUpDefinition(powerUp, attributeHolder, aggregateType, durabilityFactor))
             {
