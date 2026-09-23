@@ -184,6 +184,18 @@ public static class ItemExtensions
     }
 
     /// <summary>
+    /// Determines whether this item is a transformation ring.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <returns>
+    ///   <c>true</c> if the specified item is a transformation ring; otherwise, <c>false</c>.
+    /// </returns>
+    public static bool IsTransformationRing(this Item item)
+    {
+        return item.Definition?.BasePowerUpAttributes.Any(pu => pu.TargetAttribute == Stats.TransformationSkin) ?? false;
+    }
+
+    /// <summary>
     /// Determines whether this item is an armor item.
     /// </summary>
     /// <param name="item">The item.</param>
@@ -272,7 +284,7 @@ public static class ItemExtensions
     /// </returns>
     public static bool DegradesWithDurability(this Item item)
     {
-        return item.ItemSlot != InventoryConstants.PetSlot && !item.IsTrainablePet();
+        return item.ItemSlot != InventoryConstants.PetSlot && !item.IsTrainablePet() && !item.IsTransformationRing();
     }
 
     /// <summary>

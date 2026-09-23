@@ -16,18 +16,9 @@ using MUnique.OpenMU.PlugIns;
 [Guid("D8F4A1C7-3B9E-4D2F-A6C5-1E7B8F3A9C2D")]
 public class DurabilityDecayPlugIn : IPeriodicTaskPlugIn
 {
-    private int _counter = 0;
-
     /// <inheritdoc />
     public async ValueTask ExecuteTaskAsync(GameContext gameContext)
     {
-        if (this._counter++ < 10)
-        {
-            return;
-        }
-
-        this._counter = 0;
-
         await gameContext.ForEachPlayerAsync(async player =>
         {
             if (player.SelectedCharacter != null
@@ -45,15 +36,15 @@ public class DurabilityDecayPlugIn : IPeriodicTaskPlugIn
                             continue;
                         }
 
-                        var isTransformationRing = item.Definition?.BasePowerUpAttributes.Any(pu => pu.TargetAttribute == Stats.TransformationSkin) ?? false;
+                        var isTransformationRing = item.IsTransformationRing();
                         if (attributes[Stats.IsInSafezone] < 1 || isTransformationRing || item.IsWing())
                         {
                             double decrementWeight = identifier switch
                             {
-                                var _ when isTransformationRing => 11.28 * 10, // 11.28 / 564 = 0.02 (per second)
-                                var itm when itm == ItemConstants.WizardsRing => 70,
-                                var itm when itm == ItemConstants.MoonstonePendant => 63,
-                                _ => 1,
+                                var _ when isTransformationRing => 11.28, // 11.28 / 564 = 0.02
+                                var itm when itm == ItemConstants.WizardsRing => 7,
+                                var itm when itm == ItemConstants.MoonstonePendant => 6.3,
+                                _ => 0.1,
                             };
 
                             var durationIncrease = attributes[Stats.JewelryAndWingsDurationIncrease];
@@ -64,6 +55,11 @@ public class DurabilityDecayPlugIn : IPeriodicTaskPlugIn
 
                             var decrement = decrementWeight / (player.GameContext.Configuration.HitsPerOneItemDurability * durationIncrease);
                             await player.DecreaseItemDurabilityAsync(item, decrement).ConfigureAwait(false);
+                        }
+
+                        if (item.Durability == 0.0 && isTransformationRing)
+                        {
+                            await player.DestroyInventoryItemAsync(item).ConfigureAwait(false);
                         }
                     }
                 }
