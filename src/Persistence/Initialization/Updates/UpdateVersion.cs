@@ -579,4 +579,9 @@ public enum UpdateVersion
     /// The version of the <see cref="AddKanturuMapContentUpdatePlugIn"/>.
     /// </summary>
     AddKanturuMapContent = 114,
+
+    /// <summary>
+    /// The version of the <see cref="FixKanturuEventSafezoneMapUpdate"/>.
+    /// </summary>
+    FixKanturuEventSafezoneMap = 115,
 }

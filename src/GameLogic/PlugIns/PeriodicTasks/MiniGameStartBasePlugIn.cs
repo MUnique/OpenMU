@@ -32,7 +32,7 @@ public abstract class MiniGameStartBasePlugIn<TConfiguration, TGameState> : Peri
     }
 
     /// <inheritdoc />
-    public async ValueTask DisposeRunningGamesAsync(IGameContext gameContext)
+    public virtual async ValueTask DisposeRunningGamesAsync(IGameContext gameContext)
     {
         Announcements.TryRemove((this.GetType(), gameContext), out _);
         var logger = gameContext.LoggerFactory.CreateLogger(this.GetType());

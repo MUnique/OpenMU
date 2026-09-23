@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.MiniGames.Kanturu;
 
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 using MUnique.OpenMU.GameLogic.Properties;
 
 /// <summary>
@@ -118,7 +119,11 @@ public class KanturuEventDefinition
     /// Gets or sets how long the Tower of Refinement stays open after the Nightmare boss has
     /// been defeated. Set it to <see cref="TimeSpan.Zero"/> to skip the tower phase.
     /// </summary>
-    public TimeSpan TowerOfRefinementDuration { get; set; } = TimeSpan.FromHours(1);
+    /// <remarks>
+    /// When the event runs through the start plug-in, <see cref="KanturuStartConfiguration.TowerOpenDuration"/>
+    /// takes precedence over this value.
+    /// </remarks>
+    public TimeSpan TowerOfRefinementDuration { get; set; } = TimeSpan.FromHours(23);
 
     /// <summary>
     /// Gets or sets how long before the end of the <see cref="TowerOfRefinementDuration"/> the
@@ -181,7 +186,7 @@ public class KanturuEventDefinition
             BarrierOpeningMessageKey = nameof(PlayerMessage.KanturuBarrierOpening),
             VictoryMessageKey = nameof(PlayerMessage.KanturuVictory),
             DefeatMessageKey = nameof(PlayerMessage.KanturuDefeat),
-            TowerOfRefinementDuration = TimeSpan.FromHours(1),
+            TowerOfRefinementDuration = TimeSpan.FromHours(23),
             TowerClosingWarningOffset = TimeSpan.FromMinutes(5),
             TowerConqueredMessageKey = nameof(PlayerMessage.KanturuTowerConquered),
             TowerClosingWarningMessageKey = nameof(PlayerMessage.KanturuTowerClosingWarning),

@@ -69,7 +69,7 @@ public class KanturuGatewayPlugIn : IPlayerTalkToNpcPlugIn
         int userCount;
         TimeSpan remainTime;
 
-        if (ctx is KanturuContext kanturuCtx)
+        if (ctx is KanturuContext kanturuCtx && kanturuCtx.State is not (MiniGameState.Ended or MiniGameState.Disposed))
         {
             // A Kanturu event is actively running — reflect its real-time phase.
             // The client dialog will show "MayaBattle" or "NightmareBattle" as appropriate,
@@ -77,16 +77,35 @@ public class KanturuGatewayPlugIn : IPlayerTalkToNpcPlugIn
             state = kanturuCtx.CurrentKanturuState;
             detailState = kanturuCtx.CurrentKanturuDetailState;
 
-            // Entry allowed only during Maya-battle phases (including inter-phase standby).
+            // Entry allowed before the event starts and while the Tower of Refinement
+            // is open, so that players who died or left can rejoin the tower. The
+            // entrance warps to the event gate; from there the opened Elphis barrier
+            // leads to the tower. Fights can never be joined mid-event.
             // NightmareBattle: sealed — the Nightmare encounter cannot be joined mid-fight.
-            // Tower phase: sealed — survivors are auto-teleported to the Tower when the
-            //   Elphis barrier opens; players who died are excluded from the Tower for that
-            //   cycle and cannot re-enter via the Gateway (which would drop them in the Maya
-            //   room and let them appear to restart the event).
-            canEnter = state == KanturuState.MayaBattle;
+            canEnter = (state == KanturuState.MayaBattle && kanturuCtx.State == MiniGameState.Open)
+                || state == KanturuState.Tower;
 
-            userCount = ctx.PlayerCount;
-            remainTime = TimeSpan.Zero;
+            userCount = kanturuCtx.PlayerCount;
+            remainTime = state == KanturuState.Tower ? GetTowerRemainingTime(player.GameContext) : TimeSpan.Zero;
+        }
+        else if (KanturuTowerWindow.GetOpenUntilUtc(player.GameContext) is { } towerUntil
+            && towerUntil > DateTime.UtcNow)
+        {
+            // No event game runs, but the tower window is still open (e.g. after a
+            // server restart): entering recreates the tower without the event phases.
+            // Start the creation while the player reads the dialog, so entering itself
+            // feels like any other map. Failures are logged inside and surface as a
+            // clean rejection on entry.
+            if (miniGameDefinition is not null)
+            {
+                _ = Task.Run(() => KanturuTowerEntry.EnsureTowerGameAsync(player, miniGameDefinition).AsTask());
+            }
+
+            state = KanturuState.Tower;
+            detailState = (byte)KanturuTowerDetailState.Revitalization;
+            canEnter = true;
+            userCount = 0;
+            remainTime = GetTowerRemainingTime(player.GameContext);
         }
         else if (timeUntilOpening == TimeSpan.Zero)
         {
@@ -129,5 +148,25 @@ public class KanturuGatewayPlugIn : IPlayerTalkToNpcPlugIn
         eventArgs.LeavesDialogOpen = true;
 
         await SendKanturuStateInfoAsync(player).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the remaining tower window for the state info dialog, so the client can
+    /// show when the tower closes.
+    /// </summary>
+    /// <param name="gameContext">The game context.</param>
+    /// <returns>The remaining open window, or <see cref="TimeSpan.Zero"/> when closed.</returns>
+    private static TimeSpan GetTowerRemainingTime(IGameContext gameContext)
+    {
+        if (KanturuTowerWindow.GetOpenUntilUtc(gameContext) is { } until)
+        {
+            var remaining = until - DateTime.UtcNow;
+            if (remaining > TimeSpan.Zero)
+            {
+                return remaining;
+            }
+        }
+
+        return TimeSpan.Zero;
     }
 }

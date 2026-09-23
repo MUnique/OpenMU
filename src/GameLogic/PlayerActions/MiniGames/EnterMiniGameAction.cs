@@ -61,8 +61,7 @@ public class EnterMiniGameAction
         }
 
         // The mini game entrance warps the player directly, so the requirements of the map
-        // are not checked by the usual warp actions. Kanturu, for example, requires an
-        // equipped Moonstone Pendant.
+        // are not checked by the usual warp actions. Some maps require equipped items.
         if (miniGameDefinition.Entrance?.Map is { } entranceMap
             && entranceMap.TryGetRequirementError(player, out var requirementError))
         {
@@ -100,7 +99,8 @@ public class EnterMiniGameAction
         {
             var miniGameStrategy = player.GameContext.PlugInManager.GetStrategy<MiniGameType, IPeriodicMiniGameStartPlugIn>(miniGameDefinition.Type);
             if (miniGameStrategy is not null
-                && await miniGameStrategy.GetDurationUntilNextStartAsync(player.GameContext, miniGameDefinition).ConfigureAwait(false) != TimeSpan.Zero)
+                && await miniGameStrategy.GetDurationUntilNextStartAsync(player.GameContext, miniGameDefinition).ConfigureAwait(false) != TimeSpan.Zero
+                && !IsJoinableRunningGame(player, miniGameDefinition))
             {
                 await player.InvokeViewPlugInAsync<IShowMiniGameEnterResultPlugIn>(p => p.ShowResultAsync(miniGameType, EnterResult.NotOpen)).ConfigureAwait(false);
                 return;
@@ -149,6 +149,18 @@ public class EnterMiniGameAction
         {
             await player.InvokeViewPlugInAsync<IShowMiniGameEnterResultPlugIn>(p => p.ShowResultAsync(miniGameType, enterResult)).ConfigureAwait(false);
         }
+    }
+
+    /// <summary>
+    /// Determines whether a running game of the definition exists which players may
+    /// still join, e.g. to rejoin an ongoing event.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="miniGameDefinition">The mini game definition.</param>
+    /// <returns><c>true</c> if a joinable game is running; otherwise, <c>false</c>.</returns>
+    private static bool IsJoinableRunningGame(Player player, MiniGameDefinition miniGameDefinition)
+    {
+        return player.GameContext.MiniGames.TryGetRunningMiniGame(miniGameDefinition, null)?.IsJoinable is true;
     }
 
     private bool CheckPlayerKillState(MiniGameDefinition miniGameDefinition, Player player)

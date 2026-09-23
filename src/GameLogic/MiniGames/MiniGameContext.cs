@@ -11,6 +11,7 @@ using MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Pathfinding;
 
 /// <summary>
 /// The context of a mini game.
@@ -49,7 +50,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         this._mapInitializer = mapInitializer;
         this.Key = key;
         this.Definition = definition;
-        this.EnterEndsAtUtc = DateTime.UtcNow.Add(definition.EnterDuration.AtLeast(CountdownMessageDuration));
+        this.EnterEndsAtUtc = DateTime.UtcNow.Add(definition.EnterDuration.AtLeast(this.MinimumEnterDuration));
         this.Logger = this._gameContext.LoggerFactory.CreateLogger(this.GetType());
         this.DropGenerator = this._gameContext.DropGenerator;
         this._skipDelay = new SkippableDelay(this.Logger, this);
@@ -130,6 +131,32 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     public virtual bool AllowPlayerKilling { get; }
 
     /// <summary>
+    /// Gets a value indicating whether players may still enter while the game is
+    /// already running (<see cref="MiniGameState.Playing"/>), e.g. to rejoin an
+    /// ongoing event. It's <c>false</c> by default; entering is then only possible
+    /// while the game is <see cref="MiniGameState.Open"/>.
+    /// </summary>
+    internal bool IsJoinable => this.State == MiniGameState.Open
+        || (this.State == MiniGameState.Playing && this.AllowEnterWhilePlaying);
+
+    /// <summary>
+    /// Gets a value indicating whether entering is allowed while the game is already
+    /// running. Specific games override this to let players (re-)join mid-event.
+    /// </summary>
+    protected virtual bool AllowEnterWhilePlaying => false;
+
+    /// <summary>
+    /// Gets the duration of the countdown after the entrance closed and before the game starts.
+    /// </summary>
+    protected virtual TimeSpan CountdownDuration => CountdownMessageDuration;
+
+    /// <summary>
+    /// Gets the minimum duration of the entrance phase. Games which don't need a lobby,
+    /// e.g. a reopened tower, override this with <see cref="TimeSpan.Zero"/>.
+    /// </summary>
+    protected virtual TimeSpan MinimumEnterDuration => CountdownMessageDuration;
+
+    /// <summary>
     /// Gets the remaining time of the event, in case it has been finished by the player earlier than the timeout.
     /// </summary>
     protected virtual TimeSpan RemainingTime => TimeSpan.Zero;
@@ -178,7 +205,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     /// <returns>A value indicating whether entering had success.</returns>
     public async ValueTask<EnterResult> TryEnterAsync(Player player)
     {
-        var result = await this._players.TryEnterAsync(player, this.AreEquippedItemsAllowedAsync).ConfigureAwait(false);
+        var result = await this._players.TryEnterAsync(player, this.AreEquippedItemsAllowedAsync, this.AllowEnterWhilePlaying).ConfigureAwait(false);
         if (result != EnterResult.Success)
         {
             return result;
@@ -249,6 +276,15 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     {
         return $"{this.Definition.Name} for {this._gameContext}";
     }
+
+    /// <summary>
+    /// Gets where an entering player appears on the map, instead of the warp target.
+    /// It's consulted when the client acknowledged the map change, before the player
+    /// is added to the map, so no relocation afterwards is necessary.
+    /// </summary>
+    /// <param name="player">The player which enters.</param>
+    /// <returns>The spawn position, or <c>null</c> to keep the warp target.</returns>
+    internal virtual Point? GetEntrySpawnPosition(Player player) => null;
 
     /// <summary>
     /// Waits for the specified duration, unless the wait is skipped through
@@ -557,7 +593,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         this.Logger.LogDebug("{context}: Running the game ...", this);
         try
         {
-            var enterDuration = this.Definition.EnterDuration.AtLeast(CountdownMessageDuration);
+            var enterDuration = this.Definition.EnterDuration.AtLeast(this.MinimumEnterDuration);
             var gameDuration = this.Definition.GameDuration.AtLeast(CountdownMessageDuration);
             var exitDuration = this.Definition.ExitDuration.Subtract(CountdownMessageDuration).AtLeast(CountdownMessageDuration);
 
@@ -597,8 +633,8 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
             }
 
             await this.ShowCountdownMessageAsync().ConfigureAwait(false);
-            this.Logger.LogDebug("{context}: Waiting for the countdown duration of {countdownDuration}", this, CountdownMessageDuration);
-            await this.DelayWithSkipAsync(CountdownMessageDuration, cancellationToken).ConfigureAwait(false);
+            this.Logger.LogDebug("{context}: Waiting for the countdown duration of {countdownDuration}", this, this.CountdownDuration);
+            await this.DelayWithSkipAsync(this.CountdownDuration, cancellationToken).ConfigureAwait(false);
 
             this.Logger.LogDebug("{context}: Starting the game...", this);
             await this.StartAsync().ConfigureAwait(false);
