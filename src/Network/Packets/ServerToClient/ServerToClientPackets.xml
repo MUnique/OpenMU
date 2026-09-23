@@ -10994,6 +10994,26 @@
               <Description>The chaos castle game is finished. Chaos Castle Event shuts down (in x seconds)".</Description>
               <Value>13</Value>
             </EnumValue>
+            <EnumValue>
+              <Name>DoppelgangerEntranceClosing</Name>
+              <Description>The entrance of the doppelganger event closes in 30 seconds. The client shows the countdown only on the doppelganger maps.</Description>
+              <Value>16</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>DoppelgangerStarting</Name>
+              <Description>The doppelganger event starts in 30 seconds. The client shows the countdown only on the doppelganger maps.</Description>
+              <Value>17</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>DoppelgangerIceWalkerCountdown</Name>
+              <Description>The ice walker has to be killed within 30 seconds. The client shows the countdown only on the doppelganger maps.</Description>
+              <Value>18</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>DoppelgangerEnding</Name>
+              <Description>The doppelganger event ends in 30 seconds. The client shows the countdown only on the doppelganger maps.</Description>
+              <Value>19</Value>
+            </EnumValue>
           </Values>
         </Enum>
       </Enums>

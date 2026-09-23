@@ -30587,6 +30587,26 @@ public readonly struct UpdateMiniGameState
         /// The chaos castle game is finished. Chaos Castle Event shuts down (in x seconds)".
         /// </summary>
             ChaosCastleFinished = 13,
+
+        /// <summary>
+        /// The entrance of the doppelganger event closes in 30 seconds. The client shows the countdown only on the doppelganger maps.
+        /// </summary>
+            DoppelgangerEntranceClosing = 16,
+
+        /// <summary>
+        /// The doppelganger event starts in 30 seconds. The client shows the countdown only on the doppelganger maps.
+        /// </summary>
+            DoppelgangerStarting = 17,
+
+        /// <summary>
+        /// The ice walker has to be killed within 30 seconds. The client shows the countdown only on the doppelganger maps.
+        /// </summary>
+            DoppelgangerIceWalkerCountdown = 18,
+
+        /// <summary>
+        /// The doppelganger event ends in 30 seconds. The client shows the countdown only on the doppelganger maps.
+        /// </summary>
+            DoppelgangerEnding = 19,
     }
 
     private readonly Memory<byte> _data;
