@@ -36,6 +36,11 @@ internal class GuildRoleAssignHandlerPlugIn : IPacketHandlerPlugIn
     /// <inheritdoc/>
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
+        if (packet.Length < GuildRoleAssignRequest.Length)
+        {
+            return;
+        }
+
         GuildRoleAssignRequest request = packet;
         var position = request.Role.ConvertToPosition();
 

@@ -402,6 +402,20 @@ public class GuildActionTest : GuildTestBase
     }
 
     /// <summary>
+    /// Tests that a truncated role assign packet is ignored instead of throwing.
+    /// </summary>
+    [Test]
+    public async ValueTask GuildRoleAssignHandlerShortPacketIsIgnoredAsync()
+    {
+        await this.PrepareRoleAssignScenarioAsync().ConfigureAwait(false);
+
+        var handler = new GuildRoleAssignHandlerPlugIn();
+        await handler.HandlePacketAsync(this._guildMasterPlayer, new byte[] { 0xC1, 0x04, 0xE1, 0x01 }).ConfigureAwait(false);
+
+        Assert.That(this._player.GuildStatus!.Position, Is.EqualTo(GuildPosition.NormalMember));
+    }
+
+    /// <summary>
     /// Tests that a space-padded name field still resolves the target (role value 64).
     /// </summary>
     [Test]
