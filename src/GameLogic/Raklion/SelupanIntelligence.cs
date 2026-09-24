@@ -8,6 +8,7 @@ using System.Threading;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
+using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Pathfinding;
 
 /// <summary>
@@ -22,6 +23,8 @@ public sealed class SelupanIntelligence : INpcIntelligence, IDisposable
 {
     private const short StunnedMagicEffectNumber = 61;
     private const int TeleportTries = 10;
+    private const short TeleportSkillNumber = 6;
+    private static readonly TimeSpan TeleportVanishDuration = TimeSpan.FromMilliseconds(500);
 
     private readonly RaklionContext _context;
     private readonly RaklionEventDefinition _definition;
@@ -160,8 +163,7 @@ public sealed class SelupanIntelligence : INpcIntelligence, IDisposable
     {
         return skill switch
         {
-            SelupanSkill.Poison or SelupanSkill.IceStorm or SelupanSkill.IceStrike => 4,
-            SelupanSkill.Teleport => 1,
+            SelupanSkill.Poison or SelupanSkill.IceStorm or SelupanSkill.IceStrike => 3,
             _ => 2,
         };
     }
@@ -257,7 +259,7 @@ public sealed class SelupanIntelligence : INpcIntelligence, IDisposable
             })
             .ToList();
 
-        // The attacks are used more often than the other skills, the teleport is used rarely.
+        // The attacks are used a bit more often than the other skills.
         var totalWeight = skills.Sum(GetWeight);
         var value = Rand.NextInt(0, totalWeight);
         foreach (var skill in skills)
@@ -348,8 +350,8 @@ public sealed class SelupanIntelligence : INpcIntelligence, IDisposable
         for (var i = 0; i < TeleportTries; i++)
         {
             var distance = Rand.NextInt(this._definition.TeleportMinimumDistance, this._definition.TeleportMaximumDistance + 1);
-            var x = monster.Position.X + Rand.NextInt(-distance, distance + 1);
-            var y = monster.Position.Y + Rand.NextInt(-distance, distance + 1);
+            var x = monster.Position.X + (Rand.NextRandomBool() ? distance : -distance);
+            var y = monster.Position.Y + (Rand.NextRandomBool() ? distance : -distance);
             if (x is < byte.MinValue or > byte.MaxValue || y is < byte.MinValue or > byte.MaxValue)
             {
                 continue;
@@ -358,7 +360,10 @@ public sealed class SelupanIntelligence : INpcIntelligence, IDisposable
             var target = new Point((byte)x, (byte)y);
             if (this.CanWalkOn(target) && !monster.CurrentMap.Terrain.SafezoneMap[target.X, target.Y])
             {
+                // Selupan vanishes with the effect of the teleport skill, and appears at the target afterward.
                 await this.ShowSkillAsync(monster, null, SelupanSkill.Teleport).ConfigureAwait(false);
+                await monster.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowSkillAnimationAsync(monster, monster, TeleportSkillNumber, true), true).ConfigureAwait(false);
+                await Task.Delay(TeleportVanishDuration).ConfigureAwait(false);
                 await monster.TeleportAsync(target).ConfigureAwait(false);
                 return;
             }
