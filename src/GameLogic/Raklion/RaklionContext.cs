@@ -253,6 +253,12 @@ public sealed class RaklionContext : IEventStateProvider, IDisposable
             if (await this.SpawnMonsterAsync(spawnArea, new BasicMonsterIntelligence()).ConfigureAwait(false) is { } monster)
             {
                 this._summonedMonsters.TryAdd(monster, 0);
+                if (this._selupan is null)
+                {
+                    // The battle ended while the monster was summoned, so it's removed like the others.
+                    this._summonedMonsters.TryRemove(monster, out _);
+                    await RemoveMonsterAsync(monster).ConfigureAwait(false);
+                }
             }
         }
     }
@@ -530,11 +536,29 @@ public sealed class RaklionContext : IEventStateProvider, IDisposable
     /// </summary>
     private async ValueTask RemoveUnauthorizedPlayersAsync()
     {
+        // Players which left the hatchery while they got registered by the tick aren't battle players anymore.
+        foreach (var battlePlayer in this._battlePlayers.Keys.Where(player => player.CurrentMap != this._hatcheryMap))
+        {
+            this._battlePlayers.TryRemove(battlePlayer, out _);
+        }
+
         var players = await this._gameContext.GetPlayersAsync().ConfigureAwait(false);
+        var canEnter = this.CanEnterHatchery;
         foreach (var player in players)
         {
-            if (player.CurrentMap != this._hatcheryMap
-                || !player.IsAlive
+            if (player.CurrentMap != this._hatcheryMap)
+            {
+                continue;
+            }
+
+            if (canEnter)
+            {
+                // The player may just be entering, before it's registered by the event handler of the map.
+                this._battlePlayers.TryAdd(player, 0);
+                continue;
+            }
+
+            if (!player.IsAlive
                 || player.PlayerState.CurrentState != PlayerState.EnteredWorld
                 || this._battlePlayers.ContainsKey(player))
             {
