@@ -57,7 +57,13 @@ public class RaklionEventDefinition
     /// <summary>
     /// Gets or sets the time after the end of the battle, until the hatchery gets opened again and the spider eggs appear.
     /// </summary>
-    public TimeSpan HatcheryOpenDelay { get; set; } = TimeSpan.FromMinutes(5);
+    public TimeSpan HatcheryOpenDelay { get; set; } = TimeSpan.FromHours(12);
+
+    /// <summary>
+    /// Gets or sets the time after the end of the battle, until the players which are still in the
+    /// hatchery are moved to the entrance of raklion.
+    /// </summary>
+    public TimeSpan PlayerRemovalDelay { get; set; } = TimeSpan.FromMinutes(5);
 
     /// <summary>
     /// Gets or sets the delay between the skills of Selupan.

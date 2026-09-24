@@ -30,6 +30,10 @@ public sealed class RaklionContext : IEventStateProvider, IDisposable
     private readonly ILogger<RaklionContext> _logger;
     private readonly ConcurrentDictionary<Monster, byte> _spiderEggs = new();
     private readonly ConcurrentDictionary<Monster, byte> _summonedMonsters = new();
+
+    /// <summary>
+    /// The players which entered the hatchery while it was open. Only they're allowed to stay in the hatchery.
+    /// </summary>
     private readonly ConcurrentDictionary<Player, byte> _battlePlayers = new();
 
     private RaklionEventDefinition _definition;
@@ -38,6 +42,7 @@ public sealed class RaklionContext : IEventStateProvider, IDisposable
     private Monster? _selupan;
     private DateTime _stateStart = DateTime.UtcNow;
     private bool _areFewEggsNotified;
+    private bool _arePlayersRemoved;
     private int _isSelupanDead;
 
     /// <summary>
@@ -135,6 +140,8 @@ public sealed class RaklionContext : IEventStateProvider, IDisposable
             return;
         }
 
+        await this.RemoveUnauthorizedPlayersAsync().ConfigureAwait(false);
+
         var elapsed = DateTime.UtcNow - this._stateStart;
         switch (this.State)
         {
@@ -158,6 +165,11 @@ public sealed class RaklionContext : IEventStateProvider, IDisposable
                 break;
             case RaklionState.CloseDoor when this._battlePlayers.IsEmpty:
                 await this.EndBattleAsync(false).ConfigureAwait(false);
+                break;
+            case RaklionState.Notify4 when !this._arePlayersRemoved && elapsed >= this._definition.PlayerRemovalDelay:
+                // The remaining players are moved to the entrance of raklion by the next tick.
+                this._arePlayersRemoved = true;
+                this._battlePlayers.Clear();
                 break;
             case RaklionState.Notify4 when elapsed >= this._definition.HatcheryOpenDelay:
                 await this.ChangeStateAsync(RaklionState.End).ConfigureAwait(false);
@@ -260,6 +272,7 @@ public sealed class RaklionContext : IEventStateProvider, IDisposable
         await this.RemoveEventMonstersAsync().ConfigureAwait(false);
         Volatile.Write(ref this._isSelupanDead, 0);
         this._areFewEggsNotified = false;
+        this._arePlayersRemoved = false;
         this._battlePlayers.Clear();
         this.SelupanState = SelupanState.None;
 
@@ -331,11 +344,6 @@ public sealed class RaklionContext : IEventStateProvider, IDisposable
     private async ValueTask CloseHatcheryAsync()
     {
         await this.ChangeStateAsync(RaklionState.Notify3).ConfigureAwait(false);
-        foreach (var player in await this.GetPlayersAsync(this._hatcheryMap).ConfigureAwait(false))
-        {
-            this._battlePlayers.TryAdd(player, 0);
-        }
-
         await this.ShowMessageToAllPlayersAsync(nameof(PlayerMessage.RaklionHatcheryClosed)).ConfigureAwait(false);
         await this.ChangeStateAsync(RaklionState.CloseDoor).ConfigureAwait(false);
     }
@@ -358,7 +366,6 @@ public sealed class RaklionContext : IEventStateProvider, IDisposable
         await this.ChangeStateAsync(RaklionState.Notify4).ConfigureAwait(false);
         var minutes = (int)Math.Ceiling(this._definition.HatcheryOpenDelay.TotalMinutes);
         await this.ShowMessageToAllPlayersAsync(nameof(PlayerMessage.RaklionHatcheryOpensIn), minutes).ConfigureAwait(false);
-        this._battlePlayers.Clear();
     }
 
     private async ValueTask ChangeStateAsync(RaklionState state)
@@ -451,22 +458,14 @@ public sealed class RaklionContext : IEventStateProvider, IDisposable
             return;
         }
 
-        if (!this.CanEnterHatchery && !this._battlePlayers.ContainsKey(player))
+        if (this.CanEnterHatchery)
         {
-            // The player can't join the battle anymore. Warping it inside of the event handler of
-            // the map could interfere with the adding of the player, so it's done afterwards.
-            _ = Task.Run(async () =>
-            {
-                try
-                {
-                    await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.RaklionHatcheryIsClosed)).ConfigureAwait(false);
-                    await player.WarpToSafezoneAsync().ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    this._logger.LogError(ex, "Couldn't warp {player} out of the closed hatchery.", player);
-                }
-            });
+            this._battlePlayers.TryAdd(player, 0);
+        }
+        else if (!this._battlePlayers.ContainsKey(player))
+        {
+            // The player is moved out of the hatchery by the next tick.
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.RaklionHatcheryIsClosed)).ConfigureAwait(false);
             return;
         }
 
@@ -492,15 +491,32 @@ public sealed class RaklionContext : IEventStateProvider, IDisposable
         }
     }
 
-    private async ValueTask<IList<Player>> GetPlayersAsync(GameMap? map)
+    /// <summary>
+    /// Moves the players out of the hatchery which aren't allowed to stay, like the original game does.
+    /// These are players which entered while it was closed, or which stayed after the battle.
+    /// </summary>
+    private async ValueTask RemoveUnauthorizedPlayersAsync()
     {
-        if (map is null)
-        {
-            return [];
-        }
-
         var players = await this._gameContext.GetPlayersAsync().ConfigureAwait(false);
-        return players.Where(player => player.CurrentMap == map).ToList();
+        foreach (var player in players)
+        {
+            if (player.CurrentMap != this._hatcheryMap
+                || !player.IsAlive
+                || player.PlayerState.CurrentState != PlayerState.EnteredWorld
+                || this._battlePlayers.ContainsKey(player))
+            {
+                continue;
+            }
+
+            try
+            {
+                await player.WarpToSafezoneAsync().ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogError(ex, "Couldn't move {player} out of the hatchery.", player);
+            }
+        }
     }
 
     /// <summary>
