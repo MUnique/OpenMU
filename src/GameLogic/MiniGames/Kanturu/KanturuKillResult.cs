@@ -12,4 +12,5 @@ namespace MUnique.OpenMU.GameLogic.MiniGames.Kanturu;
 /// <param name="PhaseComplete">Whether the kill target has been reached.</param>
 /// <param name="NightmareBossKilled">Whether the Nightmare boss itself died.</param>
 /// <param name="IsNightmarePhase">Whether the current phase is a Nightmare phase.</param>
-internal readonly record struct KanturuKillResult(bool Counted, int KillCount, bool PhaseComplete, bool NightmareBossKilled, bool IsNightmarePhase);
+/// <param name="Phase">The phase the kill was counted for, if any.</param>
+internal readonly record struct KanturuKillResult(bool Counted, int KillCount, bool PhaseComplete, bool NightmareBossKilled, bool IsNightmarePhase, KanturuPhaseDefinition? Phase);

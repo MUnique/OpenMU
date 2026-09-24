@@ -177,7 +177,19 @@ internal sealed class KanturuNightmareRunner : IKanturuPhaseRunner
             await Task.Delay(nightmare.TeleportDelay).ConfigureAwait(false);
             ct.ThrowIfCancellationRequested();
 
+            // The boss may have died while teleporting; restoring its health then
+            // would resurrect it after the death event already ran.
+            if (!monster.IsAlive)
+            {
+                return;
+            }
+
             await monster.MoveAsync(new Point(hpPhase.TeleportTargetX, hpPhase.TeleportTargetY)).ConfigureAwait(false);
+
+            if (!monster.IsAlive)
+            {
+                return;
+            }
 
             monster.Health = (int)monster.Attributes[Stats.MaximumHealth];
 

@@ -34,6 +34,10 @@ public class KanturuStartConfiguration : MiniGameStartConfiguration
     /// has been defeated. The window is tracked persistently, so it survives server
     /// restarts: players can still re-enter the tower while it lasts.
     /// </summary>
+    /// <remarks>
+    /// This takes precedence over <see cref="KanturuEventDefinition.TowerOfRefinementDuration"/>
+    /// whenever the event runs through this plug-in.
+    /// </remarks>
     public TimeSpan TowerOpenDuration { get; set; } = TimeSpan.FromHours(23);
 
     /// <summary>

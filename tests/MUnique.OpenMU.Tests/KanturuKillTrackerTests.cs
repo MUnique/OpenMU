@@ -96,6 +96,7 @@ public class KanturuKillTrackerTests
         Assert.That(result.NightmareBossKilled, Is.True);
         Assert.That(result.IsNightmarePhase, Is.True);
         Assert.That(result.PhaseComplete, Is.True);
+        Assert.That(result.Phase, Is.SameAs(phase));
     }
 
     /// <summary>
@@ -127,5 +128,50 @@ public class KanturuKillTrackerTests
         var result = tracker.RegisterKill(new MonsterDefinition { Number = 354 });
 
         Assert.That(result.Counted, Is.False);
+        Assert.That(result.Phase, Is.Null);
+    }
+
+    /// <summary>
+    /// Tests that concurrent kills count exactly once each and complete the phase.
+    /// </summary>
+    [Test]
+    public async Task RegisterKill_FromMultipleThreads_CountsExactlyOnce()
+    {
+        var tracker = new KanturuKillTracker();
+        tracker.BeginPhase(CreateWavePhase(killTarget: 2000));
+        var monster = new MonsterDefinition { Number = 354 };
+
+        await Task.WhenAll(Enumerable.Range(0, 8).Select(_ => Task.Run(() =>
+        {
+            for (var i = 0; i < 250; i++)
+            {
+                tracker.RegisterKill(monster);
+            }
+        }))).ConfigureAwait(false);
+
+        Assert.That(tracker.KillCount, Is.EqualTo(2000));
+        Assert.That(tracker.PhaseCompleted.IsCompleted, Is.True);
+    }
+
+    /// <summary>
+    /// Tests that a completed phase's kills don't leak into the next generation.
+    /// </summary>
+    [Test]
+    public void BeginPhase_AfterCompletedPhase_StartsIsolatedGeneration()
+    {
+        var tracker = new KanturuKillTracker();
+        tracker.BeginPhase(CreateWavePhase(killTarget: 1));
+        tracker.RegisterKill(new MonsterDefinition { Number = 354 });
+
+        tracker.BeginPhase(CreateWavePhase(killTarget: 2));
+
+        Assert.That(tracker.KillCount, Is.EqualTo(0));
+        Assert.That(tracker.PhaseCompleted.IsCompleted, Is.False);
+
+        var result = tracker.RegisterKill(new MonsterDefinition { Number = 354 });
+
+        Assert.That(result.Counted, Is.True);
+        Assert.That(result.KillCount, Is.EqualTo(1));
+        Assert.That(result.PhaseComplete, Is.False);
     }
 }

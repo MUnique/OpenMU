@@ -101,9 +101,13 @@ public static class KanturuTowerEntry
                 return false; // A live event owns entry; never break it.
             }
 
-            // A running tower is reused. Anything else found here is tearing down;
-            // dispose it so the creation below starts fresh instead of reusing a dead map.
-            if (tower.TowerMode && (tower.State is MiniGameState.Open or MiniGameState.Playing || tower.PlayerCount > 0))
+            // A running tower is reused, including its short-lived lobby: with instant
+            // start it only exists for milliseconds, so entering must not destroy it.
+            // Usability is defined by state, not by lingering players: an ended game
+            // with stragglers still inside is already over. Anything else found here
+            // is tearing down; dispose it so the creation below starts fresh instead
+            // of reusing a dead map.
+            if (tower.TowerMode && tower.State is MiniGameState.Open or MiniGameState.Closed or MiniGameState.Playing)
             {
                 return true;
             }

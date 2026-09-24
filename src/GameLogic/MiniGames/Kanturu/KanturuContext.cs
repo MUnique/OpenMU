@@ -40,6 +40,11 @@ public sealed class KanturuContext : MiniGameContext
     /// </summary>
     private const byte HudHiddenDetailState = 0;
 
+    /// <summary>
+    /// The map center, from which the range of the alive-monster query covers the whole map.
+    /// </summary>
+    private static readonly Point MapCenter = new(127, 127);
+
     private readonly IMapInitializer _mapInitializer;
     private readonly IGameContext _gameContext;
     private readonly KanturuEventDefinition _definition;
@@ -112,9 +117,9 @@ public sealed class KanturuContext : MiniGameContext
             this.Logger);
         this._phaseRunners = new Dictionary<KanturuPhaseKind, IKanturuPhaseRunner>
         {
-            [KanturuPhaseKind.MonsterWave] = waveRunner,
-            [KanturuPhaseKind.Transition] = transitionRunner,
-            [KanturuPhaseKind.Nightmare] = nightmareRunner,
+            [waveRunner.Kind] = waveRunner,
+            [transitionRunner.Kind] = transitionRunner,
+            [nightmareRunner.Kind] = nightmareRunner,
         };
     }
 
@@ -224,8 +229,8 @@ public sealed class KanturuContext : MiniGameContext
             }
 
             var definition = monster.Definition;
-            var phase = this._killTracker.CurrentPhase;
             var result = this._killTracker.RegisterKill(definition);
+            var phase = result.Phase;
             if (!result.Counted)
             {
                 if (KanturuMonsterComparer.IsSameMonster(this._nightmareMonsterDefinition, definition))
@@ -358,6 +363,7 @@ public sealed class KanturuContext : MiniGameContext
             return runner.RunAsync(phase, ct);
         }
 
+        this.Logger.LogWarning("Kanturu: no runner for phase kind {PhaseKind}, running it as a monster wave.", phase.Kind);
         return this._phaseRunners[KanturuPhaseKind.MonsterWave].RunAsync(phase, ct);
     }
 
@@ -593,6 +599,8 @@ public sealed class KanturuContext : MiniGameContext
 
     /// <summary>
     /// Opens an already-open tower on a fresh map, without battle overlay or cinematic.
+    /// Reapplies the barrier idempotently: the constructor already opened it, so players
+    /// warping in before the game starts never face a closed barrier.
     /// </summary>
     private async ValueTask OpenTowerMapAsync()
     {
@@ -641,21 +649,20 @@ public sealed class KanturuContext : MiniGameContext
     /// <param name="ct">The cancellation token.</param>
     private async Task RunTowerOfRefinementAsync(TimeSpan duration, TimeSpan warningOffset, CancellationToken ct)
     {
-        // The delays don't use the token, so they aren't cancelled when all current players
-        // leave while new ones might still arrive.
+        // An empty tower ends with the game: re-entry recreates it while the window lasts.
         if (duration > warningOffset)
         {
-            await Task.Delay(duration - warningOffset).ConfigureAwait(false);
+            await Task.Delay(duration - warningOffset, ct).ConfigureAwait(false);
             ct.ThrowIfCancellationRequested();
 
             await this.ShowGoldenMessageIfConfiguredAsync(this._definition.TowerClosingWarningMessageKey).ConfigureAwait(false);
 
-            await Task.Delay(warningOffset).ConfigureAwait(false);
+            await Task.Delay(warningOffset, ct).ConfigureAwait(false);
             ct.ThrowIfCancellationRequested();
         }
         else if (duration > TimeSpan.Zero)
         {
-            await Task.Delay(duration).ConfigureAwait(false);
+            await Task.Delay(duration, ct).ConfigureAwait(false);
             ct.ThrowIfCancellationRequested();
         }
 
@@ -828,7 +835,7 @@ public sealed class KanturuContext : MiniGameContext
     private async ValueTask ShowLiveMonsterCountAsync()
     {
         // The range covers the whole map from its center.
-        var aliveCount = this.Map.GetAttackablesInRange(new Point(127, 127), byte.MaxValue)
+        var aliveCount = this.Map.GetAttackablesInRange(MapCenter, byte.MaxValue)
             .OfType<Monster>()
             .Count(monster => monster.IsAlive);
         await this.ShowMonsterUserCountAsync(aliveCount, this.PlayerCount).ConfigureAwait(false);

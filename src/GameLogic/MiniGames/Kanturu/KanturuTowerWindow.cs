@@ -37,14 +37,14 @@ internal static class KanturuTowerWindow
     {
         try
         {
-            var configuration = GetConfiguration(gameContext);
-            if (configuration is null)
+            var live = GetConfiguration(gameContext);
+            if (live is null)
             {
                 logger.LogWarning("The Kanturu start plugin configuration is not available to store the tower window.");
                 return;
             }
 
-            configuration.TowerOpenUntilUtc = untilUtc;
+            live.TowerOpenUntilUtc = untilUtc;
 
             using var context = gameContext.PersistenceContextProvider.CreateNewContext();
             var entity = await FindConfigurationEntityAsync(context).ConfigureAwait(false);
@@ -54,8 +54,16 @@ internal static class KanturuTowerWindow
                 return;
             }
 
-            entity.SetConfiguration(configuration, gameContext.PlugInManager.CustomConfigReferenceHandler);
+            // Read-modify-write the persisted row instead of serializing the live
+            // object: an admin saving the event schedule concurrently must not lose
+            // the tower window, and vice versa.
+            var persisted = entity.GetConfiguration<KanturuStartConfiguration>(gameContext.PlugInManager.CustomConfigReferenceHandler)
+                ?? live;
+            persisted.TowerOpenUntilUtc = untilUtc;
+            entity.SetConfiguration(persisted, gameContext.PlugInManager.CustomConfigReferenceHandler);
             await context.SaveChangesAsync().ConfigureAwait(false);
+
+            live.TowerOpenUntilUtc = untilUtc;
         }
         catch (Exception ex)
         {
