@@ -84,6 +84,25 @@ public sealed class RaklionContext : IEventStateProvider, IDisposable
     public bool IsEventRunning => this.State is >= RaklionState.Standby and < RaklionState.End;
 
     /// <summary>
+    /// Gets the remaining time of the current state, if the state has a duration.
+    /// </summary>
+    public TimeSpan RemainingTime
+    {
+        get
+        {
+            var duration = this.State switch
+            {
+                RaklionState.Standby => this._definition.SelupanAppearanceDelay,
+                RaklionState.StartBattle => this._definition.HatcheryCloseDelay,
+                RaklionState.Notify4 => this._definition.HatcheryOpenDelay,
+                _ => TimeSpan.Zero,
+            };
+            var remaining = duration - (DateTime.UtcNow - this._stateStart);
+            return remaining > TimeSpan.Zero ? remaining : TimeSpan.Zero;
+        }
+    }
+
+    /// <summary>
     /// Gets a value indicating whether Selupan can summon monsters, because some of them are missing.
     /// </summary>
     internal bool CanSummon => this.GetMissingSummons().Any();
@@ -114,23 +133,6 @@ public sealed class RaklionContext : IEventStateProvider, IDisposable
         {
             this._logger.LogWarning("The hatchery map {map} of the raklion event wasn't found.", this._definition.HatcheryMapNumber);
         }
-    }
-
-    /// <summary>
-    /// Gets the remaining time of the current state, if the state has a duration.
-    /// </summary>
-    /// <returns>The remaining time.</returns>
-    public TimeSpan GetRemainingTime()
-    {
-        var duration = this.State switch
-        {
-            RaklionState.Standby => this._definition.SelupanAppearanceDelay,
-            RaklionState.StartBattle => this._definition.HatcheryCloseDelay,
-            RaklionState.Notify4 => this._definition.HatcheryOpenDelay,
-            _ => TimeSpan.Zero,
-        };
-        var remaining = duration - (DateTime.UtcNow - this._stateStart);
-        return remaining > TimeSpan.Zero ? remaining : TimeSpan.Zero;
     }
 
     /// <summary>
@@ -460,6 +462,12 @@ public sealed class RaklionContext : IEventStateProvider, IDisposable
 
     private void OnSelupanDied(object? sender, DeathInformation e)
     {
+        if (sender is null || sender != this._selupan)
+        {
+            // It's not the Selupan of the current battle.
+            return;
+        }
+
         this._selupanKillerName = e.KillerName;
         Volatile.Write(ref this._isSelupanDead, 1);
         _ = this.OnSelupanDiedAsync();
@@ -506,6 +514,10 @@ public sealed class RaklionContext : IEventStateProvider, IDisposable
             }
 
             return;
+        }
+        else
+        {
+            // The player is a battle player which is coming back, e.g. after a teleport.
         }
 
         await this.ShowCurrentStateAsync(player).ConfigureAwait(false);
@@ -581,7 +593,7 @@ public sealed class RaklionContext : IEventStateProvider, IDisposable
     /// </summary>
     private string GetOpeningTime(Player player)
     {
-        var minutes = (int)Math.Ceiling(this.GetRemainingTime().TotalMinutes);
+        var minutes = (int)Math.Ceiling(this.RemainingTime.TotalMinutes);
         return minutes >= 60
             ? player.GetLocalizedMessage(nameof(PlayerMessage.RaklionDurationHoursMinutes), minutes / 60, minutes % 60)
             : player.GetLocalizedMessage(nameof(PlayerMessage.RaklionDurationMinutes), minutes);

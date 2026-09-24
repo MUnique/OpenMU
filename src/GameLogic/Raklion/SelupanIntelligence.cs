@@ -161,11 +161,7 @@ public sealed class SelupanIntelligence : INpcIntelligence, IDisposable
 
     private static int GetWeight(SelupanSkill skill)
     {
-        return skill switch
-        {
-            SelupanSkill.Poison or SelupanSkill.IceStorm or SelupanSkill.IceStrike => 3,
-            _ => 2,
-        };
+        return skill is SelupanSkill.Poison or SelupanSkill.IceStorm or SelupanSkill.IceStrike ? 3 : 2;
     }
 
     private static bool IsValidTarget(Monster monster, IAttackable target)

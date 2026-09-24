@@ -36,6 +36,6 @@ internal class RaklionStateInfoRequestHandlerPlugIn : ISubPacketHandlerPlugIn
             return;
         }
 
-        await player.InvokeViewPlugInAsync<IRaklionEventViewPlugIn>(p => p.ShowStateInfoAsync(context.State, context.SelupanState, context.CanEnterHatchery, context.GetRemainingTime())).ConfigureAwait(false);
+        await player.InvokeViewPlugInAsync<IRaklionEventViewPlugIn>(p => p.ShowStateInfoAsync(context.State, context.SelupanState, context.CanEnterHatchery, context.RemainingTime)).ConfigureAwait(false);
     }
 }
