@@ -16,9 +16,9 @@ using MUnique.OpenMU.GameLogic.Views;
 public interface IDoppelgangerEventViewPlugIn : IViewPlugIn
 {
     /// <summary>
-    /// The maximum position index on the path, which is the position of the magic circle.
+    /// Gets the maximum position index on the path, which is the position of the magic circle.
     /// </summary>
-    const int MaximumPathPosition = 22;
+    static int MaximumPathPosition => 22;
 
     /// <summary>
     /// Shows the state of the event.

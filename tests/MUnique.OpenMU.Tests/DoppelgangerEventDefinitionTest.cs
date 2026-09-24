@@ -54,7 +54,7 @@ public class DoppelgangerEventDefinitionTest
         Assert.That(area.Contains(new Point(10, 22)), Is.False);
         Assert.That(area.Contains(new Point(12, 20)), Is.False);
         Assert.That(area.Contains(new Point(15, 25)), Is.True);
-        Assert.That(area.GetCenter(), Is.EqualTo(new Point(12, 22)));
+        Assert.That(DoppelgangerMonsterIntelligence.GetCenter(area), Is.EqualTo(new Point(12, 22)));
     }
 
     /// <summary>

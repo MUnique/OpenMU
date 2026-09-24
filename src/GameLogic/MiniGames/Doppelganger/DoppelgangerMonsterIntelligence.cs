@@ -101,7 +101,7 @@ public sealed class DoppelgangerMonsterIntelligence : INpcIntelligence, IDisposa
     /// <inheritdoc />
     public void Start()
     {
-        this._timer ??= new Timer(_ => this.SafeTick(), null, this.Monster.Definition.AttackDelay, this.Monster.Definition.AttackDelay);
+        this._timer ??= new Timer(_ => _ = this.SafeTickAsync(), null, this.Monster.Definition.AttackDelay, this.Monster.Definition.AttackDelay);
     }
 
     /// <inheritdoc />
@@ -127,6 +127,16 @@ public sealed class DoppelgangerMonsterIntelligence : INpcIntelligence, IDisposa
     }
 
     /// <summary>
+    /// Gets the center of the area, which is the target of the monsters walking to this area.
+    /// </summary>
+    /// <param name="area">The area.</param>
+    /// <returns>The center of the area.</returns>
+    internal static Point GetCenter(DoppelgangerPathArea area)
+    {
+        return new Point((byte)(area.X1 + ((area.X2 - area.X1) / 2)), (byte)(area.Y1 + ((area.Y2 - area.Y1) / 2)));
+    }
+
+    /// <summary>
     /// Executes one step of the intelligence. It's called periodically by a timer.
     /// </summary>
     internal async ValueTask TickAsync()
@@ -144,7 +154,7 @@ public sealed class DoppelgangerMonsterIntelligence : INpcIntelligence, IDisposa
             if (Interlocked.Exchange(ref this._hasReachedMagicCircle, 1) == 0)
             {
                 this.Dispose();
-                await this._onMagicCircleReached(monster).ConfigureAwait(false);
+                await this._onMagicCircleReached.Invoke(monster).ConfigureAwait(false);
             }
 
             return;
@@ -169,8 +179,7 @@ public sealed class DoppelgangerMonsterIntelligence : INpcIntelligence, IDisposa
         }
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
-    private async void SafeTick()
+    private async Task SafeTickAsync()
     {
         try
         {
@@ -242,7 +251,7 @@ public sealed class DoppelgangerMonsterIntelligence : INpcIntelligence, IDisposa
     /// </summary>
     private Point GetWalkTarget(DoppelgangerPathArea area)
     {
-        var center = area.GetCenter();
+        var center = GetCenter(area);
         if (this.CanWalkOn(center))
         {
             return center;

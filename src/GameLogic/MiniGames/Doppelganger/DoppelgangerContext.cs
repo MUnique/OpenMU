@@ -191,6 +191,10 @@ public sealed class DoppelgangerContext : MiniGameContext
         {
             return;
         }
+        else
+        {
+            // It's the final chest, which always contains items.
+        }
 
         this.Logger.LogDebug("{context}: {player} opened {chest}, which contains {content}.", this, player, chest, containsLarvae ? "larvae" : "items");
 

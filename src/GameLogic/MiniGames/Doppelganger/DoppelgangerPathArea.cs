@@ -58,12 +58,6 @@ public class DoppelgangerPathArea
     public byte Y2 { get; set; }
 
     /// <summary>
-    /// Gets the center of the area, which is the target of the monsters walking to this area.
-    /// </summary>
-    /// <returns>The center of the area.</returns>
-    public Point GetCenter() => new((byte)(this.X1 + ((this.X2 - this.X1) / 2)), (byte)(this.Y1 + ((this.Y2 - this.Y1) / 2)));
-
-    /// <summary>
     /// Determines whether the area contains the specified point.
     /// </summary>
     /// <param name="point">The point.</param>
