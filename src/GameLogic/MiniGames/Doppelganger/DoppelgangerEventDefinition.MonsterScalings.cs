@@ -13,6 +13,7 @@ public partial class DoppelgangerEventDefinition
     /// Creates the multipliers of the monsters of the original season 6 event. Each entry applies
     /// up to a player level (including the master level) and contains the multipliers for the
     /// level, health, damage and defense for one to five players.
+    /// Higher player levels use the last entry.
     /// </summary>
     private static IList<DoppelgangerMonsterScaling> CreateDefaultMonsterScalings()
     {
@@ -78,26 +79,6 @@ public partial class DoppelgangerEventDefinition
             CreateScaling(580, [6.79f, 6.79f, 6.79f, 6.79f, 6.79f], [137f, 142f, 147f, 155.8f, 160.8f], [13.28f, 15.8f, 16.5f, 16.4f, 17f], [22.5f, 25.5f, 27.5f, 28.2f, 30f]),
             CreateScaling(590, [6.79f, 6.79f, 6.79f, 6.79f, 6.79f], [143f, 148f, 153f, 161.8f, 166.8f], [13.58f, 16.1f, 16.8f, 16.7f, 17.3f], [23.3f, 26.3f, 28.3f, 29f, 30.8f]),
             CreateScaling(600, [6.79f, 6.79f, 6.79f, 6.79f, 6.79f], [149f, 157f, 162f, 167.8f, 172.8f], [13.88f, 16.6f, 17.2f, 17f, 17.6f], [24.1f, 28.1f, 29.1f, 29.8f, 31.6f]),
-            CreateScaling(610, [6.79f, 6.79f, 6.79f, 6.79f, 6.79f], [39f, 41f, 42f, 42.8f, 43.8f], [8.58f, 9.68f, 10.78f, 10.38f, 11.38f], [12f, 12.5f, 12.8f, 12.5f, 12.3f]),
-            CreateScaling(620, [6.79f, 6.79f, 6.79f, 6.79f, 6.79f], [42f, 50f, 52f, 61.8f, 66.8f], [8.68f, 9.88f, 10.78f, 10.58f, 11.58f], [12.3f, 13.5f, 15f, 15.7f, 17.5f]),
-            CreateScaling(630, [6.79f, 6.79f, 6.79f, 6.79f, 6.79f], [47f, 52f, 57f, 66.8f, 71.8f], [8.88f, 9.98f, 10.88f, 10.78f, 11.78f], [12.6f, 14f, 15.5f, 16.2f, 18f]),
-            CreateScaling(640, [6.79f, 6.79f, 6.79f, 6.79f, 6.79f], [53f, 58f, 63f, 72.8f, 77.8f], [9.08f, 10.08f, 11.08f, 10.98f, 11.98f], [12.9f, 14.3f, 16.3f, 17f, 18.8f]),
-            CreateScaling(650, [6.79f, 6.79f, 6.79f, 6.79f, 6.79f], [59f, 64f, 69f, 78.8f, 83.8f], [9.38f, 10.28f, 11.28f, 11.18f, 12.18f], [13.1f, 15.1f, 17.1f, 17.8f, 19.6f]),
-            CreateScaling(660, [6.79f, 6.79f, 6.79f, 6.79f, 6.79f], [69f, 70f, 75f, 84.8f, 89.8f], [9.98f, 11f, 12f, 12.38f, 13.38f], [14f, 15.9f, 17.9f, 18.6f, 20.4f]),
-            CreateScaling(670, [6.79f, 6.79f, 6.79f, 6.79f, 6.79f], [76f, 76f, 81f, 90.8f, 95.8f], [10.28f, 12f, 13f, 13.1f, 13.7f], [14.7f, 16.7f, 18.7f, 19.4f, 21.2f]),
-            CreateScaling(680, [6.79f, 6.79f, 6.79f, 6.79f, 6.79f], [82f, 82f, 87f, 96.8f, 100.8f], [10.58f, 12.5f, 13.5f, 13.5f, 14f], [15.2f, 17.5f, 19.5f, 20.2f, 22f]),
-            CreateScaling(690, [6.79f, 6.79f, 6.79f, 6.79f, 6.79f], [88f, 88f, 93f, 101.8f, 106.8f], [10.88f, 13f, 13.8f, 13.7f, 14.3f], [16f, 18.3f, 20.3f, 21f, 22.8f]),
-            CreateScaling(700, [6.79f, 6.79f, 6.79f, 6.79f, 6.79f], [93f, 94f, 99f, 107.8f, 112.8f], [11.18f, 13.4f, 14.1f, 14f, 14.6f], [16.7f, 19.1f, 21.1f, 21.8f, 23.6f]),
-            CreateScaling(710, [6.79f, 6.79f, 6.79f, 6.79f, 6.79f], [95f, 100f, 105f, 113.8f, 118.8f], [11.38f, 13.7f, 14.4f, 14.3f, 14.9f], [17.4f, 19.9f, 21.9f, 22.6f, 24.4f]),
-            CreateScaling(720, [6.79f, 6.79f, 6.79f, 6.79f, 6.79f], [101f, 106f, 111f, 119.8f, 124.8f], [11.48f, 14f, 14.7f, 14.6f, 15.2f], [17.7f, 20.7f, 22.7f, 23.4f, 25.2f]),
-            CreateScaling(730, [6.79f, 6.79f, 6.79f, 6.79f, 6.79f], [107f, 112f, 117f, 125.8f, 130.8f], [11.78f, 14.3f, 15f, 14.9f, 15.5f], [18.5f, 21.5f, 23.5f, 24.2f, 26f]),
-            CreateScaling(740, [6.79f, 6.79f, 6.79f, 6.79f, 6.79f], [113f, 118f, 123f, 131.8f, 136.8f], [12.08f, 14.6f, 15.3f, 15.2f, 15.8f], [19.3f, 22.3f, 24.3f, 25f, 26.8f]),
-            CreateScaling(750, [6.79f, 6.79f, 6.79f, 6.79f, 6.79f], [119f, 124f, 129f, 137.8f, 142.8f], [12.38f, 14.9f, 15.6f, 15.5f, 16.1f], [20.1f, 23.1f, 25.1f, 25.8f, 27.6f]),
-            CreateScaling(760, [6.79f, 6.79f, 6.79f, 6.79f, 6.79f], [125f, 130f, 135f, 143.8f, 148.8f], [12.68f, 15.2f, 15.9f, 15.8f, 16.4f], [20.9f, 23.9f, 25.9f, 26.6f, 28.4f]),
-            CreateScaling(770, [6.79f, 6.79f, 6.79f, 6.79f, 6.79f], [131f, 136f, 141f, 149.8f, 154.8f], [12.98f, 15.5f, 16.2f, 16.1f, 16.7f], [21.7f, 24.7f, 26.7f, 27.4f, 29.2f]),
-            CreateScaling(780, [6.79f, 6.79f, 6.79f, 6.79f, 6.79f], [137f, 142f, 147f, 155.8f, 160.8f], [13.28f, 15.8f, 16.5f, 16.4f, 17f], [22.5f, 25.5f, 27.5f, 28.2f, 30f]),
-            CreateScaling(790, [6.79f, 6.79f, 6.79f, 6.79f, 6.79f], [143f, 148f, 153f, 161.8f, 166.8f], [13.58f, 16.1f, 16.8f, 16.7f, 17.3f], [23.3f, 26.3f, 28.3f, 29f, 30.8f]),
-            CreateScaling(800, [6.79f, 6.79f, 6.79f, 6.79f, 6.79f], [149f, 157f, 162f, 167.8f, 172.8f], [13.88f, 16.6f, 17.2f, 17f, 17.6f], [24.1f, 28.1f, 29.1f, 29.8f, 31.6f]),
         ];
     }
 

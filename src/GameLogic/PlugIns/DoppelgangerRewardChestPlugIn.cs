@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("3E9A6C51-7B28-4F0D-A1C4-58D2E96B7F30")]
 [PlugIn]
-[Display(Name = nameof(DoppelgangerRewardChestPlugIn), Description = "Opens the reward chests of the doppelganger event.")]
+[Display(Name = nameof(PlugInResources.DoppelgangerRewardChestPlugIn_Name), Description = nameof(PlugInResources.DoppelgangerRewardChestPlugIn_Description), ResourceType = typeof(PlugInResources))]
 public class DoppelgangerRewardChestPlugIn : IPlayerTalkToNpcPlugIn
 {
     /// <inheritdoc />

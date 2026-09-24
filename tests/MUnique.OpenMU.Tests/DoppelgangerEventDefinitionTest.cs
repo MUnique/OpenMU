@@ -83,8 +83,9 @@ public class DoppelgangerEventDefinitionTest
     [TestCase(11, 20)]
     [TestCase(400, 400)]
     [TestCase(401, 410)]
-    [TestCase(800, 800)]
-    [TestCase(1000, 800)]
+    [TestCase(600, 600)]
+    [TestCase(601, 600)]
+    [TestCase(800, 600)]
     public void MonsterScalingByPlayerLevel(int playerLevel, int expectedMaximumPlayerLevel)
     {
         Assert.That(this._definition.GetMonsterScaling(playerLevel)?.MaximumPlayerLevel, Is.EqualTo(expectedMaximumPlayerLevel));
@@ -96,7 +97,7 @@ public class DoppelgangerEventDefinitionTest
     [Test]
     public void DefaultMonsterScalingsAreComplete()
     {
-        Assert.That(this._definition.MonsterScalings, Has.Count.EqualTo(80));
+        Assert.That(this._definition.MonsterScalings, Has.Count.EqualTo(60));
         Assert.That(
             this._definition.MonsterScalings,
             Has.All.Matches<DoppelgangerMonsterScaling>(scaling =>

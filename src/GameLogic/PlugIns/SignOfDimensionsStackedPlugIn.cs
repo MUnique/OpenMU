@@ -12,7 +12,7 @@ using MUnique.OpenMU.PlugIns;
 /// which is the ticket of the doppelganger event.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(SignOfDimensionsStackedPlugIn), Description = "This plugin transforms a full stack of signs of dimensions into a mirror of dimensions.")]
+[Display(Name = nameof(PlugInResources.SignOfDimensionsStackedPlugIn_Name), Description = nameof(PlugInResources.SignOfDimensionsStackedPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("6D2F8B41-0C7E-4A93-B15D-E84A3F29C706")]
 public sealed class SignOfDimensionsStackedPlugIn : IItemStackedPlugIn
 {

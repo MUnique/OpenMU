@@ -130,8 +130,11 @@ public sealed class DoppelgangerContext : MiniGameContext
         }
 
         var goalCount = Interlocked.Increment(ref this._goalCount);
+
+        // When several monsters reach the magic circle at the same time, the count can exceed the maximum.
+        var shownGoalCount = Math.Min(goalCount, this._definition.MaximumGoalCount);
         await this.ForEachPlayerAsync(player => player.InvokeViewPlugInAsync<IDoppelgangerEventViewPlugIn>(p =>
-            p.ShowMonsterGoalAsync(goalCount, this._definition.MaximumGoalCount)).AsTask()).ConfigureAwait(false);
+            p.ShowMonsterGoalAsync(shownGoalCount, this._definition.MaximumGoalCount)).AsTask()).ConfigureAwait(false);
 
         if (goalCount == this._definition.MaximumGoalCount)
         {
@@ -204,7 +207,9 @@ public sealed class DoppelgangerContext : MiniGameContext
             await this.DropChestItemsAsync(player, chest).ConfigureAwait(false);
         }
 
-        _ = Task.Run(() => this.RemoveOpenedChestAsync(chest));
+        // The talk to the chest isn't awaited, so waiting here for the opening animation doesn't block anything.
+        await Task.Delay(OpenedChestRemovalDelay).ConfigureAwait(false);
+        await this.RemoveNpcAsync(chest).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -553,7 +558,6 @@ public sealed class DoppelgangerContext : MiniGameContext
 
         var intelligence = new DoppelgangerMonsterIntelligence(this._path, pathPosition, walksAlongPath, attacksFirst, this.OnMonsterReachedMagicCircleAsync, this.Logger);
         var monster = new Monster(spawnArea, monsterDefinition, this.Map, this.DropGenerator, intelligence, this._gameContext.PlugInManager, this._gameContext.PathFinderPool, this);
-        intelligence.Npc = monster;
 
         // The multipliers have to be applied before the monster is initialized, which sets its health.
         var penalty = isAffectedByMissionFailure && Volatile.Read(ref this._isIceWalkerMissionFailed) != 0
@@ -631,19 +635,6 @@ public sealed class DoppelgangerContext : MiniGameContext
             isFirstItem = false;
             var droppedItem = new DroppedItem(item, position, this.Map, null, owners);
             await this.Map.AddAsync(droppedItem).ConfigureAwait(false);
-        }
-    }
-
-    private async Task RemoveOpenedChestAsync(Destructible chest)
-    {
-        try
-        {
-            await Task.Delay(OpenedChestRemovalDelay).ConfigureAwait(false);
-            await this.RemoveNpcAsync(chest).ConfigureAwait(false);
-        }
-        catch (Exception ex)
-        {
-            this.Logger.LogDebug(ex, "{context}: Failed to remove the opened chest {chest}.", this, chest);
         }
     }
 
