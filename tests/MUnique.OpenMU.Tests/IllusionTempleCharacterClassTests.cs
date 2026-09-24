@@ -72,6 +72,6 @@ public class IllusionTempleCharacterClassTests
     {
         var converted = characterClassNumber.ToIllusionTempleCharacterClass();
 
-        Assert.That(converted & 0xF0, Is.EqualTo(MasterClass));
+        Assert.That((byte)(converted & 0xF0), Is.EqualTo(MasterClass));
     }
 }
