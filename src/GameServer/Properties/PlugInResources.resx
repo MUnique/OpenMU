@@ -2481,4 +2481,16 @@
   <data name="CastleSiegeLifeStoneStatePlugIn_Description" xml:space="preserve">
     <value>Sends Castle Siege Life Stone creation progress to the game client.</value>
   </data>
+  <data name="RaklionEventViewPlugIn_Name" xml:space="preserve">
+    <value>Raklion Event View</value>
+  </data>
+  <data name="RaklionEventViewPlugIn_Description" xml:space="preserve">
+    <value>Sends the state of the raklion event and the skills of Selupan to the client.</value>
+  </data>
+  <data name="RaklionStateInfoRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Raklion State Info Request Handler</value>
+  </data>
+  <data name="RaklionStateInfoRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the request of the client for the state of the raklion event.</value>
+  </data>
 </root>

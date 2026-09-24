@@ -801,4 +801,31 @@
   <data name="DoppelgangerIceWalkerKilled" xml:space="preserve">
     <value>The Ice Walker has been defeated!</value>
   </data>
+  <data name="RaklionSelupanAppeared" xml:space="preserve">
+    <value>Selupan has appeared. The Hatchery Gates will be closed in {0} minute(s).</value>
+  </data>
+  <data name="RaklionHatcheryClosed" xml:space="preserve">
+    <value>The Hatchery Gate is closed.</value>
+  </data>
+  <data name="RaklionHatcheryOpensIn" xml:space="preserve">
+    <value>The Hatchery Gates will open in {0}.</value>
+  </data>
+  <data name="RaklionHatcheryIsClosed" xml:space="preserve">
+    <value>The Hatchery Gate is closed, you cannot enter.</value>
+  </data>
+  <data name="RaklionHatcheryOpened" xml:space="preserve">
+    <value>The Hatchery Gate is opened.</value>
+  </data>
+  <data name="RaklionSelupanDefeated" xml:space="preserve">
+    <value>{0} defeated Selupan! The Hatchery Gates will open in {1}.</value>
+  </data>
+  <data name="RaklionBattleFailed" xml:space="preserve">
+    <value>The battle against Selupan has failed. The Hatchery Gates will open in {0}.</value>
+  </data>
+  <data name="RaklionDurationHoursMinutes" xml:space="preserve">
+    <value>{0} hour(s) {1} minute(s)</value>
+  </data>
+  <data name="RaklionDurationMinutes" xml:space="preserve">
+    <value>{0} minute(s)</value>
+  </data>
 </root>

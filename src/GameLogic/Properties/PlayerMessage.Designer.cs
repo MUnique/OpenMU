@@ -1024,6 +1024,87 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The battle against Selupan has failed. The Hatchery Gates will open in {0}..
+        /// </summary>
+        public static string RaklionBattleFailed {
+            get {
+                return ResourceManager.GetString("RaklionBattleFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} hour(s) {1} minute(s).
+        /// </summary>
+        public static string RaklionDurationHoursMinutes {
+            get {
+                return ResourceManager.GetString("RaklionDurationHoursMinutes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} minute(s).
+        /// </summary>
+        public static string RaklionDurationMinutes {
+            get {
+                return ResourceManager.GetString("RaklionDurationMinutes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Hatchery Gate is closed..
+        /// </summary>
+        public static string RaklionHatcheryClosed {
+            get {
+                return ResourceManager.GetString("RaklionHatcheryClosed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Hatchery Gate is closed, you cannot enter..
+        /// </summary>
+        public static string RaklionHatcheryIsClosed {
+            get {
+                return ResourceManager.GetString("RaklionHatcheryIsClosed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Hatchery Gate is opened..
+        /// </summary>
+        public static string RaklionHatcheryOpened {
+            get {
+                return ResourceManager.GetString("RaklionHatcheryOpened", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Hatchery Gates will open in {0}..
+        /// </summary>
+        public static string RaklionHatcheryOpensIn {
+            get {
+                return ResourceManager.GetString("RaklionHatcheryOpensIn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selupan has appeared. The Hatchery Gates will be closed in {0} minute(s)..
+        /// </summary>
+        public static string RaklionSelupanAppeared {
+            get {
+                return ResourceManager.GetString("RaklionSelupanAppeared", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} defeated Selupan! The Hatchery Gates will open in {1}..
+        /// </summary>
+        public static string RaklionSelupanDefeated {
+            get {
+                return ResourceManager.GetString("RaklionSelupanDefeated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You need to be inside a mini game event to skip the waiting time..
         /// </summary>
         public static string SkipWaitNotInMiniGame {

@@ -25,6 +25,21 @@ internal class RaklionBoss : BaseMapInitializer
     internal const string Name = "LaCleon Boss";
 
     /// <summary>
+    /// The wave number of the spider eggs, which appear when the raklion event starts.
+    /// </summary>
+    internal const byte SpiderEggWaveNumber = 1;
+
+    /// <summary>
+    /// The wave number of Selupan, which appears when all spider eggs are destroyed.
+    /// </summary>
+    internal const byte SelupanWaveNumber = 2;
+
+    /// <summary>
+    /// The wave number of the monsters, which are summoned by Selupan.
+    /// </summary>
+    internal const byte SummonWaveNumber = 3;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="RaklionBoss"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -44,40 +59,43 @@ internal class RaklionBoss : BaseMapInitializer
     protected override byte SafezoneMapNumber => Raklion.Number;
 
     /// <inheritdoc />
+    /// <remarks>
+    /// The monsters are spawned by the raklion event, depending on its state.
+    /// </remarks>
     protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()
     {
-        yield return this.CreateMonsterSpawn(1, this.GameConfiguration.Monsters.First(m => m.Number == 459), 145, 31); // Selupan (the boss)
+        yield return this.CreateMonsterSpawn(1, this.GameConfiguration.Monsters.First(m => m.Number == 459), 145, 145, 31, 31, 1, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, SelupanWaveNumber); // Selupan (the boss)
 
         var spiderEggs1 = this.GameConfiguration.Monsters.First(m => m.Number == 460);
         var spiderEggs2 = this.GameConfiguration.Monsters.First(m => m.Number == 461);
         var spiderEggs3 = this.GameConfiguration.Monsters.First(m => m.Number == 462);
-        yield return this.CreateMonsterSpawn(100, spiderEggs1, 141, 27);
-        yield return this.CreateMonsterSpawn(101, spiderEggs2, 141, 28);
-        yield return this.CreateMonsterSpawn(102, spiderEggs3, 142, 28);
-        yield return this.CreateMonsterSpawn(103, spiderEggs1, 146, 34);
-        yield return this.CreateMonsterSpawn(104, spiderEggs3, 147, 34);
-        yield return this.CreateMonsterSpawn(105, spiderEggs2, 146, 33);
-        yield return this.CreateMonsterSpawn(106, spiderEggs1, 152, 31);
-        yield return this.CreateMonsterSpawn(107, spiderEggs1, 152, 30);
-        yield return this.CreateMonsterSpawn(108, spiderEggs2, 151, 30);
-        yield return this.CreateMonsterSpawn(109, spiderEggs3, 146, 29);
-        yield return this.CreateMonsterSpawn(110, spiderEggs3, 146, 30);
-        yield return this.CreateMonsterSpawn(111, spiderEggs2, 147, 29);
-        yield return this.CreateMonsterSpawn(112, spiderEggs1, 145, 24);
-        yield return this.CreateMonsterSpawn(113, spiderEggs1, 144, 24);
-        yield return this.CreateMonsterSpawn(114, spiderEggs2, 144, 25);
+        yield return this.CreateMonsterSpawn(100, spiderEggs1, 141, 141, 27, 27, 1, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, SpiderEggWaveNumber);
+        yield return this.CreateMonsterSpawn(101, spiderEggs2, 141, 141, 28, 28, 1, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, SpiderEggWaveNumber);
+        yield return this.CreateMonsterSpawn(102, spiderEggs3, 142, 142, 28, 28, 1, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, SpiderEggWaveNumber);
+        yield return this.CreateMonsterSpawn(103, spiderEggs1, 146, 146, 34, 34, 1, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, SpiderEggWaveNumber);
+        yield return this.CreateMonsterSpawn(104, spiderEggs3, 147, 147, 34, 34, 1, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, SpiderEggWaveNumber);
+        yield return this.CreateMonsterSpawn(105, spiderEggs2, 146, 146, 33, 33, 1, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, SpiderEggWaveNumber);
+        yield return this.CreateMonsterSpawn(106, spiderEggs1, 152, 152, 31, 31, 1, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, SpiderEggWaveNumber);
+        yield return this.CreateMonsterSpawn(107, spiderEggs1, 152, 152, 30, 30, 1, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, SpiderEggWaveNumber);
+        yield return this.CreateMonsterSpawn(108, spiderEggs2, 151, 151, 30, 30, 1, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, SpiderEggWaveNumber);
+        yield return this.CreateMonsterSpawn(109, spiderEggs3, 146, 146, 29, 29, 1, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, SpiderEggWaveNumber);
+        yield return this.CreateMonsterSpawn(110, spiderEggs3, 146, 146, 30, 30, 1, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, SpiderEggWaveNumber);
+        yield return this.CreateMonsterSpawn(111, spiderEggs2, 147, 147, 29, 29, 1, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, SpiderEggWaveNumber);
+        yield return this.CreateMonsterSpawn(112, spiderEggs1, 145, 145, 24, 24, 1, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, SpiderEggWaveNumber);
+        yield return this.CreateMonsterSpawn(113, spiderEggs1, 144, 144, 24, 24, 1, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, SpiderEggWaveNumber);
+        yield return this.CreateMonsterSpawn(114, spiderEggs2, 144, 144, 25, 25, 1, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, SpiderEggWaveNumber);
 
         var coolutin = this.GameConfiguration.Monsters.First(m => m.Number == 457);
-        yield return this.CreateMonsterSpawn(200, coolutin, 144, 25);
-        yield return this.CreateMonsterSpawn(201, coolutin, 144, 29);
-        yield return this.CreateMonsterSpawn(202, coolutin, 144, 32);
-        yield return this.CreateMonsterSpawn(203, coolutin, 144, 35);
-        yield return this.CreateMonsterSpawn(204, coolutin, 144, 38);
-        yield return this.CreateMonsterSpawn(205, coolutin, 153, 24);
-        yield return this.CreateMonsterSpawn(206, coolutin, 153, 28);
-        yield return this.CreateMonsterSpawn(207, coolutin, 153, 32);
-        yield return this.CreateMonsterSpawn(208, coolutin, 153, 35);
-        yield return this.CreateMonsterSpawn(209, coolutin, 153, 38);
+        yield return this.CreateMonsterSpawn(200, coolutin, 144, 144, 25, 25, 1, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, SummonWaveNumber);
+        yield return this.CreateMonsterSpawn(201, coolutin, 144, 144, 29, 29, 1, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, SummonWaveNumber);
+        yield return this.CreateMonsterSpawn(202, coolutin, 144, 144, 32, 32, 1, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, SummonWaveNumber);
+        yield return this.CreateMonsterSpawn(203, coolutin, 144, 144, 35, 35, 1, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, SummonWaveNumber);
+        yield return this.CreateMonsterSpawn(204, coolutin, 144, 144, 38, 38, 1, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, SummonWaveNumber);
+        yield return this.CreateMonsterSpawn(205, coolutin, 153, 153, 24, 24, 1, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, SummonWaveNumber);
+        yield return this.CreateMonsterSpawn(206, coolutin, 153, 153, 28, 28, 1, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, SummonWaveNumber);
+        yield return this.CreateMonsterSpawn(207, coolutin, 153, 153, 32, 32, 1, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, SummonWaveNumber);
+        yield return this.CreateMonsterSpawn(208, coolutin, 153, 153, 35, 35, 1, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, SummonWaveNumber);
+        yield return this.CreateMonsterSpawn(209, coolutin, 153, 153, 38, 38, 1, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, SummonWaveNumber);
     }
 
     /// <inheritdoc />
@@ -113,7 +131,7 @@ internal class RaklionBoss : BaseMapInitializer
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             monster.SetGuid(monster.Number);
-            /*TODO: Selupan appears to have 4 different types of skill attacks, which have different damage multipliers and magic effects.*/
+            // The skills of Selupan are used by its intelligence of the raklion event.
         }
 
         {

@@ -249,6 +249,16 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
     }
 
     /// <summary>
+    /// Teleports this instance to the specified target, so that the clients show it at the new
+    /// position with a teleport effect, instead of moving it there.
+    /// </summary>
+    /// <param name="target">The target.</param>
+    public ValueTask TeleportAsync(Point target)
+    {
+        return this.MoveAsync(target, MoveType.Teleport);
+    }
+
+    /// <summary>
     /// Moves this instance randomly.
     /// </summary>
     internal async ValueTask RandomMoveAsync()
