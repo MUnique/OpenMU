@@ -13055,6 +13055,359 @@
       </Field>
     </Fields>
   </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>D1</Code>
+      <SubCode>10</SubCode>
+      <Name>RaklionStateInfo</Name>
+      <Length>12</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player requested the state of the raklion event.</SentWhen>
+      <CausedReaction>The client updates the state of the raklion maps, e.g. whether the portal to the hatchery is shown, the effects and the music.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>RaklionState</TypeName>
+          <Name>State</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>DetailState</Name>
+          <Description>The state of Selupan, if the state is DetailState: 0 = none, 1 = standby, 2 to 8 = pattern 1 to 7 (by the remaining health), 9 = dead. Otherwise it is ignored by the client.</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Boolean</Type>
+          <Name>CanEnter</Name>
+          <Description>It is not used by the client.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>RemainingSeconds</Name>
+          <Description>It is not used by the client. The field is aligned to 4 bytes, because the client structure is not packed.</Description>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>RaklionState</Name>
+          <Description>The state of the raklion event.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Idle</Name>
+              <Description>No event activity; the hatchery gate is open.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Notify1</Name>
+              <Description>Only a few spider eggs are left.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Standby</Name>
+              <Description>All spider eggs are destroyed and Selupan is about to appear.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Notify2</Name>
+              <Description>Selupan appeared; the hatchery gate closes soon.</Description>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Ready</Name>
+              <Description>Selupan rises; the client plays the boss music on the hatchery map.</Description>
+              <Value>4</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>StartBattle</Name>
+              <Description>The battle against Selupan is running.</Description>
+              <Value>5</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Notify3</Name>
+              <Description>The hatchery gate is about to close.</Description>
+              <Value>6</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>CloseDoor</Name>
+              <Description>The hatchery gate is closed; nobody can enter anymore.</Description>
+              <Value>7</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>AllUserDie</Name>
+              <Description>All players of the battle died or left.</Description>
+              <Value>8</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Notify4</Name>
+              <Description>The battle ended; the hatchery gate opens soon.</Description>
+              <Value>9</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>End</Name>
+              <Description>The event ended.</Description>
+              <Value>10</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>DetailState</Name>
+              <Description>The detail state contains the state of Selupan.</Description>
+              <Value>11</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>D1</Code>
+      <SubCode>11</SubCode>
+      <Name>RaklionCurrentState</Name>
+      <Length>6</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player entered one of the raklion maps.</SentWhen>
+      <CausedReaction>The client updates the state of the raklion maps, e.g. whether the portal to the hatchery is shown, the effects and the music.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>RaklionState</TypeName>
+          <Name>State</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>DetailState</Name>
+          <Description>The state of Selupan, if the state is DetailState: 0 = none, 1 = standby, 2 to 8 = pattern 1 to 7 (by the remaining health), 9 = dead. Otherwise it is ignored by the client.</Description>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>RaklionState</Name>
+          <Description>The state of the raklion event.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Idle</Name>
+              <Description>No event activity; the hatchery gate is open.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Notify1</Name>
+              <Description>Only a few spider eggs are left.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Standby</Name>
+              <Description>All spider eggs are destroyed and Selupan is about to appear.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Notify2</Name>
+              <Description>Selupan appeared; the hatchery gate closes soon.</Description>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Ready</Name>
+              <Description>Selupan rises; the client plays the boss music on the hatchery map.</Description>
+              <Value>4</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>StartBattle</Name>
+              <Description>The battle against Selupan is running.</Description>
+              <Value>5</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Notify3</Name>
+              <Description>The hatchery gate is about to close.</Description>
+              <Value>6</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>CloseDoor</Name>
+              <Description>The hatchery gate is closed; nobody can enter anymore.</Description>
+              <Value>7</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>AllUserDie</Name>
+              <Description>All players of the battle died or left.</Description>
+              <Value>8</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Notify4</Name>
+              <Description>The battle ended; the hatchery gate opens soon.</Description>
+              <Value>9</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>End</Name>
+              <Description>The event ended.</Description>
+              <Value>10</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>DetailState</Name>
+              <Description>The detail state contains the state of Selupan.</Description>
+              <Value>11</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>D1</Code>
+      <SubCode>12</SubCode>
+      <Name>RaklionStateChange</Name>
+      <Length>6</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The state of the raklion event or of Selupan changed.</SentWhen>
+      <CausedReaction>The client updates the state of the raklion maps, e.g. whether the portal to the hatchery is shown, the effects and the music.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>RaklionState</TypeName>
+          <Name>State</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>DetailState</Name>
+          <Description>The state of Selupan, if the state is DetailState: 0 = none, 1 = standby, 2 to 8 = pattern 1 to 7 (by the remaining health), 9 = dead. Otherwise it is ignored by the client.</Description>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>RaklionState</Name>
+          <Description>The state of the raklion event.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Idle</Name>
+              <Description>No event activity; the hatchery gate is open.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Notify1</Name>
+              <Description>Only a few spider eggs are left.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Standby</Name>
+              <Description>All spider eggs are destroyed and Selupan is about to appear.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Notify2</Name>
+              <Description>Selupan appeared; the hatchery gate closes soon.</Description>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Ready</Name>
+              <Description>Selupan rises; the client plays the boss music on the hatchery map.</Description>
+              <Value>4</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>StartBattle</Name>
+              <Description>The battle against Selupan is running.</Description>
+              <Value>5</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Notify3</Name>
+              <Description>The hatchery gate is about to close.</Description>
+              <Value>6</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>CloseDoor</Name>
+              <Description>The hatchery gate is closed; nobody can enter anymore.</Description>
+              <Value>7</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>AllUserDie</Name>
+              <Description>All players of the battle died or left.</Description>
+              <Value>8</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Notify4</Name>
+              <Description>The battle ended; the hatchery gate opens soon.</Description>
+              <Value>9</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>End</Name>
+              <Description>The event ended.</Description>
+              <Value>10</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>DetailState</Name>
+              <Description>The detail state contains the state of Selupan.</Description>
+              <Value>11</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>D1</Code>
+      <SubCode>13</SubCode>
+      <Name>RaklionBattleResult</Name>
+      <Length>5</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The battle against Selupan ended.</SentWhen>
+      <CausedReaction>None, the client ignores it.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>BattleResult</TypeName>
+          <Name>Result</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>BattleResult</Name>
+          <Description>The result of the battle against Selupan.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Failure</Name>
+              <Description>All players of the battle died or left.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Success</Name>
+              <Description>Selupan was killed.</Description>
+              <Value>1</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>69</Code>
+      <Name>MonsterSkillAnimation</Name>
+      <Length>10</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>A monster performs a special skill, e.g. Selupan.</SentWhen>
+      <CausedReaction>The client shows the animation of the monster skill.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>SkillNumber</Name>
+          <Description>The number of the monster skill of the client, e.g. 34 to 42 for the skills of Selupan.</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>AttackerId</Name>
+          <Description>The id of the monster. The field is aligned to 2 bytes, because the client structure is not packed.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>TargetId</Name>
+          <Description>The id of the target. The highest bit is set, if the skill has been applied successfully.</Description>
+        </Field>
+      </Fields>
+    </Packet>
   </Packets>
   <Enums>
     <Enum>
