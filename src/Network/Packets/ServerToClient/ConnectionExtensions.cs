@@ -5621,7 +5621,7 @@ public static class ConnectionExtensions
     /// </summary>
     /// <param name="connection">The connection.</param>
     /// <param name="result">The result.</param>
-    /// <param name="rewardExperience">It is not shown by the client. The field is aligned to 4 bytes, because the original client structure is not packed.</param>
+    /// <param name="rewardExperience">The experience which the player got as reward. It is not shown by the client. The field is aligned to 4 bytes, because the client structure is not packed.</param>
     /// <remarks>
     /// Is sent by the server when: The doppelganger event ended for the player.
     /// Causes reaction on client side: The client stops the timer and the event music, and shows a message box with the result.

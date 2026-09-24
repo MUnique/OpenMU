@@ -9937,7 +9937,7 @@
           <Index>8</Index>
           <Type>IntegerLittleEndian</Type>
           <Name>RewardExperience</Name>
-          <Description>It is not shown by the client. The field is aligned to 4 bytes, because the original client structure is not packed.</Description>
+          <Description>The experience which the player got as reward. It is not shown by the client. The field is aligned to 4 bytes, because the client structure is not packed.</Description>
         </Field>
       </Fields>
       <Enums>

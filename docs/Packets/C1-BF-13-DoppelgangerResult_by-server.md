@@ -17,7 +17,7 @@ The client stops the timer and the event music, and shows a message box with the
 | 2 | 1 |    Byte   | 0xBF  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x13  | Packet header - sub packet type identifier |
 | 4 | 1 | ResultType |  | Result |
-| 8 | 4 | IntegerLittleEndian |  | RewardExperience; It is not shown by the client. The field is aligned to 4 bytes, because the original client structure is not packed. |
+| 8 | 4 | IntegerLittleEndian |  | RewardExperience; The experience which the player got as reward. It is not shown by the client. The field is aligned to 4 bytes, because the client structure is not packed. |
 
 ### ResultType Enum
 

@@ -27475,7 +27475,7 @@ public readonly struct DoppelgangerResult
     }
 
     /// <summary>
-    /// Gets or sets it is not shown by the client. The field is aligned to 4 bytes, because the original client structure is not packed.
+    /// Gets or sets the experience which the player got as reward. It is not shown by the client. The field is aligned to 4 bytes, because the client structure is not packed.
     /// </summary>
     public uint RewardExperience
     {

@@ -44,8 +44,7 @@ public class DoppelgangerEventDefinitionTest
     }
 
     /// <summary>
-    /// Tests that the lower bounds of a path area are exclusive and the upper bounds are inclusive,
-    /// as in the original server.
+    /// Tests that the lower bounds of a path area are exclusive and the upper bounds are inclusive.
     /// </summary>
     [Test]
     public void PathAreaBounds()

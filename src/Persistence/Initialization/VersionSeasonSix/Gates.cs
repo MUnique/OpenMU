@@ -423,7 +423,7 @@ public class Gates : InitializerBase
         targetGates.Add(328, this.CreateExitGate(maps[72], 241, 23, 243, 25, 0, true));
 
         // Doppelgaenger
-        // The areas of the original gates contain non-walkable coordinates, so they're reduced to their walkable part.
+        // The full areas of these gates contain non-walkable coordinates, so they're reduced to their walkable part.
         targetGates.Add(329, this.CreateExitGate(maps[65], 194, 26, 199, 32, 0, true));
         targetGates.Add(330, this.CreateExitGate(maps[66], 134, 69, 139, 74, 0, true));
         targetGates.Add(331, this.CreateExitGate(maps[67], 106, 60, 111, 62, 0, true));

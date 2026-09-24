@@ -91,7 +91,7 @@ internal class DoppelgangerDataTest
             map.SafezoneMap = map;
         }
 
-        // The original entrance gate of the first event map, which contains non-walkable coordinates.
+        // The previous entrance gate of the first event map, which contains non-walkable coordinates.
         var entrance = gameConfiguration.Maps.Single(map => map.Number == 65).ExitGates.Single(gate => gate.IsSpawnGate);
         (entrance.X1, entrance.Y1, entrance.X2, entrance.Y2) = ((byte)193, (byte)26, (byte)200, (byte)32);
 

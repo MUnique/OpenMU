@@ -13,7 +13,7 @@ using MUnique.OpenMU.Persistence.Initialization.Skills;
 /// The initializer for the monsters of the doppelganger event.
 /// </summary>
 /// <remarks>
-/// The values are the base values of the original season 6 server data.
+/// The values are default values, which can be adjusted in the admin panel.
 /// </remarks>
 internal class DoppelgangerMonsters : InitializerBase
 {
@@ -63,7 +63,7 @@ internal class DoppelgangerMonsters : InitializerBase
     /// <summary>
     /// Configures the reward chests, which were created as passive NPCs before, so that they can
     /// be opened by attacking them. They drop jewels and with a small chance a Loch's Feather
-    /// or Crest of Monarch, similar to the original item bags.
+    /// or Crest of Monarch.
     /// </summary>
     internal void ConfigureRewardChests()
     {
