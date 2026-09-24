@@ -8,7 +8,6 @@ using System.Collections.Concurrent;
 using System.Threading;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Properties;
-using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// The context of the raklion event of a game server.
@@ -43,6 +42,7 @@ public sealed class RaklionContext : IEventStateProvider, IDisposable
     private DateTime _stateStart = DateTime.UtcNow;
     private bool _areFewEggsNotified;
     private bool _arePlayersRemoved;
+    private bool _isMissingConfigurationLogged;
     private int _isSelupanDead;
 
     /// <summary>
@@ -140,6 +140,18 @@ public sealed class RaklionContext : IEventStateProvider, IDisposable
             return;
         }
 
+        if (!this.GetWaveSpawns(this._definition.SelupanWaveNumber).Any())
+        {
+            // Without the monster spawns of the event (e.g. when the data update wasn't applied yet), the event can't run.
+            if (!this._isMissingConfigurationLogged)
+            {
+                this._isMissingConfigurationLogged = true;
+                this._logger.LogWarning("The raklion event doesn't run, because the spawn of Selupan isn't configured at the wave {wave} of the hatchery map.", this._definition.SelupanWaveNumber);
+            }
+
+            return;
+        }
+
         await this.RemoveUnauthorizedPlayersAsync().ConfigureAwait(false);
 
         var elapsed = DateTime.UtcNow - this._stateStart;
@@ -228,6 +240,11 @@ public sealed class RaklionContext : IEventStateProvider, IDisposable
     /// </summary>
     internal async ValueTask SummonMonstersAsync()
     {
+        foreach (var deadMonster in this._summonedMonsters.Keys.Where(monster => !monster.IsAlive))
+        {
+            this._summonedMonsters.TryRemove(deadMonster, out _);
+        }
+
         foreach (var spawnArea in this.GetMissingSummons().ToList())
         {
             if (await this.SpawnMonsterAsync(spawnArea, new BasicMonsterIntelligence()).ConfigureAwait(false) is { } monster)

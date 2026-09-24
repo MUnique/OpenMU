@@ -8,7 +8,6 @@ using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Raklion;
 using MUnique.OpenMU.GameLogic.Views;
-using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.PlugIns;
 using RaklionState = MUnique.OpenMU.GameLogic.Raklion.RaklionState;

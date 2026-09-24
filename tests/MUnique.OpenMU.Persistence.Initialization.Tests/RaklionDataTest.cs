@@ -31,7 +31,8 @@ internal class RaklionDataTest
     }
 
     /// <summary>
-    /// Tests that the update changes the automatic spawns of the hatchery of an existing database to the waves of the event.
+    /// Tests that the update changes the automatic spawns of the hatchery of an existing database to the waves of the event,
+    /// and that applying it twice doesn't change anything.
     /// </summary>
     [Test]
     public async Task UpdateChangesSpawnsOfExistingDatabaseAsync()
@@ -44,7 +45,9 @@ internal class RaklionDataTest
             spawn.WaveNumber = 0;
         }
 
-        await new AddRaklionEventUpdatePlugIn().ApplyUpdateAsync(contextProvider.CreateNewContext(), gameConfiguration).ConfigureAwait(false);
+        var update = new AddRaklionEventUpdatePlugIn();
+        await update.ApplyUpdateAsync(contextProvider.CreateNewContext(), gameConfiguration).ConfigureAwait(false);
+        await update.ApplyUpdateAsync(contextProvider.CreateNewContext(), gameConfiguration).ConfigureAwait(false);
 
         AssertEventSpawns(gameConfiguration);
     }

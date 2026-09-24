@@ -364,7 +364,11 @@ public sealed class SelupanIntelligence : INpcIntelligence, IDisposable
                 await this.ShowSkillAsync(monster, null, SelupanSkill.Teleport).ConfigureAwait(false);
                 await monster.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowSkillAnimationAsync(monster, monster, TeleportSkillNumber, true), true).ConfigureAwait(false);
                 await Task.Delay(TeleportVanishDuration).ConfigureAwait(false);
-                await monster.TeleportAsync(target).ConfigureAwait(false);
+                if (monster.IsAlive)
+                {
+                    await monster.TeleportAsync(target).ConfigureAwait(false);
+                }
+
                 return;
             }
         }
