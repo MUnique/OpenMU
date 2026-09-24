@@ -581,7 +581,12 @@ public enum UpdateVersion
     AddKanturuMapContent = 114,
 
     /// <summary>
+    /// The version of the <see cref="AddDoppelgangerDataUpdatePlugIn"/>.
+    /// </summary>
+    AddDoppelgangerData = 115,
+
+    /// <summary>
     /// The version of the <see cref="FixKanturuEventSafezoneMapUpdate"/>.
     /// </summary>
-    FixKanturuEventSafezoneMap = 115,
+    FixKanturuEventSafezoneMap = 116,
 }

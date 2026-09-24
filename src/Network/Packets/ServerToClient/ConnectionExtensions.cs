@@ -5503,6 +5503,180 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="DoppelgangerEnterResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <remarks>
+    /// Is sent by the server when: The player requested to enter the doppelganger event through the NPC Lugard.
+    /// Causes reaction on client side: On failure, the client locks the enter button of the doppelganger entry dialog and may show a message.
+    /// </remarks>
+    public static async ValueTask SendDoppelgangerEnterResultAsync(this IConnection? connection, DoppelgangerEnterResult.EnterResult @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = DoppelgangerEnterResultRef.Length;
+            var packet = new DoppelgangerEnterResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="DoppelgangerMonsterPosition" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="position">The position index on the path, between 0 (start) and 22 (magic circle).</param>
+    /// <remarks>
+    /// Is sent by the server when: The position of the most advanced monster on the path to the magic circle changed during the doppelganger event.
+    /// Causes reaction on client side: The client updates the monster progress bar of the doppelganger frame.
+    /// </remarks>
+    public static async ValueTask SendDoppelgangerMonsterPositionAsync(this IConnection? connection, byte @position)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = DoppelgangerMonsterPositionRef.Length;
+            var packet = new DoppelgangerMonsterPositionRef(connection.Output.GetSpan(length)[..length]);
+            packet.Position = @position;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="DoppelgangerStateUpdate" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="state">The state.</param>
+    /// <remarks>
+    /// Is sent by the server when: The state of the doppelganger event changed.
+    /// Causes reaction on client side: When the event starts (state Playing), the client shows the doppelganger frame and a message box with the failure conditions.
+    /// </remarks>
+    public static async ValueTask SendDoppelgangerStateUpdateAsync(this IConnection? connection, DoppelgangerStateUpdate.DoppelgangerState @state)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = DoppelgangerStateUpdateRef.Length;
+            var packet = new DoppelgangerStateUpdateRef(connection.Output.GetSpan(length)[..length]);
+            packet.State = @state;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="DoppelgangerIceWalkerState" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="state">The state.</param>
+    /// <param name="position">The position index of the ice walker on the path, between 0 (start) and 22 (magic circle).</param>
+    /// <remarks>
+    /// Is sent by the server when: The ice walker appeared on or disappeared from the path during the doppelganger event.
+    /// Causes reaction on client side: The client shows or hides the ice walker icon on the progress bar of the doppelganger frame.
+    /// </remarks>
+    public static async ValueTask SendDoppelgangerIceWalkerStateAsync(this IConnection? connection, DoppelgangerIceWalkerState.IceWalkerState @state, byte @position)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = DoppelgangerIceWalkerStateRef.Length;
+            var packet = new DoppelgangerIceWalkerStateRef(connection.Output.GetSpan(length)[..length]);
+            packet.State = @state;
+            packet.Position = @position;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="DoppelgangerResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="rewardExperience">The experience which the player got as reward. It is not shown by the client. The field is aligned to 4 bytes, because the client structure is not packed.</param>
+    /// <remarks>
+    /// Is sent by the server when: The doppelganger event ended for the player.
+    /// Causes reaction on client side: The client stops the timer and the event music, and shows a message box with the result.
+    /// </remarks>
+    public static async ValueTask SendDoppelgangerResultAsync(this IConnection? connection, DoppelgangerResult.ResultType @result, uint @rewardExperience)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = DoppelgangerResultRef.Length;
+            var packet = new DoppelgangerResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.RewardExperience = @rewardExperience;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="DoppelgangerMonsterGoal" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="maximumGoalCount">The number of monsters which may reach the magic circle until the event fails.</param>
+    /// <param name="goalCount">The number of monsters which reached the magic circle.</param>
+    /// <remarks>
+    /// Is sent by the server when: A monster reached the magic circle during the doppelganger event.
+    /// Causes reaction on client side: The client updates the counter of monsters which passed the magic circle.
+    /// </remarks>
+    public static async ValueTask SendDoppelgangerMonsterGoalAsync(this IConnection? connection, byte @maximumGoalCount, byte @goalCount)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = DoppelgangerMonsterGoalRef.Length;
+            var packet = new DoppelgangerMonsterGoalRef(connection.Output.GetSpan(length)[..length]);
+            packet.MaximumGoalCount = @maximumGoalCount;
+            packet.GoalCount = @goalCount;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="MuHelperStatusUpdate" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>

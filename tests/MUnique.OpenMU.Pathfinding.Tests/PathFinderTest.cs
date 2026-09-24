@@ -43,6 +43,36 @@ public class PathFinderTest
     }
 
     /// <summary>
+    /// Tests that a path is found for all distances which fit into a segment of the
+    /// <see cref="ScopedGridNetwork"/>, with even and odd coordinates.
+    /// The segment used to be placed around the truncated average of the start and end,
+    /// which excluded the start or end for some combinations of odd coordinates,
+    /// e.g. from (125, 103) to (124, 97).
+    /// </summary>
+    [Test]
+    public void TestPathsWithinSegmentDistance()
+    {
+        const int maximumDifference = 15;
+        var failed = new List<string>();
+        foreach (var start in new[] { new Point(150, 150), new Point(151, 151), new Point(150, 151) })
+        {
+            for (var dx = -maximumDifference; dx <= maximumDifference; dx++)
+            {
+                for (var dy = -maximumDifference; dy <= maximumDifference; dy++)
+                {
+                    var end = new Point((byte)(start.X + dx), (byte)(start.Y + dy));
+                    if (this._pathFinder.FindPath(start, end, this._grid, false) is null)
+                    {
+                        failed.Add($"{start} -> {end}");
+                    }
+                }
+            }
+        }
+
+        Assert.That(failed, Is.Empty, $"{failed.Count} paths not found, e.g. {string.Join(", ", failed.Take(5))}");
+    }
+
+    /// <summary>
     /// Tests the straight path.
     /// </summary>
     [Test]

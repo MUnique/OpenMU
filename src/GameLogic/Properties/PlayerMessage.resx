@@ -792,4 +792,13 @@
   <data name="CharacterNotStrongEnoughMessage" xml:space="preserve">
     <value>You are not strong enough for this yet.</value>
   </data>
+  <data name="DoppelgangerIceWalkerAppeared" xml:space="preserve">
+    <value>The Ice Walker appeared! Kill it within one minute, or the following monsters become stronger.</value>
+  </data>
+  <data name="DoppelgangerIceWalkerEscaped" xml:space="preserve">
+    <value>The Ice Walker escaped! The following monsters are stronger.</value>
+  </data>
+  <data name="DoppelgangerIceWalkerKilled" xml:space="preserve">
+    <value>The Ice Walker has been defeated!</value>
+  </data>
 </root>
