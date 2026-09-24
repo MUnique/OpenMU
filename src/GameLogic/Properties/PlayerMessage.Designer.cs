@@ -1024,6 +1024,51 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The hatchery has been closed. The battle against Selupan begins!.
+        /// </summary>
+        public static string RaklionHatcheryClosed {
+            get {
+                return ResourceManager.GetString("RaklionHatcheryClosed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The hatchery is closed. You can not enter it now..
+        /// </summary>
+        public static string RaklionHatcheryIsClosed {
+            get {
+                return ResourceManager.GetString("RaklionHatcheryIsClosed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The battle against Selupan ended. The hatchery opens again in {0} minute(s)..
+        /// </summary>
+        public static string RaklionHatcheryOpensIn {
+            get {
+                return ResourceManager.GetString("RaklionHatcheryOpensIn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selupan appeared! The hatchery closes in {0} minute(s)..
+        /// </summary>
+        public static string RaklionSelupanAppeared {
+            get {
+                return ResourceManager.GetString("RaklionSelupanAppeared", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} killed Selupan!.
+        /// </summary>
+        public static string RaklionSelupanKilled {
+            get {
+                return ResourceManager.GetString("RaklionSelupanKilled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You need to be inside a mini game event to skip the waiting time..
         /// </summary>
         public static string SkipWaitNotInMiniGame {
