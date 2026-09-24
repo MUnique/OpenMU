@@ -56,7 +56,13 @@ public class EnterDoppelgangerAction
         }
     }
 
-    private static Item? FindTicket(Player player, byte ticketInventoryIndex)
+    /// <summary>
+    /// Finds the ticket which should be used to enter the event.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="ticketInventoryIndex">The inventory index of the ticket item, or 0xFF to search it in the inventory.</param>
+    /// <returns>The ticket, or <c>null</c> if the player has none.</returns>
+    internal static Item? FindTicket(Player player, byte ticketInventoryIndex)
     {
         if (player.Inventory is not { } inventory)
         {

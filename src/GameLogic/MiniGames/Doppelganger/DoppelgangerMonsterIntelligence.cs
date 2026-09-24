@@ -126,24 +126,10 @@ public sealed class DoppelgangerMonsterIntelligence : INpcIntelligence, IDisposa
         this._timer = null;
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
-    private async void SafeTick()
-    {
-        try
-        {
-            await this.TickAsync().ConfigureAwait(false);
-        }
-        catch (OperationCanceledException)
-        {
-            // expected during shutdown.
-        }
-        catch (Exception ex)
-        {
-            this._logger.LogError(ex, "Unexpected error in the doppelganger monster intelligence of {monster}.", this._monster);
-        }
-    }
-
-    private async ValueTask TickAsync()
+    /// <summary>
+    /// Executes one step of the intelligence. It's called periodically by a timer.
+    /// </summary>
+    internal async ValueTask TickAsync()
     {
         if (this._monster is not { IsAlive: true } monster
             || Volatile.Read(ref this._hasReachedMagicCircle) != 0)
@@ -180,6 +166,23 @@ public sealed class DoppelgangerMonsterIntelligence : INpcIntelligence, IDisposa
         if (this.WalksAlongPath && monster.Attributes[Stats.IsFrozen] <= 0)
         {
             await monster.WalkToAsync(this.GetWalkTarget(this._path[this.PathPosition + 1])).ConfigureAwait(false);
+        }
+    }
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
+    private async void SafeTick()
+    {
+        try
+        {
+            await this.TickAsync().ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            // expected during shutdown.
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Unexpected error in the doppelganger monster intelligence of {monster}.", this._monster);
         }
     }
 
