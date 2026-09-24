@@ -8,6 +8,8 @@ using System.Collections.Concurrent;
 using System.Threading;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Properties;
+using MUnique.OpenMU.GameLogic.Views;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// The context of the raklion event of a game server.
@@ -39,6 +41,7 @@ public sealed class RaklionContext : IEventStateProvider, IDisposable
     private GameMap? _raklionMap;
     private GameMap? _hatcheryMap;
     private Monster? _selupan;
+    private string? _selupanKillerName;
     private DateTime _stateStart = DateTime.UtcNow;
     private bool _areFewEggsNotified;
     private bool _arePlayersRemoved;
@@ -288,6 +291,7 @@ public sealed class RaklionContext : IEventStateProvider, IDisposable
     {
         await this.RemoveEventMonstersAsync().ConfigureAwait(false);
         Volatile.Write(ref this._isSelupanDead, 0);
+        this._selupanKillerName = null;
         this._areFewEggsNotified = false;
         this._arePlayersRemoved = false;
         this._battlePlayers.Clear();
@@ -381,8 +385,15 @@ public sealed class RaklionContext : IEventStateProvider, IDisposable
         this._logger.LogInformation("Raklion battle ended, success: {success}.", success);
         await this.ForEachPlayerAsync(player => player.InvokeViewPlugInAsync<IRaklionEventViewPlugIn>(p => p.ShowBattleResultAsync(success)).AsTask()).ConfigureAwait(false);
         await this.ChangeStateAsync(RaklionState.Notify4).ConfigureAwait(false);
-        var minutes = (int)Math.Ceiling(this._definition.HatcheryOpenDelay.TotalMinutes);
-        await this.ShowMessageToAllPlayersAsync(nameof(PlayerMessage.RaklionHatcheryOpensIn), minutes).ConfigureAwait(false);
+
+        // One message for the result and the opening time, so that they don't replace each other on the screen.
+        // It's also shown in the chat, so that it can be read again.
+        var killerName = this._selupanKillerName;
+        await this.ShowMessageToAllPlayersAsync(
+            player => success
+                ? player.GetLocalizedMessage(nameof(PlayerMessage.RaklionSelupanDefeated), killerName, this.GetOpeningTime(player))
+                : player.GetLocalizedMessage(nameof(PlayerMessage.RaklionBattleFailed), this.GetOpeningTime(player)),
+            true).ConfigureAwait(false);
     }
 
     private async ValueTask ChangeStateAsync(RaklionState state)
@@ -443,16 +454,16 @@ public sealed class RaklionContext : IEventStateProvider, IDisposable
 
     private void OnSelupanDied(object? sender, DeathInformation e)
     {
+        this._selupanKillerName = e.KillerName;
         Volatile.Write(ref this._isSelupanDead, 1);
-        _ = this.OnSelupanDiedAsync(e.KillerName);
+        _ = this.OnSelupanDiedAsync();
     }
 
-    private async Task OnSelupanDiedAsync(string killerName)
+    private async Task OnSelupanDiedAsync()
     {
         try
         {
             await this.ChangeSelupanStateAsync(SelupanState.Dead).ConfigureAwait(false);
-            await this.ShowMessageToAllPlayersAsync(nameof(PlayerMessage.RaklionSelupanKilled), killerName).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -483,6 +494,11 @@ public sealed class RaklionContext : IEventStateProvider, IDisposable
         {
             // The player is moved out of the hatchery by the next tick.
             await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.RaklionHatcheryIsClosed)).ConfigureAwait(false);
+            if (this.State == RaklionState.Notify4)
+            {
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.RaklionHatcheryOpensIn), this.GetOpeningTime(player)).ConfigureAwait(false);
+            }
+
             return;
         }
 
@@ -537,16 +553,42 @@ public sealed class RaklionContext : IEventStateProvider, IDisposable
     }
 
     /// <summary>
+    /// Gets the localized time until the hatchery opens again, e.g. "11 hour(s) 59 minute(s)".
+    /// </summary>
+    private string GetOpeningTime(Player player)
+    {
+        var minutes = (int)Math.Ceiling(this.GetRemainingTime().TotalMinutes);
+        return minutes >= 60
+            ? player.GetLocalizedMessage(nameof(PlayerMessage.RaklionDurationHoursMinutes), minutes / 60, minutes % 60)
+            : player.GetLocalizedMessage(nameof(PlayerMessage.RaklionDurationMinutes), minutes);
+    }
+
+    /// <summary>
     /// Shows a golden message to all players of the game server, like the original game does.
     /// </summary>
-    private async ValueTask ShowMessageToAllPlayersAsync(string messageKey, params object?[] arguments)
+    private ValueTask ShowMessageToAllPlayersAsync(string messageKey, params object?[] arguments)
+    {
+        return this.ShowMessageToAllPlayersAsync(player => player.GetLocalizedMessage(messageKey, arguments), false);
+    }
+
+    /// <summary>
+    /// Shows a golden message to all players of the game server.
+    /// </summary>
+    /// <param name="getMessage">The function which gets the localized message for a player.</param>
+    /// <param name="showInChat">If set to <c>true</c>, the message is shown in the chat as well.</param>
+    private async ValueTask ShowMessageToAllPlayersAsync(Func<Player, string> getMessage, bool showInChat)
     {
         var players = await this._gameContext.GetPlayersAsync().ConfigureAwait(false);
         foreach (var player in players)
         {
             try
             {
-                await player.ShowLocalizedGoldenMessageAsync(messageKey, arguments).ConfigureAwait(false);
+                var message = getMessage(player);
+                await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.GoldenCenter)).ConfigureAwait(false);
+                if (showInChat)
+                {
+                    await player.ShowBlueMessageAsync(message).ConfigureAwait(false);
+                }
             }
             catch (Exception ex)
             {

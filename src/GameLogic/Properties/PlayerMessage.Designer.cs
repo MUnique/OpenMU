@@ -1024,6 +1024,33 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The battle against Selupan has failed. The Hatchery Gates will open in {0}..
+        /// </summary>
+        public static string RaklionBattleFailed {
+            get {
+                return ResourceManager.GetString("RaklionBattleFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} hour(s) {1} minute(s).
+        /// </summary>
+        public static string RaklionDurationHoursMinutes {
+            get {
+                return ResourceManager.GetString("RaklionDurationHoursMinutes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} minute(s).
+        /// </summary>
+        public static string RaklionDurationMinutes {
+            get {
+                return ResourceManager.GetString("RaklionDurationMinutes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The Hatchery Gate is closed..
         /// </summary>
         public static string RaklionHatcheryClosed {
@@ -1051,7 +1078,7 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Hatchery Gates will open in {0} minute(s)..
+        ///   Looks up a localized string similar to The Hatchery Gates will open in {0}..
         /// </summary>
         public static string RaklionHatcheryOpensIn {
             get {
@@ -1069,11 +1096,11 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} killed Selupan!.
+        ///   Looks up a localized string similar to {0} defeated Selupan! The Hatchery Gates will open in {1}..
         /// </summary>
-        public static string RaklionSelupanKilled {
+        public static string RaklionSelupanDefeated {
             get {
-                return ResourceManager.GetString("RaklionSelupanKilled", resourceCulture);
+                return ResourceManager.GetString("RaklionSelupanDefeated", resourceCulture);
             }
         }
         
