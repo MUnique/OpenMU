@@ -35,6 +35,8 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
 
     private readonly SkippableDelay _skipDelay;
 
+    private int _gameLoopStarted;
+
     private Stopwatch? _elapsedTimeSinceStart;
 
     /// <summary>
@@ -50,7 +52,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         this._mapInitializer = mapInitializer;
         this.Key = key;
         this.Definition = definition;
-        this.EnterEndsAtUtc = DateTime.UtcNow.Add(definition.EnterDuration.AtLeast(this.MinimumEnterDuration));
+        this.EnterEndsAtUtc = DateTime.UtcNow.Add(definition.EnterDuration.AtLeast(CountdownMessageDuration));
         this.Logger = this._gameContext.LoggerFactory.CreateLogger(this.GetType());
         this.DropGenerator = this._gameContext.DropGenerator;
         this._skipDelay = new SkippableDelay(this.Logger, this);
@@ -58,7 +60,6 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         this.Map = this.CreateMap();
 
         this._players = new MiniGamePlayerRegistry(this.Definition);
-
         // Rewards intentionally follow the game's (possibly overridden) drop generator
         // instead of the game context one: ChaosCastleDropGenerator only overrides monster
         // kill drops and delegates reward generation back to the context generator,
@@ -84,8 +85,6 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
             this,
             message => this.ShowGoldenMessageAsync(message),
             () => this._elapsedTimeSinceStart?.Elapsed);
-
-        _ = Task.Run(() => this.RunGameAsync(this.GameEndedToken), this.GameEndedToken);
     }
 
     /// <summary>
@@ -285,6 +284,19 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     /// <param name="player">The player which enters.</param>
     /// <returns>The spawn position, or <c>null</c> to keep the warp target.</returns>
     internal virtual Point? GetEntrySpawnPosition(Player player) => null;
+
+    /// <summary>
+    /// Starts the game loop, unless it was started before. It can't start in the
+    /// constructor: the loop reads overridden members which aren't ready until the
+    /// derived constructor body ran.
+    /// </summary>
+    internal void EnsureGameLoopRunning()
+    {
+        if (Interlocked.CompareExchange(ref this._gameLoopStarted, 1, 0) == 0)
+        {
+            _ = Task.Run(() => this.RunGameAsync(this.GameEndedToken), this.GameEndedToken);
+        }
+    }
 
     /// <summary>
     /// Waits for the specified duration, unless the wait is skipped through
@@ -699,7 +711,17 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     private async ValueTask StopAsync()
     {
         await this._players.SetStateAsync(MiniGameState.Ended).ConfigureAwait(false);
-        await this._gameEndedCts.CancelAsync().ConfigureAwait(false);
+        try
+        {
+            await this._gameEndedCts.CancelAsync().ConfigureAwait(false);
+        }
+        catch (ObjectDisposedException)
+        {
+            // Already torn down, e.g. by a repeated game-master restart racing this
+            // loop: disposal already warped the players out, so there is nothing to stop.
+            this.Logger.LogDebug("{context}: StopAsync called on a disposed game, skipping.", this);
+            return;
+        }
 
         this._spawnWaves.Clear();
         await this.Map.ClearEventSpawnedNpcsAsync().ConfigureAwait(false);

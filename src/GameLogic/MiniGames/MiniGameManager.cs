@@ -101,6 +101,10 @@ public sealed class MiniGameManager : IMiniGameManager
         await this._mapInitializer.InitializeStateAsync(createdMap).ConfigureAwait(false);
         this.GameMapCreated?.Invoke(this, createdMap);
         MiniGameCounter.Add(1);
+
+        // The loop starts here and not in the constructor, so overridden members
+        // read their post-construction values from the first tick on.
+        miniGameContext.EnsureGameLoopRunning();
         return miniGameContext;
     }
 

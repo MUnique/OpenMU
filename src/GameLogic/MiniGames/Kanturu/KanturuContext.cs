@@ -200,7 +200,7 @@ public sealed class KanturuContext : MiniGameContext
             && until > DateTime.UtcNow)
         {
             Interlocked.Exchange(ref this._isVictory, 1);
-            await this.OpenTowerMapAsync().ConfigureAwait(false);
+            await this.AnnounceTowerMapAsync().ConfigureAwait(false);
             _ = Task.Run(() => this.RunTowerModeAsync(this.GameEndedToken), this.GameEndedToken);
             return;
         }
@@ -238,6 +238,11 @@ public sealed class KanturuContext : MiniGameContext
                     this.Logger.LogWarning(
                         "Kanturu: Nightmare died during phase {Phase}, where it isn't expected. The barrier is NOT opened.",
                         phase?.Name ?? "<none>");
+                }
+
+                if (phase?.Kind != KanturuPhaseKind.Nightmare)
+                {
+                    return;
                 }
             }
 
@@ -435,7 +440,7 @@ public sealed class KanturuContext : MiniGameContext
         }
 
         var killWait = this._killTracker.PhaseCompleted.WaitAsync(ct);
-        if (phase.TimeLimit is not { } timeLimit)
+        if (phase.TimeLimit is not { } timeLimit || timeLimit <= TimeSpan.Zero)
         {
             await killWait.ConfigureAwait(false);
             return true;
@@ -444,7 +449,11 @@ public sealed class KanturuContext : MiniGameContext
         // A wave fails when its time limit expires before the kill target is reached.
         // A skipped wait (game master) passes the wave instead. When both finish at
         // once, the kills win: failing an actually completed wave would be unfair.
+        // Both racers are observed: the loser would otherwise surface an unobserved
+        // OperationCanceledException when the game ends.
         var timeoutWait = this.DelayWithSkipAsync(timeLimit, ct);
+        Observe(killWait);
+        Observe(timeoutWait);
         var winner = await Task.WhenAny(killWait, timeoutWait).ConfigureAwait(false);
         if (winner == killWait)
         {
@@ -453,6 +462,12 @@ public sealed class KanturuContext : MiniGameContext
         }
 
         return await timeoutWait.ConfigureAwait(false) || killWait.IsCompletedSuccessfully;
+
+        static void Observe(Task task) => _ = task.ContinueWith(
+            static faulted => _ = faulted.Exception,
+            CancellationToken.None,
+            TaskContinuationOptions.OnlyOnFaulted,
+            TaskScheduler.Default);
     }
 
     /// <summary>
@@ -598,13 +613,12 @@ public sealed class KanturuContext : MiniGameContext
     }
 
     /// <summary>
-    /// Opens an already-open tower on a fresh map, without battle overlay or cinematic.
-    /// Reapplies the barrier idempotently: the constructor already opened it, so players
-    /// warping in before the game starts never face a closed barrier.
+    /// Announces an already-open tower on a fresh map, without battle overlay or cinematic.
+    /// The barrier itself is opened at creation, so players warping in before the game
+    /// starts never face a closed barrier.
     /// </summary>
-    private async ValueTask OpenTowerMapAsync()
+    private async ValueTask AnnounceTowerMapAsync()
     {
-        this.ApplyBarrierTerrain();
         await this.ShowKanturuStateAsync(KanturuState.Tower, (byte)KanturuTowerDetailState.Revitalization).ConfigureAwait(false);
         await this.SendBarrierAttributesAsync().ConfigureAwait(false);
     }
