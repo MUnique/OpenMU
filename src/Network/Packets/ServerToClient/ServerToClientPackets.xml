@@ -9355,7 +9355,7 @@
       <Name>IllusionTempleState</Name>
       <Direction>ServerToClient</Direction>
       <SentWhen>The player is in the illusion temple event and the server sends a cyclic update.</SentWhen>
-      <CausedReaction>The client shows the state in the user interface.</CausedReaction>
+      <CausedReaction>The client shows the score board, the remaining time, and the carrier of the holy relic and the own team mates on its mini map.</CausedReaction>
       <Fields>
         <Field>
           <Index>4</Index>
@@ -9363,51 +9363,51 @@
           <Name>RemainingSeconds</Name>
         </Field>
         <Field>
-          <Index>4</Index>
-          <Type>ShortLittleEndian</Type>
-          <Name>PlayerIndex</Name>
-        </Field>
-        <Field>
           <Index>6</Index>
-          <Type>Byte</Type>
-          <Name>PositionX</Name>
-        </Field>
-        <Field>
-          <Index>7</Index>
-          <Type>Byte</Type>
-          <Name>PositionY</Name>
+          <Type>ShortLittleEndian</Type>
+          <Name>RelicCarrierId</Name>
         </Field>
         <Field>
           <Index>8</Index>
           <Type>Byte</Type>
-          <Name>Team1Points</Name>
+          <Name>PositionX</Name>
         </Field>
         <Field>
           <Index>9</Index>
           <Type>Byte</Type>
-          <Name>Team2Points</Name>
+          <Name>PositionY</Name>
         </Field>
         <Field>
           <Index>10</Index>
           <Type>Byte</Type>
-          <Name>MyTeam</Name>
+          <Name>AlliedForcesPoints</Name>
         </Field>
         <Field>
           <Index>11</Index>
           <Type>Byte</Type>
-          <Name>PartyCount</Name>
+          <Name>IllusionForcesPoints</Name>
         </Field>
         <Field>
           <Index>12</Index>
+          <Type>Byte</Type>
+          <Name>MyTeam</Name>
+        </Field>
+        <Field>
+          <Index>13</Index>
+          <Type>Byte</Type>
+          <Name>PartyCount</Name>
+        </Field>
+        <Field>
+          <Index>14</Index>
           <Type>Structure[]</Type>
-          <TypeName>IllusionTemplePartyEntry</TypeName>
-          <Name>PartyMembers</Name>
+          <TypeName>IllusionTempleTeamMate</TypeName>
+          <Name>TeamMates</Name>
         </Field>
       </Fields>
       <Structures>
         <Structure>
-          <Name>IllusionTemplePartyEntry</Name>
-          <Description>Contains the info about a party member in illusion temple.</Description>
+          <Name>IllusionTempleTeamMate</Name>
+          <Description>Contains the info about a team mate in the illusion temple, so that the client can show him on its mini map. Only PartyCount entries are sent - there are no unused/zeroed slots.</Description>
           <Length>5</Length>
           <Fields>
             <Field>
@@ -9417,7 +9417,7 @@
             </Field>
             <Field>
               <Index>2</Index>
-              <Type>ShortLittleEndian</Type>
+              <Type>Byte</Type>
               <Name>MapNumber</Name>
             </Field>
             <Field>
@@ -9533,7 +9533,7 @@
           <Name>PlayerCount</Name>
         </Field>
         <Field>
-          <Index>10</Index>
+          <Index>7</Index>
           <Type>Structure[]</Type>
           <TypeName>PlayerResult</TypeName>
           <Name>Players</Name>
@@ -9544,12 +9544,13 @@
         <Structure>
           <Name>PlayerResult</Name>
           <Description>Contains the result of a player in the event.</Description>
-          <Length>17</Length>
+          <Length>20</Length>
           <Fields>
             <Field>
               <Index>0</Index>
               <Type>String</Type>
               <Name>Name</Name>
+              <Length>10</Length>
             </Field>
             <Field>
               <Index>10</Index>
@@ -9566,8 +9567,12 @@
               <Type>Byte</Type>
               <Name>Class</Name>
             </Field>
+            <!-- Bytes 13-15 are unused padding - the original client (compiled with a C struct where an
+                 int must be 4-byte aligned) expects 3 padding bytes here before AddedExperience. Leaving
+                 this gap out entirely (as a plain 17-byte struct) makes the client misread every entry
+                 after the first, since it always advances by 20 bytes per player. -->
             <Field>
-              <Index>13</Index>
+              <Index>16</Index>
               <Type>IntegerLittleEndian</Type>
               <Name>AddedExperience</Name>
             </Field>
@@ -9635,6 +9640,57 @@
           <Name>Name</Name>
         </Field>
       </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BF</Code>
+      <SubCode>09</SubCode>
+      <Name>IllusionTempleEventState</Name>
+      <Length>6</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The state of an illusion temple event changed, e.g. when the battle starts.</SentWhen>
+      <CausedReaction>The client shows or hides the user interface of the event - the score board, the timer and the mini map - and applies the barriers of the arena, which are hardcoded at client side.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>TempleNumber</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Enum</Type>
+          <TypeName>EventState</TypeName>
+          <Name>State</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>EventState</Name>
+          <Description>Defines the state of an illusion temple event.</Description>
+          <Values>
+            <EnumValue>
+              <Name>WaitingRoom</Name>
+              <Description>The player entered the event and waits for it to start. It's only sent to the entering player, not to all participants.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Preparation</Name>
+              <Description>The preparation started: the players have been moved into the arena and assigned to their teams. The client opens the event interface with the score board, the timer and the mini map.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>BattleStarted</Name>
+              <Description>The battle started: the statues are up and the barriers of the arena are removed, so that the players can reach the cursed statue.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Ended</Name>
+              <Description>The battle ended - the client closes the event interface.</Description>
+              <Value>3</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
     </Packet>
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>

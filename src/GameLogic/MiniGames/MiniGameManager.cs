@@ -83,6 +83,9 @@ public sealed class MiniGameManager : IMiniGameManager
                 case MiniGameType.Kanturu:
                     miniGameContext = new KanturuContext(miniGameKey, miniGameDefinition, this._gameContext, this._mapInitializer);
                     break;
+                case MiniGameType.IllusionTemple:
+                    miniGameContext = new IllusionTempleContext(miniGameKey, miniGameDefinition, this._gameContext, this._mapInitializer);
+                    break;
                 default:
                     miniGameContext = new MiniGameContext(miniGameKey, miniGameDefinition, this._gameContext, this._mapInitializer);
                     break;

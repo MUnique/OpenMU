@@ -21,6 +21,8 @@ internal sealed class MiniGameRewardService
     private readonly Func<IDropGenerator> _dropGeneratorProvider;
     private readonly Func<TimeSpan> _remainingTimeProvider;
     private readonly Func<Player?> _winnerProvider;
+    private readonly Func<Player, bool> _isWinner;
+    private readonly Func<Player, bool> _isInWinningParty;
     private readonly ILogger _logger;
     private readonly object _owner;
     private readonly ConcurrentDictionary<MonsterDefinition, bool> _rewardRelatedKills;
@@ -34,6 +36,8 @@ internal sealed class MiniGameRewardService
     /// <param name="dropGeneratorProvider">A function which returns the currently used drop generator.</param>
     /// <param name="remainingTimeProvider">A function which returns the remaining time of the event.</param>
     /// <param name="winnerProvider">A function which returns the winner of the event, if any.</param>
+    /// <param name="isWinner">A function which determines whether a player is a winner of the event.</param>
+    /// <param name="isInWinningParty">A function which determines whether a player belongs to the winning party.</param>
     /// <param name="logger">The logger for this instance.</param>
     /// <param name="owner">The owner which is named in the log entries.</param>
     public MiniGameRewardService(
@@ -43,6 +47,8 @@ internal sealed class MiniGameRewardService
         Func<IDropGenerator> dropGeneratorProvider,
         Func<TimeSpan> remainingTimeProvider,
         Func<Player?> winnerProvider,
+        Func<Player, bool> isWinner,
+        Func<Player, bool> isInWinningParty,
         ILogger logger,
         object owner)
     {
@@ -52,6 +58,8 @@ internal sealed class MiniGameRewardService
         this._dropGeneratorProvider = dropGeneratorProvider;
         this._remainingTimeProvider = remainingTimeProvider;
         this._winnerProvider = winnerProvider;
+        this._isWinner = isWinner;
+        this._isInWinningParty = isInWinningParty;
         this._logger = logger;
         this._owner = owner;
         this._rewardRelatedKills = new(
@@ -75,12 +83,18 @@ internal sealed class MiniGameRewardService
     /// </summary>
     /// <param name="player">The player who should receive the rewards.</param>
     /// <param name="rank">The rank of the player in the current game.</param>
+    /// <param name="rewardFilter">
+    /// An optional filter which selects the rewards to give, for games which hand out their rewards
+    /// in more than one step. When it's <c>null</c>, every applying reward is given.
+    /// </param>
     /// <returns>The bonus score and the given money.</returns>
-    public async Task<(int BonusScore, int GivenMoney)> GiveRewardsAndGetBonusScoreAsync(Player player, int rank)
+    public async Task<(int BonusScore, int GivenMoney)> GiveRewardsAndGetBonusScoreAsync(Player player, int rank, Func<MiniGameReward, bool>? rewardFilter = null)
     {
         int bonusScore = 0;
         int givenMoney = 0;
-        var rewards = this._definition.Rewards.Where(r => this.DoesRewardApply(player, rank, r));
+        var rewards = this._definition.Rewards
+            .Where(r => rewardFilter?.Invoke(r) is not false)
+            .Where(r => this.DoesRewardApply(player, rank, r));
         foreach (var reward in rewards)
         {
             var result = await this.GiveRewardAsync(player, reward).ConfigureAwait(false);
@@ -233,26 +247,22 @@ internal sealed class MiniGameRewardService
             return false;
         }
 
-        if (reward.RequiredSuccess.HasFlag(MiniGameSuccessFlags.Winner) && winner != player)
+        if (reward.RequiredSuccess.HasFlag(MiniGameSuccessFlags.Winner) && !this._isWinner(player))
         {
             return false;
         }
 
-        if (reward.RequiredSuccess.HasFlag(MiniGameSuccessFlags.Loser)
-            && (winner == player || (player.Party == winner?.Party && player.Party is not null)))
+        if (reward.RequiredSuccess.HasFlag(MiniGameSuccessFlags.Loser) && IsWinnerOrInWinningParty())
         {
             return false;
         }
 
-        if (reward.RequiredSuccess.HasFlag(MiniGameSuccessFlags.WinningParty)
-            && (winner?.Party is null || winner.Party != player.Party))
+        if (reward.RequiredSuccess.HasFlag(MiniGameSuccessFlags.WinningParty) && !this._isInWinningParty(player))
         {
             return false;
         }
 
-        if (reward.RequiredSuccess.HasFlag(MiniGameSuccessFlags.WinnerOrInWinningParty)
-            && (winner?.Party is null || winner.Party != player.Party)
-            && winner != player)
+        if (reward.RequiredSuccess.HasFlag(MiniGameSuccessFlags.WinnerOrInWinningParty) && !IsWinnerOrInWinningParty())
         {
             return false;
         }
@@ -265,5 +275,7 @@ internal sealed class MiniGameRewardService
         }
 
         return true;
+
+        bool IsWinnerOrInWinningParty() => this._isWinner(player) || this._isInWinningParty(player);
     }
 }

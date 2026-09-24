@@ -372,6 +372,16 @@ internal enum MagicEffectNumber : short
     /// </summary>
     Alcohol = 201,
 
+    /// <summary>
+    /// The illusion temple "Order of Protection" special skill effect number.
+    /// </summary>
+    IllusionTempleProtection = 210,
+
+    /// <summary>
+    /// The illusion temple "Restraint" special skill effect number.
+    /// </summary>
+    IllusionTempleRestraint = 211,
+
     #endregion
 
 }

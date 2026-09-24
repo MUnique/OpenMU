@@ -197,6 +197,7 @@
   * [C1 BF 07 - IllusionTempleSkillEnded (by server)](C1-BF-07-IllusionTempleSkillEnded_by-server.md)
   * [C1 BF 07 - IllusionTempleSkillEnd (by server)](C1-BF-07-IllusionTempleSkillEnd_by-server.md)
   * [C1 BF 08 - IllusionTempleHolyItemRelics (by server)](C1-BF-08-IllusionTempleHolyItemRelics_by-server.md)
+  * [C1 BF 09 - IllusionTempleEventState (by server)](C1-BF-09-IllusionTempleEventState_by-server.md)
   * [C1 BF 0A - ChainLightningHitInfo (by server)](C1-BF-0A-ChainLightningHitInfo_by-server.md)
   * [C1 BF 51 - MuHelperStatusUpdate (by server)](C1-BF-51-MuHelperStatusUpdate_by-server.md)
   * [C2 C0 - MessengerInitialization (by server)](C2-C0-MessengerInitialization_by-server.md)

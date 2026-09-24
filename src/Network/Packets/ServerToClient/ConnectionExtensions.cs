@@ -5473,6 +5473,36 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="IllusionTempleEventState" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="templeNumber">The temple number.</param>
+    /// <param name="state">The state.</param>
+    /// <remarks>
+    /// Is sent by the server when: The state of an illusion temple event changed, e.g. when the battle starts.
+    /// Causes reaction on client side: The client shows or hides the user interface of the event - the score board, the timer and the mini map - and applies the barriers of the arena, which are hardcoded at client side.
+    /// </remarks>
+    public static async ValueTask SendIllusionTempleEventStateAsync(this IConnection? connection, byte @templeNumber, IllusionTempleEventState.EventState @state)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = IllusionTempleEventStateRef.Length;
+            var packet = new IllusionTempleEventStateRef(connection.Output.GetSpan(length)[..length]);
+            packet.TempleNumber = @templeNumber;
+            packet.State = @state;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="IllusionTempleSkillEnd" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
