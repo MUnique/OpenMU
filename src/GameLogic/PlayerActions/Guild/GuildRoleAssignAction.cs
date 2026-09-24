@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild;
 
+using System.Collections.Immutable;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Interfaces;
 
 /// <summary>
@@ -16,13 +18,15 @@ public class GuildRoleAssignAction
     /// Assigns the specified role to the guild member with the specified nickname.
     /// </summary>
     /// <param name="player">The requesting player. Must be the guild master.</param>
-    /// <param name="nickname">The nickname of the target guild member. Must be online on the same game server and in the same guild.</param>
+    /// <param name="nickname">The nickname of the target guild member. The target may be online on any game server or offline.</param>
     /// <param name="newPosition">The new position. Only <see cref="GuildPosition.NormalMember"/>, <see cref="GuildPosition.BattleMaster"/> and <see cref="GuildPosition.AssistantMaster"/> are accepted.</param>
+    /// <param name="enforceLimits">If set to <c>true</c> (default), the role limits of the official server are enforced:
+    /// at most one assistant master, and battle masters limited by the guild master's level. Demotions are never limited.</param>
     /// <remarks>
     /// Failures are only logged; no dedicated client response packet exists for role assignment.
     /// On success, the guild server publishes the change which updates the target's guild status and views.
     /// </remarks>
-    public async ValueTask AssignRoleAsync(Player player, string nickname, GuildPosition newPosition)
+    public async ValueTask AssignRoleAsync(Player player, string nickname, GuildPosition newPosition, bool enforceLimits = true)
     {
         using var loggerScope = player.Logger.BeginScope(this.GetType());
         if (player.PlayerState.CurrentState != PlayerState.EnteredWorld)
@@ -58,6 +62,12 @@ public class GuildRoleAssignAction
             return;
         }
 
+        if (string.Equals(player.SelectedCharacter?.Name, targetName, StringComparison.OrdinalIgnoreCase))
+        {
+            player.Logger.LogWarning("Rejected guild role assignment: guild master {PlayerName} cannot change its own role.", player.Name);
+            return;
+        }
+
         var guildServer = (player.GameContext as IGameServerContext)?.GuildServer;
         if (guildServer is null)
         {
@@ -65,37 +75,80 @@ public class GuildRoleAssignAction
             return;
         }
 
-        var target = player.GameContext.GetPlayerByCharacterName(targetName);
-        if (target?.SelectedCharacter is null)
-        {
-            player.Logger.LogWarning("Rejected guild role assignment: target {TargetName} is not online on this server.", targetName);
-            return;
-        }
-
-        if (target.SelectedCharacter.Id == player.SelectedCharacter?.Id)
-        {
-            player.Logger.LogWarning("Rejected guild role assignment: guild master {PlayerName} cannot change its own role.", player.Name);
-            return;
-        }
-
-        if (target.GuildStatus?.GuildId != guildStatus.GuildId)
+        // Resolve through the guild list, which covers members on other game servers and offline members.
+        var members = await guildServer.GetGuildListAsync(guildStatus.GuildId).ConfigureAwait(false);
+        var target = members.FirstOrDefault(m => string.Equals(m.PlayerName, targetName, StringComparison.OrdinalIgnoreCase));
+        if (target?.PlayerName is null)
         {
             player.Logger.LogWarning("Rejected guild role assignment: target {TargetName} is not in the same guild.", targetName);
             return;
         }
 
-        if (target.GuildStatus.Position == GuildPosition.GuildMaster)
+        if (target.PlayerPosition == GuildPosition.GuildMaster)
         {
             player.Logger.LogWarning("Rejected guild role assignment: target {TargetName} is the guild master, leadership transfer is not supported.", targetName);
             return;
         }
 
-        if (target.GuildStatus.Position == newPosition)
+        if (target.PlayerPosition == newPosition)
         {
             player.Logger.LogDebug("Guild role assignment skipped: target {TargetName} already has position {Position}.", targetName, newPosition);
             return;
         }
 
-        await guildServer.ChangeGuildMemberPositionAsync(guildStatus.GuildId, target.SelectedCharacter.Id, newPosition).ConfigureAwait(false);
+        if (enforceLimits && !this.ValidateRoleLimits(player, members, target, targetName, newPosition))
+        {
+            return;
+        }
+
+        if (!await guildServer.ChangeGuildMemberPositionByNameAsync(guildStatus.GuildId, target.PlayerName, newPosition).ConfigureAwait(false))
+        {
+            player.Logger.LogWarning("Rejected guild role assignment: target {TargetName} could not be updated.", targetName);
+        }
+    }
+
+    /// <summary>
+    /// Gets the maximum number of battle masters for the given combined level of the guild master.
+    /// Mirrors the official server: <c>(level / 200) + 1</c> with integer division.
+    /// </summary>
+    /// <param name="masterTotalLevel">The combined normal and master level of the guild master.</param>
+    /// <returns>The maximum number of battle masters.</returns>
+    private static int GetMaxBattleMasterCount(int masterTotalLevel)
+    {
+        return (masterTotalLevel / 200) + 1;
+    }
+
+    /// <summary>
+    /// Validates the role limits of the official server: at most one assistant master, and a
+    /// battle master count below the limit derived from the guild master's level.
+    /// Demotions are never limited.
+    /// </summary>
+    /// <param name="player">The requesting guild master.</param>
+    /// <param name="members">The current guild member list.</param>
+    /// <param name="target">The targeted member entry.</param>
+    /// <param name="targetName">The nickname used in log messages.</param>
+    /// <param name="newPosition">The requested position.</param>
+    /// <returns><c>true</c> if the limits allow the assignment; otherwise, <c>false</c>.</returns>
+    private bool ValidateRoleLimits(Player player, IImmutableList<GuildListEntry> members, GuildListEntry target, string targetName, GuildPosition newPosition)
+    {
+        if (newPosition == GuildPosition.AssistantMaster
+            && members.Any(m => m.PlayerPosition == GuildPosition.AssistantMaster && !string.Equals(m.PlayerName, target.PlayerName, StringComparison.OrdinalIgnoreCase)))
+        {
+            player.Logger.LogWarning("Rejected guild role assignment: guild already has an assistant master, target {TargetName}.", targetName);
+            return false;
+        }
+
+        if (newPosition == GuildPosition.BattleMaster)
+        {
+            var battleMasterCount = members.Count(m => m.PlayerPosition == GuildPosition.BattleMaster);
+            var maxBattleMasters = GetMaxBattleMasterCount(player.Level + (int)(player.Attributes?[Stats.MasterLevel] ?? 0));
+            if (battleMasterCount >= maxBattleMasters)
+            {
+                player.Logger.LogWarning("Rejected guild role assignment: guild already has {Count} of {Max} battle masters, target {TargetName}.", battleMasterCount, maxBattleMasters, targetName);
+                return false;
+            }
+        }
+
+        return true;
     }
 }

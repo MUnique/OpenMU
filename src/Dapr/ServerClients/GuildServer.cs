@@ -202,6 +202,20 @@ public class GuildServer : IGuildServer
     }
 
     /// <inheritdoc />
+    public async ValueTask<bool> ChangeGuildMemberPositionByNameAsync(uint guildId, string characterName, GuildPosition role)
+    {
+        try
+        {
+            return await this._daprClient.InvokeMethodAsync<GuildMemberRoleChangeByNameArguments, bool>(this._targetAppId, nameof(this.ChangeGuildMemberPositionByNameAsync), new GuildMemberRoleChangeByNameArguments(guildId, characterName, role)).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Unexpected error when sending a guild member position change.");
+            return false;
+        }
+    }
+
+    /// <inheritdoc />
     public ValueTask PlayerEnteredGameAsync(Guid characterId, string characterName, byte serverId)
     {
         // Handled by EventPublisher, through pub/sub component.

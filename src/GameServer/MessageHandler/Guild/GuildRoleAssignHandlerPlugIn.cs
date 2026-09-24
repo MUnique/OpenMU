@@ -16,9 +16,10 @@ using MUnique.OpenMU.PlugIns;
 /// Handler for guild role assign packets.
 /// </summary>
 /// <remarks>
-/// The request's <c>Type</c> byte semantics (values 1..3) are undocumented, so it is
-/// intentionally ignored. No dedicated server response packet exists; on success the
-/// guild server publishes the change which updates the member's guild status and views.
+/// The request's <c>Type</c> byte selects the validation: types 1 and 2 enforce the role
+/// limits, type 3 bypasses them, anything else is ignored (mirrors the official server).
+/// No dedicated server response packet exists; on success the guild server publishes the
+/// change which updates the member's guild status and views.
 /// </remarks>
 [PlugIn]
 [Display(Name = nameof(PlugInResources.GuildRoleAssignHandlerPlugIn_Name), Description = nameof(PlugInResources.GuildRoleAssignHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
@@ -42,6 +43,11 @@ internal class GuildRoleAssignHandlerPlugIn : IPacketHandlerPlugIn
         }
 
         GuildRoleAssignRequest request = packet;
+        if (request.Type is not (1 or 2 or 3))
+        {
+            return;
+        }
+
         var position = request.Role.ConvertToPosition();
 
         if (position is null)
@@ -50,6 +56,6 @@ internal class GuildRoleAssignHandlerPlugIn : IPacketHandlerPlugIn
             return;
         }
 
-        await this._roleAssignAction.AssignRoleAsync(player, request.PlayerName, position.Value).ConfigureAwait(false);
+        await this._roleAssignAction.AssignRoleAsync(player, request.PlayerName, position.Value, request.Type != 3).ConfigureAwait(false);
     }
 }

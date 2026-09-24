@@ -219,30 +219,52 @@ public class GuildServer : IGuildServer
                 return;
             }
 
-            guildMember.Status = role;
-            if (!await guild.DatabaseContext.SaveChangesAsync().ConfigureAwait(false))
-            {
-                this._logger.LogWarning("Guild {GuildId} member {CharacterId} position change to {Role} was not saved, so it is not published.", guildId, characterId, role);
-                return;
-            }
-
-            if (guild.Members.TryGetValue(characterId, out var listEntry))
-            {
-                listEntry.PlayerPosition = role;
-
-                // Offline members keep their cached name while their server id is
-                // OfflineServerId; publishing to them is pointless (dropped or, over
-                // Dapr, an error on every call). They pick up the persisted position
-                // on next login through PlayerEnteredGameAsync.
-                if (listEntry.PlayerName is not null && listEntry.ServerId != OfflineServerId)
-                {
-                    await this._changePublisher.AssignGuildToPlayerAsync(listEntry.ServerId, listEntry.PlayerName, new GuildMemberStatus(guildId, role)).ConfigureAwait(false);
-                }
-            }
+            await this.ApplyPositionChangeAsync(guildId, guild, guildMember, role).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
             this._logger.LogError(ex, "Error when saving a changed guild member.");
+        }
+    }
+
+    /// <inheritdoc/>
+    public async ValueTask<bool> ChangeGuildMemberPositionByNameAsync(uint guildId, string characterName, GuildPosition role)
+    {
+        try
+        {
+            if (!this._guildDictionary.TryGetValue(guildId, out var guild))
+            {
+                this._logger.LogWarning("Guild {GuildId} not found, so the position of member {CharacterName} can't be changed.", guildId, characterName);
+                return false;
+            }
+
+            var entry = guild.Members.FirstOrDefault(m => string.Equals(m.Value.PlayerName, characterName, StringComparison.OrdinalIgnoreCase));
+            if (default(KeyValuePair<Guid, GuildListEntry>).Equals(entry))
+            {
+                this._logger.LogWarning("Guild {GuildId} member {CharacterName} not found, so its position can't be changed.", guildId, characterName);
+                return false;
+            }
+
+            var guildMember = guild.Guild.Members.FirstOrDefault(m => m.Id == entry.Key);
+            if (guildMember is null)
+            {
+                this._logger.LogWarning("Guild {GuildId} member {CharacterName} not found, so its position can't be changed.", guildId, characterName);
+                return false;
+            }
+
+            if (guildMember.Status == GuildPosition.GuildMaster)
+            {
+                this._logger.LogWarning("Guild {GuildId} member {CharacterName} is the guild master, leadership transfer is not supported.", guildId, characterName);
+                return false;
+            }
+
+            await this.ApplyPositionChangeAsync(guildId, guild, guildMember, role).ConfigureAwait(false);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Error when saving a changed guild member.");
+            return false;
         }
     }
 
@@ -897,5 +919,50 @@ public class GuildServer : IGuildServer
             .Where(kvp => GetAllianceMasterGuid(kvp.Value.Guild) == masterGuid)
             .Select(kvp => kvp.Key)
             .ToList();
+    }
+
+    /// <summary>
+    /// Persists a guild member position change and publishes it to the game server of the member.
+    /// </summary>
+    /// <param name="guildId">The runtime guild identifier.</param>
+    /// <param name="guild">The guild container.</param>
+    /// <param name="guildMember">The persistent guild member.</param>
+    /// <param name="role">The new role.</param>
+    private async ValueTask ApplyPositionChangeAsync(uint guildId, GuildContainer guild, GuildMember guildMember, GuildPosition role)
+    {
+        var characterId = guildMember.Id;
+        var previousRole = guildMember.Status;
+        guildMember.Status = role;
+        try
+        {
+            if (!await guild.DatabaseContext.SaveChangesAsync().ConfigureAwait(false))
+            {
+                guildMember.Status = previousRole;
+                this._logger.LogWarning("Guild {GuildId} member {CharacterId} position change to {Role} was not saved, so it is not published.", guildId, characterId, role);
+                return;
+            }
+        }
+        catch (Exception ex)
+        {
+            // Restore the staged value: otherwise the failed change would linger on the
+            // tracked entity and get committed silently by the next save of this guild.
+            guildMember.Status = previousRole;
+            this._logger.LogError(ex, "Error when saving a changed guild member.");
+            return;
+        }
+
+        if (guild.Members.TryGetValue(characterId, out var listEntry))
+        {
+            listEntry.PlayerPosition = role;
+
+            // Offline members keep their cached name while their server id is
+            // OfflineServerId; publishing to them is pointless (dropped or, over
+            // Dapr, an error on every call). They pick up the persisted position
+            // on next login through PlayerEnteredGameAsync.
+            if (listEntry.PlayerName is not null && listEntry.ServerId != OfflineServerId)
+            {
+                await this._changePublisher.AssignGuildToPlayerAsync(listEntry.ServerId, listEntry.PlayerName, new GuildMemberStatus(guildId, role)).ConfigureAwait(false);
+            }
+        }
     }
 }
