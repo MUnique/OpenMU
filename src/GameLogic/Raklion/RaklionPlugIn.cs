@@ -49,11 +49,16 @@ public sealed class RaklionPlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISuppor
 
         try
         {
+            var definition = this.Configuration ??= new RaklionEventDefinition();
             if (!this._contexts.TryGetValue(gameContext, out var context))
             {
-                context = new RaklionContext(gameContext, this.Configuration ??= new RaklionEventDefinition());
+                context = new RaklionContext(gameContext, definition);
                 await context.InitializeAsync().ConfigureAwait(false);
                 this._contexts[gameContext] = context;
+            }
+            else
+            {
+                context.UpdateDefinition(definition);
             }
 
             await context.TickAsync().ConfigureAwait(false);

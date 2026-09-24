@@ -27,12 +27,12 @@ using MUnique.OpenMU.Interfaces;
 public sealed class RaklionContext : IEventStateProvider, IDisposable
 {
     private readonly GameContext _gameContext;
-    private readonly RaklionEventDefinition _definition;
     private readonly ILogger<RaklionContext> _logger;
     private readonly ConcurrentDictionary<Monster, byte> _spiderEggs = new();
     private readonly ConcurrentDictionary<Monster, byte> _summonedMonsters = new();
     private readonly ConcurrentDictionary<Player, byte> _battlePlayers = new();
 
+    private RaklionEventDefinition _definition;
     private GameMap? _raklionMap;
     private GameMap? _hatcheryMap;
     private Monster? _selupan;
@@ -166,6 +166,16 @@ public sealed class RaklionContext : IEventStateProvider, IDisposable
                 // nothing to do
                 break;
         }
+    }
+
+    /// <summary>
+    /// Updates the definition of the event, e.g. after it has been changed in the admin panel.
+    /// It takes effect for the following states and the next appearance of Selupan.
+    /// </summary>
+    /// <param name="definition">The definition.</param>
+    public void UpdateDefinition(RaklionEventDefinition definition)
+    {
+        this._definition = definition;
     }
 
     /// <summary>
