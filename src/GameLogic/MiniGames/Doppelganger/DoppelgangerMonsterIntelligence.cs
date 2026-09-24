@@ -101,7 +101,7 @@ public sealed class DoppelgangerMonsterIntelligence : INpcIntelligence, IDisposa
     /// <inheritdoc />
     public void Start()
     {
-        this._timer ??= new Timer(_ => _ = this.SafeTickAsync(), null, this.Monster.Definition.AttackDelay, this.Monster.Definition.AttackDelay);
+        this._timer ??= new Timer(state => _ = this.SafeTickAsync(), null, this.Monster.Definition.AttackDelay, this.Monster.Definition.AttackDelay);
     }
 
     /// <inheritdoc />
