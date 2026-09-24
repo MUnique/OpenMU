@@ -69,7 +69,8 @@ public sealed class RaklionEventViewPlugIn : IRaklionEventViewPlugIn
     public async ValueTask ShowSelupanSkillAsync(IAttacker selupan, IAttackable? target, SelupanSkill skill)
     {
         var selupanId = selupan.GetId(this._player);
-        var targetId = target is null ? selupanId : (ushort)(target.GetId(this._player) | 0x8000);
+        // The client searches the target by the id as it is, so the flag for a successful skill can't be set.
+        var targetId = target is null ? selupanId : target.GetId(this._player);
         await this._player.Connection.SendMonsterSkillAnimationAsync((ushort)skill, selupanId, targetId).ConfigureAwait(false);
     }
 }

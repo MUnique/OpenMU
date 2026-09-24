@@ -156,6 +156,16 @@ public sealed class SelupanIntelligence : INpcIntelligence, IDisposable
         return maximumHealth > 0 ? monster.Health * 100.0 / maximumHealth : 0;
     }
 
+    private static int GetWeight(SelupanSkill skill)
+    {
+        return skill switch
+        {
+            SelupanSkill.Poison or SelupanSkill.IceStorm or SelupanSkill.IceStrike => 4,
+            SelupanSkill.Teleport => 1,
+            _ => 2,
+        };
+    }
+
     private static bool IsValidTarget(Monster monster, IAttackable target)
     {
         return target.IsActive()
@@ -246,7 +256,20 @@ public sealed class SelupanIntelligence : INpcIntelligence, IDisposable
                 _ => true,
             })
             .ToList();
-        return skills[Rand.NextInt(0, skills.Count)];
+
+        // The attacks are used more often than the other skills, the teleport is used rarely.
+        var totalWeight = skills.Sum(GetWeight);
+        var value = Rand.NextInt(0, totalWeight);
+        foreach (var skill in skills)
+        {
+            value -= GetWeight(skill);
+            if (value < 0)
+            {
+                return skill;
+            }
+        }
+
+        return skills[^1];
     }
 
     private async ValueTask<IAttackable?> SearchTargetAsync(Monster monster)
@@ -336,7 +359,7 @@ public sealed class SelupanIntelligence : INpcIntelligence, IDisposable
             if (this.CanWalkOn(target) && !monster.CurrentMap.Terrain.SafezoneMap[target.X, target.Y])
             {
                 await this.ShowSkillAsync(monster, null, SelupanSkill.Teleport).ConfigureAwait(false);
-                await monster.MoveAsync(target).ConfigureAwait(false);
+                await monster.TeleportAsync(target).ConfigureAwait(false);
                 return;
             }
         }
