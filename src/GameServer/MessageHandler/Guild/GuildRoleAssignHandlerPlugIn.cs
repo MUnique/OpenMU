@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlayerActions.Guild;
+using MUnique.OpenMU.GameLogic.Views.Guild;
 using MUnique.OpenMU.GameServer.RemoteView.Guild;
 using MUnique.OpenMU.Network.Packets.ClientToServer;
 using MUnique.OpenMU.PlugIns;
@@ -16,10 +17,11 @@ using MUnique.OpenMU.PlugIns;
 /// Handler for guild role assign packets.
 /// </summary>
 /// <remarks>
-/// The request's <c>Type</c> byte selects the validation: types 1 and 2 enforce the role
-/// limits, type 3 bypasses them, anything else is ignored (mirrors the official server).
-/// No dedicated server response packet exists; on success the guild server publishes the
-/// change which updates the member's guild status and views.
+/// Only known <see cref="GuildRoleAssignType"/> values are processed, anything else is ignored.
+/// The role limits are always enforced server-side for every known request type, because
+/// the type byte is client-controlled input. No dedicated
+/// server response packet exists; on success the guild server publishes the change which updates
+/// the member's guild status and views.
 /// </remarks>
 [PlugIn]
 [Display(Name = nameof(PlugInResources.GuildRoleAssignHandlerPlugIn_Name), Description = nameof(PlugInResources.GuildRoleAssignHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
@@ -43,7 +45,7 @@ internal class GuildRoleAssignHandlerPlugIn : IPacketHandlerPlugIn
         }
 
         GuildRoleAssignRequest request = packet;
-        if (request.Type is not (1 or 2 or 3))
+        if (!Enum.IsDefined(typeof(GuildRoleAssignType), request.Type))
         {
             return;
         }
@@ -56,6 +58,6 @@ internal class GuildRoleAssignHandlerPlugIn : IPacketHandlerPlugIn
             return;
         }
 
-        await this._roleAssignAction.AssignRoleAsync(player, request.PlayerName, position.Value, request.Type != 3).ConfigureAwait(false);
+        await this._roleAssignAction.AssignRoleAsync(player, request.PlayerName, position.Value).ConfigureAwait(false);
     }
 }

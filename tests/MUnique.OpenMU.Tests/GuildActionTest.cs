@@ -472,10 +472,10 @@ public class GuildActionTest : GuildTestBase
     }
 
     /// <summary>
-    /// Tests that a type 3 request bypasses the role limits.
+    /// Tests that a type 3 request enforces the role limits like any other known type.
     /// </summary>
     [Test]
-    public async ValueTask GuildRoleAssignHandlerTypeThreeBypassesLimitsAsync()
+    public async ValueTask GuildRoleAssignHandlerTypeThreeEnforcesLimitsAsync()
     {
         await this.PrepareRoleAssignScenarioAsync().ConfigureAwait(false);
         this._guildMasterPlayer.Attributes![Stats.Level] = 100; // Limit 1.
@@ -489,7 +489,7 @@ public class GuildActionTest : GuildTestBase
         buffer[0] = 0xC1;
         buffer[1] = (byte)buffer.Length;
         buffer[2] = GuildRoleAssignRequest.Code;
-        buffer[3] = 3; // Type 3 bypasses the limits.
+        buffer[3] = (byte)GuildRoleAssignType.Direct;
         buffer[4] = (byte)GuildMemberRole.BattleMaster;
         var nameBytes = System.Text.Encoding.UTF8.GetBytes("RemoteBM");
         Array.Copy(nameBytes, 0, buffer, 5, nameBytes.Length);
@@ -498,7 +498,37 @@ public class GuildActionTest : GuildTestBase
         await handler.HandlePacketAsync(this._guildMasterPlayer, buffer).ConfigureAwait(false);
 
         var members = await this.GuildServer.GetGuildListAsync(guildId).ConfigureAwait(false);
-        Assert.That(members.First(e => e.PlayerName == "RemoteBM").PlayerPosition, Is.EqualTo(GuildPosition.BattleMaster));
+        Assert.That(members.First(e => e.PlayerName == "RemoteBM").PlayerPosition, Is.EqualTo(GuildPosition.NormalMember));
+    }
+
+    /// <summary>
+    /// Tests that a type 2 request enforces the role limits like type 1.
+    /// </summary>
+    [Test]
+    public async ValueTask GuildRoleAssignHandlerTypeTwoEnforcesLimitsAsync()
+    {
+        await this.PrepareRoleAssignScenarioAsync().ConfigureAwait(false);
+        this._guildMasterPlayer.Attributes![Stats.Level] = 100; // Limit 1.
+        var guildId = this._player.GuildStatus!.GuildId;
+        await this.GuildServer.CreateGuildMemberAsync(guildId, Guid.NewGuid(), "RemoteBM", GuildPosition.NormalMember, 1).ConfigureAwait(false);
+
+        var action = new GuildRoleAssignAction();
+        await action.AssignRoleAsync(this._guildMasterPlayer, this._player.SelectedCharacter!.Name, GuildPosition.BattleMaster).ConfigureAwait(false);
+
+        var buffer = new byte[GuildRoleAssignRequest.Length];
+        buffer[0] = 0xC1;
+        buffer[1] = (byte)buffer.Length;
+        buffer[2] = GuildRoleAssignRequest.Code;
+        buffer[3] = (byte)GuildRoleAssignType.StandardAlternate;
+        buffer[4] = (byte)GuildMemberRole.BattleMaster;
+        var nameBytes = System.Text.Encoding.UTF8.GetBytes("RemoteBM");
+        Array.Copy(nameBytes, 0, buffer, 5, nameBytes.Length);
+
+        var handler = new GuildRoleAssignHandlerPlugIn();
+        await handler.HandlePacketAsync(this._guildMasterPlayer, buffer).ConfigureAwait(false);
+
+        var members = await this.GuildServer.GetGuildListAsync(guildId).ConfigureAwait(false);
+        Assert.That(members.First(e => e.PlayerName == "RemoteBM").PlayerPosition, Is.EqualTo(GuildPosition.NormalMember));
     }
 
     /// <summary>

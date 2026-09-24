@@ -20,13 +20,13 @@ public class GuildRoleAssignAction
     /// <param name="player">The requesting player. Must be the guild master.</param>
     /// <param name="nickname">The nickname of the target guild member. The target may be online on any game server or offline.</param>
     /// <param name="newPosition">The new position. Only <see cref="GuildPosition.NormalMember"/>, <see cref="GuildPosition.BattleMaster"/> and <see cref="GuildPosition.AssistantMaster"/> are accepted.</param>
-    /// <param name="enforceLimits">If set to <c>true</c> (default), the role limits of the official server are enforced:
-    /// at most one assistant master, and battle masters limited by the guild master's level. Demotions are never limited.</param>
     /// <remarks>
     /// Failures are only logged; no dedicated client response packet exists for role assignment.
     /// On success, the guild server publishes the change which updates the target's guild status and views.
+    /// The role limits are always enforced server-side, regardless of the request type sent by the
+    /// client: the type byte is client-controlled input and must not select the validation level.
     /// </remarks>
-    public async ValueTask AssignRoleAsync(Player player, string nickname, GuildPosition newPosition, bool enforceLimits = true)
+    public async ValueTask AssignRoleAsync(Player player, string nickname, GuildPosition newPosition)
     {
         using var loggerScope = player.Logger.BeginScope(this.GetType());
         if (player.PlayerState.CurrentState != PlayerState.EnteredWorld)
@@ -96,7 +96,7 @@ public class GuildRoleAssignAction
             return;
         }
 
-        if (enforceLimits && !this.ValidateRoleLimits(player, members, target, targetName, newPosition))
+        if (!this.ValidateRoleLimits(player, members, target, targetName, newPosition))
         {
             return;
         }
@@ -108,8 +108,8 @@ public class GuildRoleAssignAction
     }
 
     /// <summary>
-    /// Gets the maximum number of battle masters for the given combined level of the guild master.
-    /// Mirrors the official server: <c>(level / 200) + 1</c> with integer division.
+    /// Gets the maximum number of battle masters for the given combined level of the guild master:
+    /// <c>(level / 200) + 1</c> with integer division.
     /// </summary>
     /// <param name="masterTotalLevel">The combined normal and master level of the guild master.</param>
     /// <returns>The maximum number of battle masters.</returns>
@@ -119,7 +119,7 @@ public class GuildRoleAssignAction
     }
 
     /// <summary>
-    /// Validates the role limits of the official server: at most one assistant master, and a
+    /// Validates the role limits: at most one assistant master, and a
     /// battle master count below the limit derived from the guild master's level.
     /// Demotions are never limited.
     /// </summary>
