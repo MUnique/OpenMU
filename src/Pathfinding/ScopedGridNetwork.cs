@@ -75,10 +75,9 @@ public sealed class ScopedGridNetwork : BaseGridNetwork
         }
 
         this._bitsPerCoordinate = BitOperations.Log2(this._actualSegmentSideLength);
-        var avg = (start / 2) + (end / 2);
 
-        var offsetX = GetOffset(avg.X, grid.GetUpperBound(0) + 1);
-        var offsetY = GetOffset(avg.Y, grid.GetUpperBound(1) + 1);
+        var offsetX = GetOffset(Math.Min(start.X, end.X), diffX, grid.GetUpperBound(0) + 1);
+        var offsetY = GetOffset(Math.Min(start.Y, end.Y), diffY, grid.GetUpperBound(1) + 1);
         this._segmentOffset = new(offsetX, offsetY);
 
         var maxX = offsetX + this._actualSegmentSideLength;
@@ -106,9 +105,11 @@ public sealed class ScopedGridNetwork : BaseGridNetwork
 
         return base.Prepare(start, end, grid, includeSafezone);
 
-        byte GetOffset(byte avgValue, int gridSize)
+        byte GetOffset(int minimumValue, int difference, int gridSize)
         {
-            var offset = Math.Max(avgValue - (this._actualSegmentSideLength / 2), 0);
+            // The start and end are centered in the segment. Because their difference is smaller
+            // than the side length of the segment, both of them are included, even after clamping.
+            var offset = Math.Max(minimumValue - ((this._actualSegmentSideLength - 1 - difference) / 2), 0);
             offset = Math.Min(offset, Math.Max(gridSize - this._actualSegmentSideLength, 0));
             return (byte)offset;
         }
