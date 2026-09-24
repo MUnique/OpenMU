@@ -164,6 +164,16 @@ public class GuildServerController : ControllerBase
     }
 
     /// <summary>
+    /// Updates the guild member position, resolved by character name.
+    /// </summary>
+    /// <param name="data">The change arguments.</param>
+    [HttpPost(nameof(IGuildServer.ChangeGuildMemberPositionByNameAsync))]
+    public ValueTask<bool> ChangeGuildMemberPositionByNameAsync([FromBody] GuildMemberRoleChangeByNameArguments data)
+    {
+        return this._guildServer.ChangeGuildMemberPositionByNameAsync(data.GuildId, data.CharacterName, data.NewRole);
+    }
+
+    /// <summary>
     /// Notifies the guild server that a player (potential guild member) entered the game.
     /// </summary>
     /// <param name="data">The arguments of the changed player.</param>

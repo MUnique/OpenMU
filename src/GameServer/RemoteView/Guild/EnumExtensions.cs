@@ -47,6 +47,23 @@ public static class EnumExtensions
     }
 
     /// <summary>
+    /// Converts a wire <see cref="GuildMemberRole"/> into a <see cref="GuildPosition"/>.
+    /// This is the inverse of <see cref="Convert(GuildPosition)"/>.
+    /// </summary>
+    /// <param name="role">The role from the client message.</param>
+    /// <returns>The position, or <c>null</c> for roles which cannot be assigned, such as guild master.</returns>
+    public static GuildPosition? ConvertToPosition(this GuildMemberRole role)
+    {
+        return role switch
+        {
+            GuildMemberRole.NormalMember => GuildPosition.NormalMember,
+            GuildMemberRole.BattleMaster => GuildPosition.BattleMaster,
+            GuildMemberRole.AssistantMaster => GuildPosition.AssistantMaster,
+            _ => null,
+        };
+    }
+
+    /// <summary>
     /// Converts the <see cref="GuildRequestAnswerResult"/> into a <see cref="GuildJoinRequestResult"/>.
     /// </summary>
     /// <param name="result">The <see cref="GuildRequestAnswerResult"/> which should be converted.</param>
