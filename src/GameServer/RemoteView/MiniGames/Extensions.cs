@@ -70,4 +70,21 @@ public static class Extensions
             _ => ChaosCastleEnterResult.EnterResult.Failed,
         };
     }
+
+    /// <summary>
+    /// Converts the <see cref="EnterResult"/> to the corresponding <see cref="DoppelgangerEnterResult.EnterResult"/>.
+    /// </summary>
+    /// <param name="enterResult">The enter result.</param>
+    /// <returns>The converted result.</returns>
+    public static DoppelgangerEnterResult.EnterResult ToDoppelgangerEnterResult(this EnterResult enterResult)
+    {
+        return enterResult switch
+        {
+            EnterResult.Success => DoppelgangerEnterResult.EnterResult.Success,
+            EnterResult.NotOpen => DoppelgangerEnterResult.EnterResult.AlreadyStarted,
+            EnterResult.Full => DoppelgangerEnterResult.EnterResult.AlreadyStarted,
+            EnterResult.PlayerKillerCantEnter => DoppelgangerEnterResult.EnterResult.PlayerKiller,
+            _ => DoppelgangerEnterResult.EnterResult.Failed,
+        };
+    }
 }

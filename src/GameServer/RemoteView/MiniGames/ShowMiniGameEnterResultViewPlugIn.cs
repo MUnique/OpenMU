@@ -41,6 +41,9 @@ public class ShowMiniGameEnterResultViewPlugIn : IShowMiniGameEnterResultPlugIn
             case MiniGameType.ChaosCastle:
                 await this._player.Connection.SendChaosCastleEnterResultAsync(enterResult.ToChaosCastleEnterResult()).ConfigureAwait(false);
                 break;
+            case MiniGameType.Doppelganger:
+                await this._player.Connection.SendDoppelgangerEnterResultAsync(enterResult.ToDoppelgangerEnterResult()).ConfigureAwait(false);
+                break;
             case MiniGameType.Undefined:
                 throw new ArgumentException("undefined game type", nameof(miniGameType));
             default:

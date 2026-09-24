@@ -9706,6 +9706,288 @@
         </Structure>
       </Structures>
     </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BF</Code>
+      <SubCode>0E</SubCode>
+      <Name>DoppelgangerEnterResult</Name>
+      <Length>5</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player requested to enter the doppelganger event through the NPC Lugard.</SentWhen>
+      <CausedReaction>On failure, the client locks the enter button of the doppelganger entry dialog and may show a message.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>EnterResult</TypeName>
+          <Name>Result</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>EnterResult</Name>
+          <Description>Result of the doppelganger enter request.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Success</Name>
+              <Description>The player entered the event.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Failed</Name>
+              <Description>The player could not enter, e.g. because of a missing ticket item. The client locks the enter button without showing a message.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>AlreadyStarted</Name>
+              <Description>The event is already running or occupied by another party. The client shows "Battle has already commenced. You cannot enter.".</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>PlayerKiller</Name>
+              <Description>Player killers are not allowed to enter. The client shows "You cannot enter if you are a 1st Stage Outlaw.".</Description>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>EntranceAvailable</Name>
+              <Description>The client unlocks the enter button of the doppelganger entry dialog.</Description>
+              <Value>4</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BF</Code>
+      <SubCode>0F</SubCode>
+      <Name>DoppelgangerMonsterPosition</Name>
+      <Length>5</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The position of the most advanced monster on the path to the magic circle changed during the doppelganger event.</SentWhen>
+      <CausedReaction>The client updates the monster progress bar of the doppelganger frame.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Position</Name>
+          <Description>The position index on the path, between 0 (start) and 22 (magic circle).</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BF</Code>
+      <SubCode>10</SubCode>
+      <Name>DoppelgangerStateUpdate</Name>
+      <Length>5</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The state of the doppelganger event changed.</SentWhen>
+      <CausedReaction>When the event starts (state Playing), the client shows the doppelganger frame and a message box with the failure conditions.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>DoppelgangerState</TypeName>
+          <Name>State</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>DoppelgangerState</Name>
+          <Description>The state of the doppelganger event.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Waiting</Name>
+              <Description>The event is waiting for the party members to enter.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Ready</Name>
+              <Description>The entrance is closed and the event is about to start.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Playing</Name>
+              <Description>The event is running.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Ended</Name>
+              <Description>The event has ended.</Description>
+              <Value>3</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BF</Code>
+      <SubCode>11</SubCode>
+      <Name>DoppelgangerIceWalkerState</Name>
+      <Length>6</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The ice walker appeared on or disappeared from the path during the doppelganger event.</SentWhen>
+      <CausedReaction>The client shows or hides the ice walker icon on the progress bar of the doppelganger frame.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>IceWalkerState</TypeName>
+          <Name>State</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Position</Name>
+          <Description>The position index of the ice walker on the path, between 0 (start) and 22 (magic circle).</Description>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>IceWalkerState</Name>
+          <Description>The state of the ice walker.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Appeared</Name>
+              <Description>The ice walker is present at the given position.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Disappeared</Name>
+              <Description>The ice walker was killed or disappeared.</Description>
+              <Value>1</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BF</Code>
+      <SubCode>12</SubCode>
+      <Name>DoppelgangerPlayInfo</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>Periodically (every second) while the doppelganger event is running.</SentWhen>
+      <CausedReaction>The client updates the remaining time and the positions of the party members on the progress bar of the doppelganger frame. Players which are not included are no longer shown.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>RemainingSeconds</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>PlayerCount</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Structure[]</Type>
+          <TypeName>PlayerPosition</TypeName>
+          <Name>PlayerPositions</Name>
+          <ItemCountField>PlayerCount</ItemCountField>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>PlayerPosition</Name>
+          <Description>The position of a player on the path.</Description>
+          <Length>4</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>PlayerId</Name>
+            </Field>
+            <Field>
+              <Index>2</Index>
+              <Type>Byte</Type>
+              <Name>MapNumber</Name>
+              <Description>The map number of the player. It is ignored by the client.</Description>
+            </Field>
+            <Field>
+              <Index>3</Index>
+              <Type>Byte</Type>
+              <Name>Position</Name>
+              <Description>The position index of the player on the path, between 0 (start) and 22 (magic circle).</Description>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BF</Code>
+      <SubCode>13</SubCode>
+      <Name>DoppelgangerResult</Name>
+      <Length>12</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The doppelganger event ended for the player.</SentWhen>
+      <CausedReaction>The client stops the timer and the event music, and shows a message box with the result.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>ResultType</TypeName>
+          <Name>Result</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>RewardExperience</Name>
+          <Description>The experience which the player got as reward. It is not shown by the client. The field is aligned to 4 bytes, because the client structure is not packed.</Description>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>ResultType</Name>
+          <Description>The result of the doppelganger event.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Success</Name>
+              <Description>The party successfully defended the magic circle.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Failed</Name>
+              <Description>The player failed, e.g. because the character died or left the event map.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>MonstersReachedMagicCircle</Name>
+              <Description>The defense failed, because too many monsters reached the magic circle.</Description>
+              <Value>2</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BF</Code>
+      <SubCode>14</SubCode>
+      <Name>DoppelgangerMonsterGoal</Name>
+      <Length>6</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>A monster reached the magic circle during the doppelganger event.</SentWhen>
+      <CausedReaction>The client updates the counter of monsters which passed the magic circle.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>MaximumGoalCount</Name>
+          <Description>The number of monsters which may reach the magic circle until the event fails.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>GoalCount</Name>
+          <Description>The number of monsters which reached the magic circle.</Description>
+        </Field>
+      </Fields>
+    </Packet>
 		<Packet>
 			<HeaderType>C1HeaderWithSubCode</HeaderType>
 			<Code>BF</Code>
@@ -10711,6 +10993,26 @@
               <Name>ChaosCastleFinished</Name>
               <Description>The chaos castle game is finished. Chaos Castle Event shuts down (in x seconds)".</Description>
               <Value>13</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>DoppelgangerEntranceClosing</Name>
+              <Description>The entrance of the doppelganger event closes in 30 seconds. The client shows the countdown only on the doppelganger maps.</Description>
+              <Value>16</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>DoppelgangerStarting</Name>
+              <Description>The doppelganger event starts in 30 seconds. The client shows the countdown only on the doppelganger maps.</Description>
+              <Value>17</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>DoppelgangerIceWalkerCountdown</Name>
+              <Description>The ice walker has to be killed within 30 seconds. The client shows the countdown only on the doppelganger maps.</Description>
+              <Value>18</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>DoppelgangerEnding</Name>
+              <Description>The doppelganger event ends in 30 seconds. The client shows the countdown only on the doppelganger maps.</Description>
+              <Value>19</Value>
             </EnumValue>
           </Values>
         </Enum>

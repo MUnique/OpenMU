@@ -25472,6 +25472,701 @@ public readonly ref struct ChainTargetRef
 
 
 /// <summary>
+/// Is sent by the server when: The player requested to enter the doppelganger event through the NPC Lugard.
+/// Causes reaction on client side: On failure, the client locks the enter button of the doppelganger entry dialog and may show a message.
+/// </summary>
+public readonly ref struct DoppelgangerEnterResultRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DoppelgangerEnterResultRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public DoppelgangerEnterResultRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DoppelgangerEnterResultRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private DoppelgangerEnterResultRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xBF;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x0E;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 5;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public DoppelgangerEnterResult.EnterResult Result
+    {
+        get => (DoppelgangerEnterResult.EnterResult)this._data[4];
+        set => this._data[4] = (byte)value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="DoppelgangerEnterResult"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator DoppelgangerEnterResultRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="DoppelgangerEnterResult"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(DoppelgangerEnterResultRef packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: The position of the most advanced monster on the path to the magic circle changed during the doppelganger event.
+/// Causes reaction on client side: The client updates the monster progress bar of the doppelganger frame.
+/// </summary>
+public readonly ref struct DoppelgangerMonsterPositionRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DoppelgangerMonsterPositionRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public DoppelgangerMonsterPositionRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DoppelgangerMonsterPositionRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private DoppelgangerMonsterPositionRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xBF;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x0F;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 5;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the position index on the path, between 0 (start) and 22 (magic circle).
+    /// </summary>
+    public byte Position
+    {
+        get => this._data[4];
+        set => this._data[4] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="DoppelgangerMonsterPosition"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator DoppelgangerMonsterPositionRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="DoppelgangerMonsterPosition"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(DoppelgangerMonsterPositionRef packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: The state of the doppelganger event changed.
+/// Causes reaction on client side: When the event starts (state Playing), the client shows the doppelganger frame and a message box with the failure conditions.
+/// </summary>
+public readonly ref struct DoppelgangerStateUpdateRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DoppelgangerStateUpdateRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public DoppelgangerStateUpdateRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DoppelgangerStateUpdateRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private DoppelgangerStateUpdateRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xBF;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x10;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 5;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the state.
+    /// </summary>
+    public DoppelgangerStateUpdate.DoppelgangerState State
+    {
+        get => (DoppelgangerStateUpdate.DoppelgangerState)this._data[4];
+        set => this._data[4] = (byte)value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="DoppelgangerStateUpdate"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator DoppelgangerStateUpdateRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="DoppelgangerStateUpdate"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(DoppelgangerStateUpdateRef packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: The ice walker appeared on or disappeared from the path during the doppelganger event.
+/// Causes reaction on client side: The client shows or hides the ice walker icon on the progress bar of the doppelganger frame.
+/// </summary>
+public readonly ref struct DoppelgangerIceWalkerStateRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DoppelgangerIceWalkerStateRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public DoppelgangerIceWalkerStateRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DoppelgangerIceWalkerStateRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private DoppelgangerIceWalkerStateRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xBF;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x11;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 6;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the state.
+    /// </summary>
+    public DoppelgangerIceWalkerState.IceWalkerState State
+    {
+        get => (DoppelgangerIceWalkerState.IceWalkerState)this._data[4];
+        set => this._data[4] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the position index of the ice walker on the path, between 0 (start) and 22 (magic circle).
+    /// </summary>
+    public byte Position
+    {
+        get => this._data[5];
+        set => this._data[5] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="DoppelgangerIceWalkerState"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator DoppelgangerIceWalkerStateRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="DoppelgangerIceWalkerState"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(DoppelgangerIceWalkerStateRef packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: Periodically (every second) while the doppelganger event is running.
+/// Causes reaction on client side: The client updates the remaining time and the positions of the party members on the progress bar of the doppelganger frame. Players which are not included are no longer shown.
+/// </summary>
+public readonly ref struct DoppelgangerPlayInfoRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DoppelgangerPlayInfoRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public DoppelgangerPlayInfoRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DoppelgangerPlayInfoRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private DoppelgangerPlayInfoRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xBF;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x12;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the remaining seconds.
+    /// </summary>
+    public ushort RemainingSeconds
+    {
+        get => ReadUInt16LittleEndian(this._data[4..]);
+        set => WriteUInt16LittleEndian(this._data[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the player count.
+    /// </summary>
+    public byte PlayerCount
+    {
+        get => this._data[6];
+        set => this._data[6] = value;
+    }
+
+    /// <summary>
+    /// Gets the <see cref="PlayerPositionRef"/> of the specified index.
+    /// </summary>
+        public PlayerPositionRef this[int index] => new (this._data[(8 + index * PlayerPositionRef.Length)..]);
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="DoppelgangerPlayInfo"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator DoppelgangerPlayInfoRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="DoppelgangerPlayInfo"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(DoppelgangerPlayInfoRef packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="PlayerPositionRef"/>.
+    /// </summary>
+    /// <param name="playerPositionsCount">The count of <see cref="PlayerPositionRef"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int playerPositionsCount) => playerPositionsCount * PlayerPositionRef.Length + 8;
+
+
+/// <summary>
+/// The position of a player on the path..
+/// </summary>
+public readonly ref struct PlayerPositionRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PlayerPositionRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public PlayerPositionRef(Span<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 4;
+
+    /// <summary>
+    /// Gets or sets the player id.
+    /// </summary>
+    public ushort PlayerId
+    {
+        get => ReadUInt16LittleEndian(this._data);
+        set => WriteUInt16LittleEndian(this._data, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the map number of the player. It is ignored by the client.
+    /// </summary>
+    public byte MapNumber
+    {
+        get => this._data[2];
+        set => this._data[2] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the position index of the player on the path, between 0 (start) and 22 (magic circle).
+    /// </summary>
+    public byte Position
+    {
+        get => this._data[3];
+        set => this._data[3] = value;
+    }
+}
+}
+
+
+/// <summary>
+/// Is sent by the server when: The doppelganger event ended for the player.
+/// Causes reaction on client side: The client stops the timer and the event music, and shows a message box with the result.
+/// </summary>
+public readonly ref struct DoppelgangerResultRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DoppelgangerResultRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public DoppelgangerResultRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DoppelgangerResultRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private DoppelgangerResultRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xBF;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x13;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 12;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public DoppelgangerResult.ResultType Result
+    {
+        get => (DoppelgangerResult.ResultType)this._data[4];
+        set => this._data[4] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the experience which the player got as reward. It is not shown by the client. The field is aligned to 4 bytes, because the client structure is not packed.
+    /// </summary>
+    public uint RewardExperience
+    {
+        get => ReadUInt32LittleEndian(this._data[8..]);
+        set => WriteUInt32LittleEndian(this._data[8..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="DoppelgangerResult"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator DoppelgangerResultRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="DoppelgangerResult"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(DoppelgangerResultRef packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: A monster reached the magic circle during the doppelganger event.
+/// Causes reaction on client side: The client updates the counter of monsters which passed the magic circle.
+/// </summary>
+public readonly ref struct DoppelgangerMonsterGoalRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DoppelgangerMonsterGoalRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public DoppelgangerMonsterGoalRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DoppelgangerMonsterGoalRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private DoppelgangerMonsterGoalRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xBF;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x14;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 6;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the number of monsters which may reach the magic circle until the event fails.
+    /// </summary>
+    public byte MaximumGoalCount
+    {
+        get => this._data[4];
+        set => this._data[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the number of monsters which reached the magic circle.
+    /// </summary>
+    public byte GoalCount
+    {
+        get => this._data[5];
+        set => this._data[5] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="DoppelgangerMonsterGoal"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator DoppelgangerMonsterGoalRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="DoppelgangerMonsterGoal"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(DoppelgangerMonsterGoalRef packet) => packet._data; 
+}
+
+
+/// <summary>
 /// Is sent by the server when: The server validated or changed the status of the MU Helper.
 /// Causes reaction on client side: The client toggle the MU Helper status.
 /// </summary>
