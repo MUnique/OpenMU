@@ -1024,7 +1024,7 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The hatchery has been closed. The battle against Selupan begins!.
+        ///   Looks up a localized string similar to The Hatchery Gate is closed..
         /// </summary>
         public static string RaklionHatcheryClosed {
             get {
@@ -1033,7 +1033,7 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The hatchery is closed. You can not enter it now..
+        ///   Looks up a localized string similar to The Hatchery Gate is closed, you cannot enter..
         /// </summary>
         public static string RaklionHatcheryIsClosed {
             get {
@@ -1042,7 +1042,16 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The battle against Selupan ended. The hatchery opens again in {0} minute(s)..
+        ///   Looks up a localized string similar to The Hatchery Gate is opened..
+        /// </summary>
+        public static string RaklionHatcheryOpened {
+            get {
+                return ResourceManager.GetString("RaklionHatcheryOpened", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hatchery Gates will open in {0} minute(s)..
         /// </summary>
         public static string RaklionHatcheryOpensIn {
             get {
@@ -1051,7 +1060,7 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Selupan appeared! The hatchery closes in {0} minute(s)..
+        ///   Looks up a localized string similar to Selupan has appeared. The Hatchery Gates will be closed in {0} minute(s)..
         /// </summary>
         public static string RaklionSelupanAppeared {
             get {

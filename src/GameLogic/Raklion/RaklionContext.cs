@@ -276,6 +276,7 @@ public sealed class RaklionContext : IEventStateProvider, IDisposable
 
         this._logger.LogInformation("Raklion event started with {count} spider eggs.", this._spiderEggs.Count);
         await this.ChangeStateAsync(RaklionState.Idle).ConfigureAwait(false);
+        await this.ShowMessageToAllPlayersAsync(nameof(PlayerMessage.RaklionHatcheryOpened)).ConfigureAwait(false);
     }
 
     private async ValueTask CheckSpiderEggsAsync()
@@ -300,7 +301,7 @@ public sealed class RaklionContext : IEventStateProvider, IDisposable
     {
         await this.ChangeStateAsync(RaklionState.Notify2).ConfigureAwait(false);
         var minutes = (int)Math.Ceiling(this._definition.HatcheryCloseDelay.TotalMinutes);
-        await this.ForEachPlayerAsync(player => player.ShowLocalizedGoldenMessageAsync(nameof(PlayerMessage.RaklionSelupanAppeared), minutes).AsTask()).ConfigureAwait(false);
+        await this.ShowMessageToAllPlayersAsync(nameof(PlayerMessage.RaklionSelupanAppeared), minutes).ConfigureAwait(false);
 
         await this.ChangeStateAsync(RaklionState.Ready).ConfigureAwait(false);
         var spawnArea = this.GetWaveSpawns(this._definition.SelupanWaveNumber).FirstOrDefault();
@@ -335,7 +336,7 @@ public sealed class RaklionContext : IEventStateProvider, IDisposable
             this._battlePlayers.TryAdd(player, 0);
         }
 
-        await this.ForEachPlayerAsync(player => player.ShowLocalizedGoldenMessageAsync(nameof(PlayerMessage.RaklionHatcheryClosed)).AsTask()).ConfigureAwait(false);
+        await this.ShowMessageToAllPlayersAsync(nameof(PlayerMessage.RaklionHatcheryClosed)).ConfigureAwait(false);
         await this.ChangeStateAsync(RaklionState.CloseDoor).ConfigureAwait(false);
     }
 
@@ -356,7 +357,7 @@ public sealed class RaklionContext : IEventStateProvider, IDisposable
         await this.ForEachPlayerAsync(player => player.InvokeViewPlugInAsync<IRaklionEventViewPlugIn>(p => p.ShowBattleResultAsync(success)).AsTask()).ConfigureAwait(false);
         await this.ChangeStateAsync(RaklionState.Notify4).ConfigureAwait(false);
         var minutes = (int)Math.Ceiling(this._definition.HatcheryOpenDelay.TotalMinutes);
-        await this.ForEachPlayerAsync(player => player.ShowLocalizedGoldenMessageAsync(nameof(PlayerMessage.RaklionHatcheryOpensIn), minutes).AsTask()).ConfigureAwait(false);
+        await this.ShowMessageToAllPlayersAsync(nameof(PlayerMessage.RaklionHatcheryOpensIn), minutes).ConfigureAwait(false);
         this._battlePlayers.Clear();
     }
 
@@ -427,7 +428,7 @@ public sealed class RaklionContext : IEventStateProvider, IDisposable
         try
         {
             await this.ChangeSelupanStateAsync(SelupanState.Dead).ConfigureAwait(false);
-            await this.ForEachPlayerAsync(player => player.ShowLocalizedGoldenMessageAsync(nameof(PlayerMessage.RaklionSelupanKilled), killerName).AsTask()).ConfigureAwait(false);
+            await this.ShowMessageToAllPlayersAsync(nameof(PlayerMessage.RaklionSelupanKilled), killerName).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -500,6 +501,25 @@ public sealed class RaklionContext : IEventStateProvider, IDisposable
 
         var players = await this._gameContext.GetPlayersAsync().ConfigureAwait(false);
         return players.Where(player => player.CurrentMap == map).ToList();
+    }
+
+    /// <summary>
+    /// Shows a golden message to all players of the game server, like the original game does.
+    /// </summary>
+    private async ValueTask ShowMessageToAllPlayersAsync(string messageKey, params object?[] arguments)
+    {
+        var players = await this._gameContext.GetPlayersAsync().ConfigureAwait(false);
+        foreach (var player in players)
+        {
+            try
+            {
+                await player.ShowLocalizedGoldenMessageAsync(messageKey, arguments).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogError(ex, "Couldn't notify {player} about the raklion event.", player);
+            }
+        }
     }
 
     private async ValueTask ForEachPlayerAsync(Func<Player, Task> action)
