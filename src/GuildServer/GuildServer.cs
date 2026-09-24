@@ -206,17 +206,34 @@ public class GuildServer : IGuildServer
     {
         try
         {
-            if (this._guildDictionary.TryGetValue(guildId, out var guild))
+            if (!this._guildDictionary.TryGetValue(guildId, out var guild))
             {
-                var guildMember = guild.Guild.Members.FirstOrDefault(m => m.Id == characterId);
-                if (guildMember != null)
-                {
-                    guildMember.Status = role;
-                    await guild.DatabaseContext.SaveChangesAsync().ConfigureAwait(false);
-                    var listEntry = guild.Members[characterId];
-                    listEntry.PlayerPosition = role;
-                }
+                this._logger.LogWarning("Guild {GuildId} not found, so the position of member {CharacterId} can't be changed.", guildId, characterId);
+                return;
             }
+
+            var guildMember = guild.Guild.Members.FirstOrDefault(m => m.Id == characterId);
+            if (guildMember is null)
+            {
+                this._logger.LogWarning("Guild {GuildId} member {CharacterId} not found, so its position can't be changed.", guildId, characterId);
+                return;
+            }
+
+            guildMember.Status = role;
+            await guild.DatabaseContext.SaveChangesAsync().ConfigureAwait(false);
+                    if (guild.Members.TryGetValue(characterId, out var listEntry))
+                    {
+                        listEntry.PlayerPosition = role;
+
+                        // Offline members keep their cached name while their server id is
+                        // OfflineServerId; publishing to them is pointless (dropped or, over
+                        // Dapr, an error on every call). They pick up the persisted position
+                        // on next login through PlayerEnteredGameAsync.
+                        if (listEntry.PlayerName is not null && listEntry.ServerId != OfflineServerId)
+                        {
+                            await this._changePublisher.AssignGuildToPlayerAsync(listEntry.ServerId, listEntry.PlayerName, new GuildMemberStatus(guildId, role)).ConfigureAwait(false);
+                        }
+                    }
         }
         catch (Exception ex)
         {

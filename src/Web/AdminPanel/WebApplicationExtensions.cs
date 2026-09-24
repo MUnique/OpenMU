@@ -70,6 +70,8 @@ public static class WebApplicationExtensions
 
         services.AddToasts();
 
+        services.AddMemoryCache();
+
         services.AddScoped<ModalService>();
         services.AddScoped<IModalService>(sp => sp.GetRequiredService<ModalService>());
         services.AddScoped<ILookupController, PersistentObjectsLookupController>();
@@ -84,6 +86,10 @@ public static class WebApplicationExtensions
         services.AddScoped<DataUpdateService>();
         services.AddScoped<AccountService>();
         services.AddScoped<IDataService<Account>>(serviceProvider => serviceProvider.GetService<AccountService>()!);
+        services.AddScoped<IGuildMemberEnricher, CharacterGuildMemberEnricher>();
+        services.AddScoped<GuildService>();
+        services.AddScoped<IGuildService>(serviceProvider => serviceProvider.GetRequiredService<GuildService>());
+        services.AddScoped<IDataService<GuildListItem>>(serviceProvider => serviceProvider.GetRequiredService<GuildService>());
         services.AddScoped<PlugInController>();
         services.AddScoped<IDataService<PlugInConfigurationViewItem>>(serviceProvider => serviceProvider.GetService<PlugInController>()!);
         services.AddScoped<ChatCommandController>();

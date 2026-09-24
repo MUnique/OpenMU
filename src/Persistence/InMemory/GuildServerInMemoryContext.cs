@@ -1,9 +1,10 @@
-﻿// <copyright file="GuildServerInMemoryContext.cs" company="MUnique">
+// <copyright file="GuildServerInMemoryContext.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
 namespace MUnique.OpenMU.Persistence.InMemory;
 
+using System.Threading;
 using MUnique.OpenMU.Persistence.BasicModel;
 
 /// <summary>
@@ -62,6 +63,42 @@ public class GuildServerInMemoryContext : InMemoryContext, IGuildServerContext
             .GetAllAsync()
             .ConfigureAwait(false))
             .Where(g => g.AllianceGuild?.GetId() == guildId)
+            .ToList();
+    }
+
+    /// <inheritdoc/>
+    public async ValueTask<IReadOnlyList<DataModel.Entities.Guild>> GetGuildsOrderedByNameAsync(int skip, int count, CancellationToken cancellationToken = default)
+    {
+        var allGuilds = await this.Provider.GetRepository<DataModel.Entities.Guild>().GetAllAsync(cancellationToken).ConfigureAwait(false);
+        return allGuilds.OrderBy(g => g.Name).Skip(skip).Take(count).ToList();
+    }
+
+    /// <inheritdoc/>
+    public async ValueTask<IReadOnlyList<DataModel.Entities.Guild>> SearchGuildsAsync(string searchTerm, int skip, int count, CancellationToken cancellationToken = default)
+    {
+        var allGuilds = await this.Provider.GetRepository<DataModel.Entities.Guild>().GetAllAsync(cancellationToken).ConfigureAwait(false);
+        return allGuilds
+            .Where(g => g.Name?.Contains(searchTerm, StringComparison.InvariantCultureIgnoreCase) == true)
+            .OrderBy(g => g.Name)
+            .Skip(skip)
+            .Take(count)
+            .ToList();
+    }
+
+    /// <inheritdoc/>
+    public async ValueTask<IReadOnlyCollection<Guid>> GetAllianceMasterIdsAsync(IReadOnlyCollection<Guid> guildIds)
+    {
+        if (guildIds.Count == 0)
+        {
+            return [];
+        }
+
+        var guildIdSet = guildIds.ToHashSet();
+        var allGuilds = await this.Provider.GetRepository<DataModel.Entities.Guild>().GetAllAsync().ConfigureAwait(false);
+        return allGuilds
+            .Where(g => g.AllianceGuild is { } master && guildIdSet.Contains(master.GetId()))
+            .Select(g => g.AllianceGuild!.GetId())
+            .Distinct()
             .ToList();
     }
 }

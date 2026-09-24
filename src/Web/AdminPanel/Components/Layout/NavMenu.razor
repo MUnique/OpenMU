@@ -49,6 +49,18 @@
                     <span class="oi oi-people" aria-hidden="true" /> @Resources.OnlineAccounts
                   </NavLink>
                 </li>
+                <li class="nav-item px-3">
+                  <NavLink class="nav-link" href="guilds" @onclick="() => NavigationHistory.Clear()">
+                    <span class="oi oi-flag" aria-hidden="true" /> @Resources.Guilds
+                  </NavLink>
+                </li>
+                <AuthorizeView Policy="@AdminPolicies.Administrator">
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" href="castle-siege" @onclick="() => NavigationHistory.Clear()">
+                            <span class="oi oi-shield" aria-hidden="true"></span> @Resources.CastleSiege
+                        </NavLink>
+                    </li>
+                </AuthorizeView>
                 @if (this.GameConfigurationId is { } gameConfigurationId )
                 {
                     <ConfigNavMenu GameConfigurationId="@gameConfigurationId" />
@@ -70,11 +82,6 @@
                 </li>
             }
             <AuthorizeView Policy="@AdminPolicies.Administrator">
-                <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="castle-siege" @onclick="() => NavigationHistory.Clear()">
-                        <span class="oi oi-shield" aria-hidden="true"></span> @Resources.CastleSiege
-                    </NavLink>
-                </li>
                 <li class="nav-item px-3">
                     <NavLink class="nav-link" href="users" @onclick="() => NavigationHistory.Clear()">
                         <span class="oi oi-key" aria-hidden="true"></span> @Resources.Users

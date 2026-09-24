@@ -55,25 +55,39 @@ public class OfflineAccountService : IDataService<OfflineAccount>, ISupportDataC
     }
 
     /// <inheritdoc />
-    public Task<List<OfflineAccount>> GetAsync(int offset, int count)
+    public async Task<List<OfflineAccount>> GetAsync(int offset, int count)
     {
         // Note: bots never show up here - they are managed by the BotManager, not the OfflinePlayerManager.
-        var result = this._serverProvider.Servers
+        // Materialized once: guild names resolve in bulk afterwards, and a second snapshot could disagree.
+        var rows = this._serverProvider.Servers
             .OfType<IGameServerContextProvider>()
             .SelectMany(s => s.Context.OfflinePlayerManager
                 .OfflinePlayers
-                .Select(p => new OfflineAccount(
-                    p.AccountLoginName ?? string.Empty,
-                    (byte)((IManageableServer)s).Id,
-                    p.StartTimestamp,
-                    p.SelectedCharacter?.Name,
-                    p.Party?.PartyMaster?.Name,
-                    p.Party?.PartyList.Count ?? 0)))
+                .Select(p => (ServerId: (byte)((IManageableServer)s).Id, Player: p)))
+            .ToList();
+
+        var guildNames = await GuildNames.ResolveAsync(
+                GuildNames.FindServer(this._serverProvider),
+                rows.Select(r => r.Player.GuildStatus?.GuildId).OfType<uint>())
+            .ConfigureAwait(false);
+
+        return rows
+            .Select(r =>
+            {
+                var (partyMaster, partySize) = PartyDisplay.From(r.Player.Party);
+                var guildId = r.Player.GuildStatus?.GuildId;
+                return new OfflineAccount(
+                    r.Player.AccountLoginName ?? string.Empty,
+                    r.ServerId,
+                    r.Player.StartTimestamp,
+                    r.Player.SelectedCharacter?.Name,
+                    guildId is { } id ? guildNames.GetValueOrDefault(id) : null,
+                    partyMaster,
+                    partySize);
+            })
             .OrderPartyGrouped()
             .Skip(offset)
             .Take(count)
             .ToList();
-
-        return Task.FromResult(result);
     }
 }

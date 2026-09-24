@@ -142,15 +142,6 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Active Offline Player.
-        /// </summary>
-        public static string ActiveOfflinePlayer {
-            get {
-                return ResourceManager.GetString("ActiveOfflinePlayer", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Add New.
         /// </summary>
         public static string AddNew {
@@ -1747,29 +1738,110 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Off-level Players.
+        ///   Looks up a localized string similar to Guilds.
         /// </summary>
-        public static string OffLevelPlayers {
+        public static string Guilds {
             get {
-                return ResourceManager.GetString("OffLevelPlayers", resourceCulture);
+                return ResourceManager.GetString("Guilds", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Bot Players.
+        ///   Looks up a localized string similar to Guild.
         /// </summary>
-        public static string BotPlayers {
+        public static string Guild {
             get {
-                return ResourceManager.GetString("BotPlayers", resourceCulture);
+                return ResourceManager.GetString("Guild", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Party.
+        ///   Looks up a localized string similar to Alliance.
         /// </summary>
-        public static string Party {
+        public static string Alliance {
             get {
-                return ResourceManager.GetString("Party", resourceCulture);
+                return ResourceManager.GetString("Alliance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Members.
+        /// </summary>
+        public static string Members {
+            get {
+                return ResourceManager.GetString("Members", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Score.
+        /// </summary>
+        public static string Score {
+            get {
+                return ResourceManager.GetString("Score", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Notice.
+        /// </summary>
+        public static string Notice {
+            get {
+                return ResourceManager.GetString("Notice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Position.
+        /// </summary>
+        public static string Position {
+            get {
+                return ResourceManager.GetString("Position", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Character Class.
+        /// </summary>
+        public static string CharacterClass {
+            get {
+                return ResourceManager.GetString("CharacterClass", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Level.
+        /// </summary>
+        public static string Level {
+            get {
+                return ResourceManager.GetString("Level", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Master Level.
+        /// </summary>
+        public static string MasterLevel {
+            get {
+                return ResourceManager.GetString("MasterLevel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Account.
+        /// </summary>
+        public static string Account {
+            get {
+                return ResourceManager.GetString("Account", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The guild was not found. It may have been deleted..
+        /// </summary>
+        public static string GuildNotFound {
+            get {
+                return ResourceManager.GetString("GuildNotFound", resourceCulture);
             }
         }
         
@@ -3462,6 +3534,51 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string CastleSiegeErrorUnexpected {
             get {
                 return ResourceManager.GetString("CastleSiegeErrorUnexpected", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Off-level Players.
+        /// </summary>
+        public static string OffLevelPlayers {
+            get {
+                return ResourceManager.GetString("OffLevelPlayers", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Bot Players.
+        /// </summary>
+        public static string BotPlayers {
+            get {
+                return ResourceManager.GetString("BotPlayers", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Party.
+        /// </summary>
+        public static string Party {
+            get {
+                return ResourceManager.GetString("Party", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to —.
+        /// </summary>
+        public static string EmptyValue {
+            get {
+                return ResourceManager.GetString("EmptyValue", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Party of {0}: {1} members.
+        /// </summary>
+        public static string PartyBadgeTitle {
+            get {
+                return ResourceManager.GetString("PartyBadgeTitle", resourceCulture);
             }
         }
     }
