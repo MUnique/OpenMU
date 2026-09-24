@@ -1375,6 +1375,42 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Tower open duration.
+        /// </summary>
+        public static string KanturuStartConfiguration_TowerOpenDuration_Name {
+            get {
+                return ResourceManager.GetString("KanturuStartConfiguration_TowerOpenDuration_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How long the Tower of Refinement stays open after the Nightmare boss has been defeated..
+        /// </summary>
+        public static string KanturuStartConfiguration_TowerOpenDuration_Description {
+            get {
+                return ResourceManager.GetString("KanturuStartConfiguration_TowerOpenDuration_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tower open until (UTC).
+        /// </summary>
+        public static string KanturuStartConfiguration_TowerOpenUntilUtc_Name {
+            get {
+                return ResourceManager.GetString("KanturuStartConfiguration_TowerOpenUntilUtc_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to End of the current open window in UTC. Set automatically when Nightmare is defeated..
+        /// </summary>
+        public static string KanturuStartConfiguration_TowerOpenUntilUtc_Description {
+            get {
+                return ResourceManager.GetString("KanturuStartConfiguration_TowerOpenUntilUtc_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Increases all monster base stats by a configurable percentage..
         /// </summary>
         public static string MonsterAttributeScaler_Description {

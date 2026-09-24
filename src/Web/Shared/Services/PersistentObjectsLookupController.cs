@@ -60,8 +60,10 @@ public class PersistentObjectsLookupController : ILookupController
                     ? this._contextProvider.CreateNewContext(owner)
                     : null;
                 var effectiveContext = persistenceContext ?? context;
-                if (effectiveContext is null)
+                if (effectiveContext is null || effectiveContext.IsSupporting(typeof(T)) is not true)
                 {
+                    // Not a persisted entity (e.g. a game-logic definition class whose
+                    // name merely contains "Definition"): nothing to suggest.
                     return Enumerable.Empty<T>();
                 }
 
