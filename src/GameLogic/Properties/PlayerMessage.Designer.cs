@@ -178,6 +178,33 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The Ice Walker appeared! Kill it within one minute, or the following monsters become stronger..
+        /// </summary>
+        public static string DoppelgangerIceWalkerAppeared {
+            get {
+                return ResourceManager.GetString("DoppelgangerIceWalkerAppeared", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Ice Walker escaped! The following monsters are stronger..
+        /// </summary>
+        public static string DoppelgangerIceWalkerEscaped {
+            get {
+                return ResourceManager.GetString("DoppelgangerIceWalkerEscaped", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Ice Walker has been defeated!.
+        /// </summary>
+        public static string DoppelgangerIceWalkerKilled {
+            get {
+                return ResourceManager.GetString("DoppelgangerIceWalkerKilled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Your {0} has been destroyed! You are falling out of the Kanturu Refinery Tower..
         /// </summary>
         public static string KanturuRequiredItemDestroyed {
