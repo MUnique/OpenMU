@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Tests;
 
 using Microsoft.Extensions.Logging.Abstractions;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.GameLogic.MiniGames.Doppelganger;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
 using MUnique.OpenMU.Persistence.InMemory;
 
@@ -28,6 +29,25 @@ internal class DoppelgangerDataTest
         var gameConfiguration = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
 
         AssertEventData(gameConfiguration);
+    }
+
+    /// <summary>
+    /// Tests that a new database contains the configuration of the event, which references the
+    /// monsters instead of containing copies of them, so that it can be edited in the admin panel.
+    /// </summary>
+    [Test]
+    public async Task NewDatabaseContainsEventConfigurationAsync()
+    {
+        var gameConfiguration = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
+
+        var plugInConfiguration = gameConfiguration.PlugInConfigurations.Single(c => c.TypeId == typeof(DoppelgangerFeaturePlugIn).GUID);
+        var json = plugInConfiguration.CustomConfiguration;
+        TestContext.Out.WriteLine(json?[..Math.Min(json.Length, 1500)]);
+
+        Assert.That(json, Is.Not.Null.And.Not.Empty);
+        Assert.That(json, Does.Contain("\"HerdMonsters\""));
+        Assert.That(json, Does.Contain("\"Paths\""));
+        Assert.That(json, Does.Not.Contain("\"Designation\""), "The monsters should be referenced instead of being serialized completely.");
     }
 
     /// <summary>

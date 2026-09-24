@@ -98,7 +98,9 @@ public sealed class DoppelgangerContext : MiniGameContext
         : base(key, definition, gameContext, mapInitializer)
     {
         this._gameContext = gameContext;
-        this._definition = DoppelgangerEventDefinition.CreateDefault();
+
+        // The definition is resolved once, so that a configuration change doesn't affect a running game.
+        this._definition = GetEventDefinition(gameContext);
         var mapNumber = (short)this.Map.MapId;
         this._path = this._definition.Paths.FirstOrDefault(path => path.MapNumber == mapNumber)?.Areas ?? [];
     }
@@ -199,7 +201,7 @@ public sealed class DoppelgangerContext : MiniGameContext
             var area = GetAreaAround(chest.Position, 2);
             for (var i = 0; i < Math.Max(1, this._initialPlayerCount); i++)
             {
-                await this.SpawnMonsterAsync(this._definition.LarvaNumber, area, 0, false, true).ConfigureAwait(false);
+                await this.SpawnMonsterAsync(this._definition.Larva, area, 0, false, true).ConfigureAwait(false);
             }
         }
         else
@@ -246,7 +248,7 @@ public sealed class DoppelgangerContext : MiniGameContext
             }
 
             this._pathMonsters.TryRemove(monster, out _);
-            if (this.State == MiniGameState.Playing && this._definition.InterimChestMonsterNumbers.Contains(monster.Definition.Number))
+            if (this.State == MiniGameState.Playing && this._definition.InterimChestMonsters.Any(m => IsSameMonster(m, monster.Definition)))
             {
                 await this.SpawnInterimChestsAsync(monster.Position).ConfigureAwait(false);
             }
@@ -321,10 +323,26 @@ public sealed class DoppelgangerContext : MiniGameContext
 
         if (result == DoppelgangerResult.Success && finishers.FirstOrDefault(player => player.IsAlive) is { } firstFinisher)
         {
-            this._finalChest = await this.SpawnDestructibleAsync(this._definition.FinalRewardChestNumber, GetAreaAround(firstFinisher.Position, 1)).ConfigureAwait(false);
+            this._finalChest = await this.SpawnDestructibleAsync(this._definition.FinalRewardChest, GetAreaAround(firstFinisher.Position, 1)).ConfigureAwait(false);
         }
 
         await base.GameEndedAsync(finishers).ConfigureAwait(false);
+    }
+
+    private static DoppelgangerEventDefinition GetEventDefinition(IGameContext gameContext)
+    {
+        return gameContext.FeaturePlugIns.GetPlugIn<DoppelgangerFeaturePlugIn>()?.Configuration
+               ?? DoppelgangerEventDefinition.CreateDefault(gameContext.Configuration);
+    }
+
+    /// <summary>
+    /// Determines whether the monster definitions describe the same monster. They're compared
+    /// by their number, because the configured definition may be a different instance than the
+    /// one of the spawned monster.
+    /// </summary>
+    private static bool IsSameMonster(MonsterDefinition? first, MonsterDefinition? second)
+    {
+        return first is not null && second is not null && first.Number == second.Number;
     }
 
     private static DoppelgangerPathArea GetAreaAround(Point point, byte radius)
@@ -436,9 +454,9 @@ public sealed class DoppelgangerContext : MiniGameContext
 
                 while (pendingSpawns.Count > 0 && pendingSpawns[0].SpawnTime <= elapsed)
                 {
-                    foreach (var monsterNumber in pendingSpawns[0].MonsterNumbers)
+                    foreach (var monster in pendingSpawns[0].Monsters)
                     {
-                        await this.SpawnMonsterAsync(monsterNumber, 0, true, true, true).ConfigureAwait(false);
+                        await this.SpawnMonsterAsync(monster, 0, true, true, true).ConfigureAwait(false);
                     }
 
                     pendingSpawns.RemoveAt(0);
@@ -464,7 +482,7 @@ public sealed class DoppelgangerContext : MiniGameContext
 
     private async ValueTask SpawnHerdAsync(TimeSpan elapsed)
     {
-        if (this._definition.HerdMonsterNumbers.Count == 0)
+        if (this._definition.HerdMonsters.Count == 0)
         {
             return;
         }
@@ -472,10 +490,10 @@ public sealed class DoppelgangerContext : MiniGameContext
         var count = this._definition.GetHerdBaseCount(elapsed) + Math.Max(0, this.PlayerCount - 1);
         for (var i = 0; i < count; i++)
         {
-            var monsterNumber = this._definition.HerdMonsterNumbers[Rand.NextInt(0, this._definition.HerdMonsterNumbers.Count)];
-            var attacksFirst = this._definition.AlwaysAttackingMonsterNumbers.Contains(monsterNumber)
+            var monster = this._definition.HerdMonsters[Rand.NextInt(0, this._definition.HerdMonsters.Count)];
+            var attacksFirst = this._definition.AlwaysAttackingMonsters.Any(m => IsSameMonster(m, monster))
                                || Rand.NextRandomBool(this._definition.AttackFirstChance);
-            await this.SpawnMonsterAsync(monsterNumber, 0, true, attacksFirst, true).ConfigureAwait(false);
+            await this.SpawnMonsterAsync(monster, 0, true, attacksFirst, true).ConfigureAwait(false);
         }
     }
 
@@ -488,7 +506,7 @@ public sealed class DoppelgangerContext : MiniGameContext
             for (var i = 0; i < count; i++)
             {
                 var position = Rand.NextInt(this._definition.IceWalkerMinimumPosition, this._definition.IceWalkerMaximumPosition + 1);
-                if (await this.SpawnMonsterAsync(this._definition.IceWalkerNumber, position, false, true).ConfigureAwait(false) is { } iceWalker)
+                if (await this.SpawnMonsterAsync(this._definition.IceWalker, position, false, true).ConfigureAwait(false) is { } iceWalker)
                 {
                     this._iceWalkers.TryAdd(iceWalker, 0);
                     shownPosition = shownPosition < 0 ? position : shownPosition;
@@ -542,22 +560,20 @@ public sealed class DoppelgangerContext : MiniGameContext
         }
     }
 
-    private ValueTask<Monster?> SpawnMonsterAsync(short monsterNumber, int pathPosition, bool walksAlongPath, bool attacksFirst, bool isAffectedByMissionFailure = false)
+    private ValueTask<Monster?> SpawnMonsterAsync(MonsterDefinition? monsterDefinition, int pathPosition, bool walksAlongPath, bool attacksFirst, bool isAffectedByMissionFailure = false)
     {
-        return this.SpawnMonsterAsync(monsterNumber, this._path[pathPosition], pathPosition, walksAlongPath, attacksFirst, isAffectedByMissionFailure);
+        return this.SpawnMonsterAsync(monsterDefinition, this._path[pathPosition], pathPosition, walksAlongPath, attacksFirst, isAffectedByMissionFailure);
     }
 
-    private async ValueTask<Monster?> SpawnMonsterAsync(short monsterNumber, DoppelgangerPathArea area, int pathPosition, bool walksAlongPath, bool attacksFirst, bool isAffectedByMissionFailure = false)
+    private async ValueTask<Monster?> SpawnMonsterAsync(MonsterDefinition? monsterDefinition, DoppelgangerPathArea area, int pathPosition, bool walksAlongPath, bool attacksFirst, bool isAffectedByMissionFailure = false)
     {
-        if (this.CreateSpawnArea(monsterNumber, area) is not { } spawnArea)
+        if (this.CreateSpawnArea(monsterDefinition, area) is not { } spawnArea)
         {
             return null;
         }
 
-        var monsterDefinition = spawnArea.MonsterDefinition!;
-
         var intelligence = new DoppelgangerMonsterIntelligence(this._path, pathPosition, walksAlongPath, attacksFirst, this.OnMonsterReachedMagicCircleAsync, this.Logger);
-        var monster = new Monster(spawnArea, monsterDefinition, this.Map, this.DropGenerator, intelligence, this._gameContext.PlugInManager, this._gameContext.PathFinderPool, this);
+        var monster = new Monster(spawnArea, spawnArea.MonsterDefinition!, this.Map, this.DropGenerator, intelligence, this._gameContext.PlugInManager, this._gameContext.PathFinderPool, this);
 
         // The multipliers have to be applied before the monster is initialized, which sets its health.
         var penalty = isAffectedByMissionFailure && Volatile.Read(ref this._isIceWalkerMissionFailed) != 0
@@ -570,7 +586,7 @@ public sealed class DoppelgangerContext : MiniGameContext
         }
         catch (InvalidOperationException ex)
         {
-            this.Logger.LogWarning(ex, "{context}: Couldn't spawn monster {monsterNumber} at the path position {pathPosition}.", this, monsterNumber, pathPosition);
+            this.Logger.LogWarning(ex, "{context}: Couldn't spawn monster {monster} at the path position {pathPosition}.", this, monsterDefinition, pathPosition);
             monster.Dispose();
             return null;
         }
@@ -588,7 +604,7 @@ public sealed class DoppelgangerContext : MiniGameContext
         var area = GetAreaAround(position, 2);
         for (var i = 0; i < this._definition.InterimChestCount; i++)
         {
-            if (await this.SpawnDestructibleAsync(this._definition.InterimRewardChestNumber, area).ConfigureAwait(false) is { } chest)
+            if (await this.SpawnDestructibleAsync(this._definition.InterimRewardChest, area).ConfigureAwait(false) is { } chest)
             {
                 group.Chests.Add(chest);
                 this._interimChests.TryAdd(chest, group);
@@ -638,9 +654,9 @@ public sealed class DoppelgangerContext : MiniGameContext
         }
     }
 
-    private async ValueTask<Destructible?> SpawnDestructibleAsync(short number, DoppelgangerPathArea area)
+    private async ValueTask<Destructible?> SpawnDestructibleAsync(MonsterDefinition? definition, DoppelgangerPathArea area)
     {
-        if (this.CreateSpawnArea(number, area) is not { } spawnArea)
+        if (this.CreateSpawnArea(definition, area) is not { } spawnArea)
         {
             return null;
         }
@@ -654,7 +670,7 @@ public sealed class DoppelgangerContext : MiniGameContext
         }
         catch (InvalidOperationException ex)
         {
-            this.Logger.LogWarning(ex, "{context}: Failed to spawn {number} around {area}.", this, number, area);
+            this.Logger.LogWarning(ex, "{context}: Failed to spawn {definition} around {area}.", this, definition, area);
             destructible.Dispose();
             return null;
         }
@@ -664,11 +680,11 @@ public sealed class DoppelgangerContext : MiniGameContext
         return destructible;
     }
 
-    private MonsterSpawnArea? CreateSpawnArea(short monsterNumber, DoppelgangerPathArea area)
+    private MonsterSpawnArea? CreateSpawnArea(MonsterDefinition? monsterDefinition, DoppelgangerPathArea area)
     {
-        if (this._gameContext.Configuration.Monsters.FirstOrDefault(m => m.Number == monsterNumber) is not { } monsterDefinition)
+        if (monsterDefinition is null)
         {
-            this.Logger.LogWarning("{context}: Monster definition {monsterNumber} not found.", this, monsterNumber);
+            this.Logger.LogWarning("{context}: A monster of the event isn't configured.", this);
             return null;
         }
 

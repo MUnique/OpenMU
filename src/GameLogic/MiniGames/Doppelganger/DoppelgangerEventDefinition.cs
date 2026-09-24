@@ -4,11 +4,15 @@
 
 namespace MUnique.OpenMU.GameLogic.MiniGames.Doppelganger;
 
+using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Pathfinding;
 
 /// <summary>
 /// Describes the run of the doppelganger event.
 /// </summary>
+/// <remarks>
+/// It's configured at the <see cref="DoppelgangerFeaturePlugIn"/>, so it can be adapted in the admin panel.
+/// </remarks>
 public partial class DoppelgangerEventDefinition
 {
     /// <summary>
@@ -28,10 +32,9 @@ public partial class DoppelgangerEventDefinition
     public TimeSpan HerdInterval { get; set; } = TimeSpan.FromSeconds(3);
 
     /// <summary>
-    /// Gets or sets the numbers of the monsters of which a herd consists. Each monster
-    /// of a herd is chosen randomly.
+    /// Gets or sets the monsters of which a herd consists. Each monster of a herd is chosen randomly.
     /// </summary>
-    public IList<short> HerdMonsterNumbers { get; set; } = new List<short>();
+    public IList<MonsterDefinition> HerdMonsters { get; set; } = new List<MonsterDefinition>();
 
     /// <summary>
     /// Gets or sets the base count of monsters of a herd, depending on the elapsed game time.
@@ -46,9 +49,9 @@ public partial class DoppelgangerEventDefinition
     public double AttackFirstChance { get; set; } = 0.7;
 
     /// <summary>
-    /// Gets or sets the numbers of the monsters which always attack players in their range.
+    /// Gets or sets the monsters which always attack players in their range.
     /// </summary>
-    public IList<short> AlwaysAttackingMonsterNumbers { get; set; } = new List<short>();
+    public IList<MonsterDefinition> AlwaysAttackingMonsters { get; set; } = new List<MonsterDefinition>();
 
     /// <summary>
     /// Gets or sets the additional monsters which spawn once at the start of the path at a specific time.
@@ -56,9 +59,9 @@ public partial class DoppelgangerEventDefinition
     public IList<DoppelgangerMonsterSpawn> AdditionalSpawns { get; set; } = new List<DoppelgangerMonsterSpawn>();
 
     /// <summary>
-    /// Gets or sets the number of the ice walker monster.
+    /// Gets or sets the ice walker monster.
     /// </summary>
-    public short IceWalkerNumber { get; set; } = 531;
+    public MonsterDefinition? IceWalker { get; set; }
 
     /// <summary>
     /// Gets or sets the elapsed game time after which the ice walkers appear. One ice walker
@@ -94,14 +97,14 @@ public partial class DoppelgangerEventDefinition
     public IList<DoppelgangerMonsterScaling> MonsterScalings { get; set; } = new List<DoppelgangerMonsterScaling>();
 
     /// <summary>
-    /// Gets or sets the numbers of the monsters which leave interim reward chests behind when they die.
+    /// Gets or sets the monsters which leave interim reward chests behind when they die.
     /// </summary>
-    public IList<short> InterimChestMonsterNumbers { get; set; } = new List<short>();
+    public IList<MonsterDefinition> InterimChestMonsters { get; set; } = new List<MonsterDefinition>();
 
     /// <summary>
-    /// Gets or sets the number of the interim reward chest.
+    /// Gets or sets the interim reward chest.
     /// </summary>
-    public short InterimRewardChestNumber { get; set; } = 541;
+    public MonsterDefinition? InterimRewardChest { get; set; }
 
     /// <summary>
     /// Gets or sets the number of interim reward chests which appear together. Only one of them can be opened.
@@ -119,14 +122,14 @@ public partial class DoppelgangerEventDefinition
     public double LarvaChance { get; set; } = 0.6;
 
     /// <summary>
-    /// Gets or sets the number of the larva monster. One larva comes out of a chest for each player which started the event.
+    /// Gets or sets the larva monster. One larva comes out of a chest for each player which started the event.
     /// </summary>
-    public short LarvaNumber { get; set; } = 532;
+    public MonsterDefinition? Larva { get; set; }
 
     /// <summary>
-    /// Gets or sets the number of the final reward chest, which appears when the players successfully defended the magic circle.
+    /// Gets or sets the final reward chest, which appears when the players successfully defended the magic circle.
     /// </summary>
-    public short FinalRewardChestNumber { get; set; } = 542;
+    public MonsterDefinition? FinalRewardChest { get; set; }
 
     /// <summary>
     /// Gets or sets the paths of the monsters, one for each event map.
@@ -134,11 +137,20 @@ public partial class DoppelgangerEventDefinition
     public IList<DoppelgangerPath> Paths { get; set; } = new List<DoppelgangerPath>();
 
     /// <summary>
-    /// Creates the definition of the original season 6 event.
+    /// Creates the default definition of the event.
     /// </summary>
+    /// <param name="gameConfiguration">The game configuration, which contains the monsters of the event.</param>
     /// <returns>The created definition.</returns>
-    public static DoppelgangerEventDefinition CreateDefault()
+    public static DoppelgangerEventDefinition CreateDefault(GameConfiguration gameConfiguration)
     {
+        MonsterDefinition? Monster(short number) => gameConfiguration.Monsters.FirstOrDefault(monster => monster.Number == number);
+
+        IList<MonsterDefinition> Monsters(params short[] numbers) => numbers
+            .Select(Monster)
+            .Where(monster => monster is not null)
+            .Select(monster => monster!)
+            .ToList();
+
         const short terribleButcher = 529;
         const short madButcher = 530;
         const short doppelganger = 533;
@@ -147,9 +159,13 @@ public partial class DoppelgangerEventDefinition
         return new DoppelgangerEventDefinition
         {
             // The dark lord clone (538) only appears as additional spawn.
-            HerdMonsterNumbers = [doppelganger, 534, 535, 536, 537, 539],
-            AlwaysAttackingMonsterNumbers = [doppelganger],
-            InterimChestMonsterNumbers = [terribleButcher, madButcher],
+            HerdMonsters = Monsters(doppelganger, 534, 535, 536, 537, 539),
+            AlwaysAttackingMonsters = Monsters(doppelganger),
+            InterimChestMonsters = Monsters(terribleButcher, madButcher),
+            IceWalker = Monster(531),
+            Larva = Monster(532),
+            InterimRewardChest = Monster(541),
+            FinalRewardChest = Monster(542),
             HerdSizes =
             [
                 new DoppelgangerHerdSize { StartsAfter = TimeSpan.Zero, BaseCount = 1 },
@@ -158,9 +174,9 @@ public partial class DoppelgangerEventDefinition
             ],
             AdditionalSpawns =
             [
-                new DoppelgangerMonsterSpawn { SpawnTime = TimeSpan.FromMinutes(1), MonsterNumbers = [madButcher, doppelgangerDarkLord] },
-                new DoppelgangerMonsterSpawn { SpawnTime = TimeSpan.FromMinutes(4), MonsterNumbers = [madButcher, doppelgangerDarkLord] },
-                new DoppelgangerMonsterSpawn { SpawnTime = TimeSpan.FromMinutes(7), MonsterNumbers = [terribleButcher, doppelgangerDarkLord] },
+                new DoppelgangerMonsterSpawn { SpawnTime = TimeSpan.FromMinutes(1), Monsters = Monsters(madButcher, doppelgangerDarkLord) },
+                new DoppelgangerMonsterSpawn { SpawnTime = TimeSpan.FromMinutes(4), Monsters = Monsters(madButcher, doppelgangerDarkLord) },
+                new DoppelgangerMonsterSpawn { SpawnTime = TimeSpan.FromMinutes(7), Monsters = Monsters(terribleButcher, doppelgangerDarkLord) },
             ],
             MonsterScalings = CreateDefaultMonsterScalings(),
             Paths = CreateDefaultPaths(),
@@ -220,7 +236,7 @@ public partial class DoppelgangerEventDefinition
     }
 
     /// <summary>
-    /// Creates the paths of the original season 6 event. Each path consists of 23 areas,
+    /// Creates the paths of the event maps. Each path consists of 23 areas,
     /// from the start of the monsters (index 0) to the magic circle (index 22), which is
     /// located next to the entrance of the players.
     /// </summary>

@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.MiniGames.Doppelganger;
 
+using MUnique.OpenMU.DataModel.Configuration;
+
 /// <summary>
 /// Monsters which spawn once at the start of the path of the doppelganger event at a specific game time.
 /// These monsters always attack players in their range.
@@ -16,7 +18,7 @@ public class DoppelgangerMonsterSpawn
     public TimeSpan SpawnTime { get; set; }
 
     /// <summary>
-    /// Gets or sets the numbers of the monsters which spawn.
+    /// Gets or sets the monsters which spawn.
     /// </summary>
-    public IList<short> MonsterNumbers { get; set; } = new List<short>();
+    public IList<MonsterDefinition> Monsters { get; set; } = new List<MonsterDefinition>();
 }

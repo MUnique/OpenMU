@@ -610,6 +610,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Configures the run of the doppelganger event, e.g. its monsters, their paths and multipliers..
+        /// </summary>
+        public static string DoppelgangerFeaturePlugIn_Description {
+            get {
+                return ResourceManager.GetString("DoppelgangerFeaturePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Doppelganger event.
+        /// </summary>
+        public static string DoppelgangerFeaturePlugIn_Name {
+            get {
+                return ResourceManager.GetString("DoppelgangerFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Opens the reward chests of the doppelganger event, when a player talks to them..
         /// </summary>
         public static string DoppelgangerRewardChestPlugIn_Description {

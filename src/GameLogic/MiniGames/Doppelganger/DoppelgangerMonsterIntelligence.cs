@@ -239,7 +239,7 @@ public sealed class DoppelgangerMonsterIntelligence : INpcIntelligence, IDisposa
     /// </summary>
     private Point GetWalkTarget(DoppelgangerPathArea area)
     {
-        var center = area.Center;
+        var center = area.GetCenter();
         if (this.CanWalkOn(center))
         {
             return center;

@@ -1296,4 +1296,10 @@
   <data name="SignOfDimensionsStackedPlugIn_Description" xml:space="preserve">
     <value>Transforms a full stack of signs of dimensions into a mirror of dimensions.</value>
   </data>
+  <data name="DoppelgangerFeaturePlugIn_Name" xml:space="preserve">
+    <value>Doppelganger event</value>
+  </data>
+  <data name="DoppelgangerFeaturePlugIn_Description" xml:space="preserve">
+    <value>Configures the run of the doppelganger event, e.g. its monsters, their paths and multipliers.</value>
+  </data>
 </root>
