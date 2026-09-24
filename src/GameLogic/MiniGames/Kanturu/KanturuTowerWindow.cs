@@ -62,8 +62,6 @@ internal static class KanturuTowerWindow
             persisted.TowerOpenUntilUtc = untilUtc;
             entity.SetConfiguration(persisted, gameContext.PlugInManager.CustomConfigReferenceHandler);
             await context.SaveChangesAsync().ConfigureAwait(false);
-
-            live.TowerOpenUntilUtc = untilUtc;
         }
         catch (Exception ex)
         {

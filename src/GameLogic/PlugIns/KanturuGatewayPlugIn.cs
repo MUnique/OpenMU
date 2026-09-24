@@ -82,8 +82,7 @@ public class KanturuGatewayPlugIn : IPlayerTalkToNpcPlugIn
             // entrance warps to the event gate; from there the opened Elphis barrier
             // leads to the tower. Fights can never be joined mid-event.
             // NightmareBattle: sealed — the Nightmare encounter cannot be joined mid-fight.
-            canEnter = (state == KanturuState.MayaBattle && kanturuCtx.State == MiniGameState.Open)
-                || state == KanturuState.Tower;
+            canEnter = kanturuCtx.IsJoinable && state is KanturuState.MayaBattle or KanturuState.Tower;
 
             userCount = kanturuCtx.PlayerCount;
             remainTime = state == KanturuState.Tower ? GetTowerRemainingTime(player.GameContext) : TimeSpan.Zero;
