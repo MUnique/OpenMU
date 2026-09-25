@@ -526,4 +526,9 @@ public enum PacketType : byte
     /// A CashShopGroup packet.
     /// </summary>
     CashShopGroup = 0xD2,
+
+    /// <summary>
+    /// A group of packets of the imperial guardian event.
+    /// </summary>
+    ImperialGuardianGroup = 0xF7,
 }

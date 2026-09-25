@@ -87,4 +87,20 @@ public static class Extensions
             _ => DoppelgangerEnterResult.EnterResult.Failed,
         };
     }
+
+    /// <summary>
+    /// Converts the enter result to the one of the imperial guardian event.
+    /// </summary>
+    /// <param name="enterResult">The enter result.</param>
+    /// <returns>The enter result of the imperial guardian event.</returns>
+    public static ImperialGuardianEnterResult.EnterResult ToImperialGuardianEnterResult(this EnterResult enterResult)
+    {
+        return enterResult switch
+        {
+            EnterResult.Success => ImperialGuardianEnterResult.EnterResult.Success,
+            EnterResult.Full => ImperialGuardianEnterResult.EnterResult.Full,
+            EnterResult.CharacterLevelTooLow => ImperialGuardianEnterResult.EnterResult.CharacterLevelTooLow,
+            _ => ImperialGuardianEnterResult.EnterResult.NotOpen,
+        };
+    }
 }
