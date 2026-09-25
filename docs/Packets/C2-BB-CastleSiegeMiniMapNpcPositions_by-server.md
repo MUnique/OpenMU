@@ -2,7 +2,7 @@
 
 ## Is sent when
 
-The server sends alive gate and Guardian Statue positions to a Castle Siege mini-map requester.
+The server pushes alive gate and Guardian Statue positions to an online Castle Siege alliance master, on a periodic timer while the siege is active.
 
 ## Causes the following actions on the client side
 
