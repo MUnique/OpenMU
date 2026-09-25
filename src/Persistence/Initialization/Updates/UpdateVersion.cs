@@ -599,4 +599,9 @@ public enum UpdateVersion
     /// The version of the <see cref="AddRaklionEventUpdatePlugIn"/>.
     /// </summary>
     AddRaklionEvent = 118,
+
+    /// <summary>
+    /// The version of the <see cref="AddImperialGuardianDataUpdatePlugIn"/>.
+    /// </summary>
+    AddImperialGuardianData = 119,
 }
