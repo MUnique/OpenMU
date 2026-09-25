@@ -24,6 +24,12 @@ using MUnique.OpenMU.GameLogic.NPC;
 public sealed class ImperialGuardianContext : MiniGameContext
 {
     /// <summary>
+    /// The terrain attribute, with which the gates block the way. The terrain of the game client already
+    /// contains it at the gates, so it has to be removed when a gate is destroyed.
+    /// </summary>
+    private const TerrainAttributeType GateTerrainAttribute = TerrainAttributeType.Water;
+
+    /// <summary>
     /// The duration of the countdown between the entering phase and the start of the game.
     /// </summary>
     private static readonly TimeSpan CountdownDuration = TimeSpan.FromSeconds(30);
@@ -132,7 +138,7 @@ public sealed class ImperialGuardianContext : MiniGameContext
         var blockedAreas = this._gates.Keys.Where(gate => gate.IsBlocking && gate.IsAlive).Select(gate => gate.GetBlockedArea()).ToList();
         if (blockedAreas.Count > 0)
         {
-            await player.InvokeViewPlugInAsync<IChangeTerrainAttributesViewPlugin>(p => p.ChangeAttributesAsync(TerrainAttributeType.Blocked, true, blockedAreas)).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IChangeTerrainAttributesViewPlugin>(p => p.ChangeAttributesAsync(GateTerrainAttribute, true, blockedAreas)).ConfigureAwait(false);
         }
 
         await this.ShowZoneAsync(player).ConfigureAwait(false);
@@ -435,12 +441,12 @@ public sealed class ImperialGuardianContext : MiniGameContext
         {
             for (var y = area.StartY; y <= area.EndY; y++)
             {
-                this.Map.Terrain.ApplyTerrainAttribute(x, y, TerrainAttributeType.Blocked, setBlocked);
+                this.Map.Terrain.ApplyTerrainAttribute(x, y, GateTerrainAttribute, setBlocked);
             }
         }
 
         await this.ForEachPlayerAsync(player => player.InvokeViewPlugInAsync<IChangeTerrainAttributesViewPlugin>(p =>
-            p.ChangeAttributesAsync(TerrainAttributeType.Blocked, setBlocked, [area])).AsTask()).ConfigureAwait(false);
+            p.ChangeAttributesAsync(GateTerrainAttribute, setBlocked, [area])).AsTask()).ConfigureAwait(false);
     }
 
     private async Task DropFragmentsAsync(Monster boss, DeathInformation e)

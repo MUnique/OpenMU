@@ -54,7 +54,9 @@ public sealed class ImperialGuardianGate : AttackableNpcBase
     {
         var x = this.Position.X;
         var y = this.Position.Y;
-        return (int)this.SpawnArea.Direction switch
+
+        // The direction of the game client is the one of OpenMU minus one.
+        return ((int)this.SpawnArea.Direction - 1) switch
         {
             1 => Area(x - 2, y, x + 2, y + 3),
             3 => Area(x - 3, y - 2, x, y + 2),

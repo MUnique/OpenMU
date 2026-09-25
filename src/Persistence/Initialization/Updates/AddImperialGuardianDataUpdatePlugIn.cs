@@ -18,7 +18,7 @@ using MUnique.OpenMU.PlugIns;
 /// It adds the <see cref="MiniGameDefinition"/>s, lets Jerint open the entrance window, lets the
 /// suspicious scrap of paper drop from monsters, and lets players who die inside the event maps
 /// respawn at Devias. The monster spawns of the event maps are changed, so that they're spawned
-/// by the event, zone by zone.
+/// by the event, zone by zone, and their directions are corrected, so that the gates are shown properly.
 /// </remarks>
 [PlugIn]
 [Display(Name = PlugInName, Description = PlugInDescription)]
@@ -83,6 +83,7 @@ public class AddImperialGuardianDataUpdatePlugIn : UpdatePlugInBase
                 {
                     spawnArea.SpawnTrigger = SpawnTrigger.OnceAtWaveStart;
                     spawnArea.WaveNumber = spawn.WaveNumber;
+                    spawnArea.Direction = spawn.Direction;
                 }
             }
         }
