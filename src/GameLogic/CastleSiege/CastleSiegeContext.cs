@@ -820,9 +820,8 @@ public class CastleSiegeContext : IEventStateProvider
     private static async ValueTask SetJoinSideMagicEffectAsync(Player player, CastleSiegeJoinSide side)
     {
         var expectedEffectNumber = GetMagicEffectNumber(side);
-        var activeSideEffects = (await player.MagicEffectList
-                .GetActiveEffectsSnapshotAsync()
-                .ConfigureAwait(false))
+        var activeSideEffects = player.MagicEffectList
+            .GetActiveEffectsSnapshot()
             .Where(effect => IsJoinSideEffect(effect.Id))
             .ToList();
         foreach (var effect in activeSideEffects)

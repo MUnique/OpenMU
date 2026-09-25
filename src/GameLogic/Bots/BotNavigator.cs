@@ -778,7 +778,7 @@ internal sealed class BotNavigator : AsyncDisposable
         // nor suppresses the stuck watchdog.
         var monstersNearby = map.GetAttackablesInRange(this._player.Position, TravelStopRange)
             .OfType<Monster>()
-            .Count(m => m.IsAlive && !m.IsAtSafezone() && CombatHandler.IsSafeTarget(this._player, m.Definition));
+            .Count(m => m.IsAlive && !m.IsAtSafezone() && m.SummonedBy is null && CombatHandler.IsSafeTarget(this._player, m.Definition));
 
         // The bot counts as stuck when it has been frozen on the spot: quickly when there is nothing to
         // fight (a wedged walk or blocked path), and after a much longer grace when huntable monsters are
@@ -1265,7 +1265,7 @@ internal sealed class BotNavigator : AsyncDisposable
 
         return attackable switch
         {
-            Monster monster => monster.Definition.ObjectKind == NpcObjectKind.Monster,
+            Monster monster => monster.SummonedBy is null && monster.Definition.ObjectKind == NpcObjectKind.Monster,
             Player player => BotPvpRules.IsLegalPvpTarget(this._player, player),
             _ => false,
         };
@@ -1339,7 +1339,7 @@ internal sealed class BotNavigator : AsyncDisposable
 
         var monsterNearLeader = map.GetAttackablesInRange(leader.Position, HuntingRange)
             .OfType<Monster>()
-            .Any(m => m.IsAlive && !m.IsAtSafezone() && CombatHandler.IsSafeTarget(this._player, m.Definition));
+            .Any(m => m.IsAlive && !m.IsAtSafezone() && m.SummonedBy is null && CombatHandler.IsSafeTarget(this._player, m.Definition));
         if (monsterNearLeader)
         {
             // Something fightable near the leader: hold position and let the combat handler engage,
@@ -1764,7 +1764,7 @@ internal sealed class BotNavigator : AsyncDisposable
         var candidates = new List<(Monster Monster, double Distance)>();
         foreach (var attackable in map.GetAttackablesInRange(position, MonsterSeekRadius))
         {
-            if (attackable is not Monster monster
+            if (attackable is not Monster { SummonedBy: null } monster
                 || !monster.IsAlive
                 || monster.IsAtSafezone())
             {

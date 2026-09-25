@@ -25,6 +25,7 @@ public class PlugInManager
     private readonly IDictionary<Guid, Type> _knownPlugIns = new ConcurrentDictionary<Guid, Type>();
     private readonly ConcurrentDictionary<Type, ISet<Type>> _knownPlugInsPerInterfaceType = new();
     private readonly ConcurrentDictionary<Guid, Type> _activePlugIns = new();
+    private readonly List<PlugInConfiguration> _observedConfigurations = new();
     private object? _lastCreatedPlugIn;
 
     /// <summary>
@@ -48,11 +49,7 @@ public class PlugInManager
         if (configurations is not null)
         {
             this.DiscoverAndRegisterPlugIns();
-            var loadedAssemblies = new HashSet<string>();
-            foreach (var configuration in configurations)
-            {
-                this.ReadConfiguration(configuration, loadedAssemblies);
-            }
+            this.ReadConfigurations(configurations);
         }
     }
 
@@ -83,6 +80,32 @@ public class PlugInManager
     /// Gets the reference handler for references in custom plugin configurations.
     /// </summary>
     public ReferenceHandler? CustomConfigReferenceHandler { get; }
+
+    /// <summary>
+    /// Reads the given plugin configurations and applies them to the known plugins.
+    /// It can be called again later, e.g. when the configurations became available
+    /// after the database has been initialized. In this case, the previously read
+    /// configurations are not observed anymore.
+    /// </summary>
+    /// <param name="configurations">The plugin configurations.</param>
+    public void ReadConfigurations(IEnumerable<PlugInConfiguration> configurations)
+    {
+        this.UnsubscribeFromConfigurations();
+
+        var loadedAssemblies = new HashSet<string>();
+        foreach (var configuration in configurations)
+        {
+            try
+            {
+                this.ReadConfiguration(configuration, loadedAssemblies);
+            }
+            catch (Exception ex)
+            {
+                // A failing configuration must not stop the remaining ones from being applied.
+                this._logger.LogError(ex, "Error when reading the configuration of plugin {TypeId}.", configuration.TypeId);
+            }
+        }
+    }
 
     /// <summary>
     /// Discovers and registers all plugins of all loaded assemblies.
@@ -450,7 +473,13 @@ public class PlugInManager
 
         if (this._knownPlugIns.TryGetValue(configuration.TypeId, out var plugInType))
         {
-            if (!configuration.IsActive)
+            if (configuration.IsActive)
+            {
+                // Plugins are active by default when they get registered, but that's not
+                // necessarily the case anymore when the configurations are read again.
+                this.ActivatePlugIn(plugInType);
+            }
+            else
             {
                 this.DeactivatePlugIn(plugInType);
             }
@@ -459,11 +488,31 @@ public class PlugInManager
 
             // When the IsActive property changed, we activate/deactivate accordingly.
             // Currently, property changes are only fired for IsActive, so we don't need to check it.
-            configuration.PropertyChanged += (sender, args) => this.OnConfigurationChanged(configuration, plugInType, args.PropertyName);
+            configuration.PropertyChanged += this.OnConfigurationPropertyChanged;
+            this._observedConfigurations.Add(configuration);
         }
         else
         {
             this._logger.LogWarning("Unknown plugin type for id {TypeId}", configuration.TypeId);
+        }
+    }
+
+    private void UnsubscribeFromConfigurations()
+    {
+        foreach (var configuration in this._observedConfigurations)
+        {
+            configuration.PropertyChanged -= this.OnConfigurationPropertyChanged;
+        }
+
+        this._observedConfigurations.Clear();
+    }
+
+    private void OnConfigurationPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs args)
+    {
+        if (sender is PlugInConfiguration configuration
+            && this._knownPlugIns.TryGetValue(configuration.TypeId, out var plugInType))
+        {
+            this.OnConfigurationChanged(configuration, plugInType, args.PropertyName);
         }
     }
 

@@ -932,7 +932,7 @@ public static class AttackableExtensions
         }
 
         if (magicEffect.Definition.SubType > 0
-            && await target.MagicEffectList.TryGetActiveEffectOfSubTypeAsync(magicEffect.Definition.SubType).ConfigureAwait(false) is { } existingEffect
+            && target.MagicEffectList.TryGetActiveEffectOfSubType(magicEffect.Definition.SubType) is { } existingEffect
             && existingEffect.Id != magicEffect.Id)
         {
             // The new effect replaces an existing effect with a different number
