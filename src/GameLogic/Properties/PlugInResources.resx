@@ -1284,4 +1284,22 @@
   <data name="CastleSiegeLifeStoneConsumeHandlerPlugIn_Description" xml:space="preserve">
     <value>Consumes Life Stones after they are successfully placed during Castle Siege.</value>
   </data>
+  <data name="DoppelgangerRewardChestPlugIn_Name" xml:space="preserve">
+    <value>Doppelganger reward chests</value>
+  </data>
+  <data name="DoppelgangerRewardChestPlugIn_Description" xml:space="preserve">
+    <value>Opens the reward chests of the doppelganger event, when a player talks to them.</value>
+  </data>
+  <data name="SignOfDimensionsStackedPlugIn_Name" xml:space="preserve">
+    <value>Sign of dimensions stack transformation</value>
+  </data>
+  <data name="SignOfDimensionsStackedPlugIn_Description" xml:space="preserve">
+    <value>Transforms a full stack of signs of dimensions into a mirror of dimensions.</value>
+  </data>
+  <data name="DoppelgangerFeaturePlugIn_Name" xml:space="preserve">
+    <value>Doppelganger event</value>
+  </data>
+  <data name="DoppelgangerFeaturePlugIn_Description" xml:space="preserve">
+    <value>Configures the run of the doppelganger event, e.g. its monsters, their paths and multipliers.</value>
+  </data>
 </root>
