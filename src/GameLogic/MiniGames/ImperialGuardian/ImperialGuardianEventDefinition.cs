@@ -107,6 +107,97 @@ public class ImperialGuardianEventDefinition
     public IList<ImperialGuardianMonsterScaling> MonsterScalings { get; set; } = new List<ImperialGuardianMonsterScaling>();
 
     /// <summary>
+    /// Gets or sets the chance in percent, that a monster uses one of its skills instead of a normal attack.
+    /// </summary>
+    public int SkillChance { get; set; } = 30;
+
+    /// <summary>
+    /// Gets or sets the skills of the monsters. The skill numbers are the ones which the client uses for the animations.
+    /// </summary>
+    public IList<ImperialGuardianMonsterSkill> MonsterSkills { get; set; } = new List<ImperialGuardianMonsterSkill>
+    {
+        // Gaion
+        ImperialGuardianMonsterSkill.Single(504, 67),
+        ImperialGuardianMonsterSkill.Area(504, 64, 3, true),
+        ImperialGuardianMonsterSkill.Area(504, 65, 5, false),
+        ImperialGuardianMonsterSkill.Area(504, 66, 5, true),
+
+        // Jerint
+        ImperialGuardianMonsterSkill.Single(505, 55, 10, 5),
+        ImperialGuardianMonsterSkill.Area(505, 61, 10, false),
+
+        // Raymond
+        ImperialGuardianMonsterSkill.Area(506, 60, 10, false, 30, 2),
+        ImperialGuardianMonsterSkill.Area(506, 52, 10, false, 30, 2),
+
+        // Ercanne
+        ImperialGuardianMonsterSkill.Area(507, 62, 6, false),
+        ImperialGuardianMonsterSkill.Area(507, 63, 3, false),
+
+        // Daesuler
+        ImperialGuardianMonsterSkill.Area(508, 57, 10, false),
+        ImperialGuardianMonsterSkill.Area(508, 58, 5, true),
+
+        // Vermont
+        ImperialGuardianMonsterSkill.Area(509, 60, 10, false, 30, 2),
+        ImperialGuardianMonsterSkill.Area(509, 61, 10, false),
+
+        // Kato
+        ImperialGuardianMonsterSkill.Area(510, 58, 5, true),
+        ImperialGuardianMonsterSkill.Area(510, 60, 10, false, 30, 2),
+
+        // Gallia
+        ImperialGuardianMonsterSkill.Area(511, 58, 5, true),
+        ImperialGuardianMonsterSkill.Area(511, 60, 10, false, 30, 2),
+
+        // Quarter Master
+        ImperialGuardianMonsterSkill.Area(512, 47, 6, false),
+        ImperialGuardianMonsterSkill.Area(512, 48, 3, false),
+
+        // Combat Instructor
+        ImperialGuardianMonsterSkill.Area(513, 47, 6, false),
+        ImperialGuardianMonsterSkill.Area(513, 49, 10, true),
+
+        // Aticle's Head
+        ImperialGuardianMonsterSkill.Area(514, 47, 6, false),
+        ImperialGuardianMonsterSkill.Single(514, 50, 10, 5),
+
+        // Dark Ghost
+        ImperialGuardianMonsterSkill.Single(515, 51),
+        ImperialGuardianMonsterSkill.Area(515, 52, 10, false, 30, 2),
+
+        // Banshee
+        ImperialGuardianMonsterSkill.Area(516, 47, 6, false),
+        ImperialGuardianMonsterSkill.Area(516, 53, 10, false),
+
+        // Head Mounter
+        ImperialGuardianMonsterSkill.Area(517, 54, 3, false),
+        ImperialGuardianMonsterSkill.Single(517, 55, 10, 5),
+        ImperialGuardianMonsterSkill.Single(517, 56, 30, 2),
+    };
+
+    /// <summary>
+    /// Gets or sets the remaining health in percent, at which the bosses get into rage and get stronger.
+    /// When it's 0, they don't get into rage.
+    /// </summary>
+    public int RageHealthPercentage { get; set; }
+
+    /// <summary>
+    /// Gets or sets the number of the skill, which the client shows when a boss gets into rage.
+    /// </summary>
+    public short RageSkillNumber { get; set; } = 59;
+
+    /// <summary>
+    /// Gets or sets the numbers of the bosses, which can get into rage.
+    /// </summary>
+    public IList<short> RageMonsterNumbers { get; set; } = new List<short> { 504, 505, 506, 507, 508, 509, 510, 511 };
+
+    /// <summary>
+    /// Gets or sets the additional damage and defense of a boss in rage.
+    /// </summary>
+    public int RageBonus { get; set; } = 150;
+
+    /// <summary>
     /// Gets the wave number of the monster spawns of a zone.
     /// </summary>
     /// <param name="day">The day of the week (1 = monday, ..., 7 = sunday).</param>

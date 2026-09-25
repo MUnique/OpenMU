@@ -35,4 +35,12 @@ public interface IImperialGuardianViewPlugIn : IViewPlugIn
     /// <param name="result">The result.</param>
     /// <param name="experience">The rewarded experience.</param>
     ValueTask ShowResultAsync(ImperialGuardianResult result, int experience);
+
+    /// <summary>
+    /// Shows the animation of a skill of a monster.
+    /// </summary>
+    /// <param name="monster">The monster.</param>
+    /// <param name="target">The target of the skill.</param>
+    /// <param name="skillNumber">The number of the skill, which the client uses for the animation.</param>
+    ValueTask ShowMonsterSkillAsync(IAttacker monster, IAttackable target, short skillNumber);
 }

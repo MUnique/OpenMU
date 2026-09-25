@@ -359,7 +359,7 @@ public sealed class ImperialGuardianContext : MiniGameContext
                     continue;
                 }
 
-                var monster = new Monster(spawnArea, definition, this.Map, this.DropGenerator, new BasicMonsterIntelligence(), this._gameContext.PlugInManager, this._gameContext.PathFinderPool, this);
+                var monster = new Monster(spawnArea, definition, this.Map, this.DropGenerator, new ImperialGuardianMonsterIntelligence(this._definition), this._gameContext.PlugInManager, this._gameContext.PathFinderPool, this);
                 this.ApplyScaling(monster);
                 if (await this.AddNpcAsync(monster).ConfigureAwait(false))
                 {

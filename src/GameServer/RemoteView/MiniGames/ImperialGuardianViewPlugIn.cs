@@ -5,7 +5,9 @@
 namespace MUnique.OpenMU.GameServer.RemoteView.MiniGames;
 
 using System.Runtime.InteropServices;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.MiniGames.ImperialGuardian;
+using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.PlugIns;
 using ImperialGuardianEnterResult = MUnique.OpenMU.GameLogic.MiniGames.ImperialGuardian.ImperialGuardianEnterResult;
@@ -55,6 +57,13 @@ public sealed class ImperialGuardianViewPlugIn : IImperialGuardianViewPlugIn
         await this._player.Connection.SendImperialGuardianResultAsync(
             (Network.Packets.ServerToClient.ImperialGuardianResult.ResultType)result,
             (uint)Math.Max(0, experience)).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask ShowMonsterSkillAsync(IAttacker monster, IAttackable target, short skillNumber)
+    {
+        // The client searches the target by the id as it is, so the flag for a successful skill can't be set.
+        await this._player.Connection.SendMonsterSkillAnimationAsync((ushort)skillNumber, monster.GetId(this._player), target.GetId(this._player)).ConfigureAwait(false);
     }
 
     private static uint ToMilliseconds(TimeSpan time)

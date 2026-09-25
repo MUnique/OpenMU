@@ -80,6 +80,21 @@ public class ImperialGuardianEventDefinitionTest
     }
 
     /// <summary>
+    /// Tests that all bosses have skills by default, whose numbers the client can show,
+    /// and that the rage of the bosses is disabled by default.
+    /// </summary>
+    [Test]
+    public void DefaultMonsterSkills()
+    {
+        var definition = new ImperialGuardianEventDefinition();
+
+        Assert.That(Enumerable.Range(504, 8).Select(number => (short)number), Is.SubsetOf(definition.MonsterSkills.Select(skill => skill.MonsterNumber)));
+        Assert.That(definition.MonsterSkills.Select(skill => (int)skill.SkillNumber), Is.All.InRange(44, 77), "The client shows the animations of the skills 1 to 77.");
+        Assert.That(definition.MonsterSkills.Select(skill => skill.StunChance), Is.All.InRange(0, 100));
+        Assert.That(definition.RageHealthPercentage, Is.Zero);
+    }
+
+    /// <summary>
     /// Tests that a fixed day overrides the day of the week of the server.
     /// </summary>
     [Test]
