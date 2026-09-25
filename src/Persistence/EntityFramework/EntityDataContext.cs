@@ -89,6 +89,7 @@ public class EntityDataContext : ExtendedTypeContext
         modelBuilder.Entity<ExitGate>().Apply();
         modelBuilder.Entity<GameConfiguration>().Apply();
         modelBuilder.Entity<GameMapDefinition>().Apply();
+        modelBuilder.Entity<Item>().Apply();
         modelBuilder.Entity<ItemCrafting>().Apply();
         modelBuilder.Entity<ItemDefinition>().Apply();
         modelBuilder.Entity<ItemLevelBonusTable>().Apply();

@@ -38,7 +38,7 @@ public partial class Item
     /// <remarks>
     /// These are directly related to the client's UI item repair icons, whose colors change (yellow, light red, red) as durability decreases.
     /// </remarks>
-    [NotMapped]
+    [Transient]
     public double[]? DurabilityThresholds { get; set; }
 
     /// <summary>

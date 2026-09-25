@@ -13,6 +13,15 @@ using MUnique.OpenMU.Persistence.EntityFramework.Model;
 internal static class ItemExtensions
 {
     /// <summary>
+    /// Applies the settings for the <see cref="Item"/> entity.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    public static void Apply(this EntityTypeBuilder<Item> builder)
+    {
+        builder.Ignore(p => p.DurabilityThresholds);
+    }
+
+    /// <summary>
     /// Applies the settings for the <see cref="ItemDefinition"/> entity.
     /// </summary>
     /// <param name="builder">The builder.</param>
