@@ -116,6 +116,9 @@ public class GameContext : AsyncDisposable, IGameContext
     public virtual float ExperienceRate => this.Configuration.ExperienceRate;
 
     /// <inheritdoc />
+    public virtual float MoneyRate => 1.0f;
+
+    /// <inheritdoc />
     public virtual float MasterExperienceRate => this.Configuration.MasterExperienceRate;
 
     /// <inheritdoc />

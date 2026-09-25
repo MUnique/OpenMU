@@ -123,6 +123,7 @@ public partial class CreateGameServerConfig : ComponentBase, IAsyncDisposable
             ServerConfiguration = serverConfigs.FirstOrDefault(),
             ServerId = (byte)nextServerId,
             ExperienceRate = 1.0f,
+            MoneyRate = 1.0f,
             PvpEnabled = true,
             NetworkPort = networkPort,
             Client = clients.FirstOrDefault(),
@@ -143,6 +144,7 @@ public partial class CreateGameServerConfig : ComponentBase, IAsyncDisposable
         result.Description = this._viewModel.Description;
         result.PvpEnabled = this._viewModel.PvpEnabled;
         result.ExperienceRate = this._viewModel.ExperienceRate;
+        result.MoneyRate = this._viewModel.MoneyRate;
         result.GameConfiguration = await this.DataSource.GetOwnerAsync().ConfigureAwait(false);
         result.ServerConfiguration = this._viewModel.ServerConfiguration!;
 
@@ -221,6 +223,12 @@ public partial class CreateGameServerConfig : ComponentBase, IAsyncDisposable
         /// </value>
         [Range(0, float.MaxValue)]
         public float ExperienceRate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Zen/money multiplier of the server.
+        /// </summary>
+        [Range(0, float.MaxValue)]
+        public float MoneyRate { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether PVP is enabled on this server.

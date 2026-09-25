@@ -1,0 +1,472 @@
+@page "/batch-operations"
+
+@using MUnique.OpenMU.DataModel.Configuration
+@using MUnique.OpenMU.Persistence
+
+<PageTitle>OpenMU: Operaciones por lote</PageTitle>
+<Breadcrumb Caption="Operaciones por lote" />
+
+<h1>Operaciones por lote</h1>
+<p class="text-muted">
+    Cockpit de MU Nueva Era para modificar configuración nativa de OpenMU por reglas. Las operaciones por lote muestran una vista previa antes de guardar.
+    El editor directo de cajas aplica al confirmar y permite deshacer la última operación mientras permanezcas en esta pantalla.
+</p>
+
+@if (this._isLoading)
+{
+    <div class="alert alert-info">Cargando configuración de OpenMU…</div>
+    return;
+}
+
+<div class="alert alert-warning">
+    <strong>Seguridad:</strong> haz un respaldo de PostgreSQL antes de una sesión de balance.
+    Las operaciones trabajan sobre la configuración real del servidor, no sobre una copia paralela.
+</div>
+
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <strong>@this._previewTitle</strong>
+        @if (this._undoAction is not null)
+        {
+            <button class="btn btn-outline-warning btn-sm"
+                    disabled="@this._isApplying"
+                    @onclick="this.UndoLastAsync">
+                Deshacer última operación
+            </button>
+        }
+    </div>
+    <div class="card-body">
+        <p class="mb-2">@this._previewSummary</p>
+        @if (this._previewLines.Count > 0)
+        {
+            <div class="border rounded p-2 bg-body-tertiary" style="max-height: 280px; overflow:auto;">
+                <ul class="mb-0 small">
+                    @foreach (var line in this._previewLines)
+                    {
+                        <li>@line</li>
+                    }
+                </ul>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <strong>1. Economía global y canales</strong>
+    </div>
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">EXP global</label>
+                <input class="form-control" type="number" min="0" step="0.1" @bind="this._economy.ExperienceRate" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Master EXP global</label>
+                <input class="form-control" type="number" min="0" step="0.1" @bind="this._economy.MasterExperienceRate" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Duración del drop en suelo (seg.)</label>
+                <input class="form-control" type="number" min="0" step="1" @bind="this._economy.ItemDropDurationSeconds" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Zen máximo inventario</label>
+                <input class="form-control" type="number" min="0" @bind="this._economy.MaximumInventoryMoney" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Zen máximo baúl</label>
+                <input class="form-control" type="number" min="0" @bind="this._economy.MaximumVaultMoney" />
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <div class="form-check mb-2">
+                    <input id="shouldDropMoney" class="form-check-input" type="checkbox" @bind="this._economy.ShouldDropMoney" />
+                    <label class="form-check-label" for="shouldDropMoney">El Zen cae al suelo</label>
+                </div>
+            </div>
+        </div>
+
+        <hr />
+        <h5>Canales / realms</h5>
+        <div class="table-responsive">
+            <table class="table table-sm align-middle">
+                <thead>
+                    <tr>
+                        <th>Canal</th>
+                        <th style="min-width:130px;">EXP</th>
+                        <th style="min-width:130px;">Zen</th>
+                        <th>PvP</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var server in this._serverEdits)
+                    {
+                        <tr>
+                            <td>
+                                <strong>#@server.ServerId</strong>
+                                <span>@server.Description</span>
+                            </td>
+                            <td><input class="form-control form-control-sm" type="number" min="0" step="0.1" @bind="server.ExperienceRate" /></td>
+                            <td><input class="form-control form-control-sm" type="number" min="0" step="0.05" @bind="server.MoneyRate" /></td>
+                            <td><input class="form-check-input" type="checkbox" @bind="server.PvpEnabled" /></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <h5 class="mt-3">Drops comunes</h5>
+        <div class="row g-3">
+            @foreach (var drop in this._dropChanceEdits)
+            {
+                <div class="col-md-6 col-xl-3">
+                    <label class="form-label">@drop.Type · @drop.Description</label>
+                    <div class="input-group">
+                        <input class="form-control" type="number" min="0" max="100" step="0.001" @bind="drop.Percent" />
+                        <span class="input-group-text">%</span>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="form-check mt-3">
+            <input id="restartAfterEconomy" class="form-check-input" type="checkbox" @bind="this._restartAllAfterEconomyApply" />
+            <label class="form-check-label" for="restartAfterEconomy">
+                Reiniciar todos los Game Servers después de guardar
+                <span class="text-muted">(recomendado para que EXP/Zen por canal entren en vigor inmediatamente)</span>
+            </label>
+        </div>
+
+        <div class="mt-3 d-flex gap-2">
+            <button class="btn btn-outline-primary" disabled="@this._isApplying" @onclick="this.PreviewEconomy">Vista previa</button>
+            <button class="btn btn-primary" disabled="@this._isApplying" @onclick="this.ApplyEconomyAsync">Aplicar economía</button>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <strong>2. Drops masivos</strong>
+    </div>
+    <div class="card-body">
+        <p class="text-muted">
+            Asigna o quita un Drop Item Group completo a mapas o a un conjunto de monstruos filtrados.
+            Esto evita configurar cientos de criaturas una por una.
+        </p>
+
+        <div class="row g-3">
+            <div class="col-md-5">
+                <label class="form-label">Grupo de drop</label>
+                <select class="form-select" @bind="this._selectedDropGroupId">
+                    <option value="">Seleccionar…</option>
+                    @foreach (var group in this._dropGroups)
+                    {
+                        <option value="@group.GetId()">@group.ItemType · @group.Description</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Acción</label>
+                <select class="form-select" @bind="this._dropAction">
+                    <option value="add">Agregar</option>
+                    <option value="remove">Quitar</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Aplicar a</label>
+                <select class="form-select" @bind="this._dropScope">
+                    <option value="maps">Mapas seleccionados</option>
+                    <option value="monsters">Monstruos filtrados</option>
+                </select>
+            </div>
+        </div>
+
+        <hr />
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h6 class="mb-2">Mapas</h6>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-secondary" @onclick="() => this.SelectAllMaps(true)">Todos</button>
+                        <button class="btn btn-outline-secondary" @onclick="() => this.SelectAllMaps(false)">Ninguno</button>
+                    </div>
+                </div>
+                <div class="border rounded p-2" style="height:260px; overflow:auto;">
+                    @foreach (var map in this._maps)
+                    {
+                        var id = map.GetId();
+                        <div class="form-check">
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   checked="@this._selectedMapIds.Contains(id)"
+                                   @onchange="e => this.ToggleMap(id, (bool)(e.Value ?? false))" />
+                            <label class="form-check-label">@map.Number - @map.Name</label>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <h6>Filtro de monstruos</h6>
+                <div class="row g-2">
+                    <div class="col-12">
+                        <label class="form-label">Nombre contiene</label>
+                        <input class="form-control" @bind="this._monsterFilter" placeholder="Ej.: Golden, Orc, Kundun…" />
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label">Nivel mínimo</label>
+                        <input class="form-control" type="number" min="0" max="255" @bind="this._monsterMinLevel" />
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label">Nivel máximo</label>
+                        <input class="form-control" type="number" min="0" max="255" @bind="this._monsterMaxLevel" />
+                    </div>
+                    <div class="col-12">
+                        <div class="form-check">
+                            <input id="onlyMaps" class="form-check-input" type="checkbox" @bind="this._monsterOnlySelectedMaps" />
+                            <label class="form-check-label" for="onlyMaps">Solo monstruos que aparecen en los mapas seleccionados</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-3 d-flex gap-2">
+            <button class="btn btn-outline-primary" disabled="@this._isApplying" @onclick="this.PreviewDropAssignment">Vista previa</button>
+            <button class="btn btn-primary" disabled="@this._isApplying" @onclick="this.ApplyDropAssignmentAsync">Aplicar drops</button>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <strong>3. Monstruos masivos</strong>
+    </div>
+    <div class="card-body">
+        <p class="text-muted">
+            Usa el mismo filtro de monstruos de la sección anterior. Deja un campo vacío para no modificarlo.
+        </p>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Máximo de drops por muerte</label>
+                <input class="form-control" type="number" min="0" @bind="this._batchMaximumItemDrops" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Respawn (segundos)</label>
+                <input class="form-control" type="number" min="0" step="0.1" @bind="this._batchRespawnSeconds" />
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <span class="text-muted small mb-2">Filtro actual: @this.GetMatchingMonsters().Count() monstruos</span>
+            </div>
+        </div>
+
+        <div class="mt-3 d-flex gap-2">
+            <button class="btn btn-outline-primary" disabled="@this._isApplying" @onclick="this.PreviewMonsterBatch">Vista previa</button>
+            <button class="btn btn-primary" disabled="@this._isApplying" @onclick="this.ApplyMonsterBatchAsync">Aplicar a monstruos</button>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <strong>4. Items masivos</strong>
+    </div>
+    <div class="card-body">
+        <p class="text-muted">
+            Filtra el catálogo y modifica niveles de drop o habilitación de drop desde monstruos en una sola operación.
+        </p>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Nombre contiene</label>
+                <input class="form-control" @bind="this._itemFilter" placeholder="Ej.: Dragon, Jewel, Helm…" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Grupo (0–15)</label>
+                <input class="form-control" type="number" min="0" max="15" @bind="this._itemGroup" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Drop level actual ≥</label>
+                <input class="form-control" type="number" min="0" max="255" @bind="this._itemCurrentMinDropLevel" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Drop level actual ≤</label>
+                <input class="form-control" type="number" min="0" max="255" @bind="this._itemCurrentMaxDropLevel" />
+            </div>
+        </div>
+
+        <hr />
+        <div class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label">Nuevo DropLevel</label>
+                <input class="form-control" type="number" min="0" max="255" @bind="this._newItemDropLevel" />
+                <div class="form-text">Vacío = no cambiar.</div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-check mb-2">
+                    <input id="setMaxDrop" class="form-check-input" type="checkbox" @bind="this._setItemMaximumDropLevel" />
+                    <label class="form-check-label" for="setMaxDrop">Modificar MaximumDropLevel</label>
+                </div>
+                <input class="form-control"
+                       type="number"
+                       min="0"
+                       max="255"
+                       disabled="@(!this._setItemMaximumDropLevel)"
+                       @bind="this._newItemMaximumDropLevel" />
+                <div class="form-text">Vacío + casilla activa = sin límite superior.</div>
+            </div>
+            <div class="col-md-5">
+                <div class="form-check mb-2">
+                    <input id="setMonsterDrop" class="form-check-input" type="checkbox" @bind="this._setDropsFromMonsters" />
+                    <label class="form-check-label" for="setMonsterDrop">Modificar “DropsFromMonsters”</label>
+                </div>
+                <select class="form-select" disabled="@(!this._setDropsFromMonsters)" @bind="this._newDropsFromMonsters">
+                    <option value="true">Sí, puede caer de monstruos</option>
+                    <option value="false">No, excluir del pool normal</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="mt-2 text-muted small">Filtro actual: @this.GetMatchingItems().Count() items.</div>
+
+        <div class="mt-3 d-flex gap-2">
+            <button class="btn btn-outline-primary" disabled="@this._isApplying" @onclick="this.PreviewItemBatch">Vista previa</button>
+            <button class="btn btn-primary" disabled="@this._isApplying" @onclick="this.ApplyItemBatchAsync">Aplicar a items</button>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4 border-primary">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <strong>5. Editor directo de cajas y grupos de drop</strong>
+        <span class="badge text-bg-primary">sin vista previa</span>
+    </div>
+    <div class="card-body">
+        <p class="text-muted">
+            Agrega, quita o reemplaza el contenido de una caja usando filtros por categoria, set, 380,
+            Excellent, Ancient, sockets, alas o armas. La edicion se guarda al pulsar el boton y la ultima
+            operacion se puede deshacer desde el panel superior.
+        </p>
+        <div class="alert alert-warning py-2">
+            Usa <strong>Agregar</strong> para ampliar una caja de forma segura. <strong>Reemplazar</strong>
+            elimina primero todos sus items actuales.
+        </div>
+        <div class="row g-3">
+            <div class="col-lg-5">
+                <label class="form-label">Caja o grupo de drop de items</label>
+                <select class="form-select" @bind="this._contentDropGroupId">
+                    <option value="">Seleccionar caja...</option>
+                    @foreach (var group in this._dropContentGroups)
+                    {
+                        <option value="@group.GetId()">@group.Description (@group.PossibleItems.Count items)</option>
+                    }
+                </select>
+            </div>
+            <div class="col-lg-3">
+                <label class="form-label">Accion</label>
+                <select class="form-select" @bind="this._contentAction">
+                    <option value="add">Agregar coincidencias</option>
+                    <option value="remove">Quitar coincidencias</option>
+                    <option value="replace">Reemplazar todo</option>
+                </select>
+            </div>
+            <div class="col-lg-4">
+                <label class="form-label">Categoria</label>
+                <select class="form-select" @bind="this._contentCategory">
+                    <option value="@DropGroupItemCategory.Any">Nombre / grupo</option>
+                    <option value="@DropGroupItemCategory.Set">Set seleccionado</option>
+                    <option value="@DropGroupItemCategory.Guardian380">Items 380</option>
+                    <option value="@DropGroupItemCategory.Excellent">Excellent posible</option>
+                    <option value="@DropGroupItemCategory.Ancient">Ancient posible</option>
+                    <option value="@DropGroupItemCategory.Socket">Con sockets</option>
+                    <option value="@DropGroupItemCategory.Weapons">Armas</option>
+                    <option value="@DropGroupItemCategory.Armor">Armaduras</option>
+                    <option value="@DropGroupItemCategory.Wings">Alas</option>
+                </select>
+            </div>
+            <div class="col-lg-5">
+                <label class="form-label">Nombre contiene</label>
+                <input class="form-control" @bind="this._contentFilter" @bind:event="oninput" placeholder="Dragon, Kundun, Bone..." />
+            </div>
+            <div class="col-lg-2">
+                <label class="form-label">Grupo (0-15)</label>
+                <input class="form-control" type="number" min="0" max="15" @bind="this._contentGroup" />
+            </div>
+            <div class="col-lg-5">
+                <label class="form-label">Set</label>
+                <select class="form-select" disabled="@(this._contentCategory != DropGroupItemCategory.Set)" @bind="this._contentSetId">
+                    <option value="">Seleccionar set...</option>
+                    @foreach (var set in this._itemSets)
+                    {
+                        <option value="@set.GetId()">@set.Name</option>
+                    }
+                </select>
+            </div>
+        </div>
+        @{ var matchingContentItems = this.GetMatchingContentItems(); }
+        <div class="mt-3 p-3 rounded border bg-body-tertiary">
+            <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap">
+                <strong>@matchingContentItems.Count coincidencias</strong>
+                <span class="text-muted small">Se aplicara directamente sobre la caja elegida.</span>
+            </div>
+            @if (matchingContentItems.Count > 0)
+            {
+                <div class="small text-muted mt-2">@string.Join(" · ", matchingContentItems.Take(18).Select(item => $"{item.Name} G{item.Group}/#{item.Number}"))</div>
+            }
+        </div>
+        <div class="form-check mt-3">
+            <input id="confirmDropContentEdit" class="form-check-input" type="checkbox" @bind="this._contentConfirmed" />
+            <label class="form-check-label" for="confirmDropContentEdit">Confirmo la edicion directa de esta caja</label>
+        </div>
+        <div class="mt-3">
+            <button class="btn btn-primary" disabled="@this._isApplying" @onclick="this.ApplyDropContentBatchAsync">Aplicar edicion directa</button>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <strong>6. Plantillas de tiendas</strong>
+        <NavLink class="btn btn-outline-primary btn-sm" href="merchant-cockpit">Abrir Merchant Cockpit</NavLink>
+    </div>
+    <div class="card-body">
+        <div class="alert alert-secondary">
+            Aquí puedes clonar tiendas completas por lote. Para editar merchants cómodamente —buscar items,
+            agregar/quitar, configurar nivel, skill, sockets, Luck/opciones, ordenar slots y copiar en modo
+            reemplazar o agregar— usa el <strong>Merchant Cockpit</strong>.
+        </div>
+
+        <div class="row g-3">
+            <div class="col-lg-5">
+                <label class="form-label">Tienda origen</label>
+                <select class="form-select" @bind="this._sourceMerchantId">
+                    <option value="">Seleccionar…</option>
+                    @foreach (var merchant in this._merchants)
+                    {
+                        <option value="@merchant.GetId()">@merchant.Designation (@merchant.MerchantStore!.Items.Count items)</option>
+                    }
+                </select>
+            </div>
+            <div class="col-lg-7">
+                <label class="form-label">Tiendas destino</label>
+                <div class="border rounded p-2" style="height:240px; overflow:auto;">
+                    @foreach (var merchant in this._merchants)
+                    {
+                        var id = merchant.GetId();
+                        <div class="form-check">
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   disabled="@(this._sourceMerchantId == id)"
+                                   checked="@this._targetMerchantIds.Contains(id)"
+                                   @onchange="e => this.ToggleMerchant(id, (bool)(e.Value ?? false))" />
+                            <label class="form-check-label">@merchant.Designation (@merchant.MerchantStore!.Items.Count items)</label>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-3 d-flex gap-2">
+            <button class="btn btn-outline-primary" disabled="@this._isApplying" @onclick="this.PreviewMerchantClone">Vista previa</button>
+            <button class="btn btn-primary" disabled="@this._isApplying" @onclick="this.ApplyMerchantCloneAsync">Clonar tienda</button>
+        </div>
+    </div>
+</div>
