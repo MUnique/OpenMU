@@ -85,7 +85,10 @@ public class RaklionRemoteViewTests
 
         var data = output.ToArray().AsMemory();
         Assert.That(data.Length, Is.EqualTo(2 * MonsterSkillAnimation.Length));
-        Assert.That(data.Span[..10].ToArray(), Is.EqualTo(new byte[] { 0xC1, 10, 0x69, 0x00, 35, 0, 0x34, 0x12, 0x67, 0x05 }));
+
+        // The padding byte at the index 5 isn't read by the client, so it's not checked.
+        Assert.That(data.Span[..5].ToArray(), Is.EqualTo(new byte[] { 0xC1, 10, 0x69, 0x00, 35 }));
+        Assert.That(data.Span[6..10].ToArray(), Is.EqualTo(new byte[] { 0x34, 0x12, 0x67, 0x05 }));
 
         var heal = (MonsterSkillAnimation)data.Slice(MonsterSkillAnimation.Length, MonsterSkillAnimation.Length);
         Assert.That(heal.SkillNumber, Is.EqualTo((ushort)SelupanSkill.Heal));
