@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using MUnique.OpenMU.Persistence.EntityFramework.AdminAuth;
+using MUnique.OpenMU.Persistence.EntityFramework.WeeklyQuests;
 using Npgsql;
 
 /// <summary>
@@ -42,6 +43,7 @@ public class DatabaseSnapshotService : IDatabaseSnapshotService
         SchemaNames.Guild,
         SchemaNames.Friend,
         SchemaNames.AdminPanel,
+        SchemaNames.WeeklyQuests,
     ];
 
     /// <inheritdoc />
@@ -125,6 +127,11 @@ public class DatabaseSnapshotService : IDatabaseSnapshotService
         await DeleteDatabaseAsync(cancellationToken).ConfigureAwait(false);
         await MigrateToSnapshotStateAsync<EntityDataContext>(manifest.Migrations, cancellationToken).ConfigureAwait(false);
         await MigrateToSnapshotStateAsync<AdminPanelContext>(manifest.AdminPanelMigrations, cancellationToken).ConfigureAwait(false);
+
+        // The weekly quest progress isn't tracked in the manifest. It has only its initial migration yet,
+        // so the current schema is also the one of the snapshot. When it gets further migrations,
+        // they have to be added to the manifest like the ones of the admin panel.
+        await MigrateToAsync<WeeklyQuestContext>(null, cancellationToken).ConfigureAwait(false);
 
         await using var connection = await CreateConnectionAsync(cancellationToken).ConfigureAwait(false);
         var existingTables = (await GetTableNamesAsync(connection, cancellationToken).ConfigureAwait(false))

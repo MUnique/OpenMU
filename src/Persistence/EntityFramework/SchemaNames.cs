@@ -36,4 +36,9 @@ internal static class SchemaNames
     /// It is deliberately not granted to any of the game server database roles.
     /// </remarks>
     internal const string AdminPanel = "admin";
+
+    /// <summary>
+    /// The schema name for the progress of the weekly quests.
+    /// </summary>
+    internal const string WeeklyQuests = "weekly";
 }
