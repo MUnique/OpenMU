@@ -13,6 +13,15 @@ using MUnique.OpenMU.Persistence.EntityFramework.Model;
 internal static class ItemExtensions
 {
     /// <summary>
+    /// Applies the settings for the <see cref="Item"/> entity.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    public static void Apply(this EntityTypeBuilder<Item> builder)
+    {
+        builder.Ignore(p => p.DurabilityThresholds);
+    }
+
+    /// <summary>
     /// Applies the settings for the <see cref="ItemDefinition"/> entity.
     /// </summary>
     /// <param name="builder">The builder.</param>
@@ -38,15 +47,6 @@ internal static class ItemExtensions
     {
         builder.Property(p => p.Name).HasConversion(LocalizedStringConverter.Instance);
         builder.HasMany(isg => isg.RawItems).WithOne(item => item.RawItemSetGroup!);
-    }
-
-    /// <summary>
-    /// Applies the settings for the <see cref="ItemBasePowerUpDefinition"/> entity.
-    /// </summary>
-    /// <param name="builder">The builder.</param>
-    public static void Apply(this EntityTypeBuilder<ItemBasePowerUpDefinition> builder)
-    {
-        builder.Ignore(d => d.BaseValueElement);
     }
 
     /// <summary>

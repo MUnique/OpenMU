@@ -637,6 +637,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The equipment has been changed..
+        /// </summary>
+        public static string EquipmentHasChangedMessage {
+            get {
+                return ResourceManager.GetString("EquipmentHasChangedMessage", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Oops, some error happened during sending the Letter..
         /// </summary>
         public static string ErrorDuringSendingLetter {

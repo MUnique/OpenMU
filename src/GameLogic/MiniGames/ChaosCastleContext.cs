@@ -106,7 +106,7 @@ public sealed class ChaosCastleContext : MiniGameContext
             case (13, 37): // Fenrir
                 return false;
             default:
-                if (definition.BasePowerUpAttributes.Any(a => a.TargetAttribute == Stats.TransformationSkin))
+                if (item.IsTransformationRing())
                 {
                     return false;
                 }

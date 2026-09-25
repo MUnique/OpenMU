@@ -2173,12 +2173,6 @@
   <data name="ItemBasePowerUpDefinition_TargetAttribute_Description" xml:space="preserve">
     <value></value>
   </data>
-  <data name="ItemBasePowerUpDefinition_BaseValueElement_Caption" xml:space="preserve">
-    <value>Base Value Element</value>
-  </data>
-  <data name="ItemBasePowerUpDefinition_BaseValueElement_Description" xml:space="preserve">
-    <value></value>
-  </data>
   <data name="ItemBasePowerUpDefinition_BonusPerLevelTable_Caption" xml:space="preserve">
     <value>Bonus Per Level Table</value>
   </data>

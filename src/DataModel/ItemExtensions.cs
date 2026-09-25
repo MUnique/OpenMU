@@ -173,6 +173,12 @@ public static class ItemExtensions
     {
         var previous = item.Durability;
         item.Durability = Math.Max(previous - decrement, 0.0);
+        if (item.Durability < 1.0)
+        {
+            // From the client's integral point of view, the item is already exhausted and treated as such.
+            item.Durability = 0.0;
+        }
+
         return (byte)Math.Floor(item.Durability) != (byte)Math.Floor(previous);
     }
 }

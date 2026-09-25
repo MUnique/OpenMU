@@ -682,6 +682,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Updates the durabilty of time-decaying items..
+        /// </summary>
+        public static string DurabilityDecayPlugIn_Description {
+            get {
+                return ResourceManager.GetString("DurabilityDecayPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Durability Decay.
+        /// </summary>
+        public static string DurabilityDecayPlugIn_Name {
+            get {
+                return ResourceManager.GetString("DurabilityDecayPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the earth shake skill of the dark horse. Pushes the targets away from the attacker..
         /// </summary>
         public static string EarthShakeSkillPlugIn_Description {
@@ -1920,24 +1938,6 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string PkClearChatCommandPlugIn_Name {
             get {
                 return ResourceManager.GetString("PkClearChatCommandPlugIn_Name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Handles the plasma storm skill of the fenrir pet. It randomly halves the durability of a target&apos;s equipped item..
-        /// </summary>
-        public static string PlasmaStormSkillPlugIn_Description {
-            get {
-                return ResourceManager.GetString("PlasmaStormSkillPlugIn_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Plasma Storm Skill.
-        /// </summary>
-        public static string PlasmaStormSkillPlugIn_Name {
-            get {
-                return ResourceManager.GetString("PlasmaStormSkillPlugIn_Name", resourceCulture);
             }
         }
         

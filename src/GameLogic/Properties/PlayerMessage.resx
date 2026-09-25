@@ -801,4 +801,7 @@
   <data name="DoppelgangerIceWalkerKilled" xml:space="preserve">
     <value>The Ice Walker has been defeated!</value>
   </data>
+  <data name="EquipmentHasChangedMessage" xml:space="preserve">
+    <value>The equipment has been changed.</value>
+  </data>
 </root>

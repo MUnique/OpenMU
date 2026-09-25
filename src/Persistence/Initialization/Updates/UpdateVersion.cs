@@ -584,4 +584,19 @@ public enum UpdateVersion
     /// The version of the <see cref="AddDoppelgangerDataUpdatePlugIn"/>.
     /// </summary>
     AddDoppelgangerData = 115,
+
+    /// <summary>
+    /// The version of the <see cref="ItemDurabilityRefactorPlugIn075"/>.
+    /// </summary>
+    ItemDurabilityRefactor075 = 116,
+
+    /// <summary>
+    /// The version of the <see cref="ItemDurabilityRefactorPlugIn095D"/>.
+    /// </summary>
+    ItemDurabilityRefactor095d = 117,
+
+    /// <summary>
+    /// The version of the <see cref="ItemDurabilityRefactorPlugInSeason6"/>.
+    /// </summary>
+    ItemDurabilityRefactorSeason6 = 118,
 }

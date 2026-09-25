@@ -112,6 +112,7 @@ public class ItemViewModel : INotifyPropertyChanged
             }
 
             this.Item.Level = value;
+            this.Item.DurabilityThresholds = null;
             this.OnPropertyChanged();
         }
     }
@@ -711,6 +712,7 @@ public class ItemViewModel : INotifyPropertyChanged
         if (definition.MaximumItemLevel < this.Level)
         {
             this.Level = 0;
+            this.Item.DurabilityThresholds = null;
         }
 
         this.AncientSet = null;
