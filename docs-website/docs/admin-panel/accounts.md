@@ -69,6 +69,8 @@ new password, use the account edit page and set a new password there.
 
 ## Deleting accounts
 
-Accounts can be deleted from the generic edit page. Consider banning instead —
+Use **Delete** in the account list and confirm the prompt. This permanently
+removes the account and its dependent characters, items, vault, and other account
+data. Disconnect an online account before deleting it. Consider banning instead —
 a banned account keeps the character names reserved and keeps the history of what
 happened on your server.
