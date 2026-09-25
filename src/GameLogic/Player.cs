@@ -1230,7 +1230,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         if (previousFactor != item.GetCurrentDurabilityFactor())
         {
-            await ((InventoryStorage?)this._storages.Inventory)!.RaiseEquippedItemsChangedAsync(item, true).ConfigureAwait(false);
+            await this._storages.Inventory!.AsInventoryStorage!.RaiseEquippedItemsChangedAsync(item, true).ConfigureAwait(false);
         }
     }
 
@@ -2068,7 +2068,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
         else
         {
-            var itemPowerUps = attributes.ItemPowerUps.FirstOrDefault(ipu => ipu.Key == targetItem).Value;
+            if (!attributes.ItemPowerUps.TryGetValue(targetItem, out var itemPowerUps))
+            {
+                return;
+            }
+
             itemDefense = attributes.GetComposableAttribute(Stats.DefenseBase)?.Elements
                 .Where(e => e.AggregateType == AggregateType.AddRaw && itemPowerUps.Contains(e))
                 .Sum(e => e.Value) ?? 0;
@@ -2225,7 +2229,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             weaponAttribute = Stats.MinimumPhysBaseDmgByWeapon;
         }
 
-        var itemPowerUps = attributes.ItemPowerUps.FirstOrDefault(ipu => ipu.Key == weapon).Value;
+        if (!attributes.ItemPowerUps.TryGetValue(weapon, out var itemPowerUps))
+        {
+            return;
+        }
+
         var weaponAttributeValue = attributes.GetComposableAttribute(weaponAttribute)?.Elements
             .Where(e => e.AggregateType == AggregateType.AddRaw && itemPowerUps.Contains(e))
             .Sum(e => e.Value) ?? 0;

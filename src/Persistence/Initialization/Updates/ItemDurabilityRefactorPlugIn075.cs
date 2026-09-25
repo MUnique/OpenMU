@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.Persistence.Initialization.Updates;
 
 using System.Runtime.InteropServices;
-using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -21,10 +20,4 @@ public class ItemDurabilityRefactorPlugIn075 : ItemDurabilityRefactorPlugInBase
 
     /// <inheritdoc />
     public override string DataInitializationKey => Version075.DataInitialization.Id;
-
-    /// <inheritdoc />
-    protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
-    {
-        await base.ApplyAsync(context, gameConfiguration).ConfigureAwait(false);
-    }
 }

@@ -465,12 +465,6 @@
   <data name="PhoenixShotSkillPlugIn_Description" xml:space="preserve">
     <value>Handles the phoenix shot weapon skill of the rage fighter class. Additionally to the attacked target, it will hit up to seven additional targets.</value>
   </data>
-  <data name="PlasmaStormSkillPlugIn_Name" xml:space="preserve">
-    <value>Plasma Storm Skill</value>
-  </data>
-  <data name="PlasmaStormSkillPlugIn_Description" xml:space="preserve">
-    <value>Handles the plasma storm skill of the fenrir pet. It randomly halves the durability of a target's equipped item.</value>
-  </data>
   <data name="PollutionSkillPlugIn_Name" xml:space="preserve">
     <value>Pollution Skill</value>
   </data>

@@ -165,6 +165,8 @@ internal partial class CharacterClassInitialization : InitializerBase
         baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.AttackDamageIncrease));
         baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.ExperienceRate));
         baseAttributeValues.Add(this.CreateConstValueAttribute(0.03f, Stats.PoisonDamageMultiplier));
+        baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.WeaponAndArmorDurationIncrease));
+        baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.JewelryAndWingsDurationIncrease));
         baseAttributeValues.Add(this.CreateConstValueAttribute(2, Stats.AbilityRecoveryAbsolute));
         baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.PhysicalBaseDmgIncrease));
         baseAttributeValues.Add(this.CreateConstValueAttribute(-1, Stats.AreTwoWeaponsEquipped));

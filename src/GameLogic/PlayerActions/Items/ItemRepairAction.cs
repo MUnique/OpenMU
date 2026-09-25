@@ -44,9 +44,9 @@ public class ItemRepairAction
         {
             var previousFactor = item.GetCurrentDurabilityFactor();
             item.Durability = item.GetMaximumDurabilityOfOnePiece();
-            if (previousFactor != item.GetCurrentDurabilityFactor())
+            if (player.Inventory!.EquippedItems.Contains(item) && previousFactor != item.GetCurrentDurabilityFactor())
             {
-                await ((InventoryStorage?)player.Inventory)!.RaiseEquippedItemsChangedAsync(item, true).ConfigureAwait(false);
+                await player.Inventory.AsInventoryStorage!.RaiseEquippedItemsChangedAsync(item, true).ConfigureAwait(false);
             }
 
             await player.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(item, false)).ConfigureAwait(false);
@@ -99,7 +99,7 @@ public class ItemRepairAction
                 item.Durability = item.GetMaximumDurabilityOfOnePiece();
                 if (previousFactor != item.GetCurrentDurabilityFactor())
                 {
-                    await ((InventoryStorage?)player.Inventory)!.RaiseEquippedItemsChangedAsync(item, true).ConfigureAwait(false);
+                    await player.Inventory!.AsInventoryStorage!.RaiseEquippedItemsChangedAsync(item, true).ConfigureAwait(false);
                 }
 
                 await player.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(item, false)).ConfigureAwait(false);

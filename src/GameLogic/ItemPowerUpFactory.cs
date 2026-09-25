@@ -15,9 +15,7 @@ using MUnique.OpenMU.Persistence;
 /// </summary>
 public class ItemPowerUpFactory : IItemPowerUpFactory
 {
-    private readonly ILogger<ItemPowerUpFactory> _logger;
-
-    private readonly AttributeDefinition[] _durabilityAffectedItemAttributes =
+    private static readonly HashSet<AttributeDefinition> _durabilityAffectedItemAttributes =
     [
         Stats.DefenseBase,
         Stats.DefenseShield,
@@ -28,6 +26,8 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
         Stats.ScepterRise,
         Stats.BookRise,
     ];
+
+    private readonly ILogger<ItemPowerUpFactory> _logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ItemPowerUpFactory"/> class.
@@ -219,7 +219,7 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
     {
         attribute.ThrowNotInitializedProperty(attribute.TargetAttribute is null, nameof(attribute.TargetAttribute));
 
-        var durabilityFactor = this._durabilityAffectedItemAttributes.Contains(attribute.TargetAttribute) ? item.GetCurrentDurabilityFactor() : 1;
+        var durabilityFactor = _durabilityAffectedItemAttributes.Contains(attribute.TargetAttribute) ? item.GetCurrentDurabilityFactor() : 1;
         var baseValueElmt = attribute.GetBaseValueElement(durabilityFactor);
 
         var levelBonusElmt = (attribute.BonusPerLevelTable?.BonusPerLevel ?? Enumerable.Empty<LevelBonus>())

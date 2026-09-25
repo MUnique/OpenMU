@@ -308,7 +308,7 @@ public static class ItemExtensions
             left = null;
         }
 
-        if ((right?.Definition?.IsAmmunition ?? false)
+        if (right?.Definition?.IsAmmunition ?? false
             || right?.Definition?.Group == ShieldItemGroup
             || (right?.IsTrainablePet() ?? false))
         {
@@ -317,7 +317,7 @@ public static class ItemExtensions
 
         if (damageType is DamageType.Wizardry or DamageType.Curse)
         {
-            if (!(left?.IsWizardryWeapon(out _) ?? true) || (left?.CanHaveSkill() ?? false))
+            if (!left?.IsWizardryWeapon(out _) ?? true || (left?.CanHaveSkill() ?? false))
             {
                 left = null;
             }
