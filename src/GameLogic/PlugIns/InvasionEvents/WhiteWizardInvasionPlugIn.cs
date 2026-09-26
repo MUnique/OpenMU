@@ -11,7 +11,7 @@ using MUnique.OpenMU.PlugIns;
 /// Enables the White Wizard Invasion feature.
 /// </summary>
 [PlugIn]
-[Display(Name = "White Wizard Invasion", Description = "Enables the White Wizard Invasion feature.")]
+[Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.WhiteWizardInvasionPlugIn_Display1_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.WhiteWizardInvasionPlugIn_Display1_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
 [Guid("4B5D0F55-5B26-4447-B9C0-C272E5D0A141")]
 public sealed class WhiteWizardInvasionPlugIn : SimpleInvasionPlugIn
 {

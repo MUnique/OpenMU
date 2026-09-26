@@ -22,7 +22,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("B7E4D2A3-1F85-4DAB-9074-19B4708389D5")]
 [PlugIn]
-[Display(Name = nameof(KanturuGatewayPlugIn), Description = "Handles the Kanturu Gateway Machine NPC for event entry.")]
+[Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.KanturuGatewayPlugIn_Display1_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.KanturuGatewayPlugIn_Display1_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
 public class KanturuGatewayPlugIn : IPlayerTalkToNpcPlugIn
 {
     /// <summary>

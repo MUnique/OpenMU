@@ -14,8 +14,8 @@
         {
             @if (this.Value.Length > 32)
             {
-                <p>Current size: @(this.Value.Length) bytes (<a href="download/@this.EditContext.Model.GetType()/@this.EditContext.Model.GetId()/@this.FieldIdentifier.FieldName">Download</a>)</p>
-                <p>Load file: <BlazorInputFile.InputFile id="@this.FieldIdentifier.FieldName" OnChange="@this.OnSelectedFile" /></p>
+                <p>@string.Format(Resources.CurrentByteSize, this.Value.Length) (<a href="download/@this.EditContext.Model.GetType()/@this.EditContext.Model.GetId()/@this.FieldIdentifier.FieldName">@Resources.Download</a>)</p>
+                <p>@Resources.LoadFile: <BlazorInputFile.InputFile id="@this.FieldIdentifier.FieldName" OnChange="@this.OnSelectedFile" /></p>
             }
             else
             {
@@ -24,8 +24,8 @@
         }
         else
         {
-            <p><input @bind="CurrentValueAsString" id="@this.FieldIdentifier.FieldName" class="form-control @CssClass" placeholder="It's currently empty. Either type in the value as hex string or upload a file." /></p>
-            <p>Load file: <BlazorInputFile.InputFile id="@this.FieldIdentifier.FieldName" OnChange="@this.OnSelectedFile" /></p>
+            <p><input @bind="CurrentValueAsString" id="@this.FieldIdentifier.FieldName" class="form-control @CssClass" placeholder="@Resources.EmptyBinaryValue" /></p>
+            <p>@Resources.LoadFile: <BlazorInputFile.InputFile id="@this.FieldIdentifier.FieldName" OnChange="@this.OnSelectedFile" /></p>
         }
 
     </div>
@@ -61,7 +61,7 @@
             else
             {
                 result = null;
-                validationErrorMessage = "Wrong format. Expected example: AB 03 DC";
+                validationErrorMessage = Resources.HexFormatError;
                 return false;
             }
         }
@@ -84,7 +84,7 @@
             await using var memoryStream = new MemoryStream();
             await file.Data.CopyToAsync(memoryStream);
             this.CurrentValue = memoryStream.ToArray();
-            await this._modalService.ShowMessageAsync(this.FieldIdentifier.FieldName, $"Loaded {file.Name} with {this.CurrentValue.Length} bytes.");
+            await this._modalService.ShowMessageAsync(FieldCaption.Get(this.FieldIdentifier), string.Format(Resources.FileLoaded, file.Name, this.CurrentValue.Length));
         }
     }
 }

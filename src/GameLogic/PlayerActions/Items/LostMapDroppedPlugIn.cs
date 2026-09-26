@@ -17,7 +17,7 @@ using MonsterSpawnArea = MUnique.OpenMU.Persistence.BasicModel.MonsterSpawnArea;
 /// todo: implement plugin configuration to resolve magic numbers.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(LostMapDroppedPlugIn), Description = "This plugin handles the drop of the lost map item. It creates the gate to the kalima map.")]
+[Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.LostMapDroppedPlugIn_Display1_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.LostMapDroppedPlugIn_Display1_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
 [Guid("F6DB10E0-AE7F-4BC6-914F-B858763C5CF7")]
 public sealed class LostMapDroppedPlugIn : IItemDropPlugIn
 {

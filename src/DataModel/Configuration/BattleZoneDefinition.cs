@@ -58,6 +58,6 @@ public partial class BattleZoneDefinition
     /// <inheritdoc />
     public override string ToString()
     {
-        return $"Battle Zone ({this.Type})";
+        return string.Format(MUnique.OpenMU.DataModel.Properties.Resources.BattleZoneSummary, ModelResourceProvider.GetEnumCaption(this.Type.GetType(), this.Type));
     }
 }

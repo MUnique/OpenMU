@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// It also refactors attack speed attributes for simplification.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixItemOptionsAndAttackSpeedPlugInBase_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixItemOptionsAndAttackSpeedPlugInBase_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("C7F90EDB-EC00-467D-826F-9DEFFEA1206A")]
 public class FixItemOptionsAndAttackSpeedPlugIn095D : FixItemOptionsAndAttackSpeedPlugInBase
 {

@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// This updates adds the new <see cref="ItemDefinition.StorageLimitPerCharacter"/> for quest items.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddQuestItemLimitPlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddQuestItemLimitPlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("48D40F2E-2844-4058-B1FA-710EEE55157B")]
 public class AddQuestItemLimitPlugIn : UpdatePlugInBase
 {

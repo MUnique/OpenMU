@@ -18,7 +18,7 @@ using MUnique.OpenMU.PlugIns;
 /// Appears in the "Feature Plugins" section of the admin panel next to the MU Helper and reset features.
 /// </summary>
 [PlugIn]
-[Display(Name = "Bots", Description = "Spawns server-side bots which hunt monsters on the maps. Configure the accounts to animate and enable the feature.")]
+[Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BotFeaturePlugIn_Display1_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BotFeaturePlugIn_Display1_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
 [Guid("6F3A2B91-7C4E-4D88-9A1F-2E5C0B7A4D63")]
 public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCustomConfiguration<BotConfiguration>, ISupportDefaultCustomConfiguration
 {

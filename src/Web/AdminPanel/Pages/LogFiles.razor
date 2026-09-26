@@ -249,7 +249,7 @@
         }
         catch (Exception ex)
         {
-            lines.Add($"Error reading log file: {ex.Message}");
+            lines.Add(string.Format(Resources.LogReadError, ex.Message));
         }
 
         return lines;

@@ -130,7 +130,7 @@
                 {
                     @if ((optionLink.ItemOption.LevelDependentOptions.FirstOrDefault(ldo => ldo.Level == level)?.PowerUpDefinition
                           ?? optionLink.ItemOption.PowerUpDefinition) is { } powerUp
-                         && $"+{powerUp.Boost?.ConstantValue.Value} {powerUp.TargetAttribute} (Level {level})" is { } caption)
+                         && string.Format(Resources.ItemBonusAtLevel, powerUp.Boost?.ConstantValue.Value, powerUp.TargetAttribute, level) is { } caption)
                     {
                         @if (level == optionLink.Level)
                         {
@@ -206,7 +206,7 @@
 
         @if (this.OnCancel.HasDelegate)
         {
-            <button type="button" class="btn btn-secondary" @onclick=@this.OnCancel>Cancel</button>
+            <button type="button" class="btn btn-secondary" @onclick=@this.OnCancel>@Resources.Cancel</button>
         }
     </div>
 </EditForm>

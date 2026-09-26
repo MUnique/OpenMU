@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// This update fixes and reworks some regeneration attributes (health, mana, ability). It also adds default running (and fast swimming) speed for tier 2 chars (MG).
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.RegenerationsRefactorPlugInBase_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.RegenerationsRefactorPlugInBase_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("A7C2E9F4-5B1D-4E8A-9C6F-3D2B7A1E5F90")]
 public class RegenerationsRefactorPlugIn095D : RegenerationsRefactorPlugInBase
 {

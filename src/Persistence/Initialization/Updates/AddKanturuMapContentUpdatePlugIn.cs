@@ -20,7 +20,7 @@ using MUnique.OpenMU.PlugIns;
 /// to the already existing map definition instead of creating a second one.
 /// </remarks>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddKanturuMapContentUpdatePlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddKanturuMapContentUpdatePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("7B4E9D26-1A83-4F5C-9E70-2C8B6D41A395")]
 public class AddKanturuMapContentUpdatePlugIn : UpdatePlugInBase
 {

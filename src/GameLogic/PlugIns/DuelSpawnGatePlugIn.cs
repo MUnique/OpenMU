@@ -11,7 +11,7 @@ using MUnique.OpenMU.PlugIns;
 /// A plugin which spawns a duelist at its side of the duel area, instead of the safezone.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(DuelSpawnGatePlugIn), Description = "Spawns a player which is in a duel at its side of the duel area.")]
+[Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.DuelSpawnGatePlugIn_Display1_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.DuelSpawnGatePlugIn_Display1_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
 [Guid("1D2C8B5A-4E7F-4C93-8B21-6A0E5D9F3C74")]
 public class DuelSpawnGatePlugIn : IPlayerSpawnGateSelectionPlugIn
 {

@@ -54,19 +54,19 @@ public partial class QuestReward
 
         if (this.RewardType == QuestRewardType.Skill)
         {
-            return $"Skill: {this.SkillReward?.Name}";
+            return string.Format(MUnique.OpenMU.DataModel.Properties.Resources.SkillRewardSummary, this.SkillReward?.Name);
         }
 
         if (this.RewardType == QuestRewardType.Attribute)
         {
-            return $"Attribute: {this.Value} x {this.AttributeReward}";
+            return string.Format(MUnique.OpenMU.DataModel.Properties.Resources.AttributeRewardSummary, this.Value, this.AttributeReward);
         }
 
         if (this.RewardType is QuestRewardType.Experience or QuestRewardType.Money or QuestRewardType.LevelUpPoints or QuestRewardType.GensAttribution)
         {
-            return $"{this.Value} x {this.RewardType}";
+            return $"{this.Value} x {ModelResourceProvider.GetEnumCaption(this.RewardType.GetType(), this.RewardType)}";
         }
 
-        return $"{this.RewardType}";
+        return $"{ModelResourceProvider.GetEnumCaption(this.RewardType.GetType(), this.RewardType)}";
     }
 }

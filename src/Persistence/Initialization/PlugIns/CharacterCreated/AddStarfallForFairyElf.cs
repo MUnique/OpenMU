@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("5AC4F8C8-8B4C-4DD6-B1CF-D4F6491DC17A")]
 [PlugIn]
-[Display(Name = nameof(AddStarfallForFairyElf), Description = "Adds the Starfall skill (active in castle siege) to a created fairy elf character.")]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddStarfallForFairyElf_Display1_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddStarfallForFairyElf_Display1_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 public class AddStarfallForFairyElf : AddInitialSkillPlugInBase
 {
     /// <summary>

@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// so the difficulty progression is correct: BC6 → BC7 → BC8.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixBloodCastleMonsterAttributesUpdatePlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixBloodCastleMonsterAttributesUpdatePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("D4E5F6A0-1B2C-3D4E-5F6A-7B8C9D0E1F2A")]
 public class FixBloodCastleMonsterAttributesUpdatePlugIn : UpdatePlugInBase
 {

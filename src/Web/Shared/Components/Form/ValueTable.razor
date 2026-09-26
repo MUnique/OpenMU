@@ -9,11 +9,11 @@
     {
         @if (this._isCollapsed)
         {
-        <button type="button" class="btn btn-outline-info" @onclick="@this.OnToggleCollapseClick">Expand (@(this.Value?.Count) Items)</button>
+        <button type="button" class="btn btn-outline-info" @onclick="@this.OnToggleCollapseClick">@string.Format(Resources.ExpandItems, this.Value?.Count)</button>
         }
         else
         {
-        <button type="button" class="btn btn-outline-info" @onclick="@this.OnToggleCollapseClick">Collapse</button>
+        <button type="button" class="btn btn-outline-info" @onclick="@this.OnToggleCollapseClick">@Resources.Collapse</button>
         }
     }
     </h5>
@@ -36,7 +36,7 @@
                                 </EditForm>
                             </td>
                             <td>
-                                <button type="button" class="btn btn-danger" @onclick="@(() => OnRemoveClickAsync(index))"><span class="oi oi-trash" aria-hidden="true"></span> Remove</button>
+                                <button type="button" class="btn btn-danger" @onclick="@(() => OnRemoveClickAsync(index))"><span class="oi oi-trash" aria-hidden="true"></span> @Resources.Remove</button>
                             </td>
                         </tr>
                     }
@@ -45,7 +45,7 @@
                 <tfoot>
                     <tr>
                         <td colspan="2" class="border-bottom-0">
-                            <button type="button" class="btn btn-primary" @onclick="@OnAddClickAsync">Add Value</button>
+                            <button type="button" class="btn btn-primary" @onclick="@OnAddClickAsync">@Resources.AddValue</button>
                         </td>
                     </tr>
                 </tfoot>

@@ -18,7 +18,7 @@ using MUnique.OpenMU.PlugIns;
 /// <see cref="MiniGameDefinition"/>. This update adds it without touching any other data.
 /// </remarks>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddKanturuDataUpdatePlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddKanturuDataUpdatePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("3F1B7A64-9C2E-4D58-B0A7-5E6C8D19F204")]
 public class AddKanturuDataUpdatePlugIn : UpdatePlugInBase
 {

@@ -20,7 +20,7 @@ public class BotConfiguration
     /// Gets or sets a value indicating whether the bot feature is enabled.
     /// Disabled by default so that enabling bots is always an explicit, deliberate action.
     /// </summary>
-    [Display(Name = "Enabled", Description = "If enabled, bots are spawned after the server has started.")]
+    [Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BotConfiguration_Display1_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BotConfiguration_Display1_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
     public bool Enabled { get; set; }
 
     /// <summary>
@@ -28,7 +28,7 @@ public class BotConfiguration
     /// When set, the feature purges every bot account on the next startup before generating fresh
     /// ones, and then automatically clears this flag again. Use it to reset the bot population.
     /// </summary>
-    [Display(Name = "Reset bots", Description = "Deletes all bot accounts and characters on the next start, then regenerates them. Clears itself afterwards.")]
+    [Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BotConfiguration_Display2_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BotConfiguration_Display2_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
     public bool ResetBots { get; set; }
 
     /// <summary>
@@ -37,7 +37,7 @@ public class BotConfiguration
     /// off - otherwise the very same pass would generate the population again - so it is the single
     /// switch for "I do not want bots on this server anymore". Clears itself afterwards.
     /// </summary>
-    [Display(Name = "Purge bots", Description = "Deletes all bot accounts and characters and turns the bot feature off, without generating new ones. Clears itself afterwards.")]
+    [Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BotConfiguration_Display3_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BotConfiguration_Display3_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
     public bool PurgeBots { get; set; }
 
     /// <summary>
@@ -47,7 +47,7 @@ public class BotConfiguration
     /// characters which are generated from now on - an existing bot population keeps its state
     /// until it is regenerated (<see cref="ResetBots"/>).
     /// </summary>
-    [Display(Name = "Start as fresh characters", Description = "Newly generated bots start at level 1 with level-0 starter equipment, like a freshly created player character, instead of with a random level, reset history and upgraded gear.")]
+    [Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BotConfiguration_Display4_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BotConfiguration_Display4_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
     public bool StartAsFreshCharacters { get; set; }
 
     /// <summary>
@@ -55,21 +55,21 @@ public class BotConfiguration
     /// fewer bots are online at night, most in the evening, with bots smoothly logging in and out -
     /// like a real player base, instead of the same characters being online 24/7.
     /// </summary>
-    [Display(Name = "Presence rotation", Description = "Bots log in and out over the day (fewest at night, most in the evening) instead of all being online 24/7.")]
+    [Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BotConfiguration_Display5_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BotConfiguration_Display5_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
     public bool PresenceRotation { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the share (in percent) of bots which stays online at the quietest time of day.
     /// 100 effectively disables the rotation effect.
     /// </summary>
-    [Display(Name = "Min. online share %", Description = "Percentage of the bot population which stays online at the quietest hour (100 = no rotation effect).")]
+    [Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BotConfiguration_Display6_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BotConfiguration_Display6_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
     public int MinOnlineSharePercent { get; set; } = 60;
 
     /// <summary>
     /// Gets or sets the number of bot accounts. Together with <see cref="MaxCharactersPerAccount"/>
     /// this defines the generated bot population, e.g. 10 accounts × 5 characters = 50 bot characters.
     /// </summary>
-    [Display(Name = "Number of accounts", Description = "How many bot accounts to maintain.")]
+    [Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BotConfiguration_Display7_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BotConfiguration_Display7_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
     [Range(0, 1000)]
     public int NumberOfAccounts { get; set; } = 10;
 
@@ -77,7 +77,7 @@ public class BotConfiguration
     /// Gets or sets the number of characters per bot account. An account can hold at most
     /// <see cref="MaxCharactersPerAccountLimit"/> (5) characters, so this value is clamped on use.
     /// </summary>
-    [Display(Name = "Characters per account", Description = "How many characters each bot account holds (max 5).")]
+    [Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BotConfiguration_Display8_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BotConfiguration_Display8_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
     [Range(1, MaxCharactersPerAccountLimit)]
     public int MaxCharactersPerAccount { get; set; } = MaxCharactersPerAccountLimit;
 
@@ -89,7 +89,7 @@ public class BotConfiguration
     /// <see cref="BotServerPartition"/>); accounts which do not fit stay offline until the servers offer
     /// the room for them.
     /// </summary>
-    [Display(Name = "Bot capacity %", Description = "Share of a game server's maximum player count which its bots may occupy; the rest stays reserved for real players.")]
+    [Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BotConfiguration_Display9_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BotConfiguration_Display9_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
     [Range(1, 100)]
     public int BotCapacityPercent { get; set; } = 60;
 
@@ -99,7 +99,7 @@ public class BotConfiguration
     /// bots don't take part in the player economy the costs are balanced for, so charging them only
     /// stalls their progression (a bot can't farm zen for a billion-zen reset the way players trade).
     /// </summary>
-    [Display(Name = "Bots pay reset costs", Description = "If enabled, bots consume the configured zen/item costs for their resets like human players (default: free bot resets).")]
+    [Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BotConfiguration_Display10_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BotConfiguration_Display10_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
     public bool BotsPayResetCosts { get; set; }
 
     /// <summary>
@@ -109,7 +109,7 @@ public class BotConfiguration
     /// merchant visit. The sensible value depends entirely on the server's drop rates - on a high rate
     /// server a bot refills a big stock within hours, so a low limit keeps its backpack usable.
     /// </summary>
-    [Display(Name = "Jewel stock per kind", Description = "How many Jewels of Bless/Soul/Life a bot keeps of each kind; above this it stops picking them up and sells the surplus.")]
+    [Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BotConfiguration_Display11_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BotConfiguration_Display11_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
     [Range(0, 100)]
     public int JewelStockPerKind { get; set; } = 10;
 
@@ -118,7 +118,7 @@ public class BotConfiguration
     /// at a merchant. Merchants sell potions in stacks of different sizes, so this is the target the bot
     /// buys towards, not a stack count.
     /// </summary>
-    [Display(Name = "Potion stock (charges)", Description = "How many healing and mana potion charges a bot buys up to at a merchant.")]
+    [Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BotConfiguration_Display12_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BotConfiguration_Display12_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
     [Range(10, 255)]
     public int PotionStockCharges { get; set; } = 60;
 
@@ -129,7 +129,7 @@ public class BotConfiguration
     /// These accounts are animated as-is and are not part of the partitioned, capacity-limited
     /// population, so leave it empty unless you specifically want to drive existing accounts.
     /// </summary>
-    [Display(Name = "Extra accounts to animate", Description = "Comma separated login names of existing accounts to animate as bots, in addition to the generated population.")]
+    [Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BotConfiguration_Display13_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BotConfiguration_Display13_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
     public string ProofOfConceptAccounts { get; set; } = string.Empty;
 
     /// <summary>

@@ -12,7 +12,7 @@ using MUnique.OpenMU.PlugIns;
 /// updating LevelWarpRequirementReductionPercent plugin.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixWarpLevelUpdatePlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixWarpLevelUpdatePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("F4342D86-7042-477A-BC3B-475C1F2A79FF")]
 public class FixWarpLevelUpdatePlugIn : UpdatePlugInBase
 {

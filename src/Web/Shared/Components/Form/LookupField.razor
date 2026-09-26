@@ -13,7 +13,7 @@
                SearchMethod="@((text, _) => this.EffectiveLookupController.GetSuggestionsAsync<TObject>(text, this.PersistenceContext))"
                EnableDropDown="true"
                MaximumSuggestions="20"
-               Placeholder="Search ..."
+               Placeholder="@Resources.Search"
                Id="@this.FieldIdentifier.FieldName">
         <SelectedTemplate Context="item">
             @if (item is null)

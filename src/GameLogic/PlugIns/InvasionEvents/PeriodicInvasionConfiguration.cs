@@ -29,12 +29,12 @@ public class PeriodicInvasionConfiguration : PeriodicTaskConfiguration
     /// When <c>true</c>, every mob in the invasion is placed on the same randomly-selected map
     /// rather than distributing across maps per their individual configurations.
     /// </summary>
-    [Display(Name = "Force Single Map", Order = 6)]
+    [Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.PeriodicInvasionConfiguration_Display1_Name), Order = 6, ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
     public bool ForceSingleMap { get; set; }
 
     /// <summary>
     /// Gets or sets the monster spawns for this invasion.
     /// </summary>
-    [Display(Name = "Monster Spawns", Order = 7)]
+    [Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.PeriodicInvasionConfiguration_Display2_Name), Order = 7, ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
     public IList<InvasionSpawnConfiguration> Mobs { get; set; } = [];
 }

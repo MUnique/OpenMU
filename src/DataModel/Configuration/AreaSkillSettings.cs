@@ -101,6 +101,6 @@ public partial class AreaSkillSettings
     /// <inheritdoc />
     public override string ToString()
     {
-        return "Area Skill Settings";
+        return typeof(AreaSkillSettings).GetTypeCaption();
     }
 }

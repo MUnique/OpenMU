@@ -46,13 +46,13 @@ public class ResetConfiguration
     /// <summary>
     /// Gets or sets the required item for a reset.
     /// </summary>
-    [Display(Name = "Required reset item")]
+    [Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.ResetConfiguration_Display1_Name), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
     public ItemDefinition? RequiredResetItem { get; set; }
 
     /// <summary>
     /// Gets or sets the item costs per reset range.
     /// </summary>
-    [Display(Name = "Item cost tiers")]
+    [Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.ResetConfiguration_Display2_Name), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
     [MemberOfAggregate]
     [ScaffoldColumn(true)]
     public ICollection<ResetItemCostTier> ItemCostTiers { get; set; } = [];
@@ -88,7 +88,7 @@ public class ResetConfiguration
     /// <summary>
     /// Gets or sets the points granted per reset range.
     /// </summary>
-    [Display(Name = "Point tiers")]
+    [Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.ResetConfiguration_Display3_Name), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
     [MemberOfAggregate]
     [ScaffoldColumn(true)]
     public ICollection<ResetPointTier> PointsTiers { get; set; } = [];
@@ -113,13 +113,13 @@ public class ResetConfiguration
         /// <summary>
         /// Gets or sets the minimum reset count at which this tier applies.
         /// </summary>
-        [Display(Name = "Minimum reset count")]
+        [Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.ResetConfiguration_Display4_Name), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
         public int MinimumResetCount { get; set; }
 
         /// <summary>
         /// Gets or sets the points granted for this tier.
         /// </summary>
-        [Display(Name = "Points granted")]
+        [Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.ResetConfiguration_Display5_Name), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
         public int PointsGranted { get; set; }
     }
 
@@ -131,13 +131,13 @@ public class ResetConfiguration
         /// <summary>
         /// Gets or sets the minimum reset count at which this tier applies.
         /// </summary>
-        [Display(Name = "Minimum reset count")]
+        [Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.ResetConfiguration_Display6_Name), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
         public int MinimumResetCount { get; set; }
 
         /// <summary>
         /// Gets or sets the required item amount for this tier.
         /// </summary>
-        [Display(Name = "Required item amount")]
+        [Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.ResetConfiguration_Display7_Name), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
         public int RequiredItemAmount { get; set; }
     }
 }

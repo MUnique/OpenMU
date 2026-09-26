@@ -38,6 +38,6 @@ public partial class ServerEndpoint
     /// </returns>
     public override string ToString()
     {
-        return $"Client: {this.Client?.Description}; Port: {this.NetworkPort}";
+        return string.Format(MUnique.OpenMU.DataModel.Properties.Resources.ServerEndpointSummary, this.Client?.Description, this.NetworkPort);
     }
 }

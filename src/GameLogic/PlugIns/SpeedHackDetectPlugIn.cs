@@ -20,7 +20,7 @@ using MUnique.OpenMU.PlugIns;
 /// A feature plugin that provides configuration and acts as a trigger control for speedhack anti-cheat checks.
 /// </summary>
 [PlugIn]
-[Display(Name = "Speedhack Anti-Cheat", Description = "Detects and prevents player walk and attack speedhacking.")]
+[Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.SpeedHackDetectPlugIn_Display1_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.SpeedHackDetectPlugIn_Display1_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
 [Guid("A95A8D2F-A0C3-442E-995C-005B5C1B42D2")]
 public class SpeedHackDetectPlugIn : IFeaturePlugIn, ISupportCustomConfiguration<SpeedHackDetectConfiguration>, ISupportDefaultCustomConfiguration, ISpeedHackCheatCheckPlugIn
 {

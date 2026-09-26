@@ -51,7 +51,7 @@ else
                 <tr class="@(apiKey.IsDisabled ? "opacity-50" : null)">
                     <td>@apiKey.Name</td>
                     <td><code>@apiKey.KeyPrefix…</code></td>
-                    <td>@apiKey.Roles</td>
+                    <td>@MUnique.OpenMU.Web.AdminPanel.Auth.RoleCaption.Get(apiKey.Roles)</td>
                     <td>
                         @if (apiKey.IsDisabled)
                         {

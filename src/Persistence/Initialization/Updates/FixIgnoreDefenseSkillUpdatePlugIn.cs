@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// This update sets the right settings for the ignore defense skill.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixIgnoreDefenseSkillUpdatePlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixIgnoreDefenseSkillUpdatePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("8DEC7BC2-E6A0-4E46-B123-C92CB43B9ED5")]
 public class FixIgnoreDefenseSkillUpdatePlugIn : UpdatePlugInBase
 {

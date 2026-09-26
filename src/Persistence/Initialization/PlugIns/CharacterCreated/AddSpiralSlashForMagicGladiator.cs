@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("83B0D163-7E97-40FC-851A-D5500B4BB33E")]
 [PlugIn]
-[Display(Name = nameof(AddSpiralSlashForMagicGladiator), Description = "Adds the Spiral Slash skill (active in castle siege) to a created magic gladiator character.")]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddSpiralSlashForMagicGladiator_Display1_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddSpiralSlashForMagicGladiator_Display1_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 public class AddSpiralSlashForMagicGladiator : AddInitialSkillPlugInBase
 {
     /// <summary>

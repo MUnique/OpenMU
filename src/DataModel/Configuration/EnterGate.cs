@@ -31,6 +31,6 @@ public partial class EnterGate : Gate
     /// <inheritdoc />
     public override string ToString()
     {
-        return $"{base.ToString()} ({this.Number}) (Level {this.LevelRequirement}) to {this.TargetGate}";
+        return string.Format(MUnique.OpenMU.DataModel.Properties.Resources.EnterGateSummary, base.ToString(), this.Number, this.LevelRequirement, this.TargetGate);
     }
 }

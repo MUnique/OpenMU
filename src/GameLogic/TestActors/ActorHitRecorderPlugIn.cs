@@ -24,7 +24,7 @@ using MUnique.OpenMU.GameLogic.PlugIns;
 /// exists exactly when actors can.
 /// </para>
 /// </remarks>
-[Display(Name = "Test actor hit recorder", Description = "Records hits dealt and received by scripted test actors in their event stream.")]
+[Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.ActorHitRecorderPlugIn_Display1_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.ActorHitRecorderPlugIn_Display1_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
 [Guid("2A7C4B18-6E5D-4C93-9F21-8D0B6A3E57C4")]
 public class ActorHitRecorderPlugIn : IAttackableGotHitPlugIn
 {

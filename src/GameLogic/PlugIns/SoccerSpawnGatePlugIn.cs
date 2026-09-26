@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// instead of spawning it at the safezone.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(SoccerSpawnGatePlugIn), Description = "Spawns a player of a running soccer match on the soccer ground.")]
+[Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.SoccerSpawnGatePlugIn_Display1_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.SoccerSpawnGatePlugIn_Display1_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
 [Guid("8C4E1F0B-7A93-4D65-B0C8-2E5F9A1D6B37")]
 public class SoccerSpawnGatePlugIn : IPlayerSpawnGateSelectionPlugIn
 {

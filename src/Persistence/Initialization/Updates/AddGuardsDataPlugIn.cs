@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// This updates adds the data for Guard NPCs.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddGuardsDataPlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddGuardsDataPlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("1EF50759-0A5F-4301-A5E9-B68A8B7D29F9")]
 public class AddGuardsDataPlugIn : UpdatePlugInBase
 {

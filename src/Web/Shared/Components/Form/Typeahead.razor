@@ -89,7 +89,7 @@
             @if (_isLoading && !_suggestions.Any())
             {
                 <div class="dropdown-item text-muted typeahead-no-results">
-                    Loading...
+                    @Resources.Loading
                 </div>
             }
             else if (!_suggestions.Any() && !string.IsNullOrWhiteSpace(_searchText))

@@ -12,7 +12,7 @@ using MUnique.OpenMU.PlugIns;
 /// This plugin enables the periodic start of the Kanturu Refinery Tower event.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(KanturuStartPlugIn), Description = "Kanturu Refinery Tower event")]
+[Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.KanturuStartPlugIn_Display1_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.KanturuStartPlugIn_Display1_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
 [Guid("A8F3C2D1-9E74-4ECB-8963-08A3697278C4")]
 public sealed class KanturuStartPlugIn : MiniGameStartBasePlugIn<KanturuStartConfiguration, KanturuGameServerState>
 {

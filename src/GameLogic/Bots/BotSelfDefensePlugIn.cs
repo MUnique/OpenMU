@@ -16,7 +16,7 @@ using MUnique.OpenMU.PlugIns;
 /// <see cref="CombatHandler"/>, which prioritizes a recent aggressor over its monster targets.
 /// </summary>
 [PlugIn]
-[Display(Name = "Bot self defense", Description = "Makes server-side bots fight back when a player attacks them.")]
+[Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BotSelfDefensePlugIn_Display1_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BotSelfDefensePlugIn_Display1_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
 [Guid("7E2B9C41-5A8D-4F36-B190-3D6E84C7F215")]
 public class BotSelfDefensePlugIn : IAttackableGotHitPlugIn
 {

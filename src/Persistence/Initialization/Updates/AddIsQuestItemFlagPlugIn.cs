@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// <see cref="ItemDefinition.IsBoundToCharacter"/> alone, which is also used by non-quest items.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddIsQuestItemFlagPlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddIsQuestItemFlagPlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("9374E428-CF5C-44B1-AAB9-0369C77AF7C6")]
 public class AddIsQuestItemFlagPlugIn : UpdatePlugInBase
 {

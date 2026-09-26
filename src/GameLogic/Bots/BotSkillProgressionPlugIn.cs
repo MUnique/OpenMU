@@ -23,7 +23,7 @@ using MUnique.OpenMU.PlugIns;
 /// same requirements the game enforces for human players.
 /// </summary>
 [PlugIn]
-[Display(Name = "Bot skill progression", Description = "Invests level-up stat points and teaches server-side bots new class- and level-appropriate skills as they level up.")]
+[Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BotSkillProgressionPlugIn_Display1_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BotSkillProgressionPlugIn_Display1_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
 [Guid("D1F4A7C2-6B3E-4A59-8E71-9C0D2F5B6A84")]
 public class BotSkillProgressionPlugIn : ICharacterLevelUpPlugIn
 {

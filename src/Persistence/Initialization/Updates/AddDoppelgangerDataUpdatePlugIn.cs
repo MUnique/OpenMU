@@ -23,7 +23,7 @@ using MUnique.OpenMU.PlugIns;
 /// warped out of the event.
 /// </remarks>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddDoppelgangerDataUpdatePlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddDoppelgangerDataUpdatePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("8E4D2B17-6A3F-4C95-9D02-B7E15A6C3F48")]
 public class AddDoppelgangerDataUpdatePlugIn : UpdatePlugInBase
 {

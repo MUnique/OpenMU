@@ -28,7 +28,7 @@
                     <option value="" selected="@(this.ChatCommandController.StatusFilter is null)">@Resources.All</option>
                     @foreach (var status in new[] { CharacterStatus.Normal, CharacterStatus.GameMaster })
                     {
-                        <option value="@status" selected="@(this.ChatCommandController.StatusFilter == status)">@status</option>
+                        <option value="@status" selected="@(this.ChatCommandController.StatusFilter == status)">@MUnique.OpenMU.DataModel.ModelResourceProvider.GetEnumCaption(typeof(CharacterStatus), status)</option>
                     }
                 </select>
             </th>
@@ -76,7 +76,7 @@
                     <div class="text-muted">@Resources.NoParameters</div>
                 }
             </td>
-            <td>@item.Info.MinimumCharacterStatus</td>
+            <td>@MUnique.OpenMU.DataModel.ModelResourceProvider.GetEnumCaption(typeof(CharacterStatus), item.Info.MinimumCharacterStatus)</td>
             <td class="text-nowrap">
                 @if (item.IsActive)
                 {

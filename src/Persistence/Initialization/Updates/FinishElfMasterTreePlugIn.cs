@@ -19,7 +19,7 @@ using MUnique.OpenMU.PlugIns;
 /// This update completes the elf master tree and fixes some of its skill values. It also adds the missing extra projectile (4th) on some higher level (cross)bows.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FinishElfMasterTreePlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FinishElfMasterTreePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("D1E2F3A4-B5C6-7D8E-9F0A-1B2C3D4E5F6A")]
 public class FinishElfMasterTreePlugIn : UpdatePlugInBase
 {
