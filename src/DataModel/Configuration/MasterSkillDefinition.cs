@@ -92,6 +92,6 @@ public partial class MasterSkillDefinition
     /// <inheritdoc />
     public override string ToString()
     {
-        return "Master Skill Definition";
+        return typeof(MasterSkillDefinition).GetTypeCaption();
     }
 }

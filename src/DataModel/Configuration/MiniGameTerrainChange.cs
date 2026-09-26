@@ -50,6 +50,14 @@ public partial class MiniGameTerrainChange
     /// <inheritdoc />
     public override string ToString()
     {
-        return $"{(this.SetTerrainAttribute ? "Set" : "Remove")} Attribute '{this.TerrainAttribute}' from ({this.StartX}, {this.StartY}) to ({this.EndX}, {this.EndY}) {(this.IsClientUpdateRequired ? "with" : "without")} client update";
+        return string.Format(
+            MUnique.OpenMU.DataModel.Properties.Resources.TerrainChangeSummary,
+            this.SetTerrainAttribute ? MUnique.OpenMU.DataModel.Properties.Resources.TerrainSet : MUnique.OpenMU.DataModel.Properties.Resources.TerrainRemove,
+            ModelResourceProvider.GetEnumCaption(this.TerrainAttribute.GetType(), this.TerrainAttribute),
+            this.StartX,
+            this.StartY,
+            this.EndX,
+            this.EndY,
+            this.IsClientUpdateRequired ? MUnique.OpenMU.DataModel.Properties.Resources.TerrainWithClientUpdate : MUnique.OpenMU.DataModel.Properties.Resources.TerrainWithoutClientUpdate);
     }
 }

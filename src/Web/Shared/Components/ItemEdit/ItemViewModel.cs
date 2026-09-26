@@ -59,6 +59,7 @@ public class ItemViewModel : INotifyPropertyChanged
     /// <summary>
     /// Gets or sets the item slot.
     /// </summary>
+    [System.ComponentModel.DataAnnotations.Display(Name = nameof(MUnique.OpenMU.Web.Shared.Properties.Resources.ItemEdit_ItemSlot), ResourceType = typeof(MUnique.OpenMU.Web.Shared.Properties.Resources))]
     public byte ItemSlot
     {
         get => this.Item.ItemSlot;
@@ -77,6 +78,7 @@ public class ItemViewModel : INotifyPropertyChanged
     /// <summary>
     /// Gets or sets the definition.
     /// </summary>
+    [System.ComponentModel.DataAnnotations.Display(Name = nameof(MUnique.OpenMU.Web.Shared.Properties.Resources.ItemEdit_Definition), ResourceType = typeof(MUnique.OpenMU.Web.Shared.Properties.Resources))]
     public ItemDefinition? Definition
     {
         get => this.Item.Definition;
@@ -96,6 +98,7 @@ public class ItemViewModel : INotifyPropertyChanged
     /// <summary>
     /// Gets or sets the level.
     /// </summary>
+    [System.ComponentModel.DataAnnotations.Display(Name = nameof(MUnique.OpenMU.Web.Shared.Properties.Resources.ItemEdit_Level), ResourceType = typeof(MUnique.OpenMU.Web.Shared.Properties.Resources))]
     public byte Level
     {
         get => this.Item.Level;
@@ -119,6 +122,7 @@ public class ItemViewModel : INotifyPropertyChanged
     /// <summary>
     /// Gets or sets the amount for items which are not wearable.
     /// </summary>
+    [System.ComponentModel.DataAnnotations.Display(Name = nameof(MUnique.OpenMU.Web.Shared.Properties.Resources.ItemEdit_Amount), ResourceType = typeof(MUnique.OpenMU.Web.Shared.Properties.Resources))]
     public byte Amount
     {
         get => (byte)this.Durability;
@@ -128,6 +132,7 @@ public class ItemViewModel : INotifyPropertyChanged
     /// <summary>
     /// Gets or sets the durability.
     /// </summary>
+    [System.ComponentModel.DataAnnotations.Display(Name = nameof(MUnique.OpenMU.Web.Shared.Properties.Resources.ItemEdit_Durability), ResourceType = typeof(MUnique.OpenMU.Web.Shared.Properties.Resources))]
     public double Durability
     {
         get => this.Item.Durability;
@@ -148,6 +153,7 @@ public class ItemViewModel : INotifyPropertyChanged
     /// <summary>
     /// Gets or sets a value indicating whether this item has skill.
     /// </summary>
+    [System.ComponentModel.DataAnnotations.Display(Name = nameof(MUnique.OpenMU.Web.Shared.Properties.Resources.ItemEdit_HasSkill), ResourceType = typeof(MUnique.OpenMU.Web.Shared.Properties.Resources))]
     public bool HasSkill
     {
         get => this.Item.HasSkill;
@@ -166,6 +172,7 @@ public class ItemViewModel : INotifyPropertyChanged
     /// <summary>
     /// Gets or sets a value indicating whether this item has luck.
     /// </summary>
+    [System.ComponentModel.DataAnnotations.Display(Name = nameof(MUnique.OpenMU.Web.Shared.Properties.Resources.ItemEdit_HasLuck), ResourceType = typeof(MUnique.OpenMU.Web.Shared.Properties.Resources))]
     public bool HasLuck
     {
         get => this.Item.ItemOptions.Any(io => io.ItemOption?.OptionType == ItemOptionTypes.Luck);
@@ -202,6 +209,7 @@ public class ItemViewModel : INotifyPropertyChanged
     /// <summary>
     /// Gets or sets a value indicating whether this item has guardian option.
     /// </summary>
+    [System.ComponentModel.DataAnnotations.Display(Name = nameof(MUnique.OpenMU.Web.Shared.Properties.Resources.ItemEdit_HasGuardianOption), ResourceType = typeof(MUnique.OpenMU.Web.Shared.Properties.Resources))]
     public bool HasGuardianOption
     {
         get => this.Item.ItemOptions.Any(io => io.ItemOption?.OptionType == ItemOptionTypes.GuardianOption);
@@ -253,6 +261,7 @@ public class ItemViewModel : INotifyPropertyChanged
     /// <summary>
     /// Gets or sets the normal option, if assigned.
     /// </summary>
+    [System.ComponentModel.DataAnnotations.Display(Name = nameof(MUnique.OpenMU.Web.Shared.Properties.Resources.ItemEdit_NormalOption), ResourceType = typeof(MUnique.OpenMU.Web.Shared.Properties.Resources))]
     public IncreasableItemOption? NormalOption
     {
         get => this.NormalOptionLink?.ItemOption;
@@ -293,6 +302,7 @@ public class ItemViewModel : INotifyPropertyChanged
     /// <summary>
     /// Gets or sets the normal option, if assigned.
     /// </summary>
+    [System.ComponentModel.DataAnnotations.Display(Name = nameof(MUnique.OpenMU.Web.Shared.Properties.Resources.ItemEdit_HarmonyOption), ResourceType = typeof(MUnique.OpenMU.Web.Shared.Properties.Resources))]
     public IncreasableItemOption? HarmonyOption
     {
         get => this.HarmonyOptionLink?.ItemOption;
@@ -329,6 +339,7 @@ public class ItemViewModel : INotifyPropertyChanged
     /// <summary>
     /// Gets or sets the socket bonus option.
     /// </summary>
+    [System.ComponentModel.DataAnnotations.Display(Name = nameof(MUnique.OpenMU.Web.Shared.Properties.Resources.ItemEdit_SocketBonusOption), ResourceType = typeof(MUnique.OpenMU.Web.Shared.Properties.Resources))]
     public IncreasableItemOption? SocketBonusOption
     {
         get => this.SocketBonusOptionLink?.ItemOption;
@@ -364,6 +375,7 @@ public class ItemViewModel : INotifyPropertyChanged
     /// <summary>
     /// Gets or sets the fenrir option.
     /// </summary>
+    [System.ComponentModel.DataAnnotations.Display(Name = nameof(MUnique.OpenMU.Web.Shared.Properties.Resources.ItemEdit_FenrirOption), ResourceType = typeof(MUnique.OpenMU.Web.Shared.Properties.Resources))]
     public ItemOptionType? FenrirOption
     {
         get => this.FenrirOptionLinks.FirstOrDefault()?.ItemOption?.OptionType;
@@ -393,6 +405,7 @@ public class ItemViewModel : INotifyPropertyChanged
     /// Gets or sets a value indicating whether this item has a "normal" option.
     /// It comes to action when there is just one possible option.
     /// </summary>
+    [System.ComponentModel.DataAnnotations.Display(Name = nameof(MUnique.OpenMU.Web.Shared.Properties.Resources.ItemEdit_HasOption), ResourceType = typeof(MUnique.OpenMU.Web.Shared.Properties.Resources))]
     public bool HasOption
     {
         get => this.NormalOption is { };
@@ -412,6 +425,7 @@ public class ItemViewModel : INotifyPropertyChanged
     /// <summary>
     /// Gets or sets the socket count.
     /// </summary>
+    [System.ComponentModel.DataAnnotations.Display(Name = nameof(MUnique.OpenMU.Web.Shared.Properties.Resources.ItemEdit_SocketCount), ResourceType = typeof(MUnique.OpenMU.Web.Shared.Properties.Resources))]
     public int SocketCount
     {
         get => this.Item.SocketCount;
@@ -455,6 +469,7 @@ public class ItemViewModel : INotifyPropertyChanged
     /// <summary>
     /// Gets or sets the pet experience.
     /// </summary>
+    [System.ComponentModel.DataAnnotations.Display(Name = nameof(MUnique.OpenMU.Web.Shared.Properties.Resources.ItemEdit_PetExperience), ResourceType = typeof(MUnique.OpenMU.Web.Shared.Properties.Resources))]
     public int PetExperience
     {
         get => this.Item.PetExperience;
@@ -473,16 +488,19 @@ public class ItemViewModel : INotifyPropertyChanged
     /// <summary>
     /// Gets or sets the excellent options.
     /// </summary>
+    [System.ComponentModel.DataAnnotations.Display(Name = nameof(MUnique.OpenMU.Web.Shared.Properties.Resources.ItemEdit_ExcellentOptions), ResourceType = typeof(MUnique.OpenMU.Web.Shared.Properties.Resources))]
     public IList<IncreasableItemOption> ExcellentOptions { get; set; }
 
     /// <summary>
     /// Gets or sets the wing options.
     /// </summary>
+    [System.ComponentModel.DataAnnotations.Display(Name = nameof(MUnique.OpenMU.Web.Shared.Properties.Resources.ItemEdit_WingOptions), ResourceType = typeof(MUnique.OpenMU.Web.Shared.Properties.Resources))]
     public IList<IncreasableItemOption> WingOptions { get; set; }
 
     /// <summary>
     /// Gets or sets the ancient set.
     /// </summary>
+    [System.ComponentModel.DataAnnotations.Display(Name = nameof(MUnique.OpenMU.Web.Shared.Properties.Resources.ItemEdit_AncientSet), ResourceType = typeof(MUnique.OpenMU.Web.Shared.Properties.Resources))]
     public ItemSetGroup? AncientSet
     {
         get => this.ItemSetGroups.FirstOrDefault(io => io.AncientSetDiscriminator > 0)?.ItemSetGroup;

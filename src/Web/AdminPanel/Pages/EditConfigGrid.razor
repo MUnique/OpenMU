@@ -20,7 +20,7 @@
 
 <div>
     <QuickGrid Items="@this.ViewModels" Pagination="@_pagination" Theme="none" >
-        <PropertyColumn Property="@(c => c.Name)" Sortable="true">
+        <PropertyColumn Title="@Resources.ConfigurationEntryName" Property="@(c => c.Name)" Sortable="true">
             <HeaderTemplate>
                 <button type="button" class="col-title" onclick="@(() => context.Grid.SortByColumnAsync(context))">
                     <div class="col-title-text">@context.Title</div>
@@ -45,7 +45,7 @@
         </TemplateColumn>
     </QuickGrid>
 </div>
-<Paginator State="@_pagination" />
+<LocalizedPaginator State="@_pagination" />
 <div class="add-new-bar">
     <hr />
     <button type="button" class="btn btn-primary" @onclick="OnCreateButtonClickAsync"><span class="oi oi-plus"></span> @Resources.AddNew</button>

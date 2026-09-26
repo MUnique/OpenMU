@@ -30,6 +30,6 @@ public partial class CombinationBonusRequirement
     /// <inheritdoc />
     public override string ToString()
     {
-        return $"{this.OptionType}: SubOption Type {this.SubOptionType}, Min. Count {this.MinimumCount}";
+        return string.Format(MUnique.OpenMU.DataModel.Properties.Resources.OptionRequirementSummary, this.OptionType, this.SubOptionType, this.MinimumCount);
     }
 }

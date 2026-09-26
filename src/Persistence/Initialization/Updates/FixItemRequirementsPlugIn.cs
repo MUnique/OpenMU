@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// Updates some item requirements for elf bows that were initialized wrongly.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixItemRequirementsPlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixItemRequirementsPlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("9E8DB2CB-1972-40D3-9129-6964ABFEB4DC")]
 public class FixItemRequirementsPlugIn : UpdatePlugInBase
 {

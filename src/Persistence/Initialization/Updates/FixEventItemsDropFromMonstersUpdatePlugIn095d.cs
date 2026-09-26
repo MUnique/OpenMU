@@ -12,7 +12,7 @@ using MUnique.OpenMU.PlugIns;
 /// but should use dedicated DropItemGroups instead.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixEventItemsDropFromMonstersUpdatePlugIn095d_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixEventItemsDropFromMonstersUpdatePlugIn095d_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("B9C6D3E2-4F5A-6B7C-8D9E-0F1A2B3C4D5E")]
 public class FixEventItemsDropFromMonstersUpdatePlugIn095d : FixEventItemsDropFromMonstersUpdatePlugInBase
 {

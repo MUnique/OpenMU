@@ -2481,4 +2481,6 @@
   <data name="CastleSiegeLifeStoneStatePlugIn_Description" xml:space="preserve">
     <value>Sends Castle Siege Life Stone creation progress to the game client.</value>
   </data>
+  <data name="EnterMarketPlace_Name" xml:space="preserve"><value>Enter Market Place Handler</value></data>
+  <data name="EnterMarketPlace_Description" xml:space="preserve"><value>Handler which warps a player between Lorencia and the Loren Market when using the 'Warp' button of Market Union Member Julia.</value></data>
 </root>

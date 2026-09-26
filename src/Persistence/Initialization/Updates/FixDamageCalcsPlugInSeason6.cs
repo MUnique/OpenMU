@@ -19,7 +19,7 @@ using MUnique.OpenMU.PlugIns;
 /// This update fixes character stats, skills, magic effects, items, and options related to damage. It also adds the Berserker magic effect.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixDamageCalcsPlugInBase_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixDamageCalcsPlugInBase_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("077BA63D-F201-41BE-8A65-CFB859482A1B")]
 public class FixDamageCalcsPlugInSeason6 : FixDamageCalcsPlugInBase
 {

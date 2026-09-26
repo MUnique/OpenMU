@@ -11,7 +11,7 @@ using MUnique.OpenMU.PlugIns;
 /// This update adds the random experience config attributes for season 6.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddRandomExperienceConfigAttributesPlugInBase_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddRandomExperienceConfigAttributesPlugInBase_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("D1DC70A2-2614-4CC0-81C0-6C8253781019")]
 public class AddRandomExperienceConfigAttributesPlugInSeason6 : AddRandomExperienceConfigAttributesPlugInBase
 {

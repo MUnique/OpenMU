@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// This update sets the right settings for the chain lightning skill.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.ChainLightningUpdatePlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.ChainLightningUpdatePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("039D09CB-283C-4CBD-ABBC-FFD3F7D5C62F")]
 public class ChainLightningUpdatePlugIn : UpdatePlugInBase
 {

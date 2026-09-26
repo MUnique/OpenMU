@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 /// This update completes the summoner master tree and fixes some of its skill values.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FinishSummonerMasterTreePlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FinishSummonerMasterTreePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("4A1F9B2C-3D6E-4F70-A8B9-1C2D3E4F5A6B")]
 public class FinishSummonerMasterTreePlugIn : UpdatePlugInBase
 {

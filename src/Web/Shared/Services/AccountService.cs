@@ -130,7 +130,7 @@ public class AccountService : IDataService<Account>, ISupportDataChangedNotifica
             DisableBackgroundCancel = true,
         };
 
-        var modal = this._modalService.Show<ModalCreateNew<AccountCreationParameters>>($"Create {nameof(Account)}", parameters, options);
+        var modal = this._modalService.Show<ModalCreateNew<AccountCreationParameters>>(string.Format(MUnique.OpenMU.Web.Shared.Properties.Resources.CreateType, MUnique.OpenMU.DataModel.ModelResourceProvider.GetTypeCaption<Account>()), parameters, options);
         var result = await modal.Result.ConfigureAwait(false);
         if (!result.Cancelled)
         {

@@ -3464,5 +3464,293 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("CastleSiegeErrorUnexpected", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Server ID.
+        /// </summary>
+        public static string CreateGameServer_ServerId {
+            get {
+                return ResourceManager.GetString("CreateGameServer_ServerId", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Description.
+        /// </summary>
+        public static string CreateGameServer_Description {
+            get {
+                return ResourceManager.GetString("CreateGameServer_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Experience Rate.
+        /// </summary>
+        public static string CreateGameServer_ExperienceRate {
+            get {
+                return ResourceManager.GetString("CreateGameServer_ExperienceRate", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Enable PvP.
+        /// </summary>
+        public static string CreateGameServer_PvpEnabled {
+            get {
+                return ResourceManager.GetString("CreateGameServer_PvpEnabled", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Server Configuration.
+        /// </summary>
+        public static string CreateGameServer_ServerConfiguration {
+            get {
+                return ResourceManager.GetString("CreateGameServer_ServerConfiguration", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Client.
+        /// </summary>
+        public static string CreateGameServer_Client {
+            get {
+                return ResourceManager.GetString("CreateGameServer_Client", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Listening Port.
+        /// </summary>
+        public static string CreateGameServer_NetworkPort {
+            get {
+                return ResourceManager.GetString("CreateGameServer_NetworkPort", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Server ID.
+        /// </summary>
+        public static string CreateConnectServer_ServerId {
+            get {
+                return ResourceManager.GetString("CreateConnectServer_ServerId", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Description.
+        /// </summary>
+        public static string CreateConnectServer_Description {
+            get {
+                return ResourceManager.GetString("CreateConnectServer_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Client.
+        /// </summary>
+        public static string CreateConnectServer_Client {
+            get {
+                return ResourceManager.GetString("CreateConnectServer_Client", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Listening Port.
+        /// </summary>
+        public static string CreateConnectServer_NetworkPort {
+            get {
+                return ResourceManager.GetString("CreateConnectServer_NetworkPort", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Not Found.
+        /// </summary>
+        public static string PageNotFound {
+            get {
+                return ResourceManager.GetString("PageNotFound", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Sorry, the content you are looking for does not exist..
+        /// </summary>
+        public static string PageNotFoundDescription {
+            get {
+                return ResourceManager.GetString("PageNotFoundDescription", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Party of {0}: {1} members.
+        /// </summary>
+        public static string PartySummary {
+            get {
+                return ResourceManager.GetString("PartySummary", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Deleted '{0}' successfully..
+        /// </summary>
+        public static string DeletedSuccessfully {
+            get {
+                return ResourceManager.GetString("DeletedSuccessfully", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Type '{0}' must have a Clone method that takes '{1}' and returns '{0}'..
+        /// </summary>
+        public static string InvalidCloneMethod {
+            get {
+                return ResourceManager.GetString("InvalidCloneMethod", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        public static string ConfigurationEntryName {
+            get {
+                return ResourceManager.GetString("ConfigurationEntryName", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Error reading log file: {0}.
+        /// </summary>
+        public static string LogReadError {
+            get {
+                return ResourceManager.GetString("LogReadError", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Could not save the new entry: {0}.
+        /// </summary>
+        public static string CouldNotSaveEntry {
+            get {
+                return ResourceManager.GetString("CouldNotSaveEntry", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Confirm deletion.
+        /// </summary>
+        public static string ConfirmDelete {
+            get {
+                return ResourceManager.GetString("ConfirmDelete", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to You are about to delete '{0}'. Are you sure?.
+        /// </summary>
+        public static string ConfirmDeleteEntry {
+            get {
+                return ResourceManager.GetString("ConfirmDeleteEntry", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Create {0}.
+        /// </summary>
+        public static string CreateEntry {
+            get {
+                return ResourceManager.GetString("CreateEntry", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Duplicate '{0}'.
+        /// </summary>
+        public static string DuplicateEntry {
+            get {
+                return ResourceManager.GetString("DuplicateEntry", resourceCulture);
+            }
+        }
+        /// <summary>
+        ///   Looks up a localized string similar to Rejoining the server....
+        /// </summary>
+        public static string ReconnectJoining {
+            get {
+                return ResourceManager.GetString("ReconnectJoining", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Rejoin failed... trying again in .
+        /// </summary>
+        public static string ReconnectRetryBefore {
+            get {
+                return ResourceManager.GetString("ReconnectRetryBefore", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to  seconds..
+        /// </summary>
+        public static string ReconnectRetryAfter {
+            get {
+                return ResourceManager.GetString("ReconnectRetryAfter", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to rejoin. Please retry or reload the page..
+        /// </summary>
+        public static string ReconnectFailed {
+            get {
+                return ResourceManager.GetString("ReconnectFailed", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Retry.
+        /// </summary>
+        public static string ReconnectRetry {
+            get {
+                return ResourceManager.GetString("ReconnectRetry", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The session has been paused by the server..
+        /// </summary>
+        public static string ReconnectPaused {
+            get {
+                return ResourceManager.GetString("ReconnectPaused", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Resume.
+        /// </summary>
+        public static string ReconnectResume {
+            get {
+                return ResourceManager.GetString("ReconnectResume", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to resume the session. Please reload the page..
+        /// </summary>
+        public static string ReconnectResumeFailed {
+            get {
+                return ResourceManager.GetString("ReconnectResumeFailed", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets the localized RoleAdministrator text.</summary>
+        public static string RoleAdministrator => ResourceManager.GetString("RoleAdministrator", resourceCulture)!;
+
+        /// <summary>Gets the localized RoleOperator text.</summary>
+        public static string RoleOperator => ResourceManager.GetString("RoleOperator", resourceCulture)!;
+
+        /// <summary>Gets the localized RoleViewer text.</summary>
+        public static string RoleViewer => ResourceManager.GetString("RoleViewer", resourceCulture)!;
+
     }
 }

@@ -50,6 +50,6 @@ public partial class CastleSiegeNpcDefinition
     /// <inheritdoc />
     public override string ToString()
     {
-        return $"{this.MonsterDefinition} #{this.InstanceId} at ({this.SpawnX},{this.SpawnY})";
+        return string.Format(MUnique.OpenMU.DataModel.Properties.Resources.CastleNpcSummary, this.MonsterDefinition, this.InstanceId, this.SpawnX, this.SpawnY);
     }
 }

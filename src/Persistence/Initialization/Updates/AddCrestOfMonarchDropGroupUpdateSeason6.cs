@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// This update adds the Crest of Monarch drop item group for the Icarus map.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddCrestOfMonarchDropGroupUpdateSeason6_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddCrestOfMonarchDropGroupUpdateSeason6_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("FF14A478-3EA8-4C41-A298-8E6698D5973D")]
 public class AddCrestOfMonarchDropGroupUpdateSeason6 : UpdatePlugInBase
 {

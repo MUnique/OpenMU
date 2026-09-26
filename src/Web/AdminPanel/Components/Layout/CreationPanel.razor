@@ -61,7 +61,7 @@
         }
         catch (Exception ex)
         {
-            this.ToastService.ShowError($"Could not save the new entry: {ex.Message}");
+            this.ToastService.ShowError(string.Format(Resources.CouldNotSaveEntry, ex.Message));
         }
     }
 

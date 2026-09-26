@@ -12,7 +12,7 @@ using MUnique.OpenMU.PlugIns;
 /// This plugin enables the start of the devil square.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(DevilSquareStartPlugIn), Description = "Devil Square event")]
+[Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.DevilSquareStartPlugIn_Display1_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.DevilSquareStartPlugIn_Display1_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
 [Guid("61C61A58-211E-4D6A-9EA1-D25E0C4A47C5")]
 public sealed class DevilSquareStartPlugIn : MiniGameStartBasePlugIn<DevilSquareStartConfiguration, DevilSquareGameServerState>
 {

@@ -11,7 +11,7 @@ using MUnique.OpenMU.PlugIns;
 /// This plugin transforms a stack of symbol of kundun into a lost map.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(SymbolOfKundunStackedPlugIn), Description = "This plugin transforms a stack of symbol of kundun into a lost map.")]
+[Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.SymbolOfKundunStackedPlugIn_Display1_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.SymbolOfKundunStackedPlugIn_Display1_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
 [Guid("F07A9CED-F43E-4824-9587-F5C3C3187A13")]
 public sealed class SymbolOfKundunStackedPlugIn : IItemStackedPlugIn
 {

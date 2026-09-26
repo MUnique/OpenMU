@@ -12,7 +12,7 @@ using MUnique.OpenMU.PlugIns;
 /// This plugin enables the start of the blood castle.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(BloodCastleStartPlugIn), Description = "Blood Castle event")]
+[Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BloodCastleStartPlugIn_Display1_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BloodCastleStartPlugIn_Display1_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
 [Guid("95E68C14-AD87-4B3C-AF46-45B8F1C3BC2A")]
 public sealed class BloodCastleStartPlugIn : MiniGameStartBasePlugIn<BloodCastleStartConfiguration, BloodCastleGameServerState>
 {

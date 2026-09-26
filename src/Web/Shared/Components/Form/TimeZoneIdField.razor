@@ -54,7 +54,7 @@
         catch (Exception ex) when (ex is TimeZoneNotFoundException or InvalidTimeZoneException)
         {
             result = value;
-            validationErrorMessage = $"Unknown time zone id '{trimmed}'. Leave empty for UTC or pick a suggestion, e.g. Europe/Warsaw.";
+            validationErrorMessage = string.Format(Resources.UnknownTimeZone, trimmed);
             return false;
         }
     }

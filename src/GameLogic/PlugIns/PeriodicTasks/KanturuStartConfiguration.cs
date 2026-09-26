@@ -37,5 +37,6 @@ public class KanturuStartConfiguration : MiniGameStartConfiguration
     /// game configuration is known. The <see cref="MiniGames.Kanturu.KanturuContext"/> falls
     /// back to <see cref="KanturuEventDefinition.CreateDefault"/> in that case.
     /// </remarks>
+    [System.ComponentModel.DataAnnotations.Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.KanturuStartConfiguration_EventDefinition_Caption), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
     public KanturuEventDefinition? EventDefinition { get; set; }
 }

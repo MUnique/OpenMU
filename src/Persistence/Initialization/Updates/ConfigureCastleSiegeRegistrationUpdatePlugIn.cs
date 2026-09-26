@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// Configures Sign of Lord registration for an existing Season 6 Castle Siege configuration.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.ConfigureCastleSiegeRegistrationUpdatePlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.ConfigureCastleSiegeRegistrationUpdatePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("D91757B1-0C3D-4336-8DEC-20438EDA7F09")]
 public class ConfigureCastleSiegeRegistrationUpdatePlugIn : UpdatePlugInBase
 {

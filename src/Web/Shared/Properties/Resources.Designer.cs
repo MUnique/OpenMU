@@ -434,5 +434,548 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
                 return ResourceManager.GetString("No", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Create.
+        /// </summary>
+        public static string Create {
+            get {
+                return ResourceManager.GetString("Create", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Edit.
+        /// </summary>
+        public static string Edit {
+            get {
+                return ResourceManager.GetString("Edit", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Add.
+        /// </summary>
+        public static string Add {
+            get {
+                return ResourceManager.GetString("Add", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Delete.
+        /// </summary>
+        public static string Delete {
+            get {
+                return ResourceManager.GetString("Delete", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Change.
+        /// </summary>
+        public static string Change {
+            get {
+                return ResourceManager.GetString("Change", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to OK.
+        /// </summary>
+        public static string OK {
+            get {
+                return ResourceManager.GetString("OK", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Close.
+        /// </summary>
+        public static string Close {
+            get {
+                return ResourceManager.GetString("Close", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Collapse.
+        /// </summary>
+        public static string Collapse {
+            get {
+                return ResourceManager.GetString("Collapse", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Expand ({0} Items).
+        /// </summary>
+        public static string ExpandItems {
+            get {
+                return ResourceManager.GetString("ExpandItems", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Previous.
+        /// </summary>
+        public static string Previous {
+            get {
+                return ResourceManager.GetString("Previous", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Next.
+        /// </summary>
+        public static string Next {
+            get {
+                return ResourceManager.GetString("Next", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Navigation.
+        /// </summary>
+        public static string Navigation {
+            get {
+                return ResourceManager.GetString("Navigation", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Breadcrumb.
+        /// </summary>
+        public static string Breadcrumb {
+            get {
+                return ResourceManager.GetString("Breadcrumb", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Home.
+        /// </summary>
+        public static string Home {
+            get {
+                return ResourceManager.GetString("Home", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Page {0}.
+        /// </summary>
+        public static string PageNumber {
+            get {
+                return ResourceManager.GetString("PageNumber", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Download.
+        /// </summary>
+        public static string Download {
+            get {
+                return ResourceManager.GetString("Download", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Load file.
+        /// </summary>
+        public static string LoadFile {
+            get {
+                return ResourceManager.GetString("LoadFile", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Current size: {0} bytes.
+        /// </summary>
+        public static string CurrentByteSize {
+            get {
+                return ResourceManager.GetString("CurrentByteSize", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to It is currently empty. Either type in the value as a hex string or upload a file..
+        /// </summary>
+        public static string EmptyBinaryValue {
+            get {
+                return ResourceManager.GetString("EmptyBinaryValue", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to New password ....
+        /// </summary>
+        public static string NewPasswordPlaceholder {
+            get {
+                return ResourceManager.GetString("NewPasswordPlaceholder", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Repeat password ....
+        /// </summary>
+        public static string RepeatPasswordPlaceholder {
+            get {
+                return ResourceManager.GetString("RepeatPasswordPlaceholder", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Enter at least 3 characters..
+        /// </summary>
+        public static string PasswordMinimumLength {
+            get {
+                return ResourceManager.GetString("PasswordMinimumLength", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The passwords don't match..
+        /// </summary>
+        public static string PasswordsDoNotMatch {
+            get {
+                return ResourceManager.GetString("PasswordsDoNotMatch", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Extension {0}.
+        /// </summary>
+        public static string ExtensionNumber {
+            get {
+                return ResourceManager.GetString("ExtensionNumber", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Personal Store.
+        /// </summary>
+        public static string PersonalStore {
+            get {
+                return ResourceManager.GetString("PersonalStore", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Select {0}.
+        /// </summary>
+        public static string SelectType {
+            get {
+                return ResourceManager.GetString("SelectType", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Create {0}.
+        /// </summary>
+        public static string CreateType {
+            get {
+                return ResourceManager.GetString("CreateType", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to No more available.
+        /// </summary>
+        public static string NoMoreAvailable {
+            get {
+                return ResourceManager.GetString("NoMoreAvailable", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Add ....
+        /// </summary>
+        public static string AddPlaceholder {
+            get {
+                return ResourceManager.GetString("AddPlaceholder", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Object.
+        /// </summary>
+        public static string Object {
+            get {
+                return ResourceManager.GetString("Object", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Exit gate selector.
+        /// </summary>
+        public static string ExitGateSelector {
+            get {
+                return ResourceManager.GetString("ExitGateSelector", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The {0} field must be a number between {1} and {2}..
+        /// </summary>
+        public static string NumberRangeError {
+            get {
+                return ResourceManager.GetString("NumberRangeError", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The {0} field is not valid..
+        /// </summary>
+        public static string InvalidField {
+            get {
+                return ResourceManager.GetString("InvalidField", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to +{0} {1} (Level {2}).
+        /// </summary>
+        public static string ItemBonusAtLevel {
+            get {
+                return ResourceManager.GetString("ItemBonusAtLevel", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Item Slot.
+        /// </summary>
+        public static string ItemEdit_ItemSlot {
+            get {
+                return ResourceManager.GetString("ItemEdit_ItemSlot", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Definition.
+        /// </summary>
+        public static string ItemEdit_Definition {
+            get {
+                return ResourceManager.GetString("ItemEdit_Definition", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Level.
+        /// </summary>
+        public static string ItemEdit_Level {
+            get {
+                return ResourceManager.GetString("ItemEdit_Level", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Durability.
+        /// </summary>
+        public static string ItemEdit_Durability {
+            get {
+                return ResourceManager.GetString("ItemEdit_Durability", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Amount.
+        /// </summary>
+        public static string ItemEdit_Amount {
+            get {
+                return ResourceManager.GetString("ItemEdit_Amount", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Pet Experience.
+        /// </summary>
+        public static string ItemEdit_PetExperience {
+            get {
+                return ResourceManager.GetString("ItemEdit_PetExperience", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Has Skill.
+        /// </summary>
+        public static string ItemEdit_HasSkill {
+            get {
+                return ResourceManager.GetString("ItemEdit_HasSkill", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Has Luck.
+        /// </summary>
+        public static string ItemEdit_HasLuck {
+            get {
+                return ResourceManager.GetString("ItemEdit_HasLuck", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Ancient Set.
+        /// </summary>
+        public static string ItemEdit_AncientSet {
+            get {
+                return ResourceManager.GetString("ItemEdit_AncientSet", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Excellent Options.
+        /// </summary>
+        public static string ItemEdit_ExcellentOptions {
+            get {
+                return ResourceManager.GetString("ItemEdit_ExcellentOptions", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Wing Options.
+        /// </summary>
+        public static string ItemEdit_WingOptions {
+            get {
+                return ResourceManager.GetString("ItemEdit_WingOptions", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Additional Option.
+        /// </summary>
+        public static string ItemEdit_NormalOption {
+            get {
+                return ResourceManager.GetString("ItemEdit_NormalOption", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Has Additional Option.
+        /// </summary>
+        public static string ItemEdit_HasOption {
+            get {
+                return ResourceManager.GetString("ItemEdit_HasOption", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Harmony Option.
+        /// </summary>
+        public static string ItemEdit_HarmonyOption {
+            get {
+                return ResourceManager.GetString("ItemEdit_HarmonyOption", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Socket Count.
+        /// </summary>
+        public static string ItemEdit_SocketCount {
+            get {
+                return ResourceManager.GetString("ItemEdit_SocketCount", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Socket Bonus Option.
+        /// </summary>
+        public static string ItemEdit_SocketBonusOption {
+            get {
+                return ResourceManager.GetString("ItemEdit_SocketBonusOption", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Fenrir Option.
+        /// </summary>
+        public static string ItemEdit_FenrirOption {
+            get {
+                return ResourceManager.GetString("ItemEdit_FenrirOption", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Has Guardian Option.
+        /// </summary>
+        public static string ItemEdit_HasGuardianOption {
+            get {
+                return ResourceManager.GetString("ItemEdit_HasGuardianOption", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Wrong format..
+        /// </summary>
+        public static string WrongFormat {
+            get {
+                return ResourceManager.GetString("WrongFormat", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Wrong format. Expected example: AB 03 DC.
+        /// </summary>
+        public static string HexFormatError {
+            get {
+                return ResourceManager.GetString("HexFormatError", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Wrong format. Expected example: 1;2;3.
+        /// </summary>
+        public static string IntegerListFormatError {
+            get {
+                return ResourceManager.GetString("IntegerListFormatError", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Unknown time zone id '{0}'. Leave empty for UTC or pick a suggestion, e.g. Europe/Warsaw..
+        /// </summary>
+        public static string UnknownTimeZone {
+            get {
+                return ResourceManager.GetString("UnknownTimeZone", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to {0} in milliseconds.
+        /// </summary>
+        public static string MillisecondsHint {
+            get {
+                return ResourceManager.GetString("MillisecondsHint", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Loaded {0} with {1} bytes..
+        /// </summary>
+        public static string FileLoaded {
+            get {
+                return ResourceManager.GetString("FileLoaded", resourceCulture);
+            }
+        }
+        /// <summary>Gets the localized PaginationItems text.</summary>
+        public static string PaginationItems => ResourceManager.GetString("PaginationItems", resourceCulture)!;
+
+        /// <summary>Gets the localized PaginationPage text.</summary>
+        public static string PaginationPage => ResourceManager.GetString("PaginationPage", resourceCulture)!;
+
+        /// <summary>Gets the localized FirstPage text.</summary>
+        public static string FirstPage => ResourceManager.GetString("FirstPage", resourceCulture)!;
+
+        /// <summary>Gets the localized LastPage text.</summary>
+        public static string LastPage => ResourceManager.GetString("LastPage", resourceCulture)!;
+
+        /// <summary>Gets the localized InvalidNumber text.</summary>
+        public static string InvalidNumber => ResourceManager.GetString("InvalidNumber", resourceCulture)!;
+
+        /// <summary>Gets the localized MonsterLabel text.</summary>
+        public static string MonsterLabel => ResourceManager.GetString("MonsterLabel", resourceCulture)!;
+
+        /// <summary>Gets the localized MapsLabel text.</summary>
+        public static string MapsLabel => ResourceManager.GetString("MapsLabel", resourceCulture)!;
+
     }
 }

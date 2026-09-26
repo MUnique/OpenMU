@@ -18,7 +18,7 @@ public abstract class InputByteBase<TByte> : InputBase<TByte>
     /// Gets or sets the error message used when displaying an a parsing error.
     /// </summary>
     [Parameter]
-    public string ParsingErrorMessage { get; set; } = "The {0} field must be a number between 0 and 255.";
+    public string ParsingErrorMessage { get; set; } = string.Format(MUnique.OpenMU.Web.Shared.Properties.Resources.NumberRangeError, "{0}", byte.MinValue, byte.MaxValue);
 
     /// <summary>
     /// Gets or sets the minimum value.

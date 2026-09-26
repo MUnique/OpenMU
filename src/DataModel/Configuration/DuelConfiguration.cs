@@ -47,6 +47,6 @@ public partial class DuelConfiguration
     /// <inheritdoc />
     public override string ToString()
     {
-        return $"Duel Configuration {this.DuelAreas.Count} Arenas, Exit: {this.Exit}";
+        return string.Format(MUnique.OpenMU.DataModel.Properties.Resources.DuelConfigSummary, this.DuelAreas.Count, this.Exit);
     }
 }

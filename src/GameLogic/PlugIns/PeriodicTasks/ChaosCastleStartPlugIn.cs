@@ -12,7 +12,7 @@ using MUnique.OpenMU.PlugIns;
 /// This plugin enables the start of the chaos castle.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(ChaosCastleStartPlugIn), Description = "Chaos Castle event")]
+[Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.ChaosCastleStartPlugIn_Display1_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.ChaosCastleStartPlugIn_Display1_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
 [Guid("3AD96A70-ED24-4979-80B8-169E461E548F")]
 public sealed class ChaosCastleStartPlugIn : MiniGameStartBasePlugIn<ChaosCastleStartConfiguration, ChaosCastleGameServerState>
 {

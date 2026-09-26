@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// for Version 0.75.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.SystemConfigurationAddedPlugInBase_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.SystemConfigurationAddedPlugInBase_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("F1151FDE-14F7-4945-AEE9-57DAB6449CFF")]
 public class SystemConfigurationAddedPlugIn075 : SystemConfigurationAddedPlugInBase
 {

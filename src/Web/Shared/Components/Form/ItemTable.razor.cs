@@ -107,7 +107,7 @@ public partial class ItemTable<TItem>
         var parameters = new ModalParameters();
         parameters.Add(nameof(ModalCreateNew<TItem>.PersistenceContext), this.PersistenceContext);
 
-        var modal = this._modal.Show<ModalObjectMultiSelection<TItem>>($"Select {typeof(TItem).Name}", parameters);
+        var modal = this._modal.Show<ModalObjectMultiSelection<TItem>>(string.Format(MUnique.OpenMU.Web.Shared.Properties.Resources.SelectType, typeof(TItem).GetTypeCaption()), parameters);
         var result = await modal.Result.ConfigureAwait(false);
         if (result.Cancelled || result.Data is not IList<TItem> items)
         {
@@ -150,7 +150,7 @@ public partial class ItemTable<TItem>
             DisableBackgroundCancel = true,
         };
 
-        var modal = this._modal.Show<ModalCreateNew<TItem>>($"Create {typeof(TItem).GetTypeCaption()}", parameters, options);
+        var modal = this._modal.Show<ModalCreateNew<TItem>>(string.Format(MUnique.OpenMU.Web.Shared.Properties.Resources.CreateType, typeof(TItem).GetTypeCaption()), parameters, options);
         var result = await modal.Result.ConfigureAwait(false);
         if (result.Cancelled)
         {

@@ -15,7 +15,7 @@ using static MUnique.OpenMU.GameLogic.PlugIns.IItemDropPlugIn;
 /// This plugin handles the drop of an item box, e.g. box of kundun.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(ItemBoxDroppedPlugIn), Description = "This plugin handles the drop of an item box, e.g. box of kundun.")]
+[Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.ItemBoxDroppedPlugIn_Display1_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.ItemBoxDroppedPlugIn_Display1_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
 [Guid("3D15D55D-EEFE-4B5F-89B1-6934AB3F0BEE")]
 public sealed class ItemBoxDroppedPlugIn : IItemDropPlugIn
 {

@@ -17,8 +17,8 @@
         </TableHeader>
         <FilterHeader>
             <th><PlugInExtensionPointSelection SelectedPointId="@this.PlugInController.PointFilter" ExtensionPoints="@this.PlugInController.ExtensionPoints" OnSelectionChanged="@this.OnPlugInPointSelected" /></th>
-            <th><div class="input-group"><span class="input-group-text"><span class="oi oi-magnifying-glass" aria-hidden="true"></span></span><input type="search" class="form-control" placeholder="Search" @bind="@this.PlugInController.NameFilter" @bind:event="oninput"/></div></th>
-            <th><div class="input-group"><span class="input-group-text"><span class="oi oi-magnifying-glass" aria-hidden="true"></span></span><input type="search" class="form-control" placeholder="Search" @bind="@this.PlugInController.TypeFilter" @bind:event="oninput"/></div></th>
+            <th><div class="input-group"><span class="input-group-text"><span class="oi oi-magnifying-glass" aria-hidden="true"></span></span><input type="search" class="form-control" placeholder="@Resources.Search" @bind="@this.PlugInController.NameFilter" @bind:event="oninput"/></div></th>
+            <th><div class="input-group"><span class="input-group-text"><span class="oi oi-magnifying-glass" aria-hidden="true"></span></span><input type="search" class="form-control" placeholder="@Resources.Search" @bind="@this.PlugInController.TypeFilter" @bind:event="oninput"/></div></th>
             <th></th>
         </FilterHeader>
         <ItemTemplate Context="item">

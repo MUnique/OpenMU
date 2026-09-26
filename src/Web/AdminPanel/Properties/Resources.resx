@@ -1254,4 +1254,100 @@
   <data name="Party" xml:space="preserve">
     <value>Party</value>
   </data>
+  <data name="CreateGameServer_ServerId" xml:space="preserve">
+    <value>Server ID</value>
+  </data>
+  <data name="CreateGameServer_Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="CreateGameServer_ExperienceRate" xml:space="preserve">
+    <value>Experience Rate</value>
+  </data>
+  <data name="CreateGameServer_PvpEnabled" xml:space="preserve">
+    <value>Enable PvP</value>
+  </data>
+  <data name="CreateGameServer_ServerConfiguration" xml:space="preserve">
+    <value>Server Configuration</value>
+  </data>
+  <data name="CreateGameServer_Client" xml:space="preserve">
+    <value>Client</value>
+  </data>
+  <data name="CreateGameServer_NetworkPort" xml:space="preserve">
+    <value>Listening Port</value>
+  </data>
+  <data name="CreateConnectServer_ServerId" xml:space="preserve">
+    <value>Server ID</value>
+  </data>
+  <data name="CreateConnectServer_Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="CreateConnectServer_Client" xml:space="preserve">
+    <value>Client</value>
+  </data>
+  <data name="CreateConnectServer_NetworkPort" xml:space="preserve">
+    <value>Listening Port</value>
+  </data>
+  <data name="PageNotFound" xml:space="preserve">
+    <value>Not Found</value>
+  </data>
+  <data name="PageNotFoundDescription" xml:space="preserve">
+    <value>Sorry, the content you are looking for does not exist.</value>
+  </data>
+  <data name="PartySummary" xml:space="preserve">
+    <value>Party of {0}: {1} members</value>
+  </data>
+  <data name="DeletedSuccessfully" xml:space="preserve">
+    <value>Deleted '{0}' successfully.</value>
+  </data>
+  <data name="InvalidCloneMethod" xml:space="preserve">
+    <value>Type '{0}' must have a Clone method that takes '{1}' and returns '{0}'.</value>
+  </data>
+  <data name="ConfigurationEntryName" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="LogReadError" xml:space="preserve">
+    <value>Error reading log file: {0}</value>
+  </data>
+  <data name="CouldNotSaveEntry" xml:space="preserve">
+    <value>Could not save the new entry: {0}</value>
+  </data>
+  <data name="ConfirmDelete" xml:space="preserve">
+    <value>Confirm deletion</value>
+  </data>
+  <data name="ConfirmDeleteEntry" xml:space="preserve">
+    <value>You are about to delete '{0}'. Are you sure?</value>
+  </data>
+  <data name="CreateEntry" xml:space="preserve">
+    <value>Create {0}</value>
+  </data>
+  <data name="DuplicateEntry" xml:space="preserve">
+    <value>Duplicate '{0}'</value>
+  </data>
+  <data name="ReconnectJoining" xml:space="preserve">
+    <value>Rejoining the server...</value>
+  </data>
+  <data name="ReconnectRetryBefore" xml:space="preserve">
+    <value>Rejoin failed... trying again in </value>
+  </data>
+  <data name="ReconnectRetryAfter" xml:space="preserve">
+    <value> seconds.</value>
+  </data>
+  <data name="ReconnectFailed" xml:space="preserve">
+    <value>Failed to rejoin. Please retry or reload the page.</value>
+  </data>
+  <data name="ReconnectRetry" xml:space="preserve">
+    <value>Retry</value>
+  </data>
+  <data name="ReconnectPaused" xml:space="preserve">
+    <value>The session has been paused by the server.</value>
+  </data>
+  <data name="ReconnectResume" xml:space="preserve">
+    <value>Resume</value>
+  </data>
+  <data name="ReconnectResumeFailed" xml:space="preserve">
+    <value>Failed to resume the session. Please reload the page.</value>
+  </data>
+  <data name="RoleAdministrator" xml:space="preserve"><value>Administrator</value></data>
+  <data name="RoleOperator" xml:space="preserve"><value>Operator</value></data>
+  <data name="RoleViewer" xml:space="preserve"><value>Read only</value></data>
 </root>

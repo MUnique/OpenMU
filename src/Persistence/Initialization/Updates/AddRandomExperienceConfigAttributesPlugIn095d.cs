@@ -11,7 +11,7 @@ using MUnique.OpenMU.PlugIns;
 /// This update adds the random experience config attributes for version 0.95d.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddRandomExperienceConfigAttributesPlugInBase_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddRandomExperienceConfigAttributesPlugInBase_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("9A166583-C3E7-4E04-924C-F01FF9840974")]
 public class AddRandomExperienceConfigAttributesPlugIn095d : AddRandomExperienceConfigAttributesPlugInBase
 {

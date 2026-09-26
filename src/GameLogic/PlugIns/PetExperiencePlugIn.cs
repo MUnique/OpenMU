@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 /// player gained for a kill, and levels them up.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(PetExperiencePlugIn), Description = "Gives the trainable pets of a player a share of the experience which the player gained for a kill.")]
+[Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.PetExperiencePlugIn_Display1_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.PetExperiencePlugIn_Display1_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
 [Guid("6B9A0A0E-5C6A-4E8F-A4E1-3C7B8B9A2D51")]
 public class PetExperiencePlugIn : IPlayerGainedExperiencePlugIn
 {

@@ -46,8 +46,10 @@
         var displayAttribute = property?.GetCustomAttribute<DisplayAttribute>(true);
         if (property is not null)
         {
-            // DisplayAttribute has priority
-            this._actualLabel = displayAttribute?.GetName() ?? type.GetPropertyCaption(property.Name);
+            // Explicit captions take priority over display metadata and model resources.
+            this._actualLabel = string.IsNullOrEmpty(this.Text)
+                ? displayAttribute?.GetName() ?? type.GetPropertyCaption(property.Name)
+                : this.Text;
             this._description = displayAttribute?.GetDescription() ?? type.GetPropertyDescription(property.Name);
         }
     }

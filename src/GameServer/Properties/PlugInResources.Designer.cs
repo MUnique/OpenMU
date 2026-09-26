@@ -7151,5 +7151,11 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("CastleSiegeLifeStoneStatePlugIn_Name", resourceCulture);
             }
         }
+        /// <summary>Gets the localized EnterMarketPlace_Name text.</summary>
+        public static string EnterMarketPlace_Name => ResourceManager.GetString("EnterMarketPlace_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized EnterMarketPlace_Description text.</summary>
+        public static string EnterMarketPlace_Description => ResourceManager.GetString("EnterMarketPlace_Description", resourceCulture)!;
+
     }
 }

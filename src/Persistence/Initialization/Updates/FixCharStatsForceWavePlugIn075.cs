@@ -11,7 +11,7 @@ using MUnique.OpenMU.PlugIns;
 /// This update fixes DW agility to defense multiplier stat.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixCharStatsForceWavePlugInBase_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixCharStatsForceWavePlugInBase_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("D7CD05B7-06EE-4D9F-BAD0-65267F3A9FE8")]
 public class FixCharStatsForceWavePlugIn075 : FixCharStatsForceWavePlugInBase
 {
