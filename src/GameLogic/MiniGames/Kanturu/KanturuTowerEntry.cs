@@ -109,7 +109,7 @@ public static class KanturuTowerEntry
                 return true;
             }
 
-            // Anything else found here is tearing down (ended with stragglers, disposing);
+            // Anything else found here is tearing down (ended with stragglers, disposing),
             // dispose it so the creation below starts fresh instead of reusing a dead map.
             await tower.DisposeAsync().ConfigureAwait(false);
         }
