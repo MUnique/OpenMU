@@ -44,7 +44,10 @@ public class WeeklyQuestContext : DbContext
             entity.ToTable(nameof(WeeklyQuestProgress), SchemaNames.WeeklyQuests);
             entity.HasKey(p => new { p.CharacterId, p.PeriodStart, p.QuestId });
             entity.Property(p => p.QuestId).IsRequired().HasMaxLength(64);
+            entity.Property(p => p.AdditionalCounts).IsRequired();
+            entity.Ignore(p => p.HasAnyProgress);
             entity.HasIndex(p => p.PeriodStart);
+            entity.HasIndex(p => new { p.AccountId, p.PeriodStart, p.QuestId });
         });
     }
 }

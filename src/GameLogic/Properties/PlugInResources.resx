@@ -1288,7 +1288,7 @@
     <value>Weekly Quests</value>
   </data>
   <data name="WeeklyQuestsPlugIn_Description" xml:space="preserve">
-    <value>Quests semanales con objetivos (kills, niveles, resets, eventos, PvP) y premios configurables. El progreso se reinicia cada semana.</value>
+    <value>Quests de historia, diarias, semanales, de clase y de zona, con uno o varios pasos (kills, niveles, resets, eventos, PvP, items, hablar con NPCs, entrar a mapas) y premios configurables.</value>
   </data>
   <data name="WeeklyQuestsChatCommandPlugIn_Name" xml:space="preserve">
     <value>Weekly quests chat command</value>

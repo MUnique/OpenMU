@@ -52,14 +52,15 @@ public sealed class WeeklyQuestProgressRepository : IWeeklyQuestProgressReposito
     }
 
     /// <inheritdoc />
-    public async ValueTask<IList<WeeklyQuestProgress>> LoadAsync(Guid characterId, DateTime periodStart, CancellationToken cancellationToken = default)
+    public async ValueTask<IList<WeeklyQuestProgress>> LoadAsync(Guid characterId, IReadOnlyCollection<DateTime> periodStarts, CancellationToken cancellationToken = default)
     {
         await this.EnsureAvailableStorageAsync(cancellationToken).ConfigureAwait(false);
 
+        var starts = periodStarts.ToArray();
         await using var context = new WeeklyQuestContext();
         return await context.Progress
             .AsNoTracking()
-            .Where(p => p.CharacterId == characterId && p.PeriodStart == periodStart)
+            .Where(p => p.CharacterId == characterId && starts.Contains(p.PeriodStart))
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
     }
@@ -88,7 +89,9 @@ public sealed class WeeklyQuestProgressRepository : IWeeklyQuestProgressReposito
             {
                 if (existing.TryGetValue(entry.QuestId, out var stored))
                 {
+                    stored.AccountId ??= entry.AccountId;
                     stored.Count = entry.Count;
+                    stored.AdditionalCounts = (int[])entry.AdditionalCounts.Clone();
                     stored.CompletedAt = entry.CompletedAt;
                     stored.RewardedAt = entry.RewardedAt;
                 }
@@ -97,9 +100,11 @@ public sealed class WeeklyQuestProgressRepository : IWeeklyQuestProgressReposito
                     context.Progress.Add(new WeeklyQuestProgress
                     {
                         CharacterId = entry.CharacterId,
+                        AccountId = entry.AccountId,
                         PeriodStart = entry.PeriodStart,
                         QuestId = entry.QuestId,
                         Count = entry.Count,
+                        AdditionalCounts = (int[])entry.AdditionalCounts.Clone(),
                         CompletedAt = entry.CompletedAt,
                         RewardedAt = entry.RewardedAt,
                     });
@@ -108,6 +113,32 @@ public sealed class WeeklyQuestProgressRepository : IWeeklyQuestProgressReposito
         }
 
         await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<IList<WeeklyQuestProgress>> LoadRewardedByAccountAsync(Guid accountId, IReadOnlyCollection<DateTime> periodStarts, CancellationToken cancellationToken = default)
+    {
+        await this.EnsureAvailableStorageAsync(cancellationToken).ConfigureAwait(false);
+
+        var starts = periodStarts.ToArray();
+        await using var context = new WeeklyQuestContext();
+        return await context.Progress
+            .AsNoTracking()
+            .Where(p => p.AccountId == accountId && starts.Contains(p.PeriodStart) && p.RewardedAt != null)
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<int> DeleteExpiredAsync(DateTime olderThan, DateTime keepPeriodStart, CancellationToken cancellationToken = default)
+    {
+        await this.EnsureAvailableStorageAsync(cancellationToken).ConfigureAwait(false);
+
+        await using var context = new WeeklyQuestContext();
+        return await context.Progress
+            .Where(p => p.PeriodStart < olderThan && p.PeriodStart != keepPeriodStart)
+            .ExecuteDeleteAsync(cancellationToken)
+            .ConfigureAwait(false);
     }
 
     private async ValueTask EnsureAvailableStorageAsync(CancellationToken cancellationToken)

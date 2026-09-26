@@ -80,7 +80,10 @@ public class DropItemAction
         // However, to check this in the right order, we need to extend IContext to
         // give us this information.
         var wasItemPersisted = player.PersistenceContext.Detach(item);
-        var droppedItem = new DroppedItem(item, target, player.CurrentMap!, player, owners, wasItemPersisted);
+        var droppedItem = new DroppedItem(item, target, player.CurrentMap!, player, owners, wasItemPersisted)
+        {
+            IsDroppedFromInventory = true,
+        };
         await player.CurrentMap!.AddAsync(droppedItem).ConfigureAwait(false);
     }
 

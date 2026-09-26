@@ -31074,6 +31074,212 @@ public readonly struct WeeklyQuestEntry
 
 
 /// <summary>
+/// Is sent by the server when: Right after each WeeklyQuestEntry message, with the same quest id. Clients which don't know it can ignore it and just show the WeeklyQuestEntry.
+/// Causes reaction on client side: The client shows the quest under the tab of its category, with a checklist of its objectives (steps).
+/// </summary>
+public readonly struct QuestDetails
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="QuestDetails"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public QuestDetails(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="QuestDetails"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private QuestDetails(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xF5;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x03;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the category of the quest: 0 = weekly, 1 = daily, 2 = main story, 3 = class, 4 = zone.
+    /// </summary>
+    public byte Category
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets when the progress starts over: 0 = weekly, 1 = daily, 2 = never (the quest is done once).
+    /// </summary>
+    public byte Period
+    {
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the index of the first objective which isn't done yet. It's the number of objectives when all are done.
+    /// </summary>
+    public byte CurrentStep
+    {
+        get => this._data.Span[7];
+        set => this._data.Span[7] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the objective count.
+    /// </summary>
+    public byte ObjectiveCount
+    {
+        get => this._data.Span[8];
+        set => this._data.Span[8] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets if true, the objectives have to be done in their order.
+    /// </summary>
+    public bool IsSequential
+    {
+        get => this._data.Span[9..].GetBoolean();
+        set => this._data.Span[9..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the seconds until the progress of this quest starts over. 0 for quests which are done once.
+    /// </summary>
+    public uint SecondsUntilReset
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[12..]);
+        set => WriteUInt32LittleEndian(this._data.Span[12..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the identifier of the quest, as in the WeeklyQuestEntry message.
+    /// </summary>
+    public string Id
+    {
+        get => this._data.Span.ExtractString(16, 64, System.Text.Encoding.UTF8);
+        set => this._data.Slice(16, 64).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets the <see cref="QuestObjective"/> of the specified index.
+    /// </summary>
+        public QuestObjective this[int index] => new (this._data.Slice(80 + index * QuestObjective.Length));
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="QuestDetails"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator QuestDetails(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="QuestDetails"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(QuestDetails packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="QuestObjective"/>.
+    /// </summary>
+    /// <param name="objectivesCount">The count of <see cref="QuestObjective"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int objectivesCount) => objectivesCount * QuestObjective.Length + 80;
+
+
+/// <summary>
+/// An objective (step) of a quest..
+/// </summary>
+public readonly struct QuestObjective
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="QuestObjective"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public QuestObjective(Memory<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 76;
+
+    /// <summary>
+    /// Gets or sets the current count.
+    /// </summary>
+    public uint CurrentCount
+    {
+        get => ReadUInt32LittleEndian(this._data.Span);
+        set => WriteUInt32LittleEndian(this._data.Span, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the required count.
+    /// </summary>
+    public uint RequiredCount
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[4..]);
+        set => WriteUInt32LittleEndian(this._data.Span[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the is done.
+    /// </summary>
+    public bool IsDone
+    {
+        get => this._data.Span[8..].GetBoolean();
+        set => this._data.Span[8..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the text of the objective, in the language of the player, e.g. 'Kill 50 Skeletons'.
+    /// </summary>
+    public string Text
+    {
+        get => this._data.Span.ExtractString(12, 64, System.Text.Encoding.UTF8);
+        set => this._data.Slice(12, 64).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+}
+}
+
+
+/// <summary>
 /// Is sent by the server when: The player receives the result of registering Rena or Event Chips at the Golden Archer NPC.
 /// Causes reaction on client side: The client updates the Golden Archer interface with total registered count and remaining count in inventory.
 /// </summary>

@@ -11258,6 +11258,98 @@
       </Fields>
     </Packet>
     <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>F5</Code>
+      <SubCode>03</SubCode>
+      <Name>QuestDetails</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>Right after each WeeklyQuestEntry message, with the same quest id. Clients which don't know it can ignore it and just show the WeeklyQuestEntry.</SentWhen>
+      <CausedReaction>The client shows the quest under the tab of its category, with a checklist of its objectives (steps).</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Category</Name>
+          <Description>The category of the quest: 0 = weekly, 1 = daily, 2 = main story, 3 = class, 4 = zone.</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>Period</Name>
+          <Description>When the progress starts over: 0 = weekly, 1 = daily, 2 = never (the quest is done once).</Description>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>CurrentStep</Name>
+          <Description>The index of the first objective which isn't done yet. It's the number of objectives when all are done.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Byte</Type>
+          <Name>ObjectiveCount</Name>
+        </Field>
+        <Field>
+          <Index>9</Index>
+          <Type>Boolean</Type>
+          <Name>IsSequential</Name>
+          <Description>If true, the objectives have to be done in their order.</Description>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>SecondsUntilReset</Name>
+          <Description>The seconds until the progress of this quest starts over. 0 for quests which are done once.</Description>
+        </Field>
+        <Field>
+          <Index>16</Index>
+          <Type>String</Type>
+          <Name>Id</Name>
+          <Length>64</Length>
+          <Description>The identifier of the quest, as in the WeeklyQuestEntry message.</Description>
+        </Field>
+        <Field>
+          <Index>80</Index>
+          <Type>Structure[]</Type>
+          <TypeName>QuestObjective</TypeName>
+          <Name>Objectives</Name>
+          <ItemCountField>ObjectiveCount</ItemCountField>
+          <Description>The objectives of the quest, in their order.</Description>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>QuestObjective</Name>
+          <Description>An objective (step) of a quest.</Description>
+          <Length>76</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>IntegerLittleEndian</Type>
+              <Name>CurrentCount</Name>
+            </Field>
+            <Field>
+              <Index>4</Index>
+              <Type>IntegerLittleEndian</Type>
+              <Name>RequiredCount</Name>
+            </Field>
+            <Field>
+              <Index>8</Index>
+              <Type>Boolean</Type>
+              <Name>IsDone</Name>
+            </Field>
+            <Field>
+              <Index>12</Index>
+              <Type>String</Type>
+              <Name>Text</Name>
+              <Length>64</Length>
+              <Description>The text of the objective, in the language of the player, e.g. 'Kill 50 Skeletons'.</Description>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
+    </Packet>
+    <Packet>
       <HeaderType>C1Header</HeaderType>
       <Code>94</Code>
       <Name>EventChipRegistrationResult</Name>

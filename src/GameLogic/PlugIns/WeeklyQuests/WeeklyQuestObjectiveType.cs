@@ -50,4 +50,22 @@ public enum WeeklyQuestObjectiveType
     /// </summary>
     [Display(Name = "Matar jugadores")]
     KillPlayer,
+
+    /// <summary>
+    /// Pick up a specific item which was dropped by a monster or an event.
+    /// </summary>
+    [Display(Name = "Juntar items")]
+    CollectItem,
+
+    /// <summary>
+    /// Talk to a specific NPC.
+    /// </summary>
+    [Display(Name = "Hablar con NPC")]
+    TalkToNpc,
+
+    /// <summary>
+    /// Enter a map.
+    /// </summary>
+    [Display(Name = "Entrar a un mapa")]
+    EnterMap,
 }
