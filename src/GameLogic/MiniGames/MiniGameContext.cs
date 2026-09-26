@@ -671,6 +671,11 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         var players = await this._players.GetSnapshotAsync().ConfigureAwait(false);
 
         await this.GameEndedAsync(players).ConfigureAwait(false);
+
+        if (this._gameContext.PlugInManager.GetPlugInPoint<IMiniGameEndedPlugIn>() is { } plugInPoint)
+        {
+            await plugInPoint.MiniGameEndedAsync(this, players).ConfigureAwait(false);
+        }
     }
 
     private GameMap CreateMap()

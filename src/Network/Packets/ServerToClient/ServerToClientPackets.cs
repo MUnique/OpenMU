@@ -30889,6 +30889,191 @@ public readonly struct ChatCommandParameter
 
 
 /// <summary>
+/// Is sent by the server when: After the client requested the list of available chat commands, one message is sent for each active weekly quest. When the progress of a quest changes, a single message is sent as update of this quest.
+/// Causes reaction on client side: The client shows the weekly quests and their progress in a window.
+/// </summary>
+public readonly struct WeeklyQuestEntry
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WeeklyQuestEntry"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public WeeklyQuestEntry(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WeeklyQuestEntry"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private WeeklyQuestEntry(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xF5;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x02;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 520;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the index of this quest within the list, starting at 0. The first message of a list replaces the previously known quests.
+    /// </summary>
+    public byte Index
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the total number of quests. A list without quests is sent as a single message with a count of 0.
+    /// </summary>
+    public byte Count
+    {
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets if true, this message updates the already known quest with the same id, instead of being part of a list.
+    /// </summary>
+    public bool IsUpdate
+    {
+        get => this._data.Span[7..].GetBoolean();
+        set => this._data.Span[7..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the objective of the quest has been reached.
+    /// </summary>
+    public bool IsCompleted
+    {
+        get => this._data.Span[8..].GetBoolean();
+        set => this._data.Span[8..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the rewards of the quest have been handed out. If the quest is completed but not rewarded, the reward is pending, e.g. because the inventory was full.
+    /// </summary>
+    public bool IsRewarded
+    {
+        get => this._data.Span[9..].GetBoolean();
+        set => this._data.Span[9..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the current count.
+    /// </summary>
+    public uint CurrentCount
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[12..]);
+        set => WriteUInt32LittleEndian(this._data.Span[12..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the required count.
+    /// </summary>
+    public uint RequiredCount
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[16..]);
+        set => WriteUInt32LittleEndian(this._data.Span[16..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the seconds until the weekly progress is reset.
+    /// </summary>
+    public uint SecondsUntilReset
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[20..]);
+        set => WriteUInt32LittleEndian(this._data.Span[20..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the identifier of the quest.
+    /// </summary>
+    public string Id
+    {
+        get => this._data.Span.ExtractString(24, 64, System.Text.Encoding.UTF8);
+        set => this._data.Slice(24, 64).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the name.
+    /// </summary>
+    public string Name
+    {
+        get => this._data.Span.ExtractString(88, 48, System.Text.Encoding.UTF8);
+        set => this._data.Slice(88, 48).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the description.
+    /// </summary>
+    public string Description
+    {
+        get => this._data.Span.ExtractString(136, 256, System.Text.Encoding.UTF8);
+        set => this._data.Slice(136, 256).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the rewards of the quest as text, in the language of the player.
+    /// </summary>
+    public string Rewards
+    {
+        get => this._data.Span.ExtractString(392, 128, System.Text.Encoding.UTF8);
+        set => this._data.Slice(392, 128).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="WeeklyQuestEntry"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator WeeklyQuestEntry(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="WeeklyQuestEntry"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(WeeklyQuestEntry packet) => packet._data; 
+}
+
+
+/// <summary>
 /// Is sent by the server when: The player receives the result of registering Rena or Event Chips at the Golden Archer NPC.
 /// Causes reaction on client side: The client updates the Golden Archer interface with total registered count and remaining count in inventory.
 /// </summary>

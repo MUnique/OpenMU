@@ -3562,5 +3562,41 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("CastleSiegeLifeStoneConsumeHandlerPlugIn_Name", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Weekly Quests.
+        /// </summary>
+        public static string WeeklyQuestsPlugIn_Name {
+            get {
+                return ResourceManager.GetString("WeeklyQuestsPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Quests semanales con objetivos y premios configurables..
+        /// </summary>
+        public static string WeeklyQuestsPlugIn_Description {
+            get {
+                return ResourceManager.GetString("WeeklyQuestsPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Weekly quests chat command.
+        /// </summary>
+        public static string WeeklyQuestsChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("WeeklyQuestsChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the chat command '/weekly'. Shows the progress of the weekly quests..
+        /// </summary>
+        public static string WeeklyQuestsChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("WeeklyQuestsChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

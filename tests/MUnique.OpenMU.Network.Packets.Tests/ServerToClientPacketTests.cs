@@ -6453,6 +6453,68 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the packet size calculation for WeeklyQuestEntry.
+    /// </summary>
+    [Test]
+    public void WeeklyQuestEntry_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 520;
+        var actualLength = WeeklyQuestEntryRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Index' boundary
+        Assert.That(5 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Index' exceeds packet boundary");
+        
+        // Validate field 'Count' boundary
+        Assert.That(6 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Count' exceeds packet boundary");
+        
+        // Validate field 'IsUpdate' boundary
+        Assert.That(7 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'IsUpdate' exceeds packet boundary");
+        
+        // Validate field 'IsCompleted' boundary
+        Assert.That(8 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'IsCompleted' exceeds packet boundary");
+        
+        // Validate field 'IsRewarded' boundary
+        Assert.That(9 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'IsRewarded' exceeds packet boundary");
+        
+        // Validate field 'CurrentCount' boundary
+        Assert.That(12 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'CurrentCount' exceeds packet boundary");
+        
+        // Validate field 'RequiredCount' boundary
+        Assert.That(16 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'RequiredCount' exceeds packet boundary");
+        
+        // Validate field 'SecondsUntilReset' boundary
+        Assert.That(20 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'SecondsUntilReset' exceeds packet boundary");
+        
+        // Validate field 'Id' boundary
+        Assert.That(24 + 64, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Id' exceeds packet boundary");
+        
+        // Validate field 'Name' boundary
+        Assert.That(88 + 48, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Name' exceeds packet boundary");
+        
+        // Validate field 'Description' boundary
+        Assert.That(136 + 256, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Description' exceeds packet boundary");
+        
+        // Validate field 'Rewards' boundary
+        Assert.That(392 + 128, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Rewards' exceeds packet boundary");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for EventChipRegistrationResult.
     /// </summary>
     [Test]

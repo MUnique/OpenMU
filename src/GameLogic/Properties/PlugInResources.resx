@@ -1284,4 +1284,16 @@
   <data name="CastleSiegeLifeStoneConsumeHandlerPlugIn_Description" xml:space="preserve">
     <value>Consumes Life Stones after they are successfully placed during Castle Siege.</value>
   </data>
+  <data name="WeeklyQuestsPlugIn_Name" xml:space="preserve">
+    <value>Weekly Quests</value>
+  </data>
+  <data name="WeeklyQuestsPlugIn_Description" xml:space="preserve">
+    <value>Quests semanales con objetivos (kills, niveles, resets, eventos, PvP) y premios configurables. El progreso se reinicia cada semana.</value>
+  </data>
+  <data name="WeeklyQuestsChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Weekly quests chat command</value>
+  </data>
+  <data name="WeeklyQuestsChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/weekly'. Shows the progress of the weekly quests.</value>
+  </data>
 </root>
