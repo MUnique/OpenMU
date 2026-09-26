@@ -56,4 +56,16 @@ public enum WeeklyQuestObjectiveType
     /// </summary>
     [Display(Name = "Juntar items")]
     CollectItem,
+
+    /// <summary>
+    /// Talk to a specific NPC.
+    /// </summary>
+    [Display(Name = "Hablar con NPC")]
+    TalkToNpc,
+
+    /// <summary>
+    /// Enter a map.
+    /// </summary>
+    [Display(Name = "Entrar a un mapa")]
+    EnterMap,
 }

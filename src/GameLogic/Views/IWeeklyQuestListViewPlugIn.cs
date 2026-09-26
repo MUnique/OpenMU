@@ -18,9 +18,10 @@ public interface IWeeklyQuestListViewPlugIn : IViewPlugIn
     ValueTask ShowWeeklyQuestsAsync(WeeklyQuestOverview overview);
 
     /// <summary>
-    /// Updates the progress of one weekly quest which the client already knows.
+    /// Updates the progress of one quest which the client already knows.
     /// </summary>
     /// <param name="entry">The entry of the quest.</param>
-    /// <param name="nextResetUtc">The point in time (UTC) when the next period starts.</param>
-    ValueTask UpdateWeeklyQuestAsync(WeeklyQuestOverviewEntry entry, DateTime nextResetUtc);
+    /// <param name="nextResetUtc">The point in time (UTC) when the next week starts.</param>
+    /// <param name="nextDailyResetUtc">The point in time (UTC) when the next day starts.</param>
+    ValueTask UpdateWeeklyQuestAsync(WeeklyQuestOverviewEntry entry, DateTime nextResetUtc, DateTime nextDailyResetUtc);
 }

@@ -33,19 +33,19 @@ public class WeeklyQuestsChatCommandPlugIn : ChatCommandPlugInBase<EmptyChatComm
         var plugIn = WeeklyQuestsPlugIn.GetTrackingPlugIn(player);
         if (plugIn is null || !player.GameContext.PlugInManager.IsPlugInActive(typeof(WeeklyQuestsPlugIn).GUID))
         {
-            await player.ShowBlueMessageAsync("Las quests semanales no están disponibles.").ConfigureAwait(false);
+            await player.ShowBlueMessageAsync("Las quests no están disponibles.").ConfigureAwait(false);
             return;
         }
 
         if (await plugIn.GetOverviewAsync(player).ConfigureAwait(false) is not { } overview)
         {
-            await player.ShowBlueMessageAsync("No se pudo cargar tu progreso semanal. Probá de nuevo en un rato.").ConfigureAwait(false);
+            await player.ShowBlueMessageAsync("No se pudo cargar tu progreso. Probá de nuevo en un rato.").ConfigureAwait(false);
             return;
         }
 
         if (overview.Entries.Count == 0)
         {
-            await player.ShowBlueMessageAsync("No hay quests semanales activas.").ConfigureAwait(false);
+            await player.ShowBlueMessageAsync("No hay quests activas.").ConfigureAwait(false);
             return;
         }
 
@@ -55,15 +55,34 @@ public class WeeklyQuestsChatCommandPlugIn : ChatCommandPlugInBase<EmptyChatComm
             {
                 { IsRewarded: true } => "[OK]",
                 { IsCompleted: true } => "[Premio pendiente]",
-                _ => $"{entry.Count}/{entry.Quest.RequiredCount}",
+                _ => $"{entry.Count}/{entry.Required}",
             };
-            await player.ShowBlueMessageAsync($"{entry.Quest.Name}: {status} - {entry.Quest.Description}").ConfigureAwait(false);
+            await player.ShowBlueMessageAsync($"[{GetCategoryName(entry.Quest.Category)}] {entry.Quest.Name}: {status} - {entry.Quest.Description}").ConfigureAwait(false);
+            if (entry.Objectives.Count > 1 && !entry.IsCompleted)
+            {
+                foreach (var objective in entry.Objectives)
+                {
+                    var mark = objective.IsDone ? "[x]" : "[ ]";
+                    var count = objective.Required > 1 && !objective.IsDone ? $" {objective.Count}/{objective.Required}" : string.Empty;
+                    await player.ShowBlueMessageAsync($"  {mark} {objective.Objective.GetDisplayText(player.Culture)}{count}").ConfigureAwait(false);
+                }
+            }
         }
 
         var remaining = overview.NextResetUtc - DateTime.UtcNow;
-        await player.ShowBlueMessageAsync($"Reinicio en {(int)remaining.TotalDays}d {remaining.Hours}h {remaining.Minutes}m.").ConfigureAwait(false);
+        var remainingDaily = overview.NextDailyResetUtc - DateTime.UtcNow;
+        await player.ShowBlueMessageAsync($"Reinicio semanal en {(int)remaining.TotalDays}d {remaining.Hours}h {remaining.Minutes}m, diario en {remainingDaily.Hours}h {remainingDaily.Minutes}m.").ConfigureAwait(false);
 
         // The configuration may have changed since the client got the list, so the window is refreshed, too.
         await player.InvokeViewPlugInAsync<IWeeklyQuestListViewPlugIn>(p => p.ShowWeeklyQuestsAsync(overview)).ConfigureAwait(false);
     }
+
+    private static string GetCategoryName(QuestCategory category) => category switch
+    {
+        QuestCategory.Main => "Historia",
+        QuestCategory.Daily => "Diaria",
+        QuestCategory.Class => "Clase",
+        QuestCategory.Zone => "Zona",
+        _ => "Semanal",
+    };
 }

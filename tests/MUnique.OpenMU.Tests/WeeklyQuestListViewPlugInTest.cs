@@ -8,6 +8,7 @@ using System.Globalization;
 using MUnique.OpenMU.GameLogic.PlugIns.WeeklyQuests;
 using MUnique.OpenMU.GameServer.RemoteView;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
+using MUnique.OpenMU.Persistence.WeeklyQuests;
 
 /// <summary>
 /// Tests for the <see cref="WeeklyQuestListViewPlugIn"/>.
@@ -15,8 +16,10 @@ using MUnique.OpenMU.Network.Packets.ServerToClient;
 [TestFixture]
 public class WeeklyQuestListViewPlugInTest
 {
+    private static readonly int SingleObjectiveDetailsLength = QuestDetails.GetRequiredSize(1);
+
     /// <summary>
-    /// Tests that one message is sent per quest, with the progress and the texts of the quest.
+    /// Tests that one message is sent per quest, with the progress and the texts of the quest, each followed by its details.
     /// </summary>
     [Test]
     public async Task SendsOneMessagePerQuestAsync()
@@ -26,15 +29,17 @@ public class WeeklyQuestListViewPlugInTest
         var overview = new WeeklyQuestOverview(
             new List<WeeklyQuestOverviewEntry>
             {
-                new(CreateQuest("a", "Cazador"), 3, false, false),
-                new(CreateQuest("b", "Castillo"), 5, true, true),
+                CreateEntry(CreateQuest("a", "Cazador"), 3, false, false),
+                CreateEntry(CreateQuest("b", "Castillo"), 5, true, true),
             },
-            DateTime.UtcNow.AddHours(1));
+            DateTime.UtcNow.AddHours(1),
+            DateTime.UtcNow.AddMinutes(30));
 
         await view.ShowWeeklyQuestsAsync(overview).ConfigureAwait(false);
 
         var data = output.ToArray();
-        Assert.That(data, Has.Length.EqualTo(2 * WeeklyQuestEntry.Length));
+        var messageLength = WeeklyQuestEntry.Length + SingleObjectiveDetailsLength;
+        Assert.That(data, Has.Length.EqualTo(2 * messageLength));
 
         var first = new WeeklyQuestEntry(data.AsMemory(0, WeeklyQuestEntry.Length));
         Assert.That(first.Index, Is.EqualTo(0));
@@ -46,10 +51,72 @@ public class WeeklyQuestListViewPlugInTest
         Assert.That(first.RequiredCount, Is.EqualTo(5));
         Assert.That(first.SecondsUntilReset, Is.InRange(3500u, 3600u));
 
-        var second = new WeeklyQuestEntry(data.AsMemory(WeeklyQuestEntry.Length, WeeklyQuestEntry.Length));
+        var second = new WeeklyQuestEntry(data.AsMemory(messageLength, WeeklyQuestEntry.Length));
         Assert.That(second.Index, Is.EqualTo(1));
         Assert.That(second.IsCompleted, Is.True);
         Assert.That(second.IsRewarded, Is.True);
+    }
+
+    /// <summary>
+    /// Tests that the details contain the category, the period and the checklist of the objectives.
+    /// </summary>
+    [Test]
+    public async Task SendsDetailsWithObjectivesAsync()
+    {
+        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var view = new WeeklyQuestListViewPlugIn(player);
+        var quest = new WeeklyQuestDefinition
+        {
+            Id = "main-1",
+            Name = "Capítulo I",
+            Category = QuestCategory.Main,
+            Period = QuestPeriod.Once,
+            SequentialObjectives = true,
+            Objectives =
+            {
+                new WeeklyQuestObjective { Description = "Habla con el Guardián", ObjectiveType = WeeklyQuestObjectiveType.TalkToNpc },
+                new WeeklyQuestObjective { Description = "Mata 50 Skeletons", ObjectiveType = WeeklyQuestObjectiveType.KillMonster, RequiredCount = 50 },
+            },
+        };
+        var progress = new WeeklyQuestProgress { QuestId = quest.Id, Count = 1 };
+        progress.SetCount(1, 12);
+        var entry = WeeklyQuestSelector.CreateEntry(quest, new Dictionary<string, WeeklyQuestProgress> { [quest.Id] = progress });
+
+        await view.UpdateWeeklyQuestAsync(entry, DateTime.UtcNow.AddDays(1), DateTime.UtcNow.AddHours(1)).ConfigureAwait(false);
+
+        var data = output.ToArray();
+        Assert.That(data, Has.Length.EqualTo(WeeklyQuestEntry.Length + QuestDetails.GetRequiredSize(2)));
+        var details = new QuestDetails(data.AsMemory(WeeklyQuestEntry.Length));
+        Assert.That(details.Id, Is.EqualTo("main-1"));
+        Assert.That(details.Category, Is.EqualTo((byte)QuestCategory.Main));
+        Assert.That(details.Period, Is.EqualTo((byte)QuestPeriod.Once));
+        Assert.That(details.IsSequential, Is.True);
+        Assert.That(details.CurrentStep, Is.EqualTo(1));
+        Assert.That(details.SecondsUntilReset, Is.EqualTo(0));
+        Assert.That(details.ObjectiveCount, Is.EqualTo(2));
+        Assert.That(details[0].IsDone, Is.True);
+        Assert.That(details[0].Text, Is.EqualTo("Habla con el Guardián"));
+        Assert.That(details[1].IsDone, Is.False);
+        Assert.That(details[1].CurrentCount, Is.EqualTo(12));
+        Assert.That(details[1].RequiredCount, Is.EqualTo(50));
+    }
+
+    /// <summary>
+    /// Tests that texts which are too long for their field are cut, instead of failing.
+    /// </summary>
+    [Test]
+    public async Task CutsTooLongTextsAsync()
+    {
+        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var view = new WeeklyQuestListViewPlugIn(player);
+        var quest = CreateQuest("a", new string('ñ', 100));
+        quest.Description = new string('á', 300);
+
+        await view.UpdateWeeklyQuestAsync(CreateEntry(quest, 0, false, false), DateTime.UtcNow, DateTime.UtcNow).ConfigureAwait(false);
+
+        var packet = new WeeklyQuestEntry(output.ToArray().AsMemory(0, WeeklyQuestEntry.Length));
+        Assert.That(packet.Name, Is.EqualTo(new string('ñ', 24)));
+        Assert.That(packet.Description, Is.EqualTo(new string('á', 128)));
     }
 
     /// <summary>
@@ -61,7 +128,7 @@ public class WeeklyQuestListViewPlugInTest
         var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
         var view = new WeeklyQuestListViewPlugIn(player);
 
-        await view.ShowWeeklyQuestsAsync(new WeeklyQuestOverview(new List<WeeklyQuestOverviewEntry>(), DateTime.UtcNow)).ConfigureAwait(false);
+        await view.ShowWeeklyQuestsAsync(new WeeklyQuestOverview(new List<WeeklyQuestOverviewEntry>(), DateTime.UtcNow, DateTime.UtcNow)).ConfigureAwait(false);
 
         var data = output.ToArray();
         Assert.That(data, Has.Length.EqualTo(WeeklyQuestEntry.Length));
@@ -77,9 +144,9 @@ public class WeeklyQuestListViewPlugInTest
         var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
         var view = new WeeklyQuestListViewPlugIn(player);
 
-        await view.UpdateWeeklyQuestAsync(new(CreateQuest("a", "Cazador"), 4, false, false), DateTime.UtcNow).ConfigureAwait(false);
+        await view.UpdateWeeklyQuestAsync(CreateEntry(CreateQuest("a", "Cazador"), 4, false, false), DateTime.UtcNow, DateTime.UtcNow).ConfigureAwait(false);
 
-        var packet = new WeeklyQuestEntry(output.ToArray());
+        var packet = new WeeklyQuestEntry(output.ToArray().AsMemory(0, WeeklyQuestEntry.Length));
         Assert.That(packet.IsUpdate, Is.True);
         Assert.That(packet.Id, Is.EqualTo("a"));
         Assert.That(packet.CurrentCount, Is.EqualTo(4));
@@ -95,6 +162,18 @@ public class WeeklyQuestListViewPlugInTest
         quest.Rewards.Add(new WeeklyQuestReward { RewardType = WeeklyQuestRewardType.Experience, Amount = 2500 });
 
         Assert.That(quest.GetRewardsText(CultureInfo.GetCultureInfo("es-AR")), Is.EqualTo("1.000.000 Zen, 2.500 EXP"));
+    }
+
+    private static WeeklyQuestOverviewEntry CreateEntry(WeeklyQuestDefinition quest, int count, bool isCompleted, bool isRewarded)
+    {
+        var progress = new WeeklyQuestProgress
+        {
+            QuestId = quest.Id,
+            Count = count,
+            CompletedAt = isCompleted ? DateTime.UtcNow : null,
+            RewardedAt = isRewarded ? DateTime.UtcNow : null,
+        };
+        return WeeklyQuestSelector.CreateEntry(quest, new Dictionary<string, WeeklyQuestProgress> { [quest.Id] = progress });
     }
 
     private static WeeklyQuestDefinition CreateQuest(string id, string name) => new()

@@ -149,13 +149,24 @@ public class WebsiteController : Controller
             return this.NotFound();
         }
 
-        var periodStart = WeeklyPeriod.GetPeriodStartUtc(DateTime.UtcNow, configuration.ResetDay, configuration.ResetTime, context.ServerTimeZone);
+        var periods = WeeklyPeriod.GetPeriodStarts(DateTime.UtcNow, configuration, context.ServerTimeZone);
+        var questsById = configuration.Quests
+            .Where(q => !string.IsNullOrWhiteSpace(q.Id))
+            .GroupBy(q => q.Id)
+            .ToDictionary(g => g.Key, g => g.First());
         var progressPerCharacter = new Dictionary<Guid, Dictionary<string, WeeklyQuestProgress>>();
         foreach (var character in account.Characters)
         {
             var id = character.GetId();
-            var loaded = await repository.LoadAsync(id, periodStart).ConfigureAwait(false);
-            progressPerCharacter[id] = loaded.ToDictionary(p => p.QuestId);
+            var loaded = await repository.LoadAsync(id, periods.All).ConfigureAwait(false);
+
+            // Only the progress of the current period of each quest counts.
+            progressPerCharacter[id] = loaded
+                .Where(p => p.PeriodStart == periods.Get(p.QuestId == WeeklyQuestSelector.AllCompletedBonusId
+                    ? QuestPeriod.Weekly
+                    : questsById.GetValueOrDefault(p.QuestId)?.Period ?? QuestPeriod.Weekly))
+                .GroupBy(p => p.QuestId)
+                .ToDictionary(g => g.Key, g => g.First());
         }
 
         var characters = account.Characters
@@ -173,26 +184,40 @@ public class WebsiteController : Controller
                     character.CharacterClass,
                     (int)(character.Attributes.FirstOrDefault(a => a.Definition == Stats.Level)?.Value ?? 1),
                     (int)(character.Attributes.FirstOrDefault(a => a.Definition == Stats.Resets)?.Value ?? 0));
-                var quests = WeeklyQuestSelector.CreateEntries(configuration, periodStart, info, progressPerCharacter[id], rewardedByOthers)
+                var quests = WeeklyQuestSelector.CreateEntries(configuration, periods, info, progressPerCharacter[id], rewardedByOthers)
                     .Select(e => new
                     {
                         id = e.Quest.Id,
                         name = e.Quest.Name,
                         description = e.Quest.Description,
                         count = e.Count,
-                        required = e.Quest.RequiredCount,
+                        required = e.Required,
                         completed = e.IsCompleted,
                         rewarded = e.IsRewarded,
                         rewards = e.Quest.GetRewardsText(WebsiteCulture),
                         isBonus = e.Quest.Id == WeeklyQuestSelector.AllCompletedBonusId,
+                        category = e.Quest.Category.ToString().ToLowerInvariant(),
+                        period = e.Quest.Period.ToString().ToLowerInvariant(),
+                        sequential = e.Quest.SequentialObjectives,
+                        currentStep = e.CurrentStep,
+                        objectives = e.Objectives.Count > 1
+                            ? e.Objectives.Select(o => new
+                            {
+                                text = o.Objective.GetDisplayText(WebsiteCulture),
+                                count = o.Count,
+                                required = o.Required,
+                                done = o.IsDone,
+                            }).ToList()
+                            : null,
                     })
                     .ToList();
                 return new { name = character.Name, quests };
             })
             .ToList();
 
-        var nextResetUtc = WeeklyPeriod.GetNextPeriodStartUtc(periodStart, context.ServerTimeZone);
-        return this.Ok(new { enabled = true, nextResetUtc, characters });
+        var nextResetUtc = WeeklyPeriod.GetNextPeriodStartUtc(periods.Weekly, context.ServerTimeZone);
+        var nextDailyResetUtc = WeeklyPeriod.GetNextDailyPeriodStartUtc(periods.Daily, context.ServerTimeZone);
+        return this.Ok(new { enabled = true, nextResetUtc, nextDailyResetUtc, characters });
     }
 
     private async Task<(bool InGame, string? Character)> FindPlayerAsync(string login)

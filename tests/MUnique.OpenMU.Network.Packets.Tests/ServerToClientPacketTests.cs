@@ -6515,6 +6515,44 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the packet size calculation for QuestDetails.
+    /// </summary>
+    [Test]
+    public void QuestDetails_PacketSizeValidation()
+    {
+        // Basic packet validation
+        // Validate header type and field boundaries
+        
+        // Field 'Category' starts at index 5 with size 1
+        Assert.That(5, Is.GreaterThanOrEqualTo(0), 
+            "Field 'Category' has invalid negative index");
+        
+        // Field 'Period' starts at index 6 with size 1
+        Assert.That(6, Is.GreaterThanOrEqualTo(0), 
+            "Field 'Period' has invalid negative index");
+        
+        // Field 'CurrentStep' starts at index 7 with size 1
+        Assert.That(7, Is.GreaterThanOrEqualTo(0), 
+            "Field 'CurrentStep' has invalid negative index");
+        
+        // Field 'ObjectiveCount' starts at index 8 with size 1
+        Assert.That(8, Is.GreaterThanOrEqualTo(0), 
+            "Field 'ObjectiveCount' has invalid negative index");
+        
+        // Field 'IsSequential' starts at index 9 with size 1
+        Assert.That(9, Is.GreaterThanOrEqualTo(0), 
+            "Field 'IsSequential' has invalid negative index");
+        
+        // Field 'SecondsUntilReset' starts at index 12 with size 4
+        Assert.That(12, Is.GreaterThanOrEqualTo(0), 
+            "Field 'SecondsUntilReset' has invalid negative index");
+        
+        // Field 'Id' starts at index 16 with size 64
+        Assert.That(16, Is.GreaterThanOrEqualTo(0), 
+            "Field 'Id' has invalid negative index");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for EventChipRegistrationResult.
     /// </summary>
     [Test]

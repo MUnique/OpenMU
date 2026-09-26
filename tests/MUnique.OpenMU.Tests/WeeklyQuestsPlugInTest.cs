@@ -9,6 +9,8 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.NPC;
+using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.PlugIns.WeeklyQuests;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.WeeklyQuests;
@@ -418,6 +420,285 @@ public class WeeklyQuestsPlugInTest
         otherPlayer.Account = new Persistence.BasicModel.Account { Id = Guid.NewGuid(), LoginName = "other" };
         overview = await plugIn.GetOverviewAsync(otherPlayer).ConfigureAwait(false);
         Assert.That(overview!.Entries, Has.Count.EqualTo(1));
+    }
+
+    /// <summary>
+    /// Tests that the daily period starts at the configured time of the current day.
+    /// </summary>
+    [Test]
+    public void DailyPeriodStartsAtResetTimeOfCurrentDay()
+    {
+        var now = new DateTime(2026, 9, 25, 15, 0, 0, DateTimeKind.Utc);
+        Assert.That(WeeklyPeriod.GetDailyPeriodStartUtc(now, new TimeOnly(3, 0), TimeZoneInfo.Utc), Is.EqualTo(new DateTime(2026, 9, 25, 3, 0, 0, DateTimeKind.Utc)));
+
+        now = new DateTime(2026, 9, 25, 2, 0, 0, DateTimeKind.Utc);
+        var start = WeeklyPeriod.GetDailyPeriodStartUtc(now, new TimeOnly(3, 0), TimeZoneInfo.Utc);
+        Assert.That(start, Is.EqualTo(new DateTime(2026, 9, 24, 3, 0, 0, DateTimeKind.Utc)));
+        Assert.That(WeeklyPeriod.GetNextDailyPeriodStartUtc(start, TimeZoneInfo.Utc), Is.EqualTo(new DateTime(2026, 9, 25, 3, 0, 0, DateTimeKind.Utc)));
+    }
+
+    /// <summary>
+    /// Tests that the objectives of a sequential quest only make progress in their order, and that the quest is rewarded after the last one.
+    /// </summary>
+    [Test]
+    public async Task SequentialStepsOnlyCountTheCurrentStepAsync()
+    {
+        var player = await CreatePlayerAsync().ConfigureAwait(false);
+        var plugIn = CreatePlugIn(new InMemoryWeeklyQuestProgressRepository(), CreateStoryQuest(
+            new WeeklyQuestObjective { ObjectiveType = WeeklyQuestObjectiveType.GainMasterLevels },
+            new WeeklyQuestObjective { ObjectiveType = WeeklyQuestObjectiveType.GainResets, RequiredCount = 2 }));
+
+        await plugIn.CharacterResetAsync(player, 1).ConfigureAwait(false);
+        var entry = await GetEntryAsync(plugIn, player, "story").ConfigureAwait(false);
+        Assert.That(entry.Objectives.Select(o => o.Count), Is.EqualTo(new[] { 0, 0 }));
+
+        await plugIn.CharacterMasterLeveledUpAsync(player).ConfigureAwait(false);
+        await plugIn.CharacterResetAsync(player, 2).ConfigureAwait(false);
+        entry = await GetEntryAsync(plugIn, player, "story").ConfigureAwait(false);
+        Assert.That(entry.Objectives.Select(o => o.Count), Is.EqualTo(new[] { 1, 1 }));
+        Assert.That(entry.CurrentStep, Is.EqualTo(1));
+        Assert.That(player.Money, Is.EqualTo(0));
+
+        await plugIn.CharacterResetAsync(player, 3).ConfigureAwait(false);
+        entry = await GetEntryAsync(plugIn, player, "story").ConfigureAwait(false);
+        Assert.That(entry.IsRewarded, Is.True);
+        Assert.That(player.Money, Is.EqualTo(1000));
+    }
+
+    /// <summary>
+    /// Tests that one event makes progress in only one step of a sequential quest, even if the next step has the same type.
+    /// </summary>
+    [Test]
+    public async Task OneEventAdvancesOnlyOneSequentialStepAsync()
+    {
+        var player = await CreatePlayerAsync().ConfigureAwait(false);
+        var plugIn = CreatePlugIn(new InMemoryWeeklyQuestProgressRepository(), CreateStoryQuest(
+            new WeeklyQuestObjective { ObjectiveType = WeeklyQuestObjectiveType.GainResets },
+            new WeeklyQuestObjective { ObjectiveType = WeeklyQuestObjectiveType.GainResets }));
+
+        await plugIn.CharacterResetAsync(player, 1).ConfigureAwait(false);
+        var entry = await GetEntryAsync(plugIn, player, "story").ConfigureAwait(false);
+        Assert.That(entry.Count, Is.EqualTo(1));
+        Assert.That(entry.IsCompleted, Is.False);
+
+        await plugIn.CharacterResetAsync(player, 2).ConfigureAwait(false);
+        entry = await GetEntryAsync(plugIn, player, "story").ConfigureAwait(false);
+        Assert.That(entry.IsCompleted, Is.True);
+    }
+
+    /// <summary>
+    /// Tests that the objectives of a quest which isn't sequential make progress in any order.
+    /// </summary>
+    [Test]
+    public async Task ParallelObjectivesProgressInAnyOrderAsync()
+    {
+        var player = await CreatePlayerAsync().ConfigureAwait(false);
+        var quest = CreateStoryQuest(
+            new WeeklyQuestObjective { ObjectiveType = WeeklyQuestObjectiveType.GainResets },
+            new WeeklyQuestObjective { ObjectiveType = WeeklyQuestObjectiveType.GainMasterLevels });
+        quest.SequentialObjectives = false;
+        var plugIn = CreatePlugIn(new InMemoryWeeklyQuestProgressRepository(), quest);
+
+        await plugIn.CharacterMasterLeveledUpAsync(player).ConfigureAwait(false);
+        var entry = await GetEntryAsync(plugIn, player, "story").ConfigureAwait(false);
+        Assert.That(entry.Objectives.Select(o => o.IsDone), Is.EqualTo(new[] { false, true }));
+
+        await plugIn.CharacterResetAsync(player, 1).ConfigureAwait(false);
+        Assert.That(player.Money, Is.EqualTo(1000));
+    }
+
+    /// <summary>
+    /// Tests that talking to the configured NPC counts, and that such an NPC doesn't show "not implemented".
+    /// </summary>
+    [Test]
+    public async Task TalkToNpcCountsTheConfiguredNpcAsync()
+    {
+        var player = await CreatePlayerAsync().ConfigureAwait(false);
+        var guardian = new MonsterDefinition { Number = 240 };
+        var plugIn = CreatePlugIn(new InMemoryWeeklyQuestProgressRepository(), CreateStoryQuest(
+            new WeeklyQuestObjective { ObjectiveType = WeeklyQuestObjectiveType.TalkToNpc, Monster = guardian }));
+
+        var otherNpc = new NonPlayerCharacter(null!, new MonsterDefinition { Number = 241 }, null!);
+        await plugIn.NpcTalkStartedAsync(player, otherNpc).ConfigureAwait(false);
+        Assert.That(player.Money, Is.EqualTo(0));
+
+        var otherArgs = new NpcTalkEventArgs();
+        await plugIn.PlayerTalksToNpcAsync(player, otherNpc, otherArgs).ConfigureAwait(false);
+        Assert.That(otherArgs.HasBeenHandled, Is.False);
+
+        var guardianNpc = new NonPlayerCharacter(null!, guardian, null!);
+        var guardianArgs = new NpcTalkEventArgs();
+        await plugIn.PlayerTalksToNpcAsync(player, guardianNpc, guardianArgs).ConfigureAwait(false);
+        Assert.That(guardianArgs.HasBeenHandled, Is.True);
+
+        await plugIn.NpcTalkStartedAsync(player, guardianNpc).ConfigureAwait(false);
+        Assert.That(player.Money, Is.EqualTo(1000));
+    }
+
+    /// <summary>
+    /// Tests that entering a map counts, but being added to the same map again (e.g. after a respawn) doesn't.
+    /// </summary>
+    [Test]
+    public async Task EnterMapCountsOncePerMapChangeAsync()
+    {
+        var player = await CreatePlayerAsync().ConfigureAwait(false);
+        var map = (await player.GameContext.GetMapAsync(0).ConfigureAwait(false))!;
+        var quest = CreateStoryQuest(new WeeklyQuestObjective
+        {
+            ObjectiveType = WeeklyQuestObjectiveType.EnterMap,
+            Map = map.Definition,
+            RequiredCount = 2,
+        });
+        var plugIn = CreatePlugIn(new InMemoryWeeklyQuestProgressRepository(), quest);
+
+        await plugIn.ObjectAddedToMapAsync(map, player).ConfigureAwait(false);
+        await plugIn.ObjectAddedToMapAsync(map, player).ConfigureAwait(false);
+
+        var entry = await GetEntryAsync(plugIn, player, "story").ConfigureAwait(false);
+        Assert.That(entry.Count, Is.EqualTo(1));
+    }
+
+    /// <summary>
+    /// Tests that the progress of a daily quest is stored in the daily period.
+    /// </summary>
+    [Test]
+    public async Task DailyQuestIsStoredInDailyPeriodAsync()
+    {
+        var repository = new InMemoryWeeklyQuestProgressRepository();
+        var player = await CreatePlayerAsync().ConfigureAwait(false);
+        var plugIn = CreatePlugIn(repository);
+        plugIn.Configuration!.Quests.Single().Period = QuestPeriod.Daily;
+
+        await plugIn.CharacterResetAsync(player, 1).ConfigureAwait(false);
+        await plugIn.PlayerStateChangedAsync(player, PlayerState.EnteredWorld, PlayerState.CharacterSelection).ConfigureAwait(false);
+
+        var dailyStart = WeeklyPeriod.GetDailyPeriodStartUtc(DateTime.UtcNow, TimeOnly.MinValue, TimeZoneInfo.Utc);
+        var stored = await repository.LoadAsync(player.SelectedCharacter!.GetId(), new[] { dailyStart }).ConfigureAwait(false);
+        Assert.That(stored.Single().Count, Is.EqualTo(1));
+    }
+
+    /// <summary>
+    /// Tests that a completed story chapter stays completed, and unlocks the next chapter.
+    /// </summary>
+    [Test]
+    public async Task CompletedOnceQuestUnlocksNextChapterAsync()
+    {
+        var repository = new InMemoryWeeklyQuestProgressRepository();
+        var player = await CreatePlayerAsync().ConfigureAwait(false);
+        var chapter1 = CreateStoryQuest(new WeeklyQuestObjective { ObjectiveType = WeeklyQuestObjectiveType.GainResets });
+        var chapter2 = CreateStoryQuest(new WeeklyQuestObjective { ObjectiveType = WeeklyQuestObjectiveType.GainResets });
+        chapter2.Id = "story-2";
+        chapter2.PrerequisiteQuestId = chapter1.Id;
+        var plugIn = CreatePlugIn(repository, chapter1, chapter2);
+        await repository.SaveAsync(new[]
+        {
+            new WeeklyQuestProgress
+            {
+                CharacterId = player.SelectedCharacter!.GetId(),
+                PeriodStart = WeeklyPeriod.OncePeriodStartUtc,
+                QuestId = chapter1.Id,
+                Count = 1,
+                CompletedAt = DateTime.UtcNow.AddDays(-30),
+                RewardedAt = DateTime.UtcNow.AddDays(-30),
+            },
+        }).ConfigureAwait(false);
+
+        var overview = await plugIn.GetOverviewAsync(player).ConfigureAwait(false);
+
+        Assert.That(overview!.Entries.Select(e => e.Quest.Id), Is.EqualTo(new[] { "story", "story-2" }));
+        Assert.That(overview.Entries[0].IsRewarded, Is.True);
+
+        // The completed chapter doesn't make progress anymore, the unlocked one does.
+        await plugIn.CharacterResetAsync(player, 1).ConfigureAwait(false);
+        Assert.That(player.Money, Is.EqualTo(1000));
+        Assert.That((await GetEntryAsync(plugIn, player, "story-2").ConfigureAwait(false)).IsRewarded, Is.True);
+    }
+
+    /// <summary>
+    /// Tests that stored progress of another period of a quest (e.g. after its period was changed in the configuration) is ignored.
+    /// </summary>
+    [Test]
+    public async Task ProgressOfAnotherPeriodIsIgnoredAsync()
+    {
+        var repository = new InMemoryWeeklyQuestProgressRepository();
+        var player = await CreatePlayerAsync().ConfigureAwait(false);
+        var plugIn = CreatePlugIn(repository);
+        var quest = plugIn.Configuration!.Quests.Single();
+        quest.Period = QuestPeriod.Once;
+        var weekStart = WeeklyPeriod.GetPeriodStartUtc(DateTime.UtcNow, DayOfWeek.Monday, TimeOnly.MinValue, TimeZoneInfo.Utc);
+        await repository.SaveAsync(new[]
+        {
+            new WeeklyQuestProgress { CharacterId = player.SelectedCharacter!.GetId(), PeriodStart = weekStart, QuestId = quest.Id, Count = 1 },
+        }).ConfigureAwait(false);
+
+        Assert.That(await GetCountAsync(plugIn, player, quest.Id).ConfigureAwait(false), Is.EqualTo(0));
+    }
+
+    /// <summary>
+    /// Tests that the progress is loaded once, and not again for each event.
+    /// </summary>
+    [Test]
+    public async Task ProgressIsLoadedOnceAsync()
+    {
+        var repository = new InMemoryWeeklyQuestProgressRepository();
+        var player = await CreatePlayerAsync().ConfigureAwait(false);
+        var plugIn = CreatePlugIn(repository);
+        plugIn.Configuration!.Quests.Single().RequiredCount = 100;
+
+        for (var i = 0; i < 10; i++)
+        {
+            await plugIn.CharacterResetAsync(player, i).ConfigureAwait(false);
+        }
+
+        Assert.That(repository.LoadCount, Is.EqualTo(1));
+        Assert.That(await GetCountAsync(plugIn, player, QuestId).ConfigureAwait(false), Is.EqualTo(10));
+    }
+
+    /// <summary>
+    /// Tests that the purge deletes the progress of old periods, but keeps the one of the quests which are done once.
+    /// </summary>
+    [Test]
+    public async Task PurgeKeepsQuestsWhichAreDoneOnceAsync()
+    {
+        var repository = new InMemoryWeeklyQuestProgressRepository();
+        var characterId = Guid.NewGuid();
+        var old = DateTime.UtcNow.AddDays(-100);
+        var current = DateTime.UtcNow.AddDays(-1);
+        await repository.SaveAsync(new[]
+        {
+            new WeeklyQuestProgress { CharacterId = characterId, PeriodStart = old, QuestId = "old" },
+            new WeeklyQuestProgress { CharacterId = characterId, PeriodStart = current, QuestId = "current" },
+            new WeeklyQuestProgress { CharacterId = characterId, PeriodStart = WeeklyPeriod.OncePeriodStartUtc, QuestId = "story" },
+        }).ConfigureAwait(false);
+
+        var deleted = await repository.DeleteExpiredAsync(DateTime.UtcNow.AddDays(-56), WeeklyPeriod.OncePeriodStartUtc).ConfigureAwait(false);
+
+        Assert.That(deleted, Is.EqualTo(1));
+        var remaining = await repository.LoadAsync(characterId, new[] { old, current, WeeklyPeriod.OncePeriodStartUtc }).ConfigureAwait(false);
+        Assert.That(remaining.Select(p => p.QuestId), Is.EquivalentTo(new[] { "current", "story" }));
+    }
+
+    private static WeeklyQuestDefinition CreateStoryQuest(params WeeklyQuestObjective[] objectives)
+    {
+        return new WeeklyQuestDefinition
+        {
+            Id = "story",
+            Name = "Capítulo I",
+            Category = QuestCategory.Main,
+            Period = QuestPeriod.Once,
+            SequentialObjectives = true,
+            Objectives = objectives.ToList(),
+            Rewards = new List<WeeklyQuestReward>
+            {
+                new() { RewardType = WeeklyQuestRewardType.Money, Amount = 1000 },
+            },
+        };
+    }
+
+    private static async ValueTask<WeeklyQuestOverviewEntry> GetEntryAsync(WeeklyQuestsPlugIn plugIn, Player player, string questId)
+    {
+        var overview = await plugIn.GetOverviewAsync(player).ConfigureAwait(false);
+        return overview!.Entries.Single(e => e.Quest.Id == questId);
     }
 
     private static async ValueTask<int> GetCountAsync(WeeklyQuestsPlugIn plugIn, Player player, string questId)

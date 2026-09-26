@@ -12,6 +12,9 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 /// </summary>
 public class WeeklyQuestDefinition
 {
+    private IReadOnlyList<WeeklyQuestObjective>? _objectives;
+    private int _objectivesSourceCount;
+
     /// <summary>
     /// Gets or sets the identifier of the quest. The progress of the characters is stored by it.
     /// </summary>
@@ -38,6 +41,25 @@ public class WeeklyQuestDefinition
     /// </summary>
     [Display(Name = "Activa")]
     public bool IsActive { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the category, which decides under which tab the quest is shown.
+    /// </summary>
+    [Display(Name = "Categoría", Description = "La pestaña en la que se muestra: Historia, Diaria, Semanal, Clase o Zona.")]
+    public QuestCategory Category { get; set; }
+
+    /// <summary>
+    /// Gets or sets the period after which the progress starts over.
+    /// </summary>
+    [Display(Name = "Reinicio", Description = "Semanal, Diaria o Una sola vez (p. ej. los capítulos de la historia).")]
+    public QuestPeriod Period { get; set; }
+
+    /// <summary>
+    /// Gets or sets the identifier of the quest which has to be completed before this quest is available.
+    /// </summary>
+    [Display(Name = "Requiere quest", Description = "Opcional. Id de la quest que hay que completar antes, p. ej. el capítulo anterior. Hasta entonces, esta quest no se muestra.")]
+    [StringLength(64)]
+    public string? PrerequisiteQuestId { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether this quest is part of every week, when the quests rotate
@@ -91,9 +113,25 @@ public class WeeklyQuestDefinition
     public ICollection<CharacterClass> QualifiedCharacters { get; set; } = new List<CharacterClass>();
 
     /// <summary>
+    /// Gets or sets the objectives (steps) of the quest. If empty, the single objective of the fields
+    /// <see cref="ObjectiveType"/>, <see cref="RequiredCount"/> etc. is used.
+    /// </summary>
+    [Display(Name = "Pasos", Description = "Opcional. Varios objetivos, p. ej. hablar con un NPC, matar 50 Skeletons y derrotar al jefe. Si está vacío, se usa el objetivo simple de abajo.")]
+    [MemberOfAggregate]
+    [ScaffoldColumn(true)]
+    public ICollection<WeeklyQuestObjective> Objectives { get; set; } = new List<WeeklyQuestObjective>();
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the <see cref="Objectives"/> have to be done in their order.
+    /// Otherwise, they make progress at the same time.
+    /// </summary>
+    [Display(Name = "Pasos en orden", Description = "Cada paso cuenta recién cuando se completó el anterior.")]
+    public bool SequentialObjectives { get; set; }
+
+    /// <summary>
     /// Gets or sets the type of the objective.
     /// </summary>
-    [Display(Name = "Tipo de objetivo")]
+    [Display(Name = "Tipo de objetivo", Description = "Objetivo simple: solo se usa si la quest no tiene pasos.")]
     public WeeklyQuestObjectiveType ObjectiveType { get; set; }
 
     /// <summary>
@@ -104,15 +142,16 @@ public class WeeklyQuestDefinition
     public int RequiredCount { get; set; } = 1;
 
     /// <summary>
-    /// Gets or sets the monster which has to be killed, for <see cref="WeeklyQuestObjectiveType.KillMonster"/>.
+    /// Gets or sets the monster which has to be killed, for <see cref="WeeklyQuestObjectiveType.KillMonster"/>,
+    /// or the NPC to talk to, for <see cref="WeeklyQuestObjectiveType.TalkToNpc"/>.
     /// </summary>
-    [Display(Name = "Monstruo", Description = "Solo para \"Matar monstruo\".")]
+    [Display(Name = "Monstruo / NPC", Description = "Solo para \"Matar monstruo\" y \"Hablar con NPC\".")]
     public virtual MonsterDefinition? Monster { get; set; }
 
     /// <summary>
     /// Gets or sets the map on which the kills have to happen. If empty, kills on every map count.
     /// </summary>
-    [Display(Name = "Mapa", Description = "Opcional, para objetivos de kills y de juntar items. Vacío = cualquier mapa.")]
+    [Display(Name = "Mapa", Description = "Obligatorio para \"Entrar a un mapa\". Para los demás es opcional: vacío = cualquier mapa.")]
     public virtual GameMapDefinition? Map { get; set; }
 
     /// <summary>
@@ -211,6 +250,28 @@ public class WeeklyQuestDefinition
     }
 
     /// <summary>
+    /// Gets the objectives of the quest: the configured <see cref="Objectives"/>, or the single objective
+    /// of the fields <see cref="ObjectiveType"/>, <see cref="RequiredCount"/> etc. when there are none.
+    /// </summary>
+    /// <returns>The objectives; at least one.</returns>
+    /// <remarks>
+    /// The result is cached, because it's needed for every event which may make progress.
+    /// A changed plugin configuration is deserialized into new objects, so the cache doesn't get outdated.
+    /// </remarks>
+    public IReadOnlyList<WeeklyQuestObjective> GetObjectives()
+    {
+        var count = this.Objectives.Count;
+        if (this._objectives is { } cached && this._objectivesSourceCount == count)
+        {
+            return cached;
+        }
+
+        this._objectivesSourceCount = count;
+        this._objectives = count == 0 ? [this.CreateSingleObjective()] : this.Objectives.ToArray();
+        return this._objectives;
+    }
+
+    /// <summary>
     /// Gets the text which describes all rewards to a player.
     /// </summary>
     /// <param name="culture">The culture of the player.</param>
@@ -222,4 +283,20 @@ public class WeeklyQuestDefinition
 
     /// <inheritdoc />
     public override string ToString() => $"{this.Id}: {this.Name}";
+
+    private WeeklyQuestObjective CreateSingleObjective() => new()
+    {
+        ObjectiveType = this.ObjectiveType,
+        RequiredCount = this.RequiredCount,
+        Monster = this.Monster,
+        Map = this.Map,
+        Item = this.Item,
+        MinimumItemLevel = this.MinimumItemLevel,
+        MiniGameType = this.MiniGameType,
+        MinimumVictimLevel = this.MinimumVictimLevel,
+        IgnoreSameIp = this.IgnoreSameIp,
+        IgnoreSameGuild = this.IgnoreSameGuild,
+        IgnoreSameParty = this.IgnoreSameParty,
+        VictimCooldownMinutes = this.VictimCooldownMinutes,
+    };
 }
