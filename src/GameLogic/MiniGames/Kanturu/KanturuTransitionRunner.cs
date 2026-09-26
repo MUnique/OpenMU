@@ -48,14 +48,16 @@ internal sealed class KanturuTransitionRunner : IKanturuPhaseRunner
 
         await this._showStateAsync(phase.State, phase.DetailState).ConfigureAwait(false);
 
-        // The cinematic is never cancelled in the middle, so it uses no cancellation token.
-        await Task.Delay(transition.CinematicDuration).ConfigureAwait(false);
+        // The cinematic is never skipped in the middle (a game master skip waits for it),
+        // but it still observes the game end, so a torn-down game doesn't linger in it.
+        await Task.Delay(transition.CinematicDuration, cancellationToken).ConfigureAwait(false);
         cancellationToken.ThrowIfCancellationRequested();
 
         var entryPoint = new Point(transition.EntryPointX, transition.EntryPointY);
         await this._forEachPlayerAsync(player => player.MoveAsync(entryPoint).AsTask()).ConfigureAwait(false);
 
-        await Task.Delay(transition.WarpAnimationDelay).ConfigureAwait(false);
+        await Task.Delay(transition.WarpAnimationDelay, cancellationToken).ConfigureAwait(false);
+        cancellationToken.ThrowIfCancellationRequested();
         await this._forEachPlayerAsync(player =>
             player.InvokeViewPlugInAsync<IMapChangePlugIn>(p =>
                 p.MapChangeFailedAsync()).AsTask()).ConfigureAwait(false);

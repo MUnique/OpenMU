@@ -36,6 +36,10 @@ public sealed class KanturuStartPlugIn : MiniGameStartBasePlugIn<KanturuStartCon
             null,
             gameContext.LoggerFactory.CreateLogger(this.GetType())).ConfigureAwait(false);
 
+        // A forced start must proceed at once: reset the task cooldown, which would
+        // otherwise swallow it when the previous run started less than TaskDuration ago.
+        this.GetStateByGameContext(gameContext).LastRunUtc = DateTime.MinValue;
+
         await base.DisposeRunningGamesAsync(gameContext).ConfigureAwait(false);
     }
 

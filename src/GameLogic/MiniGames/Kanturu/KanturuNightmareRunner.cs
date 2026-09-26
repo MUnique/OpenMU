@@ -12,8 +12,8 @@ using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Pathfinding;
 
 /// <summary>
-/// Runs the Nightmare boss fight: spawn wait, health-phase teleports, special attacks.
-/// Owns the boss state; the spawn wait is provided by the caller.
+/// Runs the Nightmare boss fight: spawn wait, health-phase teleports with minion
+/// summons, special attacks.
 /// </summary>
 internal sealed class KanturuNightmareRunner : IKanturuPhaseRunner
 {
@@ -25,6 +25,7 @@ internal sealed class KanturuNightmareRunner : IKanturuPhaseRunner
     private readonly Func<KanturuPhaseDefinition, CancellationToken, Task> _standbyAsync;
     private readonly Func<KanturuNightmareDefinition, CancellationToken, Task<Monster?>> _waitForSpawnAsync;
     private readonly Func<Func<Player, Task>, ValueTask> _forEachPlayerAsync;
+    private readonly Func<byte, CancellationToken, Task> _spawnWaveAsync;
     private readonly ILogger _logger;
 
     private Monster? _nightmareMonster;
@@ -37,11 +38,12 @@ internal sealed class KanturuNightmareRunner : IKanturuPhaseRunner
     /// <param name="beginAsync">Starts a phase.</param>
     /// <param name="showStateAsync">Broadcasts a state change to the clients.</param>
     /// <param name="showGoldenAsync">Shows a golden message, if a message key is configured.</param>
-    /// <param name="showLiveCountAsync">Broadcasts the currently alive monster count.</param>
+    /// <param name="showLiveCountAsync">Broadcasts the remaining minion count.</param>
     /// <param name="waitAsync">Waits for a phase to end; reports whether it completed.</param>
     /// <param name="standbyAsync">Runs the standby time after a phase.</param>
     /// <param name="waitForSpawnAsync">Waits for the Nightmare boss to spawn.</param>
     /// <param name="forEachPlayerAsync">Executes an action for each player.</param>
+    /// <param name="spawnWaveAsync">Spawns a configured monster wave on the event map.</param>
     /// <param name="logger">The logger.</param>
     public KanturuNightmareRunner(
         Func<KanturuPhaseDefinition, CancellationToken, Task> beginAsync,
@@ -52,6 +54,7 @@ internal sealed class KanturuNightmareRunner : IKanturuPhaseRunner
         Func<KanturuPhaseDefinition, CancellationToken, Task> standbyAsync,
         Func<KanturuNightmareDefinition, CancellationToken, Task<Monster?>> waitForSpawnAsync,
         Func<Func<Player, Task>, ValueTask> forEachPlayerAsync,
+        Func<byte, CancellationToken, Task> spawnWaveAsync,
         ILogger logger)
     {
         this._beginAsync = beginAsync;
@@ -62,6 +65,7 @@ internal sealed class KanturuNightmareRunner : IKanturuPhaseRunner
         this._standbyAsync = standbyAsync;
         this._waitForSpawnAsync = waitForSpawnAsync;
         this._forEachPlayerAsync = forEachPlayerAsync;
+        this._spawnWaveAsync = spawnWaveAsync;
         this._logger = logger;
     }
 
@@ -101,6 +105,7 @@ internal sealed class KanturuNightmareRunner : IKanturuPhaseRunner
 
         await bossCts.CancelAsync().ConfigureAwait(false);
 
+        // Both background loops end through the cancellation above.
         try
         {
             await healthMonitor.ConfigureAwait(false);
@@ -172,13 +177,11 @@ internal sealed class KanturuNightmareRunner : IKanturuPhaseRunner
         Interlocked.Exchange(ref this._nightmareTeleporting, 1);
         try
         {
-            monster.Health = (int)monster.Attributes[Stats.MaximumHealth];
-
-            await Task.Delay(nightmare.TeleportDelay).ConfigureAwait(false);
+            await Task.Delay(nightmare.TeleportDelay, ct).ConfigureAwait(false);
             ct.ThrowIfCancellationRequested();
 
-            // The boss may have died while teleporting; restoring its health then
-            // would resurrect it after the death event already ran.
+            // The boss may have died while teleporting; moving or announcing it then
+            // would act on a corpse after the death event already ran.
             if (!monster.IsAlive)
             {
                 return;
@@ -191,7 +194,12 @@ internal sealed class KanturuNightmareRunner : IKanturuPhaseRunner
                 return;
             }
 
-            monster.Health = (int)monster.Attributes[Stats.MaximumHealth];
+            // The summons are ordinary configured waves around the teleport target.
+            if (hpPhase.SummonWaveNumber is { } summonWaveNumber)
+            {
+                await this._spawnWaveAsync(summonWaveNumber, ct).ConfigureAwait(false);
+                await this._showLiveCountAsync().ConfigureAwait(false);
+            }
 
             await this._showGoldenAsync(hpPhase.MessageKey).ConfigureAwait(false);
         }

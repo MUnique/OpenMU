@@ -84,7 +84,7 @@ public class MiniGamePlayerRegistryTests
         var registry = new MiniGamePlayerRegistry(this.CreateDefinition());
         await registry.SetStateAsync(MiniGameState.Playing).ConfigureAwait(false);
 
-        var result = await registry.TryEnterAsync(CreatePlayer(), _ => ValueTask.FromResult(true), allowEnterWhilePlaying: true).ConfigureAwait(false);
+        var result = await registry.TryEnterAsync(CreatePlayer(), _ => ValueTask.FromResult(true), allowEnterWhilePlaying: () => true).ConfigureAwait(false);
 
         Assert.That(result, Is.EqualTo(EnterResult.Success));
     }
@@ -98,7 +98,7 @@ public class MiniGamePlayerRegistryTests
         var registry = new MiniGamePlayerRegistry(this.CreateDefinition());
         await registry.SetStateAsync(MiniGameState.Ended).ConfigureAwait(false);
 
-        var result = await registry.TryEnterAsync(CreatePlayer(), _ => ValueTask.FromResult(true), allowEnterWhilePlaying: true).ConfigureAwait(false);
+        var result = await registry.TryEnterAsync(CreatePlayer(), _ => ValueTask.FromResult(true), allowEnterWhilePlaying: () => true).ConfigureAwait(false);
 
         Assert.That(result, Is.EqualTo(EnterResult.NotOpen));
     }

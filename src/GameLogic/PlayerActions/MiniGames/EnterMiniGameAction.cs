@@ -62,7 +62,10 @@ public class EnterMiniGameAction
 
         // The mini game entrance warps the player directly, so the requirements of the map
         // are not checked by the usual warp actions. Some maps require equipped items.
+        // A running game may waive them, e.g. the open tower no longer needs the pendant.
+        var liveGame = player.GameContext.MiniGames.TryGetRunningMiniGame(miniGameDefinition, null);
         if (miniGameDefinition.Entrance?.Map is { } entranceMap
+            && liveGame?.SkipMapEntryRequirements is not true
             && entranceMap.TryGetRequirementError(player, out var requirementError))
         {
             await player.ShowBlueMessageAsync(requirementError).ConfigureAwait(false);

@@ -13,10 +13,10 @@ public class KanturuStartConfiguration : MiniGameStartConfiguration
 {
     /// <summary>
     /// Gets the default configuration for the Kanturu event.
-    /// The event runs once per day. After Nightmare is defeated the Tower of Refinement
-    /// stays open for <see cref="TowerOpenDuration"/>, then the event ends and the next
-    /// occurrence is the following day.
-    /// The preparation window (entry phase) opens 3 minutes before the scheduled start time.
+    /// The event runs every 6 hours: each tick opens a silent entry lobby while no
+    /// fight runs and the tower is closed. Entry is additionally always open on demand,
+    /// and the tower stays open for <see cref="TowerOpenDuration"/> after Nightmare dies.
+    /// There are no entrance announcements; the gateway dialog shows the live state.
     /// </summary>
     public static KanturuStartConfiguration Default =>
         new()
@@ -24,8 +24,8 @@ public class KanturuStartConfiguration : MiniGameStartConfiguration
             PreStartMessageDelay = TimeSpan.Zero,
             EntranceOpenedMessage = "Kanturu Refinery Tower entrance is open and closes in {0} minute(s).",
             EntranceClosedMessage = "Kanturu Refinery Tower entrance closed.",
-            TaskDuration = TimeSpan.FromMinutes(135),
-            Timetable = [new TimeOnly(20, 0)],   // 20:00 UTC — one occurrence per day
+            TaskDuration = TimeSpan.FromHours(6),
+            Timetable = GenerateTimeSequence(TimeSpan.FromHours(6)).ToList(),
             TowerOpenDuration = TimeSpan.FromHours(23),
         };
 

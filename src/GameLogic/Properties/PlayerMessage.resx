@@ -442,10 +442,10 @@
     <value>NIGHTMARE has appeared! Defeat him to claim victory!</value>
   </data>
   <data name="KanturuNightmareTeleport2" xml:space="preserve">
-    <value>Nightmare has teleported! He recovers his full strength!</value>
+    <value>Nightmare has teleported! Don't let him escape!</value>
   </data>
   <data name="KanturuNightmareTeleport3" xml:space="preserve">
-    <value>Nightmare teleports again! He is more powerful than ever!</value>
+    <value>Nightmare teleports again! Keep up the attack!</value>
   </data>
   <data name="KanturuNightmareTeleport4" xml:space="preserve">
     <value>Nightmare is at his last stand! Finish him!</value>

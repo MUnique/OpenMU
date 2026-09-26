@@ -534,6 +534,7 @@ internal sealed class Program : IDisposable
                 this.CreateDefaultPlugInConfiguration(plugInType, plugInConfiguration, referenceHandler);
             }
 
+            this._logger.Information("Created missing plugin configuration for plugin type {plugInType}", plugInType);
             yield return plugInConfiguration;
         }
 

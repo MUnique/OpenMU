@@ -139,6 +139,12 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         || (this.State == MiniGameState.Playing && this.AllowEnterWhilePlaying);
 
     /// <summary>
+    /// Gets a value indicating whether the map entry requirements are skipped when
+    /// entering, e.g. an event item which the tower visitors no longer need.
+    /// </summary>
+    internal virtual bool SkipMapEntryRequirements => false;
+
+    /// <summary>
     /// Gets a value indicating whether entering is allowed while the game is already
     /// running. Specific games override this to let players (re-)join mid-event.
     /// </summary>
@@ -204,7 +210,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     /// <returns>A value indicating whether entering had success.</returns>
     public async ValueTask<EnterResult> TryEnterAsync(Player player)
     {
-        var result = await this._players.TryEnterAsync(player, this.AreEquippedItemsAllowedAsync, this.AllowEnterWhilePlaying).ConfigureAwait(false);
+        var result = await this._players.TryEnterAsync(player, this.AreEquippedItemsAllowedAsync, () => this.AllowEnterWhilePlaying).ConfigureAwait(false);
         if (result != EnterResult.Success)
         {
             return result;

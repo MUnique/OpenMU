@@ -105,6 +105,12 @@ internal class KanturuEvent : BaseMapInitializer
 
         // Wave 8: Nightmare.
         (270, NightmareNumber, 78, 78, 143, 143, 1, 8),
+
+        // Waves 9-11: Nightmare summons — 7 Dread Fear around each teleport target
+        // of the health phases ((79, 100), (78, 124), (78, 141)).
+        (280, DreadfearNumber, 77, 81, 98, 102, 7, 9),
+        (281, DreadfearNumber, 76, 80, 122, 126, 7, 10),
+        (282, DreadfearNumber, 76, 80, 139, 143, 7, 11),
     ];
 
     /// <inheritdoc/>

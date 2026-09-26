@@ -94,29 +94,41 @@ public static class KanturuTowerEntry
             return false;
         }
 
-        if (player.GameContext.MiniGames.TryGetRunningMiniGame(definition, null) is KanturuContext tower)
+        if (player.GameContext.MiniGames.TryGetRunningMiniGame(definition, null) is KanturuContext tower
+            && !tower.IsDisposed && !tower.IsDisposing)
         {
-            if (!tower.TowerMode && tower.State is not (MiniGameState.Ended or MiniGameState.Disposed))
+            if (IsLiveEventBlocking(tower))
             {
-                return false; // A live event owns entry; never break it.
+                return false;
             }
 
             // A running tower is reused, including its short-lived lobby: with instant
             // start it only exists for milliseconds, so entering must not destroy it.
-            // Usability is defined by state, not by lingering players: an ended game
-            // with stragglers still inside is already over. Anything else found here
-            // is tearing down; dispose it so the creation below starts fresh instead
-            // of reusing a dead map.
-            if (tower.TowerMode && tower.State is MiniGameState.Open or MiniGameState.Closed or MiniGameState.Playing)
+            if (IsReusableTower(tower))
             {
                 return true;
             }
 
+            // Anything else found here is tearing down (ended with stragglers, disposing);
+            // dispose it so the creation below starts fresh instead of reusing a dead map.
             await tower.DisposeAsync().ConfigureAwait(false);
         }
 
         var game = await player.GameContext.MiniGames.GetOrCreateAsync(CreateTowerDefinition(definition, remaining), player).ConfigureAwait(false);
         return game is KanturuContext;
+    }
+
+    private static bool IsLiveEventBlocking(KanturuContext tower)
+    {
+        // A live event owns entry; never break it for the tower.
+        return !tower.TowerMode && tower.State is not (MiniGameState.Ended or MiniGameState.Disposed);
+    }
+
+    private static bool IsReusableTower(KanturuContext tower)
+    {
+        // Usability is defined by state, not by lingering players: an ended game
+        // with stragglers still inside is already over.
+        return tower.TowerMode && tower.State is MiniGameState.Open or MiniGameState.Closed or MiniGameState.Playing;
     }
 
     private static MiniGameContext? GetLiveGame(Player player, MiniGameDefinition definition)

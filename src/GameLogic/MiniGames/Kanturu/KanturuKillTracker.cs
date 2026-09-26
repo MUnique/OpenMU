@@ -61,9 +61,10 @@ internal sealed class KanturuKillTracker
     {
         var state = Volatile.Read(ref this._state);
         var phase = state?.Phase;
-        if (!KanturuMonsterComparer.IsCountedMonster(killed, phase) || phase is null || state is null)
+        var isNightmarePhase = phase?.Kind == KanturuPhaseKind.Nightmare;
+        if (phase is null || state is null || !KanturuMonsterComparer.IsCountedMonster(killed, phase))
         {
-            return new KanturuKillResult(false, this.KillCount, false, false, phase?.Kind == KanturuPhaseKind.Nightmare, phase);
+            return new KanturuKillResult(false, this.KillCount, false, false, isNightmarePhase, phase);
         }
 
         var killCount = state.RegisterKill();
@@ -73,10 +74,10 @@ internal sealed class KanturuKillTracker
             state.Completion.TrySetResult();
         }
 
-        var bossKilled = phase.Kind == KanturuPhaseKind.Nightmare
+        var bossKilled = isNightmarePhase
             && KanturuMonsterComparer.IsSameMonster(phase.Nightmare?.Monster, killed);
 
-        return new KanturuKillResult(true, killCount, phaseComplete, bossKilled, phase.Kind == KanturuPhaseKind.Nightmare, phase);
+        return new KanturuKillResult(true, killCount, phaseComplete, bossKilled, isNightmarePhase, phase);
     }
 
     /// <summary>

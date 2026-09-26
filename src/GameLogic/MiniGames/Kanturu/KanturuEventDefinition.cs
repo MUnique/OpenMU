@@ -15,13 +15,15 @@ using MUnique.OpenMU.GameLogic.Properties;
 /// <remarks>
 /// It's configured at the Kanturu start plug-in, see
 /// <c>MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks.KanturuStartConfiguration</c>.
-/// The values of <see cref="CreateDefault"/> describe the original season 6 event.
+/// The values of <see cref="CreateDefault"/> describe the season 6 event.
 /// </remarks>
 public class KanturuEventDefinition
 {
     private const short MayaLeftHandNumber = 362;
 
     private const short MayaRightHandNumber = 363;
+
+    private const short MayaBodyNumber = 364;
 
     private const short NightmareNumber = 361;
 
@@ -157,13 +159,24 @@ public class KanturuEventDefinition
     public string? DefeatMessageKey { get; set; }
 
     /// <summary>
-    /// Creates the definition of the original season 6 event.
+    /// Gets the monster numbers of Maya (body and hands), which deal the wide area
+    /// attacks of the Maya phases.
+    /// </summary>
+    internal static IReadOnlySet<short> MayaMonsterNumbers { get; } = new HashSet<short>
+    {
+        MayaBodyNumber,
+        MayaLeftHandNumber,
+        MayaRightHandNumber,
+    };
+
+    /// <summary>
+    /// Creates the default definition of the Kanturu event.
     /// </summary>
     /// <param name="gameConfiguration">
     /// The game configuration, from which the monsters of the event are resolved. Monsters
     /// which it doesn't contain are left out.
     /// </param>
-    /// <returns>The definition of the original season 6 event.</returns>
+    /// <returns>The default definition of the Kanturu event.</returns>
     public static KanturuEventDefinition CreateDefault(GameConfiguration gameConfiguration)
     {
         IList<MonsterDefinition> Monsters(params short[] monsterNumbers) => monsterNumbers
@@ -203,7 +216,8 @@ public class KanturuEventDefinition
                     Kind = KanturuPhaseKind.MonsterWave,
                     State = KanturuState.MayaBattle,
                     DetailState = (byte)KanturuMayaDetailState.Monster1,
-                    TimeLimit = TimeSpan.FromMinutes(10),
+                    TimeLimit = TimeSpan.FromMinutes(15),
+                    TimeLimitGroup = KanturuWaveGroup.MayaLeftHand,
                     SpawnWaveNumber = 1,
                     KillTarget = 40,
                     CountedMonsters = Monsters(BladeHunterNumber, DreadfearNumber),
@@ -215,6 +229,7 @@ public class KanturuEventDefinition
                     Kind = KanturuPhaseKind.MonsterWave,
                     State = KanturuState.MayaBattle,
                     DetailState = (byte)KanturuMayaDetailState.Maya1,
+                    TimeLimitGroup = KanturuWaveGroup.MayaLeftHand,
                     SpawnWaveNumber = 2,
                     KillTarget = 1,
                     CountedMonsters = Monsters(MayaLeftHandNumber),
@@ -228,7 +243,8 @@ public class KanturuEventDefinition
                     Kind = KanturuPhaseKind.MonsterWave,
                     State = KanturuState.MayaBattle,
                     DetailState = (byte)KanturuMayaDetailState.Monster2,
-                    TimeLimit = TimeSpan.FromMinutes(10),
+                    TimeLimit = TimeSpan.FromMinutes(15),
+                    TimeLimitGroup = KanturuWaveGroup.MayaRightHand,
                     SpawnWaveNumber = 3,
                     KillTarget = 40,
                     CountedMonsters = Monsters(BladeHunterNumber, DreadfearNumber),
@@ -240,6 +256,7 @@ public class KanturuEventDefinition
                     Kind = KanturuPhaseKind.MonsterWave,
                     State = KanturuState.MayaBattle,
                     DetailState = (byte)KanturuMayaDetailState.Maya2,
+                    TimeLimitGroup = KanturuWaveGroup.MayaRightHand,
                     SpawnWaveNumber = 4,
                     KillTarget = 1,
                     CountedMonsters = Monsters(MayaRightHandNumber),
@@ -253,7 +270,8 @@ public class KanturuEventDefinition
                     Kind = KanturuPhaseKind.MonsterWave,
                     State = KanturuState.MayaBattle,
                     DetailState = (byte)KanturuMayaDetailState.Monster3,
-                    TimeLimit = TimeSpan.FromMinutes(10),
+                    TimeLimit = TimeSpan.FromMinutes(20),
+                    TimeLimitGroup = KanturuWaveGroup.MayaBothHands,
                     SpawnWaveNumber = 5,
                     KillTarget = 20,
                     CountedMonsters = Monsters(DreadfearNumber, TwinTaleNumber),
@@ -265,6 +283,7 @@ public class KanturuEventDefinition
                     Kind = KanturuPhaseKind.MonsterWave,
                     State = KanturuState.MayaBattle,
                     DetailState = (byte)KanturuMayaDetailState.Maya3,
+                    TimeLimitGroup = KanturuWaveGroup.MayaBothHands,
                     SpawnWaveNumber = 6,
                     KillTarget = 2,
                     CountedMonsters = Monsters(MayaLeftHandNumber, MayaRightHandNumber),
@@ -294,13 +313,15 @@ public class KanturuEventDefinition
                     Kind = KanturuPhaseKind.MonsterWave,
                     State = KanturuState.NightmareBattle,
                     DetailState = (byte)KanturuNightmareDetailState.Idle,
-                    TimeLimit = TimeSpan.FromMinutes(30),
+                    TimeLimit = TimeSpan.FromMinutes(20),
+                    TimeLimitGroup = KanturuWaveGroup.Nightmare,
                     SpawnWaveNumber = 7,
                     KillTarget = 45,
                     CountedMonsters = Monsters(GenociderNumber, DreadfearNumber, PersonaNumber),
                     StartMessageKey = nameof(PlayerMessage.KanturuNightmareGuardiansAppeared),
 
                     // The guardians don't have to be killed; they fight alongside the boss.
+                    // The wave clock starts here, so the Nightmare inherits the remainder.
                     Duration = TimeSpan.FromSeconds(3),
                 },
                 new KanturuPhaseDefinition
@@ -309,6 +330,7 @@ public class KanturuEventDefinition
                     Kind = KanturuPhaseKind.Nightmare,
                     State = KanturuState.NightmareBattle,
                     DetailState = (byte)KanturuNightmareDetailState.NightmareIntro,
+                    TimeLimitGroup = KanturuWaveGroup.Nightmare,
                     StartDelay = TimeSpan.FromSeconds(3),
                     SpawnWaveNumber = 8,
                     KillTarget = 1,
@@ -320,27 +342,32 @@ public class KanturuEventDefinition
                         BattleDetailState = (byte)KanturuNightmareDetailState.Battle,
 
                         // The boss spawns at (78, 143) and moves within the zone of X:75-88, Y:97-143.
+                        // The targets drift towards the Refinery Tower gate as its health lessens.
+                        // Each threshold spawns its summon wave around the new position.
                         HpPhases =
                         [
                             new KanturuNightmareHpPhase
                             {
                                 HealthPercentage = 75,
-                                TeleportTargetX = 82,
-                                TeleportTargetY = 130,
+                                TeleportTargetX = 79,
+                                TeleportTargetY = 100,
+                                SummonWaveNumber = 9,
                                 MessageKey = nameof(PlayerMessage.KanturuNightmareTeleport2),
                             },
                             new KanturuNightmareHpPhase
                             {
                                 HealthPercentage = 50,
-                                TeleportTargetX = 76,
-                                TeleportTargetY = 115,
+                                TeleportTargetX = 78,
+                                TeleportTargetY = 124,
+                                SummonWaveNumber = 10,
                                 MessageKey = nameof(PlayerMessage.KanturuNightmareTeleport3),
                             },
                             new KanturuNightmareHpPhase
                             {
                                 HealthPercentage = 25,
-                                TeleportTargetX = 85,
-                                TeleportTargetY = 100,
+                                TeleportTargetX = 78,
+                                TeleportTargetY = 141,
+                                SummonWaveNumber = 11,
                                 MessageKey = nameof(PlayerMessage.KanturuNightmareTeleport4),
                             },
                         ],
