@@ -92,7 +92,10 @@ public partial class ItemDefinition
     public bool IsPersonalStoreSellable { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets a value indicating whether items of this kind can be repaired.
+    /// Gets or sets a value indicating whether items of this kind can be repaired the normal way:
+    /// by an NPC, or with the repair of the inventory.
+    /// Other ways to restore the durability don't depend on it, e.g. repairing a Horn of Fenrir
+    /// with a Jewel of Bless (see the repair target items of the jewel of bless consume handler).
     /// </summary>
     public bool IsRepairable { get; set; } = true;
 

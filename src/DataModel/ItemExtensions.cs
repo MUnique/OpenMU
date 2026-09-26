@@ -101,9 +101,11 @@ public static class ItemExtensions
     public static bool IsWearable(this Item item) => item.Definition?.ItemSlot != null;
 
     /// <summary>
-    /// Determines whether this item can be repaired: it must be wearable, and its definition must allow it
-    /// (<see cref="ItemDefinition.IsRepairable"/>). The durability of an item which can't be worn is its
-    /// number of pieces, so repairing it would reduce a stack to one piece.
+    /// Determines whether this item can be repaired the normal way (by an NPC, or with the repair of the
+    /// inventory): it must be wearable, and its definition must allow it (<see cref="ItemDefinition.IsRepairable"/>).
+    /// The durability of an item which can't be worn is its number of pieces, so repairing it would reduce a
+    /// stack to one piece. Other ways to restore the durability, like a Jewel of Bless on a Horn of Fenrir,
+    /// don't use this check.
     /// </summary>
     /// <param name="item">The item.</param>
     /// <returns>
