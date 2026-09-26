@@ -83,11 +83,14 @@ public class TradeButtonAction : BaseTradeAction
 
         // Checked here, and not only when an item is moved into the trade: the temporary storage
         // is shared with other windows (e.g. the chaos machine), so it may already contain items.
-        if (!await this.CheckItemsAreTradableAsync(trader, traderItems).ConfigureAwait(false)
-            | !await this.CheckItemsAreTradableAsync(tradingPartner, tradePartnerItems).ConfigureAwait(false))
+        // Both are checked, so that each trader gets the message about their own items.
+        var traderItemsAreTradable = await this.CheckItemsAreTradableAsync(trader, traderItems).ConfigureAwait(false);
+        var partnerItemsAreTradable = await this.CheckItemsAreTradableAsync(tradingPartner, tradePartnerItems).ConfigureAwait(false);
+        if (!traderItemsAreTradable || !partnerItemsAreTradable)
         {
             return TradeResult.Cancelled;
         }
+
         this.AttachItemsToPersistenceContext(traderItems, itemContext);
         this.AttachItemsToPersistenceContext(tradePartnerItems, itemContext);
 
