@@ -80,6 +80,14 @@ public class TradeButtonAction : BaseTradeAction
         using var itemContext = trader.GameContext.PersistenceContextProvider.CreateNewTradeContext();
         var traderItems = trader.TemporaryStorage!.Items.ToList();
         var tradePartnerItems = tradingPartner.TemporaryStorage!.Items.ToList();
+
+        // Checked here, and not only when an item is moved into the trade: the temporary storage
+        // is shared with other windows (e.g. the chaos machine), so it may already contain items.
+        if (!await this.CheckItemsAreTradableAsync(trader, traderItems).ConfigureAwait(false)
+            | !await this.CheckItemsAreTradableAsync(tradingPartner, tradePartnerItems).ConfigureAwait(false))
+        {
+            return TradeResult.Cancelled;
+        }
         this.AttachItemsToPersistenceContext(traderItems, itemContext);
         this.AttachItemsToPersistenceContext(tradePartnerItems, itemContext);
 
@@ -117,6 +125,22 @@ public class TradeButtonAction : BaseTradeAction
             (trader as Player)?.Logger.LogError(exception, $"An unexpected error occured during closing the trade. trader: {trader.Name}, partner:{tradingPartner.Name}");
             return TradeResult.Cancelled;
         }
+    }
+
+    private async ValueTask<bool> CheckItemsAreTradableAsync(ITrader trader, IEnumerable<Item> items)
+    {
+        var notTradable = items.FirstOrDefault(item => item.Definition is { IsTradable: false });
+        if (notTradable is null)
+        {
+            return true;
+        }
+
+        (trader as Player)?.Logger.LogWarning(
+            "Trader {0} offered {1}, which its item definition doesn't allow to trade. The trade is cancelled.",
+            trader.Name,
+            notTradable);
+        await this.SendMessageAsync(trader, nameof(PlayerMessage.ItemCannotBeTraded)).ConfigureAwait(false);
+        return false;
     }
 
     private void CallPlugIn(IEnumerable<Item> items, ITrader source, ITrader target)

@@ -53,6 +53,20 @@ public class BuyRequestAction
             return;
         }
 
+        // Checked here, and not only when the item is moved into the store: the store may
+        // contain it since before the item rules existed.
+        if (item.Definition is { IsPersonalStoreSellable: false })
+        {
+            player.Logger.LogWarning(
+                "Player {0} tried to buy {1} from the store of {2}, which its item definition doesn't allow to sell in a personal store.",
+                player,
+                item,
+                requestedPlayer);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.ItemCannotBeSoldInPersonalStore)).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IPlayerShopBuyRequestResultPlugIn>(p => p.ShowResultAsync(requestedPlayer, ItemBuyResult.ItemBlock, null)).ConfigureAwait(false);
+            return;
+        }
+
         var itemPrice = item.StorePrice.Value;
 
         if (player.Money < itemPrice)

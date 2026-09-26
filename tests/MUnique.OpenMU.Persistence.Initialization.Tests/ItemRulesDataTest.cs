@@ -17,13 +17,24 @@ using MUnique.OpenMU.Persistence.InMemory;
 [TestFixture]
 internal class ItemRulesDataTest
 {
+    private GameConfiguration _season6 = null!;
+
+    /// <summary>
+    /// Creates the season 6 data once for the tests which only read it.
+    /// </summary>
+    [OneTimeSetUp]
+    public async Task CreateSeason6DataAsync()
+    {
+        this._season6 = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
+    }
+
     /// <summary>
     /// Tests that every listed item exists once in the season 6 data.
     /// </summary>
     [Test]
-    public async Task EveryListedItemExistsAsync()
+    public void EveryListedItemExists()
     {
-        var gameConfiguration = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
+        var gameConfiguration = this._season6;
 
         Assert.That(ItemRules.Rules.Select(rule => (rule.Group, rule.Number)), Is.Unique);
         foreach (var (group, number, _) in ItemRules.Rules)
@@ -36,9 +47,9 @@ internal class ItemRulesDataTest
     /// Tests that a new season 6 database contains the item rules.
     /// </summary>
     [Test]
-    public async Task NewDatabaseContainsItemRulesAsync()
+    public void NewDatabaseContainsItemRules()
     {
-        var gameConfiguration = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
+        var gameConfiguration = this._season6;
 
         // Kris: a normal weapon allows everything.
         var kris = GetItem(gameConfiguration, 0, 0);
@@ -72,7 +83,7 @@ internal class ItemRulesDataTest
     [Test]
     public async Task UpdateSetsItemRulesOnExistingDatabaseAsync()
     {
-        var expected = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
+        var expected = this._season6;
 
         var contextProvider = new InMemoryPersistenceContextProvider();
         var dataInitialization = new VersionSeasonSix.DataInitialization(contextProvider, new NullLoggerFactory());

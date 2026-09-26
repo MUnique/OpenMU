@@ -23,6 +23,9 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 ///   <item>The Dark Horse and the Dark Raven stay repairable: the server repairs trainable pets
 ///   (with their own repair price), while the client has no way to repair them.</item>
 /// </list>
+/// Like in the client, the other pets (Guardian Angel, Imp, Horn of Uniria, Horn of Dinorant,
+/// Horn of Fenrir) and the transformation rings can't be repaired, although they wear out:
+/// a pet which can't be trained is destroyed when its durability reaches zero.
 /// </remarks>
 public class ItemRules : InitializerBase
 {
@@ -243,16 +246,17 @@ public class ItemRules : InitializerBase
     }
 
     /// <summary>
-    /// Applies the <see cref="Rules"/> to the items of the game configuration.
-    /// Items which are not part of the configuration are skipped.
+    /// Applies the <see cref="Rules"/> to the items of the game configuration. Listed items which are
+    /// not part of the configuration are skipped; an item which exists more than once (e.g. copied in
+    /// the admin panel) gets the rule on every copy.
     /// </summary>
     /// <param name="gameConfiguration">The game configuration.</param>
     internal static void Apply(GameConfiguration gameConfiguration)
     {
-        var items = gameConfiguration.Items.ToDictionary(item => (item.Group, item.Number));
-        foreach (var (group, number, blocked) in Rules)
+        var rules = Rules.ToDictionary(rule => (rule.Group, rule.Number), rule => rule.Blocked);
+        foreach (var item in gameConfiguration.Items)
         {
-            if (!items.TryGetValue((group, number), out var item))
+            if (!rules.TryGetValue((item.Group, item.Number), out var blocked))
             {
                 continue;
             }

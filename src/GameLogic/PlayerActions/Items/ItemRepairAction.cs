@@ -35,7 +35,7 @@ public class ItemRepairAction
             return;
         }
 
-        if (item.Definition is { IsRepairable: false })
+        if (!item.CanBeRepaired())
         {
             player.Logger.LogWarning(
                 "Player {0} tried to repair {1}, which its item definition doesn't allow. The client item data may differ from the server.",
@@ -87,7 +87,7 @@ public class ItemRepairAction
             }
 
             var item = player.Inventory?.GetItem(i);
-            if (item is null || item.Definition is { IsRepairable: false })
+            if (item is null || !item.CanBeRepaired())
             {
                 continue;
             }
