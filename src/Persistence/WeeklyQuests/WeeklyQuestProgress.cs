@@ -19,6 +19,14 @@ public class WeeklyQuestProgress
     public Guid CharacterId { get; set; }
 
     /// <summary>
+    /// Gets or sets the identifier of the account of the character.
+    /// </summary>
+    /// <remarks>
+    /// It's <c>null</c> for entries which were stored before it was introduced.
+    /// </remarks>
+    public Guid? AccountId { get; set; }
+
+    /// <summary>
     /// Gets or sets the start of the weekly period (UTC) to which this progress belongs.
     /// </summary>
     public DateTime PeriodStart { get; set; }

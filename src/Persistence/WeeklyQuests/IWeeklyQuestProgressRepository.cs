@@ -26,4 +26,13 @@ public interface IWeeklyQuestProgressRepository
     /// <param name="progress">The progress entries.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     ValueTask SaveAsync(IEnumerable<WeeklyQuestProgress> progress, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Loads the rewarded progress entries of all characters of an account for the specified period.
+    /// </summary>
+    /// <param name="accountId">The identifier of the account.</param>
+    /// <param name="periodStart">The start of the period.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The rewarded progress entries of the characters of the account in this period.</returns>
+    ValueTask<IList<WeeklyQuestProgress>> LoadRewardedByAccountAsync(Guid accountId, DateTime periodStart, CancellationToken cancellationToken = default);
 }

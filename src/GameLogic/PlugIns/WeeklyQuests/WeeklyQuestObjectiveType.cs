@@ -50,4 +50,10 @@ public enum WeeklyQuestObjectiveType
     /// </summary>
     [Display(Name = "Matar jugadores")]
     KillPlayer,
+
+    /// <summary>
+    /// Pick up a specific item which was dropped by a monster or an event.
+    /// </summary>
+    [Display(Name = "Juntar items")]
+    CollectItem,
 }

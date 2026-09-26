@@ -18,10 +18,12 @@ internal sealed class WeeklyQuestPlayerState
     /// </summary>
     /// <param name="owner">The plugin which tracks the progress.</param>
     /// <param name="characterId">The identifier of the character.</param>
-    public WeeklyQuestPlayerState(WeeklyQuestsPlugIn owner, Guid characterId)
+    /// <param name="accountId">The identifier of the account of the character.</param>
+    public WeeklyQuestPlayerState(WeeklyQuestsPlugIn owner, Guid characterId, Guid? accountId)
     {
         this.Owner = owner;
         this.CharacterId = characterId;
+        this.AccountId = accountId;
     }
 
     /// <summary>
@@ -38,6 +40,22 @@ internal sealed class WeeklyQuestPlayerState
     /// Gets the identifier of the character.
     /// </summary>
     public Guid CharacterId { get; }
+
+    /// <summary>
+    /// Gets the identifier of the account of the character.
+    /// </summary>
+    public Guid? AccountId { get; }
+
+    /// <summary>
+    /// Gets or sets the ids of the quests whose rewards another character of the account already received in this period.
+    /// </summary>
+    public HashSet<string> RewardedByOtherCharacters { get; set; } = new();
+
+    /// <summary>
+    /// Gets the last time (UTC) per victim character when a player kill counted for a quest.
+    /// It's only kept in memory, so it starts over after leaving the game.
+    /// </summary>
+    public Dictionary<(string QuestId, Guid VictimId), DateTime> LastCountedVictimKills { get; } = new();
 
     /// <summary>
     /// Gets or sets a value indicating whether the progress of the <see cref="PeriodStartUtc"/> has been loaded.
@@ -71,6 +89,7 @@ internal sealed class WeeklyQuestPlayerState
             progress = new WeeklyQuestProgress
             {
                 CharacterId = this.CharacterId,
+                AccountId = this.AccountId,
                 PeriodStart = this.PeriodStartUtc,
                 QuestId = questId,
             };

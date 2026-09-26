@@ -4,10 +4,16 @@
 
 namespace MUnique.OpenMU.Web.AdminPanel.API;
 
+using System.Globalization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.PlugIns.WeeklyQuests;
 using MUnique.OpenMU.GameServer;
 using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Persistence.WeeklyQuests;
+using MUnique.OpenMU.PlugIns;
 using MUnique.OpenMU.Web.AdminPanel.Auth;
 
 /// <summary>
@@ -22,18 +28,26 @@ using MUnique.OpenMU.Web.AdminPanel.Auth;
 [Authorize(AuthenticationSchemes = ApiKeyAuthenticationDefaults.ApiSchemes, Policy = AdminPolicies.Viewer)]
 public class WebsiteController : Controller
 {
+    /// <summary>
+    /// The culture of the texts for the website, e.g. the names of the reward items.
+    /// </summary>
+    private static readonly CultureInfo WebsiteCulture = CultureInfo.GetCultureInfo("es");
+
     private readonly IDictionary<int, IGameServer> _gameServers;
     private readonly ILoginServer _loginServer;
+    private readonly IPersistenceContextProvider _contextProvider;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="WebsiteController"/> class.
     /// </summary>
     /// <param name="gameServers">The game servers.</param>
     /// <param name="loginServer">The login server.</param>
-    public WebsiteController(IDictionary<int, IGameServer> gameServers, ILoginServer loginServer)
+    /// <param name="contextProvider">The persistence context provider.</param>
+    public WebsiteController(IDictionary<int, IGameServer> gameServers, ILoginServer loginServer, IPersistenceContextProvider contextProvider)
     {
         this._gameServers = gameServers;
         this._loginServer = loginServer;
+        this._contextProvider = contextProvider;
     }
 
     /// <summary>
@@ -99,6 +113,86 @@ public class WebsiteController : Controller
         }
 
         return this.Ok(new { kicked, released });
+    }
+
+    /// <summary>
+    /// Gets the weekly quests of the characters of an account, with their progress in the current week.
+    /// </summary>
+    /// <param name="login">The login name of the account.</param>
+    /// <returns>
+    /// <c>enabled</c>: whether the weekly quests plugin is active;
+    /// <c>nextResetUtc</c>: when the next week starts;
+    /// <c>characters</c>: the quests per character, like they're shown in the game.
+    /// </returns>
+    /// <remarks>
+    /// The progress of a character which is in the game is saved every minute, so it may be a bit behind.
+    /// </remarks>
+    [HttpGet]
+    [Route("account/{login}/weekly-quests")]
+    public async Task<IActionResult> GetWeeklyQuestsAsync(string login)
+    {
+        var context = this._gameServers.Values.OfType<GameServer>().FirstOrDefault()?.Context;
+        var plugInId = typeof(WeeklyQuestsPlugIn).GUID;
+        if (context is null
+            || WeeklyQuestProgressRepositoryRegistry.Current is not { } repository
+            || !context.PlugInManager.IsPlugInActive(plugInId)
+            || context.Configuration.PlugInConfigurations.FirstOrDefault(c => c.TypeId == plugInId)
+                ?.GetConfiguration<WeeklyQuestsConfiguration>(context.PlugInManager.CustomConfigReferenceHandler) is not { } configuration)
+        {
+            return this.Ok(new { enabled = false });
+        }
+
+        using var playerContext = this._contextProvider.CreateNewPlayerContext(context.Configuration);
+        var account = await playerContext.GetAccountByLoginNameAsync(login).ConfigureAwait(false);
+        if (account is null)
+        {
+            return this.NotFound();
+        }
+
+        var periodStart = WeeklyPeriod.GetPeriodStartUtc(DateTime.UtcNow, configuration.ResetDay, configuration.ResetTime, context.ServerTimeZone);
+        var progressPerCharacter = new Dictionary<Guid, Dictionary<string, WeeklyQuestProgress>>();
+        foreach (var character in account.Characters)
+        {
+            var id = character.GetId();
+            var loaded = await repository.LoadAsync(id, periodStart).ConfigureAwait(false);
+            progressPerCharacter[id] = loaded.ToDictionary(p => p.QuestId);
+        }
+
+        var characters = account.Characters
+            .OrderBy(c => c.CharacterSlot)
+            .Select(character =>
+            {
+                var id = character.GetId();
+                var rewardedByOthers = progressPerCharacter
+                    .Where(p => p.Key != id)
+                    .SelectMany(p => p.Value.Values)
+                    .Where(p => p.RewardedAt is not null)
+                    .Select(p => p.QuestId)
+                    .ToHashSet();
+                var info = new WeeklyQuestCharacterInfo(
+                    character.CharacterClass,
+                    (int)(character.Attributes.FirstOrDefault(a => a.Definition == Stats.Level)?.Value ?? 1),
+                    (int)(character.Attributes.FirstOrDefault(a => a.Definition == Stats.Resets)?.Value ?? 0));
+                var quests = WeeklyQuestSelector.CreateEntries(configuration, periodStart, info, progressPerCharacter[id], rewardedByOthers)
+                    .Select(e => new
+                    {
+                        id = e.Quest.Id,
+                        name = e.Quest.Name,
+                        description = e.Quest.Description,
+                        count = e.Count,
+                        required = e.Quest.RequiredCount,
+                        completed = e.IsCompleted,
+                        rewarded = e.IsRewarded,
+                        rewards = e.Quest.GetRewardsText(WebsiteCulture),
+                        isBonus = e.Quest.Id == WeeklyQuestSelector.AllCompletedBonusId,
+                    })
+                    .ToList();
+                return new { name = character.Name, quests };
+            })
+            .ToList();
+
+        var nextResetUtc = WeeklyPeriod.GetNextPeriodStartUtc(periodStart, context.ServerTimeZone);
+        return this.Ok(new { enabled = true, nextResetUtc, characters });
     }
 
     private async Task<(bool InGame, string? Character)> FindPlayerAsync(string login)

@@ -25,6 +25,30 @@ public class WeeklyQuestsConfiguration
     public TimeOnly ResetTime { get; set; } = TimeOnly.MinValue;
 
     /// <summary>
+    /// Gets or sets the number of quests which are drawn each week from the active quests.
+    /// The quests which are <see cref="WeeklyQuestDefinition.AlwaysIncluded"/> are added to them.
+    /// 0 means that all active quests are available every week.
+    /// </summary>
+    [Display(Name = "Quests por semana", Description = "0 = sin rotación, todas las quests activas. Si es mayor, cada semana se sortean esa cantidad entre las activas (más las \"Siempre incluidas\"). El sorteo es igual para todos; una quest exclusiva de una clase que sale sorteada deja a las demás clases con menos quests esa semana.")]
+    [Range(0, int.MaxValue)]
+    public int QuestsPerWeek { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the monster kills count for the party members nearby, like the experience.
+    /// </summary>
+    [Display(Name = "Kills compartidos en party", Description = "Los kills de monstruos cuentan para los miembros de la party que estén cerca, igual que la experiencia.")]
+    public bool ShareKillsWithParty { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the bonus which is given when a character completed all of its quests of the week.
+    /// Its <see cref="WeeklyQuestDefinition.Name"/>, <see cref="WeeklyQuestDefinition.Description"/> and
+    /// <see cref="WeeklyQuestDefinition.Rewards"/> are used. Without rewards, there is no bonus.
+    /// </summary>
+    [Display(Name = "Bonus por completar todas", Description = "Premio extra al completar todas las quests de la semana. Se usan Nombre, Descripción y Premios; el resto de los campos se ignora. Sin premios = sin bonus.")]
+    [MemberOfAggregate]
+    public WeeklyQuestDefinition? AllCompletedBonus { get; set; }
+
+    /// <summary>
     /// Gets or sets the message which is shown when the progress of a quest reached a milestone (25%, 50%, 75%).
     /// Placeholders: {0} = quest name, {1} = current count, {2} = required count.
     /// </summary>

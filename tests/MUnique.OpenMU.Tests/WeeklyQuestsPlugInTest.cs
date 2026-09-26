@@ -4,10 +4,17 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using Microsoft.Extensions.Logging.Abstractions;
+using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.PlugIns.WeeklyQuests;
+using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.WeeklyQuests;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.PlugIns;
+using Moq;
 
 /// <summary>
 /// Tests for the <see cref="WeeklyQuestsPlugIn"/> and <see cref="WeeklyPeriod"/>.
@@ -164,6 +171,277 @@ public class WeeklyQuestsPlugInTest
         Assert.That(overview!.Entries, Is.Empty);
     }
 
+    /// <summary>
+    /// Tests that a quest without qualified classes is available for every class.
+    /// </summary>
+    [Test]
+    public void QuestWithoutClassesQualifiesEveryClass()
+    {
+        var quest = new WeeklyQuestDefinition();
+        Assert.That(quest.IsQualified(new CharacterClass { Number = 4 }), Is.True);
+        Assert.That(quest.IsQualified(null), Is.True);
+    }
+
+    /// <summary>
+    /// Tests that a qualified class includes its evolutions, but not its previous classes.
+    /// </summary>
+    [Test]
+    public void QualifiedClassIncludesItsEvolutions()
+    {
+        var (wizard, soulMaster, grandMaster) = CreateWizardLine();
+        var knight = new CharacterClass { Number = 4 };
+
+        var wizardQuest = new WeeklyQuestDefinition { QualifiedCharacters = { wizard } };
+        Assert.That(wizardQuest.IsQualified(wizard), Is.True);
+        Assert.That(wizardQuest.IsQualified(soulMaster), Is.True);
+        Assert.That(wizardQuest.IsQualified(grandMaster), Is.True);
+        Assert.That(wizardQuest.IsQualified(knight), Is.False);
+        Assert.That(wizardQuest.IsQualified(null), Is.False);
+
+        var soulMasterQuest = new WeeklyQuestDefinition { QualifiedCharacters = { soulMaster } };
+        Assert.That(soulMasterQuest.IsQualified(wizard), Is.False);
+        Assert.That(soulMasterQuest.IsQualified(soulMaster), Is.True);
+        Assert.That(soulMasterQuest.IsQualified(grandMaster), Is.True);
+    }
+
+    /// <summary>
+    /// Tests that a circular chain of classes doesn't hang the check.
+    /// </summary>
+    [Test]
+    public void CircularClassChainTerminates()
+    {
+        var a = new CharacterClass { Number = 1 };
+        var b = new CharacterClass { Number = 2, NextGenerationClass = a };
+        a.NextGenerationClass = b;
+
+        var quest = new WeeklyQuestDefinition { QualifiedCharacters = { a } };
+        Assert.That(quest.IsQualified(new CharacterClass { Number = 3 }), Is.False);
+    }
+
+    /// <summary>
+    /// Tests that a character of another class neither makes progress nor sees the quest.
+    /// </summary>
+    [Test]
+    public async Task OtherClassDoesNotSeeNorProgressQuestAsync()
+    {
+        var player = await CreatePlayerAsync().ConfigureAwait(false);
+        player.SelectedCharacter!.CharacterClass!.Number = 4;
+        var plugIn = CreatePlugIn(new InMemoryWeeklyQuestProgressRepository());
+        plugIn.Configuration!.Quests.Single().QualifiedCharacters.Add(CreateWizardLine().Wizard);
+
+        await plugIn.CharacterResetAsync(player, 1).ConfigureAwait(false);
+        await plugIn.CharacterResetAsync(player, 2).ConfigureAwait(false);
+
+        Assert.That(player.Money, Is.EqualTo(0));
+        var overview = await plugIn.GetOverviewAsync(player).ConfigureAwait(false);
+        Assert.That(overview!.Entries, Is.Empty);
+    }
+
+    /// <summary>
+    /// Tests that an evolved class makes progress in a quest of its class line.
+    /// </summary>
+    [Test]
+    public async Task EvolvedClassProgressesQuestOfItsLineAsync()
+    {
+        var player = await CreatePlayerAsync().ConfigureAwait(false);
+        var (wizard, soulMaster, _) = CreateWizardLine();
+        player.SelectedCharacter!.CharacterClass!.Number = soulMaster.Number;
+        var plugIn = CreatePlugIn(new InMemoryWeeklyQuestProgressRepository());
+        plugIn.Configuration!.Quests.Single().QualifiedCharacters.Add(wizard);
+
+        await plugIn.CharacterResetAsync(player, 1).ConfigureAwait(false);
+        await plugIn.CharacterResetAsync(player, 2).ConfigureAwait(false);
+
+        Assert.That(player.Money, Is.EqualTo(1000));
+        var overview = await plugIn.GetOverviewAsync(player).ConfigureAwait(false);
+        Assert.That(overview!.Entries.Single().IsRewarded, Is.True);
+    }
+
+    /// <summary>
+    /// Tests that the qualified classes are stored as references in the plugin configuration
+    /// and are resolved to the classes of the game configuration when it's loaded.
+    /// </summary>
+    [Test]
+    public void QualifiedClassesSurviveJsonRoundTrip()
+    {
+        var wizard = new Persistence.BasicModel.CharacterClass { Id = Guid.NewGuid(), Number = 0 };
+        var dataSource = new Mock<IDataSource<GameConfiguration>>();
+        dataSource.Setup(d => d.Get(wizard.Id)).Returns(wizard);
+        var referenceHandler = new ByDataSourceReferenceHandler(dataSource.Object);
+
+        var configuration = CreatePlugIn(new InMemoryWeeklyQuestProgressRepository()).Configuration!;
+        configuration.Quests.Single().QualifiedCharacters.Add(wizard);
+        var plugInConfiguration = new PlugInConfiguration();
+        plugInConfiguration.SetConfiguration(configuration, referenceHandler);
+        var loaded = plugInConfiguration.GetConfiguration<WeeklyQuestsConfiguration>(referenceHandler);
+
+        Assert.That(loaded!.Quests.Single().QualifiedCharacters.Single(), Is.SameAs(wizard));
+    }
+
+    /// <summary>
+    /// Tests that the monster kills count for the party members who see the killer, but not for the others.
+    /// </summary>
+    [Test]
+    public async Task KillsAreSharedWithNearbyPartyMembersAsync()
+    {
+        var killer = await CreatePlayerAsync().ConfigureAwait(false);
+        var nearby = await CreatePlayerAsync(killer.GameContext).ConfigureAwait(false);
+        var farAway = await CreatePlayerAsync(killer.GameContext).ConfigureAwait(false);
+        var party = new Party(new PartyManager(5, new NullLogger<Party>()), 5, new NullLogger<Party>());
+        await party.AddAsync(killer).ConfigureAwait(false);
+        await party.AddAsync(nearby).ConfigureAwait(false);
+        await party.AddAsync(farAway).ConfigureAwait(false);
+        // The test players enter the same map at the same position, so we set up who sees whom explicitly.
+        killer.Observers.Add(nearby);
+        killer.Observers.Remove(farAway);
+        nearby.IsAlive = true;
+        farAway.IsAlive = true;
+
+        var plugIn = CreatePlugIn(new InMemoryWeeklyQuestProgressRepository());
+        var receivers = await plugIn.GetKillReceiversAsync(killer).ConfigureAwait(false);
+        Assert.That(receivers, Is.EquivalentTo(new[] { killer, nearby }));
+
+        plugIn.Configuration!.ShareKillsWithParty = false;
+        receivers = await plugIn.GetKillReceiversAsync(killer).ConfigureAwait(false);
+        Assert.That(receivers, Is.EquivalentTo(new[] { killer }));
+    }
+
+    /// <summary>
+    /// Tests that the kills of guild mates don't count, and that the same victim only counts again after the cooldown.
+    /// </summary>
+    [Test]
+    public async Task PlayerKillsIgnoreGuildMatesAndRespectCooldownAsync()
+    {
+        var killer = await CreatePlayerAsync().ConfigureAwait(false);
+        var victim = await CreatePlayerAsync(killer.GameContext).ConfigureAwait(false);
+        var plugIn = CreatePlugIn(
+            new InMemoryWeeklyQuestProgressRepository(),
+            new WeeklyQuestDefinition { Id = "pvp", Name = "PvP", ObjectiveType = WeeklyQuestObjectiveType.KillPlayer, RequiredCount = 10, VictimCooldownMinutes = 30 });
+
+        killer.GuildStatus = new GuildMemberStatus(1, GuildPosition.NormalMember);
+        victim.GuildStatus = new GuildMemberStatus(1, GuildPosition.NormalMember);
+        await plugIn.AttackableGotKilledAsync(victim, killer).ConfigureAwait(false);
+        Assert.That(await GetCountAsync(plugIn, killer, "pvp").ConfigureAwait(false), Is.EqualTo(0));
+
+        victim.GuildStatus = new GuildMemberStatus(2, GuildPosition.NormalMember);
+        await plugIn.AttackableGotKilledAsync(victim, killer).ConfigureAwait(false);
+        await plugIn.AttackableGotKilledAsync(victim, killer).ConfigureAwait(false);
+        Assert.That(await GetCountAsync(plugIn, killer, "pvp").ConfigureAwait(false), Is.EqualTo(1));
+    }
+
+    /// <summary>
+    /// Tests that picked up items count, unless they were dropped by a player, and only for the configured item and level.
+    /// </summary>
+    [Test]
+    public async Task CollectItemCountsOnlyDropsOfTheItemAsync()
+    {
+        var player = await CreatePlayerAsync().ConfigureAwait(false);
+        var jewel = new ItemDefinition { Group = 14, Number = 13 };
+        var plugIn = CreatePlugIn(
+            new InMemoryWeeklyQuestProgressRepository(),
+            new WeeklyQuestDefinition { Id = "bless", Name = "Bless", ObjectiveType = WeeklyQuestObjectiveType.CollectItem, RequiredCount = 10, Item = jewel, MinimumItemLevel = 1 });
+
+        await plugIn.ItemPickedUpAsync(player, new TemporaryItem { Definition = jewel, Level = 1 }, false).ConfigureAwait(false);
+        await plugIn.ItemPickedUpAsync(player, new TemporaryItem { Definition = jewel, Level = 1 }, true).ConfigureAwait(false);
+        await plugIn.ItemPickedUpAsync(player, new TemporaryItem { Definition = jewel, Level = 0 }, false).ConfigureAwait(false);
+        await plugIn.ItemPickedUpAsync(player, new TemporaryItem { Definition = new ItemDefinition { Group = 14, Number = 14 }, Level = 1 }, false).ConfigureAwait(false);
+
+        Assert.That(await GetCountAsync(plugIn, player, "bless").ConfigureAwait(false), Is.EqualTo(1));
+    }
+
+    /// <summary>
+    /// Tests that the bonus is shown with the progress of the quests and rewarded when all of them are completed.
+    /// </summary>
+    [Test]
+    public async Task AllCompletedBonusIsRewardedAsync()
+    {
+        var player = await CreatePlayerAsync().ConfigureAwait(false);
+        var plugIn = CreatePlugIn(
+            new InMemoryWeeklyQuestProgressRepository(),
+            new WeeklyQuestDefinition { Id = "resets", Name = "Resets", ObjectiveType = WeeklyQuestObjectiveType.GainResets, RequiredCount = 1 },
+            new WeeklyQuestDefinition { Id = "masters", Name = "Masters", ObjectiveType = WeeklyQuestObjectiveType.GainMasterLevels, RequiredCount = 1 });
+        plugIn.Configuration!.AllCompletedBonus = new WeeklyQuestDefinition
+        {
+            Name = "Bonus",
+            Rewards = { new WeeklyQuestReward { RewardType = WeeklyQuestRewardType.Money, Amount = 5000 } },
+        };
+
+        await plugIn.CharacterResetAsync(player, 1).ConfigureAwait(false);
+        var overview = await plugIn.GetOverviewAsync(player).ConfigureAwait(false);
+        var bonus = overview!.Entries.Single(e => e.Quest.Id == WeeklyQuestSelector.AllCompletedBonusId);
+        Assert.That(bonus.Count, Is.EqualTo(1));
+        Assert.That(bonus.Quest.RequiredCount, Is.EqualTo(2));
+        Assert.That(player.Money, Is.EqualTo(0));
+
+        await plugIn.CharacterMasterLeveledUpAsync(player).ConfigureAwait(false);
+        overview = await plugIn.GetOverviewAsync(player).ConfigureAwait(false);
+        bonus = overview!.Entries.Single(e => e.Quest.Id == WeeklyQuestSelector.AllCompletedBonusId);
+        Assert.That(bonus.IsRewarded, Is.True);
+        Assert.That(player.Money, Is.EqualTo(5000));
+    }
+
+    /// <summary>
+    /// Tests that a quest which is limited to one character per account is hidden, when another character of the account received its rewards.
+    /// </summary>
+    [Test]
+    public async Task OncePerAccountQuestIsHiddenForOtherCharactersAsync()
+    {
+        var repository = new InMemoryWeeklyQuestProgressRepository();
+        var player = await CreatePlayerAsync().ConfigureAwait(false);
+        var accountId = Guid.NewGuid();
+        player.Account = new Persistence.BasicModel.Account { Id = accountId, LoginName = "test" };
+        var plugIn = CreatePlugIn(repository);
+        var quest = plugIn.Configuration!.Quests.Single();
+        quest.OncePerAccount = true;
+
+        var periodStart = WeeklyPeriod.GetPeriodStartUtc(DateTime.UtcNow, DayOfWeek.Monday, TimeOnly.MinValue, TimeZoneInfo.Utc);
+        await repository.SaveAsync(new[]
+        {
+            new WeeklyQuestProgress
+            {
+                CharacterId = Guid.NewGuid(),
+                AccountId = accountId,
+                PeriodStart = periodStart,
+                QuestId = quest.Id,
+                Count = 2,
+                CompletedAt = DateTime.UtcNow,
+                RewardedAt = DateTime.UtcNow,
+            },
+        }).ConfigureAwait(false);
+
+        await plugIn.CharacterResetAsync(player, 1).ConfigureAwait(false);
+        var overview = await plugIn.GetOverviewAsync(player).ConfigureAwait(false);
+        Assert.That(overview!.Entries, Is.Empty);
+
+        // Another account isn't affected.
+        var otherPlayer = await CreatePlayerAsync(player.GameContext).ConfigureAwait(false);
+        otherPlayer.Account = new Persistence.BasicModel.Account { Id = Guid.NewGuid(), LoginName = "other" };
+        overview = await plugIn.GetOverviewAsync(otherPlayer).ConfigureAwait(false);
+        Assert.That(overview!.Entries, Has.Count.EqualTo(1));
+    }
+
+    private static async ValueTask<int> GetCountAsync(WeeklyQuestsPlugIn plugIn, Player player, string questId)
+    {
+        var overview = await plugIn.GetOverviewAsync(player).ConfigureAwait(false);
+        return overview!.Entries.Single(e => e.Quest.Id == questId).Count;
+    }
+
+    private static WeeklyQuestsPlugIn CreatePlugIn(IWeeklyQuestProgressRepository repository, params WeeklyQuestDefinition[] quests)
+    {
+        return new WeeklyQuestsPlugIn(repository)
+        {
+            Configuration = new WeeklyQuestsConfiguration { Quests = quests.ToList() },
+        };
+    }
+
+    private static (CharacterClass Wizard, CharacterClass SoulMaster, CharacterClass GrandMaster) CreateWizardLine()
+    {
+        var grandMaster = new CharacterClass { Number = 3 };
+        var soulMaster = new CharacterClass { Number = 1, NextGenerationClass = grandMaster };
+        var wizard = new CharacterClass { Number = 0, NextGenerationClass = soulMaster };
+        return (wizard, soulMaster, grandMaster);
+    }
+
     private static WeeklyQuestsPlugIn CreatePlugIn(IWeeklyQuestProgressRepository repository)
     {
         return new WeeklyQuestsPlugIn(repository)
@@ -188,9 +466,11 @@ public class WeeklyQuestsPlugInTest
         };
     }
 
-    private static async ValueTask<Player> CreatePlayerAsync()
+    private static async ValueTask<Player> CreatePlayerAsync(IGameContext? gameContext = null)
     {
-        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var player = gameContext is null
+            ? await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false)
+            : await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
         player.GameContext.Configuration.MaximumInventoryMoney = int.MaxValue;
         await player.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
         return player;

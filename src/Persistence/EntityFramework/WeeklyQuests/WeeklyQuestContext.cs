@@ -45,6 +45,7 @@ public class WeeklyQuestContext : DbContext
             entity.HasKey(p => new { p.CharacterId, p.PeriodStart, p.QuestId });
             entity.Property(p => p.QuestId).IsRequired().HasMaxLength(64);
             entity.HasIndex(p => p.PeriodStart);
+            entity.HasIndex(p => new { p.AccountId, p.PeriodStart, p.QuestId });
         });
     }
 }

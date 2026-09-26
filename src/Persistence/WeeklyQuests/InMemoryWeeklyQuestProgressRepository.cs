@@ -36,9 +36,20 @@ public class InMemoryWeeklyQuestProgressRepository : IWeeklyQuestProgressReposit
         return ValueTask.CompletedTask;
     }
 
+    /// <inheritdoc />
+    public ValueTask<IList<WeeklyQuestProgress>> LoadRewardedByAccountAsync(Guid accountId, DateTime periodStart, CancellationToken cancellationToken = default)
+    {
+        IList<WeeklyQuestProgress> result = this._entries.Values
+            .Where(e => e.AccountId == accountId && e.PeriodStart == periodStart && e.RewardedAt is not null)
+            .Select(Clone)
+            .ToList();
+        return ValueTask.FromResult(result);
+    }
+
     private static WeeklyQuestProgress Clone(WeeklyQuestProgress source) => new()
     {
         CharacterId = source.CharacterId,
+        AccountId = source.AccountId,
         PeriodStart = source.PeriodStart,
         QuestId = source.QuestId,
         Count = source.Count,

@@ -29,6 +29,7 @@ public class WeeklyQuestsPlugIn :
     ICharacterMasterLevelUpPlugIn,
     ICharacterResetPlugIn,
     IMiniGameEndedPlugIn,
+    IItemPickedUpPlugIn,
     IPeriodicTaskPlugIn,
     ISupportCustomConfiguration<WeeklyQuestsConfiguration>,
     ISupportDefaultCustomConfiguration
@@ -144,12 +145,15 @@ public class WeeklyQuestsPlugIn :
             var mapNumber = monster.CurrentMap?.Definition.Number;
             bool IsOnMap(WeeklyQuestDefinition quest) => quest.Map is null || quest.Map.Number == mapNumber;
 
-            await this.AddProgressAsync(player, WeeklyQuestObjectiveType.KillAnyMonster, 1, IsOnMap).ConfigureAwait(false);
-            await this.AddProgressAsync(
-                player,
-                WeeklyQuestObjectiveType.KillMonster,
-                1,
-                quest => IsOnMap(quest) && quest.Monster is not null && quest.Monster.Number == monster.Definition.Number).ConfigureAwait(false);
+            foreach (var receiver in await this.GetKillReceiversAsync(player).ConfigureAwait(false))
+            {
+                await this.AddProgressAsync(receiver, WeeklyQuestObjectiveType.KillAnyMonster, 1, (quest, _) => IsOnMap(quest)).ConfigureAwait(false);
+                await this.AddProgressAsync(
+                    receiver,
+                    WeeklyQuestObjectiveType.KillMonster,
+                    1,
+                    (quest, _) => IsOnMap(quest) && quest.Monster is not null && quest.Monster.Number == monster.Definition.Number).ConfigureAwait(false);
+            }
         }
         else if (killed is Player victim && victim != player)
         {
@@ -157,7 +161,7 @@ public class WeeklyQuestsPlugIn :
                 player,
                 WeeklyQuestObjectiveType.KillPlayer,
                 1,
-                quest => victim.Level >= quest.MinimumVictimLevel).ConfigureAwait(false);
+                (quest, state) => CountsAsPlayerKill(quest, state, player, victim)).ConfigureAwait(false);
         }
     }
 
@@ -200,8 +204,29 @@ public class WeeklyQuestsPlugIn :
                 player,
                 WeeklyQuestObjectiveType.CompleteMiniGame,
                 1,
-                quest => quest.MiniGameType == MiniGameType.Undefined || quest.MiniGameType == type).ConfigureAwait(false);
+                (quest, _) => quest.MiniGameType == MiniGameType.Undefined || quest.MiniGameType == type).ConfigureAwait(false);
         }
+    }
+
+    /// <inheritdoc />
+    public ValueTask ItemPickedUpAsync(Player player, Item item, bool fromPlayerInventory)
+    {
+        // Items which were dropped by a player don't count, otherwise the same item could be dropped and picked up again.
+        if (fromPlayerInventory || item.Definition is not { } definition)
+        {
+            return ValueTask.CompletedTask;
+        }
+
+        var mapNumber = player.CurrentMap?.Definition.Number;
+        return this.AddProgressAsync(
+            player,
+            WeeklyQuestObjectiveType.CollectItem,
+            1,
+            (quest, _) => (quest.Map is null || quest.Map.Number == mapNumber)
+                          && quest.Item is { } questItem
+                          && questItem.Group == definition.Group
+                          && questItem.Number == definition.Number
+                          && item.Level >= quest.MinimumItemLevel);
     }
 
     /// <inheritdoc />
@@ -259,6 +284,9 @@ public class WeeklyQuestsPlugIn :
         // The player may have freed some inventory space in the meantime.
         await this.RewardPendingAsync(player, state, false).ConfigureAwait(false);
 
+        // The available quests may have changed, e.g. by a level up, so the bonus may be reached now.
+        await this.UpdateAllCompletedBonusAsync(player, state, configuration).ConfigureAwait(false);
+
         return CreateOverview(configuration, state, player);
     }
 
@@ -284,20 +312,86 @@ public class WeeklyQuestsPlugIn :
         return States.TryGetValue(player, out var state) ? state.Owner : null;
     }
 
-    private static IEnumerable<WeeklyQuestDefinition> GetActiveQuests(WeeklyQuestsConfiguration configuration)
+    /// <summary>
+    /// Gets the players for whom a monster kill of the killer counts.
+    /// </summary>
+    /// <param name="killer">The killer.</param>
+    /// <returns>The killer and, if configured, its party members nearby.</returns>
+    internal async ValueTask<IReadOnlyList<Player>> GetKillReceiversAsync(Player killer)
     {
-        return configuration.Quests.Where(q => q.IsActive && !string.IsNullOrWhiteSpace(q.Id));
+        if (this.Configuration is not { ShareKillsWithParty: true } || killer.Party is not { } party)
+        {
+            return [killer];
+        }
+
+        // Like the experience: the party members who see the killer, i.e. who are nearby on the same map.
+        using (await killer.ObserverLock.ReaderLockAsync())
+        {
+            return party.PartyList
+                .OfType<Player>()
+                .Where(p => p == killer || (p.IsAlive && killer.Observers.Contains(p)))
+                .ToList();
+        }
     }
 
-    private static WeeklyQuestOverviewEntry CreateEntry(WeeklyQuestDefinition quest, WeeklyQuestPlayerState state)
+    private static WeeklyQuestCharacterInfo GetCharacterInfo(Player player)
     {
-        state.Progress.TryGetValue(quest.Id, out var progress);
-        return new WeeklyQuestOverviewEntry(quest, progress?.Count ?? 0, progress?.CompletedAt is not null, progress?.RewardedAt is not null);
+        return new WeeklyQuestCharacterInfo(
+            player.SelectedCharacter?.CharacterClass,
+            player.Level,
+            (int)(player.Attributes?[Stats.Resets] ?? 0));
+    }
+
+    private static List<WeeklyQuestDefinition> GetAvailableQuests(WeeklyQuestsConfiguration configuration, WeeklyQuestPlayerState state, WeeklyQuestCharacterInfo character)
+    {
+        return WeeklyQuestSelector.GetAvailableQuests(configuration, state.PeriodStartUtc, character, state.Progress, state.RewardedByOtherCharacters);
+    }
+
+    private static bool CountsAsPlayerKill(WeeklyQuestDefinition quest, WeeklyQuestPlayerState state, Player killer, Player victim)
+    {
+        if (victim.Level < quest.MinimumVictimLevel)
+        {
+            return false;
+        }
+
+        if (quest.IgnoreSameIp
+            && (killer as IHasIpAddress)?.IpAddress is { Length: > 0 } killerIp
+            && killerIp == (victim as IHasIpAddress)?.IpAddress)
+        {
+            return false;
+        }
+
+        if (quest.IgnoreSameGuild
+            && killer.GuildStatus is { } killerGuild
+            && killerGuild.GuildId == victim.GuildStatus?.GuildId)
+        {
+            return false;
+        }
+
+        if (quest.IgnoreSameParty && killer.Party is not null && killer.Party == victim.Party)
+        {
+            return false;
+        }
+
+        if (quest.VictimCooldownMinutes > 0 && victim.SelectedCharacter is { } victimCharacter)
+        {
+            var key = (quest.Id, victimCharacter.GetId());
+            var now = DateTime.UtcNow;
+            if (state.LastCountedVictimKills.TryGetValue(key, out var lastCounted)
+                && now - lastCounted < TimeSpan.FromMinutes(quest.VictimCooldownMinutes))
+            {
+                return false;
+            }
+
+            state.LastCountedVictimKills[key] = now;
+        }
+
+        return true;
     }
 
     private static WeeklyQuestOverview CreateOverview(WeeklyQuestsConfiguration configuration, WeeklyQuestPlayerState state, Player player)
     {
-        var entries = GetActiveQuests(configuration).Select(quest => CreateEntry(quest, state)).ToList();
+        var entries = WeeklyQuestSelector.CreateEntries(configuration, state.PeriodStartUtc, GetCharacterInfo(player), state.Progress, state.RewardedByOtherCharacters);
         return new WeeklyQuestOverview(entries, GetNextResetUtc(state, player));
     }
 
@@ -339,25 +433,20 @@ public class WeeklyQuestsPlugIn :
             return null;
         }
 
-        return States.GetValue(player, _ => new WeeklyQuestPlayerState(this, character.GetId()));
+        var accountId = player.Account?.GetId();
+        return States.GetValue(player, _ => new WeeklyQuestPlayerState(this, character.GetId(), accountId == Guid.Empty ? null : accountId));
     }
 
-    private async ValueTask AddProgressAsync(Player player, WeeklyQuestObjectiveType objectiveType, int amount, Func<WeeklyQuestDefinition, bool>? filter = null)
+    private async ValueTask AddProgressAsync(Player player, WeeklyQuestObjectiveType objectiveType, int amount, Func<WeeklyQuestDefinition, WeeklyQuestPlayerState, bool>? filter = null)
     {
         if (this.Configuration is not { } configuration)
         {
             return;
         }
 
-        var level = player.Level;
-        var resets = (int)(player.Attributes?[Stats.Resets] ?? 0);
-        var quests = GetActiveQuests(configuration)
-            .Where(q => q.ObjectiveType == objectiveType
-                        && level >= q.MinimumLevel
-                        && resets >= q.MinimumResets
-                        && (filter is null || filter(q)))
-            .ToList();
-        if (quests.Count == 0 || this.GetOrCreateState(player) is not { } state)
+        // A quick check before the state is loaded, as most events don't concern any quest.
+        if (!configuration.Quests.Any(q => q.IsActive && q.ObjectiveType == objectiveType)
+            || this.GetOrCreateState(player) is not { } state)
         {
             return;
         }
@@ -370,6 +459,13 @@ public class WeeklyQuestsPlugIn :
             {
                 return;
             }
+
+            var character = GetCharacterInfo(player);
+            var quests = GetAvailableQuests(configuration, state, character)
+                .Where(q => q.ObjectiveType == objectiveType
+                            && WeeklyQuestSelector.MeetsMinimumRequirements(q, character)
+                            && (filter is null || filter(q, state)))
+                .ToList();
 
             var hasCompleted = false;
             var changedQuests = new List<WeeklyQuestDefinition>();
@@ -398,6 +494,11 @@ public class WeeklyQuestsPlugIn :
                 }
             }
 
+            if (hasCompleted && await this.UpdateAllCompletedBonusAsync(player, state, configuration).ConfigureAwait(false) is { } bonusQuest)
+            {
+                changedQuests.Add(bonusQuest);
+            }
+
             // A completion is saved immediately, so that it can't get lost.
             if (hasCompleted)
             {
@@ -413,6 +514,37 @@ public class WeeklyQuestsPlugIn :
         }
     }
 
+    /// <summary>
+    /// Updates the progress of the <see cref="WeeklyQuestsConfiguration.AllCompletedBonus"/>, and rewards it when all quests are completed.
+    /// </summary>
+    /// <returns>The quest of the bonus, if its progress changed.</returns>
+    private async ValueTask<WeeklyQuestDefinition?> UpdateAllCompletedBonusAsync(Player player, WeeklyQuestPlayerState state, WeeklyQuestsConfiguration configuration)
+    {
+        var quests = GetAvailableQuests(configuration, state, GetCharacterInfo(player));
+        if (quests.Count == 0 || WeeklyQuestSelector.CreateAllCompletedBonusQuest(configuration, quests.Count) is not { } bonusQuest)
+        {
+            return null;
+        }
+
+        var completedCount = quests.Count(q => state.Progress.TryGetValue(q.Id, out var p) && p.CompletedAt is not null);
+        var progress = state.GetOrCreateProgress(bonusQuest.Id);
+        if (progress.CompletedAt is not null || progress.Count == completedCount)
+        {
+            return null;
+        }
+
+        progress.Count = completedCount;
+        state.DirtyQuestIds.Add(bonusQuest.Id);
+        if (completedCount >= quests.Count)
+        {
+            progress.CompletedAt = DateTime.UtcNow;
+            await this.TryRewardAsync(player, bonusQuest, progress, true).ConfigureAwait(false);
+            await this.SaveAsync(player, state).ConfigureAwait(false);
+        }
+
+        return bonusQuest;
+    }
+
     private async ValueTask SendChangesAsync(Player player, WeeklyQuestPlayerState state, WeeklyQuestsConfiguration configuration, List<WeeklyQuestDefinition> changedQuests, bool isNewPeriod)
     {
         // After a reset, all quests of the client are outdated, not only the changed ones.
@@ -426,7 +558,7 @@ public class WeeklyQuestsPlugIn :
         var nextResetUtc = GetNextResetUtc(state, player);
         foreach (var quest in changedQuests)
         {
-            var entry = CreateEntry(quest, state);
+            var entry = WeeklyQuestSelector.CreateEntry(quest, state.Progress);
             await player.InvokeViewPlugInAsync<IWeeklyQuestListViewPlugIn>(p => p.UpdateWeeklyQuestAsync(entry, nextResetUtc)).ConfigureAwait(false);
         }
     }
@@ -453,6 +585,7 @@ public class WeeklyQuestsPlugIn :
             }
 
             var loaded = await this.Repository.LoadAsync(state.CharacterId, periodStart).ConfigureAwait(false);
+            state.RewardedByOtherCharacters = await this.LoadRewardedByOtherCharactersAsync(state, periodStart).ConfigureAwait(false);
             state.Progress = loaded.ToDictionary(p => p.QuestId);
             state.PeriodStartUtc = periodStart;
             state.DirtyQuestIds.Clear();
@@ -464,6 +597,22 @@ public class WeeklyQuestsPlugIn :
             player.Logger.LogWarning(ex, "Couldn't load the weekly quest progress of character {characterId}.", state.CharacterId);
             return false;
         }
+    }
+
+    private async ValueTask<HashSet<string>> LoadRewardedByOtherCharactersAsync(WeeklyQuestPlayerState state, DateTime periodStart)
+    {
+        // Only one character of an account can be in the game at the same time, so loading it once per period is enough.
+        if (state.AccountId is not { } accountId
+            || this.Configuration?.Quests.Any(q => q.OncePerAccount) != true)
+        {
+            return new HashSet<string>();
+        }
+
+        var rewarded = await this.Repository.LoadRewardedByAccountAsync(accountId, periodStart).ConfigureAwait(false);
+        return rewarded
+            .Where(p => p.CharacterId != state.CharacterId)
+            .Select(p => p.QuestId)
+            .ToHashSet();
     }
 
     private async ValueTask SaveAsync(Player player, WeeklyQuestPlayerState state)
@@ -499,7 +648,10 @@ public class WeeklyQuestsPlugIn :
         var rewarded = false;
         foreach (var progress in state.Progress.Values.Where(p => p.CompletedAt is not null && p.RewardedAt is null).ToList())
         {
-            if (configuration.Quests.FirstOrDefault(q => q.Id == progress.QuestId) is { } quest)
+            var quest = progress.QuestId == WeeklyQuestSelector.AllCompletedBonusId
+                ? WeeklyQuestSelector.CreateAllCompletedBonusQuest(configuration, progress.Count)
+                : configuration.Quests.FirstOrDefault(q => q.Id == progress.QuestId);
+            if (quest is not null)
             {
                 rewarded |= await this.TryRewardAsync(player, quest, progress, showPendingMessage).ConfigureAwait(false);
             }
