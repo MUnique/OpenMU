@@ -12,6 +12,7 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
 
+using MUnique.OpenMU.DataModel.Composition;
 using MUnique.OpenMU.Persistence;
 using Mapster;
 
@@ -34,6 +35,18 @@ public static class MapsterConfigurator
 
         Mapster.TypeAdapterConfig.GlobalSettings.Default.PreserveReference(true);
         Mapster.TypeAdapterConfig.GlobalSettings.Default.IgnoreMember((member, side) => member.Name.StartsWith("Raw"));
+
+        // Transient properties just hold run-time information and are not persisted.
+        // Some of them (e.g. of the SkillEntry) can't be mapped by Mapster at all, because their types are interfaces with events.
+        Mapster.TypeAdapterConfig.GlobalSettings.Default.IgnoreMember(
+            (member, side) => member.GetCustomAttributes(true).OfType<TransientAttribute>().Any());
+
+        // Collections of value types (e.g. ItemSlotType.ItemSlots) are only filled when the collection of the
+        // destination is used. Otherwise, Mapster creates a new, empty one and the values would be lost.
+        Mapster.TypeAdapterConfig.GlobalSettings.Default.UseDestinationValue(
+            member => member.Type.IsGenericType
+                      && member.Type.GetGenericTypeDefinition() == typeof(ICollection<>)
+                      && member.Type.GetGenericArguments()[0].IsValueType);
 
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Statistics.MiniGameRankingEntry, MUnique.OpenMU.DataModel.Statistics.MiniGameRankingEntry>()
             .Include<MiniGameRankingEntry, BasicModel.MiniGameRankingEntry>();
@@ -70,6 +83,9 @@ public static class MapsterConfigurator
 
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Entities.GuildMember, MUnique.OpenMU.DataModel.Entities.GuildMember>()
             .Include<GuildMember, BasicModel.GuildMember>();
+
+        Mapster.TypeAdapterConfig.GlobalSettings.ForType<MUnique.OpenMU.DataModel.Entities.GuildMember, BasicModel.GuildMember>()
+            .ConstructUsing(source => new BasicModel.GuildMember(source.Id));
 
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Entities.Item, MUnique.OpenMU.DataModel.Entities.Item>()
             .Include<Item, BasicModel.Item>();
@@ -227,6 +243,9 @@ public static class MapsterConfigurator
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.StatAttributeDefinition, MUnique.OpenMU.DataModel.Configuration.StatAttributeDefinition>()
             .Include<StatAttributeDefinition, BasicModel.StatAttributeDefinition>();
 
+        Mapster.TypeAdapterConfig.GlobalSettings.ForType<MUnique.OpenMU.DataModel.Configuration.StatAttributeDefinition, BasicModel.StatAttributeDefinition>()
+            .ConstructUsing(source => new BasicModel.StatAttributeDefinition(source.Attribute, source.BaseValue, source.IncreasableByPlayer));
+
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.SystemConfiguration, MUnique.OpenMU.DataModel.Configuration.SystemConfiguration>()
             .Include<SystemConfiguration, BasicModel.SystemConfiguration>();
 
@@ -311,14 +330,23 @@ public static class MapsterConfigurator
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.AttributeSystem.AttributeDefinition, MUnique.OpenMU.AttributeSystem.AttributeDefinition>()
             .Include<AttributeDefinition, BasicModel.AttributeDefinition>();
 
+        Mapster.TypeAdapterConfig.GlobalSettings.ForType<MUnique.OpenMU.AttributeSystem.AttributeDefinition, BasicModel.AttributeDefinition>()
+            .ConstructUsing(source => new BasicModel.AttributeDefinition(source.Id, source.Designation, source.Description));
+
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.AttributeSystem.StatAttribute, MUnique.OpenMU.AttributeSystem.StatAttribute>()
             .Include<StatAttribute, BasicModel.StatAttribute>();
 
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.AttributeSystem.ConstValueAttribute, MUnique.OpenMU.AttributeSystem.ConstValueAttribute>()
             .Include<ConstValueAttribute, BasicModel.ConstValueAttribute>();
 
+        Mapster.TypeAdapterConfig.GlobalSettings.ForType<MUnique.OpenMU.AttributeSystem.ConstValueAttribute, BasicModel.ConstValueAttribute>()
+            .ConstructUsing(source => new BasicModel.ConstValueAttribute(source.Value, source.Definition, source.AggregateType));
+
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.AttributeSystem.AttributeRelationship, MUnique.OpenMU.AttributeSystem.AttributeRelationship>()
             .Include<AttributeRelationship, BasicModel.AttributeRelationship>();
+
+        Mapster.TypeAdapterConfig.GlobalSettings.ForType<MUnique.OpenMU.AttributeSystem.AttributeRelationship, BasicModel.AttributeRelationship>()
+            .ConstructUsing(source => new BasicModel.AttributeRelationship(source.TargetAttribute, source.InputOperand, source.InputAttribute, source.AggregateType));
 
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.Interfaces.LetterHeader, MUnique.OpenMU.Interfaces.LetterHeader>()
             .Include<LetterHeader, BasicModel.LetterHeader>();

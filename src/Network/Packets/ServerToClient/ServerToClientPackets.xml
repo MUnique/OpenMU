@@ -11174,6 +11174,90 @@
       </Structures>
     </Packet>
     <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>F5</Code>
+      <SubCode>02</SubCode>
+      <Name>WeeklyQuestEntry</Name>
+      <Length>520</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the client requested the list of available chat commands, one message is sent for each active weekly quest. When the progress of a quest changes, a single message is sent as update of this quest.</SentWhen>
+      <CausedReaction>The client shows the weekly quests and their progress in a window.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Index</Name>
+          <Description>The index of this quest within the list, starting at 0. The first message of a list replaces the previously known quests.</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>Count</Name>
+          <Description>The total number of quests. A list without quests is sent as a single message with a count of 0.</Description>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Boolean</Type>
+          <Name>IsUpdate</Name>
+          <Description>If true, this message updates the already known quest with the same id, instead of being part of a list.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Boolean</Type>
+          <Name>IsCompleted</Name>
+          <Description>The objective of the quest has been reached.</Description>
+        </Field>
+        <Field>
+          <Index>9</Index>
+          <Type>Boolean</Type>
+          <Name>IsRewarded</Name>
+          <Description>The rewards of the quest have been handed out. If the quest is completed but not rewarded, the reward is pending, e.g. because the inventory was full.</Description>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>CurrentCount</Name>
+        </Field>
+        <Field>
+          <Index>16</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>RequiredCount</Name>
+        </Field>
+        <Field>
+          <Index>20</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>SecondsUntilReset</Name>
+          <Description>The seconds until the weekly progress is reset.</Description>
+        </Field>
+        <Field>
+          <Index>24</Index>
+          <Type>String</Type>
+          <Name>Id</Name>
+          <Length>64</Length>
+          <Description>The identifier of the quest.</Description>
+        </Field>
+        <Field>
+          <Index>88</Index>
+          <Type>String</Type>
+          <Name>Name</Name>
+          <Length>48</Length>
+        </Field>
+        <Field>
+          <Index>136</Index>
+          <Type>String</Type>
+          <Name>Description</Name>
+          <Length>256</Length>
+        </Field>
+        <Field>
+          <Index>392</Index>
+          <Type>String</Type>
+          <Name>Rewards</Name>
+          <Length>128</Length>
+          <Description>The rewards of the quest as text, in the language of the player.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
       <HeaderType>C1Header</HeaderType>
       <Code>94</Code>
       <Name>EventChipRegistrationResult</Name>

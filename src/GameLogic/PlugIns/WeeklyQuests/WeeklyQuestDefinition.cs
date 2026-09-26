@@ -99,6 +99,16 @@ public class WeeklyQuestDefinition
     [ScaffoldColumn(true)]
     public ICollection<WeeklyQuestReward> Rewards { get; set; } = new List<WeeklyQuestReward>();
 
+    /// <summary>
+    /// Gets the text which describes all rewards to a player.
+    /// </summary>
+    /// <param name="culture">The culture of the player.</param>
+    /// <returns>The rewards, separated by commas.</returns>
+    public string GetRewardsText(System.Globalization.CultureInfo culture)
+    {
+        return string.Join(", ", this.Rewards.Select(r => r.GetDisplayText(culture)));
+    }
+
     /// <inheritdoc />
     public override string ToString() => $"{this.Id}: {this.Name}";
 }

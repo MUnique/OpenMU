@@ -259,14 +259,19 @@ public class WeeklyQuestsPlugIn :
         // The player may have freed some inventory space in the meantime.
         await this.RewardPendingAsync(player, state, false).ConfigureAwait(false);
 
-        var entries = GetActiveQuests(configuration)
-            .Select(quest =>
-            {
-                state.Progress.TryGetValue(quest.Id, out var progress);
-                return new WeeklyQuestOverviewEntry(quest, progress?.Count ?? 0, progress?.CompletedAt is not null, progress?.RewardedAt is not null);
-            })
-            .ToList();
-        return new WeeklyQuestOverview(entries, WeeklyPeriod.GetNextPeriodStartUtc(state.PeriodStartUtc, player.GameContext.ServerTimeZone));
+        return CreateOverview(configuration, state, player);
+    }
+
+    /// <summary>
+    /// Sends the active quests and the progress of the player to the client, so that it can show them in a window.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    public async ValueTask SendListAsync(Player player)
+    {
+        if (await this.GetOverviewAsync(player).ConfigureAwait(false) is { } overview)
+        {
+            await player.InvokeViewPlugInAsync<IWeeklyQuestListViewPlugIn>(p => p.ShowWeeklyQuestsAsync(overview)).ConfigureAwait(false);
+        }
     }
 
     /// <summary>
@@ -274,7 +279,7 @@ public class WeeklyQuestsPlugIn :
     /// </summary>
     /// <param name="player">The player.</param>
     /// <returns>The plugin, if the player is tracked by one.</returns>
-    internal static WeeklyQuestsPlugIn? GetTrackingPlugIn(Player player)
+    public static WeeklyQuestsPlugIn? GetTrackingPlugIn(Player player)
     {
         return States.TryGetValue(player, out var state) ? state.Owner : null;
     }
@@ -282,6 +287,23 @@ public class WeeklyQuestsPlugIn :
     private static IEnumerable<WeeklyQuestDefinition> GetActiveQuests(WeeklyQuestsConfiguration configuration)
     {
         return configuration.Quests.Where(q => q.IsActive && !string.IsNullOrWhiteSpace(q.Id));
+    }
+
+    private static WeeklyQuestOverviewEntry CreateEntry(WeeklyQuestDefinition quest, WeeklyQuestPlayerState state)
+    {
+        state.Progress.TryGetValue(quest.Id, out var progress);
+        return new WeeklyQuestOverviewEntry(quest, progress?.Count ?? 0, progress?.CompletedAt is not null, progress?.RewardedAt is not null);
+    }
+
+    private static WeeklyQuestOverview CreateOverview(WeeklyQuestsConfiguration configuration, WeeklyQuestPlayerState state, Player player)
+    {
+        var entries = GetActiveQuests(configuration).Select(quest => CreateEntry(quest, state)).ToList();
+        return new WeeklyQuestOverview(entries, GetNextResetUtc(state, player));
+    }
+
+    private static DateTime GetNextResetUtc(WeeklyQuestPlayerState state, Player player)
+    {
+        return WeeklyPeriod.GetNextPeriodStartUtc(state.PeriodStartUtc, player.GameContext.ServerTimeZone);
     }
 
     private static string Format(LocalizedString template, Player player, params object?[] args)
@@ -343,12 +365,14 @@ public class WeeklyQuestsPlugIn :
         try
         {
             using var l = await state.Lock.LockAsync().ConfigureAwait(false);
+            var previousPeriodStart = state.IsLoaded ? state.PeriodStartUtc : (DateTime?)null;
             if (!await this.EnsureLoadedAsync(player, state).ConfigureAwait(false))
             {
                 return;
             }
 
             var hasCompleted = false;
+            var changedQuests = new List<WeeklyQuestDefinition>();
             foreach (var quest in quests)
             {
                 var progress = state.GetOrCreateProgress(quest.Id);
@@ -357,6 +381,7 @@ public class WeeklyQuestsPlugIn :
                     continue;
                 }
 
+                changedQuests.Add(quest);
                 var previousCount = progress.Count;
                 progress.Count = (int)Math.Min((long)previousCount + amount, quest.RequiredCount);
                 state.DirtyQuestIds.Add(quest.Id);
@@ -378,10 +403,31 @@ public class WeeklyQuestsPlugIn :
             {
                 await this.SaveAsync(player, state).ConfigureAwait(false);
             }
+
+            var isNewPeriod = previousPeriodStart is not null && previousPeriodStart != state.PeriodStartUtc;
+            await this.SendChangesAsync(player, state, configuration, changedQuests, isNewPeriod).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
             player.Logger.LogError(ex, "Unexpected error when adding weekly quest progress of type {objectiveType}.", objectiveType);
+        }
+    }
+
+    private async ValueTask SendChangesAsync(Player player, WeeklyQuestPlayerState state, WeeklyQuestsConfiguration configuration, List<WeeklyQuestDefinition> changedQuests, bool isNewPeriod)
+    {
+        // After a reset, all quests of the client are outdated, not only the changed ones.
+        if (isNewPeriod)
+        {
+            var overview = CreateOverview(configuration, state, player);
+            await player.InvokeViewPlugInAsync<IWeeklyQuestListViewPlugIn>(p => p.ShowWeeklyQuestsAsync(overview)).ConfigureAwait(false);
+            return;
+        }
+
+        var nextResetUtc = GetNextResetUtc(state, player);
+        foreach (var quest in changedQuests)
+        {
+            var entry = CreateEntry(quest, state);
+            await player.InvokeViewPlugInAsync<IWeeklyQuestListViewPlugIn>(p => p.UpdateWeeklyQuestAsync(entry, nextResetUtc)).ConfigureAwait(false);
         }
     }
 

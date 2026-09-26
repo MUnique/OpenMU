@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.Arguments;
 using MUnique.OpenMU.GameLogic.PlugIns.WeeklyQuests;
+using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -61,5 +62,8 @@ public class WeeklyQuestsChatCommandPlugIn : ChatCommandPlugInBase<EmptyChatComm
 
         var remaining = overview.NextResetUtc - DateTime.UtcNow;
         await player.ShowBlueMessageAsync($"Reinicio en {(int)remaining.TotalDays}d {remaining.Hours}h {remaining.Minutes}m.").ConfigureAwait(false);
+
+        // The configuration may have changed since the client got the list, so the window is refreshed, too.
+        await player.InvokeViewPlugInAsync<IWeeklyQuestListViewPlugIn>(p => p.ShowWeeklyQuestsAsync(overview)).ConfigureAwait(false);
     }
 }

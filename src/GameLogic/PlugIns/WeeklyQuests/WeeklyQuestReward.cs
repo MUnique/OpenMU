@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlugIns.WeeklyQuests;
 
+using System.Globalization;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 
 /// <summary>
@@ -65,7 +66,22 @@ public class WeeklyQuestReward
     public byte ExcellentOptions { get; set; }
 
     /// <inheritdoc />
-    public override string ToString() => this.RewardType == WeeklyQuestRewardType.Item
-        ? $"{this.Amount}x {this.Item?.Name ?? "?"} +{this.ItemLevel}"
-        : $"{this.Amount} {this.RewardType}";
+    public override string ToString() => this.GetDisplayText(CultureInfo.InvariantCulture);
+
+    /// <summary>
+    /// Gets the text which describes the reward to a player.
+    /// </summary>
+    /// <param name="culture">The culture of the player.</param>
+    /// <returns>The text, e.g. "5.000.000 Zen" or "1x Jewel of Bless +0".</returns>
+    public string GetDisplayText(CultureInfo culture)
+    {
+        return this.RewardType switch
+        {
+            WeeklyQuestRewardType.Item => $"{this.Amount}x {this.Item?.Name.GetTranslation(culture) ?? "?"}{(this.ItemLevel > 0 ? $" +{this.ItemLevel}" : string.Empty)}",
+            WeeklyQuestRewardType.Money => $"{this.Amount.ToString("N0", culture)} Zen",
+            WeeklyQuestRewardType.Experience => $"{this.Amount.ToString("N0", culture)} EXP",
+            WeeklyQuestRewardType.MasterExperience => $"{this.Amount.ToString("N0", culture)} Master EXP",
+            _ => this.Amount.ToString("N0", culture),
+        };
+    }
 }
