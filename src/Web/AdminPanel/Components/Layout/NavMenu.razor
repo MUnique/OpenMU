@@ -30,36 +30,45 @@
             else
             {
                 <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="" Match="NavLinkMatch.All" @onclick="() => NavigationHistory.Clear()">
+                    <NavLink class="nav-link" href="" Match="NavLinkMatch.All" @onclick="() => NavigationHistory.Clear()" title="Inicio del panel.">
                         <span class="oi oi-home" aria-hidden="true"></span> @Resources.Home
                     </NavLink>
                 </li>
                 <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="servers" @onclick="() => NavigationHistory.Clear()">
+                    <NavLink class="nav-link" href="ayuda" @onclick="() => NavigationHistory.Clear()" title="Guía rápida en español: cómo hacer las tareas más comunes y qué impacta cada cambio.">
+                        <span class="oi oi-question-mark" aria-hidden="true"></span> Ayuda
+                    </NavLink>
+                </li>
+                <li class="nav-section px-3">Operación</li>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="servers" @onclick="() => NavigationHistory.Clear()" title="Estado de los servidores de juego: iniciar, detener, reiniciar y ver cuántos jugadores hay.">
                         <span class="oi oi-project" aria-hidden="true"></span> @Resources.Servers
                     </NavLink>
                 </li>
+                <li class="nav-section px-3">Jugadores</li>
                 <li class="nav-item px-3">
-                  <NavLink class="nav-link" href="accounts" @onclick="() => NavigationHistory.Clear()">
+                  <NavLink class="nav-link" href="accounts" @onclick="() => NavigationHistory.Clear()" title="Cuentas de jugadores: buscar, editar personajes, bloquear o crear cuentas.">
                     <span class="oi oi-list" aria-hidden="true"></span> @Resources.Accounts
                   </NavLink>
                 </li>
                 <li class="nav-item px-3">
-                  <NavLink class="nav-link" href="logged-in" @onclick="() => NavigationHistory.Clear()">
+                  <NavLink class="nav-link" href="logged-in" @onclick="() => NavigationHistory.Clear()" title="Cuentas conectadas ahora. Permite desconectar una cuenta que quedó trabada.">
                     <span class="oi oi-people" aria-hidden="true" /> @Resources.OnlineAccounts
                   </NavLink>
                 </li>
+                <li class="nav-section px-3">Contenido del juego</li>
                 @if (this.GameConfigurationId is { } gameConfigurationId )
                 {
                     <ConfigNavMenu GameConfigurationId="@gameConfigurationId" />
                 }
+                <li class="nav-section px-3">Sistema</li>
                 <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="setup" @onclick="() => NavigationHistory.Clear()">
+                    <NavLink class="nav-link" href="setup" @onclick="() => NavigationHistory.Clear()" title="Instalación y ajustes iniciales. Tiene acciones que pueden borrar datos: usar con cuidado.">
                         <span class="oi oi-cog" aria-hidden="true"></span> @Resources.Setup
                     </NavLink>
                 </li>
                 <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="config-updates" @onclick="() => NavigationHistory.Clear()">
+                    <NavLink class="nav-link" href="config-updates" @onclick="() => NavigationHistory.Clear()" title="Actualizaciones de configuración pendientes para la base de datos.">
                         <span class="oi oi-medical-cross" aria-hidden="true"></span> @Resources.Updates
                         @if (this._availableConfigUpdates > 0)
                         {
@@ -71,17 +80,17 @@
             }
             <AuthorizeView Policy="@AdminPolicies.Administrator">
                 <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="castle-siege" @onclick="() => NavigationHistory.Clear()">
+                    <NavLink class="nav-link" href="castle-siege" @onclick="() => NavigationHistory.Clear()" title="Castle Siege: fechas, castillo y alianzas.">
                         <span class="oi oi-shield" aria-hidden="true"></span> @Resources.CastleSiege
                     </NavLink>
                 </li>
                 <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="users" @onclick="() => NavigationHistory.Clear()">
+                    <NavLink class="nav-link" href="users" @onclick="() => NavigationHistory.Clear()" title="Usuarios que pueden entrar a este panel, con su rol y su contraseña.">
                         <span class="oi oi-key" aria-hidden="true"></span> @Resources.Users
                     </NavLink>
                 </li>
                 <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="api-keys" @onclick="() => NavigationHistory.Clear()">
+                    <NavLink class="nav-link" href="api-keys" @onclick="() => NavigationHistory.Clear()" title="Claves de acceso para programas externos, como la web. El rol Operator permite ejecutar acciones.">
                         <span class="oi oi-share-boxed" aria-hidden="true"></span> @Resources.ApiKeys
                     </NavLink>
                 </li>
@@ -89,7 +98,7 @@
             @if (AdminPanelEnvironment.IsHostingEmbedded)
             {
                 <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="logfiles" @onclick="() => NavigationHistory.Clear()">
+                    <NavLink class="nav-link" href="logfiles" @onclick="() => NavigationHistory.Clear()" title="Registros del servidor, para ver errores y qué pasó.">
                         <span class="oi oi-list" aria-hidden="true"></span> @Resources.LogFiles
                     </NavLink>
                 </li>
@@ -118,7 +127,7 @@
             @if (this.IsNetworkAnalyzerAvailable)
             {
               <li class="nav-item px-3">
-                <NavLink class="nav-link" href="network-analyzer" @onclick="() => NavigationHistory.Clear()">
+                <NavLink class="nav-link" href="network-analyzer" @onclick="() => NavigationHistory.Clear()" title="Captura y analiza el tráfico de red del juego. Pensado para desarrolladores.">
                   <span class="oi oi-pulse" aria-hidden="true"></span> @Resources.NetworkAnalyzer
                 </NavLink>
               </li>

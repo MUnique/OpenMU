@@ -9,7 +9,24 @@
 {
     <label for="@this._fieldIdentifier.FieldName">
         @this._actualLabel
-        @if (!string.IsNullOrWhiteSpace(this._description))
+        @if (this._help is not null)
+        {
+            <details class="info-popup ms-2" @onclick:stopPropagation>
+                <summary></summary>
+                <div class="alert alert-secondary shadow me-3">
+                    <div><span class="oi oi-info" aria-hidden="true"></span> @this._help.Info</div>
+                    @if (!string.IsNullOrWhiteSpace(this._help.Impact))
+                    {
+                        <div class="mt-2"><strong>Impacto:</strong> @this._help.Impact</div>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(this._description))
+                    {
+                        <div class="mt-2 small text-muted">@this._description</div>
+                    }
+                </div>
+            </details>
+        }
+        else if (!string.IsNullOrWhiteSpace(this._description))
         {
             <details class="info-popup ms-2" @onclick:stopPropagation>
                 <summary></summary>
@@ -23,6 +40,7 @@
     private string _actualLabel = null!;
     private FieldIdentifier _fieldIdentifier;
     private string? _description;
+    private SpanishHelp.Entry? _help;
 
     /// <summary>
     /// Gets or sets the text.
@@ -49,6 +67,7 @@
             // DisplayAttribute has priority
             this._actualLabel = displayAttribute?.GetName() ?? type.GetPropertyCaption(property.Name);
             this._description = displayAttribute?.GetDescription() ?? type.GetPropertyDescription(property.Name);
+            this._help = SpanishHelp.TryGet(type, property.Name, out var help) ? help : null;
         }
     }
 }
