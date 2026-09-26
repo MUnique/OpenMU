@@ -194,4 +194,184 @@
   <data name="AddSmallShieldForMagicGladiator_Description" xml:space="preserve">
     <value>Adds a small shield to a created magic gladiator character.</value>
   </data>
+  <data name="AddCrescentMoonSlashForDarkKnight_Display1_Name" xml:space="preserve"><value>AddCrescentMoonSlashForDarkKnight</value></data>
+  <data name="AddCrescentMoonSlashForDarkKnight_Display1_Description" xml:space="preserve"><value>Adds the crescent moon slash skill (active in castle siege) to a created dark knight character.</value></data>
+  <data name="AddStarfallForFairyElf_Display1_Name" xml:space="preserve"><value>AddStarfallForFairyElf</value></data>
+  <data name="AddStarfallForFairyElf_Display1_Description" xml:space="preserve"><value>Adds the Starfall skill (active in castle siege) to a created fairy elf character.</value></data>
+  <data name="AddManaRaysForMagicGladiator_Display1_Name" xml:space="preserve"><value>AddManaRaysForMagicGladiator</value></data>
+  <data name="AddManaRaysForMagicGladiator_Display1_Description" xml:space="preserve"><value>Adds the Mana Rays skill (active in castle siege) to a created magic gladiator character.</value></data>
+  <data name="AddFireBlastForDarkLord_Display1_Name" xml:space="preserve"><value>AddFireBlastForDarkLord</value></data>
+  <data name="AddFireBlastForDarkLord_Display1_Description" xml:space="preserve"><value>Adds the Fire Blast skill (active in castle siege) to a created dark lord character.</value></data>
+  <data name="AddSpiralSlashForMagicGladiator_Display1_Name" xml:space="preserve"><value>AddSpiralSlashForMagicGladiator</value></data>
+  <data name="AddSpiralSlashForMagicGladiator_Display1_Description" xml:space="preserve"><value>Adds the Spiral Slash skill (active in castle siege) to a created magic gladiator character.</value></data>
+  <data name="FixWeaponRisePercentagePlugInSeason6_Name" xml:space="preserve"><value>Fix Weapon Rise Percentage, Summoner Items Wizardry/Curse Options, and Several 3rd Level Wing Damage Rates</value></data>
+  <data name="FixWeaponRisePercentagePlugInSeason6_Description" xml:space="preserve"><value>This update fixes weapons (staff, stick, book, scepter) rise percentage; Summoner weapons and wings wizardry/curse options; and Wing of Dimension (inc/dec), Cape of Overrule (inc/dec), Cape of Emperor (dec) damage rates. Also includes fixes for Divine Staff of Archangel and Eternal Wing Stick.</value></data>
+  <data name="FixAreaSkillsUpdatePlugIn_Name" xml:space="preserve"><value>Fix Area Skills</value></data>
+  <data name="FixAreaSkillsUpdatePlugIn_Description" xml:space="preserve"><value>Fixes Hellfire, Decay, and Ice Storm skills' range, effect radius, and delay.</value></data>
+  <data name="AddMissingMerchantStoresPlugIn_Name" xml:space="preserve"><value>Add missing merchant stores</value></data>
+  <data name="AddMissingMerchantStoresPlugIn_Description" xml:space="preserve"><value>Gives a general-goods store to Christine the General Goods Merchant (545), which had a shop window but no items, cloned from Thompson the Merchant (231).</value></data>
+  <data name="FixEventItemsDropFromMonstersUpdatePlugInSeason6_Name" xml:space="preserve"><value>Fix Event Items DropsFromMonsters Season 6</value></data>
+  <data name="FixEventItemsDropFromMonstersUpdatePlugInSeason6_Description" xml:space="preserve"><value>This update fixes event items that have DropsFromMonsters set to true, causing them to drop at level 0 instead of using their dedicated DropItemGroups.</value></data>
+  <data name="InfinityArrowSkillOnQuestCompletionPlugIn_Name" xml:space="preserve"><value>Adds infinity arrow skill with quest</value></data>
+  <data name="InfinityArrowSkillOnQuestCompletionPlugIn_Description" xml:space="preserve"><value>This update adds the infinity arrow skill as quest reward for 'Gain Hero Status (Muse Elf)'.</value></data>
+  <data name="RegenerationsRefactorPlugInBase_Name" xml:space="preserve"><value>Regenerations Refactor</value></data>
+  <data name="RegenerationsRefactorPlugInBase_Description" xml:space="preserve"><value>This update fixes and reworks some regeneration attributes (health, mana, ability).</value></data>
+  <data name="AddDuelConfigurationPlugIn_Name" xml:space="preserve"><value>Add duel configuration</value></data>
+  <data name="AddDuelConfigurationPlugIn_Description" xml:space="preserve"><value>This update adds data for the duel configuration</value></data>
+  <data name="FixBloodCastleMonsterAttributesUpdatePlugIn_Name" xml:space="preserve"><value>Fix Blood Castle 7/8 Monster Attributes</value></data>
+  <data name="FixBloodCastleMonsterAttributesUpdatePlugIn_Description" xml:space="preserve"><value>Swaps attribute values between BC7 (monsters 138-143) and BC8 (monsters 428-433) so progression is correct: BC6 → BC7 → BC8.</value></data>
+  <data name="AddDoppelgangerDataUpdatePlugIn_Name" xml:space="preserve"><value>Add Doppelganger data</value></data>
+  <data name="AddDoppelgangerDataUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the doppelganger event configuration.</value></data>
+  <data name="ConfigureCastleSiegeRegistrationUpdatePlugIn_Name" xml:space="preserve"><value>Configure Castle Siege registration</value></data>
+  <data name="ConfigureCastleSiegeRegistrationUpdatePlugIn_Description" xml:space="preserve"><value>This update configures the item used for Castle Siege Sign of Lord registration.</value></data>
+  <data name="AddKanturuMapContentUpdatePlugIn_Name" xml:space="preserve"><value>Add Kanturu map content</value></data>
+  <data name="AddKanturuMapContentUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the Kanturu bosses (Maya, her hands, Nightmare) and the event wave spawns.</value></data>
+  <data name="FinishSummonerMasterTreePlugIn_Name" xml:space="preserve"><value>Finish Summoner Master Tree PlugIn</value></data>
+  <data name="FinishSummonerMasterTreePlugIn_Description" xml:space="preserve"><value>This update completes the summoner master tree and fixes some of its skill values.</value></data>
+  <data name="AddMaximumAllianceSizeUpdatePlugInSeason6_Name" xml:space="preserve"><value>Add Maximum Alliance Size Attribute (Season 6)</value></data>
+  <data name="AddMaximumAllianceSizeUpdatePlugInSeason6_Description" xml:space="preserve"><value>Adds the MaximumAllianceSize global base attribute with a default value of 5 to the Season 6 game configuration.</value></data>
+  <data name="FixAncientDiscriminatorsUpdatePlugIn_Name" xml:space="preserve"><value>Fix Warrior Morning Star</value></data>
+  <data name="FixAncientDiscriminatorsUpdatePlugIn_Description" xml:space="preserve"><value>This update fixes the discriminators of some ancient items.</value></data>
+  <data name="AddSummonerBuffSkillsPlugIn_Name" xml:space="preserve"><value>Add Summoner Buff Skills</value></data>
+  <data name="AddSummonerBuffSkillsPlugIn_Description" xml:space="preserve"><value>This update adds the Sleep, Innovation, Damage Reflection and Weakness Summoner buff skills. It also fixes the 3rd wing full reflect option.</value></data>
+  <data name="AddIsQuestItemFlagPlugIn_Name" xml:space="preserve"><value>Add IsQuestItem flag</value></data>
+  <data name="AddIsQuestItemFlagPlugIn_Description" xml:space="preserve"><value>This update flags the existing quest items as such, so that they can only be picked up by characters with a matching active quest.</value></data>
+  <data name="WizEnhanceAndRagefighterSkillsUpdatePlugIn_Name" xml:space="preserve"><value>Some added skills</value></data>
+  <data name="WizEnhanceAndRagefighterSkillsUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the following skills: Wizardry Enhance, Increase Health, Increase Block, Ignore Defense.</value></data>
+  <data name="FixJeweleryPetsDamageCalcsPlugInBase_Name" xml:space="preserve"><value>Fix Jewelery Resistance Calculations</value></data>
+  <data name="FixJeweleryPetsDamageCalcsPlugInBase_Description" xml:space="preserve"><value>This update fixes jewelery items resistance values.</value></data>
+  <data name="FixChaosMixesPlugInBase_Name" xml:space="preserve"><value>Fix Chaos Mixes Settings</value></data>
+  <data name="FixChaosMixesPlugInBase_Description" xml:space="preserve"><value>This update fixes Chaos Weapon crafting settings.</value></data>
+  <data name="FixDamageAbsorbItemsUpdatePlugIn_Name" xml:space="preserve"><value>Fixed damage absorb items/skills</value></data>
+  <data name="FixDamageAbsorbItemsUpdatePlugIn_Description" xml:space="preserve"><value>This update fixes the damage absorbtion settings for items and skills.</value></data>
+  <data name="AddHarmonyOptionWeightsUpdateSeason6_Name" xml:space="preserve"><value>Add harmony option weights</value></data>
+  <data name="AddHarmonyOptionWeightsUpdateSeason6_Description" xml:space="preserve"><value>This update adds Jewel of Harmony option weights used for option assignment, fixes some options, and fixes item restore mix</value></data>
+  <data name="AddQuestItemLimitPlugIn_Name" xml:space="preserve"><value>Add quest item limits</value></data>
+  <data name="AddQuestItemLimitPlugIn_Description" xml:space="preserve"><value>This update adds limits to quest items, so that only one item can be picked up.</value></data>
+  <data name="FinishDarkKnightMasterTreePlugInSeason6_Name" xml:space="preserve"><value>Finish Dark Knight Master Tree PlugIn</value></data>
+  <data name="FinishDarkKnightMasterTreePlugInSeason6_Description" xml:space="preserve"><value>This update completes the dark knight master tree skills and effects. It also fixes the double wield damage calculations.</value></data>
+  <data name="AddLorenMarketJuliaWarpPlugIn_Name" xml:space="preserve"><value>Add Loren Market Julia warp</value></data>
+  <data name="AddLorenMarketJuliaWarpPlugIn_Description" xml:space="preserve"><value>Makes Market Union Member Julia (547) a working warp NPC between Lorencia and the Loren Market, on both sides, instead of an empty merchant.</value></data>
+  <data name="LimitWhiteWizardDropsUpdatePlugIn_Name" xml:space="preserve"><value>Limit White Wizard drops</value></data>
+  <data name="LimitWhiteWizardDropsUpdatePlugIn_Description" xml:space="preserve"><value>Limits the Wizard's Ring to one per character.</value></data>
+  <data name="ChaosCastleDataUpdatePlugIn_Name" xml:space="preserve"><value>Chaos Castle Data</value></data>
+  <data name="ChaosCastleDataUpdatePlugIn_Description" xml:space="preserve"><value>This update creates the configuration data for the chaos castle event.</value></data>
+  <data name="FinishDarkLordMasterTreePlugIn_Name" xml:space="preserve"><value>Finish Dark Lord Master Tree PlugIn</value></data>
+  <data name="FinishDarkLordMasterTreePlugIn_Description" xml:space="preserve"><value>This update completes the dark lord master tree skills and effects.</value></data>
+  <data name="FixWingsAndCapesCraftingsUpdatePlugIn_Name" xml:space="preserve"><value>Fixed wings and capes craftings</value></data>
+  <data name="FixWingsAndCapesCraftingsUpdatePlugIn_Description" xml:space="preserve"><value>This update sets the right settings for the wings and capes craftings.</value></data>
+  <data name="AddRenaItemUpdatePlugIn_Name" xml:space="preserve"><value>Add Rena Item</value></data>
+  <data name="AddRenaItemUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the missing Rena item, which is required for the item registration feature.</value></data>
+  <data name="AddCrestOfMonarchDropGroupUpdateSeason6_Name" xml:space="preserve"><value>Add Crest of Monarch Drop Group</value></data>
+  <data name="AddCrestOfMonarchDropGroupUpdateSeason6_Description" xml:space="preserve"><value>Adds the Crest of Monarch (Loch's Feather +1) drop item group to Icarus.</value></data>
+  <data name="FixSummonerCurseSkillsPlugIn_Name" xml:space="preserve"><value>Fix Summoner Curse Skills</value></data>
+  <data name="FixSummonerCurseSkillsPlugIn_Description" xml:space="preserve"><value>This update adds missing area skill settings for summoner curse (book) and lightning shock skills.</value></data>
+  <data name="AddAreaSkillSettingsUpdatePlugIn_Name" xml:space="preserve"><value>Add Area Skill Settings</value></data>
+  <data name="AddAreaSkillSettingsUpdatePlugIn_Description" xml:space="preserve"><value>Adds the new area skill settings for skills like evil spirit, etc. to make them work properly again.</value></data>
+  <data name="FinishDarkWizardMasterTreePlugIn_Name" xml:space="preserve"><value>Finish Dark Wizard Master Tree PlugIn</value></data>
+  <data name="FinishDarkWizardMasterTreePlugIn_Description" xml:space="preserve"><value>This update completes the dark wizard master tree expansion of wizardry effects.</value></data>
+  <data name="RemoveJewelDropLevelGapPlugInBase_Name" xml:space="preserve"><value>Remove Jewel Drop Level Gap</value></data>
+  <data name="RemoveJewelDropLevelGapPlugInBase_Description" xml:space="preserve"><value>This update removes the existing drop level gap condition for jewels and similar items that should always drop.</value></data>
+  <data name="FixSetBonusesPlugIn_Name" xml:space="preserve"><value>Fix Item Set Bonuses</value></data>
+  <data name="FixSetBonusesPlugIn_Description" xml:space="preserve"><value>This update fixes the set bonuses for additional defense of +10~15 sets and the defense rate.</value></data>
+  <data name="AddElfSoldierBuffPlugIn_Name" xml:space="preserve"><value>Add Elf Soldier Buff</value></data>
+  <data name="AddElfSoldierBuffPlugIn_Description" xml:space="preserve"><value>This update adds the Elf Soldier buff (defense and damage boost) as a configurable Buff.</value></data>
+  <data name="FixSocketSeedCraftingUpdatePlugIn_Name" xml:space="preserve"><value>Fixed socket seed crafting</value></data>
+  <data name="FixSocketSeedCraftingUpdatePlugIn_Description" xml:space="preserve"><value>This update sets the right settings for the socket seed crafting.</value></data>
+  <data name="FixWarriorMorningStarPlugIn_Name" xml:space="preserve"><value>Fix Warrior Morning Star</value></data>
+  <data name="FixWarriorMorningStarPlugIn_Description" xml:space="preserve"><value>This update fixes the weapon of the warrior ancient set. The Hand Axe is replaced by the Morning Star.</value></data>
+  <data name="SpawnFixesUpdatePlugIn_Name" xml:space="preserve"><value>Spawn Points Fixes</value></data>
+  <data name="SpawnFixesUpdatePlugIn_Description" xml:space="preserve"><value>This updates the spawn points of NPCs. 1) Crywolf-Statues are fixed. 2) Wandering merchants and Marlon. 3) Spawn trigger in chaos castle 1</value></data>
+  <data name="FixJeweleryPetsDamageCalcsPlugInSeason6_Name" xml:space="preserve"><value>Fix Jewelery and Pets Damage Calculations</value></data>
+  <data name="FixJeweleryPetsDamageCalcsPlugInSeason6_Description" xml:space="preserve"><value>This update fixes jewelery items and pet options related to damage, and jewelery resistance values.</value></data>
+  <data name="RemoveDuplicateStatAttributesPlugInBase_Name" xml:space="preserve"><value>Remove duplicate stat attributes</value></data>
+  <data name="RemoveDuplicateStatAttributesPlugInBase_Description" xml:space="preserve"><value>This update removes stat attributes which are defined more than once for a character class.</value></data>
+  <data name="FixItemRequirementsPlugIn2_Name" xml:space="preserve"><value>Fix Item Requirements (Elf Bows) v2</value></data>
+  <data name="FixItemRequirementsPlugIn2_Description" xml:space="preserve"><value>Updates some item requirements for elf bows which were initialized wrongly. This fixes configurations created after the initial fix but before the base data was corrected.</value></data>
+  <data name="FixWeaponRisePercentagePlugInBase_Name" xml:space="preserve"><value>Fix Weapon Rise Percentage</value></data>
+  <data name="FixWeaponRisePercentagePlugInBase_Description" xml:space="preserve"><value>This update fixes weapons (staff) rise percentage</value></data>
+  <data name="FixItemRequirementsPlugIn_Name" xml:space="preserve"><value>Fix Item Requirements (Elf Bows)</value></data>
+  <data name="FixItemRequirementsPlugIn_Description" xml:space="preserve"><value>Updates some item requirements for elf bows which were initialized wrongly.</value></data>
+  <data name="AddCastleSiegeDataUpdatePlugIn_Name" xml:space="preserve"><value>Add Castle Siege data</value></data>
+  <data name="AddCastleSiegeDataUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the Castle Siege configuration and persistent state.</value></data>
+  <data name="FixAttackSpeedCalculationUpdate_Name" xml:space="preserve"><value>Fix Attack Speed Calculation</value></data>
+  <data name="FixAttackSpeedCalculationUpdate_Description" xml:space="preserve"><value>Adds attributes and relations for attack speed. Adds effects for Ale and Potion of Soul.</value></data>
+  <data name="FixItemOptionsAndAttackSpeedPlugInBase_Name" xml:space="preserve"><value>Fix Item Options And Attack Speed</value></data>
+  <data name="FixItemOptionsAndAttackSpeedPlugInBase_Description" xml:space="preserve"><value>This update fixes some item options (damage, defense rate) and weapons attack speed.</value></data>
+  <data name="FinishDarkKnightMasterTreePlugInBase_Name" xml:space="preserve"><value>Fix Double Wield Damage Calculations</value></data>
+  <data name="FinishDarkKnightMasterTreePlugInBase_Description" xml:space="preserve"><value>This update fixes the double wield damage calculations.</value></data>
+  <data name="AddGlobalMoneyAmountRateAttributePlugInBase_Name" xml:space="preserve"><value>Add Global Money Amount Rate Attribute</value></data>
+  <data name="AddGlobalMoneyAmountRateAttributePlugInBase_Description" xml:space="preserve"><value>Moves the MoneyAmountRate attribute from character class base attributes to global base attributes.</value></data>
+  <data name="FixDamageCalcsPlugInBase_Name" xml:space="preserve"><value>Fix Damage Calculations</value></data>
+  <data name="FixDamageCalcsPlugInBase_Description" xml:space="preserve"><value>This update fixes character stats, magic effects, items, and options related to damage.</value></data>
+  <data name="ConfigureCastleSiegeParticipationUpdatePlugIn_Name" xml:space="preserve"><value>Configure Castle Siege participation</value></data>
+  <data name="ConfigureCastleSiegeParticipationUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the client-visible effects used for Castle Siege participant sides.</value></data>
+  <data name="FixEventItemsDropFromMonstersUpdatePlugIn095d_Name" xml:space="preserve"><value>Fix Event Items DropsFromMonsters 0.95d</value></data>
+  <data name="FixEventItemsDropFromMonstersUpdatePlugIn095d_Description" xml:space="preserve"><value>This update fixes event items that have DropsFromMonsters set to true, causing them to drop at level 0 instead of using their dedicated DropItemGroups.</value></data>
+  <data name="AddItemDropGroupForJewelsUpdate075_Name" xml:space="preserve"><value>Create item drop group for jewels</value></data>
+  <data name="AddItemDropGroupForJewelsUpdate075_Description" xml:space="preserve"><value>This update creates a specific item drop group for jewels with a default chance of 5%.</value></data>
+  <data name="FixCharStatsForceWavePlugInBase_Name" xml:space="preserve"><value>Fix DW Defense Multiplier</value></data>
+  <data name="FixCharStatsForceWavePlugInBase_Description" xml:space="preserve"><value>This update fixes DW agility to defense multiplier stat.</value></data>
+  <data name="FinishElfMasterTreePlugIn_Name" xml:space="preserve"><value>Finish Elf Master Tree PlugIn</value></data>
+  <data name="FinishElfMasterTreePlugIn_Description" xml:space="preserve"><value>This update completes the elf master tree and fixes some of its skill values. It also adds the missing extra projectile (4th) on some higher level (cross)bows.</value></data>
+  <data name="ConfigureCastleSiegeLifeStoneUpdatePlugIn_Name" xml:space="preserve"><value>Configure Castle Siege Life Stone</value></data>
+  <data name="ConfigureCastleSiegeLifeStoneUpdatePlugIn_Description" xml:space="preserve"><value>This update configures the combat attributes of the Castle Siege Life Stone.</value></data>
+  <data name="AddItemRegistrationAttributesUpdatePlugIn_Name" xml:space="preserve"><value>Add Item Registration Attributes</value></data>
+  <data name="AddItemRegistrationAttributesUpdatePlugIn_Description" xml:space="preserve"><value>This update adds data for the item registration attributes.</value></data>
+  <data name="ConfigureCastleSiegeEconomyUpdatePlugIn_Name" xml:space="preserve"><value>Configure Castle Siege economy</value></data>
+  <data name="ConfigureCastleSiegeEconomyUpdatePlugIn_Description" xml:space="preserve"><value>This update enables the Castle Siege economy interface of the Senior NPC.</value></data>
+  <data name="FixWingsDmgRatesUpdatePlugInBase_Name" xml:space="preserve"><value>Fix Wings Damage Rates</value></data>
+  <data name="FixWingsDmgRatesUpdatePlugInBase_Description" xml:space="preserve"><value>This update fixes the wings damage absorption and increase bonus level tables values.</value></data>
+  <data name="FixLifeSwellEffectUpdatePlugIn_Name" xml:space="preserve"><value>Fixed life swell effect</value></data>
+  <data name="FixLifeSwellEffectUpdatePlugIn_Description" xml:space="preserve"><value>This update sets the right settings for the life swell effect.</value></data>
+  <data name="AddPointsPerResetAttributePlugIn_Name" xml:space="preserve"><value>Adds attribute PointsPerReset</value></data>
+  <data name="AddPointsPerResetAttributePlugIn_Description" xml:space="preserve"><value>This update adds the attribute PointsPerReset.</value></data>
+  <data name="ChainLightningUpdatePlugIn_Name" xml:space="preserve"><value>Chain Lightning skill</value></data>
+  <data name="ChainLightningUpdatePlugIn_Description" xml:space="preserve"><value>This update sets the right settings for the chain lightning skill.</value></data>
+  <data name="FixDefenseCalcsPlugInBase_Name" xml:space="preserve"><value>Fix Defense Calculations</value></data>
+  <data name="FixDefenseCalcsPlugInBase_Description" xml:space="preserve"><value>This update fixes character stats, magic effects, and options related to defense.</value></data>
+  <data name="FixDuelArenaSafezoneMapUpdate_Name" xml:space="preserve"><value>Fix Duel Arena Safezone Map</value></data>
+  <data name="FixDuelArenaSafezoneMapUpdate_Description" xml:space="preserve"><value>Sets the safezone of duel arena to lorencia.</value></data>
+  <data name="AddMovementSpeedAttributesPlugInBase_Name" xml:space="preserve"><value>Add Movement Speed Attributes</value></data>
+  <data name="AddMovementSpeedAttributesPlugInBase_Description" xml:space="preserve"><value>Adds attribute-based movement speed configuration for players, monsters, items, effects, and underwater maps.</value></data>
+  <data name="SystemConfigurationAddedPlugInBase_Name" xml:space="preserve"><value>Add System Configuration</value></data>
+  <data name="SystemConfigurationAddedPlugInBase_Description" xml:space="preserve"><value>This update adds the new system configuration.</value></data>
+  <data name="AddKanturuDataUpdatePlugIn_Name" xml:space="preserve"><value>Add Kanturu data</value></data>
+  <data name="AddKanturuDataUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the Kanturu Refinery Tower event configuration.</value></data>
+  <data name="FixDrainLifeSkillUpdate_Name" xml:space="preserve"><value>Fix Drain Life Skill</value></data>
+  <data name="FixDrainLifeSkillUpdate_Description" xml:space="preserve"><value>Updates the attributes of the summoner's Drain Life skill to make it work properly.</value></data>
+  <data name="FinishRageFighterMasterTreePlugIn_Name" xml:space="preserve"><value>Finish Rage Fighter Master Tree PlugIn</value></data>
+  <data name="FinishRageFighterMasterTreePlugIn_Description" xml:space="preserve"><value>This update completes the rage fighter master tree and fixes some of its skill values.</value></data>
+  <data name="FixIgnoreDefenseSkillUpdatePlugIn_Name" xml:space="preserve"><value>Fixed ignore defense skill</value></data>
+  <data name="FixIgnoreDefenseSkillUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the magic effect definition for the Ignore Defense skill.</value></data>
+  <data name="FixMaxManaAndAbilityJewelryOptionsUpdateSeason6_Name" xml:space="preserve"><value>Fix max mana/AG % increase jewelry options</value></data>
+  <data name="FixMaxManaAndAbilityJewelryOptionsUpdateSeason6_Description" xml:space="preserve"><value>This update fixes the calculation for max mana/AG % increase provided by Ring of Magic/Pendant of Ability options</value></data>
+  <data name="AddRandomExperienceConfigAttributesPlugInBase_Name" xml:space="preserve"><value>Add Random Experience Configuration Attributes</value></data>
+  <data name="AddRandomExperienceConfigAttributesPlugInBase_Description" xml:space="preserve"><value>Adds new random experience Configuration attributes to the game configuration.</value></data>
+  <data name="FixCharStatsForceWavePlugInSeason6_Name" xml:space="preserve"><value>Fix Char Stats and DL Force Wave Str skill</value></data>
+  <data name="FixCharStatsForceWavePlugInSeason6_Description" xml:space="preserve"><value>This update fixes several character stats values and DL Force Wave Strengthener master skill.</value></data>
+  <data name="FixWarpLevelUpdatePlugIn_Name" xml:space="preserve"><value>Fix Warp Level Reduction</value></data>
+  <data name="FixWarpLevelUpdatePlugIn_Description" xml:space="preserve"><value>This plugin updates the LevelWarpRequirementReductionPercent for MG, DL, and RF.</value></data>
+  <data name="AddProjectileCountToTripleShotUpdatePlugIn_Name" xml:space="preserve"><value>Add Projectile Count to Triple Shot</value></data>
+  <data name="AddProjectileCountToTripleShotUpdatePlugIn_Description" xml:space="preserve"><value>Adds the projectile count of 3 to the Triple Shot skill to properly handle arrow directions.</value></data>
+  <data name="FixSkillMultipliersPlugIn_Name" xml:space="preserve"><value>Fix Skill Multipliers</value></data>
+  <data name="FixSkillMultipliersPlugIn_Description" xml:space="preserve"><value>This update fixes RF skill multipliers and adds several skill-specific multipliers.</value></data>
+  <data name="AddWhiteWizardInvasionMobsUpdatePlugIn_Name" xml:space="preserve"><value>Add White Wizard Invasion Monsters</value></data>
+  <data name="AddWhiteWizardInvasionMobsUpdatePlugIn_Description" xml:space="preserve"><value>Adds White Wizard (135), Destructive Ogre Soldier (136), and Destructive Ogre Archer (137) and drop groups for existing databases.</value></data>
+  <data name="AddKalimaPlugIn_Name" xml:space="preserve"><value>Add Kalima</value></data>
+  <data name="AddKalimaPlugIn_Description" xml:space="preserve"><value>This adds the items required to enter the kalima map.</value></data>
+  <data name="FixEventItemsDropFromMonstersUpdatePlugInBase_Name" xml:space="preserve"><value>Fix Event Items DropsFromMonsters</value></data>
+  <data name="FixEventItemsDropFromMonstersUpdatePlugInBase_Description" xml:space="preserve"><value>This update fixes event items that have DropsFromMonsters set to true, causing them to drop at level 0 instead of using their dedicated DropItemGroups.</value></data>
+  <data name="FixCharStatsForceWavePlugIn095d_Name" xml:space="preserve"><value>Fix DW and MG Char Stats</value></data>
+  <data name="FixCharStatsForceWavePlugIn095d_Description" xml:space="preserve"><value>This update fixes agility to defense multiplier (DW) and base energy (MG) stats.</value></data>
+  <data name="FixHorseFenrirOptionsSoulBarrierPlugIn_Name" xml:space="preserve"><value>Fix Dark Horse and Gold Fenrir Options, and Soul Barrier Effects</value></data>
+  <data name="FixHorseFenrirOptionsSoulBarrierPlugIn_Description" xml:space="preserve"><value>This update adds Dark Horse options, fixes Gold Fenrir options and Soul Barrier effects.</value></data>
+  <data name="FixLevelDiv20ExcOptionUpdatePlugIn_Name" xml:space="preserve"><value>Excellent Option Level/20 damage fix</value></data>
+  <data name="FixLevelDiv20ExcOptionUpdatePlugIn_Description" xml:space="preserve"><value>This update fixes the excellent option which adds level / 20 as wizardry damage</value></data>
+  <data name="AddGuardsDataPlugIn_Name" xml:space="preserve"><value>Add guard npc data</value></data>
+  <data name="AddGuardsDataPlugIn_Description" xml:space="preserve"><value>This update adds data for guard npcs, so they can attack and move around.</value></data>
+  <data name="FixRageFighterMultipleHitSkillsPlugIn_Name" xml:space="preserve"><value>Fix Rage Fighter Multiple Hit Skills</value></data>
+  <data name="FixRageFighterMultipleHitSkillsPlugIn_Description" xml:space="preserve"><value>This update adds the missing multiple hits to the Killing Blow, Beast Uppercut, Chain Drive, Dragon Roar and Phoenix Shot Rage Fighter skills, as well as their magic effects.</value></data>
+  <data name="FixChaosMixesPlugInSeason6_Name" xml:space="preserve"><value>Fix Chaos Mixes Settings And Several Options</value></data>
+  <data name="FixChaosMixesPlugInSeason6_Description" xml:space="preserve"><value>This update fixes the Chaos Weapon, First Wings, Dinorant, Item Level Upgrade, Second Wings, Third Wings, Cape, SD Potions, Guardian Option, and Secromicon crafting settings; Blue Fenrir (Protect) damage decrease option value; Wizard's Ring wizardry option; lvl 380 item guardian options for Summoner and Rage Fighter.</value></data>
 </root>

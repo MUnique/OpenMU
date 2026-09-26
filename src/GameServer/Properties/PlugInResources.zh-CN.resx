@@ -1,0 +1,2427 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:schema id="root">
+    <xs:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xs:element name="root" ns1:IsDataSet="true">
+      <xs:complexType>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element name="metadata">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" />
+              </xs:sequence>
+              <xs:attribute name="name" use="required" type="xsd:string" />
+              <xs:attribute name="type" type="xsd:string" />
+              <xs:attribute name="mimetype" type="xsd:string" />
+              <xs:attribute ref="xml:space" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="assembly">
+            <xs:complexType>
+              <xs:attribute name="alias" type="xsd:string" />
+              <xs:attribute name="name" type="xsd:string" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="data">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+                <xs:element name="comment" type="xsd:string" minOccurs="0" ns1:Ordinal="2" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" ns1:Ordinal="1" />
+              <xs:attribute name="type" type="xsd:string" ns1:Ordinal="3" />
+              <xs:attribute name="mimetype" type="xsd:string" ns1:Ordinal="4" />
+              <xs:attribute ref="xml:space" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="resheader">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" />
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AnimationHandlerPlugIn_Name" xml:space="preserve">
+    <value>动作处理</value>
+  </data>
+  <data name="AnimationHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理动作相关数据包。</value>
+  </data>
+  <data name="AreaSkillAttackHandlerPlugIn_Name" xml:space="preserve">
+    <value>范围技能攻击处理</value>
+  </data>
+  <data name="AreaSkillAttackHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理范围技能攻击相关数据包。</value>
+  </data>
+  <data name="AreaSkillAttackHandlerPlugIn075_Name" xml:space="preserve">
+    <value>范围技能攻击处理（0.75）</value>
+  </data>
+  <data name="AreaSkillAttackHandlerPlugIn075_Description" xml:space="preserve">
+    <value>处理范围技能攻击相关数据包（版本 0.75）。</value>
+  </data>
+  <data name="AreaSkillAttackHandlerPlugIn095_Name" xml:space="preserve">
+    <value>范围技能攻击处理（0.95）</value>
+  </data>
+  <data name="AreaSkillAttackHandlerPlugIn095_Description" xml:space="preserve">
+    <value>处理范围技能攻击相关数据包（版本 0.95）。</value>
+  </data>
+  <data name="AreaSkillHitHandlerPlugIn_Name" xml:space="preserve">
+    <value>范围技能命中处理</value>
+  </data>
+  <data name="AreaSkillHitHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理范围技能命中相关数据包。</value>
+  </data>
+  <data name="AreaSkillHitHandlerPlugIn075_Name" xml:space="preserve">
+    <value>范围技能命中处理（0.75）</value>
+  </data>
+  <data name="AreaSkillHitHandlerPlugIn075_Description" xml:space="preserve">
+    <value>处理范围技能命中相关数据包。</value>
+  </data>
+  <data name="AreaSkillHitHandlerPlugIn095_Name" xml:space="preserve">
+    <value>范围技能命中处理（0.95）</value>
+  </data>
+  <data name="AreaSkillHitHandlerPlugIn095_Description" xml:space="preserve">
+    <value>处理范围技能命中相关数据包。</value>
+  </data>
+  <data name="CharacterMoveHandlerPlugIn_Name" xml:space="preserve">
+    <value>角色移动处理</value>
+  </data>
+  <data name="CharacterMoveHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理角色移动相关数据包。</value>
+  </data>
+  <data name="CharacterMoveHandlerPlugIn075_Name" xml:space="preserve">
+    <value>角色移动处理（0.75）</value>
+  </data>
+  <data name="CharacterMoveHandlerPlugIn075_Description" xml:space="preserve">
+    <value>处理角色移动相关数据包（版本 0.75）。</value>
+  </data>
+  <data name="CharacterWalkHandlerPlugIn_Name" xml:space="preserve">
+    <value>角色行走处理</value>
+  </data>
+  <data name="CharacterWalkHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理角色行走相关数据包。</value>
+  </data>
+  <data name="CharacterWalkHandlerPlugIn075_Name" xml:space="preserve">
+    <value>角色行走处理（0.75）</value>
+  </data>
+  <data name="CharacterWalkHandlerPlugIn075_Description" xml:space="preserve">
+    <value>处理角色行走相关数据包。</value>
+  </data>
+  <data name="ChatMessageHandlerPlugIn_Name" xml:space="preserve">
+    <value>聊天消息处理</value>
+  </data>
+  <data name="ChatMessageHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理聊天消息相关数据包。</value>
+  </data>
+  <data name="CloseNpcDialogHandlerPlugIn_Name" xml:space="preserve">
+    <value>关闭 NPC 对话处理</value>
+  </data>
+  <data name="CloseNpcDialogHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理关闭 NPC 对话相关数据包。</value>
+  </data>
+  <data name="EnterOnGatekeeperHandlerPlugIn_Name" xml:space="preserve">
+    <value>守门人入场处理</value>
+  </data>
+  <data name="EnterOnGatekeeperHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理守门人入场相关数据包（EnterOnGatekeeperRequest）。</value>
+  </data>
+  <data name="EnterOnWerewolfHandlerPlugIn_Name" xml:space="preserve">
+    <value>狼人入场处理</value>
+  </data>
+  <data name="EnterOnWerewolfHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理狼人入场相关数据包（EnterOnWerewolfRequest）。</value>
+  </data>
+  <data name="HitHandlerPlugIn_Name" xml:space="preserve">
+    <value>攻击命中处理</value>
+  </data>
+  <data name="HitHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理攻击命中相关数据包。</value>
+  </data>
+  <data name="HitHandlerPlugIn075_Name" xml:space="preserve">
+    <value>攻击命中处理（0.75）</value>
+  </data>
+  <data name="HitHandlerPlugIn075_Description" xml:space="preserve">
+    <value>处理攻击命中相关数据包。</value>
+  </data>
+  <data name="MagicEffectCancelHandlerPlugIn_Name" xml:space="preserve">
+    <value>取消魔法效果处理</value>
+  </data>
+  <data name="MagicEffectCancelHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理取消魔法效果相关数据包。</value>
+  </data>
+  <data name="TalkNpcHandlerPlugIn_Name" xml:space="preserve">
+    <value>NPC 对话处理</value>
+  </data>
+  <data name="TalkNpcHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理NPC 对话相关数据包。</value>
+  </data>
+  <data name="TalkNpcHandlerPlugIn075_Name" xml:space="preserve">
+    <value>NPC 对话处理（0.75）</value>
+  </data>
+  <data name="TalkNpcHandlerPlugIn075_Description" xml:space="preserve">
+    <value>处理NPC 对话相关数据包。</value>
+  </data>
+  <data name="TargetedSkillHandlerPlugIn_Name" xml:space="preserve">
+    <value>指向技能处理</value>
+  </data>
+  <data name="TargetedSkillHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理指向技能相关数据包。</value>
+  </data>
+  <data name="TargetedSkillHandlerPlugIn075_Name" xml:space="preserve">
+    <value>指向技能处理（0.75）</value>
+  </data>
+  <data name="TargetedSkillHandlerPlugIn075_Description" xml:space="preserve">
+    <value>处理指向技能相关数据包（版本 0.75）。</value>
+  </data>
+  <data name="TargetedSkillHandlerPlugIn095_Name" xml:space="preserve">
+    <value>指向技能处理（0.95）</value>
+  </data>
+  <data name="TargetedSkillHandlerPlugIn095_Description" xml:space="preserve">
+    <value>处理指向技能相关数据包（版本 0.95）。</value>
+  </data>
+  <data name="TeleportTargetHandlerPlugIn_Name" xml:space="preserve">
+    <value>队友传送处理</value>
+  </data>
+  <data name="TeleportTargetHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理队友传送技能的目标传送数据包。</value>
+  </data>
+  <data name="WarpGateHandler075PlugIn_Name" xml:space="preserve">
+    <value>传送门处理（0.75）</value>
+  </data>
+  <data name="WarpGateHandler075PlugIn_Description" xml:space="preserve">
+    <value>处理传送门相关数据包。</value>
+  </data>
+  <data name="WarpGateHandlerPlugIn_Name" xml:space="preserve">
+    <value>传送门处理</value>
+  </data>
+  <data name="WarpGateHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理传送门相关数据包。</value>
+  </data>
+  <data name="WarpHandlerPlugIn_Name" xml:space="preserve">
+    <value>地图传送处理</value>
+  </data>
+  <data name="WarpHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理地图传送相关数据包。</value>
+  </data>
+  <data name="WhisperedChatMessageHandlerPlugIn_Name" xml:space="preserve">
+    <value>私聊消息处理</value>
+  </data>
+  <data name="WhisperedChatMessageHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理私聊消息相关数据包。</value>
+  </data>
+  <data name="AppearanceSerializer_Name" xml:space="preserve">
+    <value>角色外观序列化</value>
+  </data>
+  <data name="AppearanceSerializer_Description" xml:space="preserve">
+    <value>角色外观的默认序列化实现，很可能仅适用于 Season 6。</value>
+  </data>
+  <data name="AppearanceSerializer075_Name" xml:space="preserve">
+    <value>角色外观序列化（0.75）</value>
+  </data>
+  <data name="AppearanceSerializer075_Description" xml:space="preserve">
+    <value>适用于 0.75 版客户端的角色外观序列化实现。</value>
+  </data>
+  <data name="AppearanceSerializer095_Name" xml:space="preserve">
+    <value>角色外观序列化（0.95）</value>
+  </data>
+  <data name="AppearanceSerializer095_Description" xml:space="preserve">
+    <value>适用于 0.95 版客户端的角色外观序列化实现。</value>
+  </data>
+  <data name="AppearanceSerializerExtended_Name" xml:space="preserve">
+    <value>角色外观序列化（扩展版）</value>
+  </data>
+  <data name="AppearanceSerializerExtended_Description" xml:space="preserve">
+    <value>角色外观的扩展序列化实现。</value>
+  </data>
+  <data name="ChatViewPlugIn_Name" xml:space="preserve">
+    <value>聊天消息显示</value>
+  </data>
+  <data name="ChatViewPlugIn_Description" xml:space="preserve">
+    <value>向玩家发送聊天消息的显示插件。</value>
+  </data>
+  <data name="ConsumeSpecialItemPlugIn_Name" xml:space="preserve">
+    <value>特殊物品消耗通知</value>
+  </data>
+  <data name="ConsumeSpecialItemPlugIn_Description" xml:space="preserve">
+    <value>IConsumeSpecialItemPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ItemSerializer_Name" xml:space="preserve">
+    <value>物品序列化</value>
+  </data>
+  <data name="ItemSerializer_Description" xml:space="preserve">
+    <value>默认物品序列化实现，很可能仅适用于 Season 6。</value>
+  </data>
+  <data name="ItemSerializer075_Name" xml:space="preserve">
+    <value>物品序列化（0.75）</value>
+  </data>
+  <data name="ItemSerializer075_Description" xml:space="preserve">
+    <value>适用于 0.75 版客户端的物品序列化实现。</value>
+  </data>
+  <data name="ItemSerializer095_Name" xml:space="preserve">
+    <value>物品序列化（0.95）</value>
+  </data>
+  <data name="ItemSerializer095_Description" xml:space="preserve">
+    <value>适用于 0.95 版客户端的物品序列化实现。</value>
+  </data>
+  <data name="ItemSerializerExtended_Name" xml:space="preserve">
+    <value>物品序列化（扩展版）</value>
+  </data>
+  <data name="ItemSerializerExtended_Description" xml:space="preserve">
+    <value>扩展物品序列化实现，很可能仅适用于 Season 6。</value>
+  </data>
+  <data name="ShowMessagePlugIn_Name" xml:space="preserve">
+    <value>消息显示</value>
+  </data>
+  <data name="ShowMessagePlugIn_Description" xml:space="preserve">
+    <value>IShowMessagePlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="CancelGuildCreationHandlerPlugIn_Name" xml:space="preserve">
+    <value>取消创建战盟处理</value>
+  </data>
+  <data name="CancelGuildCreationHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理取消创建战盟相关数据包（CancelGuildCreation）。</value>
+  </data>
+  <data name="GuildCreateHandlerPlugIn_Name" xml:space="preserve">
+    <value>创建战盟处理</value>
+  </data>
+  <data name="GuildCreateHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理创建战盟相关数据包。</value>
+  </data>
+  <data name="GuildCreateHandlerPlugIn075_Name" xml:space="preserve">
+    <value>创建战盟处理（0.75）</value>
+  </data>
+  <data name="GuildCreateHandlerPlugIn075_Description" xml:space="preserve">
+    <value>处理创建战盟相关数据包。</value>
+  </data>
+  <data name="GuildInfoRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>战盟信息请求处理</value>
+  </data>
+  <data name="GuildInfoRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理战盟信息请求相关数据包。</value>
+  </data>
+  <data name="GuildKickPlayerHandlerPlugIn_Name" xml:space="preserve">
+    <value>战盟踢人处理</value>
+  </data>
+  <data name="GuildKickPlayerHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理战盟踢人相关数据包。</value>
+  </data>
+  <data name="GuildListRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>战盟列表请求处理</value>
+  </data>
+  <data name="GuildListRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理战盟列表请求相关数据包。</value>
+  </data>
+  <data name="GuildMasterAnswerHandlerPlugIn_Name" xml:space="preserve">
+    <value>盟主答复处理</value>
+  </data>
+  <data name="GuildMasterAnswerHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理盟主答复相关数据包。</value>
+  </data>
+  <data name="GuildRequestAnswerHandlerPlugIn_Name" xml:space="preserve">
+    <value>入盟申请答复处理</value>
+  </data>
+  <data name="GuildRequestAnswerHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理入盟申请答复相关数据包。</value>
+  </data>
+  <data name="GuildRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>入盟申请处理</value>
+  </data>
+  <data name="GuildRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理入盟申请相关数据包。</value>
+  </data>
+  <data name="GuildWarResponseHandlerPlugIn_Name" xml:space="preserve">
+    <value>战盟战答复处理</value>
+  </data>
+  <data name="GuildWarResponseHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理战盟战答复相关数据包。</value>
+  </data>
+  <data name="GuildRelationshipChangeHandlerPlugIn_Name" xml:space="preserve">
+    <value>战盟关系变更请求处理</value>
+  </data>
+  <data name="GuildRelationshipChangeHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理战盟关系变更请求，包括联盟和敌对申请。</value>
+  </data>
+  <data name="GuildRelationshipChangeResponseHandlerPlugIn_Name" xml:space="preserve">
+    <value>战盟关系变更答复处理</value>
+  </data>
+  <data name="GuildRelationshipChangeResponseHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理战盟关系变更答复，即目标战盟盟主的答复。</value>
+  </data>
+  <data name="AllianceListRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>联盟列表请求处理</value>
+  </data>
+  <data name="AllianceListRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理联盟列表请求相关数据包。</value>
+  </data>
+  <data name="AllianceGroupHandlerPlugIn_Name" xml:space="preserve">
+    <value>联盟协议分组处理</value>
+  </data>
+  <data name="AllianceGroupHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理联盟协议分组相关数据包（0xEB 标识）。</value>
+  </data>
+  <data name="RemoveAllianceGuildHandlerPlugIn_Name" xml:space="preserve">
+    <value>移除联盟战盟处理</value>
+  </data>
+  <data name="RemoveAllianceGuildHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理移除联盟战盟相关数据包。</value>
+  </data>
+  <data name="BuyNpcItemHandlerPlugIn_Name" xml:space="preserve">
+    <value>NPC 物品购买处理</value>
+  </data>
+  <data name="BuyNpcItemHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理NPC 物品购买相关数据包。</value>
+  </data>
+  <data name="ChaosMixHandlerPlugIn_Name" xml:space="preserve">
+    <value>玛雅合成处理</value>
+  </data>
+  <data name="ChaosMixHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理玛雅合成相关数据包。</value>
+  </data>
+  <data name="ConsumeItemHandlerPlugIn_Name" xml:space="preserve">
+    <value>使用物品处理</value>
+  </data>
+  <data name="ConsumeItemHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理使用物品相关数据包。</value>
+  </data>
+  <data name="ConsumeItemHandlerPlugIn075_Name" xml:space="preserve">
+    <value>使用物品处理（0.75）</value>
+  </data>
+  <data name="ConsumeItemHandlerPlugIn075_Description" xml:space="preserve">
+    <value>处理使用物品相关数据包（版本 0.75）。</value>
+  </data>
+  <data name="DropItemHandlerPlugIn_Name" xml:space="preserve">
+    <value>丢弃物品处理</value>
+  </data>
+  <data name="DropItemHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理丢弃物品相关数据包。</value>
+  </data>
+  <data name="ItemMoveExtendedHandlerPlugIn_Name" xml:space="preserve">
+    <value>移动物品处理（扩展版）</value>
+  </data>
+  <data name="ItemMoveExtendedHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理移动物品相关数据包。</value>
+  </data>
+  <data name="ItemMoveHandlerPlugIn_Name" xml:space="preserve">
+    <value>移动物品处理</value>
+  </data>
+  <data name="ItemMoveHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理移动物品相关数据包。</value>
+  </data>
+  <data name="ItemRepairHandlerPlugIn_Name" xml:space="preserve">
+    <value>修理物品处理</value>
+  </data>
+  <data name="ItemRepairHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理修理物品相关数据包。</value>
+  </data>
+  <data name="JewelMixHandlerPlugIn_Name" xml:space="preserve">
+    <value>宝石合成处理</value>
+  </data>
+  <data name="JewelMixHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理宝石合成相关数据包。</value>
+  </data>
+  <data name="KanturuEnterRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>坎特鲁入场请求处理</value>
+  </data>
+  <data name="KanturuEnterRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理 0xD1/0x01（KanturuEnterRequest）并将玩家传送进坎特鲁副本。</value>
+  </data>
+  <data name="KanturuGroupHandlerPlugIn_Name" xml:space="preserve">
+    <value>坎特鲁协议分组处理</value>
+  </data>
+  <data name="KanturuGroupHandlerPlugIn_Description" xml:space="preserve">
+    <value>将 0xD1 坎特鲁客户端数据包分发至对应子处理器。</value>
+  </data>
+  <data name="KanturuInfoRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>坎特鲁信息请求处理</value>
+  </data>
+  <data name="KanturuInfoRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>响应 0xD1/0x00（KanturuInfoRequest），返回最新的副本状态信息。</value>
+  </data>
+  <data name="PickupItemHandlerPlugIn_Name" xml:space="preserve">
+    <value>拾取物品处理</value>
+  </data>
+  <data name="PickupItemHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理拾取物品相关数据包。</value>
+  </data>
+  <data name="PickupItemHandlerPlugIn075_Name" xml:space="preserve">
+    <value>拾取物品处理（0.75）</value>
+  </data>
+  <data name="PickupItemHandlerPlugIn075_Description" xml:space="preserve">
+    <value>处理拾取物品相关数据包（版本 0.75）。</value>
+  </data>
+  <data name="SellItemToNpcHandlerPlugIn_Name" xml:space="preserve">
+    <value>出售物品给 NPC 处理</value>
+  </data>
+  <data name="SellItemToNpcHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理出售物品给 NPC 相关数据包。</value>
+  </data>
+  <data name="LogInHandlerPlugIn_Name" xml:space="preserve">
+    <value>登录处理</value>
+  </data>
+  <data name="LogInHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理登录相关数据包。</value>
+  </data>
+  <data name="LogOutHandlerPlugIn_Name" xml:space="preserve">
+    <value>退出登录处理</value>
+  </data>
+  <data name="LogOutHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理退出登录相关数据包。</value>
+  </data>
+  <data name="AddFriendHandlerPlugIn_Name" xml:space="preserve">
+    <value>添加好友处理</value>
+  </data>
+  <data name="AddFriendHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理添加好友相关数据包。</value>
+  </data>
+  <data name="ChangeOnlineStateHandlerPlugIn_Name" xml:space="preserve">
+    <value>在线状态变更处理</value>
+  </data>
+  <data name="ChangeOnlineStateHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理在线状态变更相关数据包。</value>
+  </data>
+  <data name="ChatRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>聊天请求处理</value>
+  </data>
+  <data name="ChatRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理聊天请求相关数据包。</value>
+  </data>
+  <data name="ChatRoomInvitationRequestPlugIn_Name" xml:space="preserve">
+    <value>聊天室邀请请求处理</value>
+  </data>
+  <data name="ChatRoomInvitationRequestPlugIn_Description" xml:space="preserve">
+    <value>处理玩家邀请其他玩家加入现有聊天室的请求。</value>
+  </data>
+  <data name="DeleteFriendHandlerPlugIn_Name" xml:space="preserve">
+    <value>删除好友处理</value>
+  </data>
+  <data name="DeleteFriendHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理删除好友相关数据包。</value>
+  </data>
+  <data name="FriendAddResponseHandlerPlugIn_Name" xml:space="preserve">
+    <value>添加好友答复处理</value>
+  </data>
+  <data name="FriendAddResponseHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理添加好友答复相关数据包。</value>
+  </data>
+  <data name="LetterDeleteHandlerPlugIn_Name" xml:space="preserve">
+    <value>删除信件处理</value>
+  </data>
+  <data name="LetterDeleteHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理删除信件相关数据包。</value>
+  </data>
+  <data name="LetterReadRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>读取信件请求处理</value>
+  </data>
+  <data name="LetterReadRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理读取信件请求相关数据包。</value>
+  </data>
+  <data name="LetterSendHandlerPlugIn_Name" xml:space="preserve">
+    <value>发送信件处理</value>
+  </data>
+  <data name="LetterSendHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理发送信件相关数据包。</value>
+  </data>
+  <data name="BloodCastleEnterHandlerPlugIn_Name" xml:space="preserve">
+    <value>血色城堡入场处理</value>
+  </data>
+  <data name="BloodCastleEnterHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理血色城堡入场相关数据包。</value>
+  </data>
+  <data name="ChaosCastleEnterHandlerPlugIn_Name" xml:space="preserve">
+    <value>赤色要塞入场处理</value>
+  </data>
+  <data name="ChaosCastleEnterHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理赤色要塞入场相关数据包。</value>
+  </data>
+  <data name="DevilSquareEnterHandlerPlugIn_Name" xml:space="preserve">
+    <value>恶魔广场入场处理</value>
+  </data>
+  <data name="DevilSquareEnterHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理恶魔广场入场相关数据包。</value>
+  </data>
+  <data name="MiniGameOpeningStateRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>活动副本开放状态请求处理</value>
+  </data>
+  <data name="MiniGameOpeningStateRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理活动副本开放状态请求相关数据包。</value>
+  </data>
+  <data name="MuHelperSaveDataRequestHandlerPlugin_Name" xml:space="preserve">
+    <value>奇迹助手数据保存处理</value>
+  </data>
+  <data name="MuHelperSaveDataRequestHandlerPlugin_Description" xml:space="preserve">
+    <value>处理奇迹助手数据保存相关数据包。</value>
+  </data>
+  <data name="MuHelperStatusChangeRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>奇迹助手状态变更处理</value>
+  </data>
+  <data name="MuHelperStatusChangeRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理奇迹助手状态变更相关数据包。</value>
+  </data>
+  <data name="PartyKickHandlerPlugIn_Name" xml:space="preserve">
+    <value>队伍踢人处理</value>
+  </data>
+  <data name="PartyKickHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理队伍踢人相关数据包。</value>
+  </data>
+  <data name="PartyListRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>队伍列表请求处理</value>
+  </data>
+  <data name="PartyListRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理队伍列表请求相关数据包。</value>
+  </data>
+  <data name="PartyRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>组队请求处理</value>
+  </data>
+  <data name="PartyRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理组队请求相关数据包。</value>
+  </data>
+  <data name="PartyResponseHandlerPlugIn_Name" xml:space="preserve">
+    <value>组队答复处理</value>
+  </data>
+  <data name="PartyResponseHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理组队答复相关数据包。</value>
+  </data>
+  <data name="PetCommandRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>宠物指令请求处理</value>
+  </data>
+  <data name="PetCommandRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理宠物指令请求相关数据包。</value>
+  </data>
+  <data name="PetInfoRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>宠物信息请求处理</value>
+  </data>
+  <data name="PetInfoRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理宠物信息请求相关数据包。</value>
+  </data>
+  <data name="StoreHandlerGroupPlugIn_Name" xml:space="preserve">
+    <value>个人商店协议分组处理</value>
+  </data>
+  <data name="StoreHandlerGroupPlugIn_Description" xml:space="preserve">
+    <value>处理个人商店协议分组相关数据包。</value>
+  </data>
+  <data name="TradeAcceptHandlerPlugIn_Name" xml:space="preserve">
+    <value>交易申请答复处理</value>
+  </data>
+  <data name="TradeAcceptHandlerPlugIn_Description" xml:space="preserve">
+    <value>玩家答复交易申请时调用的数据包处理器。</value>
+  </data>
+  <data name="TradeButtonHandlerPlugIn_Name" xml:space="preserve">
+    <value>交易按钮处理</value>
+  </data>
+  <data name="TradeButtonHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理交易按钮相关数据包。</value>
+  </data>
+  <data name="TradeCancelHandlerPlugIn_Name" xml:space="preserve">
+    <value>取消交易处理</value>
+  </data>
+  <data name="TradeCancelHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理取消交易相关数据包。</value>
+  </data>
+  <data name="TradeMoneyHandlerPlugIn_Name" xml:space="preserve">
+    <value>交易金币处理</value>
+  </data>
+  <data name="TradeMoneyHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理交易金币相关数据包。</value>
+  </data>
+  <data name="TradeRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>交易请求处理</value>
+  </data>
+  <data name="TradeRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理交易请求相关数据包。</value>
+  </data>
+  <data name="VaultCloseHandlerPlugIn_Name" xml:space="preserve">
+    <value>关闭仓库处理</value>
+  </data>
+  <data name="VaultCloseHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理关闭仓库相关数据包。</value>
+  </data>
+  <data name="VaultMoneyHandlerPlugIn_Name" xml:space="preserve">
+    <value>仓库金币处理</value>
+  </data>
+  <data name="VaultMoneyHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理仓库金币相关数据包。</value>
+  </data>
+  <data name="AddExperienceExtendedPlugIn_Name" xml:space="preserve">
+    <value>增加经验通知（扩展版）</value>
+  </data>
+  <data name="AddExperienceExtendedPlugIn_Description" xml:space="preserve">
+    <value>IAddExperiencePlugIn 的扩展实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="AddExperiencePlugIn_Name" xml:space="preserve">
+    <value>增加经验通知</value>
+  </data>
+  <data name="AddExperiencePlugIn_Description" xml:space="preserve">
+    <value>IAddExperiencePlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ApplyKeyConfigurationPlugIn_Name" xml:space="preserve">
+    <value>应用快捷键配置</value>
+  </data>
+  <data name="ApplyKeyConfigurationPlugIn_Description" xml:space="preserve">
+    <value>IUpdateVaultMoneyPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="CharacterFocusedPlugIn_Name" xml:space="preserve">
+    <value>角色选中通知</value>
+  </data>
+  <data name="CharacterFocusedPlugIn_Description" xml:space="preserve">
+    <value>ICharacterFocusedPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="FruitConsumptionResultPlugIn_Name" xml:space="preserve">
+    <value>果实使用结果通知</value>
+  </data>
+  <data name="FruitConsumptionResultPlugIn_Description" xml:space="preserve">
+    <value>IFruitConsumptionResponsePlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="MasterSkillLevelChangedPlugIn_Name" xml:space="preserve">
+    <value>大师技能等级变更通知</value>
+  </data>
+  <data name="MasterSkillLevelChangedPlugIn_Description" xml:space="preserve">
+    <value>IMasterSkillLevelChangedPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowCharacterCreationFailedPlugIn_Name" xml:space="preserve">
+    <value>创建角色失败提示</value>
+  </data>
+  <data name="ShowCharacterCreationFailedPlugIn_Description" xml:space="preserve">
+    <value>IShowCharacterCreationFailedPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowCharacterDeleteResponsePlugIn_Name" xml:space="preserve">
+    <value>删除角色结果显示</value>
+  </data>
+  <data name="ShowCharacterDeleteResponsePlugIn_Description" xml:space="preserve">
+    <value>IShowCharacterDeleteResponsePlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowCharacterListExtendedPlugIn_Name" xml:space="preserve">
+    <value>角色列表显示（扩展版）</value>
+  </data>
+  <data name="ShowCharacterListExtendedPlugIn_Description" xml:space="preserve">
+    <value>IShowCharacterListPlugIn 的扩展实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowCharacterListPlugIn_Name" xml:space="preserve">
+    <value>角色列表显示</value>
+  </data>
+  <data name="ShowCharacterListPlugIn_Description" xml:space="preserve">
+    <value>IShowCharacterListPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowCharacterListPlugIn075_Name" xml:space="preserve">
+    <value>角色列表显示（0.75）</value>
+  </data>
+  <data name="ShowCharacterListPlugIn075_Description" xml:space="preserve">
+    <value>IShowCharacterListPlugIn 的实现，通过专用数据包将相关信息发送至游戏客户端。适用于 0.75 版本。</value>
+  </data>
+  <data name="ShowCharacterListPlugIn095_Name" xml:space="preserve">
+    <value>角色列表显示（0.95）</value>
+  </data>
+  <data name="ShowCharacterListPlugIn095_Description" xml:space="preserve">
+    <value>IShowCharacterListPlugIn 的实现，通过专用数据包将相关信息发送至游戏客户端。适用于 0.75 版本。</value>
+  </data>
+  <data name="ShowCreatedCharacterPlugIn_Name" xml:space="preserve">
+    <value>新建角色显示</value>
+  </data>
+  <data name="ShowCreatedCharacterPlugIn_Description" xml:space="preserve">
+    <value>IShowCreatedCharacterPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowDialogPlugIn_Name" xml:space="preserve">
+    <value>对话框显示</value>
+  </data>
+  <data name="ShowDialogPlugIn_Description" xml:space="preserve">
+    <value>IShowDialogPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowEffectPlugIn_Name" xml:space="preserve">
+    <value>特效显示</value>
+  </data>
+  <data name="ShowEffectPlugIn_Description" xml:space="preserve">
+    <value>IShowEffectPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowItemDropEffectPlugIn_Name" xml:space="preserve">
+    <value>物品掉落特效显示</value>
+  </data>
+  <data name="ShowItemDropEffectPlugIn_Description" xml:space="preserve">
+    <value>ShowItemDropEffectPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="SkillListViewPlugIn_Name" xml:space="preserve">
+    <value>技能列表显示</value>
+  </data>
+  <data name="SkillListViewPlugIn_Description" xml:space="preserve">
+    <value>ISkillListViewPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="SkillListViewPlugIn075_Name" xml:space="preserve">
+    <value>技能列表显示（0.75）</value>
+  </data>
+  <data name="SkillListViewPlugIn075_Description" xml:space="preserve">
+    <value>ISkillListViewPlugIn 的实现，通过专用数据包将相关信息发送至游戏客户端。适用于 0.75 版本。</value>
+  </data>
+  <data name="SkillListViewPlugIn095_Name" xml:space="preserve">
+    <value>技能列表显示（0.95）</value>
+  </data>
+  <data name="SkillListViewPlugIn095_Description" xml:space="preserve">
+    <value>ISkillListViewPlugIn 的实现，通过专用数据包将相关信息发送至游戏客户端。适用于 0.95 版本。</value>
+  </data>
+  <data name="StatIncreaseResultExtendedPlugIn_Name" xml:space="preserve">
+    <value>属性加点结果通知（扩展版）</value>
+  </data>
+  <data name="StatIncreaseResultExtendedPlugIn_Description" xml:space="preserve">
+    <value>IStatIncreaseResultPlugIn 的扩展实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="StatIncreaseResultPlugIn_Name" xml:space="preserve">
+    <value>属性加点结果通知</value>
+  </data>
+  <data name="StatIncreaseResultPlugIn_Description" xml:space="preserve">
+    <value>IStatIncreaseResultPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="UpdateCharacterBaseStatsExtendedPlugIn_Name" xml:space="preserve">
+    <value>角色基础属性更新（扩展版）</value>
+  </data>
+  <data name="UpdateCharacterBaseStatsExtendedPlugIn_Description" xml:space="preserve">
+    <value>IUpdateCharacterBaseStatsPlugIn 的扩展实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="UpdateCharacterHeroStatePlugIn_Name" xml:space="preserve">
+    <value>角色红名状态更新</value>
+  </data>
+  <data name="UpdateCharacterHeroStatePlugIn_Description" xml:space="preserve">
+    <value>IUpdateCharacterHeroStatePlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="UpdateCharacterStatsExtendedPlugIn_Name" xml:space="preserve">
+    <value>角色属性更新（扩展版）</value>
+  </data>
+  <data name="UpdateCharacterStatsExtendedPlugIn_Description" xml:space="preserve">
+    <value>IUpdateCharacterStatsPlugIn 的扩展实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="UpdateCharacterStatsPlugIn_Name" xml:space="preserve">
+    <value>角色属性更新</value>
+  </data>
+  <data name="UpdateCharacterStatsPlugIn_Description" xml:space="preserve">
+    <value>IUpdateCharacterStatsPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="UpdateCharacterStatsPlugIn075_Name" xml:space="preserve">
+    <value>角色属性更新（0.75）</value>
+  </data>
+  <data name="UpdateCharacterStatsPlugIn075_Description" xml:space="preserve">
+    <value>IUpdateCharacterStatsPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。适用于 0.75 版本。</value>
+  </data>
+  <data name="UpdateCharacterStatsPlugIn097_Name" xml:space="preserve">
+    <value>角色属性更新（0.97）</value>
+  </data>
+  <data name="UpdateCharacterStatsPlugIn097_Description" xml:space="preserve">
+    <value>IUpdateCharacterStatsPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="UpdateLevelExtendedPlugIn_Name" xml:space="preserve">
+    <value>等级更新（扩展版）</value>
+  </data>
+  <data name="UpdateLevelExtendedPlugIn_Description" xml:space="preserve">
+    <value>IUpdateLevelPlugIn 的扩展实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="UpdateLevelPlugIn_Name" xml:space="preserve">
+    <value>等级更新</value>
+  </data>
+  <data name="UpdateLevelPlugIn_Description" xml:space="preserve">
+    <value>IUpdateLevelPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="UpdateMasterSkillsPlugIn_Name" xml:space="preserve">
+    <value>大师技能更新</value>
+  </data>
+  <data name="UpdateMasterSkillsPlugIn_Description" xml:space="preserve">
+    <value>IUpdateMasterSkillsPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="UpdateMasterStatsExtendedPlugIn_Name" xml:space="preserve">
+    <value>大师属性更新（扩展版）</value>
+  </data>
+  <data name="UpdateMasterStatsExtendedPlugIn_Description" xml:space="preserve">
+    <value>IUpdateMasterStatsPlugIn 的扩展实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="UpdateMasterStatsPlugIn_Name" xml:space="preserve">
+    <value>大师属性更新</value>
+  </data>
+  <data name="UpdateMasterStatsPlugIn_Description" xml:space="preserve">
+    <value>IUpdateMasterStatsPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="UpdateStatsExtendedPlugIn_Name" xml:space="preserve">
+    <value>属性更新（扩展版）</value>
+  </data>
+  <data name="UpdateStatsExtendedPlugIn_Description" xml:space="preserve">
+    <value>IUpdateStatsPlugIn 的扩展实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="UpdateStatsPlugIn_Name" xml:space="preserve">
+    <value>属性更新</value>
+  </data>
+  <data name="UpdateStatsPlugIn_Description" xml:space="preserve">
+    <value>IUpdateStatsPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="DuelEndedPlugIn_Name" xml:space="preserve">
+    <value>决斗结束通知</value>
+  </data>
+  <data name="DuelEndedPlugIn_Description" xml:space="preserve">
+    <value>IDuelEndedPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="DuelFinishedPlugIn_Name" xml:space="preserve">
+    <value>决斗完成通知</value>
+  </data>
+  <data name="DuelFinishedPlugIn_Description" xml:space="preserve">
+    <value>IDuelFinishedPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="DuelHealthUpdatePlugIn_Name" xml:space="preserve">
+    <value>决斗生命值更新</value>
+  </data>
+  <data name="DuelHealthUpdatePlugIn_Description" xml:space="preserve">
+    <value>IDuelHealthUpdatePlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="DuelSpectatorAddedPlugIn_Name" xml:space="preserve">
+    <value>决斗观战者加入通知</value>
+  </data>
+  <data name="DuelSpectatorAddedPlugIn_Description" xml:space="preserve">
+    <value>IDuelSpectatorAddedPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="DuelSpectatorListUpdatePlugIn_Name" xml:space="preserve">
+    <value>决斗观战列表更新</value>
+  </data>
+  <data name="DuelSpectatorListUpdatePlugIn_Description" xml:space="preserve">
+    <value>IDuelSpectatorListUpdatePlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="DuelSpectatorRemovedPlugIn_Name" xml:space="preserve">
+    <value>决斗观战者离开通知</value>
+  </data>
+  <data name="DuelSpectatorRemovedPlugIn_Description" xml:space="preserve">
+    <value>IDuelSpectatorRemovedPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="DuelStatusUpdatePlugIn_Name" xml:space="preserve">
+    <value>决斗状态更新</value>
+  </data>
+  <data name="DuelStatusUpdatePlugIn_Description" xml:space="preserve">
+    <value>IDuelStatusUpdatePlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="InitializeDuelPlugIn_Name" xml:space="preserve">
+    <value>决斗初始化</value>
+  </data>
+  <data name="InitializeDuelPlugIn_Description" xml:space="preserve">
+    <value>IInitializeDuelPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowDuelRequestPlugIn_Name" xml:space="preserve">
+    <value>决斗邀请显示</value>
+  </data>
+  <data name="ShowDuelRequestPlugIn_Description" xml:space="preserve">
+    <value>IShowDuelRequestPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowDuelRequestResultPlugIn_Name" xml:space="preserve">
+    <value>决斗邀请结果显示</value>
+  </data>
+  <data name="ShowDuelRequestResultPlugIn_Description" xml:space="preserve">
+    <value>IShowDuelRequestResultPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowDuelScoreUpdatePlugIn_Name" xml:space="preserve">
+    <value>决斗比分更新</value>
+  </data>
+  <data name="ShowDuelScoreUpdatePlugIn_Description" xml:space="preserve">
+    <value>IShowDuelScoreUpdatePlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="AssignPlayersToGuildPlugIn_Name" xml:space="preserve">
+    <value>玩家战盟归属通知</value>
+  </data>
+  <data name="AssignPlayersToGuildPlugIn_Description" xml:space="preserve">
+    <value>IAssignPlayersToGuildPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="AssignPlayersToGuildPlugIn075_Name" xml:space="preserve">
+    <value>玩家战盟归属通知（0.75）</value>
+  </data>
+  <data name="AssignPlayersToGuildPlugIn075_Description" xml:space="preserve">
+    <value>IAssignPlayersToGuildPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="GuildJoinResponsePlugIn_Name" xml:space="preserve">
+    <value>入盟结果通知</value>
+  </data>
+  <data name="GuildJoinResponsePlugIn_Description" xml:space="preserve">
+    <value>IGuildJoinResponsePlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="GuildKickResultPlugIn_Name" xml:space="preserve">
+    <value>战盟踢人结果通知</value>
+  </data>
+  <data name="GuildKickResultPlugIn_Description" xml:space="preserve">
+    <value>IGuildKickResultPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="GuildWarScoreUpdatePlugIn_Name" xml:space="preserve">
+    <value>战盟战比分更新</value>
+  </data>
+  <data name="GuildWarScoreUpdatePlugIn_Description" xml:space="preserve">
+    <value>IGuildWarScoreUpdatePlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="PlayerLeftGuildPlugIn_Name" xml:space="preserve">
+    <value>玩家退盟通知</value>
+  </data>
+  <data name="PlayerLeftGuildPlugIn_Description" xml:space="preserve">
+    <value>IPlayerLeftGuildPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowGuildCreateResultPlugIn_Name" xml:space="preserve">
+    <value>创建战盟结果显示</value>
+  </data>
+  <data name="ShowGuildCreateResultPlugIn_Description" xml:space="preserve">
+    <value>IShowGuildCreateResultPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowGuildCreationDialogPlugIn_Name" xml:space="preserve">
+    <value>创建战盟对话框显示</value>
+  </data>
+  <data name="ShowGuildCreationDialogPlugIn_Description" xml:space="preserve">
+    <value>IShowGuildCreationDialogPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowGuildInfoPlugIn_Name" xml:space="preserve">
+    <value>战盟信息显示</value>
+  </data>
+  <data name="ShowGuildInfoPlugIn_Description" xml:space="preserve">
+    <value>IShowGuildInfoPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowGuildJoinRequestPlugIn_Name" xml:space="preserve">
+    <value>入盟申请显示</value>
+  </data>
+  <data name="ShowGuildJoinRequestPlugIn_Description" xml:space="preserve">
+    <value>IShowGuildJoinRequestPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowGuildListPlugIn_Name" xml:space="preserve">
+    <value>战盟列表显示</value>
+  </data>
+  <data name="ShowGuildListPlugIn_Description" xml:space="preserve">
+    <value>IShowGuildListPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowGuildListPlugIn075_Name" xml:space="preserve">
+    <value>战盟列表显示（0.75）</value>
+  </data>
+  <data name="ShowGuildListPlugIn075_Description" xml:space="preserve">
+    <value>IShowGuildListPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowGuildMasterDialogPlugIn_Name" xml:space="preserve">
+    <value>战盟管理员对话框显示</value>
+  </data>
+  <data name="ShowGuildMasterDialogPlugIn_Description" xml:space="preserve">
+    <value>IShowGuildMasterDialogPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowGuildWarDeclaredPlugIn_Name" xml:space="preserve">
+    <value>宣战通知显示</value>
+  </data>
+  <data name="ShowGuildWarDeclaredPlugIn_Description" xml:space="preserve">
+    <value>IShowGuildWarDeclaredPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowGuildWarRequestPlugIn_Name" xml:space="preserve">
+    <value>战盟战邀请显示</value>
+  </data>
+  <data name="ShowGuildWarRequestPlugIn_Description" xml:space="preserve">
+    <value>IShowGuildWarRequestPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowGuildWarResultPlugIn_Name" xml:space="preserve">
+    <value>战盟战结果显示</value>
+  </data>
+  <data name="ShowGuildWarResultPlugIn_Description" xml:space="preserve">
+    <value>IShowGuildWarResultPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowGuildRelationshipChangeResultPlugIn_Name" xml:space="preserve">
+    <value>战盟关系变更结果显示</value>
+  </data>
+  <data name="ShowGuildRelationshipChangeResultPlugIn_Description" xml:space="preserve">
+    <value>IGuildRelationshipChangeResultPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowGuildRelationshipRequestPlugIn_Name" xml:space="preserve">
+    <value>战盟关系申请显示</value>
+  </data>
+  <data name="ShowGuildRelationshipRequestPlugIn_Description" xml:space="preserve">
+    <value>IShowGuildRelationshipRequestPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowAllianceListPlugIn_Name" xml:space="preserve">
+    <value>联盟列表显示</value>
+  </data>
+  <data name="ShowAllianceListPlugIn_Description" xml:space="preserve">
+    <value>IShowAllianceListPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowShowGuildWarRequestResultPlugIn_Name" xml:space="preserve">
+    <value>战盟战邀请结果显示</value>
+  </data>
+  <data name="ShowShowGuildWarRequestResultPlugIn_Description" xml:space="preserve">
+    <value>IShowShowGuildWarRequestResultPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="BuyNpcItemFailedPlugIn_Name" xml:space="preserve">
+    <value>NPC 物品购买失败通知</value>
+  </data>
+  <data name="BuyNpcItemFailedPlugIn_Description" xml:space="preserve">
+    <value>IBuyNpcItemFailedPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ItemAppearPlugIn_Name" xml:space="preserve">
+    <value>物品出现通知</value>
+  </data>
+  <data name="ItemAppearPlugIn_Description" xml:space="preserve">
+    <value>IItemAppearPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ItemDropResultPlugIn_Name" xml:space="preserve">
+    <value>丢弃物品结果通知</value>
+  </data>
+  <data name="ItemDropResultPlugIn_Description" xml:space="preserve">
+    <value>IItemDropResultPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ItemDurabilityChangedPlugIn_Name" xml:space="preserve">
+    <value>物品耐久度变更通知</value>
+  </data>
+  <data name="ItemDurabilityChangedPlugIn_Description" xml:space="preserve">
+    <value>IItemDurabilityChangedPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ItemMovedPlugIn_Name" xml:space="preserve">
+    <value>物品移动通知</value>
+  </data>
+  <data name="ItemMovedPlugIn_Description" xml:space="preserve">
+    <value>IItemMovedPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ItemMoveFailedPlugIn_Name" xml:space="preserve">
+    <value>物品移动失败通知</value>
+  </data>
+  <data name="ItemMoveFailedPlugIn_Description" xml:space="preserve">
+    <value>IItemMoveFailedPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ItemPickUpFailedPlugIn_Name" xml:space="preserve">
+    <value>物品拾取失败通知</value>
+  </data>
+  <data name="ItemPickUpFailedPlugIn_Description" xml:space="preserve">
+    <value>IItemPickUpFailedPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ItemPriceSetResponsePlugIn_Name" xml:space="preserve">
+    <value>物品定价结果通知</value>
+  </data>
+  <data name="ItemPriceSetResponsePlugIn_Description" xml:space="preserve">
+    <value>IItemPriceSetResponsePlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ItemRemovedPlugIn_Name" xml:space="preserve">
+    <value>物品移除通知</value>
+  </data>
+  <data name="ItemRemovedPlugIn_Description" xml:space="preserve">
+    <value>IItemRemovedPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ItemSoldByPlayerShopPlugIn_Name" xml:space="preserve">
+    <value>个人商店售出通知</value>
+  </data>
+  <data name="ItemSoldByPlayerShopPlugIn_Description" xml:space="preserve">
+    <value>IItemSoldByPlayerShopPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ItemSoldToNpcPlugIn_Name" xml:space="preserve">
+    <value>向 NPC 出售物品通知</value>
+  </data>
+  <data name="ItemSoldToNpcPlugIn_Description" xml:space="preserve">
+    <value>IItemSoldToNpcPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ItemUpgradedPlugIn_Name" xml:space="preserve">
+    <value>物品强化通知</value>
+  </data>
+  <data name="ItemUpgradedPlugIn_Description" xml:space="preserve">
+    <value>IItemUpgradedPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="NpcItemBoughtPlugIn_Name" xml:space="preserve">
+    <value>NPC 物品购买通知</value>
+  </data>
+  <data name="NpcItemBoughtPlugIn_Description" xml:space="preserve">
+    <value>INpcItemBoughtPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="PlayerShopBuyRequestResultExtendedPlugIn_Name" xml:space="preserve">
+    <value>个人商店购买结果通知（扩展版）</value>
+  </data>
+  <data name="PlayerShopBuyRequestResultExtendedPlugIn_Description" xml:space="preserve">
+    <value>IPlayerShopBuyRequestResultPlugIn 的扩展实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="PlayerShopBuyRequestResultPlugIn_Name" xml:space="preserve">
+    <value>个人商店购买结果通知</value>
+  </data>
+  <data name="PlayerShopBuyRequestResultPlugIn_Description" xml:space="preserve">
+    <value>IPlayerShopBuyRequestResultPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="RequestedItemConsumptionFailedExtendedPlugIn_Name" xml:space="preserve">
+    <value>物品使用失败通知（扩展版）</value>
+  </data>
+  <data name="RequestedItemConsumptionFailedExtendedPlugIn_Description" xml:space="preserve">
+    <value>IRequestedItemConsumptionFailedPlugIn 的扩展实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="RequestedItemConsumptionFailedPlugIn_Name" xml:space="preserve">
+    <value>物品使用失败通知</value>
+  </data>
+  <data name="RequestedItemConsumptionFailedPlugIn_Description" xml:space="preserve">
+    <value>IRequestedItemConsumptionFailedPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="UpdateInventoryListPlugIn_Name" xml:space="preserve">
+    <value>背包列表更新</value>
+  </data>
+  <data name="UpdateInventoryListPlugIn_Description" xml:space="preserve">
+    <value>IUpdateInventoryListPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="UpdateMoneyPlugIn_Name" xml:space="preserve">
+    <value>金币更新</value>
+  </data>
+  <data name="UpdateMoneyPlugIn_Description" xml:space="preserve">
+    <value>IUpdateMoneyPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="LogoutPlugIn_Name" xml:space="preserve">
+    <value>退出登录通知</value>
+  </data>
+  <data name="LogoutPlugIn_Description" xml:space="preserve">
+    <value>ILogoutPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowLoginResultPlugIn_Name" xml:space="preserve">
+    <value>登录结果显示</value>
+  </data>
+  <data name="ShowLoginResultPlugIn_Description" xml:space="preserve">
+    <value>IShowLoginResultPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowLoginWindowPlugIn_Name" xml:space="preserve">
+    <value>登录窗口显示</value>
+  </data>
+  <data name="ShowLoginWindowPlugIn_Description" xml:space="preserve">
+    <value>IShowLoginWindowPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="AddToLetterListPlugIn_Name" xml:space="preserve">
+    <value>信件列表追加</value>
+  </data>
+  <data name="AddToLetterListPlugIn_Description" xml:space="preserve">
+    <value>IAddToLetterListPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ChatRoomCreatedPlugIn_Name" xml:space="preserve">
+    <value>聊天室创建通知</value>
+  </data>
+  <data name="ChatRoomCreatedPlugIn_Description" xml:space="preserve">
+    <value>IChatRoomCreatedPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="FriendAddedPlugIn_Name" xml:space="preserve">
+    <value>好友添加通知</value>
+  </data>
+  <data name="FriendAddedPlugIn_Description" xml:space="preserve">
+    <value>IFriendAddedPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="FriendDeletedPlugIn_Name" xml:space="preserve">
+    <value>好友删除通知</value>
+  </data>
+  <data name="FriendDeletedPlugIn_Description" xml:space="preserve">
+    <value>IFriendDeletedPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="FriendStateUpdatePlugIn_Name" xml:space="preserve">
+    <value>好友状态更新</value>
+  </data>
+  <data name="FriendStateUpdatePlugIn_Description" xml:space="preserve">
+    <value>IFriendStateUpdatePlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="InitializeMessengerPlugIn_Name" xml:space="preserve">
+    <value>好友系统初始化</value>
+  </data>
+  <data name="InitializeMessengerPlugIn_Description" xml:space="preserve">
+    <value>IInitializeMessengerPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="LetterDeletedPlugIn_Name" xml:space="preserve">
+    <value>信件删除通知</value>
+  </data>
+  <data name="LetterDeletedPlugIn_Description" xml:space="preserve">
+    <value>ILetterDeletedPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="LetterSendResultPlugIn_Name" xml:space="preserve">
+    <value>信件发送结果通知</value>
+  </data>
+  <data name="LetterSendResultPlugIn_Description" xml:space="preserve">
+    <value>ILetterSendResultPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowFriendInvitationResultPlugIn_Name" xml:space="preserve">
+    <value>好友邀请结果显示</value>
+  </data>
+  <data name="ShowFriendInvitationResultPlugIn_Description" xml:space="preserve">
+    <value>IShowFriendInvitationResultPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowFriendRequestPlugIn_Name" xml:space="preserve">
+    <value>好友申请显示</value>
+  </data>
+  <data name="ShowFriendRequestPlugIn_Description" xml:space="preserve">
+    <value>IShowFriendRequestPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowLetterExtendedPlugIn_Name" xml:space="preserve">
+    <value>信件显示（扩展版）</value>
+  </data>
+  <data name="ShowLetterExtendedPlugIn_Description" xml:space="preserve">
+    <value>IShowLetterPlugIn 的扩展实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowLetterPlugIn_Name" xml:space="preserve">
+    <value>信件显示</value>
+  </data>
+  <data name="ShowLetterPlugIn_Description" xml:space="preserve">
+    <value>IShowLetterPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="BloodCastleScoreTableViewPlugin_Name" xml:space="preserve">
+    <value>血色城堡积分榜显示</value>
+  </data>
+  <data name="BloodCastleScoreTableViewPlugin_Description" xml:space="preserve">
+    <value> 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="BloodCastleStateViewPlugIn_Name" xml:space="preserve">
+    <value>血色城堡状态显示</value>
+  </data>
+  <data name="BloodCastleStateViewPlugIn_Description" xml:space="preserve">
+    <value> 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ChangeTerrainAttributesViewPlugIn_Name" xml:space="preserve">
+    <value>地形属性变更通知</value>
+  </data>
+  <data name="ChangeTerrainAttributesViewPlugIn_Description" xml:space="preserve">
+    <value> 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ChaosCastleStateViewPlugIn_Name" xml:space="preserve">
+    <value>赤色要塞状态显示</value>
+  </data>
+  <data name="ChaosCastleStateViewPlugIn_Description" xml:space="preserve">
+    <value> 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="DoppelgangerEnterRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>镜像世界入场请求处理</value>
+  </data>
+  <data name="DoppelgangerEnterRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理镜像世界入场请求相关数据包。</value>
+  </data>
+  <data name="DoppelgangerEventViewPlugIn_Name" xml:space="preserve">
+    <value>镜像世界状态显示</value>
+  </data>
+  <data name="DoppelgangerEventViewPlugIn_Description" xml:space="preserve">
+    <value>向客户端发送镜像世界数据包（0xBF 0x0F - 0x14）。</value>
+  </data>
+  <data name="KanturuEventViewPlugIn_Name" xml:space="preserve">
+    <value>坎特鲁副本状态显示</value>
+  </data>
+  <data name="KanturuEventViewPlugIn_Description" xml:space="preserve">
+    <value>向客户端发送坎特鲁副本的状态、结果及界面信息数据包（0xD1 分组）。</value>
+  </data>
+  <data name="MiniGameScoreTableViewPlugin_Name" xml:space="preserve">
+    <value>活动副本积分榜显示</value>
+  </data>
+  <data name="MiniGameScoreTableViewPlugin_Description" xml:space="preserve">
+    <value> 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowMiniGameEnterResultViewPlugIn_Name" xml:space="preserve">
+    <value>活动副本入场结果显示</value>
+  </data>
+  <data name="ShowMiniGameEnterResultViewPlugIn_Description" xml:space="preserve">
+    <value>IShowMiniGameEnterResultPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowMiniGameOpeningStateViewPlugIn_Name" xml:space="preserve">
+    <value>活动副本开放状态显示</value>
+  </data>
+  <data name="ShowMiniGameOpeningStateViewPlugIn_Description" xml:space="preserve">
+    <value>IShowMiniGameOpeningStatePlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="UpdateMiniGameStateViewViewPlugIn_Name" xml:space="preserve">
+    <value>活动副本状态更新</value>
+  </data>
+  <data name="UpdateMiniGameStateViewViewPlugIn_Description" xml:space="preserve">
+    <value>IUpdateMiniGameStateViewPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="MuHelperConfigurationUpdatePlugIn_Name" xml:space="preserve">
+    <value>奇迹助手配置更新</value>
+  </data>
+  <data name="MuHelperConfigurationUpdatePlugIn_Description" xml:space="preserve">
+    <value>向客户端发送新的奇迹助手状态。</value>
+  </data>
+  <data name="MuHelperStatusUpdatePlugIn_Name" xml:space="preserve">
+    <value>奇迹助手状态更新</value>
+  </data>
+  <data name="MuHelperStatusUpdatePlugIn_Description" xml:space="preserve">
+    <value>向客户端发送奇迹助手状态更新。</value>
+  </data>
+  <data name="NpcDialogClosedPlugIn075_Name" xml:space="preserve">
+    <value>NPC 对话关闭通知（0.75）</value>
+  </data>
+  <data name="NpcDialogClosedPlugIn075_Description" xml:space="preserve">
+    <value>INpcDialogClosedPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="OpenNpcWindowPlugIn_Name" xml:space="preserve">
+    <value>NPC 窗口打开通知</value>
+  </data>
+  <data name="OpenNpcWindowPlugIn_Description" xml:space="preserve">
+    <value>IOpenNpcWindowPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowItemCraftingResultPlugIn_Name" xml:space="preserve">
+    <value>物品合成结果显示</value>
+  </data>
+  <data name="ShowItemCraftingResultPlugIn_Description" xml:space="preserve">
+    <value>IShowItemCraftingResultPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowMerchantStoreItemListPlugIn_Name" xml:space="preserve">
+    <value>商人商品列表显示</value>
+  </data>
+  <data name="ShowMerchantStoreItemListPlugIn_Description" xml:space="preserve">
+    <value>IShowMerchantStoreItemListPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowMessageOfObjectPlugIn_Name" xml:space="preserve">
+    <value>对象消息显示</value>
+  </data>
+  <data name="ShowMessageOfObjectPlugIn_Description" xml:space="preserve">
+    <value>IShowMessageOfObjectPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="PartyHealthViewPlugIn_Name" xml:space="preserve">
+    <value>队伍生命值显示</value>
+  </data>
+  <data name="PartyHealthViewPlugIn_Description" xml:space="preserve">
+    <value> 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="PartyMemberRemovedPlugIn_Name" xml:space="preserve">
+    <value>队员移除通知</value>
+  </data>
+  <data name="PartyMemberRemovedPlugIn_Description" xml:space="preserve">
+    <value>IPartyMemberRemovedPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowPartyRequestPlugIn_Name" xml:space="preserve">
+    <value>组队邀请显示</value>
+  </data>
+  <data name="ShowPartyRequestPlugIn_Description" xml:space="preserve">
+    <value>IShowPartyRequestPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="UpdatePartyListPlugIn_Name" xml:space="preserve">
+    <value>队伍列表更新</value>
+  </data>
+  <data name="UpdatePartyListPlugIn_Description" xml:space="preserve">
+    <value>IUpdatePartyListPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="UpdatePartyListPlugIn075_Name" xml:space="preserve">
+    <value>队伍列表更新（0.75）</value>
+  </data>
+  <data name="UpdatePartyListPlugIn075_Description" xml:space="preserve">
+    <value>IUpdatePartyListPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="PetAttackViewPlugIn_Name" xml:space="preserve">
+    <value>宠物攻击显示</value>
+  </data>
+  <data name="PetAttackViewPlugIn_Description" xml:space="preserve">
+    <value>显示宠物攻击的插件。</value>
+  </data>
+  <data name="PetBehaviourChangedViewPlugIn_Name" xml:space="preserve">
+    <value>宠物行为变更显示</value>
+  </data>
+  <data name="PetBehaviourChangedViewPlugIn_Description" xml:space="preserve">
+    <value>通知宠物行为变更的显示插件。</value>
+  </data>
+  <data name="PetInfoViewPlugIn_Name" xml:space="preserve">
+    <value>宠物信息显示</value>
+  </data>
+  <data name="PetInfoViewPlugIn_Description" xml:space="preserve">
+    <value>IPetInfoViewPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="PlayerShopClosedPlugIn_Name" xml:space="preserve">
+    <value>个人商店关闭通知</value>
+  </data>
+  <data name="PlayerShopClosedPlugIn_Description" xml:space="preserve">
+    <value>IPlayerShopClosedPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="PlayerShopOpenedPlugIn_Name" xml:space="preserve">
+    <value>个人商店开张通知</value>
+  </data>
+  <data name="PlayerShopOpenedPlugIn_Description" xml:space="preserve">
+    <value>IPlayerShopOpenedPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowShopItemListExtendedPlugIn_Name" xml:space="preserve">
+    <value>个人商店物品列表显示（扩展版）</value>
+  </data>
+  <data name="ShowShopItemListExtendedPlugIn_Description" xml:space="preserve">
+    <value>IShowShopItemListPlugIn 的扩展实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowShopItemListPlugIn_Name" xml:space="preserve">
+    <value>个人商店物品列表显示</value>
+  </data>
+  <data name="ShowShopItemListPlugIn_Description" xml:space="preserve">
+    <value>IShowShopItemListPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowShopsOfPlayersPlugIn_Name" xml:space="preserve">
+    <value>玩家商店显示</value>
+  </data>
+  <data name="ShowShopsOfPlayersPlugIn_Description" xml:space="preserve">
+    <value>IShowShopsOfPlayersPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="CurrentlyActiveQuestsPlugIn_Name" xml:space="preserve">
+    <value>进行中任务显示</value>
+  </data>
+  <data name="CurrentlyActiveQuestsPlugIn_Description" xml:space="preserve">
+    <value>ICurrentlyActiveQuestsPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="LegacyQuestRewardPlugIn_Name" xml:space="preserve">
+    <value>旧版任务奖励通知</value>
+  </data>
+  <data name="LegacyQuestRewardPlugIn_Description" xml:space="preserve">
+    <value>ILegacyQuestRewardPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="LegacyQuestStateDialogPlugIn_Name" xml:space="preserve">
+    <value>旧版任务状态对话框</value>
+  </data>
+  <data name="LegacyQuestStateDialogPlugIn_Description" xml:space="preserve">
+    <value>ILegacyQuestStateDialogPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="QuestCancelledPlugIn_Name" xml:space="preserve">
+    <value>任务取消通知</value>
+  </data>
+  <data name="QuestCancelledPlugIn_Description" xml:space="preserve">
+    <value>IQuestCancelledPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="QuestCompletionResponsePlugIn_Name" xml:space="preserve">
+    <value>任务完成结果通知</value>
+  </data>
+  <data name="QuestCompletionResponsePlugIn_Description" xml:space="preserve">
+    <value>IQuestCompletionResponsePlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="QuestEventResponsePlugIn_Name" xml:space="preserve">
+    <value>活动任务答复</value>
+  </data>
+  <data name="QuestEventResponsePlugIn_Description" xml:space="preserve">
+    <value>IQuestEventResponsePlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="QuestProgressExtendedPlugIn_Name" xml:space="preserve">
+    <value>任务进度显示（扩展版）</value>
+  </data>
+  <data name="QuestProgressExtendedPlugIn_Description" xml:space="preserve">
+    <value>IQuestProgressPlugIn 的扩展实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="QuestProgressPlugIn_Name" xml:space="preserve">
+    <value>任务进度显示</value>
+  </data>
+  <data name="QuestProgressPlugIn_Description" xml:space="preserve">
+    <value>IQuestProgressPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="QuestStartedPlugIn_Name" xml:space="preserve">
+    <value>任务开始通知</value>
+  </data>
+  <data name="QuestStartedPlugIn_Description" xml:space="preserve">
+    <value>IQuestStartedPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="QuestStateResponseExtendedPlugIn_Name" xml:space="preserve">
+    <value>任务状态答复（扩展版）</value>
+  </data>
+  <data name="QuestStateResponseExtendedPlugIn_Description" xml:space="preserve">
+    <value>IQuestStateResponsePlugIn 的扩展实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="QuestStateResponsePlugIn_Name" xml:space="preserve">
+    <value>任务状态答复</value>
+  </data>
+  <data name="QuestStateResponsePlugIn_Description" xml:space="preserve">
+    <value>IQuestStateResponsePlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="QuestStepInfoPlugIn_Name" xml:space="preserve">
+    <value>任务步骤信息显示</value>
+  </data>
+  <data name="QuestStepInfoPlugIn_Description" xml:space="preserve">
+    <value>IQuestStepInfoPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowAvailableQuestsPlugIn_Name" xml:space="preserve">
+    <value>可接任务显示</value>
+  </data>
+  <data name="ShowAvailableQuestsPlugIn_Description" xml:space="preserve">
+    <value>IShowAvailableQuestsPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ChangeTradeButtonStatePlugIn_Name" xml:space="preserve">
+    <value>交易按钮状态变更</value>
+  </data>
+  <data name="ChangeTradeButtonStatePlugIn_Description" xml:space="preserve">
+    <value>IChangeTradeButtonStatePlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="RequestedTradeMoneyHasBeenSetPlugIn_Name" xml:space="preserve">
+    <value>交易金币设置确认</value>
+  </data>
+  <data name="RequestedTradeMoneyHasBeenSetPlugIn_Description" xml:space="preserve">
+    <value>IRequestedTradeMoneyHasBeenSetPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="SetTradeMoneyPlugIn_Name" xml:space="preserve">
+    <value>交易金币设置通知</value>
+  </data>
+  <data name="SetTradeMoneyPlugIn_Description" xml:space="preserve">
+    <value>ISetTradeMoneyPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowTradeRequestAnswerPlugIn_Name" xml:space="preserve">
+    <value>交易邀请答复显示</value>
+  </data>
+  <data name="ShowTradeRequestAnswerPlugIn_Description" xml:space="preserve">
+    <value>IShowTradeRequestAnswerPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowTradeRequestPlugIn_Name" xml:space="preserve">
+    <value>交易邀请显示</value>
+  </data>
+  <data name="ShowTradeRequestPlugIn_Description" xml:space="preserve">
+    <value>IShowTradeRequestPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="TradeFinishedPlugIn_Name" xml:space="preserve">
+    <value>交易完成通知</value>
+  </data>
+  <data name="TradeFinishedPlugIn_Description" xml:space="preserve">
+    <value>ITradeFinishedPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="TradeItemAppearPlugIn_Name" xml:space="preserve">
+    <value>交易物品出现通知</value>
+  </data>
+  <data name="TradeItemAppearPlugIn_Description" xml:space="preserve">
+    <value>ITradeItemAppearPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="TradeItemDisappearPlugIn_Name" xml:space="preserve">
+    <value>交易物品移除通知</value>
+  </data>
+  <data name="TradeItemDisappearPlugIn_Description" xml:space="preserve">
+    <value>ITradeItemDisappearPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="CloseVaultPlugIn_Name" xml:space="preserve">
+    <value>仓库关闭通知</value>
+  </data>
+  <data name="CloseVaultPlugIn_Description" xml:space="preserve">
+    <value>ICloseVaultPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowVaultLockChangeResponsePlugIn_Name" xml:space="preserve">
+    <value>仓库锁变更结果显示</value>
+  </data>
+  <data name="ShowVaultLockChangeResponsePlugIn_Description" xml:space="preserve">
+    <value>IShowVaultLockChangeResponse 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowVaultPlugIn_Name" xml:space="preserve">
+    <value>仓库显示</value>
+  </data>
+  <data name="ShowVaultPlugIn_Description" xml:space="preserve">
+    <value>IShowVaultPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="UpdateVaultMoneyPlugIn_Name" xml:space="preserve">
+    <value>仓库金币更新</value>
+  </data>
+  <data name="UpdateVaultMoneyPlugIn_Description" xml:space="preserve">
+    <value>IUpdateVaultMoneyPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="UpdateVaultStatePlugIn_Name" xml:space="preserve">
+    <value>仓库状态更新</value>
+  </data>
+  <data name="UpdateVaultStatePlugIn_Description" xml:space="preserve">
+    <value>IUpdateVaultStatePlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="AppearanceChangedPlugIn_Name" xml:space="preserve">
+    <value>角色外观变更通知</value>
+  </data>
+  <data name="AppearanceChangedPlugIn_Description" xml:space="preserve">
+    <value>IAppearanceChangedPlugIn 的默认实现，通过专用数据包将其他玩家的外观变化发送至游戏客户端。</value>
+  </data>
+  <data name="DeActivateMagicEffectPlugIn_Name" xml:space="preserve">
+    <value>魔法效果启用与取消</value>
+  </data>
+  <data name="DeActivateMagicEffectPlugIn_Description" xml:space="preserve">
+    <value>IActivateMagicEffectPlugIn、IDeactivateMagicEffectPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="DeActivateMagicEffectPlugIn075_Name" xml:space="preserve">
+    <value>魔法效果启用与取消（0.75）</value>
+  </data>
+  <data name="DeActivateMagicEffectPlugIn075_Description" xml:space="preserve">
+    <value>IActivateMagicEffectPlugIn、IDeactivateMagicEffectPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="DroppedItemsDisappearedPlugIn_Name" xml:space="preserve">
+    <value>掉落物品消失通知</value>
+  </data>
+  <data name="DroppedItemsDisappearedPlugIn_Description" xml:space="preserve">
+    <value>IDroppedItemsDisappearedPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="MapChangePlugIn_Name" xml:space="preserve">
+    <value>地图切换通知</value>
+  </data>
+  <data name="MapChangePlugIn_Description" xml:space="preserve">
+    <value>IMapChangePlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="MapChangePlugIn075_Name" xml:space="preserve">
+    <value>地图切换通知（0.75）</value>
+  </data>
+  <data name="MapChangePlugIn075_Description" xml:space="preserve">
+    <value>IMapChangePlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="MapEventStateUpdatePlugIn_Name" xml:space="preserve">
+    <value>地图事件状态更新</value>
+  </data>
+  <data name="MapEventStateUpdatePlugIn_Description" xml:space="preserve">
+    <value>IMapEventStateUpdatePlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="NewNpcsInScopePlugIn_Name" xml:space="preserve">
+    <value>视野内新增 NPC 通知</value>
+  </data>
+  <data name="NewNpcsInScopePlugIn_Description" xml:space="preserve">
+    <value>INewNpcsInScopePlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="NewNpcsInScopePlugIn075_Name" xml:space="preserve">
+    <value>视野内新增 NPC 通知（0.75）</value>
+  </data>
+  <data name="NewNpcsInScopePlugIn075_Description" xml:space="preserve">
+    <value>INewNpcsInScopePlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。适用于 0.75 版本。</value>
+  </data>
+  <data name="NewNpcsInScopePlugIn095_Name" xml:space="preserve">
+    <value>视野内新增 NPC 通知（0.95）</value>
+  </data>
+  <data name="NewNpcsInScopePlugIn095_Description" xml:space="preserve">
+    <value>INewNpcsInScopePlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。适用于 0.75 版本。</value>
+  </data>
+  <data name="NewPlayersInScopeExtendedPlugIn_Name" xml:space="preserve">
+    <value>视野内新增玩家通知（扩展版）</value>
+  </data>
+  <data name="NewPlayersInScopeExtendedPlugIn_Description" xml:space="preserve">
+    <value>INewPlayersInScopePlugIn 的扩展实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="NewPlayersInScopePlugIn_Name" xml:space="preserve">
+    <value>视野内新增玩家通知</value>
+  </data>
+  <data name="NewPlayersInScopePlugIn_Description" xml:space="preserve">
+    <value>INewPlayersInScopePlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="NewPlayersInScopePlugIn075_Name" xml:space="preserve">
+    <value>视野内新增玩家通知（0.75）</value>
+  </data>
+  <data name="NewPlayersInScopePlugIn075_Description" xml:space="preserve">
+    <value>INewPlayersInScopePlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。适用于 0.75 版本。</value>
+  </data>
+  <data name="NewPlayersInScopePlugIn095_Name" xml:space="preserve">
+    <value>视野内新增玩家通知（0.95）</value>
+  </data>
+  <data name="NewPlayersInScopePlugIn095_Description" xml:space="preserve">
+    <value>INewPlayersInScopePlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。适用于 0.75 版本。</value>
+  </data>
+  <data name="ObjectGotKilledPlugIn_Name" xml:space="preserve">
+    <value>对象死亡通知</value>
+  </data>
+  <data name="ObjectGotKilledPlugIn_Description" xml:space="preserve">
+    <value>IObjectGotKilledPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ObjectMovedPlugIn_Name" xml:space="preserve">
+    <value>对象移动通知</value>
+  </data>
+  <data name="ObjectMovedPlugIn_Description" xml:space="preserve">
+    <value>IObjectMovedPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ObjectMovedPlugIn075_Name" xml:space="preserve">
+    <value>对象移动通知（0.75）</value>
+  </data>
+  <data name="ObjectMovedPlugIn075_Description" xml:space="preserve">
+    <value>IObjectMovedPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ObjectMovedPlugInExtended_Name" xml:space="preserve">
+    <value>对象移动通知（扩展版）</value>
+  </data>
+  <data name="ObjectMovedPlugInExtended_Description" xml:space="preserve">
+    <value>IObjectMovedPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ObjectsOutOfScopePlugIn_Name" xml:space="preserve">
+    <value>对象离开视野通知</value>
+  </data>
+  <data name="ObjectsOutOfScopePlugIn_Description" xml:space="preserve">
+    <value>IObjectsOutOfScopePlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="RespawnAfterDeathExtendedPlugIn_Name" xml:space="preserve">
+    <value>死亡后复活通知（扩展版）</value>
+  </data>
+  <data name="RespawnAfterDeathExtendedPlugIn_Description" xml:space="preserve">
+    <value>IRespawnAfterDeathPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="RespawnAfterDeathPlugIn_Name" xml:space="preserve">
+    <value>死亡后复活通知</value>
+  </data>
+  <data name="RespawnAfterDeathPlugIn_Description" xml:space="preserve">
+    <value>IRespawnAfterDeathPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="RespawnAfterDeathPlugIn075_Name" xml:space="preserve">
+    <value>死亡后复活通知（0.75）</value>
+  </data>
+  <data name="RespawnAfterDeathPlugIn075_Description" xml:space="preserve">
+    <value>IRespawnAfterDeathPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="RespawnAfterDeathPlugIn095_Name" xml:space="preserve">
+    <value>死亡后复活通知（0.95）</value>
+  </data>
+  <data name="RespawnAfterDeathPlugIn095_Description" xml:space="preserve">
+    <value>IRespawnAfterDeathPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowAnimationPlugIn_Name" xml:space="preserve">
+    <value>动作显示</value>
+  </data>
+  <data name="ShowAnimationPlugIn_Description" xml:space="preserve">
+    <value>IShowAnimationPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowAnimationPlugIn075_Name" xml:space="preserve">
+    <value>动作显示（0.75）</value>
+  </data>
+  <data name="ShowAnimationPlugIn075_Description" xml:space="preserve">
+    <value>IShowAnimationPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowAreaSkillAnimationPlugIn_Name" xml:space="preserve">
+    <value>范围技能动作显示</value>
+  </data>
+  <data name="ShowAreaSkillAnimationPlugIn_Description" xml:space="preserve">
+    <value>IShowAreaSkillAnimationPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowAreaSkillAnimationPlugIn075_Name" xml:space="preserve">
+    <value>范围技能动作显示（0.75）</value>
+  </data>
+  <data name="ShowAreaSkillAnimationPlugIn075_Description" xml:space="preserve">
+    <value>IShowAreaSkillAnimationPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowAreaSkillAnimationPlugIn095_Name" xml:space="preserve">
+    <value>范围技能动作显示（0.95）</value>
+  </data>
+  <data name="ShowAreaSkillAnimationPlugIn095_Description" xml:space="preserve">
+    <value>IShowAreaSkillAnimationPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowChainLightningPlugIn_Name" xml:space="preserve">
+    <value>链雷咒显示</value>
+  </data>
+  <data name="ShowChainLightningPlugIn_Description" xml:space="preserve">
+    <value>IShowChainLightningPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowDroppedItemsPlugIn_Name" xml:space="preserve">
+    <value>掉落物品显示</value>
+  </data>
+  <data name="ShowDroppedItemsPlugIn_Description" xml:space="preserve">
+    <value>IShowDroppedItemsPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowHitExtendedPlugIn_Name" xml:space="preserve">
+    <value>攻击命中显示（扩展版）</value>
+  </data>
+  <data name="ShowHitExtendedPlugIn_Description" xml:space="preserve">
+    <value>IShowHitPlugIn 的扩展实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowHitPlugIn_Name" xml:space="preserve">
+    <value>攻击命中显示</value>
+  </data>
+  <data name="ShowHitPlugIn_Description" xml:space="preserve">
+    <value>IShowHitPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowMoneyDrop075_Name" xml:space="preserve">
+    <value>金币掉落显示（0.75）</value>
+  </data>
+  <data name="ShowMoneyDrop075_Description" xml:space="preserve">
+    <value>IShowMoneyDropPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowMoneyDropExtendedPlugIn_Name" xml:space="preserve">
+    <value>金币掉落显示（扩展版）</value>
+  </data>
+  <data name="ShowMoneyDropExtendedPlugIn_Description" xml:space="preserve">
+    <value>IShowMoneyDropPlugIn 的扩展实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowMoneyDropPlugIn_Name" xml:space="preserve">
+    <value>金币掉落显示</value>
+  </data>
+  <data name="ShowMoneyDropPlugIn_Description" xml:space="preserve">
+    <value>IShowMoneyDropPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowRageAttackPlugIn_Name" xml:space="preserve">
+    <value>格斗家攻击显示</value>
+  </data>
+  <data name="ShowRageAttackPlugIn_Description" xml:space="preserve">
+    <value>IShowRageAttackPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowRageAttackRangePlugIn_Name" xml:space="preserve">
+    <value>格斗家攻击范围显示</value>
+  </data>
+  <data name="ShowRageAttackRangePlugIn_Description" xml:space="preserve">
+    <value>IShowRageAttackRangePlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowSkillAnimationPlugIn_Name" xml:space="preserve">
+    <value>技能动作显示</value>
+  </data>
+  <data name="ShowSkillAnimationPlugIn_Description" xml:space="preserve">
+    <value>IShowSkillAnimationPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowSkillAnimationPlugIn075_Name" xml:space="preserve">
+    <value>技能动作显示（0.75）</value>
+  </data>
+  <data name="ShowSkillAnimationPlugIn075_Description" xml:space="preserve">
+    <value>IShowSkillAnimationPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="ShowSkillAnimationPlugIn095_Name" xml:space="preserve">
+    <value>技能动作显示（0.95）</value>
+  </data>
+  <data name="ShowSkillAnimationPlugIn095_Description" xml:space="preserve">
+    <value>IShowSkillAnimationPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="SkillStageUpdatePlugInPlugIn_Name" xml:space="preserve">
+    <value>技能阶段更新</value>
+  </data>
+  <data name="SkillStageUpdatePlugInPlugIn_Description" xml:space="preserve">
+    <value> 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="TeleportPlugIn_Name" xml:space="preserve">
+    <value>瞬移通知</value>
+  </data>
+  <data name="TeleportPlugIn_Description" xml:space="preserve">
+    <value>ITeleportPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="TeleportPlugIn075_Name" xml:space="preserve">
+    <value>瞬移通知（0.75）</value>
+  </data>
+  <data name="TeleportPlugIn075_Description" xml:space="preserve">
+    <value>ITeleportPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="UpdateRotationPlugIn_Name" xml:space="preserve">
+    <value>朝向更新</value>
+  </data>
+  <data name="UpdateRotationPlugIn_Description" xml:space="preserve">
+    <value>IUpdateRotationPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="WeatherStatusUpdatePlugIn_Name" xml:space="preserve">
+    <value>天气状态更新</value>
+  </data>
+  <data name="WeatherStatusUpdatePlugIn_Description" xml:space="preserve">
+    <value>IWeatherStatusUpdatePlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
+  </data>
+  <data name="CraftingDialogCloseRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>关闭合成窗口请求处理</value>
+  </data>
+  <data name="CraftingDialogCloseRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理关闭玛雅哥布林合成窗口的数据包。</value>
+  </data>
+  <data name="NpcActionGroupHandlerPlugIn_Name" xml:space="preserve">
+    <value>NPC 操作协议分组处理</value>
+  </data>
+  <data name="NpcActionGroupHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理NPC 操作协议分组相关数据包（0xD0 标识）。</value>
+  </data>
+  <data name="RageSkillAttackHandlerPlugIn_Name" xml:space="preserve">
+    <value>格斗家范围技能攻击处理</value>
+  </data>
+  <data name="RageSkillAttackHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理格斗家的范围攻击技能数据包（Dark Side）。</value>
+  </data>
+  <data name="RageSkillAttackRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>格斗家范围技能攻击请求处理</value>
+  </data>
+  <data name="RageSkillAttackRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理格斗家的范围攻击技能数据包（Dark Side）。</value>
+  </data>
+  <data name="CharacterAddMasterPointPacketHandlerPlugIn_Name" xml:space="preserve">
+    <value>大师技能加点处理</value>
+  </data>
+  <data name="CharacterAddMasterPointPacketHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理大师技能加点相关数据包（0xF3, 0x52 标识）。</value>
+  </data>
+  <data name="CharacterClientReadyPacketHandlerPlugIn_Name" xml:space="preserve">
+    <value>客户端就绪处理</value>
+  </data>
+  <data name="CharacterClientReadyPacketHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理切换地图后发送的客户端就绪数据包（0xF3, 0x12）。</value>
+  </data>
+  <data name="CharacterCreatePacketHandlerPlugIn_Name" xml:space="preserve">
+    <value>创建角色处理</value>
+  </data>
+  <data name="CharacterCreatePacketHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理创建角色相关数据包（0xF3, 0x01 标识）。</value>
+  </data>
+  <data name="CharacterDeletePacketHandlerPlugIn_Name" xml:space="preserve">
+    <value>删除角色处理</value>
+  </data>
+  <data name="CharacterDeletePacketHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理删除角色相关数据包（0xF3, 0x02 标识）。</value>
+  </data>
+  <data name="CharacterFocusPacketHandlerPlugIn_Name" xml:space="preserve">
+    <value>选中角色处理</value>
+  </data>
+  <data name="CharacterFocusPacketHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理选中角色相关数据包（0xF3, 0x15 标识）。</value>
+  </data>
+  <data name="CharacterGroupHandlerPlugIn_Name" xml:space="preserve">
+    <value>角色协议分组处理</value>
+  </data>
+  <data name="CharacterGroupHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理角色协议分组相关数据包（0xF3 标识）。</value>
+  </data>
+  <data name="CastleSiegeGroupHandlerPlugIn_Name" xml:space="preserve">
+    <value>攻城战协议分组处理</value>
+  </data>
+  <data name="CastleSiegeGroupHandlerPlugIn_Description" xml:space="preserve">
+    <value>将攻城战协议分组中的子协议分发至对应处理器。</value>
+  </data>
+  <data name="CastleSiegeHuntZoneGroupHandlerPlugIn_Name" xml:space="preserve">
+    <value>魔炼之地协议分组处理</value>
+  </data>
+  <data name="CastleSiegeHuntZoneGroupHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理魔炼之地的分组数据包。</value>
+  </data>
+  <data name="CastleSiegeMachineGroupHandlerPlugIn_Name" xml:space="preserve">
+    <value>攻城战战争机器协议分组处理</value>
+  </data>
+  <data name="CastleSiegeMachineGroupHandlerPlugIn_Description" xml:space="preserve">
+    <value>将攻城战战争机器协议分组中的子协议分发至对应处理器。</value>
+  </data>
+  <data name="CastleSiegeMachineUseHandlerPlugIn_Name" xml:space="preserve">
+    <value>战争机器发射处理</value>
+  </data>
+  <data name="CastleSiegeMachineUseHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理战争机器发射。</value>
+  </data>
+  <data name="CastleSiegeMachineInterfacePlugIn_Name" xml:space="preserve">
+    <value>战争机器界面显示</value>
+  </data>
+  <data name="CastleSiegeMachineInterfacePlugIn_Description" xml:space="preserve">
+    <value>向游戏客户端发送战争机器界面信息。</value>
+  </data>
+  <data name="CastleSiegeMachineRegionNotifyPlugIn_Name" xml:space="preserve">
+    <value>战争机器落点区域通知</value>
+  </data>
+  <data name="CastleSiegeMachineRegionNotifyPlugIn_Description" xml:space="preserve">
+    <value>向游戏客户端发送战争机器落点区域信息。</value>
+  </data>
+  <data name="CastleSiegeMachineUseResultPlugIn_Name" xml:space="preserve">
+    <value>战争机器发射结果显示</value>
+  </data>
+  <data name="CastleSiegeMachineUseResultPlugIn_Description" xml:space="preserve">
+    <value>向游戏客户端发送战争机器发射结果信息。</value>
+  </data>
+  <data name="CastleSiegeDefenseBuyHandlerPlugIn_Name" xml:space="preserve">
+    <value>攻城战防御设施购买处理</value>
+  </data>
+  <data name="CastleSiegeDefenseBuyHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理攻城战防御设施购买。</value>
+  </data>
+  <data name="CastleSiegeDefenseRepairHandlerPlugIn_Name" xml:space="preserve">
+    <value>攻城战防御设施修复处理</value>
+  </data>
+  <data name="CastleSiegeDefenseRepairHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理攻城战防御设施修复。</value>
+  </data>
+  <data name="CastleSiegeDefenseUpgradeHandlerPlugIn_Name" xml:space="preserve">
+    <value>攻城战防御设施升级处理</value>
+  </data>
+  <data name="CastleSiegeDefenseUpgradeHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理攻城战防御设施升级。</value>
+  </data>
+  <data name="CastleSiegeGateListHandlerPlugIn_Name" xml:space="preserve">
+    <value>攻城战城门列表请求处理</value>
+  </data>
+  <data name="CastleSiegeGateListHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理攻城战城门列表请求。</value>
+  </data>
+  <data name="CastleSiegeGateOperateHandlerPlugIn_Name" xml:space="preserve">
+    <value>攻城战城门开关处理</value>
+  </data>
+  <data name="CastleSiegeGateOperateHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理攻城战城门开关。</value>
+  </data>
+  <data name="CastleSiegeNpcGroupHandlerPlugIn_Name" xml:space="preserve">
+    <value>攻城战 NPC 协议分组处理</value>
+  </data>
+  <data name="CastleSiegeNpcGroupHandlerPlugIn_Description" xml:space="preserve">
+    <value>将攻城战 NPC 协议分组中的子协议分发至对应处理器。</value>
+  </data>
+  <data name="CastleSiegeStatueListHandlerPlugIn_Name" xml:space="preserve">
+    <value>守护石像列表请求处理</value>
+  </data>
+  <data name="CastleSiegeStatueListHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理守护石像列表请求。</value>
+  </data>
+  <data name="CastleSiegeNpcListPlugIn_Name" xml:space="preserve">
+    <value>攻城战防御设施列表显示</value>
+  </data>
+  <data name="CastleSiegeNpcListPlugIn_Description" xml:space="preserve">
+    <value>向游戏客户端发送攻城战防御设施列表信息。</value>
+  </data>
+  <data name="CastleSiegeNpcOperationResultPlugIn_Name" xml:space="preserve">
+    <value>攻城战防御设施操作结果显示</value>
+  </data>
+  <data name="CastleSiegeNpcOperationResultPlugIn_Description" xml:space="preserve">
+    <value>向游戏客户端发送攻城战防御设施操作结果信息。</value>
+  </data>
+  <data name="CastleSiegeRegistrationHandlerPlugIn_Name" xml:space="preserve">
+    <value>攻城战战盟报名处理</value>
+  </data>
+  <data name="CastleSiegeRegistrationHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理攻城战战盟报名。</value>
+  </data>
+  <data name="CastleSiegeUnregisterHandlerPlugIn_Name" xml:space="preserve">
+    <value>攻城战取消报名处理</value>
+  </data>
+  <data name="CastleSiegeUnregisterHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理攻城战取消报名。</value>
+  </data>
+  <data name="CastleSiegeRegistrationStateHandlerPlugIn_Name" xml:space="preserve">
+    <value>攻城战报名状态请求处理</value>
+  </data>
+  <data name="CastleSiegeRegistrationStateHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理攻城战报名状态请求。</value>
+  </data>
+  <data name="CastleSiegeMarkRegistrationHandlerPlugIn_Name" xml:space="preserve">
+    <value>城主标识登记处理</value>
+  </data>
+  <data name="CastleSiegeMarkRegistrationHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理城主标识登记。</value>
+  </data>
+  <data name="CastleSiegeMarkRegistrationResultPlugIn_Name" xml:space="preserve">
+    <value>城主标识登记结果显示</value>
+  </data>
+  <data name="CastleSiegeMarkRegistrationResultPlugIn_Description" xml:space="preserve">
+    <value>向游戏客户端发送城主标识登记结果信息。</value>
+  </data>
+  <data name="CastleSiegeRegistrationResultPlugIn_Name" xml:space="preserve">
+    <value>攻城战报名结果显示</value>
+  </data>
+  <data name="CastleSiegeRegistrationResultPlugIn_Description" xml:space="preserve">
+    <value>向游戏客户端发送攻城战报名结果信息。</value>
+  </data>
+  <data name="CastleSiegeRegistrationStatePlugIn_Name" xml:space="preserve">
+    <value>攻城战报名状态显示</value>
+  </data>
+  <data name="CastleSiegeRegistrationStatePlugIn_Description" xml:space="preserve">
+    <value>向游戏客户端发送攻城战报名状态信息。</value>
+  </data>
+  <data name="CastleSiegeGuildListHandlerPlugIn_Name" xml:space="preserve">
+    <value>攻城战入选战盟列表请求处理</value>
+  </data>
+  <data name="CastleSiegeGuildListHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理攻城战入选战盟列表请求。</value>
+  </data>
+  <data name="CastleSiegeRegisteredGuildListHandlerPlugIn_Name" xml:space="preserve">
+    <value>攻城战已报名战盟列表请求处理</value>
+  </data>
+  <data name="CastleSiegeRegisteredGuildListHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理攻城战已报名战盟列表请求。</value>
+  </data>
+  <data name="CastleSiegeGuildListPlugIn_Name" xml:space="preserve">
+    <value>攻城战入选战盟列表显示</value>
+  </data>
+  <data name="CastleSiegeGuildListPlugIn_Description" xml:space="preserve">
+    <value>向游戏客户端发送攻城战入选战盟列表信息。</value>
+  </data>
+  <data name="CastleSiegeRegisteredGuildListPlugIn_Name" xml:space="preserve">
+    <value>攻城战已报名战盟列表显示</value>
+  </data>
+  <data name="CastleSiegeRegisteredGuildListPlugIn_Description" xml:space="preserve">
+    <value>向游戏客户端发送攻城战已报名战盟列表信息。</value>
+  </data>
+  <data name="CastleSiegeJoinSidePlugIn_Name" xml:space="preserve">
+    <value>攻城战阵营分配显示</value>
+  </data>
+  <data name="CastleSiegeJoinSidePlugIn_Description" xml:space="preserve">
+    <value>向游戏客户端发送攻城战阵营分配信息。</value>
+  </data>
+  <data name="CharacterKeyConfigurationPacketHandlerPlugIn_Name" xml:space="preserve">
+    <value>角色快捷键配置处理</value>
+  </data>
+  <data name="CharacterKeyConfigurationPacketHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理角色快捷键配置相关数据包（0xF3, 0x30 标识）。</value>
+  </data>
+  <data name="CharacterListRequestPacketHandlerPlugIn_Name" xml:space="preserve">
+    <value>角色列表请求处理</value>
+  </data>
+  <data name="CharacterListRequestPacketHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理角色列表请求相关数据包（0xF3, 0x00 标识）。</value>
+  </data>
+  <data name="CharacterSelectPacketHandlerPlugIn_Name" xml:space="preserve">
+    <value>角色选择处理</value>
+  </data>
+  <data name="CharacterSelectPacketHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理角色选择相关数据包（0xF3, 0x03 标识）。</value>
+  </data>
+  <data name="CharacterStatIncreasePacketHandlerPlugIn_Name" xml:space="preserve">
+    <value>角色属性加点处理</value>
+  </data>
+  <data name="CharacterStatIncreasePacketHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理角色属性加点相关数据包（0xF3, 0x06 标识）。</value>
+  </data>
+  <data name="DuelChannelJoinRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>加入决斗观战请求处理</value>
+  </data>
+  <data name="DuelChannelJoinRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理观战者发送的加入决斗频道请求（新版决斗系统）。</value>
+  </data>
+  <data name="DuelChannelQuitRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>退出决斗观战请求处理</value>
+  </data>
+  <data name="DuelChannelQuitRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理观战者发送的退出决斗频道请求（新版决斗系统）。</value>
+  </data>
+  <data name="DuelGroupHandlerPlugIn_Name" xml:space="preserve">
+    <value>决斗协议分组处理</value>
+  </data>
+  <data name="DuelGroupHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理决斗协议分组相关数据包（new system）。</value>
+  </data>
+  <data name="DuelStartRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>开始决斗请求处理</value>
+  </data>
+  <data name="DuelStartRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理开始决斗请求（新版决斗系统）。</value>
+  </data>
+  <data name="DuelStartResponseHandlerPlugIn_Name" xml:space="preserve">
+    <value>决斗邀请答复处理</value>
+  </data>
+  <data name="DuelStartResponseHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理决斗邀请答复（新版决斗系统）。</value>
+  </data>
+  <data name="DuelStopResponseHandlerPlugIn_Name" xml:space="preserve">
+    <value>停止决斗请求处理</value>
+  </data>
+  <data name="DuelStopResponseHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理停止决斗请求（新版决斗系统）。</value>
+  </data>
+  <data name="LogInOutGroup_Name" xml:space="preserve">
+    <value>登录退出协议分组处理</value>
+  </data>
+  <data name="LogInOutGroup_Description" xml:space="preserve">
+    <value>处理登录和退出登录数据包的分组（0xF1）。</value>
+  </data>
+  <data name="LogOutByCheatDetectionHandlerPlugIn_Name" xml:space="preserve">
+    <value>作弊检测退出处理</value>
+  </data>
+  <data name="LogOutByCheatDetectionHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理作弊检测退出相关数据包（by cheat）。</value>
+  </data>
+  <data name="MuHelperGroupHandler_Name" xml:space="preserve">
+    <value>奇迹助手协议分组处理</value>
+  </data>
+  <data name="MuHelperGroupHandler_Description" xml:space="preserve">
+    <value>处理奇迹助手协议分组相关数据包（0xBF 标识）。</value>
+  </data>
+  <data name="PlayerShopBuyRequestPacketHandlerPlugIn_Name" xml:space="preserve">
+    <value>个人商店购买请求处理</value>
+  </data>
+  <data name="PlayerShopBuyRequestPacketHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理个人商店购买请求（3F 06）。</value>
+  </data>
+  <data name="PlayerShopClosePacketHandlerPlugIn_Name" xml:space="preserve">
+    <value>关闭个人商店处理</value>
+  </data>
+  <data name="PlayerShopClosePacketHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理关闭个人商店请求（3F 03）。</value>
+  </data>
+  <data name="PlayerShopOpenPacketHandlerPlugIn_Name" xml:space="preserve">
+    <value>开启个人商店处理</value>
+  </data>
+  <data name="PlayerShopOpenPacketHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理开启个人商店请求（3F 02）。</value>
+  </data>
+  <data name="PlayerShopRequestItemListPacketHandlerPlugIn_Name" xml:space="preserve">
+    <value>个人商店物品列表请求处理</value>
+  </data>
+  <data name="PlayerShopRequestItemListPacketHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理获取其他玩家商店物品列表的请求（3F 05）。</value>
+  </data>
+  <data name="PlayerShopSetItemPricePacketHandlerPlugIn_Name" xml:space="preserve">
+    <value>个人商店物品定价处理</value>
+  </data>
+  <data name="PlayerShopSetItemPricePacketHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理个人商店物品定价请求（3F 01）。</value>
+  </data>
+  <data name="ActiveQuestListRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>进行中任务列表请求处理</value>
+  </data>
+  <data name="ActiveQuestListRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理进行中任务列表请求相关数据包（0xF3, 0x15 标识）。</value>
+  </data>
+  <data name="AvailableQuestsRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>可接任务请求处理</value>
+  </data>
+  <data name="AvailableQuestsRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理可接任务请求相关数据包（0xF6, 0x30 标识）。</value>
+  </data>
+  <data name="BuffRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>增益效果请求处理</value>
+  </data>
+  <data name="BuffRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理增益效果请求相关数据包（elf soldier；0xF6, 0x31 标识）。</value>
+  </data>
+  <data name="EventQuestStateRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>活动任务状态请求处理</value>
+  </data>
+  <data name="EventQuestStateRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理活动任务状态请求相关数据包（0xF6, 0x21 标识）。</value>
+  </data>
+  <data name="QuestCancelRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>取消任务请求处理</value>
+  </data>
+  <data name="QuestCancelRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理取消任务请求相关数据包（0xF6, 0x0F 标识）。</value>
+  </data>
+  <data name="QuestClientActionHandlerPlugIn_Name" xml:space="preserve">
+    <value>任务客户端操作处理</value>
+  </data>
+  <data name="QuestClientActionHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理任务客户端操作相关数据包（0xF6, 0x10 标识）。</value>
+  </data>
+  <data name="QuestCompletionRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>完成任务请求处理</value>
+  </data>
+  <data name="QuestCompletionRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理完成任务请求相关数据包（0xF6, 0x0D 标识）。</value>
+  </data>
+  <data name="QuestGroupHandlerPlugIn_Name" xml:space="preserve">
+    <value>任务协议分组处理</value>
+  </data>
+  <data name="QuestGroupHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理任务协议分组相关数据包（0xF6 标识）。</value>
+  </data>
+  <data name="QuestProceedRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>推进任务请求处理</value>
+  </data>
+  <data name="QuestProceedRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理推进任务请求相关数据包（0xF6, 0x0B 标识）。</value>
+  </data>
+  <data name="QuestSelectRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>选择任务请求处理</value>
+  </data>
+  <data name="QuestSelectRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理选择任务请求相关数据包（0xF6, 0x0A 标识）。</value>
+  </data>
+  <data name="QuestStateListLegacyRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>旧版任务状态列表请求处理</value>
+  </data>
+  <data name="QuestStateListLegacyRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理旧版任务系统的任务状态列表请求（0xA0）。</value>
+  </data>
+  <data name="QuestStateRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>任务状态请求处理</value>
+  </data>
+  <data name="QuestStateRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理任务状态请求相关数据包（0xF6, 0x1B 标识）。</value>
+  </data>
+  <data name="QuestStateSetLegacyRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>旧版任务状态设置请求处理</value>
+  </data>
+  <data name="QuestStateSetLegacyRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理旧版任务系统的任务状态设置请求（0xA2）。</value>
+  </data>
+  <data name="RemoveVaultPinPlugIn_Name" xml:space="preserve">
+    <value>移除仓库密码处理</value>
+  </data>
+  <data name="RemoveVaultPinPlugIn_Description" xml:space="preserve">
+    <value>处理移除仓库密码相关数据包（0x83, 0x02 标识）。</value>
+  </data>
+  <data name="SetVaultPinPlugIn_Name" xml:space="preserve">
+    <value>设置仓库密码处理</value>
+  </data>
+  <data name="SetVaultPinPlugIn_Description" xml:space="preserve">
+    <value>处理设置仓库密码相关数据包（0x83, 0x01 标识）。</value>
+  </data>
+  <data name="UnlockVaultPlugIn_Name" xml:space="preserve">
+    <value>解锁仓库处理</value>
+  </data>
+  <data name="UnlockVaultPlugIn_Description" xml:space="preserve">
+    <value>处理解锁仓库相关数据包（0x83, 0x00 标识）。</value>
+  </data>
+  <data name="VaultLockGroupPlugIn_Name" xml:space="preserve">
+    <value>仓库锁协议分组处理</value>
+  </data>
+  <data name="VaultLockGroupPlugIn_Description" xml:space="preserve">
+    <value>处理仓库锁协议分组相关数据包（0x83 标识）。</value>
+  </data>
+  <data name="AppearanceChangedExtendedPlugIn_Name" xml:space="preserve">
+    <value>角色外观变更通知（扩展版）</value>
+  </data>
+  <data name="AppearanceChangedExtendedPlugIn_Description" xml:space="preserve">
+    <value>IAppearanceChangedPlugIn 的扩展实现，通过专用数据包将其他玩家的外观变化发送至游戏客户端。</value>
+  </data>
+  <data name="MuHelperSettingsInitializationPlugIn_Name" xml:space="preserve">
+    <value>奇迹助手设置初始化</value>
+  </data>
+  <data name="MuHelperSettingsInitializationPlugIn_Description" xml:space="preserve">
+    <value>玩家进入游戏世界时初始化奇迹助手设置。</value>
+  </data>
+  <data name="ChatCommandListViewPlugIn_Name" xml:space="preserve">
+    <value>聊天命令列表显示</value>
+  </data>
+  <data name="ChatCommandListViewPlugIn_Description" xml:space="preserve">
+    <value>向客户端发送玩家可用的聊天命令，使客户端能够在界面中提供这些命令。</value>
+  </data>
+  <data name="ChatCommandGroupHandlerPlugIn_Name" xml:space="preserve">
+    <value>聊天命令协议分组处理</value>
+  </data>
+  <data name="ChatCommandGroupHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理聊天命令相关的数据包（0xF5）。</value>
+  </data>
+  <data name="ChatCommandListRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>聊天命令列表请求处理</value>
+  </data>
+  <data name="ChatCommandListRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理获取玩家可用聊天命令列表的请求。</value>
+  </data>
+  <data name="CastleSiegeCrownStatePlugIn_Name" xml:space="preserve">
+    <value>攻城战职印状态显示</value>
+  </data>
+  <data name="CastleSiegeCrownStatePlugIn_Description" xml:space="preserve">
+    <value>向游戏客户端发送攻城战职印状态信息。</value>
+  </data>
+  <data name="CastleSiegeCrownAccessStatePlugIn_Name" xml:space="preserve">
+    <value>攻城战职印登录进度显示</value>
+  </data>
+  <data name="CastleSiegeCrownAccessStatePlugIn_Description" xml:space="preserve">
+    <value>向游戏客户端发送攻城战职印登录进度信息。</value>
+  </data>
+  <data name="CastleSiegeSwitchInfoPlugIn_Name" xml:space="preserve">
+    <value>攻城战开关占领信息显示</value>
+  </data>
+  <data name="CastleSiegeSwitchInfoPlugIn_Description" xml:space="preserve">
+    <value>向游戏客户端发送攻城战开关占领信息信息。</value>
+  </data>
+  <data name="CastleSiegeOwnershipChangePlugIn_Name" xml:space="preserve">
+    <value>攻城战城主变更显示</value>
+  </data>
+  <data name="CastleSiegeOwnershipChangePlugIn_Description" xml:space="preserve">
+    <value>向游戏客户端发送攻城战城主变更信息。</value>
+  </data>
+  <data name="CastleSiegeTaxInfoHandlerPlugIn_Name" xml:space="preserve">
+    <value>攻城战税率与国库信息请求处理</value>
+  </data>
+  <data name="CastleSiegeTaxInfoHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理攻城战税率与国库信息请求。</value>
+  </data>
+  <data name="CastleSiegeTaxChangeHandlerPlugIn_Name" xml:space="preserve">
+    <value>攻城战税率修改处理</value>
+  </data>
+  <data name="CastleSiegeTaxChangeHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理攻城战税率修改。</value>
+  </data>
+  <data name="CastleSiegeTributeWithdrawHandlerPlugIn_Name" xml:space="preserve">
+    <value>攻城战国库金币提取处理</value>
+  </data>
+  <data name="CastleSiegeTributeWithdrawHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理攻城战国库金币提取。</value>
+  </data>
+  <data name="CastleSiegeHuntZoneToggleHandlerPlugIn_Name" xml:space="preserve">
+    <value>魔炼之地开放设置处理</value>
+  </data>
+  <data name="CastleSiegeHuntZoneToggleHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理魔炼之地开放设置。</value>
+  </data>
+  <data name="CastleSiegeHuntZoneEnterHandlerPlugIn_Name" xml:space="preserve">
+    <value>魔炼之地入场请求处理</value>
+  </data>
+  <data name="CastleSiegeHuntZoneEnterHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理魔炼之地入场请求。</value>
+  </data>
+  <data name="CastleSiegeTaxInfoPlugIn_Name" xml:space="preserve">
+    <value>攻城战税率与国库信息显示</value>
+  </data>
+  <data name="CastleSiegeTaxInfoPlugIn_Description" xml:space="preserve">
+    <value>向游戏客户端发送攻城战税率与国库信息信息。</value>
+  </data>
+  <data name="CastleSiegeTaxChangeResultPlugIn_Name" xml:space="preserve">
+    <value>攻城战税率修改结果显示</value>
+  </data>
+  <data name="CastleSiegeTaxChangeResultPlugIn_Description" xml:space="preserve">
+    <value>向游戏客户端发送攻城战税率修改结果信息。</value>
+  </data>
+  <data name="CastleSiegeTributeWithdrawResultPlugIn_Name" xml:space="preserve">
+    <value>攻城战国库金币提取结果显示</value>
+  </data>
+  <data name="CastleSiegeTributeWithdrawResultPlugIn_Description" xml:space="preserve">
+    <value>向游戏客户端发送攻城战国库金币提取结果信息。</value>
+  </data>
+  <data name="CastleSiegeHuntZoneGuardInfoPlugIn_Name" xml:space="preserve">
+    <value>魔炼之地入场信息显示</value>
+  </data>
+  <data name="CastleSiegeHuntZoneGuardInfoPlugIn_Description" xml:space="preserve">
+    <value>向游戏客户端发送魔炼之地入场信息信息。</value>
+  </data>
+  <data name="CastleSiegeHuntZoneResultPlugIn_Name" xml:space="preserve">
+    <value>魔炼之地请求结果显示</value>
+  </data>
+  <data name="CastleSiegeHuntZoneResultPlugIn_Description" xml:space="preserve">
+    <value>向游戏客户端发送魔炼之地请求结果信息。</value>
+  </data>
+  <data name="CastleSiegeLifeStoneStatePlugIn_Name" xml:space="preserve">
+    <value>攻城战生命石创建进度显示</value>
+  </data>
+  <data name="CastleSiegeLifeStoneStatePlugIn_Description" xml:space="preserve">
+    <value>向游戏客户端发送攻城战生命石创建进度信息。</value>
+  </data>
+  <data name="EnterMarketPlace_Name" xml:space="preserve"><value>进入罗兰市场处理器</value></data>
+  <data name="EnterMarketPlace_Description" xml:space="preserve"><value>处理市场联盟成员茱莉娅的传送请求，让玩家在勇者大陆与罗兰市场之间传送。</value></data>
+</root>

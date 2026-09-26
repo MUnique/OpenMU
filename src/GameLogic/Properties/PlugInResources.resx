@@ -1302,4 +1302,123 @@
   <data name="DoppelgangerFeaturePlugIn_Description" xml:space="preserve">
     <value>Configures the run of the doppelganger event, e.g. its monsters, their paths and multipliers.</value>
   </data>
+  <data name="BotConfiguration_Display1_Name" xml:space="preserve"><value>Enabled</value></data>
+  <data name="BotConfiguration_Display1_Description" xml:space="preserve"><value>If enabled, bots are spawned after the server has started.</value></data>
+  <data name="BotConfiguration_Display2_Name" xml:space="preserve"><value>Reset bots</value></data>
+  <data name="BotConfiguration_Display2_Description" xml:space="preserve"><value>Deletes all bot accounts and characters on the next start, then regenerates them. Clears itself afterwards.</value></data>
+  <data name="BotConfiguration_Display3_Name" xml:space="preserve"><value>Purge bots</value></data>
+  <data name="BotConfiguration_Display3_Description" xml:space="preserve"><value>Deletes all bot accounts and characters and turns the bot feature off, without generating new ones. Clears itself afterwards.</value></data>
+  <data name="BotConfiguration_Display4_Name" xml:space="preserve"><value>Start as fresh characters</value></data>
+  <data name="BotConfiguration_Display4_Description" xml:space="preserve"><value>Newly generated bots start at level 1 with level-0 starter equipment, like a freshly created player character, instead of with a random level, reset history and upgraded gear.</value></data>
+  <data name="BotConfiguration_Display5_Name" xml:space="preserve"><value>Presence rotation</value></data>
+  <data name="BotConfiguration_Display5_Description" xml:space="preserve"><value>Bots log in and out over the day (fewest at night, most in the evening) instead of all being online 24/7.</value></data>
+  <data name="BotConfiguration_Display6_Name" xml:space="preserve"><value>Min. online share %</value></data>
+  <data name="BotConfiguration_Display6_Description" xml:space="preserve"><value>Percentage of the bot population which stays online at the quietest hour (100 = no rotation effect).</value></data>
+  <data name="BotConfiguration_Display7_Name" xml:space="preserve"><value>Number of accounts</value></data>
+  <data name="BotConfiguration_Display7_Description" xml:space="preserve"><value>How many bot accounts to maintain.</value></data>
+  <data name="BotConfiguration_Display8_Name" xml:space="preserve"><value>Characters per account</value></data>
+  <data name="BotConfiguration_Display8_Description" xml:space="preserve"><value>How many characters each bot account holds (max 5).</value></data>
+  <data name="BotConfiguration_Display9_Name" xml:space="preserve"><value>Bot capacity %</value></data>
+  <data name="BotConfiguration_Display9_Description" xml:space="preserve"><value>Share of a game server's maximum player count which its bots may occupy; the rest stays reserved for real players.</value></data>
+  <data name="BotConfiguration_Display10_Name" xml:space="preserve"><value>Bots pay reset costs</value></data>
+  <data name="BotConfiguration_Display10_Description" xml:space="preserve"><value>If enabled, bots consume the configured zen/item costs for their resets like human players (default: free bot resets).</value></data>
+  <data name="BotConfiguration_Display11_Name" xml:space="preserve"><value>Jewel stock per kind</value></data>
+  <data name="BotConfiguration_Display11_Description" xml:space="preserve"><value>How many Jewels of Bless/Soul/Life a bot keeps of each kind; above this it stops picking them up and sells the surplus.</value></data>
+  <data name="BotConfiguration_Display12_Name" xml:space="preserve"><value>Potion stock (charges)</value></data>
+  <data name="BotConfiguration_Display12_Description" xml:space="preserve"><value>How many healing and mana potion charges a bot buys up to at a merchant.</value></data>
+  <data name="BotConfiguration_Display13_Name" xml:space="preserve"><value>Extra accounts to animate</value></data>
+  <data name="BotConfiguration_Display13_Description" xml:space="preserve"><value>Comma separated login names of existing accounts to animate as bots, in addition to the generated population.</value></data>
+  <data name="BotSelfDefensePlugIn_Display1_Name" xml:space="preserve"><value>Bot self defense</value></data>
+  <data name="BotSelfDefensePlugIn_Display1_Description" xml:space="preserve"><value>Makes server-side bots fight back when a player attacks them.</value></data>
+  <data name="BotRevengePlugIn_Display1_Name" xml:space="preserve"><value>Bot revenge</value></data>
+  <data name="BotRevengePlugIn_Display1_Description" xml:space="preserve"><value>Makes server-side bots return to their death site and take revenge on the player who killed them.</value></data>
+  <data name="BotSkillProgressionPlugIn_Display1_Name" xml:space="preserve"><value>Bot skill progression</value></data>
+  <data name="BotSkillProgressionPlugIn_Display1_Description" xml:space="preserve"><value>Invests level-up stat points and teaches server-side bots new class- and level-appropriate skills as they level up.</value></data>
+  <data name="BotFeaturePlugIn_Display1_Name" xml:space="preserve"><value>Bots</value></data>
+  <data name="BotFeaturePlugIn_Display1_Description" xml:space="preserve"><value>Spawns server-side bots which hunt monsters on the maps. Configure the accounts to animate and enable the feature.</value></data>
+  <data name="MaximumConnectionsPerIpPlugIn_Display1_Name" xml:space="preserve"><value>Maximum Connections Per IP</value></data>
+  <data name="MaximumConnectionsPerIpPlugIn_Display1_Description" xml:space="preserve"><value>Limits the maximum number of parallel connections from the same IP address.</value></data>
+  <data name="SpeedHackDetectPlugIn_Display1_Name" xml:space="preserve"><value>Speedhack Anti-Cheat</value></data>
+  <data name="SpeedHackDetectPlugIn_Display1_Description" xml:space="preserve"><value>Detects and prevents player walk and attack speedhacking.</value></data>
+  <data name="KanturuGatewayPlugIn_Display1_Name" xml:space="preserve"><value>KanturuGatewayPlugIn</value></data>
+  <data name="KanturuGatewayPlugIn_Display1_Description" xml:space="preserve"><value>Handles the Kanturu Gateway Machine NPC for event entry.</value></data>
+  <data name="SymbolOfKundunStackedPlugIn_Display1_Name" xml:space="preserve"><value>SymbolOfKundunStackedPlugIn</value></data>
+  <data name="SymbolOfKundunStackedPlugIn_Display1_Description" xml:space="preserve"><value>This plugin transforms a stack of symbol of kundun into a lost map.</value></data>
+  <data name="DuelSpawnGatePlugIn_Display1_Name" xml:space="preserve"><value>DuelSpawnGatePlugIn</value></data>
+  <data name="DuelSpawnGatePlugIn_Display1_Description" xml:space="preserve"><value>Spawns a player which is in a duel at its side of the duel area.</value></data>
+  <data name="SoccerSpawnGatePlugIn_Display1_Name" xml:space="preserve"><value>SoccerSpawnGatePlugIn</value></data>
+  <data name="SoccerSpawnGatePlugIn_Display1_Description" xml:space="preserve"><value>Spawns a player of a running soccer match on the soccer ground.</value></data>
+  <data name="PetExperiencePlugIn_Display1_Name" xml:space="preserve"><value>PetExperiencePlugIn</value></data>
+  <data name="PetExperiencePlugIn_Display1_Description" xml:space="preserve"><value>Gives the trainable pets of a player a share of the experience which the player gained for a kill.</value></data>
+  <data name="PeriodicInvasionConfiguration_Display1_Name" xml:space="preserve"><value>Force Single Map</value></data>
+  <data name="PeriodicInvasionConfiguration_Display2_Name" xml:space="preserve"><value>Monster Spawns</value></data>
+  <data name="WhiteWizardInvasionPlugIn_Display1_Name" xml:space="preserve"><value>White Wizard Invasion</value></data>
+  <data name="WhiteWizardInvasionPlugIn_Display1_Description" xml:space="preserve"><value>Enables the White Wizard Invasion feature.</value></data>
+  <data name="ItemRegistrationConfiguration_Display1_Name" xml:space="preserve"><value>NPC Registration Rules</value></data>
+  <data name="ItemRegistrationConfiguration_Display1_Description" xml:space="preserve"><value>Configure item registration rules for different NPCs.</value></data>
+  <data name="NpcItemRegistrationRule_Display1_Name" xml:space="preserve"><value>NPC Number</value></data>
+  <data name="NpcItemRegistrationRule_Display1_Description" xml:space="preserve"><value>The NPC definition number (e.g. 236 for Golden Archer).</value></data>
+  <data name="NpcItemRegistrationRule_Display2_Name" xml:space="preserve"><value>Accepted Item Group</value></data>
+  <data name="NpcItemRegistrationRule_Display2_Description" xml:space="preserve"><value>Group of the accepted item (e.g. 14 for event items).</value></data>
+  <data name="NpcItemRegistrationRule_Display3_Name" xml:space="preserve"><value>Accepted Item Number</value></data>
+  <data name="NpcItemRegistrationRule_Display3_Description" xml:space="preserve"><value>Number of the accepted item (e.g. 21 for Rena).</value></data>
+  <data name="NpcItemRegistrationRule_Display4_Name" xml:space="preserve"><value>Required Items Count</value></data>
+  <data name="NpcItemRegistrationRule_Display4_Description" xml:space="preserve"><value>Number of items required to receive a reward.</value></data>
+  <data name="NpcItemRegistrationRule_Display5_Name" xml:space="preserve"><value>Reward Zen</value></data>
+  <data name="NpcItemRegistrationRule_Display5_Description" xml:space="preserve"><value>Zen awarded upon reaching the required item count.</value></data>
+  <data name="NpcItemRegistrationRule_Display6_Name" xml:space="preserve"><value>Reward Drop Item Group</value></data>
+  <data name="NpcItemRegistrationRule_Display6_Description" xml:space="preserve"><value>The DropItemGroup used to generate the item reward drop. If empty, no item drops (Zen reward only).</value></data>
+  <data name="ChaosCastleStartPlugIn_Display1_Name" xml:space="preserve"><value>ChaosCastleStartPlugIn</value></data>
+  <data name="ChaosCastleStartPlugIn_Display1_Description" xml:space="preserve"><value>Chaos Castle event</value></data>
+  <data name="KanturuStartPlugIn_Display1_Name" xml:space="preserve"><value>KanturuStartPlugIn</value></data>
+  <data name="KanturuStartPlugIn_Display1_Description" xml:space="preserve"><value>Kanturu Refinery Tower event</value></data>
+  <data name="BloodCastleStartPlugIn_Display1_Name" xml:space="preserve"><value>BloodCastleStartPlugIn</value></data>
+  <data name="BloodCastleStartPlugIn_Display1_Description" xml:space="preserve"><value>Blood Castle event</value></data>
+  <data name="DevilSquareStartPlugIn_Display1_Name" xml:space="preserve"><value>DevilSquareStartPlugIn</value></data>
+  <data name="DevilSquareStartPlugIn_Display1_Description" xml:space="preserve"><value>Devil Square event</value></data>
+  <data name="PKClearChatCommandPlugIn_Display1_Name" xml:space="preserve"><value>Zen Cost Per Kill</value></data>
+  <data name="PKClearChatCommandPlugIn_Display1_Description" xml:space="preserve"><value>The amount of Zen required to clear one PK count.</value></data>
+  <data name="PKClearChatCommandPlugIn_Display2_Name" xml:space="preserve"><value>Allow Regular Players</value></data>
+  <data name="PKClearChatCommandPlugIn_Display2_Description" xml:space="preserve"><value>Allows regular players to use this command to clear their own PK status for Zen.</value></data>
+  <data name="LostMapDroppedPlugIn_Display1_Name" xml:space="preserve"><value>LostMapDroppedPlugIn</value></data>
+  <data name="LostMapDroppedPlugIn_Display1_Description" xml:space="preserve"><value>This plugin handles the drop of the lost map item. It creates the gate to the kalima map.</value></data>
+  <data name="ItemBoxDroppedPlugIn_Display1_Name" xml:space="preserve"><value>ItemBoxDroppedPlugIn</value></data>
+  <data name="ItemBoxDroppedPlugIn_Display1_Description" xml:space="preserve"><value>This plugin handles the drop of an item box, e.g. box of kundun.</value></data>
+  <data name="ResetConfiguration_Display1_Name" xml:space="preserve"><value>Required reset item</value></data>
+  <data name="ResetConfiguration_Display2_Name" xml:space="preserve"><value>Item cost tiers</value></data>
+  <data name="ResetConfiguration_Display3_Name" xml:space="preserve"><value>Point tiers</value></data>
+  <data name="ResetConfiguration_Display4_Name" xml:space="preserve"><value>Minimum reset count</value></data>
+  <data name="ResetConfiguration_Display5_Name" xml:space="preserve"><value>Points granted</value></data>
+  <data name="ResetConfiguration_Display6_Name" xml:space="preserve"><value>Minimum reset count</value></data>
+  <data name="ResetConfiguration_Display7_Name" xml:space="preserve"><value>Required item amount</value></data>
+  <data name="ActorHitRecorderPlugIn_Display1_Name" xml:space="preserve"><value>Test actor hit recorder</value></data>
+  <data name="ActorHitRecorderPlugIn_Display1_Description" xml:space="preserve"><value>Records hits dealt and received by scripted test actors in their event stream.</value></data>
+  <data name="MonsterAttributeScalerConfiguration_HealthPercentage_Caption" xml:space="preserve"><value>Health Percentage</value></data>
+  <data name="MonsterAttributeScalerConfiguration_DefensePercentage_Caption" xml:space="preserve"><value>Defense Percentage</value></data>
+  <data name="MonsterAttributeScalerConfiguration_DefenseRatePercentage_Caption" xml:space="preserve"><value>Defense Rate Percentage</value></data>
+  <data name="MonsterAttributeScalerConfiguration_AttackRatePercentage_Caption" xml:space="preserve"><value>Attack Rate Percentage</value></data>
+  <data name="MonsterAttributeScalerConfiguration_DamagePercentage_Caption" xml:space="preserve"><value>Damage Percentage</value></data>
+  <data name="MonsterAttributeScalerConfiguration_ScaleAllPercentage_Caption" xml:space="preserve"><value>Scale All Percentage</value></data>
+  <data name="MaximumConnectionsPerIpPlugInConfiguration_MaximumConnectionsPerIp_Caption" xml:space="preserve"><value>Maximum Connections Per Ip</value></data>
+  <data name="SpeedHackDetectConfiguration_AttackSpeedMinIntervalMs_Caption" xml:space="preserve"><value>Attack Speed Min Interval Ms</value></data>
+  <data name="SpeedHackDetectConfiguration_AttackSpeedScalingFactor_Caption" xml:space="preserve"><value>Attack Speed Scaling Factor</value></data>
+  <data name="SpeedHackDetectConfiguration_AttackSpeedBaseDelayMs_Caption" xml:space="preserve"><value>Attack Speed Base Delay Ms</value></data>
+  <data name="SpeedHackDetectConfiguration_MaxAttackTokens_Caption" xml:space="preserve"><value>Max Attack Tokens</value></data>
+  <data name="SpeedHackDetectConfiguration_MaxAllowedWalkStartOffset_Caption" xml:space="preserve"><value>Max Allowed Walk Start Offset</value></data>
+  <data name="SpeedHackDetectConfiguration_WalkSpeedToleranceMs_Caption" xml:space="preserve"><value>Walk Speed Tolerance Ms</value></data>
+  <data name="SpeedHackDetectConfiguration_WarningHistoryHours_Caption" xml:space="preserve"><value>Warning History Hours</value></data>
+  <data name="SpeedHackDetectConfiguration_AlertDebounceSeconds_Caption" xml:space="preserve"><value>Alert Debounce Seconds</value></data>
+  <data name="SpeedHackDetectConfiguration_MaxWarnings_Caption" xml:space="preserve"><value>Max Warnings</value></data>
+  <data name="SpeedHackDetectConfiguration_DisconnectOnViolation_Caption" xml:space="preserve"><value>Disconnect On Violation</value></data>
+  <data name="SpeedHackDetectConfiguration_AutoBan_Caption" xml:space="preserve"><value>Auto Ban</value></data>
+  <data name="InvasionSpawnConfiguration_Y_Caption" xml:space="preserve"><value>Y</value></data>
+  <data name="InvasionSpawnConfiguration_X_Caption" xml:space="preserve"><value>X</value></data>
+  <data name="InvasionSpawnConfiguration_IsSpawnOnAllMaps_Caption" xml:space="preserve"><value>Is Spawn On All Maps</value></data>
+  <data name="InvasionSpawnConfiguration_AnnounceDeath_Caption" xml:space="preserve"><value>Announce Death</value></data>
+  <data name="InvasionSpawnConfiguration_MapStrategy_Caption" xml:space="preserve"><value>Map Strategy</value></data>
+  <data name="InvasionSpawnConfiguration_MapIds_Caption" xml:space="preserve"><value>Map Ids</value></data>
+  <data name="InvasionSpawnConfiguration_Count_Caption" xml:space="preserve"><value>Count</value></data>
+  <data name="InvasionSpawnConfiguration_MonsterId_Caption" xml:space="preserve"><value>Monster Id</value></data>
+  <data name="KanturuStartConfiguration_EventDefinition_Caption" xml:space="preserve"><value>Event Definition</value></data>
+  <data name="BlessJewelConsumeHandlerPlugInConfiguration_RepairTargetItems_Caption" xml:space="preserve"><value>Repair Target Items</value></data>
 </root>

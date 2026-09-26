@@ -347,5 +347,545 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("DataInitialization095d_Name", resourceCulture);
             }
         }
+        /// <summary>Gets the localized AddCrescentMoonSlashForDarkKnight_Display1_Name text.</summary>
+        public static string AddCrescentMoonSlashForDarkKnight_Display1_Name => ResourceManager.GetString("AddCrescentMoonSlashForDarkKnight_Display1_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddCrescentMoonSlashForDarkKnight_Display1_Description text.</summary>
+        public static string AddCrescentMoonSlashForDarkKnight_Display1_Description => ResourceManager.GetString("AddCrescentMoonSlashForDarkKnight_Display1_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AddStarfallForFairyElf_Display1_Name text.</summary>
+        public static string AddStarfallForFairyElf_Display1_Name => ResourceManager.GetString("AddStarfallForFairyElf_Display1_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddStarfallForFairyElf_Display1_Description text.</summary>
+        public static string AddStarfallForFairyElf_Display1_Description => ResourceManager.GetString("AddStarfallForFairyElf_Display1_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AddManaRaysForMagicGladiator_Display1_Name text.</summary>
+        public static string AddManaRaysForMagicGladiator_Display1_Name => ResourceManager.GetString("AddManaRaysForMagicGladiator_Display1_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddManaRaysForMagicGladiator_Display1_Description text.</summary>
+        public static string AddManaRaysForMagicGladiator_Display1_Description => ResourceManager.GetString("AddManaRaysForMagicGladiator_Display1_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AddFireBlastForDarkLord_Display1_Name text.</summary>
+        public static string AddFireBlastForDarkLord_Display1_Name => ResourceManager.GetString("AddFireBlastForDarkLord_Display1_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddFireBlastForDarkLord_Display1_Description text.</summary>
+        public static string AddFireBlastForDarkLord_Display1_Description => ResourceManager.GetString("AddFireBlastForDarkLord_Display1_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AddSpiralSlashForMagicGladiator_Display1_Name text.</summary>
+        public static string AddSpiralSlashForMagicGladiator_Display1_Name => ResourceManager.GetString("AddSpiralSlashForMagicGladiator_Display1_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddSpiralSlashForMagicGladiator_Display1_Description text.</summary>
+        public static string AddSpiralSlashForMagicGladiator_Display1_Description => ResourceManager.GetString("AddSpiralSlashForMagicGladiator_Display1_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FixWeaponRisePercentagePlugInSeason6_Name text.</summary>
+        public static string FixWeaponRisePercentagePlugInSeason6_Name => ResourceManager.GetString("FixWeaponRisePercentagePlugInSeason6_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixWeaponRisePercentagePlugInSeason6_Description text.</summary>
+        public static string FixWeaponRisePercentagePlugInSeason6_Description => ResourceManager.GetString("FixWeaponRisePercentagePlugInSeason6_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FixAreaSkillsUpdatePlugIn_Name text.</summary>
+        public static string FixAreaSkillsUpdatePlugIn_Name => ResourceManager.GetString("FixAreaSkillsUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixAreaSkillsUpdatePlugIn_Description text.</summary>
+        public static string FixAreaSkillsUpdatePlugIn_Description => ResourceManager.GetString("FixAreaSkillsUpdatePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AddMissingMerchantStoresPlugIn_Name text.</summary>
+        public static string AddMissingMerchantStoresPlugIn_Name => ResourceManager.GetString("AddMissingMerchantStoresPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddMissingMerchantStoresPlugIn_Description text.</summary>
+        public static string AddMissingMerchantStoresPlugIn_Description => ResourceManager.GetString("AddMissingMerchantStoresPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FixEventItemsDropFromMonstersUpdatePlugInSeason6_Name text.</summary>
+        public static string FixEventItemsDropFromMonstersUpdatePlugInSeason6_Name => ResourceManager.GetString("FixEventItemsDropFromMonstersUpdatePlugInSeason6_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixEventItemsDropFromMonstersUpdatePlugInSeason6_Description text.</summary>
+        public static string FixEventItemsDropFromMonstersUpdatePlugInSeason6_Description => ResourceManager.GetString("FixEventItemsDropFromMonstersUpdatePlugInSeason6_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized InfinityArrowSkillOnQuestCompletionPlugIn_Name text.</summary>
+        public static string InfinityArrowSkillOnQuestCompletionPlugIn_Name => ResourceManager.GetString("InfinityArrowSkillOnQuestCompletionPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized InfinityArrowSkillOnQuestCompletionPlugIn_Description text.</summary>
+        public static string InfinityArrowSkillOnQuestCompletionPlugIn_Description => ResourceManager.GetString("InfinityArrowSkillOnQuestCompletionPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized RegenerationsRefactorPlugInBase_Name text.</summary>
+        public static string RegenerationsRefactorPlugInBase_Name => ResourceManager.GetString("RegenerationsRefactorPlugInBase_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized RegenerationsRefactorPlugInBase_Description text.</summary>
+        public static string RegenerationsRefactorPlugInBase_Description => ResourceManager.GetString("RegenerationsRefactorPlugInBase_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AddDuelConfigurationPlugIn_Name text.</summary>
+        public static string AddDuelConfigurationPlugIn_Name => ResourceManager.GetString("AddDuelConfigurationPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddDuelConfigurationPlugIn_Description text.</summary>
+        public static string AddDuelConfigurationPlugIn_Description => ResourceManager.GetString("AddDuelConfigurationPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FixBloodCastleMonsterAttributesUpdatePlugIn_Name text.</summary>
+        public static string FixBloodCastleMonsterAttributesUpdatePlugIn_Name => ResourceManager.GetString("FixBloodCastleMonsterAttributesUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixBloodCastleMonsterAttributesUpdatePlugIn_Description text.</summary>
+        public static string FixBloodCastleMonsterAttributesUpdatePlugIn_Description => ResourceManager.GetString("FixBloodCastleMonsterAttributesUpdatePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AddDoppelgangerDataUpdatePlugIn_Name text.</summary>
+        public static string AddDoppelgangerDataUpdatePlugIn_Name => ResourceManager.GetString("AddDoppelgangerDataUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddDoppelgangerDataUpdatePlugIn_Description text.</summary>
+        public static string AddDoppelgangerDataUpdatePlugIn_Description => ResourceManager.GetString("AddDoppelgangerDataUpdatePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized ConfigureCastleSiegeRegistrationUpdatePlugIn_Name text.</summary>
+        public static string ConfigureCastleSiegeRegistrationUpdatePlugIn_Name => ResourceManager.GetString("ConfigureCastleSiegeRegistrationUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized ConfigureCastleSiegeRegistrationUpdatePlugIn_Description text.</summary>
+        public static string ConfigureCastleSiegeRegistrationUpdatePlugIn_Description => ResourceManager.GetString("ConfigureCastleSiegeRegistrationUpdatePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AddKanturuMapContentUpdatePlugIn_Name text.</summary>
+        public static string AddKanturuMapContentUpdatePlugIn_Name => ResourceManager.GetString("AddKanturuMapContentUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddKanturuMapContentUpdatePlugIn_Description text.</summary>
+        public static string AddKanturuMapContentUpdatePlugIn_Description => ResourceManager.GetString("AddKanturuMapContentUpdatePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FinishSummonerMasterTreePlugIn_Name text.</summary>
+        public static string FinishSummonerMasterTreePlugIn_Name => ResourceManager.GetString("FinishSummonerMasterTreePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FinishSummonerMasterTreePlugIn_Description text.</summary>
+        public static string FinishSummonerMasterTreePlugIn_Description => ResourceManager.GetString("FinishSummonerMasterTreePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AddMaximumAllianceSizeUpdatePlugInSeason6_Name text.</summary>
+        public static string AddMaximumAllianceSizeUpdatePlugInSeason6_Name => ResourceManager.GetString("AddMaximumAllianceSizeUpdatePlugInSeason6_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddMaximumAllianceSizeUpdatePlugInSeason6_Description text.</summary>
+        public static string AddMaximumAllianceSizeUpdatePlugInSeason6_Description => ResourceManager.GetString("AddMaximumAllianceSizeUpdatePlugInSeason6_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FixAncientDiscriminatorsUpdatePlugIn_Name text.</summary>
+        public static string FixAncientDiscriminatorsUpdatePlugIn_Name => ResourceManager.GetString("FixAncientDiscriminatorsUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixAncientDiscriminatorsUpdatePlugIn_Description text.</summary>
+        public static string FixAncientDiscriminatorsUpdatePlugIn_Description => ResourceManager.GetString("FixAncientDiscriminatorsUpdatePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AddSummonerBuffSkillsPlugIn_Name text.</summary>
+        public static string AddSummonerBuffSkillsPlugIn_Name => ResourceManager.GetString("AddSummonerBuffSkillsPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddSummonerBuffSkillsPlugIn_Description text.</summary>
+        public static string AddSummonerBuffSkillsPlugIn_Description => ResourceManager.GetString("AddSummonerBuffSkillsPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AddIsQuestItemFlagPlugIn_Name text.</summary>
+        public static string AddIsQuestItemFlagPlugIn_Name => ResourceManager.GetString("AddIsQuestItemFlagPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddIsQuestItemFlagPlugIn_Description text.</summary>
+        public static string AddIsQuestItemFlagPlugIn_Description => ResourceManager.GetString("AddIsQuestItemFlagPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized WizEnhanceAndRagefighterSkillsUpdatePlugIn_Name text.</summary>
+        public static string WizEnhanceAndRagefighterSkillsUpdatePlugIn_Name => ResourceManager.GetString("WizEnhanceAndRagefighterSkillsUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized WizEnhanceAndRagefighterSkillsUpdatePlugIn_Description text.</summary>
+        public static string WizEnhanceAndRagefighterSkillsUpdatePlugIn_Description => ResourceManager.GetString("WizEnhanceAndRagefighterSkillsUpdatePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FixJeweleryPetsDamageCalcsPlugInBase_Name text.</summary>
+        public static string FixJeweleryPetsDamageCalcsPlugInBase_Name => ResourceManager.GetString("FixJeweleryPetsDamageCalcsPlugInBase_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixJeweleryPetsDamageCalcsPlugInBase_Description text.</summary>
+        public static string FixJeweleryPetsDamageCalcsPlugInBase_Description => ResourceManager.GetString("FixJeweleryPetsDamageCalcsPlugInBase_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FixChaosMixesPlugInBase_Name text.</summary>
+        public static string FixChaosMixesPlugInBase_Name => ResourceManager.GetString("FixChaosMixesPlugInBase_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixChaosMixesPlugInBase_Description text.</summary>
+        public static string FixChaosMixesPlugInBase_Description => ResourceManager.GetString("FixChaosMixesPlugInBase_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FixDamageAbsorbItemsUpdatePlugIn_Name text.</summary>
+        public static string FixDamageAbsorbItemsUpdatePlugIn_Name => ResourceManager.GetString("FixDamageAbsorbItemsUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixDamageAbsorbItemsUpdatePlugIn_Description text.</summary>
+        public static string FixDamageAbsorbItemsUpdatePlugIn_Description => ResourceManager.GetString("FixDamageAbsorbItemsUpdatePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AddHarmonyOptionWeightsUpdateSeason6_Name text.</summary>
+        public static string AddHarmonyOptionWeightsUpdateSeason6_Name => ResourceManager.GetString("AddHarmonyOptionWeightsUpdateSeason6_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddHarmonyOptionWeightsUpdateSeason6_Description text.</summary>
+        public static string AddHarmonyOptionWeightsUpdateSeason6_Description => ResourceManager.GetString("AddHarmonyOptionWeightsUpdateSeason6_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AddQuestItemLimitPlugIn_Name text.</summary>
+        public static string AddQuestItemLimitPlugIn_Name => ResourceManager.GetString("AddQuestItemLimitPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddQuestItemLimitPlugIn_Description text.</summary>
+        public static string AddQuestItemLimitPlugIn_Description => ResourceManager.GetString("AddQuestItemLimitPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FinishDarkKnightMasterTreePlugInSeason6_Name text.</summary>
+        public static string FinishDarkKnightMasterTreePlugInSeason6_Name => ResourceManager.GetString("FinishDarkKnightMasterTreePlugInSeason6_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FinishDarkKnightMasterTreePlugInSeason6_Description text.</summary>
+        public static string FinishDarkKnightMasterTreePlugInSeason6_Description => ResourceManager.GetString("FinishDarkKnightMasterTreePlugInSeason6_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AddLorenMarketJuliaWarpPlugIn_Name text.</summary>
+        public static string AddLorenMarketJuliaWarpPlugIn_Name => ResourceManager.GetString("AddLorenMarketJuliaWarpPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddLorenMarketJuliaWarpPlugIn_Description text.</summary>
+        public static string AddLorenMarketJuliaWarpPlugIn_Description => ResourceManager.GetString("AddLorenMarketJuliaWarpPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized LimitWhiteWizardDropsUpdatePlugIn_Name text.</summary>
+        public static string LimitWhiteWizardDropsUpdatePlugIn_Name => ResourceManager.GetString("LimitWhiteWizardDropsUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized LimitWhiteWizardDropsUpdatePlugIn_Description text.</summary>
+        public static string LimitWhiteWizardDropsUpdatePlugIn_Description => ResourceManager.GetString("LimitWhiteWizardDropsUpdatePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized ChaosCastleDataUpdatePlugIn_Name text.</summary>
+        public static string ChaosCastleDataUpdatePlugIn_Name => ResourceManager.GetString("ChaosCastleDataUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized ChaosCastleDataUpdatePlugIn_Description text.</summary>
+        public static string ChaosCastleDataUpdatePlugIn_Description => ResourceManager.GetString("ChaosCastleDataUpdatePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FinishDarkLordMasterTreePlugIn_Name text.</summary>
+        public static string FinishDarkLordMasterTreePlugIn_Name => ResourceManager.GetString("FinishDarkLordMasterTreePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FinishDarkLordMasterTreePlugIn_Description text.</summary>
+        public static string FinishDarkLordMasterTreePlugIn_Description => ResourceManager.GetString("FinishDarkLordMasterTreePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FixWingsAndCapesCraftingsUpdatePlugIn_Name text.</summary>
+        public static string FixWingsAndCapesCraftingsUpdatePlugIn_Name => ResourceManager.GetString("FixWingsAndCapesCraftingsUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixWingsAndCapesCraftingsUpdatePlugIn_Description text.</summary>
+        public static string FixWingsAndCapesCraftingsUpdatePlugIn_Description => ResourceManager.GetString("FixWingsAndCapesCraftingsUpdatePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AddRenaItemUpdatePlugIn_Name text.</summary>
+        public static string AddRenaItemUpdatePlugIn_Name => ResourceManager.GetString("AddRenaItemUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddRenaItemUpdatePlugIn_Description text.</summary>
+        public static string AddRenaItemUpdatePlugIn_Description => ResourceManager.GetString("AddRenaItemUpdatePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AddCrestOfMonarchDropGroupUpdateSeason6_Name text.</summary>
+        public static string AddCrestOfMonarchDropGroupUpdateSeason6_Name => ResourceManager.GetString("AddCrestOfMonarchDropGroupUpdateSeason6_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddCrestOfMonarchDropGroupUpdateSeason6_Description text.</summary>
+        public static string AddCrestOfMonarchDropGroupUpdateSeason6_Description => ResourceManager.GetString("AddCrestOfMonarchDropGroupUpdateSeason6_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FixSummonerCurseSkillsPlugIn_Name text.</summary>
+        public static string FixSummonerCurseSkillsPlugIn_Name => ResourceManager.GetString("FixSummonerCurseSkillsPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixSummonerCurseSkillsPlugIn_Description text.</summary>
+        public static string FixSummonerCurseSkillsPlugIn_Description => ResourceManager.GetString("FixSummonerCurseSkillsPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AddAreaSkillSettingsUpdatePlugIn_Name text.</summary>
+        public static string AddAreaSkillSettingsUpdatePlugIn_Name => ResourceManager.GetString("AddAreaSkillSettingsUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddAreaSkillSettingsUpdatePlugIn_Description text.</summary>
+        public static string AddAreaSkillSettingsUpdatePlugIn_Description => ResourceManager.GetString("AddAreaSkillSettingsUpdatePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FinishDarkWizardMasterTreePlugIn_Name text.</summary>
+        public static string FinishDarkWizardMasterTreePlugIn_Name => ResourceManager.GetString("FinishDarkWizardMasterTreePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FinishDarkWizardMasterTreePlugIn_Description text.</summary>
+        public static string FinishDarkWizardMasterTreePlugIn_Description => ResourceManager.GetString("FinishDarkWizardMasterTreePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized RemoveJewelDropLevelGapPlugInBase_Name text.</summary>
+        public static string RemoveJewelDropLevelGapPlugInBase_Name => ResourceManager.GetString("RemoveJewelDropLevelGapPlugInBase_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized RemoveJewelDropLevelGapPlugInBase_Description text.</summary>
+        public static string RemoveJewelDropLevelGapPlugInBase_Description => ResourceManager.GetString("RemoveJewelDropLevelGapPlugInBase_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FixSetBonusesPlugIn_Name text.</summary>
+        public static string FixSetBonusesPlugIn_Name => ResourceManager.GetString("FixSetBonusesPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixSetBonusesPlugIn_Description text.</summary>
+        public static string FixSetBonusesPlugIn_Description => ResourceManager.GetString("FixSetBonusesPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AddElfSoldierBuffPlugIn_Name text.</summary>
+        public static string AddElfSoldierBuffPlugIn_Name => ResourceManager.GetString("AddElfSoldierBuffPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddElfSoldierBuffPlugIn_Description text.</summary>
+        public static string AddElfSoldierBuffPlugIn_Description => ResourceManager.GetString("AddElfSoldierBuffPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FixSocketSeedCraftingUpdatePlugIn_Name text.</summary>
+        public static string FixSocketSeedCraftingUpdatePlugIn_Name => ResourceManager.GetString("FixSocketSeedCraftingUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixSocketSeedCraftingUpdatePlugIn_Description text.</summary>
+        public static string FixSocketSeedCraftingUpdatePlugIn_Description => ResourceManager.GetString("FixSocketSeedCraftingUpdatePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FixWarriorMorningStarPlugIn_Name text.</summary>
+        public static string FixWarriorMorningStarPlugIn_Name => ResourceManager.GetString("FixWarriorMorningStarPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixWarriorMorningStarPlugIn_Description text.</summary>
+        public static string FixWarriorMorningStarPlugIn_Description => ResourceManager.GetString("FixWarriorMorningStarPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized SpawnFixesUpdatePlugIn_Name text.</summary>
+        public static string SpawnFixesUpdatePlugIn_Name => ResourceManager.GetString("SpawnFixesUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized SpawnFixesUpdatePlugIn_Description text.</summary>
+        public static string SpawnFixesUpdatePlugIn_Description => ResourceManager.GetString("SpawnFixesUpdatePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FixJeweleryPetsDamageCalcsPlugInSeason6_Name text.</summary>
+        public static string FixJeweleryPetsDamageCalcsPlugInSeason6_Name => ResourceManager.GetString("FixJeweleryPetsDamageCalcsPlugInSeason6_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixJeweleryPetsDamageCalcsPlugInSeason6_Description text.</summary>
+        public static string FixJeweleryPetsDamageCalcsPlugInSeason6_Description => ResourceManager.GetString("FixJeweleryPetsDamageCalcsPlugInSeason6_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized RemoveDuplicateStatAttributesPlugInBase_Name text.</summary>
+        public static string RemoveDuplicateStatAttributesPlugInBase_Name => ResourceManager.GetString("RemoveDuplicateStatAttributesPlugInBase_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized RemoveDuplicateStatAttributesPlugInBase_Description text.</summary>
+        public static string RemoveDuplicateStatAttributesPlugInBase_Description => ResourceManager.GetString("RemoveDuplicateStatAttributesPlugInBase_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FixItemRequirementsPlugIn2_Name text.</summary>
+        public static string FixItemRequirementsPlugIn2_Name => ResourceManager.GetString("FixItemRequirementsPlugIn2_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixItemRequirementsPlugIn2_Description text.</summary>
+        public static string FixItemRequirementsPlugIn2_Description => ResourceManager.GetString("FixItemRequirementsPlugIn2_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FixWeaponRisePercentagePlugInBase_Name text.</summary>
+        public static string FixWeaponRisePercentagePlugInBase_Name => ResourceManager.GetString("FixWeaponRisePercentagePlugInBase_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixWeaponRisePercentagePlugInBase_Description text.</summary>
+        public static string FixWeaponRisePercentagePlugInBase_Description => ResourceManager.GetString("FixWeaponRisePercentagePlugInBase_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FixItemRequirementsPlugIn_Name text.</summary>
+        public static string FixItemRequirementsPlugIn_Name => ResourceManager.GetString("FixItemRequirementsPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixItemRequirementsPlugIn_Description text.</summary>
+        public static string FixItemRequirementsPlugIn_Description => ResourceManager.GetString("FixItemRequirementsPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AddCastleSiegeDataUpdatePlugIn_Name text.</summary>
+        public static string AddCastleSiegeDataUpdatePlugIn_Name => ResourceManager.GetString("AddCastleSiegeDataUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddCastleSiegeDataUpdatePlugIn_Description text.</summary>
+        public static string AddCastleSiegeDataUpdatePlugIn_Description => ResourceManager.GetString("AddCastleSiegeDataUpdatePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FixAttackSpeedCalculationUpdate_Name text.</summary>
+        public static string FixAttackSpeedCalculationUpdate_Name => ResourceManager.GetString("FixAttackSpeedCalculationUpdate_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixAttackSpeedCalculationUpdate_Description text.</summary>
+        public static string FixAttackSpeedCalculationUpdate_Description => ResourceManager.GetString("FixAttackSpeedCalculationUpdate_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FixItemOptionsAndAttackSpeedPlugInBase_Name text.</summary>
+        public static string FixItemOptionsAndAttackSpeedPlugInBase_Name => ResourceManager.GetString("FixItemOptionsAndAttackSpeedPlugInBase_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixItemOptionsAndAttackSpeedPlugInBase_Description text.</summary>
+        public static string FixItemOptionsAndAttackSpeedPlugInBase_Description => ResourceManager.GetString("FixItemOptionsAndAttackSpeedPlugInBase_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FinishDarkKnightMasterTreePlugInBase_Name text.</summary>
+        public static string FinishDarkKnightMasterTreePlugInBase_Name => ResourceManager.GetString("FinishDarkKnightMasterTreePlugInBase_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FinishDarkKnightMasterTreePlugInBase_Description text.</summary>
+        public static string FinishDarkKnightMasterTreePlugInBase_Description => ResourceManager.GetString("FinishDarkKnightMasterTreePlugInBase_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AddGlobalMoneyAmountRateAttributePlugInBase_Name text.</summary>
+        public static string AddGlobalMoneyAmountRateAttributePlugInBase_Name => ResourceManager.GetString("AddGlobalMoneyAmountRateAttributePlugInBase_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddGlobalMoneyAmountRateAttributePlugInBase_Description text.</summary>
+        public static string AddGlobalMoneyAmountRateAttributePlugInBase_Description => ResourceManager.GetString("AddGlobalMoneyAmountRateAttributePlugInBase_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FixDamageCalcsPlugInBase_Name text.</summary>
+        public static string FixDamageCalcsPlugInBase_Name => ResourceManager.GetString("FixDamageCalcsPlugInBase_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixDamageCalcsPlugInBase_Description text.</summary>
+        public static string FixDamageCalcsPlugInBase_Description => ResourceManager.GetString("FixDamageCalcsPlugInBase_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized ConfigureCastleSiegeParticipationUpdatePlugIn_Name text.</summary>
+        public static string ConfigureCastleSiegeParticipationUpdatePlugIn_Name => ResourceManager.GetString("ConfigureCastleSiegeParticipationUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized ConfigureCastleSiegeParticipationUpdatePlugIn_Description text.</summary>
+        public static string ConfigureCastleSiegeParticipationUpdatePlugIn_Description => ResourceManager.GetString("ConfigureCastleSiegeParticipationUpdatePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FixEventItemsDropFromMonstersUpdatePlugIn095d_Name text.</summary>
+        public static string FixEventItemsDropFromMonstersUpdatePlugIn095d_Name => ResourceManager.GetString("FixEventItemsDropFromMonstersUpdatePlugIn095d_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixEventItemsDropFromMonstersUpdatePlugIn095d_Description text.</summary>
+        public static string FixEventItemsDropFromMonstersUpdatePlugIn095d_Description => ResourceManager.GetString("FixEventItemsDropFromMonstersUpdatePlugIn095d_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AddItemDropGroupForJewelsUpdate075_Name text.</summary>
+        public static string AddItemDropGroupForJewelsUpdate075_Name => ResourceManager.GetString("AddItemDropGroupForJewelsUpdate075_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddItemDropGroupForJewelsUpdate075_Description text.</summary>
+        public static string AddItemDropGroupForJewelsUpdate075_Description => ResourceManager.GetString("AddItemDropGroupForJewelsUpdate075_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FixCharStatsForceWavePlugInBase_Name text.</summary>
+        public static string FixCharStatsForceWavePlugInBase_Name => ResourceManager.GetString("FixCharStatsForceWavePlugInBase_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixCharStatsForceWavePlugInBase_Description text.</summary>
+        public static string FixCharStatsForceWavePlugInBase_Description => ResourceManager.GetString("FixCharStatsForceWavePlugInBase_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FinishElfMasterTreePlugIn_Name text.</summary>
+        public static string FinishElfMasterTreePlugIn_Name => ResourceManager.GetString("FinishElfMasterTreePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FinishElfMasterTreePlugIn_Description text.</summary>
+        public static string FinishElfMasterTreePlugIn_Description => ResourceManager.GetString("FinishElfMasterTreePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized ConfigureCastleSiegeLifeStoneUpdatePlugIn_Name text.</summary>
+        public static string ConfigureCastleSiegeLifeStoneUpdatePlugIn_Name => ResourceManager.GetString("ConfigureCastleSiegeLifeStoneUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized ConfigureCastleSiegeLifeStoneUpdatePlugIn_Description text.</summary>
+        public static string ConfigureCastleSiegeLifeStoneUpdatePlugIn_Description => ResourceManager.GetString("ConfigureCastleSiegeLifeStoneUpdatePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AddItemRegistrationAttributesUpdatePlugIn_Name text.</summary>
+        public static string AddItemRegistrationAttributesUpdatePlugIn_Name => ResourceManager.GetString("AddItemRegistrationAttributesUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddItemRegistrationAttributesUpdatePlugIn_Description text.</summary>
+        public static string AddItemRegistrationAttributesUpdatePlugIn_Description => ResourceManager.GetString("AddItemRegistrationAttributesUpdatePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized ConfigureCastleSiegeEconomyUpdatePlugIn_Name text.</summary>
+        public static string ConfigureCastleSiegeEconomyUpdatePlugIn_Name => ResourceManager.GetString("ConfigureCastleSiegeEconomyUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized ConfigureCastleSiegeEconomyUpdatePlugIn_Description text.</summary>
+        public static string ConfigureCastleSiegeEconomyUpdatePlugIn_Description => ResourceManager.GetString("ConfigureCastleSiegeEconomyUpdatePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FixWingsDmgRatesUpdatePlugInBase_Name text.</summary>
+        public static string FixWingsDmgRatesUpdatePlugInBase_Name => ResourceManager.GetString("FixWingsDmgRatesUpdatePlugInBase_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixWingsDmgRatesUpdatePlugInBase_Description text.</summary>
+        public static string FixWingsDmgRatesUpdatePlugInBase_Description => ResourceManager.GetString("FixWingsDmgRatesUpdatePlugInBase_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FixLifeSwellEffectUpdatePlugIn_Name text.</summary>
+        public static string FixLifeSwellEffectUpdatePlugIn_Name => ResourceManager.GetString("FixLifeSwellEffectUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixLifeSwellEffectUpdatePlugIn_Description text.</summary>
+        public static string FixLifeSwellEffectUpdatePlugIn_Description => ResourceManager.GetString("FixLifeSwellEffectUpdatePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AddPointsPerResetAttributePlugIn_Name text.</summary>
+        public static string AddPointsPerResetAttributePlugIn_Name => ResourceManager.GetString("AddPointsPerResetAttributePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddPointsPerResetAttributePlugIn_Description text.</summary>
+        public static string AddPointsPerResetAttributePlugIn_Description => ResourceManager.GetString("AddPointsPerResetAttributePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized ChainLightningUpdatePlugIn_Name text.</summary>
+        public static string ChainLightningUpdatePlugIn_Name => ResourceManager.GetString("ChainLightningUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized ChainLightningUpdatePlugIn_Description text.</summary>
+        public static string ChainLightningUpdatePlugIn_Description => ResourceManager.GetString("ChainLightningUpdatePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FixDefenseCalcsPlugInBase_Name text.</summary>
+        public static string FixDefenseCalcsPlugInBase_Name => ResourceManager.GetString("FixDefenseCalcsPlugInBase_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixDefenseCalcsPlugInBase_Description text.</summary>
+        public static string FixDefenseCalcsPlugInBase_Description => ResourceManager.GetString("FixDefenseCalcsPlugInBase_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FixDuelArenaSafezoneMapUpdate_Name text.</summary>
+        public static string FixDuelArenaSafezoneMapUpdate_Name => ResourceManager.GetString("FixDuelArenaSafezoneMapUpdate_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixDuelArenaSafezoneMapUpdate_Description text.</summary>
+        public static string FixDuelArenaSafezoneMapUpdate_Description => ResourceManager.GetString("FixDuelArenaSafezoneMapUpdate_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AddMovementSpeedAttributesPlugInBase_Name text.</summary>
+        public static string AddMovementSpeedAttributesPlugInBase_Name => ResourceManager.GetString("AddMovementSpeedAttributesPlugInBase_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddMovementSpeedAttributesPlugInBase_Description text.</summary>
+        public static string AddMovementSpeedAttributesPlugInBase_Description => ResourceManager.GetString("AddMovementSpeedAttributesPlugInBase_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized SystemConfigurationAddedPlugInBase_Name text.</summary>
+        public static string SystemConfigurationAddedPlugInBase_Name => ResourceManager.GetString("SystemConfigurationAddedPlugInBase_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized SystemConfigurationAddedPlugInBase_Description text.</summary>
+        public static string SystemConfigurationAddedPlugInBase_Description => ResourceManager.GetString("SystemConfigurationAddedPlugInBase_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AddKanturuDataUpdatePlugIn_Name text.</summary>
+        public static string AddKanturuDataUpdatePlugIn_Name => ResourceManager.GetString("AddKanturuDataUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddKanturuDataUpdatePlugIn_Description text.</summary>
+        public static string AddKanturuDataUpdatePlugIn_Description => ResourceManager.GetString("AddKanturuDataUpdatePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FixDrainLifeSkillUpdate_Name text.</summary>
+        public static string FixDrainLifeSkillUpdate_Name => ResourceManager.GetString("FixDrainLifeSkillUpdate_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixDrainLifeSkillUpdate_Description text.</summary>
+        public static string FixDrainLifeSkillUpdate_Description => ResourceManager.GetString("FixDrainLifeSkillUpdate_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FinishRageFighterMasterTreePlugIn_Name text.</summary>
+        public static string FinishRageFighterMasterTreePlugIn_Name => ResourceManager.GetString("FinishRageFighterMasterTreePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FinishRageFighterMasterTreePlugIn_Description text.</summary>
+        public static string FinishRageFighterMasterTreePlugIn_Description => ResourceManager.GetString("FinishRageFighterMasterTreePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FixIgnoreDefenseSkillUpdatePlugIn_Name text.</summary>
+        public static string FixIgnoreDefenseSkillUpdatePlugIn_Name => ResourceManager.GetString("FixIgnoreDefenseSkillUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixIgnoreDefenseSkillUpdatePlugIn_Description text.</summary>
+        public static string FixIgnoreDefenseSkillUpdatePlugIn_Description => ResourceManager.GetString("FixIgnoreDefenseSkillUpdatePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FixMaxManaAndAbilityJewelryOptionsUpdateSeason6_Name text.</summary>
+        public static string FixMaxManaAndAbilityJewelryOptionsUpdateSeason6_Name => ResourceManager.GetString("FixMaxManaAndAbilityJewelryOptionsUpdateSeason6_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixMaxManaAndAbilityJewelryOptionsUpdateSeason6_Description text.</summary>
+        public static string FixMaxManaAndAbilityJewelryOptionsUpdateSeason6_Description => ResourceManager.GetString("FixMaxManaAndAbilityJewelryOptionsUpdateSeason6_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AddRandomExperienceConfigAttributesPlugInBase_Name text.</summary>
+        public static string AddRandomExperienceConfigAttributesPlugInBase_Name => ResourceManager.GetString("AddRandomExperienceConfigAttributesPlugInBase_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddRandomExperienceConfigAttributesPlugInBase_Description text.</summary>
+        public static string AddRandomExperienceConfigAttributesPlugInBase_Description => ResourceManager.GetString("AddRandomExperienceConfigAttributesPlugInBase_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FixCharStatsForceWavePlugInSeason6_Name text.</summary>
+        public static string FixCharStatsForceWavePlugInSeason6_Name => ResourceManager.GetString("FixCharStatsForceWavePlugInSeason6_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixCharStatsForceWavePlugInSeason6_Description text.</summary>
+        public static string FixCharStatsForceWavePlugInSeason6_Description => ResourceManager.GetString("FixCharStatsForceWavePlugInSeason6_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FixWarpLevelUpdatePlugIn_Name text.</summary>
+        public static string FixWarpLevelUpdatePlugIn_Name => ResourceManager.GetString("FixWarpLevelUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixWarpLevelUpdatePlugIn_Description text.</summary>
+        public static string FixWarpLevelUpdatePlugIn_Description => ResourceManager.GetString("FixWarpLevelUpdatePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AddProjectileCountToTripleShotUpdatePlugIn_Name text.</summary>
+        public static string AddProjectileCountToTripleShotUpdatePlugIn_Name => ResourceManager.GetString("AddProjectileCountToTripleShotUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddProjectileCountToTripleShotUpdatePlugIn_Description text.</summary>
+        public static string AddProjectileCountToTripleShotUpdatePlugIn_Description => ResourceManager.GetString("AddProjectileCountToTripleShotUpdatePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FixSkillMultipliersPlugIn_Name text.</summary>
+        public static string FixSkillMultipliersPlugIn_Name => ResourceManager.GetString("FixSkillMultipliersPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixSkillMultipliersPlugIn_Description text.</summary>
+        public static string FixSkillMultipliersPlugIn_Description => ResourceManager.GetString("FixSkillMultipliersPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AddWhiteWizardInvasionMobsUpdatePlugIn_Name text.</summary>
+        public static string AddWhiteWizardInvasionMobsUpdatePlugIn_Name => ResourceManager.GetString("AddWhiteWizardInvasionMobsUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddWhiteWizardInvasionMobsUpdatePlugIn_Description text.</summary>
+        public static string AddWhiteWizardInvasionMobsUpdatePlugIn_Description => ResourceManager.GetString("AddWhiteWizardInvasionMobsUpdatePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AddKalimaPlugIn_Name text.</summary>
+        public static string AddKalimaPlugIn_Name => ResourceManager.GetString("AddKalimaPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddKalimaPlugIn_Description text.</summary>
+        public static string AddKalimaPlugIn_Description => ResourceManager.GetString("AddKalimaPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FixEventItemsDropFromMonstersUpdatePlugInBase_Name text.</summary>
+        public static string FixEventItemsDropFromMonstersUpdatePlugInBase_Name => ResourceManager.GetString("FixEventItemsDropFromMonstersUpdatePlugInBase_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixEventItemsDropFromMonstersUpdatePlugInBase_Description text.</summary>
+        public static string FixEventItemsDropFromMonstersUpdatePlugInBase_Description => ResourceManager.GetString("FixEventItemsDropFromMonstersUpdatePlugInBase_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FixCharStatsForceWavePlugIn095d_Name text.</summary>
+        public static string FixCharStatsForceWavePlugIn095d_Name => ResourceManager.GetString("FixCharStatsForceWavePlugIn095d_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixCharStatsForceWavePlugIn095d_Description text.</summary>
+        public static string FixCharStatsForceWavePlugIn095d_Description => ResourceManager.GetString("FixCharStatsForceWavePlugIn095d_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FixHorseFenrirOptionsSoulBarrierPlugIn_Name text.</summary>
+        public static string FixHorseFenrirOptionsSoulBarrierPlugIn_Name => ResourceManager.GetString("FixHorseFenrirOptionsSoulBarrierPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixHorseFenrirOptionsSoulBarrierPlugIn_Description text.</summary>
+        public static string FixHorseFenrirOptionsSoulBarrierPlugIn_Description => ResourceManager.GetString("FixHorseFenrirOptionsSoulBarrierPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FixLevelDiv20ExcOptionUpdatePlugIn_Name text.</summary>
+        public static string FixLevelDiv20ExcOptionUpdatePlugIn_Name => ResourceManager.GetString("FixLevelDiv20ExcOptionUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixLevelDiv20ExcOptionUpdatePlugIn_Description text.</summary>
+        public static string FixLevelDiv20ExcOptionUpdatePlugIn_Description => ResourceManager.GetString("FixLevelDiv20ExcOptionUpdatePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AddGuardsDataPlugIn_Name text.</summary>
+        public static string AddGuardsDataPlugIn_Name => ResourceManager.GetString("AddGuardsDataPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddGuardsDataPlugIn_Description text.</summary>
+        public static string AddGuardsDataPlugIn_Description => ResourceManager.GetString("AddGuardsDataPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FixRageFighterMultipleHitSkillsPlugIn_Name text.</summary>
+        public static string FixRageFighterMultipleHitSkillsPlugIn_Name => ResourceManager.GetString("FixRageFighterMultipleHitSkillsPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixRageFighterMultipleHitSkillsPlugIn_Description text.</summary>
+        public static string FixRageFighterMultipleHitSkillsPlugIn_Description => ResourceManager.GetString("FixRageFighterMultipleHitSkillsPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FixChaosMixesPlugInSeason6_Name text.</summary>
+        public static string FixChaosMixesPlugInSeason6_Name => ResourceManager.GetString("FixChaosMixesPlugInSeason6_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixChaosMixesPlugInSeason6_Description text.</summary>
+        public static string FixChaosMixesPlugInSeason6_Description => ResourceManager.GetString("FixChaosMixesPlugInSeason6_Description", resourceCulture)!;
+
     }
 }

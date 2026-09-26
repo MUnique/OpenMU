@@ -1,0 +1,1547 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:schema id="root">
+    <xs:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xs:element name="root" ns1:IsDataSet="true">
+      <xs:complexType>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element name="metadata">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" />
+              </xs:sequence>
+              <xs:attribute name="name" use="required" type="xsd:string" />
+              <xs:attribute name="type" type="xsd:string" />
+              <xs:attribute name="mimetype" type="xsd:string" />
+              <xs:attribute ref="xml:space" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="assembly">
+            <xs:complexType>
+              <xs:attribute name="alias" type="xsd:string" />
+              <xs:attribute name="name" type="xsd:string" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="data">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+                <xs:element name="comment" type="xsd:string" minOccurs="0" ns1:Ordinal="2" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" ns1:Ordinal="1" />
+              <xs:attribute name="type" type="xsd:string" ns1:Ordinal="3" />
+              <xs:attribute name="mimetype" type="xsd:string" ns1:Ordinal="4" />
+              <xs:attribute ref="xml:space" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="resheader">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" />
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="CastleSiegeLeverTalkPlugIn_Name" xml:space="preserve">
+    <value>攻城战城门机关</value>
+  </data>
+  <data name="CastleSiegeLeverTalkPlugIn_Description" xml:space="preserve">
+    <value>打开攻城战城门机关的操作界面。</value>
+  </data>
+  <data name="CastleSiegeMachineTalkPlugIn_Name" xml:space="preserve">
+    <value>攻城战战争机器</value>
+  </data>
+  <data name="CastleSiegeMachineTalkPlugIn_Description" xml:space="preserve">
+    <value>为具有使用权限的玩家打开攻城战战争机器。</value>
+  </data>
+  <data name="CastleSiegePlugIn_Name" xml:space="preserve">
+    <value>攻城战</value>
+  </data>
+  <data name="CastleSiegePlugIn_Description" xml:space="preserve">
+    <value>推进每周攻城战的阶段循环。</value>
+  </data>
+  <data name="CastleSiegePendingRewardPlugIn_Name" xml:space="preserve">
+    <value>攻城战待领奖励发放</value>
+  </data>
+  <data name="CastleSiegePendingRewardPlugIn_Description" xml:space="preserve">
+    <value>角色进入游戏时发放待领取的攻城战参与奖励。</value>
+  </data>
+  <data name="CastleSiegeGuardsmanTalkPlugIn_Name" xml:space="preserve">
+    <value>攻城战守卫</value>
+  </data>
+  <data name="CastleSiegeGuardsmanTalkPlugIn_Description" xml:space="preserve">
+    <value>显示魔炼之地是否开放及适用的入场费用。</value>
+  </data>
+  <data name="MuHelperFeaturePlugIn_Name" xml:space="preserve">
+    <value>奇迹助手</value>
+  </data>
+  <data name="MuHelperFeaturePlugIn_Description" xml:space="preserve">
+    <value>提供奇迹助手功能的配置。</value>
+  </data>
+  <data name="UpdatePetCommandManagerOnItemMovePlugIn_Name" xml:space="preserve">
+    <value>装备变更时更新宠物指令</value>
+  </data>
+  <data name="UpdatePetCommandManagerOnItemMovePlugIn_Description" xml:space="preserve">
+    <value>装备或卸下宠物后，更新玩家的宠物指令管理器。</value>
+  </data>
+  <data name="GuildWarKillScorePlugIn_Name" xml:space="preserve">
+    <value>战盟足球击杀计分</value>
+  </data>
+  <data name="GuildWarKillScorePlugIn_Description" xml:space="preserve">
+    <value>发生击杀时增加战盟足球比赛的得分。</value>
+  </data>
+  <data name="PeriodicSaveProgressPlugIn_Name" xml:space="preserve">
+    <value>定时保存游戏进度</value>
+  </data>
+  <data name="PeriodicSaveProgressPlugIn_Description" xml:space="preserve">
+    <value>定期保存已进入游戏世界（EnteredWorld）的玩家进度。</value>
+  </data>
+  <data name="PlayerLosesExperienceAfterDeathPlugIn_Name" xml:space="preserve">
+    <value>死亡经验损失</value>
+  </data>
+  <data name="PlayerLosesExperienceAfterDeathPlugIn_Description" xml:space="preserve">
+    <value>玩家被怪物击杀后扣除经验值。</value>
+  </data>
+  <data name="QuestMonsterKillCountPlugIn_Name" xml:space="preserve">
+    <value>任务怪物击杀统计</value>
+  </data>
+  <data name="QuestMonsterKillCountPlugIn_Description" xml:space="preserve">
+    <value>增加进行中任务的怪物击杀计数。</value>
+  </data>
+  <data name="SelfDefensePlugIn_Name" xml:space="preserve">
+    <value>正当防卫</value>
+  </data>
+  <data name="SelfDefensePlugIn_Description" xml:space="preserve">
+    <value>更新正当防卫系统的状态。</value>
+  </data>
+  <data name="ShieldRecoveryHiatusPlugIn_Name" xml:space="preserve">
+    <value>防护值恢复暂停</value>
+  </data>
+  <data name="ShieldRecoveryHiatusPlugIn_Description" xml:space="preserve">
+    <value>更新和重置防护值恢复暂停属性。</value>
+  </data>
+  <data name="ShowMessageToAllWhenPlayerEnteredWorldPlugIn_Name" xml:space="preserve">
+    <value>玩家上线公告</value>
+  </data>
+  <data name="ShowMessageToAllWhenPlayerEnteredWorldPlugIn_Description" xml:space="preserve">
+    <value>玩家进入游戏时向所有玩家发送公告。</value>
+  </data>
+  <data name="UpdateIsInSafezoneAfterPlayerMoved_Name" xml:space="preserve">
+    <value>移动后更新安全区状态</value>
+  </data>
+  <data name="UpdateIsInSafezoneAfterPlayerMoved_Description" xml:space="preserve">
+    <value>更新玩家是否位于安全区的属性，例如据此启用生命值和防护值自动恢复。</value>
+  </data>
+  <data name="WeatherUpdatePlugIn_Name" xml:space="preserve">
+    <value>天气更新</value>
+  </data>
+  <data name="WeatherUpdatePlugIn_Description" xml:space="preserve">
+    <value>随机更新各托管地图的天气状态。</value>
+  </data>
+  <data name="GatekeeperNpcPlugin_Name" xml:space="preserve">
+    <value>守门人交互</value>
+  </data>
+  <data name="GatekeeperNpcPlugin_Description" xml:space="preserve">
+    <value>处理守门人 NPC 的交互请求。</value>
+  </data>
+  <data name="ResetCharacterNpcPlugin_Name" xml:space="preserve">
+    <value>角色转生 NPC 交互</value>
+  </data>
+  <data name="ResetCharacterNpcPlugin_Description" xml:space="preserve">
+    <value>处理角色转生 NPC 的交互请求。</value>
+  </data>
+  <data name="ResetChatCommandPlugIn_Name" xml:space="preserve">
+    <value>转生命令</value>
+  </data>
+  <data name="ResetChatCommandPlugIn_Description" xml:space="preserve">
+    <value>处理聊天命令 /reset。</value>
+  </data>
+  <data name="ResetInfoChatCommandPlugIn_Name" xml:space="preserve">
+    <value>转生信息命令</value>
+  </data>
+  <data name="ResetInfoChatCommandPlugIn_Description" xml:space="preserve">
+    <value>处理 /resetinfo 命令，显示下次转生的费用和可获得的属性点。</value>
+  </data>
+  <data name="ResetFeaturePlugIn_Name" xml:space="preserve">
+    <value>角色转生</value>
+  </data>
+  <data name="ResetFeaturePlugIn_Description" xml:space="preserve">
+    <value>提供角色转生功能的配置。</value>
+  </data>
+  <data name="EndDuelWhenLeavingDuelMapPlugIn_Name" xml:space="preserve">
+    <value>离开地图时结束决斗</value>
+  </data>
+  <data name="EndDuelWhenLeavingDuelMapPlugIn_Description" xml:space="preserve">
+    <value>决斗者离开决斗地图时结束决斗；观战者离开时将其从观战列表移除。</value>
+  </data>
+  <data name="UpdateDuelScorePlugIn_Name" xml:space="preserve">
+    <value>决斗计分</value>
+  </data>
+  <data name="UpdateDuelScorePlugIn_Description" xml:space="preserve">
+    <value>发生击杀时增加决斗得分。</value>
+  </data>
+  <data name="AlcoholConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>酒使用</value>
+  </data>
+  <data name="AlcoholConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理酒的使用和消耗。</value>
+  </data>
+  <data name="AntidoteConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>解毒剂使用</value>
+  </data>
+  <data name="AntidoteConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理解毒剂的使用和消耗。</value>
+  </data>
+  <data name="AppleConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>苹果使用</value>
+  </data>
+  <data name="AppleConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理苹果的使用和消耗。</value>
+  </data>
+  <data name="BlessJewelConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>祝福宝石使用</value>
+  </data>
+  <data name="BlessJewelConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理祝福宝石的使用和消耗。</value>
+  </data>
+  <data name="FruitConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>果实使用</value>
+  </data>
+  <data name="FruitConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理果实的使用和消耗。</value>
+  </data>
+  <data name="HarmonyJewelConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>再生宝石使用</value>
+  </data>
+  <data name="HarmonyJewelConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理再生宝石的使用和消耗。</value>
+  </data>
+  <data name="HigherRefineStoneConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>高级进化宝石使用</value>
+  </data>
+  <data name="HigherRefineStoneConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理高级进化宝石的使用和消耗。</value>
+  </data>
+  <data name="LargeComplexPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>大型复合药水使用</value>
+  </data>
+  <data name="LargeComplexPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理大型复合药水的使用和消耗。</value>
+  </data>
+  <data name="LargeHealthPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>大型治疗药水使用</value>
+  </data>
+  <data name="LargeHealthPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理大型治疗药水的使用和消耗。</value>
+  </data>
+  <data name="LargeManaPotionConsumeHandler_Name" xml:space="preserve">
+    <value>大型魔力药水使用</value>
+  </data>
+  <data name="LargeManaPotionConsumeHandler_Description" xml:space="preserve">
+    <value>处理大型魔力药水的使用和消耗。</value>
+  </data>
+  <data name="LargeShieldPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>大型防护药水使用</value>
+  </data>
+  <data name="LargeShieldPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理大型防护药水的使用和消耗。</value>
+  </data>
+  <data name="LifeJewelConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>生命宝石使用</value>
+  </data>
+  <data name="LifeJewelConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理生命宝石的使用和消耗。</value>
+  </data>
+  <data name="LowerRefineStoneConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>低级进化宝石使用</value>
+  </data>
+  <data name="LowerRefineStoneConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理低级进化宝石的使用和消耗。</value>
+  </data>
+  <data name="MediumComplexPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>中型复合药水使用</value>
+  </data>
+  <data name="MediumComplexPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理中型复合药水的使用和消耗。</value>
+  </data>
+  <data name="MediumHealthPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>中型治疗药水使用</value>
+  </data>
+  <data name="MediumHealthPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理中型治疗药水的使用和消耗。</value>
+  </data>
+  <data name="MediumManaPotionConsumeHandler_Name" xml:space="preserve">
+    <value>中型魔力药水使用</value>
+  </data>
+  <data name="MediumManaPotionConsumeHandler_Description" xml:space="preserve">
+    <value>处理中型魔力药水的使用和消耗。</value>
+  </data>
+  <data name="MediumShieldPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>中型防护药水使用</value>
+  </data>
+  <data name="MediumShieldPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理中型防护药水的使用和消耗。</value>
+  </data>
+  <data name="SiegePotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>攻城药水使用</value>
+  </data>
+  <data name="SiegePotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理攻城药水的使用和消耗。</value>
+  </data>
+  <data name="SmallComplexPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>小型复合药水使用</value>
+  </data>
+  <data name="SmallComplexPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理小型复合药水的使用和消耗。</value>
+  </data>
+  <data name="SmallHealthPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>小型治疗药水使用</value>
+  </data>
+  <data name="SmallHealthPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理小型治疗药水的使用和消耗。</value>
+  </data>
+  <data name="SmallManaPotionConsumeHandler_Name" xml:space="preserve">
+    <value>小型魔力药水使用</value>
+  </data>
+  <data name="SmallManaPotionConsumeHandler_Description" xml:space="preserve">
+    <value>处理小型魔力药水的使用和消耗。</value>
+  </data>
+  <data name="SmallShieldPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>小型防护药水使用</value>
+  </data>
+  <data name="SmallShieldPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理小型防护药水的使用和消耗。</value>
+  </data>
+  <data name="SoulJewelConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>灵魂宝石使用</value>
+  </data>
+  <data name="SoulJewelConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理灵魂宝石的使用和消耗。</value>
+  </data>
+  <data name="SummoningOrbConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>召唤石使用</value>
+  </data>
+  <data name="SummoningOrbConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理召唤石的使用和消耗。</value>
+  </data>
+  <data name="TownPortalScrollConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>回城卷轴使用</value>
+  </data>
+  <data name="TownPortalScrollConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理回城卷轴的使用和消耗。</value>
+  </data>
+  <data name="ChainLightningSkillPlugIn_Name" xml:space="preserve">
+    <value>链雷咒技能</value>
+  </data>
+  <data name="ChainLightningSkillPlugIn_Description" xml:space="preserve">
+    <value>处理召唤术师的链雷咒技能，除当前目标外最多再命中两个目标。</value>
+  </data>
+  <data name="DragonRoarSkillPlugIn_Name" xml:space="preserve">
+    <value>格斗家范围技能（Dragon Roar）</value>
+  </data>
+  <data name="DragonRoarSkillPlugIn_Description" xml:space="preserve">
+    <value>处理格斗家的格斗家范围技能（Dragon Roar），除当前目标外最多再命中七个目标。</value>
+  </data>
+  <data name="DrainLifeSkillPlugIn_Name" xml:space="preserve">
+    <value>摄魂咒技能</value>
+  </data>
+  <data name="DrainLifeSkillPlugIn_Description" xml:space="preserve">
+    <value>处理召唤术师的摄魂咒技能，造成伤害时恢复自身生命值。</value>
+  </data>
+  <data name="EarthShakeSkillPlugIn_Name" xml:space="preserve">
+    <value>地裂技能</value>
+  </data>
+  <data name="EarthShakeSkillPlugIn_Description" xml:space="preserve">
+    <value>处理黑王马的地裂技能，将目标击退。</value>
+  </data>
+  <data name="FireScreamSkillPlugIn_Name" xml:space="preserve">
+    <value>火舞旋风技能</value>
+  </data>
+  <data name="FireScreamSkillPlugIn_Description" xml:space="preserve">
+    <value>处理圣导师的火舞旋风技能，有概率对目标周围一定范围内的目标造成额外爆炸伤害。</value>
+  </data>
+  <data name="ForceSkillAction_Name" xml:space="preserve">
+    <value>冲击技能</value>
+  </data>
+  <data name="ForceSkillAction_Description" xml:space="preserve">
+    <value>处理圣导师的冲击技能。</value>
+  </data>
+  <data name="ForceWaveStrengSkillAction_Name" xml:space="preserve">
+    <value>冲击波强化技能</value>
+  </data>
+  <data name="ForceWaveStrengSkillAction_Description" xml:space="preserve">
+    <value>处理圣导师的冲击波强化技能。</value>
+  </data>
+  <data name="NovaSkillStartPlugin_Name" xml:space="preserve">
+    <value>星辰一怒蓄力</value>
+  </data>
+  <data name="NovaSkillStartPlugin_Description" xml:space="preserve">
+    <value>处理魔法师星辰一怒技能的开始蓄力。</value>
+  </data>
+  <data name="NovaSkillStopPlugin_Name" xml:space="preserve">
+    <value>星辰一怒释放</value>
+  </data>
+  <data name="NovaSkillStopPlugin_Description" xml:space="preserve">
+    <value>处理魔法师星辰一怒技能的停止蓄力。</value>
+  </data>
+  <data name="PhoenixShotSkillPlugIn_Name" xml:space="preserve">
+    <value>格斗家武器技能（Phoenix Shot）</value>
+  </data>
+  <data name="PhoenixShotSkillPlugIn_Description" xml:space="preserve">
+    <value>处理格斗家的武器技能（Phoenix Shot），除当前目标外最多再命中七个目标。</value>
+  </data>
+  <data name="PlasmaStormSkillPlugIn_Name" xml:space="preserve">
+    <value>血色风暴技能</value>
+  </data>
+  <data name="PlasmaStormSkillPlugIn_Description" xml:space="preserve">
+    <value>处理炎狼兽的血色风暴技能，随机将目标一件已装备物品的耐久度减半。</value>
+  </data>
+  <data name="PollutionSkillPlugIn_Name" xml:space="preserve">
+    <value>幻兽技能</value>
+  </data>
+  <data name="PollutionSkillPlugIn_Description" xml:space="preserve">
+    <value>处理召唤术师的幻兽技能（污灵之书），有概率将目标向远离攻击者的方向击退两格。</value>
+  </data>
+  <data name="RequiemSkillPlugIn_Name" xml:space="preserve">
+    <value>安魂弥撒技能</value>
+  </data>
+  <data name="RequiemSkillPlugIn_Description" xml:space="preserve">
+    <value>处理召唤术师的安魂弥撒技能（异灵之书），有概率使目标眩晕。</value>
+  </data>
+  <data name="SoulBarrierProficieSkillAction_Name" xml:space="preserve">
+    <value>精通守护之魂</value>
+  </data>
+  <data name="SoulBarrierProficieSkillAction_Description" xml:space="preserve">
+    <value>处理神导师的精通守护之魂技能。</value>
+  </data>
+  <data name="SoulBarrierStrengSkillAction_Name" xml:space="preserve">
+    <value>强化守护之魂</value>
+  </data>
+  <data name="SoulBarrierStrengSkillAction_Description" xml:space="preserve">
+    <value>处理神导师的强化守护之魂技能。</value>
+  </data>
+  <data name="SummonPartySkillPlugin_Name" xml:space="preserve">
+    <value>星云召唤技能</value>
+  </data>
+  <data name="SummonPartySkillPlugin_Description" xml:space="preserve">
+    <value>处理圣导师召唤队友的技能。</value>
+  </data>
+  <data name="TwistingSlashMasterySkillPlugIn_Name" xml:space="preserve">
+    <value>精通旋风斩</value>
+  </data>
+  <data name="TwistingSlashMasterySkillPlugIn_Description" xml:space="preserve">
+    <value>处理剑士的精通旋风斩技能，有概率将目标向远离攻击者的方向击退两格。</value>
+  </data>
+  <data name="AddAgilityStatChatCommandPlugIn_Name" xml:space="preserve">
+    <value>增加敏捷命令</value>
+  </data>
+  <data name="AddAgilityStatChatCommandPlugIn_Description" xml:space="preserve">
+    <value>为角色增加指定数量的敏捷点数。</value>
+  </data>
+  <data name="AddCommandStatChatCommandPlugIn_Name" xml:space="preserve">
+    <value>增加统率命令</value>
+  </data>
+  <data name="AddCommandStatChatCommandPlugIn_Description" xml:space="preserve">
+    <value>为角色增加指定数量的统率点数。</value>
+  </data>
+  <data name="AddEnergyStatChatCommandPlugIn_Name" xml:space="preserve">
+    <value>增加智力命令</value>
+  </data>
+  <data name="AddEnergyStatChatCommandPlugIn_Description" xml:space="preserve">
+    <value>为角色增加指定数量的智力点数。</value>
+  </data>
+  <data name="AddStrengthStatChatCommandPlugIn_Name" xml:space="preserve">
+    <value>增加力量命令</value>
+  </data>
+  <data name="AddStrengthStatChatCommandPlugIn_Description" xml:space="preserve">
+    <value>为角色增加指定数量的力量点数。</value>
+  </data>
+  <data name="AddVitalityStatChatCommandPlugIn_Name" xml:space="preserve">
+    <value>增加体力命令</value>
+  </data>
+  <data name="AddVitalityStatChatCommandPlugIn_Description" xml:space="preserve">
+    <value>为角色增加指定数量的体力点数。</value>
+  </data>
+  <data name="BanAccChatCommandPlugIn_Name" xml:space="preserve">
+    <value>封禁账号命令</value>
+  </data>
+  <data name="BanAccChatCommandPlugIn_Description" xml:space="preserve">
+    <value>处理 /banacc &lt;acc&gt;，封禁指定游戏账号。</value>
+  </data>
+  <data name="BanCharChatCommandPlugIn_Name" xml:space="preserve">
+    <value>封禁角色账号命令</value>
+  </data>
+  <data name="BanCharChatCommandPlugIn_Description" xml:space="preserve">
+    <value>处理 /banchar &lt;char&gt;，封禁指定角色所属的账号。</value>
+  </data>
+  <data name="ChangeLanguageChatCommandPlugIn_Name" xml:space="preserve">
+    <value>切换语言命令</value>
+  </data>
+  <data name="ChangeLanguageChatCommandPlugIn_Description" xml:space="preserve">
+    <value>处理 /language &lt;isoCode&gt;，更改账号使用的语言。</value>
+  </data>
+  <data name="CharInfoChatCommandPlugIn_Name" xml:space="preserve">
+    <value>角色信息命令</value>
+  </data>
+  <data name="CharInfoChatCommandPlugIn_Description" xml:space="preserve">
+    <value>处理 /charinfo &lt;char&gt;，向请求者返回指定角色的信息。</value>
+  </data>
+  <data name="ChatBanCharChatCommandPlugIn_Name" xml:space="preserve">
+    <value>禁言命令</value>
+  </data>
+  <data name="ChatBanCharChatCommandPlugIn_Description" xml:space="preserve">
+    <value>处理 /chatban &lt;characterName&gt; &lt;durationMinutes&gt;，将指定角色所属账号禁言指定分钟数。</value>
+  </data>
+  <data name="ChatUnbanCharChatCommandPlugIn_Name" xml:space="preserve">
+    <value>解除禁言命令</value>
+  </data>
+  <data name="ChatUnbanCharChatCommandPlugIn_Description" xml:space="preserve">
+    <value>处理 /chatunban &lt;characterName&gt;，解除指定角色所属账号的禁言。</value>
+  </data>
+  <data name="CreateMonsterChatCommand_Name" xml:space="preserve">
+    <value>创建怪物命令</value>
+  </data>
+  <data name="CreateMonsterChatCommand_Description" xml:space="preserve">
+    <value>处理 /createmonster &lt;number&gt; &lt;intelligent&gt;，创建可由游戏管理员远程控制的怪物。</value>
+  </data>
+  <data name="DisconnectChatCommandPlugIn_Name" xml:space="preserve">
+    <value>断开连接命令</value>
+  </data>
+  <data name="DisconnectChatCommandPlugIn_Description" xml:space="preserve">
+    <value>处理 /disconnect &lt;char&gt;，断开指定玩家与游戏服务器的连接。</value>
+  </data>
+  <data name="GuildBattleSoccerChatCommandPlugIn_Name" xml:space="preserve">
+    <value>战盟足球命令</value>
+  </data>
+  <data name="GuildBattleSoccerChatCommandPlugIn_Description" xml:space="preserve">
+    <value>处理 /battlesoccer &lt;guildname&gt;，向目标战盟盟主发送足球比赛邀请。</value>
+  </data>
+  <data name="GuildDisconnectChatCommandPlugIn_Name" xml:space="preserve">
+    <value>战盟成员下线命令</value>
+  </data>
+  <data name="GuildDisconnectChatCommandPlugIn_Description" xml:space="preserve">
+    <value>处理 /guilddisconnect &lt;guild&gt;，断开指定战盟成员的连接。</value>
+  </data>
+  <data name="GuildMoveChatCommandPlugIn_Name" xml:space="preserve">
+    <value>战盟传送命令</value>
+  </data>
+  <data name="GuildMoveChatCommandPlugIn_Description" xml:space="preserve">
+    <value>处理 /guildmove &lt;guild&gt; &lt;map&gt; &lt;x?&gt; &lt;y?&gt;，将指定战盟的角色传送到指定地图和坐标。</value>
+  </data>
+  <data name="GuildWarChatCommandPlugIn_Name" xml:space="preserve">
+    <value>战盟宣战命令</value>
+  </data>
+  <data name="GuildWarChatCommandPlugIn_Description" xml:space="preserve">
+    <value>处理 /war &lt;guild&gt;，向目标战盟盟主发送战盟战邀请。</value>
+  </data>
+  <data name="HelpCommand_Name" xml:space="preserve">
+    <value>命令帮助</value>
+  </data>
+  <data name="HelpCommand_Description" xml:space="preserve">
+    <value>处理 /help &lt;command&gt;，显示指定命令的说明。</value>
+  </data>
+  <data name="HideChatCommandPlugIn_Name" xml:space="preserve">
+    <value>隐身命令</value>
+  </data>
+  <data name="HideChatCommandPlugIn_Description" xml:space="preserve">
+    <value>处理 /hide，使其他玩家看不到自己。</value>
+  </data>
+  <data name="ItemChatCommandPlugIn_Name" xml:space="preserve">
+    <value>生成物品命令</value>
+  </data>
+  <data name="ItemChatCommandPlugIn_Description" xml:space="preserve">
+    <value>处理 /item &lt;group&gt; &lt;number&gt; &lt;lvl?&gt; &lt;exc?&gt; &lt;sk?&gt; &lt;lu?&gt; &lt;opt?&gt; &lt;anc?&gt; &lt;ancBonuslvl?&gt;，在角色旁生成指定物品。</value>
+  </data>
+  <data name="KillAllMonstersChatCommandPlugIn_Name" xml:space="preserve">
+    <value>清除地图怪物命令</value>
+  </data>
+  <data name="KillAllMonstersChatCommandPlugIn_Description" xml:space="preserve">
+    <value>处理 /killall，击杀当前地图上的所有怪物。</value>
+  </data>
+  <data name="ListCommand_Name" xml:space="preserve">
+    <value>命令列表</value>
+  </data>
+  <data name="ListCommand_Description" xml:space="preserve">
+    <value>列出所有命令。</value>
+  </data>
+  <data name="MoveChatCommandPlugIn_Name" xml:space="preserve">
+    <value>传送命令</value>
+  </data>
+  <data name="MoveChatCommandPlugIn_Description" xml:space="preserve">
+    <value>处理 /move &lt;target&gt; &lt;mapIdOrName?&gt; &lt;x?&gt; &lt;y?&gt;，将角色传送到指定目的地。</value>
+  </data>
+  <data name="MoveMonsterChatCommand_Name" xml:space="preserve">
+    <value>移动受控怪物命令</value>
+  </data>
+  <data name="MoveMonsterChatCommand_Description" xml:space="preserve">
+    <value>处理 /movemonster &lt;id&gt; &lt;x&gt; &lt;y&gt;，移动此前创建、可由游戏管理员远程控制的怪物。</value>
+  </data>
+  <data name="NoticeChatCommandPlugIn_Name" xml:space="preserve">
+    <value>金色公告命令</value>
+  </data>
+  <data name="NoticeChatCommandPlugIn_Description" xml:space="preserve">
+    <value>处理 /goldnotice message，向所有玩家发送全局金色公告。</value>
+  </data>
+  <data name="NpcChatCommandPlugIn_Name" xml:space="preserve">
+    <value>打开商店命令</value>
+  </data>
+  <data name="NpcChatCommandPlugIn_Description" xml:space="preserve">
+    <value>打开商人 NPC 的商店。</value>
+  </data>
+  <data name="OnlineChatCommandPlugIn_Name" xml:space="preserve">
+    <value>在线人数命令</value>
+  </data>
+  <data name="OnlineChatCommandPlugIn_Description" xml:space="preserve">
+    <value>处理 /online，获取在线游戏管理员和玩家的人数。</value>
+  </data>
+  <data name="OpenWarehouseChatCommandPlugIn_Name" xml:space="preserve">
+    <value>打开仓库命令</value>
+  </data>
+  <data name="OpenWarehouseChatCommandPlugIn_Description" xml:space="preserve">
+    <value>打开仓库。</value>
+  </data>
+  <data name="PkChatCommandPlugIn_Name" xml:space="preserve">
+    <value>设置 PK 状态命令</value>
+  </data>
+  <data name="PkChatCommandPlugIn_Description" xml:space="preserve">
+    <value>处理 /pk &lt;char&gt; &lt;pk_lvl&gt; &lt;pk_count&gt;，设置角色的 PK 等级和杀人数。</value>
+  </data>
+  <data name="PkClearChatCommandPlugIn_Name" xml:space="preserve">
+    <value>清除 PK 记录命令</value>
+  </data>
+  <data name="PkClearChatCommandPlugIn_Description" xml:space="preserve">
+    <value>处理 /pkclear &lt;char&gt;，清除角色的杀人数。</value>
+  </data>
+  <data name="PostChatCommandPlugIn_Name" xml:space="preserve">
+    <value>全服喊话命令</value>
+  </data>
+  <data name="PostChatCommandPlugIn_Description" xml:space="preserve">
+    <value>处理 /post message，向所有玩家发送全局蓝色系统消息。</value>
+  </data>
+  <data name="RemoveNpcChatCommand_Name" xml:space="preserve">
+    <value>移除 NPC 命令</value>
+  </data>
+  <data name="RemoveNpcChatCommand_Description" xml:space="preserve">
+    <value>处理 /removenpc &lt;id&gt;。</value>
+  </data>
+  <data name="ShowFireworksEffectChatCommandPlugIn_Name" xml:space="preserve">
+    <value>烟花命令</value>
+  </data>
+  <data name="ShowFireworksEffectChatCommandPlugIn_Description" xml:space="preserve">
+    <value>处理 /fireworks &lt;x&gt; &lt;y&gt;，在指定坐标显示烟花效果。</value>
+  </data>
+  <data name="ShowXmasFireworksEffectChatCommandPlugIn_Name" xml:space="preserve">
+    <value>圣诞烟花命令</value>
+  </data>
+  <data name="ShowXmasFireworksEffectChatCommandPlugIn_Description" xml:space="preserve">
+    <value>处理 /xmasfireworks &lt;x&gt; &lt;y&gt;，在指定坐标显示圣诞烟花效果。</value>
+  </data>
+  <data name="SkinChatCommandPlugIn_Name" xml:space="preserve">
+    <value>变身命令</value>
+  </data>
+  <data name="SkinChatCommandPlugIn_Description" xml:space="preserve">
+    <value>处理 /skin &lt;number&gt;，将游戏管理员角色的外观设为指定怪物。</value>
+  </data>
+  <data name="SkipMiniGameWaitChatCommandPlugIn_Name" xml:space="preserve">
+    <value>跳过副本等待命令</value>
+  </data>
+  <data name="SkipMiniGameWaitChatCommandPlugIn_Description" xml:space="preserve">
+    <value>处理 /skipwait，跳过副本当前的等待阶段（入场、倒计时、待机）；被跳过的等待按已完成处理。</value>
+  </data>
+  <data name="StartBloodCastleEventChatCommandPlugIn_Name" xml:space="preserve">
+    <value>开启血色城堡命令</value>
+  </data>
+  <data name="StartBloodCastleEventChatCommandPlugIn_Description" xml:space="preserve">
+    <value>处理 /startbc，在下一个允许的时机开启血色城堡。</value>
+  </data>
+  <data name="StartChaosCastleEventChatCommandPlugIn_Name" xml:space="preserve">
+    <value>开启赤色要塞命令</value>
+  </data>
+  <data name="StartChaosCastleEventChatCommandPlugIn_Description" xml:space="preserve">
+    <value>处理 /startcc，在下一个允许的时机开启赤色要塞。</value>
+  </data>
+  <data name="StartDevilSquareEventChatCommandPlugIn_Name" xml:space="preserve">
+    <value>开启恶魔广场命令</value>
+  </data>
+  <data name="StartDevilSquareEventChatCommandPlugIn_Description" xml:space="preserve">
+    <value>处理 /startds，在下一个允许的时机开启恶魔广场。</value>
+  </data>
+  <data name="StartKanturuEventChatCommandPlugIn_Name" xml:space="preserve">
+    <value>开启坎特鲁副本命令</value>
+  </data>
+  <data name="StartKanturuEventChatCommandPlugIn_Description" xml:space="preserve">
+    <value>处理 /startkanturu，在下一个允许的时机开启坎特鲁副本。</value>
+  </data>
+  <data name="TeleportChatCommandPlugIn_Name" xml:space="preserve">
+    <value>坐标瞬移命令</value>
+  </data>
+  <data name="TeleportChatCommandPlugIn_Description" xml:space="preserve">
+    <value>处理 /teleport &lt;x&gt; &lt;y&gt;，将游戏管理员传送至指定坐标。</value>
+  </data>
+  <data name="TraceChatCommandPlugIn_Name" xml:space="preserve">
+    <value>追踪玩家命令</value>
+  </data>
+  <data name="TraceChatCommandPlugIn_Description" xml:space="preserve">
+    <value>处理 /trace &lt;char&gt;，将游戏管理员传送至指定角色所在位置。</value>
+  </data>
+  <data name="TrackChatCommandPlugIn_Name" xml:space="preserve">
+    <value>召来玩家命令</value>
+  </data>
+  <data name="TrackChatCommandPlugIn_Description" xml:space="preserve">
+    <value>处理 /track &lt;char&gt;，将指定玩家传送至游戏管理员所在位置。</value>
+  </data>
+  <data name="UnBanAccChatCommandPlugIn_Name" xml:space="preserve">
+    <value>解封账号命令</value>
+  </data>
+  <data name="UnBanAccChatCommandPlugIn_Description" xml:space="preserve">
+    <value>处理 /unbanacc &lt;acc&gt;，解除指定游戏账号的封禁。</value>
+  </data>
+  <data name="UnBanCharChatCommandPlugIn_Name" xml:space="preserve">
+    <value>解封角色账号命令</value>
+  </data>
+  <data name="UnBanCharChatCommandPlugIn_Description" xml:space="preserve">
+    <value>处理 /unbanchar &lt;char&gt;，解除指定角色所属账号的封禁。</value>
+  </data>
+  <data name="UnHideChatCommandPlugIn_Name" xml:space="preserve">
+    <value>解除隐身命令</value>
+  </data>
+  <data name="UnHideChatCommandPlugIn_Description" xml:space="preserve">
+    <value>处理 /unhide，使其他玩家重新看到自己。</value>
+  </data>
+  <data name="WalkMonsterChatCommand_Name" xml:space="preserve">
+    <value>受控怪物行走命令</value>
+  </data>
+  <data name="WalkMonsterChatCommand_Description" xml:space="preserve">
+    <value>处理 /walkmonster &lt;id&gt; &lt;x&gt; &lt;y&gt;，让此前创建、可由游戏管理员远程控制的怪物走向指定坐标。</value>
+  </data>
+  <data name="GoldenInvasionPlugIn_Name" xml:space="preserve">
+    <value>黄金部队入侵</value>
+  </data>
+  <data name="GoldenInvasionPlugIn_Description" xml:space="preserve">
+    <value>处理黄金部队入侵活动。</value>
+  </data>
+  <data name="RedDragonInvasionPlugIn_Name" xml:space="preserve">
+    <value>红龙入侵</value>
+  </data>
+  <data name="RedDragonInvasionPlugIn_Description" xml:space="preserve">
+    <value>处理红龙入侵活动。</value>
+  </data>
+  <data name="HappyHourPlugIn_Name" xml:space="preserve">
+    <value>欢乐时光</value>
+  </data>
+  <data name="HappyHourPlugIn_Description" xml:space="preserve">
+    <value>处理欢乐时光活动。</value>
+  </data>
+  <data name="UnlockDarkLordAtLevel250_Name" xml:space="preserve">
+    <value>250 级解锁圣导师</value>
+  </data>
+  <data name="UnlockDarkLordAtLevel250_Description" xml:space="preserve">
+    <value>账号中首个角色达到 250 级时解锁圣导师职业。</value>
+  </data>
+  <data name="UnlockMagicGladiatorAtLevel220_Name" xml:space="preserve">
+    <value>220 级解锁魔剑士</value>
+  </data>
+  <data name="UnlockMagicGladiatorAtLevel220_Description" xml:space="preserve">
+    <value>账号中首个角色达到 220 级时解锁魔剑士职业。</value>
+  </data>
+  <data name="UnlockRageFighterAtLevel150_Name" xml:space="preserve">
+    <value>150 级解锁格斗家</value>
+  </data>
+  <data name="UnlockRageFighterAtLevel150_Description" xml:space="preserve">
+    <value>账号中首个角色达到 150 级时解锁格斗家职业。</value>
+  </data>
+  <data name="UnlockSummonerAtLevel1_Name" xml:space="preserve">
+    <value>1 级解锁召唤术师</value>
+  </data>
+  <data name="UnlockSummonerAtLevel1_Description" xml:space="preserve">
+    <value>账号中首个角色达到 1 级时解锁召唤术师职业。</value>
+  </data>
+  <data name="WanderingMerchantsPlugIn_Name" xml:space="preserve">
+    <value>流浪商人</value>
+  </data>
+  <data name="WanderingMerchantsPlugIn_Description" xml:space="preserve">
+    <value>生成和移动流浪商人。</value>
+  </data>
+  <data name="PlayerLosesMoneyAfterDeathPlugIn_Name" xml:space="preserve">
+    <value>死亡金币损失</value>
+  </data>
+  <data name="PlayerLosesMoneyAfterDeathPlugIn_Description" xml:space="preserve">
+    <value>玩家被怪物击杀后扣除金币（Zen）。</value>
+  </data>
+  <data name="LearnablesConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>技能学习物品使用</value>
+  </data>
+  <data name="LearnablesConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理技能学习物品的消耗，例如魔法书和技能石。</value>
+  </data>
+  <data name="TargetedSkillDefaultPlugin_Name" xml:space="preserve">
+    <value>指向技能默认处理</value>
+  </data>
+  <data name="TargetedSkillDefaultPlugin_Description" xml:space="preserve">
+    <value>为指向技能提供默认的兜底处理。</value>
+  </data>
+  <data name="AddStatChatCommandPlugIn_Name" xml:space="preserve">
+    <value>分配属性点命令</value>
+  </data>
+  <data name="AddStatChatCommandPlugIn_Description" xml:space="preserve">
+    <value>处理 /add (ene|agi|vit|str|cmd) (amount)，为角色的指定属性分配指定数量的属性点。</value>
+  </data>
+  <data name="ClearInventoryChatCommandPlugIn_Name" xml:space="preserve">
+    <value>清空背包命令</value>
+  </data>
+  <data name="ClearInventoryChatCommandPlugIn_Description" xml:space="preserve">
+    <value>清空背包。用法：/clearinv [character]，角色参数可省略。</value>
+  </data>
+  <data name="GetLevelChatCommandPlugIn_Name" xml:space="preserve">
+    <value>查询等级命令</value>
+  </data>
+  <data name="GetLevelChatCommandPlugIn_Description" xml:space="preserve">
+    <value>查询玩家的等级。用法：/getlevel [character]，角色参数可省略。</value>
+  </data>
+  <data name="GetLevelUpPointsChatCommandPlugIn_Name" xml:space="preserve">
+    <value>查询升级属性点命令</value>
+  </data>
+  <data name="GetLevelUpPointsChatCommandPlugIn_Description" xml:space="preserve">
+    <value>查询玩家的升级属性点。用法：/getleveluppoints [character]，角色参数可省略。</value>
+  </data>
+  <data name="GetMasterLevelChatCommandPlugIn_Name" xml:space="preserve">
+    <value>查询大师等级命令</value>
+  </data>
+  <data name="GetMasterLevelChatCommandPlugIn_Description" xml:space="preserve">
+    <value>查询玩家的大师等级。用法：/getmasterlevel [character]，角色参数可省略。</value>
+  </data>
+  <data name="GetMasterLevelUpPointsChatCommandPlugIn_Name" xml:space="preserve">
+    <value>查询大师技能点命令</value>
+  </data>
+  <data name="GetMasterLevelUpPointsChatCommandPlugIn_Description" xml:space="preserve">
+    <value>查询玩家的大师技能点。用法：/getmasterleveluppoints [character]，角色参数可省略。</value>
+  </data>
+  <data name="GetMoneyChatCommandPlugIn_Name" xml:space="preserve">
+    <value>查询金币命令</value>
+  </data>
+  <data name="GetMoneyChatCommandPlugIn_Description" xml:space="preserve">
+    <value>查询玩家的金币。用法：/getmoney [character]，角色参数可省略。</value>
+  </data>
+  <data name="GetResetsChatCommandPlugIn_Name" xml:space="preserve">
+    <value>查询转生次数命令</value>
+  </data>
+  <data name="GetResetsChatCommandPlugIn_Description" xml:space="preserve">
+    <value>查询玩家的转生次数。用法：/getresets [character]，角色参数可省略。</value>
+  </data>
+  <data name="GetStatChatCommandPlugIn_Name" xml:space="preserve">
+    <value>查询属性点命令</value>
+  </data>
+  <data name="GetStatChatCommandPlugIn_Description" xml:space="preserve">
+    <value>查询属性点。用法：/get (ene|agi|vit|str|cmd) [character]，角色参数可省略。</value>
+  </data>
+  <data name="SetLevelChatCommandPlugIn_Name" xml:space="preserve">
+    <value>设置等级命令</value>
+  </data>
+  <data name="SetLevelChatCommandPlugIn_Description" xml:space="preserve">
+    <value>设置玩家的等级。用法：/setlevel (level) [character]，角色参数可省略。</value>
+  </data>
+  <data name="SetLevelUpPointsChatCommandPlugIn_Name" xml:space="preserve">
+    <value>设置升级属性点命令</value>
+  </data>
+  <data name="SetLevelUpPointsChatCommandPlugIn_Description" xml:space="preserve">
+    <value>设置玩家的升级属性点。用法：/setleveluppoints (points) [character]，角色参数可省略。</value>
+  </data>
+  <data name="SetMasterLevelChatCommandPlugIn_Name" xml:space="preserve">
+    <value>设置大师等级命令</value>
+  </data>
+  <data name="SetMasterLevelChatCommandPlugIn_Description" xml:space="preserve">
+    <value>设置玩家的大师等级。用法：/setmasterlevel (level) [character]，角色参数可省略。</value>
+  </data>
+  <data name="SetMasterLevelUpPointsChatCommandPlugIn_Name" xml:space="preserve">
+    <value>设置大师技能点命令</value>
+  </data>
+  <data name="SetMasterLevelUpPointsChatCommandPlugIn_Description" xml:space="preserve">
+    <value>设置玩家的大师技能点。用法：/setmasterleveluppoints (points) [character]，角色参数可省略。</value>
+  </data>
+  <data name="SetMoneyChatCommandPlugIn_Name" xml:space="preserve">
+    <value>设置金币命令</value>
+  </data>
+  <data name="SetMoneyChatCommandPlugIn_Description" xml:space="preserve">
+    <value>设置玩家的金币。用法：/setmoney (amount) [character]，角色参数可省略。</value>
+  </data>
+  <data name="SetResetsChatCommandPlugIn_Name" xml:space="preserve">
+    <value>设置转生次数命令</value>
+  </data>
+  <data name="SetResetsChatCommandPlugIn_Description" xml:space="preserve">
+    <value>设置玩家的转生次数。用法：/setresets (resets) [character]，角色参数可省略。</value>
+  </data>
+  <data name="SetStatChatCommandPlugIn_Name" xml:space="preserve">
+    <value>设置属性点命令</value>
+  </data>
+  <data name="SetStatChatCommandPlugIn_Description" xml:space="preserve">
+    <value>设置属性点。用法：/set (ene|agi|vit|str|cmd) (amount) [character]，角色参数可省略。</value>
+  </data>
+  <data name="UpgradeItemLevelConfiguration_SuccessRatePercentage_Name" xml:space="preserve">
+    <value>成功率（%）</value>
+  </data>
+  <data name="UpgradeItemLevelConfiguration_SuccessRatePercentage_Description" xml:space="preserve">
+    <value>物品强化升级的成功率，以百分比表示。</value>
+  </data>
+  <data name="UpgradeItemLevelConfiguration_SuccessRateBonusWithLuckPercentage_Name" xml:space="preserve">
+    <value>幸运属性增加的成功率（%）</value>
+  </data>
+  <data name="UpgradeItemLevelConfiguration_SuccessRateBonusWithLuckPercentage_Description" xml:space="preserve">
+    <value>物品具有幸运属性时额外增加的成功率。</value>
+  </data>
+  <data name="UpgradeItemLevelConfiguration_MinimumLevel_Name" xml:space="preserve">
+    <value>最低物品强化等级</value>
+  </data>
+  <data name="UpgradeItemLevelConfiguration_MinimumLevel_Description" xml:space="preserve">
+    <value>使用宝石前，物品必须达到的最低强化等级。</value>
+  </data>
+  <data name="UpgradeItemLevelConfiguration_MaximumLevel_Name" xml:space="preserve">
+    <value>最高物品强化等级</value>
+  </data>
+  <data name="UpgradeItemLevelConfiguration_MaximumLevel_Description" xml:space="preserve">
+    <value>允许使用宝石的最高物品强化等级。</value>
+  </data>
+  <data name="UpgradeItemLevelConfiguration_LevelAmount_Name" xml:space="preserve">
+    <value>增加的强化等级</value>
+  </data>
+  <data name="UpgradeItemLevelConfiguration_LevelAmount_Description" xml:space="preserve">
+    <value>尝试为物品增加强化等级的次数，最高不超过允许的强化等级。</value>
+  </data>
+  <data name="UpgradeItemLevelConfiguration_ResetToLevel0WhenFailMinLevel_Name" xml:space="preserve">
+    <value>失败归零的最低强化等级</value>
+  </data>
+  <data name="UpgradeItemLevelConfiguration_ResetToLevel0WhenFailMinLevel_Description" xml:space="preserve">
+    <value>达到此强化等级后，强化失败会使物品的强化等级归零。</value>
+  </data>
+  <data name="UpgradeItemLevelConfiguration_AllowedItems_Name" xml:space="preserve">
+    <value>允许强化的物品</value>
+  </data>
+  <data name="UpgradeItemLevelConfiguration_AllowedItems_Description" xml:space="preserve">
+    <value>指定允许强化的物品；留空时允许除“禁止强化的物品”之外的所有物品。</value>
+  </data>
+  <data name="UpgradeItemLevelConfiguration_DisallowedItems_Name" xml:space="preserve">
+    <value>禁止强化的物品</value>
+  </data>
+  <data name="UpgradeItemLevelConfiguration_DisallowedItems_Description" xml:space="preserve">
+    <value>指定禁止强化的物品。</value>
+  </data>
+  <data name="ClearInventoryConfiguration_MoneyCost_Name" xml:space="preserve">
+    <value>金币费用</value>
+  </data>
+  <data name="ClearInventoryConfiguration_MoneyCost_Description" xml:space="preserve">
+    <value>清空背包所需的金币，游戏管理员除外。默认值为 0。</value>
+  </data>
+  <data name="ClearInventoryConfiguration_RequireConfirmation_Name" xml:space="preserve">
+    <value>需要二次确认</value>
+  </data>
+  <data name="ClearInventoryConfiguration_RequireConfirmation_Description" xml:space="preserve">
+    <value>启用后，玩家需在 10 秒内再次执行命令才能确认清空背包，游戏管理员除外。</value>
+  </data>
+  <data name="ClearInventoryConfiguration_ConfirmationMessage_Name" xml:space="preserve">
+    <value>确认提示</value>
+  </data>
+  <data name="ClearInventoryConfiguration_ConfirmationMessage_Description" xml:space="preserve">
+    <value>提示玩家在 10 秒内再次执行命令以确认清空背包的消息。</value>
+  </data>
+  <data name="ClearInventoryConfiguration_NotEnoughMoneyMessage_Name" xml:space="preserve">
+    <value>金币不足提示</value>
+  </data>
+  <data name="ClearInventoryConfiguration_NotEnoughMoneyMessage_Description" xml:space="preserve">
+    <value>玩家金币不足、无法执行命令时显示的消息。</value>
+  </data>
+  <data name="ClearInventoryConfiguration_InventoryClearedMessage_Name" xml:space="preserve">
+    <value>背包已清空提示</value>
+  </data>
+  <data name="ClearInventoryConfiguration_InventoryClearedMessage_Description" xml:space="preserve">
+    <value>背包清空后显示的消息。</value>
+  </data>
+  <data name="NpcChatCommandConfiguration_OpenMerchantNpc_Name" xml:space="preserve">
+    <value>NPC 编号</value>
+  </data>
+  <data name="NpcChatCommandConfiguration_OpenMerchantNpc_Description" xml:space="preserve">
+    <value>打开商店所使用的 NPC 编号，默认值为 253（药水商人）。</value>
+  </data>
+  <data name="NpcChatCommandConfiguration_MinimumVipLevel_Name" xml:space="preserve">
+    <value>最低 VIP 等级</value>
+  </data>
+  <data name="NpcChatCommandConfiguration_MinimumVipLevel_Description" xml:space="preserve">
+    <value>使用命令所需的最低 VIP 等级，默认值为 0。</value>
+  </data>
+  <data name="NpcChatCommandConfiguration_InsufficientVipLevelMessage_Name" xml:space="preserve">
+    <value>VIP 等级不足提示</value>
+  </data>
+  <data name="NpcChatCommandConfiguration_InsufficientVipLevelMessage_Description" xml:space="preserve">
+    <value>玩家未达到命令要求的 VIP 等级时显示的消息，游戏管理员除外。</value>
+  </data>
+  <data name="OpenWarehouseChatCommandConfiguration_MinimumVipLevel_Name" xml:space="preserve">
+    <value>最低 VIP 等级</value>
+  </data>
+  <data name="OpenWarehouseChatCommandConfiguration_MinimumVipLevel_Description" xml:space="preserve">
+    <value>使用命令所需的最低 VIP 等级，游戏管理员除外。默认值为 0。</value>
+  </data>
+  <data name="OpenWarehouseChatCommandConfiguration_InsufficientVipLevelMessage_Name" xml:space="preserve">
+    <value>VIP 等级不足提示</value>
+  </data>
+  <data name="OpenWarehouseChatCommandConfiguration_InsufficientVipLevelMessage_Description" xml:space="preserve">
+    <value>玩家未达到命令要求的 VIP 等级时显示的消息，游戏管理员除外。</value>
+  </data>
+  <data name="ShowNpcIdsChatCommand_ShowNpcIdsChatCommand_Name" xml:space="preserve">
+    <value>显示 NPC 编号命令</value>
+  </data>
+  <data name="ShowNpcIdsChatCommand_ShowNpcIdsChatCommand_Description" xml:space="preserve">
+    <value>处理 /showids。</value>
+  </data>
+  <data name="MuHelperConfiguration_CostPerStage_Name" xml:space="preserve">
+    <value>各阶段费用系数</value>
+  </data>
+  <data name="MuHelperConfiguration_CostPerStage_Description" xml:space="preserve">
+    <value>每个扣费间隔按此系数乘以角色总等级计算费用。</value>
+  </data>
+  <data name="MuHelperConfiguration_PayInterval_Name" xml:space="preserve">
+    <value>扣费间隔</value>
+  </data>
+  <data name="MuHelperConfiguration_StageInterval_Name" xml:space="preserve">
+    <value>阶段间隔</value>
+  </data>
+  <data name="MuHelperConfiguration_StageInterval_Description" xml:space="preserve">
+    <value>每经过一个间隔进入下一阶段，费用通常随阶段增加。</value>
+  </data>
+  <data name="MuHelperConfiguration_MinLevel_Name" xml:space="preserve">
+    <value>最低角色等级</value>
+  </data>
+  <data name="MuHelperConfiguration_MaxLevel_Name" xml:space="preserve">
+    <value>最高角色等级</value>
+  </data>
+  <data name="RecoverConsumeHandlerConfiguration_TotalRecoverPercentage_Name" xml:space="preserve">
+    <value>总恢复比例</value>
+  </data>
+  <data name="RecoverConsumeHandlerConfiguration_RecoverPercentageIncreaseByPotionLevel_Name" xml:space="preserve">
+    <value>每级药水增加的恢复比例</value>
+  </data>
+  <data name="RecoverConsumeHandlerConfiguration_RecoverDelayReductionByPotionLevel_Name" xml:space="preserve">
+    <value>每级药水减少的恢复延迟比例</value>
+  </data>
+  <data name="RecoverConsumeHandlerConfiguration_RecoverDelayReductionByPotionLevel_Description" xml:space="preserve">
+    <value>取值大于 0 且小于 1。若设为 1，则药水从 1 级起便会瞬间恢复。</value>
+  </data>
+  <data name="RecoverConsumeHandlerConfiguration_AdditionalRecoverMinusCharacterLevel_Name" xml:space="preserve">
+    <value>额外恢复基数（减去角色等级）</value>
+  </data>
+  <data name="RecoverConsumeHandlerConfiguration_AdditionalRecoverMinusCharacterLevel_Description" xml:space="preserve">
+    <value>额外恢复量的基数，实际计算时减去角色等级。</value>
+  </data>
+  <data name="RecoverConsumeHandlerConfiguration_CooldownTime_Name" xml:space="preserve">
+    <value>使用冷却时间</value>
+  </data>
+  <data name="RecoverConsumeHandlerConfiguration_CooldownTime_Description" xml:space="preserve">
+    <value>再次使用物品前需要等待的冷却时间。</value>
+  </data>
+  <data name="RecoverConsumeHandlerConfiguration_RecoverSteps_Name" xml:space="preserve">
+    <value>恢复步骤</value>
+  </data>
+  <data name="RecoverConsumeHandlerConfiguration_RecoverSteps_Description" xml:space="preserve">
+    <value>未配置恢复步骤时立即完成恢复。</value>
+  </data>
+  <data name="SelfDefensePlugInConfiguration_SelfDefenseTimeOut_Name" xml:space="preserve">
+    <value>正当防卫持续时间</value>
+  </data>
+  <data name="QuestMonsterKillCountPlugInConfiguration_Message_Name" xml:space="preserve">
+    <value>提示消息</value>
+  </data>
+  <data name="PlayerLosesMoneyAfterDeathPlugInConfiguration_LossesPerLevel_Name" xml:space="preserve">
+    <value>各等级损失配置</value>
+  </data>
+  <data name="PlayerLosesMoneyAfterDeathPlugInConfiguration_MinimumLevel_Name" xml:space="preserve">
+    <value>最低等级</value>
+  </data>
+  <data name="PlayerLosesMoneyAfterDeathPlugInConfiguration_IsMaster_Name" xml:space="preserve">
+    <value>大师等级</value>
+  </data>
+  <data name="PlayerLosesMoneyAfterDeathPlugInConfiguration_InventoryMoneyLossPercentage_Name" xml:space="preserve">
+    <value>背包金币损失比例（%）</value>
+  </data>
+  <data name="PlayerLosesMoneyAfterDeathPlugInConfiguration_VaultMoneyLossPercentage_Name" xml:space="preserve">
+    <value>仓库金币损失比例（%）</value>
+  </data>
+  <data name="PlayerLosesExperienceAfterDeathPlugInConfiguration_LossesPerLevel_Name" xml:space="preserve">
+    <value>各等级损失配置</value>
+  </data>
+  <data name="PlayerLosesExperienceAfterDeathPlugInConfiguration_MinimumLevel_Name" xml:space="preserve">
+    <value>最低等级</value>
+  </data>
+  <data name="PlayerLosesExperienceAfterDeathPlugInConfiguration_IsMaster_Name" xml:space="preserve">
+    <value>大师等级</value>
+  </data>
+  <data name="PlayerLosesExperienceAfterDeathPlugInConfiguration_Losses_Name" xml:space="preserve">
+    <value>各阶段损失配置</value>
+  </data>
+  <data name="PlayerLosesExperienceAfterDeathPlugInConfiguration_State_Name" xml:space="preserve">
+    <value>状态</value>
+  </data>
+  <data name="PlayerLosesExperienceAfterDeathPlugInConfiguration_ExperienceLossPercentage_Name" xml:space="preserve">
+    <value>经验损失比例（%）</value>
+  </data>
+  <data name="PeriodicSaveProgressPlugInConfiguration_Interval_Name" xml:space="preserve">
+    <value>保存间隔</value>
+  </data>
+  <data name="PeriodicTaskConfiguration_Timetable_Name" xml:space="preserve">
+    <value>时间安排</value>
+  </data>
+  <data name="PeriodicTaskConfiguration_PreStartMessageDelay_Name" xml:space="preserve">
+    <value>开始前消息延迟</value>
+  </data>
+  <data name="PeriodicTaskConfiguration_TaskDuration_Name" xml:space="preserve">
+    <value>最短活动持续时间</value>
+  </data>
+  <data name="PeriodicTaskConfiguration_StartMessage_Name" xml:space="preserve">
+    <value>开始公告</value>
+  </data>
+  <data name="PeriodicTaskConfiguration_StartMessage_Description" xml:space="preserve">
+    <value>活动开始时在游戏中以金色公告显示的文字。</value>
+  </data>
+  <data name="PeriodicTaskConfiguration_EndMessage_Name" xml:space="preserve">
+    <value>结束公告</value>
+  </data>
+  <data name="PeriodicTaskConfiguration_EndMessage_Description" xml:space="preserve">
+    <value>活动结束时在游戏中以金色公告显示的文字。</value>
+  </data>
+  <data name="ResetConfiguration_ResetLimit_Name" xml:space="preserve">
+    <value>转生次数上限</value>
+  </data>
+  <data name="ResetConfiguration_RequiredLevel_Name" xml:space="preserve">
+    <value>所需等级</value>
+  </data>
+  <data name="ResetConfiguration_LevelAfterReset_Name" xml:space="preserve">
+    <value>转生后的等级</value>
+  </data>
+  <data name="ResetConfiguration_RequiredMoney_Name" xml:space="preserve">
+    <value>所需金币</value>
+  </data>
+  <data name="ResetConfiguration_MultiplyRequiredMoneyByResetCount_Name" xml:space="preserve">
+    <value>金币费用乘以转生次数</value>
+  </data>
+  <data name="ResetConfiguration_ResetStats_Name" xml:space="preserve">
+    <value>基础属性重置为职业初始值</value>
+  </data>
+  <data name="ResetConfiguration_PointsPerReset_Name" xml:space="preserve">
+    <value>每次转生获得的属性点</value>
+  </data>
+  <data name="ResetConfiguration_MultiplyPointsByResetCount_Name" xml:space="preserve">
+    <value>属性点乘以转生次数</value>
+  </data>
+  <data name="ResetConfiguration_ReplacePointsPerReset_Name" xml:space="preserve">
+    <value>用转生总点数替换升级属性点</value>
+  </data>
+  <data name="ResetConfiguration_MoveHome_Name" xml:space="preserve">
+    <value>返回出生地</value>
+  </data>
+  <data name="ResetConfiguration_LogOut_Name" xml:space="preserve">
+    <value>退出游戏</value>
+  </data>
+  <data name="MiniGameStartConfiguration_EntranceOpenedMessage_Name" xml:space="preserve">
+    <value>入口开放公告</value>
+  </data>
+  <data name="MiniGameStartConfiguration_EntranceClosedMessage_Name" xml:space="preserve">
+    <value>入口关闭公告</value>
+  </data>
+  <data name="HappyHourConfiguration_ExperienceMultiplier_Name" xml:space="preserve">
+    <value>经验倍率</value>
+  </data>
+  <data name="WanderingMerchantsConfiguration_MinimumSpawnDuration_Name" xml:space="preserve">
+    <value>最短出现时间</value>
+  </data>
+  <data name="WanderingMerchantsConfiguration_MaximumSpawnDuration_Name" xml:space="preserve">
+    <value>最长出现时间</value>
+  </data>
+  <data name="BaseInvasionPlugIn_DefaultStartMessage" xml:space="preserve">
+    <value>[{mapName}] 怪物入侵！</value>
+  </data>
+  <data name="OfflineLevelingChatCommandPlugIn_Name" xml:space="preserve">
+    <value>离线练级命令</value>
+  </data>
+  <data name="OfflineLevelingChatCommandPlugIn_Description" xml:space="preserve">
+    <value>允许玩家通过 /offlevel 开始离线练级。客户端断开后角色仍留在游戏世界中，玩家重新登录时停止离线练级。</value>
+  </data>
+  <data name="PartyAutoRejoinPlugIn_Name" xml:space="preserve">
+    <value>自动重返队伍</value>
+  </data>
+  <data name="PartyAutoRejoinPlugIn_Description" xml:space="preserve">
+    <value>玩家进入游戏时自动重新加入之前的队伍。</value>
+  </data>
+  <data name="MonsterAttributeScaler_Name" xml:space="preserve">
+    <value>怪物属性调整</value>
+  </data>
+  <data name="MonsterAttributeScaler_Description" xml:space="preserve">
+    <value>按可配置的百分比增加所有怪物的基础属性。</value>
+  </data>
+  <data name="StatResetFeaturePlugIn_Name" xml:space="preserve">
+    <value>属性重置</value>
+  </data>
+  <data name="StatResetFeaturePlugIn_Description" xml:space="preserve">
+    <value>提供属性重置功能的配置。</value>
+  </data>
+  <data name="ResetStatsChatCommandPlugIn_Name" xml:space="preserve">
+    <value>重置属性命令</value>
+  </data>
+  <data name="ResetStatsChatCommandPlugIn_Description" xml:space="preserve">
+    <value>处理 /resetstats。</value>
+  </data>
+  <data name="StatResetConfiguration_RequiredLevel_Name" xml:space="preserve">
+    <value>所需等级</value>
+  </data>
+  <data name="StatResetConfiguration_RequiredMoney_Name" xml:space="preserve">
+    <value>所需金币</value>
+  </data>
+  <data name="StatResetConfiguration_RequiredResetItem_Name" xml:space="preserve">
+    <value>重置所需物品</value>
+  </data>
+  <data name="StatResetConfiguration_ChatCommandEnabled_Name" xml:space="preserve">
+    <value>启用聊天命令</value>
+  </data>
+  <data name="StatResetConfiguration_MoveHome_Name" xml:space="preserve">
+    <value>返回出生地</value>
+  </data>
+  <data name="StatResetConfiguration_LogOut_Name" xml:space="preserve">
+    <value>退出游戏</value>
+  </data>
+  <data name="CastleSiegeLifeStoneConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>攻城战生命石使用</value>
+  </data>
+  <data name="CastleSiegeLifeStoneConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>攻城战期间成功放置生命石后消耗该物品。</value>
+  </data>
+  <data name="DoppelgangerRewardChestPlugIn_Name" xml:space="preserve">
+    <value>镜像世界奖励宝箱</value>
+  </data>
+  <data name="DoppelgangerRewardChestPlugIn_Description" xml:space="preserve">
+    <value>玩家与宝箱交互时打开镜像世界的奖励宝箱。</value>
+  </data>
+  <data name="SignOfDimensionsStackedPlugIn_Name" xml:space="preserve">
+    <value>次元碎片合成</value>
+  </data>
+  <data name="SignOfDimensionsStackedPlugIn_Description" xml:space="preserve">
+    <value>将叠满的次元碎片转换为次元之镜。</value>
+  </data>
+  <data name="DoppelgangerFeaturePlugIn_Name" xml:space="preserve">
+    <value>镜像世界</value>
+  </data>
+  <data name="DoppelgangerFeaturePlugIn_Description" xml:space="preserve">
+    <value>配置镜像世界的怪物、行进路线和倍率等内容。</value>
+  </data>
+  <data name="BotConfiguration_Display1_Name" xml:space="preserve">
+    <value>启用</value>
+  </data>
+  <data name="BotConfiguration_Display1_Description" xml:space="preserve">
+    <value>启用后，服务器启动时生成机器人。</value>
+  </data>
+  <data name="BotConfiguration_Display2_Name" xml:space="preserve">
+    <value>重建机器人</value>
+  </data>
+  <data name="BotConfiguration_Display2_Description" xml:space="preserve">
+    <value>下次启动时删除所有机器人账号和角色并重新生成，完成后自动关闭此选项。</value>
+  </data>
+  <data name="BotConfiguration_Display3_Name" xml:space="preserve">
+    <value>清除机器人</value>
+  </data>
+  <data name="BotConfiguration_Display3_Description" xml:space="preserve">
+    <value>删除所有机器人账号和角色并关闭机器人功能，不再生成新机器人，完成后自动关闭此选项。</value>
+  </data>
+  <data name="BotConfiguration_Display4_Name" xml:space="preserve">
+    <value>以新角色状态开始</value>
+  </data>
+  <data name="BotConfiguration_Display4_Description" xml:space="preserve">
+    <value>新生成的机器人以 1 级、未强化的初始装备开始，如同新建玩家角色，不使用随机等级、转生记录和强化装备。</value>
+  </data>
+  <data name="BotConfiguration_Display5_Name" xml:space="preserve">
+    <value>轮换在线</value>
+  </data>
+  <data name="BotConfiguration_Display5_Description" xml:space="preserve">
+    <value>机器人按时段轮流上下线，深夜在线最少、晚间最多，不再全天全部在线。</value>
+  </data>
+  <data name="BotConfiguration_Display6_Name" xml:space="preserve">
+    <value>最低在线比例（%）</value>
+  </data>
+  <data name="BotConfiguration_Display6_Description" xml:space="preserve">
+    <value>最冷清时段保持在线的机器人占比；设为 100 时不产生轮换效果。</value>
+  </data>
+  <data name="BotConfiguration_Display7_Name" xml:space="preserve">
+    <value>账号数量</value>
+  </data>
+  <data name="BotConfiguration_Display7_Description" xml:space="preserve">
+    <value>需要维持的机器人账号数量。</value>
+  </data>
+  <data name="BotConfiguration_Display8_Name" xml:space="preserve">
+    <value>每个账号的角色数</value>
+  </data>
+  <data name="BotConfiguration_Display8_Description" xml:space="preserve">
+    <value>每个机器人账号拥有的角色数，最多 5 个。</value>
+  </data>
+  <data name="BotConfiguration_Display9_Name" xml:space="preserve">
+    <value>机器人名额占比（%）</value>
+  </data>
+  <data name="BotConfiguration_Display9_Description" xml:space="preserve">
+    <value>机器人最多可占用服务器玩家容量的比例，其余名额留给真人玩家。</value>
+  </data>
+  <data name="BotConfiguration_Display10_Name" xml:space="preserve">
+    <value>机器人支付转生费用</value>
+  </data>
+  <data name="BotConfiguration_Display10_Description" xml:space="preserve">
+    <value>启用后，机器人转生时与真人玩家一样支付配置的金币和物品费用；默认免费转生。</value>
+  </data>
+  <data name="BotConfiguration_Display11_Name" xml:space="preserve">
+    <value>每种宝石储备量</value>
+  </data>
+  <data name="BotConfiguration_Display11_Description" xml:space="preserve">
+    <value>机器人分别保留的祝福、灵魂、生命宝石数量；超过后停止拾取并出售多余部分。</value>
+  </data>
+  <data name="BotConfiguration_Display12_Name" xml:space="preserve">
+    <value>药水储备量（使用次数）</value>
+  </data>
+  <data name="BotConfiguration_Display12_Description" xml:space="preserve">
+    <value>机器人在商店补充治疗和魔力药水时，分别补足的可使用次数。</value>
+  </data>
+  <data name="BotConfiguration_Display13_Name" xml:space="preserve">
+    <value>额外托管账号</value>
+  </data>
+  <data name="BotConfiguration_Display13_Description" xml:space="preserve">
+    <value>除自动生成的机器人外，额外托管为机器人的现有账号登录名，以逗号分隔。</value>
+  </data>
+  <data name="BotSelfDefensePlugIn_Display1_Name" xml:space="preserve">
+    <value>机器人自卫</value>
+  </data>
+  <data name="BotSelfDefensePlugIn_Display1_Description" xml:space="preserve">
+    <value>玩家攻击服务器机器人时，机器人会反击。</value>
+  </data>
+  <data name="BotRevengePlugIn_Display1_Name" xml:space="preserve">
+    <value>机器人复仇</value>
+  </data>
+  <data name="BotRevengePlugIn_Display1_Description" xml:space="preserve">
+    <value>服务器机器人返回死亡地点，向击杀自己的玩家复仇。</value>
+  </data>
+  <data name="BotSkillProgressionPlugIn_Display1_Name" xml:space="preserve">
+    <value>机器人成长</value>
+  </data>
+  <data name="BotSkillProgressionPlugIn_Display1_Description" xml:space="preserve">
+    <value>服务器机器人升级时分配属性点，并学习适合其职业和等级的新技能。</value>
+  </data>
+  <data name="BotFeaturePlugIn_Display1_Name" xml:space="preserve">
+    <value>机器人</value>
+  </data>
+  <data name="BotFeaturePlugIn_Display1_Description" xml:space="preserve">
+    <value>生成在地图上打怪的服务器机器人。配置需要托管的账号并启用此功能。</value>
+  </data>
+  <data name="MaximumConnectionsPerIpPlugIn_Display1_Name" xml:space="preserve">
+    <value>每个 IP 的最大连接数</value>
+  </data>
+  <data name="MaximumConnectionsPerIpPlugIn_Display1_Description" xml:space="preserve">
+    <value>限制同一 IP 地址的最大同时连接数。</value>
+  </data>
+  <data name="SpeedHackDetectPlugIn_Display1_Name" xml:space="preserve">
+    <value>移动与攻击加速检测</value>
+  </data>
+  <data name="SpeedHackDetectPlugIn_Display1_Description" xml:space="preserve">
+    <value>检测并阻止玩家使用移动或攻击加速作弊。</value>
+  </data>
+  <data name="KanturuGatewayPlugIn_Display1_Name" xml:space="preserve">
+    <value>坎特鲁入口机器</value>
+  </data>
+  <data name="KanturuGatewayPlugIn_Display1_Description" xml:space="preserve">
+    <value>处理坎特鲁入口机器 NPC 的副本入场交互。</value>
+  </data>
+  <data name="SymbolOfKundunStackedPlugIn_Display1_Name" xml:space="preserve">
+    <value>昆顿印记合成</value>
+  </data>
+  <data name="SymbolOfKundunStackedPlugIn_Display1_Description" xml:space="preserve">
+    <value>将叠满的昆顿印记转换为失落的地图。</value>
+  </data>
+  <data name="DuelSpawnGatePlugIn_Display1_Name" xml:space="preserve">
+    <value>决斗出生点选择</value>
+  </data>
+  <data name="DuelSpawnGatePlugIn_Display1_Description" xml:space="preserve">
+    <value>将决斗中的玩家生成在决斗区域中所属的一侧。</value>
+  </data>
+  <data name="SoccerSpawnGatePlugIn_Display1_Name" xml:space="preserve">
+    <value>战盟足球出生点选择</value>
+  </data>
+  <data name="SoccerSpawnGatePlugIn_Display1_Description" xml:space="preserve">
+    <value>将正在参加足球比赛的玩家生成在足球场上。</value>
+  </data>
+  <data name="PetExperiencePlugIn_Display1_Name" xml:space="preserve">
+    <value>宠物经验分配</value>
+  </data>
+  <data name="PetExperiencePlugIn_Display1_Description" xml:space="preserve">
+    <value>将玩家击杀所得经验的一部分分配给可培养的宠物。</value>
+  </data>
+  <data name="PeriodicInvasionConfiguration_Display1_Name" xml:space="preserve">
+    <value>强制在同一地图刷新</value>
+  </data>
+  <data name="PeriodicInvasionConfiguration_Display2_Name" xml:space="preserve">
+    <value>怪物刷新配置</value>
+  </data>
+  <data name="WhiteWizardInvasionPlugIn_Display1_Name" xml:space="preserve">
+    <value>白魔法师入侵</value>
+  </data>
+  <data name="WhiteWizardInvasionPlugIn_Display1_Description" xml:space="preserve">
+    <value>启用白魔法师入侵活动。</value>
+  </data>
+  <data name="ItemRegistrationConfiguration_Display1_Name" xml:space="preserve">
+    <value>NPC 物品登记规则</value>
+  </data>
+  <data name="ItemRegistrationConfiguration_Display1_Description" xml:space="preserve">
+    <value>配置不同 NPC 接收物品登记的规则。</value>
+  </data>
+  <data name="NpcItemRegistrationRule_Display1_Name" xml:space="preserve">
+    <value>NPC 编号</value>
+  </data>
+  <data name="NpcItemRegistrationRule_Display1_Description" xml:space="preserve">
+    <value>NPC 定义编号，例如黄金弓箭手为 236。</value>
+  </data>
+  <data name="NpcItemRegistrationRule_Display2_Name" xml:space="preserve">
+    <value>接收物品的分组</value>
+  </data>
+  <data name="NpcItemRegistrationRule_Display2_Description" xml:space="preserve">
+    <value>允许登记的物品分组，例如活动物品为 14。</value>
+  </data>
+  <data name="NpcItemRegistrationRule_Display3_Name" xml:space="preserve">
+    <value>接收物品的编号</value>
+  </data>
+  <data name="NpcItemRegistrationRule_Display3_Description" xml:space="preserve">
+    <value>允许登记的物品编号，例如蕾娜为 21。</value>
+  </data>
+  <data name="NpcItemRegistrationRule_Display4_Name" xml:space="preserve">
+    <value>所需物品数量</value>
+  </data>
+  <data name="NpcItemRegistrationRule_Display4_Description" xml:space="preserve">
+    <value>领取奖励所需登记的物品数量。</value>
+  </data>
+  <data name="NpcItemRegistrationRule_Display5_Name" xml:space="preserve">
+    <value>奖励金币</value>
+  </data>
+  <data name="NpcItemRegistrationRule_Display5_Description" xml:space="preserve">
+    <value>登记物品达到要求数量时奖励的金币。</value>
+  </data>
+  <data name="NpcItemRegistrationRule_Display6_Name" xml:space="preserve">
+    <value>奖励物品掉落组</value>
+  </data>
+  <data name="NpcItemRegistrationRule_Display6_Description" xml:space="preserve">
+    <value>用于生成物品奖励的掉落组。留空时不掉落物品，仅奖励金币。</value>
+  </data>
+  <data name="ChaosCastleStartPlugIn_Display1_Name" xml:space="preserve">
+    <value>赤色要塞定时开启</value>
+  </data>
+  <data name="ChaosCastleStartPlugIn_Display1_Description" xml:space="preserve">
+    <value>赤色要塞活动。</value>
+  </data>
+  <data name="KanturuStartPlugIn_Display1_Name" xml:space="preserve">
+    <value>坎特鲁副本定时开启</value>
+  </data>
+  <data name="KanturuStartPlugIn_Display1_Description" xml:space="preserve">
+    <value>坎特鲁提炼之塔活动。</value>
+  </data>
+  <data name="BloodCastleStartPlugIn_Display1_Name" xml:space="preserve">
+    <value>血色城堡定时开启</value>
+  </data>
+  <data name="BloodCastleStartPlugIn_Display1_Description" xml:space="preserve">
+    <value>血色城堡活动。</value>
+  </data>
+  <data name="DevilSquareStartPlugIn_Display1_Name" xml:space="preserve">
+    <value>恶魔广场定时开启</value>
+  </data>
+  <data name="DevilSquareStartPlugIn_Display1_Description" xml:space="preserve">
+    <value>恶魔广场活动。</value>
+  </data>
+  <data name="PKClearChatCommandPlugIn_Display1_Name" xml:space="preserve">
+    <value>每点杀人数清除费用（金币）</value>
+  </data>
+  <data name="PKClearChatCommandPlugIn_Display1_Description" xml:space="preserve">
+    <value>清除一点杀人数所需的金币。</value>
+  </data>
+  <data name="PKClearChatCommandPlugIn_Display2_Name" xml:space="preserve">
+    <value>允许普通玩家使用</value>
+  </data>
+  <data name="PKClearChatCommandPlugIn_Display2_Description" xml:space="preserve">
+    <value>允许普通玩家支付金币，使用此命令清除自身 PK 状态。</value>
+  </data>
+  <data name="LostMapDroppedPlugIn_Display1_Name" xml:space="preserve">
+    <value>失落的地图入口生成</value>
+  </data>
+  <data name="LostMapDroppedPlugIn_Display1_Description" xml:space="preserve">
+    <value>处理丢弃失落的地图的操作，创建通往卡利玛神庙的入口。</value>
+  </data>
+  <data name="ItemBoxDroppedPlugIn_Display1_Name" xml:space="preserve">
+    <value>宝箱掉落处理</value>
+  </data>
+  <data name="ItemBoxDroppedPlugIn_Display1_Description" xml:space="preserve">
+    <value>处理丢弃宝箱的操作，例如昆顿宝箱。</value>
+  </data>
+  <data name="ResetConfiguration_Display1_Name" xml:space="preserve">
+    <value>转生所需物品</value>
+  </data>
+  <data name="ResetConfiguration_Display2_Name" xml:space="preserve">
+    <value>物品费用档位</value>
+  </data>
+  <data name="ResetConfiguration_Display3_Name" xml:space="preserve">
+    <value>属性点档位</value>
+  </data>
+  <data name="ResetConfiguration_Display4_Name" xml:space="preserve">
+    <value>最低转生次数</value>
+  </data>
+  <data name="ResetConfiguration_Display5_Name" xml:space="preserve">
+    <value>发放属性点</value>
+  </data>
+  <data name="ResetConfiguration_Display6_Name" xml:space="preserve">
+    <value>最低转生次数</value>
+  </data>
+  <data name="ResetConfiguration_Display7_Name" xml:space="preserve">
+    <value>所需物品数量</value>
+  </data>
+  <data name="ActorHitRecorderPlugIn_Display1_Name" xml:space="preserve">
+    <value>测试角色攻击记录</value>
+  </data>
+  <data name="ActorHitRecorderPlugIn_Display1_Description" xml:space="preserve">
+    <value>将脚本测试角色造成和受到的攻击记录到其事件流中。</value>
+  </data>
+  <data name="MonsterAttributeScalerConfiguration_HealthPercentage_Caption" xml:space="preserve"><value>最大生命值增幅（%）</value></data>
+  <data name="MonsterAttributeScalerConfiguration_DefensePercentage_Caption" xml:space="preserve"><value>防御力增幅（%）</value></data>
+  <data name="MonsterAttributeScalerConfiguration_DefenseRatePercentage_Caption" xml:space="preserve"><value>防御成功率增幅（%）</value></data>
+  <data name="MonsterAttributeScalerConfiguration_AttackRatePercentage_Caption" xml:space="preserve"><value>攻击成功率增幅（%）</value></data>
+  <data name="MonsterAttributeScalerConfiguration_DamagePercentage_Caption" xml:space="preserve"><value>伤害增幅（%）</value></data>
+  <data name="MonsterAttributeScalerConfiguration_ScaleAllPercentage_Caption" xml:space="preserve"><value>全部属性增幅（%）</value></data>
+  <data name="MaximumConnectionsPerIpPlugInConfiguration_MaximumConnectionsPerIp_Caption" xml:space="preserve"><value>每个 IP 的最大同时连接数</value></data>
+  <data name="SpeedHackDetectConfiguration_AttackSpeedMinIntervalMs_Caption" xml:space="preserve"><value>最短攻击间隔（毫秒）</value></data>
+  <data name="SpeedHackDetectConfiguration_AttackSpeedScalingFactor_Caption" xml:space="preserve"><value>攻击速度换算系数</value></data>
+  <data name="SpeedHackDetectConfiguration_AttackSpeedBaseDelayMs_Caption" xml:space="preserve"><value>攻击基础间隔（毫秒）</value></data>
+  <data name="SpeedHackDetectConfiguration_MaxAttackTokens_Caption" xml:space="preserve"><value>攻击令牌上限</value></data>
+  <data name="SpeedHackDetectConfiguration_MaxAllowedWalkStartOffset_Caption" xml:space="preserve"><value>允许的最大移动起点偏差</value></data>
+  <data name="SpeedHackDetectConfiguration_WalkSpeedToleranceMs_Caption" xml:space="preserve"><value>移动速度容差（毫秒）</value></data>
+  <data name="SpeedHackDetectConfiguration_WarningHistoryHours_Caption" xml:space="preserve"><value>警告记录保留时间（小时）</value></data>
+  <data name="SpeedHackDetectConfiguration_AlertDebounceSeconds_Caption" xml:space="preserve"><value>告警最小间隔（秒）</value></data>
+  <data name="SpeedHackDetectConfiguration_MaxWarnings_Caption" xml:space="preserve"><value>警告次数上限</value></data>
+  <data name="SpeedHackDetectConfiguration_DisconnectOnViolation_Caption" xml:space="preserve"><value>违规时断开连接</value></data>
+  <data name="SpeedHackDetectConfiguration_AutoBan_Caption" xml:space="preserve"><value>自动封禁</value></data>
+  <data name="InvasionSpawnConfiguration_Y_Caption" xml:space="preserve"><value>Y 坐标</value></data>
+  <data name="InvasionSpawnConfiguration_X_Caption" xml:space="preserve"><value>X 坐标</value></data>
+  <data name="InvasionSpawnConfiguration_IsSpawnOnAllMaps_Caption" xml:space="preserve"><value>在所有选中地图上刷新</value></data>
+  <data name="InvasionSpawnConfiguration_AnnounceDeath_Caption" xml:space="preserve"><value>公告怪物死亡</value></data>
+  <data name="InvasionSpawnConfiguration_MapStrategy_Caption" xml:space="preserve"><value>地图选择方式</value></data>
+  <data name="InvasionSpawnConfiguration_MapIds_Caption" xml:space="preserve"><value>地图 ID 列表</value></data>
+  <data name="InvasionSpawnConfiguration_Count_Caption" xml:space="preserve"><value>数量</value></data>
+  <data name="InvasionSpawnConfiguration_MonsterId_Caption" xml:space="preserve"><value>怪物 ID</value></data>
+  <data name="KanturuStartConfiguration_EventDefinition_Caption" xml:space="preserve"><value>副本定义</value></data>
+  <data name="BlessJewelConsumeHandlerPlugInConfiguration_RepairTargetItems_Caption" xml:space="preserve"><value>修复目标物品</value></data>
+</root>

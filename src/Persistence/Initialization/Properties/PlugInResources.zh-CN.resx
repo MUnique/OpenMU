@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:schema id="root">
+    <xs:element name="root" ns1:IsDataSet="true">
+      <xs:complexType>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element name="data">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+                <xs:element name="comment" type="xsd:string" minOccurs="0" ns1:Ordinal="2" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" ns1:Ordinal="1" />
+              <xs:attribute name="type" type="xsd:string" ns1:Ordinal="3" />
+              <xs:attribute name="mimetype" type="xsd:string" ns1:Ordinal="4" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="resheader">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" />
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>1.3</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="DataInitialization075_Name" xml:space="preserve">
+    <value>0.75 数据初始化</value>
+  </data>
+  <data name="DataInitialization075_Description" xml:space="preserve">
+    <value>提供 0.75 的初始数据。</value>
+  </data>
+  <data name="DataInitialization095d_Name" xml:space="preserve">
+    <value>0.95d 数据初始化</value>
+  </data>
+  <data name="DataInitialization095d_Description" xml:space="preserve">
+    <value>提供 0.95d 的初始数据。</value>
+  </data>
+  <data name="DataInitialization_Name" xml:space="preserve">
+    <value>Season 6 Episode 3 数据初始化</value>
+  </data>
+  <data name="DataInitialization_Description" xml:space="preserve">
+    <value>提供 Season 6 Episode 3 的初始数据。</value>
+  </data>
+  <data name="AddArrowsForFairyElf_Name" xml:space="preserve">
+    <value>弓箭手初始箭矢</value>
+  </data>
+  <data name="AddArrowsForFairyElf_Description" xml:space="preserve">
+    <value>为新建的弓箭手角色添加箭矢。</value>
+  </data>
+  <data name="AddChargeForRageFighter_Name" xml:space="preserve">
+    <value>格斗家初始冲锋技能</value>
+  </data>
+  <data name="AddChargeForRageFighter_Description" xml:space="preserve">
+    <value>为新建的格斗家角色添加冲锋技能。</value>
+  </data>
+  <data name="AddEnergyBallForDarkWizard_Name" xml:space="preserve">
+    <value>魔法师初始能量球技能</value>
+  </data>
+  <data name="AddEnergyBallForDarkWizard_Description" xml:space="preserve">
+    <value>为新建的魔法师角色添加能量球技能。</value>
+  </data>
+  <data name="AddForceForDarkLord_Name" xml:space="preserve">
+    <value>圣导师初始冲击技能</value>
+  </data>
+  <data name="AddForceForDarkLord_Description" xml:space="preserve">
+    <value>为新建的圣导师角色添加冲击技能。</value>
+  </data>
+  <data name="AddLanceForSummoner_Name" xml:space="preserve">
+    <value>召唤术师初始 Lance 技能</value>
+  </data>
+  <data name="AddLanceForSummoner_Description" xml:space="preserve">
+    <value>为新建的召唤术师角色添加 Lance 技能。</value>
+  </data>
+  <data name="AddRingOfWarriorLevel40ForNewCharacters_Name" xml:space="preserve">
+    <value>新角色 40 级战士戒指</value>
+  </data>
+  <data name="AddRingOfWarriorLevel40ForNewCharacters_Description" xml:space="preserve">
+    <value>为新角色添加达到 40 级后可丢弃的战士戒指。</value>
+  </data>
+  <data name="AddRingOfWarriorLevel80ForNewCharacters_Name" xml:space="preserve">
+    <value>新角色 80 级战士戒指</value>
+  </data>
+  <data name="AddRingOfWarriorLevel80ForNewCharacters_Description" xml:space="preserve">
+    <value>为新角色添加达到 80 级后可丢弃的战士戒指。</value>
+  </data>
+  <data name="AddShortBowForFairyElf_Name" xml:space="preserve">
+    <value>弓箭手初始短弓</value>
+  </data>
+  <data name="AddShortBowForFairyElf_Description" xml:space="preserve">
+    <value>为新建的弓箭手角色添加短弓。</value>
+  </data>
+  <data name="AddShortSwordForDarkLord_Name" xml:space="preserve">
+    <value>圣导师初始短剑</value>
+  </data>
+  <data name="AddShortSwordForDarkLord_Description" xml:space="preserve">
+    <value>为新建的圣导师角色添加短剑。</value>
+  </data>
+  <data name="AddShortSwordForMagicGladiator_Name" xml:space="preserve">
+    <value>魔剑士初始短剑</value>
+  </data>
+  <data name="AddShortSwordForMagicGladiator_Description" xml:space="preserve">
+    <value>为新建的魔剑士角色添加短剑。</value>
+  </data>
+  <data name="AddSmallAxeForDarkKnight_Name" xml:space="preserve">
+    <value>剑士初始小斧</value>
+  </data>
+  <data name="AddSmallAxeForDarkKnight_Description" xml:space="preserve">
+    <value>为新建的剑士角色添加小斧。</value>
+  </data>
+  <data name="AddSmallShieldForDarkLord_Name" xml:space="preserve">
+    <value>圣导师初始小盾</value>
+  </data>
+  <data name="AddSmallShieldForDarkLord_Description" xml:space="preserve">
+    <value>为新建的圣导师角色添加小盾。</value>
+  </data>
+  <data name="AddSmallShieldForMagicGladiator_Name" xml:space="preserve">
+    <value>魔剑士初始小盾</value>
+  </data>
+  <data name="AddSmallShieldForMagicGladiator_Description" xml:space="preserve">
+    <value>为新建的魔剑士角色添加小盾。</value>
+  </data>
+  <data name="AddCrescentMoonSlashForDarkKnight_Display1_Name" xml:space="preserve">
+    <value>剑士初始半月斩</value>
+  </data>
+  <data name="AddCrescentMoonSlashForDarkKnight_Display1_Description" xml:space="preserve">
+    <value>为新建剑士添加攻城战专用的半月斩技能。</value>
+  </data>
+  <data name="AddStarfallForFairyElf_Display1_Name" xml:space="preserve">
+    <value>弓箭手初始星落</value>
+  </data>
+  <data name="AddStarfallForFairyElf_Display1_Description" xml:space="preserve">
+    <value>为新建弓箭手添加攻城战专用的星落技能。</value>
+  </data>
+  <data name="AddManaRaysForMagicGladiator_Display1_Name" xml:space="preserve">
+    <value>魔剑士初始魔力射线</value>
+  </data>
+  <data name="AddManaRaysForMagicGladiator_Display1_Description" xml:space="preserve">
+    <value>为新建魔剑士添加攻城战专用的魔力射线技能。</value>
+  </data>
+  <data name="AddFireBlastForDarkLord_Display1_Name" xml:space="preserve">
+    <value>圣导师初始火焰爆发</value>
+  </data>
+  <data name="AddFireBlastForDarkLord_Display1_Description" xml:space="preserve">
+    <value>为新建圣导师添加攻城战专用的火焰爆发技能。</value>
+  </data>
+  <data name="AddSpiralSlashForMagicGladiator_Display1_Name" xml:space="preserve">
+    <value>魔剑士初始螺旋斩</value>
+  </data>
+  <data name="AddSpiralSlashForMagicGladiator_Display1_Description" xml:space="preserve">
+    <value>为新建魔剑士添加攻城战专用的螺旋斩技能。</value>
+  </data>
+  <data name="FixWeaponRisePercentagePlugInSeason6_Name" xml:space="preserve"><value>修正武器增幅及召唤装备、三代翅膀属性</value></data>
+  <data name="FixWeaponRisePercentagePlugInSeason6_Description" xml:space="preserve"><value>修正法杖、召唤杖、魔法书、权杖的增幅比例，召唤武器和翅膀的魔法与诅咒属性，以及部分三代翅膀和披风的伤害增减比例；包含大天使之杖与永恒之翼杖的修正。</value></data>
+  <data name="FixAreaSkillsUpdatePlugIn_Name" xml:space="preserve"><value>修正范围技能</value></data>
+  <data name="FixAreaSkillsUpdatePlugIn_Description" xml:space="preserve"><value>修正地狱火、毒炎和暴风雪的施法距离、作用半径与延迟。</value></data>
+  <data name="AddMissingMerchantStoresPlugIn_Name" xml:space="preserve"><value>补充缺失的商店</value></data>
+  <data name="AddMissingMerchantStoresPlugIn_Description" xml:space="preserve"><value>为仅有商店窗口却无商品的杂货商克莉丝汀（545）添加商店，商品复制自商人汤姆森（231）。</value></data>
+  <data name="FixEventItemsDropFromMonstersUpdatePlugInSeason6_Name" xml:space="preserve"><value>修正 Season 6 活动物品掉落</value></data>
+  <data name="FixEventItemsDropFromMonstersUpdatePlugInSeason6_Description" xml:space="preserve"><value>修正活动物品启用 DropsFromMonsters 后以 0 级掉落、未使用专属物品掉落组的问题。</value></data>
+  <data name="InfinityArrowSkillOnQuestCompletionPlugIn_Name" xml:space="preserve"><value>任务奖励增加无影箭</value></data>
+  <data name="InfinityArrowSkillOnQuestCompletionPlugIn_Description" xml:space="preserve"><value>为圣射手的英雄资格任务添加无影箭技能奖励。</value></data>
+  <data name="RegenerationsRefactorPlugInBase_Name" xml:space="preserve"><value>调整自动恢复属性</value></data>
+  <data name="RegenerationsRefactorPlugInBase_Description" xml:space="preserve"><value>修正并调整生命值、魔力值和技能值的部分恢复属性。</value></data>
+  <data name="AddDuelConfigurationPlugIn_Name" xml:space="preserve"><value>添加决斗配置</value></data>
+  <data name="AddDuelConfigurationPlugIn_Description" xml:space="preserve"><value>添加决斗配置数据。</value></data>
+  <data name="FixBloodCastleMonsterAttributesUpdatePlugIn_Name" xml:space="preserve"><value>修正血色城堡 7、8 层怪物属性</value></data>
+  <data name="FixBloodCastleMonsterAttributesUpdatePlugIn_Description" xml:space="preserve"><value>交换血色城堡 7 层（怪物 138–143）和 8 层（怪物 428–433）的属性，使强度按 6、7、8 层递增。</value></data>
+  <data name="AddDoppelgangerDataUpdatePlugIn_Name" xml:space="preserve"><value>添加镜像世界数据</value></data>
+  <data name="AddDoppelgangerDataUpdatePlugIn_Description" xml:space="preserve"><value>添加镜像世界的副本配置。</value></data>
+  <data name="ConfigureCastleSiegeRegistrationUpdatePlugIn_Name" xml:space="preserve"><value>配置攻城战报名</value></data>
+  <data name="ConfigureCastleSiegeRegistrationUpdatePlugIn_Description" xml:space="preserve"><value>配置攻城战登记城主标识所使用的物品。</value></data>
+  <data name="AddKanturuMapContentUpdatePlugIn_Name" xml:space="preserve"><value>添加坎特鲁地图内容</value></data>
+  <data name="AddKanturuMapContentUpdatePlugIn_Description" xml:space="preserve"><value>添加玛雅、玛雅之手、咒怨魔王等首领及副本波次刷新配置。</value></data>
+  <data name="FinishSummonerMasterTreePlugIn_Name" xml:space="preserve"><value>补全召唤术师大师技能树</value></data>
+  <data name="FinishSummonerMasterTreePlugIn_Description" xml:space="preserve"><value>补全召唤术师大师技能树并修正部分技能数值。</value></data>
+  <data name="AddMaximumAllianceSizeUpdatePlugInSeason6_Name" xml:space="preserve"><value>添加 Season 6 联盟规模上限属性</value></data>
+  <data name="AddMaximumAllianceSizeUpdatePlugInSeason6_Description" xml:space="preserve"><value>为 Season 6 游戏配置添加 MaximumAllianceSize 全局基础属性，默认值为 5。</value></data>
+  <data name="FixAncientDiscriminatorsUpdatePlugIn_Name" xml:space="preserve"><value>修正套装物品识别值</value></data>
+  <data name="FixAncientDiscriminatorsUpdatePlugIn_Description" xml:space="preserve"><value>修正部分套装物品的识别值。</value></data>
+  <data name="AddSummonerBuffSkillsPlugIn_Name" xml:space="preserve"><value>添加召唤术师辅助技能</value></data>
+  <data name="AddSummonerBuffSkillsPlugIn_Description" xml:space="preserve"><value>添加昏睡术、破御阵、伤害反射和虚弱阵，并修正三代翅膀的完全反射属性。</value></data>
+  <data name="AddIsQuestItemFlagPlugIn_Name" xml:space="preserve"><value>添加任务物品标记</value></data>
+  <data name="AddIsQuestItemFlagPlugIn_Description" xml:space="preserve"><value>为已有任务物品添加标记，使其仅能被持有对应进行中任务的角色拾取。</value></data>
+  <data name="WizEnhanceAndRagefighterSkillsUpdatePlugIn_Name" xml:space="preserve"><value>补充魔法师与格斗家技能</value></data>
+  <data name="WizEnhanceAndRagefighterSkillsUpdatePlugIn_Description" xml:space="preserve"><value>添加魔力强化、增加生命、增加防御成功率、无视防御等技能。</value></data>
+  <data name="FixJeweleryPetsDamageCalcsPlugInBase_Name" xml:space="preserve"><value>修正首饰抗性计算</value></data>
+  <data name="FixJeweleryPetsDamageCalcsPlugInBase_Description" xml:space="preserve"><value>修正首饰物品的抗性数值。</value></data>
+  <data name="FixChaosMixesPlugInBase_Name" xml:space="preserve"><value>修正玛雅合成配置</value></data>
+  <data name="FixChaosMixesPlugInBase_Description" xml:space="preserve"><value>修正玛雅武器合成配置。</value></data>
+  <data name="FixDamageAbsorbItemsUpdatePlugIn_Name" xml:space="preserve"><value>修正物品与技能的伤害吸收</value></data>
+  <data name="FixDamageAbsorbItemsUpdatePlugIn_Description" xml:space="preserve"><value>修正物品和技能的伤害吸收配置。</value></data>
+  <data name="AddHarmonyOptionWeightsUpdateSeason6_Name" xml:space="preserve"><value>添加再生属性权重</value></data>
+  <data name="AddHarmonyOptionWeightsUpdateSeason6_Description" xml:space="preserve"><value>添加再生宝石随机属性分配权重，修正部分属性及物品还原合成。</value></data>
+  <data name="AddQuestItemLimitPlugIn_Name" xml:space="preserve"><value>添加任务物品数量限制</value></data>
+  <data name="AddQuestItemLimitPlugIn_Description" xml:space="preserve"><value>为任务物品添加限制，使其只能拾取一件。</value></data>
+  <data name="FinishDarkKnightMasterTreePlugInSeason6_Name" xml:space="preserve"><value>补全剑士大师技能树</value></data>
+  <data name="FinishDarkKnightMasterTreePlugInSeason6_Description" xml:space="preserve"><value>补全剑士大师技能树及效果，并修正双持伤害计算。</value></data>
+  <data name="AddLorenMarketJuliaWarpPlugIn_Name" xml:space="preserve"><value>添加罗兰市场传送 NPC</value></data>
+  <data name="AddLorenMarketJuliaWarpPlugIn_Description" xml:space="preserve"><value>将市场联盟成员茱莉娅（547）设为勇者大陆与罗兰市场之间的双向传送 NPC，替代空商店。</value></data>
+  <data name="LimitWhiteWizardDropsUpdatePlugIn_Name" xml:space="preserve"><value>限制白魔法师掉落</value></data>
+  <data name="LimitWhiteWizardDropsUpdatePlugIn_Description" xml:space="preserve"><value>限制每个角色只能持有一枚魔法师戒指。</value></data>
+  <data name="ChaosCastleDataUpdatePlugIn_Name" xml:space="preserve"><value>添加赤色要塞数据</value></data>
+  <data name="ChaosCastleDataUpdatePlugIn_Description" xml:space="preserve"><value>创建赤色要塞的副本配置数据。</value></data>
+  <data name="FinishDarkLordMasterTreePlugIn_Name" xml:space="preserve"><value>补全圣导师大师技能树</value></data>
+  <data name="FinishDarkLordMasterTreePlugIn_Description" xml:space="preserve"><value>补全圣导师大师技能树及技能效果。</value></data>
+  <data name="FixWingsAndCapesCraftingsUpdatePlugIn_Name" xml:space="preserve"><value>修正翅膀与披风合成</value></data>
+  <data name="FixWingsAndCapesCraftingsUpdatePlugIn_Description" xml:space="preserve"><value>修正翅膀和披风的合成配置。</value></data>
+  <data name="AddRenaItemUpdatePlugIn_Name" xml:space="preserve"><value>添加蕾娜物品</value></data>
+  <data name="AddRenaItemUpdatePlugIn_Description" xml:space="preserve"><value>添加物品登记功能所需、此前缺失的蕾娜物品。</value></data>
+  <data name="AddCrestOfMonarchDropGroupUpdateSeason6_Name" xml:space="preserve"><value>添加王者之书掉落组</value></data>
+  <data name="AddCrestOfMonarchDropGroupUpdateSeason6_Description" xml:space="preserve"><value>为天空之城添加王者之书（洛克之羽 +1）掉落组。</value></data>
+  <data name="FixSummonerCurseSkillsPlugIn_Name" xml:space="preserve"><value>修正召唤术师诅咒技能</value></data>
+  <data name="FixSummonerCurseSkillsPlugIn_Description" xml:space="preserve"><value>为召唤术师魔法书诅咒技能和烈光闪补充缺失的范围技能配置。</value></data>
+  <data name="AddAreaSkillSettingsUpdatePlugIn_Name" xml:space="preserve"><value>添加范围技能配置</value></data>
+  <data name="AddAreaSkillSettingsUpdatePlugIn_Description" xml:space="preserve"><value>为黑龙波等技能添加新的范围技能配置，使其恢复正常工作。</value></data>
+  <data name="FinishDarkWizardMasterTreePlugIn_Name" xml:space="preserve"><value>补全魔法师大师技能树</value></data>
+  <data name="FinishDarkWizardMasterTreePlugIn_Description" xml:space="preserve"><value>补全魔法师大师技能树中的魔法效果扩展。</value></data>
+  <data name="RemoveJewelDropLevelGapPlugInBase_Name" xml:space="preserve"><value>移除宝石掉落等级差限制</value></data>
+  <data name="RemoveJewelDropLevelGapPlugInBase_Description" xml:space="preserve"><value>移除宝石等应持续参与掉落的物品的掉落等级差限制。</value></data>
+  <data name="FixSetBonusesPlugIn_Name" xml:space="preserve"><value>修正成套装备加成</value></data>
+  <data name="FixSetBonusesPlugIn_Description" xml:space="preserve"><value>修正 +10 至 +15 成套装备的额外防御力及防御成功率加成。</value></data>
+  <data name="AddElfSoldierBuffPlugIn_Name" xml:space="preserve"><value>添加幻影导师增益</value></data>
+  <data name="AddElfSoldierBuffPlugIn_Description" xml:space="preserve"><value>将幻影导师提供的防御和伤害提升设为可配置的增益效果。</value></data>
+  <data name="FixSocketSeedCraftingUpdatePlugIn_Name" xml:space="preserve"><value>修正荧之石合成</value></data>
+  <data name="FixSocketSeedCraftingUpdatePlugIn_Description" xml:space="preserve"><value>修正镶嵌系统中荧之石的合成配置。</value></data>
+  <data name="FixWarriorMorningStarPlugIn_Name" xml:space="preserve"><value>修正战士套装武器</value></data>
+  <data name="FixWarriorMorningStarPlugIn_Description" xml:space="preserve"><value>将战士套装武器由手斧改为流星锤。</value></data>
+  <data name="SpawnFixesUpdatePlugIn_Name" xml:space="preserve"><value>修正 NPC 刷新点</value></data>
+  <data name="SpawnFixesUpdatePlugIn_Description" xml:space="preserve"><value>修正狼魂要塞石像、流浪商人及摩伦的刷新点，以及赤色要塞 1 层的刷新触发方式。</value></data>
+  <data name="FixJeweleryPetsDamageCalcsPlugInSeason6_Name" xml:space="preserve"><value>修正首饰和宠物伤害计算</value></data>
+  <data name="FixJeweleryPetsDamageCalcsPlugInSeason6_Description" xml:space="preserve"><value>修正首饰与宠物的伤害相关属性，以及首饰抗性数值。</value></data>
+  <data name="RemoveDuplicateStatAttributesPlugInBase_Name" xml:space="preserve"><value>移除重复的角色属性</value></data>
+  <data name="RemoveDuplicateStatAttributesPlugInBase_Description" xml:space="preserve"><value>移除同一职业中重复定义的属性。</value></data>
+  <data name="FixItemRequirementsPlugIn2_Name" xml:space="preserve"><value>再次修正弓箭手武器需求</value></data>
+  <data name="FixItemRequirementsPlugIn2_Description" xml:space="preserve"><value>修正错误初始化的弓类装备需求，适用于首次修复后、基础数据修正前创建的配置。</value></data>
+  <data name="FixWeaponRisePercentagePlugInBase_Name" xml:space="preserve"><value>修正武器增幅比例</value></data>
+  <data name="FixWeaponRisePercentagePlugInBase_Description" xml:space="preserve"><value>修正法杖的增幅比例。</value></data>
+  <data name="FixItemRequirementsPlugIn_Name" xml:space="preserve"><value>修正弓箭手武器需求</value></data>
+  <data name="FixItemRequirementsPlugIn_Description" xml:space="preserve"><value>修正部分弓类装备错误的使用需求。</value></data>
+  <data name="AddCastleSiegeDataUpdatePlugIn_Name" xml:space="preserve"><value>添加攻城战数据</value></data>
+  <data name="AddCastleSiegeDataUpdatePlugIn_Description" xml:space="preserve"><value>添加攻城战配置及持久化状态。</value></data>
+  <data name="FixAttackSpeedCalculationUpdate_Name" xml:space="preserve"><value>修正攻击速度计算</value></data>
+  <data name="FixAttackSpeedCalculationUpdate_Description" xml:space="preserve"><value>添加攻击速度属性及关系，并添加酒和灵魂药水的效果。</value></data>
+  <data name="FixItemOptionsAndAttackSpeedPlugInBase_Name" xml:space="preserve"><value>修正物品属性和攻击速度</value></data>
+  <data name="FixItemOptionsAndAttackSpeedPlugInBase_Description" xml:space="preserve"><value>修正部分伤害、防御成功率属性及武器攻击速度。</value></data>
+  <data name="FinishDarkKnightMasterTreePlugInBase_Name" xml:space="preserve"><value>修正双持伤害计算</value></data>
+  <data name="FinishDarkKnightMasterTreePlugInBase_Description" xml:space="preserve"><value>修正双持武器的伤害计算。</value></data>
+  <data name="AddGlobalMoneyAmountRateAttributePlugInBase_Name" xml:space="preserve"><value>添加全局金币数量倍率</value></data>
+  <data name="AddGlobalMoneyAmountRateAttributePlugInBase_Description" xml:space="preserve"><value>将 MoneyAmountRate 属性从职业基础属性移至全局基础属性。</value></data>
+  <data name="FixDamageCalcsPlugInBase_Name" xml:space="preserve"><value>修正伤害计算</value></data>
+  <data name="FixDamageCalcsPlugInBase_Description" xml:space="preserve"><value>修正角色属性、魔法效果、物品及附加属性中与伤害有关的配置。</value></data>
+  <data name="ConfigureCastleSiegeParticipationUpdatePlugIn_Name" xml:space="preserve"><value>配置攻城战参战阵营</value></data>
+  <data name="ConfigureCastleSiegeParticipationUpdatePlugIn_Description" xml:space="preserve"><value>添加用于在客户端显示攻城战阵营的效果。</value></data>
+  <data name="FixEventItemsDropFromMonstersUpdatePlugIn095d_Name" xml:space="preserve"><value>修正 0.95d 活动物品掉落</value></data>
+  <data name="FixEventItemsDropFromMonstersUpdatePlugIn095d_Description" xml:space="preserve"><value>修正活动物品启用 DropsFromMonsters 后以 0 级掉落、未使用专属物品掉落组的问题。</value></data>
+  <data name="AddItemDropGroupForJewelsUpdate075_Name" xml:space="preserve"><value>创建宝石掉落组</value></data>
+  <data name="AddItemDropGroupForJewelsUpdate075_Description" xml:space="preserve"><value>创建宝石专属物品掉落组，默认概率为 5%。</value></data>
+  <data name="FixCharStatsForceWavePlugInBase_Name" xml:space="preserve"><value>修正魔法师防御换算系数</value></data>
+  <data name="FixCharStatsForceWavePlugInBase_Description" xml:space="preserve"><value>修正魔法师敏捷转化为防御力的系数。</value></data>
+  <data name="FinishElfMasterTreePlugIn_Name" xml:space="preserve"><value>补全弓箭手大师技能树</value></data>
+  <data name="FinishElfMasterTreePlugIn_Description" xml:space="preserve"><value>补全弓箭手大师技能树并修正部分技能数值，为部分高级弓弩补充缺失的第 4 支箭。</value></data>
+  <data name="ConfigureCastleSiegeLifeStoneUpdatePlugIn_Name" xml:space="preserve"><value>配置攻城战生命石</value></data>
+  <data name="ConfigureCastleSiegeLifeStoneUpdatePlugIn_Description" xml:space="preserve"><value>配置攻城战生命石的战斗属性。</value></data>
+  <data name="AddItemRegistrationAttributesUpdatePlugIn_Name" xml:space="preserve"><value>添加物品登记属性</value></data>
+  <data name="AddItemRegistrationAttributesUpdatePlugIn_Description" xml:space="preserve"><value>添加物品登记功能所需的属性数据。</value></data>
+  <data name="ConfigureCastleSiegeEconomyUpdatePlugIn_Name" xml:space="preserve"><value>配置攻城战经济系统</value></data>
+  <data name="ConfigureCastleSiegeEconomyUpdatePlugIn_Description" xml:space="preserve"><value>启用长老 NPC 的攻城战经济管理界面。</value></data>
+  <data name="FixWingsDmgRatesUpdatePlugInBase_Name" xml:space="preserve"><value>修正翅膀伤害比例</value></data>
+  <data name="FixWingsDmgRatesUpdatePlugInBase_Description" xml:space="preserve"><value>修正翅膀伤害吸收与伤害增加的等级加成表。</value></data>
+  <data name="FixLifeSwellEffectUpdatePlugIn_Name" xml:space="preserve"><value>修正生命之光效果</value></data>
+  <data name="FixLifeSwellEffectUpdatePlugIn_Description" xml:space="preserve"><value>修正生命之光的效果配置。</value></data>
+  <data name="AddPointsPerResetAttributePlugIn_Name" xml:space="preserve"><value>添加每次转生属性点</value></data>
+  <data name="AddPointsPerResetAttributePlugIn_Description" xml:space="preserve"><value>添加 PointsPerReset 属性。</value></data>
+  <data name="ChainLightningUpdatePlugIn_Name" xml:space="preserve"><value>修正链雷咒</value></data>
+  <data name="ChainLightningUpdatePlugIn_Description" xml:space="preserve"><value>修正链雷咒技能配置。</value></data>
+  <data name="FixDefenseCalcsPlugInBase_Name" xml:space="preserve"><value>修正防御计算</value></data>
+  <data name="FixDefenseCalcsPlugInBase_Description" xml:space="preserve"><value>修正角色属性、魔法效果和附加属性中与防御有关的配置。</value></data>
+  <data name="FixDuelArenaSafezoneMapUpdate_Name" xml:space="preserve"><value>修正决斗场安全区地图</value></data>
+  <data name="FixDuelArenaSafezoneMapUpdate_Description" xml:space="preserve"><value>将决斗场的安全区地图设为勇者大陆。</value></data>
+  <data name="AddMovementSpeedAttributesPlugInBase_Name" xml:space="preserve"><value>添加移动速度属性</value></data>
+  <data name="AddMovementSpeedAttributesPlugInBase_Description" xml:space="preserve"><value>为玩家、怪物、物品、效果和水下地图添加基于属性的移动速度配置。</value></data>
+  <data name="SystemConfigurationAddedPlugInBase_Name" xml:space="preserve"><value>添加系统配置</value></data>
+  <data name="SystemConfigurationAddedPlugInBase_Description" xml:space="preserve"><value>添加新的系统配置。</value></data>
+  <data name="AddKanturuDataUpdatePlugIn_Name" xml:space="preserve"><value>添加坎特鲁副本数据</value></data>
+  <data name="AddKanturuDataUpdatePlugIn_Description" xml:space="preserve"><value>添加坎特鲁提炼之塔副本配置。</value></data>
+  <data name="FixDrainLifeSkillUpdate_Name" xml:space="preserve"><value>修正摄魂咒</value></data>
+  <data name="FixDrainLifeSkillUpdate_Description" xml:space="preserve"><value>更新召唤术师摄魂咒的属性，使其正常工作。</value></data>
+  <data name="FinishRageFighterMasterTreePlugIn_Name" xml:space="preserve"><value>补全格斗家大师技能树</value></data>
+  <data name="FinishRageFighterMasterTreePlugIn_Description" xml:space="preserve"><value>补全格斗家大师技能树并修正部分技能数值。</value></data>
+  <data name="FixIgnoreDefenseSkillUpdatePlugIn_Name" xml:space="preserve"><value>修正无视防御技能</value></data>
+  <data name="FixIgnoreDefenseSkillUpdatePlugIn_Description" xml:space="preserve"><value>为无视防御技能添加魔法效果定义。</value></data>
+  <data name="FixMaxManaAndAbilityJewelryOptionsUpdateSeason6_Name" xml:space="preserve"><value>修正首饰最大魔力与技能值加成</value></data>
+  <data name="FixMaxManaAndAbilityJewelryOptionsUpdateSeason6_Description" xml:space="preserve"><value>修正魔法戒指和技能项链提供的最大魔力、最大 AG 百分比加成计算。</value></data>
+  <data name="AddRandomExperienceConfigAttributesPlugInBase_Name" xml:space="preserve"><value>添加随机经验配置属性</value></data>
+  <data name="AddRandomExperienceConfigAttributesPlugInBase_Description" xml:space="preserve"><value>为游戏配置添加随机经验相关属性。</value></data>
+  <data name="FixCharStatsForceWavePlugInSeason6_Name" xml:space="preserve"><value>修正角色属性与圣导师强化冲击波</value></data>
+  <data name="FixCharStatsForceWavePlugInSeason6_Description" xml:space="preserve"><value>修正多项角色基础数值及圣导师冲击波强化大师技能。</value></data>
+  <data name="FixWarpLevelUpdatePlugIn_Name" xml:space="preserve"><value>修正传送等级减免</value></data>
+  <data name="FixWarpLevelUpdatePlugIn_Description" xml:space="preserve"><value>更新魔剑士、圣导师和格斗家的传送等级需求减免比例。</value></data>
+  <data name="AddProjectileCountToTripleShotUpdatePlugIn_Name" xml:space="preserve"><value>添加多重箭弹道数量</value></data>
+  <data name="AddProjectileCountToTripleShotUpdatePlugIn_Description" xml:space="preserve"><value>将多重箭的弹道数量设为 3，以正确处理箭矢方向。</value></data>
+  <data name="FixSkillMultipliersPlugIn_Name" xml:space="preserve"><value>修正技能倍率</value></data>
+  <data name="FixSkillMultipliersPlugIn_Description" xml:space="preserve"><value>修正格斗家技能倍率，并补充多项技能专属倍率。</value></data>
+  <data name="AddWhiteWizardInvasionMobsUpdatePlugIn_Name" xml:space="preserve"><value>添加白魔法师入侵怪物</value></data>
+  <data name="AddWhiteWizardInvasionMobsUpdatePlugIn_Description" xml:space="preserve"><value>为已有数据库添加白魔法师（135）、毁灭巨人战士（136）、毁灭巨人弓箭手（137）及其掉落组。</value></data>
+  <data name="AddKalimaPlugIn_Name" xml:space="preserve"><value>添加卡利玛入场物品</value></data>
+  <data name="AddKalimaPlugIn_Description" xml:space="preserve"><value>添加进入卡利玛地图所需的物品。</value></data>
+  <data name="FixEventItemsDropFromMonstersUpdatePlugInBase_Name" xml:space="preserve"><value>修正活动物品掉落</value></data>
+  <data name="FixEventItemsDropFromMonstersUpdatePlugInBase_Description" xml:space="preserve"><value>修正活动物品启用 DropsFromMonsters 后以 0 级掉落、未使用专属物品掉落组的问题。</value></data>
+  <data name="FixCharStatsForceWavePlugIn095d_Name" xml:space="preserve"><value>修正魔法师与魔剑士基础属性</value></data>
+  <data name="FixCharStatsForceWavePlugIn095d_Description" xml:space="preserve"><value>修正魔法师敏捷转防御系数，以及魔剑士的基础智力。</value></data>
+  <data name="FixHorseFenrirOptionsSoulBarrierPlugIn_Name" xml:space="preserve"><value>修正坐骑属性与守护之魂</value></data>
+  <data name="FixHorseFenrirOptionsSoulBarrierPlugIn_Description" xml:space="preserve"><value>添加黑王马属性，修正金色炎狼兽属性及守护之魂效果。</value></data>
+  <data name="FixLevelDiv20ExcOptionUpdatePlugIn_Name" xml:space="preserve"><value>修正等级除以 20 的卓越伤害加成</value></data>
+  <data name="FixLevelDiv20ExcOptionUpdatePlugIn_Description" xml:space="preserve"><value>修正按角色等级除以 20 增加魔法伤害的卓越属性。</value></data>
+  <data name="AddGuardsDataPlugIn_Name" xml:space="preserve"><value>添加守卫 NPC 数据</value></data>
+  <data name="AddGuardsDataPlugIn_Description" xml:space="preserve"><value>添加守卫 NPC 的数据，使其能够攻击和移动。</value></data>
+  <data name="FixRageFighterMultipleHitSkillsPlugIn_Name" xml:space="preserve"><value>修正格斗家多段攻击技能</value></data>
+  <data name="FixRageFighterMultipleHitSkillsPlugIn_Description" xml:space="preserve"><value>为格斗家的 Killing Blow、Beast Uppercut、Chain Drive、Dragon Roar、Phoenix Shot 技能及其魔法效果补充缺失的多段攻击。</value></data>
+  <data name="FixChaosMixesPlugInSeason6_Name" xml:space="preserve"><value>修正玛雅合成和多项物品属性</value></data>
+  <data name="FixChaosMixesPlugInSeason6_Description" xml:space="preserve"><value>修正玛雅武器、一代翅膀、彩云兽、物品强化、二代和三代翅膀、披风、防护药水、守护属性及召唤魔法书的合成配置；修正蓝色炎狼兽减伤、魔法师戒指魔法属性，以及召唤术师和格斗家 380 级物品的守护属性。</value></data>
+</root>
