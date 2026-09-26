@@ -824,6 +824,17 @@ public class CastleSiegeNpcTests
                     Times.Once);
 
             fixture.Context.CurrentState = CastleSiegeState.Start;
+            var withoutLeverResult = await CastleSiegeGateOperateAction
+                .OperateAsync(fixture.Player, fixture.Context, gate.Id, true)
+                .ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(withoutLeverResult, Is.EqualTo(CastleSiegeNpcOperationResult.Failed));
+                Assert.That(gate.IsClosed, Is.True);
+            });
+
+            // The NPC talk action keeps the lever opened because the lever plug-in leaves the dialog open.
+            fixture.Player.OpenedNpc = lever;
             var operationResult = await CastleSiegeGateOperateAction
                 .OperateAsync(fixture.Player, fixture.Context, gate.Id, true)
                 .ConfigureAwait(false);

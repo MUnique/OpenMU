@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.CastleSiege.Actions;
 
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.GameLogic.CastleSiege.NPC;
 using MUnique.OpenMU.GameLogic.Views.CastleSiege;
 
 /// <summary>
@@ -73,6 +74,14 @@ public static class CastleSiegeGateOperateAction
             if (context.NpcController.FindGate(gateId) is not { IsAlive: true } gate)
             {
                 return (CastleSiegeNpcOperationResult.Failed, open);
+            }
+
+            // Gates are only operated through their linked lever; otherwise, any authorized player could
+            // toggle every gate from anywhere by sending the request without talking to the lever.
+            if (player.OpenedNpc is not CastleSiegeLever { Gate: { } leverGate }
+                || !ReferenceEquals(leverGate, gate))
+            {
+                return (CastleSiegeNpcOperationResult.Failed, !gate.IsClosed);
             }
 
             if (open)
