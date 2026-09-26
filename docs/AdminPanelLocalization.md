@@ -37,7 +37,8 @@ Do not translate command syntax, packet identifiers, or authorization values.
 Run the admin panel tests with:
 
 ```sh
-dotnet test tests/MUnique.OpenMU.Web.Tests/MUnique.OpenMU.Web.Tests.csproj -c Release -p:ci=true
+dotnet test tests/MUnique.OpenMU.Web.Tests/MUnique.OpenMU.Web.Tests.csproj \
+  -c Release -p:ci=true
 ```
 
 Localization tests cover culture selection, enum round trips, model captions and
