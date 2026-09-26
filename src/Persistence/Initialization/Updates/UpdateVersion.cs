@@ -584,4 +584,9 @@ public enum UpdateVersion
     /// The version of the <see cref="AddDoppelgangerDataUpdatePlugIn"/>.
     /// </summary>
     AddDoppelgangerData = 115,
+
+    /// <summary>
+    /// The version of the <see cref="RefreshKanturuDataUpdatePlugIn"/>.
+    /// </summary>
+    RefreshKanturuData = 116,
 }

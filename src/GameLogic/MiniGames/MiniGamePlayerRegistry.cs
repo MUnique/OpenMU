@@ -58,12 +58,14 @@ internal sealed class MiniGamePlayerRegistry
     /// </summary>
     /// <param name="player">The player which tries to enter.</param>
     /// <param name="areEquippedItemsAllowedAsync">A function which checks if the equipped items of the player are allowed.</param>
+    /// <param name="allowEnterWhilePlaying">Whether entering is also allowed while the game is already running, e.g. to rejoin an ongoing event. It's evaluated while holding the entering lock and must return immediately, without awaiting or locking.</param>
     /// <returns>A value indicating whether entering had success.</returns>
-    public async ValueTask<EnterResult> TryEnterAsync(Player player, Func<Player, ValueTask<bool>> areEquippedItemsAllowedAsync)
+    public async ValueTask<EnterResult> TryEnterAsync(Player player, Func<Player, ValueTask<bool>> areEquippedItemsAllowedAsync, Func<bool>? allowEnterWhilePlaying = null)
     {
         using (await this._lock.WriterLockAsync().ConfigureAwait(false))
         {
-            if (this._state != MiniGameState.Open)
+            if (this._state != MiniGameState.Open
+                && !((allowEnterWhilePlaying?.Invoke() ?? false) && this._state == MiniGameState.Playing))
             {
                 return EnterResult.NotOpen;
             }

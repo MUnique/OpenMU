@@ -33,7 +33,7 @@ internal class KanturuInitializer : InitializerBase
         kanturu.EnterDuration = TimeSpan.FromMinutes(3);
         kanturu.GameDuration = TimeSpan.FromMinutes(135);
         kanturu.ExitDuration = TimeSpan.FromMinutes(1);
-        kanturu.MaximumPlayerCount = 10;
+        kanturu.MaximumPlayerCount = 15;
         kanturu.MinimumCharacterLevel = 350;
         kanturu.MaximumCharacterLevel = 400;
         kanturu.MinimumSpecialCharacterLevel = 350;

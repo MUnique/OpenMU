@@ -44,6 +44,9 @@ public class ShowMiniGameEnterResultViewPlugIn : IShowMiniGameEnterResultPlugIn
             case MiniGameType.Doppelganger:
                 await this._player.Connection.SendDoppelgangerEnterResultAsync(enterResult.ToDoppelgangerEnterResult()).ConfigureAwait(false);
                 break;
+            case MiniGameType.Kanturu:
+                await this._player.Connection.SendKanturuEnterResultAsync(enterResult.ToKanturuEnterResult()).ConfigureAwait(false);
+                break;
             case MiniGameType.Undefined:
                 throw new ArgumentException("undefined game type", nameof(miniGameType));
             default:

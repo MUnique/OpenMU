@@ -129,6 +129,11 @@ public interface IGameContext
     IPartyManager PartyManager { get; }
 
     /// <summary>
+    /// Gets the manager which hosts and tracks the mini game instances of the game.
+    /// </summary>
+    IMiniGameManager MiniGames { get; }
+
+    /// <summary>
     /// Gets the initialized maps which are hosted on this context.
     /// </summary>
     ValueTask<IEnumerable<GameMap>> GetMapsAsync();
@@ -159,11 +164,6 @@ public interface IGameContext
     /// The hosted GameMap instance.
     /// </returns>
     ValueTask<GameMap?> GetMapAsync(ushort mapId, bool createIfNotExists = true);
-
-    /// <summary>
-    /// Gets the manager which hosts and tracks the mini game instances of the game.
-    /// </summary>
-    IMiniGameManager MiniGames { get; }
 
     /// <summary>
     /// Gets the player object by character name.

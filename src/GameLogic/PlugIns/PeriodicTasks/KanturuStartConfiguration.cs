@@ -13,9 +13,10 @@ public class KanturuStartConfiguration : MiniGameStartConfiguration
 {
     /// <summary>
     /// Gets the default configuration for the Kanturu event.
-    /// The event runs once per day. After Nightmare is defeated the Tower of Refinement
-    /// stays open for 1 hour, then the event ends and the next occurrence is the following day.
-    /// The preparation window (entry phase) opens 3 minutes before the scheduled start time.
+    /// The event runs every 6 hours: each tick opens a silent entry lobby while no
+    /// fight runs and the tower is closed. Entry is additionally always open on demand,
+    /// and the tower stays open for <see cref="TowerOpenDuration"/> after Nightmare dies.
+    /// There are no entrance announcements; the gateway dialog shows the live state.
     /// </summary>
     public static KanturuStartConfiguration Default =>
         new()
@@ -23,9 +24,31 @@ public class KanturuStartConfiguration : MiniGameStartConfiguration
             PreStartMessageDelay = TimeSpan.Zero,
             EntranceOpenedMessage = "Kanturu Refinery Tower entrance is open and closes in {0} minute(s).",
             EntranceClosedMessage = "Kanturu Refinery Tower entrance closed.",
-            TaskDuration = TimeSpan.FromMinutes(135),
-            Timetable = [new TimeOnly(20, 0)],   // 20:00 UTC — one occurrence per day
+            TaskDuration = TimeSpan.FromHours(6),
+            Timetable = GenerateTimeSequence(TimeSpan.FromHours(6)).ToList(),
+            TowerOpenDuration = TimeSpan.FromHours(23),
         };
+
+    /// <summary>
+    /// Gets or sets how long the Tower of Refinement stays open after the Nightmare boss
+    /// has been defeated. The window is tracked persistently, so it survives server
+    /// restarts: players can still re-enter the tower while it lasts.
+    /// </summary>
+    /// <remarks>
+    /// This takes precedence over <see cref="KanturuEventDefinition.TowerOfRefinementDuration"/>
+    /// whenever the event runs through this plug-in.
+    /// </remarks>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.KanturuStartConfiguration_TowerOpenDuration_Name), Description = nameof(PlugInResources.KanturuStartConfiguration_TowerOpenDuration_Description), Order = 6)]
+    public TimeSpan TowerOpenDuration { get; set; } = TimeSpan.FromHours(23);
+
+    /// <summary>
+    /// Gets or sets the UTC time until which the Tower of Refinement is open.
+    /// It's set when the Nightmare boss is defeated and cleared when the tower closes
+    /// or a new event run starts. Persisted with the configuration, so the open window
+    /// survives server restarts.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.KanturuStartConfiguration_TowerOpenUntilUtc_Name), Description = nameof(PlugInResources.KanturuStartConfiguration_TowerOpenUntilUtc_Description), Order = 7)]
+    public DateTime? TowerOpenUntilUtc { get; set; }
 
     /// <summary>
     /// Gets or sets the definition of the event run itself: its phases, the monsters which

@@ -11,6 +11,7 @@ using MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Pathfinding;
 
 /// <summary>
 /// The context of a mini game.
@@ -33,6 +34,8 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     private readonly CancellationTokenSource _gameEndedCts = new();
 
     private readonly SkippableDelay _skipDelay;
+
+    private int _gameLoopStarted;
 
     private Stopwatch? _elapsedTimeSinceStart;
 
@@ -57,7 +60,6 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         this.Map = this.CreateMap();
 
         this._players = new MiniGamePlayerRegistry(this.Definition);
-
         // Rewards intentionally follow the game's (possibly overridden) drop generator
         // instead of the game context one: ChaosCastleDropGenerator only overrides monster
         // kill drops and delegates reward generation back to the context generator,
@@ -83,8 +85,6 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
             this,
             message => this.ShowGoldenMessageAsync(message),
             () => this._elapsedTimeSinceStart?.Elapsed);
-
-        _ = Task.Run(() => this.RunGameAsync(this.GameEndedToken), this.GameEndedToken);
     }
 
     /// <summary>
@@ -128,6 +128,38 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     /// Gets a value indicating whether it's allowed to kill other players without consequences.
     /// </summary>
     public virtual bool AllowPlayerKilling { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether players may still enter while the game is
+    /// already running (<see cref="MiniGameState.Playing"/>), e.g. to rejoin an
+    /// ongoing event. It's <c>false</c> by default; entering is then only possible
+    /// while the game is <see cref="MiniGameState.Open"/>.
+    /// </summary>
+    internal bool IsJoinable => this.State == MiniGameState.Open
+        || (this.State == MiniGameState.Playing && this.AllowEnterWhilePlaying);
+
+    /// <summary>
+    /// Gets a value indicating whether the map entry requirements are skipped when
+    /// entering, e.g. an event item which the tower visitors no longer need.
+    /// </summary>
+    internal virtual bool SkipMapEntryRequirements => false;
+
+    /// <summary>
+    /// Gets a value indicating whether entering is allowed while the game is already
+    /// running. Specific games override this to let players (re-)join mid-event.
+    /// </summary>
+    protected virtual bool AllowEnterWhilePlaying => false;
+
+    /// <summary>
+    /// Gets the duration of the countdown after the entrance closed and before the game starts.
+    /// </summary>
+    protected virtual TimeSpan CountdownDuration => CountdownMessageDuration;
+
+    /// <summary>
+    /// Gets the minimum duration of the entrance phase. Games which don't need a lobby,
+    /// e.g. a reopened tower, override this with <see cref="TimeSpan.Zero"/>.
+    /// </summary>
+    protected virtual TimeSpan MinimumEnterDuration => CountdownMessageDuration;
 
     /// <summary>
     /// Gets the remaining time of the event, in case it has been finished by the player earlier than the timeout.
@@ -178,7 +210,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     /// <returns>A value indicating whether entering had success.</returns>
     public async ValueTask<EnterResult> TryEnterAsync(Player player)
     {
-        var result = await this._players.TryEnterAsync(player, this.AreEquippedItemsAllowedAsync).ConfigureAwait(false);
+        var result = await this._players.TryEnterAsync(player, this.AreEquippedItemsAllowedAsync, () => this.AllowEnterWhilePlaying).ConfigureAwait(false);
         if (result != EnterResult.Success)
         {
             return result;
@@ -248,6 +280,28 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     public override string ToString()
     {
         return $"{this.Definition.Name} for {this._gameContext}";
+    }
+
+    /// <summary>
+    /// Gets where an entering player appears on the map, instead of the warp target.
+    /// It's consulted when the client acknowledged the map change, before the player
+    /// is added to the map, so no relocation afterwards is necessary.
+    /// </summary>
+    /// <param name="player">The player which enters.</param>
+    /// <returns>The spawn position, or <c>null</c> to keep the warp target.</returns>
+    internal virtual Point? GetEntrySpawnPosition(Player player) => null;
+
+    /// <summary>
+    /// Starts the game loop, unless it was started before. It can't start in the
+    /// constructor: the loop reads overridden members which aren't ready until the
+    /// derived constructor body ran.
+    /// </summary>
+    internal void EnsureGameLoopRunning()
+    {
+        if (Interlocked.CompareExchange(ref this._gameLoopStarted, 1, 0) == 0)
+        {
+            _ = Task.Run(() => this.RunGameAsync(this.GameEndedToken), this.GameEndedToken);
+        }
     }
 
     /// <summary>
@@ -557,7 +611,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         this.Logger.LogDebug("{context}: Running the game ...", this);
         try
         {
-            var enterDuration = this.Definition.EnterDuration.AtLeast(CountdownMessageDuration);
+            var enterDuration = this.Definition.EnterDuration.AtLeast(this.MinimumEnterDuration);
             var gameDuration = this.Definition.GameDuration.AtLeast(CountdownMessageDuration);
             var exitDuration = this.Definition.ExitDuration.Subtract(CountdownMessageDuration).AtLeast(CountdownMessageDuration);
 
@@ -597,8 +651,8 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
             }
 
             await this.ShowCountdownMessageAsync().ConfigureAwait(false);
-            this.Logger.LogDebug("{context}: Waiting for the countdown duration of {countdownDuration}", this, CountdownMessageDuration);
-            await this.DelayWithSkipAsync(CountdownMessageDuration, cancellationToken).ConfigureAwait(false);
+            this.Logger.LogDebug("{context}: Waiting for the countdown duration of {countdownDuration}", this, this.CountdownDuration);
+            await this.DelayWithSkipAsync(this.CountdownDuration, cancellationToken).ConfigureAwait(false);
 
             this.Logger.LogDebug("{context}: Starting the game...", this);
             await this.StartAsync().ConfigureAwait(false);
@@ -663,7 +717,17 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     private async ValueTask StopAsync()
     {
         await this._players.SetStateAsync(MiniGameState.Ended).ConfigureAwait(false);
-        await this._gameEndedCts.CancelAsync().ConfigureAwait(false);
+        try
+        {
+            await this._gameEndedCts.CancelAsync().ConfigureAwait(false);
+        }
+        catch (ObjectDisposedException)
+        {
+            // Already torn down, e.g. by a repeated game-master restart racing this
+            // loop: disposal already warped the players out, so there is nothing to stop.
+            this.Logger.LogDebug("{context}: StopAsync called on a disposed game, skipping.", this);
+            return;
+        }
 
         this._spawnWaves.Clear();
         await this.Map.ClearEventSpawnedNpcsAsync().ConfigureAwait(false);

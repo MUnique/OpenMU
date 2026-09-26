@@ -1218,6 +1218,18 @@
   <data name="MiniGameStartConfiguration_EntranceClosedMessage_Name" xml:space="preserve">
     <value>Entrance closed message</value>
   </data>
+  <data name="KanturuStartConfiguration_TowerOpenDuration_Name" xml:space="preserve">
+    <value>Tower open duration</value>
+  </data>
+  <data name="KanturuStartConfiguration_TowerOpenDuration_Description" xml:space="preserve">
+    <value>How long the Tower of Refinement stays open after the Nightmare boss has been defeated.</value>
+  </data>
+  <data name="KanturuStartConfiguration_TowerOpenUntilUtc_Name" xml:space="preserve">
+    <value>Tower open until (UTC)</value>
+  </data>
+  <data name="KanturuStartConfiguration_TowerOpenUntilUtc_Description" xml:space="preserve">
+    <value>End of the current open window in UTC. Set automatically when Nightmare is defeated.</value>
+  </data>
   <data name="HappyHourConfiguration_ExperienceMultiplier_Name" xml:space="preserve">
     <value>Experience multiplier</value>
   </data>

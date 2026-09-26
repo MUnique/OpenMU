@@ -6,11 +6,19 @@ namespace MUnique.OpenMU.GameLogic.MiniGames.Kanturu;
 
 /// <summary>
 /// One health based phase of the Nightmare boss fight. When the boss' health drops below
-/// <see cref="HealthPercentage"/>, it's teleported to the configured position and its health
-/// is restored.
+/// <see cref="HealthPercentage"/>, it's teleported to the configured position and the
+/// configured summon wave spawns around the teleport target. Its health is not restored.
 /// </summary>
 public class KanturuNightmareHpPhase
 {
+    /// <summary>
+    /// Gets or sets the number of the spawn wave which is started when this phase starts,
+    /// e.g. 7 Dread Fears around the teleport target. No minions are summoned when it's
+    /// <c>null</c>. It refers to the <see cref="MUnique.OpenMU.DataModel.Configuration.MonsterSpawnArea.WaveNumber"/>
+    /// of the spawn areas of the event map.
+    /// </summary>
+    public byte? SummonWaveNumber { get; set; }
+
     /// <summary>
     /// Gets or sets the health percentage below which this phase starts.
     /// </summary>

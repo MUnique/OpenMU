@@ -38,13 +38,17 @@ public abstract class StartMiniGameEventChatCommandPlugInBase : IChatCommandPlug
             ?? this.MiniGameType.ToString();
         if (gameStarter.IsEventActive(player.GameContext))
         {
-            await gameStarter.DisposeRunningGamesAsync(player.GameContext).ConfigureAwait(false);
             await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MiniGameForceRestartFormat), eventName).ConfigureAwait(false);
         }
         else
         {
             await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MiniGameForceStartInitiatedFormat), eventName).ConfigureAwait(false);
         }
+
+        // Always dispose first, even without a running game: it's a no-op then, but
+        // clears stale state which would block the forced start (e.g. Kanturu's open
+        // tower window).
+        await gameStarter.DisposeRunningGamesAsync(player.GameContext).ConfigureAwait(false);
 
         gameStarter.ForceStart();
     }
