@@ -1359,12 +1359,6 @@
   <data name="ItemType" xml:space="preserve">
     <value>Type</value>
   </data>
-  <data name="MapDropChanceOverview" xml:space="preserve">
-    <value>Drop chance overview per map</value>
-  </data>
-  <data name="MapDropChanceOverviewDescription" xml:space="preserve">
-    <value>The sum of the chance based drop groups per map. Monster level restrictions of the groups are not considered here. If the total chance exceeds 100 %, the chances are scaled down proportionally and there is no chance for no drop. Groups of specific monsters and quests are added to these when a monster is killed.</value>
-  </data>
   <data name="MapDropItemGroups" xml:space="preserve">
     <value>Map drop groups</value>
   </data>
@@ -1493,5 +1487,17 @@
   </data>
   <data name="UsedBy" xml:space="preserve">
     <value>Used by</value>
+  </data>
+  <data name="Monster" xml:space="preserve">
+    <value>Monster</value>
+  </data>
+  <data name="MonsterLevel" xml:space="preserve">
+    <value>Level</value>
+  </data>
+  <data name="MonsterDropChanceOverview" xml:space="preserve">
+    <value>Drop chance overview per monster</value>
+  </data>
+  <data name="MonsterDropChanceOverviewDescription" xml:space="preserve">
+    <value>The drop chances of each monster which is spawned on a map, considering the monster level restrictions of the map drop groups and the monster specific drop groups. The chances apply to each drop roll, a monster rolls up to its maximum item drops. Quest item drops are not included. If the total chance exceeds 100 %, the chances are scaled down proportionally and there is no chance for no drop.</value>
   </data>
 </root>

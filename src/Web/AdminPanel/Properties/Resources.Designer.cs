@@ -1774,24 +1774,6 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Drop chance overview per map.
-        /// </summary>
-        public static string MapDropChanceOverview {
-            get {
-                return ResourceManager.GetString("MapDropChanceOverview", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The sum of the chance based drop groups per map. Monster level restrictions of the groups are not considered here. If the total chance exceeds 100 %, the chances are scaled down proportionally and there is no chance for no drop. Groups of specific monsters and quests are added to these when a monster is killed..
-        /// </summary>
-        public static string MapDropChanceOverviewDescription {
-            get {
-                return ResourceManager.GetString("MapDropChanceOverviewDescription", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Map drop groups.
         /// </summary>
         public static string MapDropItemGroups {
@@ -1990,6 +1972,33 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Monster.
+        /// </summary>
+        public static string Monster {
+            get {
+                return ResourceManager.GetString("Monster", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Drop chance overview per monster.
+        /// </summary>
+        public static string MonsterDropChanceOverview {
+            get {
+                return ResourceManager.GetString("MonsterDropChanceOverview", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The drop chances of each monster which is spawned on a map, considering the monster level restrictions of the map drop groups and the monster specific drop groups. The chances apply to each drop roll, a monster rolls up to its maximum item drops. Quest item drops are not included. If the total chance exceeds 100 %, the chances are scaled down proportionally and there is no chance for no drop..
+        /// </summary>
+        public static string MonsterDropChanceOverviewDescription {
+            get {
+                return ResourceManager.GetString("MonsterDropChanceOverviewDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Monster drops.
         /// </summary>
         public static string MonsterDrops {
@@ -2004,6 +2013,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string MonsterDropsDescription {
             get {
                 return ResourceManager.GetString("MonsterDropsDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Level.
+        /// </summary>
+        public static string MonsterLevel {
+            get {
+                return ResourceManager.GetString("MonsterLevel", resourceCulture);
             }
         }
         

@@ -1,4 +1,4 @@
-// <copyright file="EditItemDrops.razor.cs" company="MUnique">
+﻿// <copyright file="EditItemDrops.razor.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
 using MUnique.OpenMU.Web.Shared;
@@ -129,10 +130,35 @@ public partial class EditItemDrops : ComponentBase, IAsyncDisposable
         }
     }
 
-    private IEnumerable<GameMapDefinition> FilteredMaps =>
-        this._maps.Where(m => !this.HasFilter
-                              || this.Matches(m.Name)
-                              || m.DropItemGroups.Any(this.IsMatchingFilter));
+    /// <summary>
+    /// Gets the drop overviews of the monsters which are spawned on each map, filtered by the current filter.
+    /// </summary>
+    private IEnumerable<(GameMapDefinition Map, IReadOnlyList<MonsterDropOverview> Monsters)> MonsterDropOverviewsPerMap
+    {
+        get
+        {
+            foreach (var map in this._maps)
+            {
+                var mapMatches = !this.HasFilter || this.Matches(map.Name);
+                var overviews = map.MonsterSpawns
+                    .Select(spawn => spawn.MonsterDefinition)
+                    .OfType<MonsterDefinition>()
+                    .Where(monster => monster.ObjectKind is NpcObjectKind.Monster or NpcObjectKind.Destructible)
+                    .Distinct()
+                    .Select(monster => new MonsterDropOverview(monster, map))
+                    .Where(overview => mapMatches
+                                       || this.Matches(overview.Monster.Designation)
+                                       || overview.Groups.Any(this.IsMatchingFilter))
+                    .OrderBy(overview => overview.Level)
+                    .ThenBy(overview => overview.Monster.Number)
+                    .ToList();
+                if (overviews.Count > 0)
+                {
+                    yield return (map, overviews);
+                }
+            }
+        }
+    }
 
     private IEnumerable<MonsterDefinition> FilteredMonsters =>
         this._monsters
@@ -483,6 +509,75 @@ public partial class EditItemDrops : ComponentBase, IAsyncDisposable
             await this.DataSource.DiscardChangesAsync().ConfigureAwait(true);
             this._gameConfiguration = null;
             await this.LoadDataAsync(this._disposeCts?.Token ?? default).ConfigureAwait(true);
+        }
+    }
+
+    /// <summary>
+    /// The drop overview of a monster on a map. It considers the drop item groups in the same way
+    /// as the <see cref="MUnique.OpenMU.GameLogic.DefaultDropGenerator"/>, except the quest and character specific groups.
+    /// </summary>
+    private sealed class MonsterDropOverview
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MonsterDropOverview"/> class.
+        /// </summary>
+        /// <param name="monster">The monster.</param>
+        /// <param name="map">The map on which the monster is spawned.</param>
+        public MonsterDropOverview(MonsterDefinition monster, GameMapDefinition map)
+        {
+            this.Monster = monster;
+            this.Level = (int)monster[Stats.Level];
+            var groups = monster.DropItemGroups.ToList();
+            if (monster.ObjectKind != NpcObjectKind.Destructible)
+            {
+                groups.AddRange(map.DropItemGroups.Where(this.IsRelevant).Except(groups));
+            }
+
+            this.Groups = groups.OrderByDescending(g => g.Chance).ToList();
+            this.GuaranteedDrops = groups.Count(g => g.Chance >= 1.0);
+            this.TotalChance = groups.Where(g => g.Chance < 1.0).Sum(g => g.Chance);
+        }
+
+        /// <summary>
+        /// Gets the monster.
+        /// </summary>
+        public MonsterDefinition Monster { get; }
+
+        /// <summary>
+        /// Gets the level of the monster.
+        /// </summary>
+        public int Level { get; }
+
+        /// <summary>
+        /// Gets the drop item groups which apply to the monster.
+        /// </summary>
+        public IReadOnlyList<DropItemGroup> Groups { get; }
+
+        /// <summary>
+        /// Gets the number of groups which drop always.
+        /// </summary>
+        public int GuaranteedDrops { get; }
+
+        /// <summary>
+        /// Gets the sum of the chances of the chance based groups, which applies per drop roll.
+        /// </summary>
+        public double TotalChance { get; }
+
+        /// <summary>
+        /// Gets the chance that nothing drops in a drop roll.
+        /// </summary>
+        public double NoDropChance => Math.Max(0, 1.0 - this.TotalChance);
+
+        /// <summary>
+        /// Gets the tooltip text which lists the groups with their chance.
+        /// </summary>
+        public string GroupsTooltip => string.Join(Environment.NewLine, this.Groups.Select(g => $"{g.Chance:P2} {g.Description}"));
+
+        private bool IsRelevant(DropItemGroup group)
+        {
+            return (group.MinimumMonsterLevel is not { } minimumLevel || this.Level >= minimumLevel)
+                   && (group.MaximumMonsterLevel is not { } maximumLevel || this.Level <= maximumLevel)
+                   && (group.Monster is null || group.Monster.Equals(this.Monster));
         }
     }
 

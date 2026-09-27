@@ -10,11 +10,14 @@
     width: 8rem;
 }
 
-.drop-group-table .items-column {
-    max-width: 20rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+.drop-group-table .group-row > td {
+    border-bottom-width: 0;
+}
+
+.drop-group-table .items-row > td {
+    padding-top: 0;
+    font-size: 0.875em;
+    white-space: normal;
 }
 
 .drop-group-table .details-row > td {

@@ -31,7 +31,6 @@
             <th>@Resources.MinimumMonsterLevel</th>
             <th>@Resources.MaximumMonsterLevel</th>
         }
-        <th>@Resources.PossibleItems</th>
         @if (this.UsageProvider is not null)
         {
             <th>@Resources.UsedBy</th>
@@ -44,7 +43,7 @@
     {
         var isExpanded = this._expandedGroups.Contains(group);
         var boxGroup = group as ItemDropItemGroup;
-        <tr @key="group">
+        <tr @key="group" class="group-row">
             <td class="description-column">
                 <input type="text" class="form-control form-control-sm" value="@group.Description.ValueInNeutralLanguage"
                        @onchange="@(e => SetDescription(group, e.Value?.ToString()))" />
@@ -83,7 +82,6 @@
                 <td><input type="number" class="form-control form-control-sm number-input" min="0" max="255" @bind="group.MinimumMonsterLevel" /></td>
                 <td><input type="number" class="form-control form-control-sm number-input" min="0" max="255" @bind="group.MaximumMonsterLevel" /></td>
             }
-            <td class="items-column" title="@GetItemsTooltip(group)">@GetItemsSummary(group)</td>
             @if (this.UsageProvider is not null)
             {
                 <td class="small">@this.UsageProvider(group)</td>
@@ -98,6 +96,11 @@
                         <span class="oi oi-trash" aria-hidden="true"></span>
                     </button>
                 }
+            </td>
+        </tr>
+        <tr @key="(group, nameof(group.PossibleItems))" class="items-row">
+            <td colspan="@this.ColumnCount">
+                <span class="text-muted">@Resources.PossibleItems:</span> @GetItemsSummary(group)
             </td>
         </tr>
         @if (isExpanded)

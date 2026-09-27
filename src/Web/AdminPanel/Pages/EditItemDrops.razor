@@ -1,4 +1,4 @@
-@page "/edit-item-drops"
+﻿@page "/edit-item-drops"
 
 @using MUnique.OpenMU.DataModel.Configuration
 @using MUnique.OpenMU.DataModel.Configuration.Items
@@ -54,31 +54,40 @@
     </div>
 </CollapsibleSection>
 
-<CollapsibleSection Title="@Resources.MapDropChanceOverview" Description="@Resources.MapDropChanceOverviewDescription" Badge="@this.FilteredMaps.Count().ToString()">
+<CollapsibleSection Title="@Resources.MonsterDropChanceOverview" Description="@Resources.MonsterDropChanceOverviewDescription">
     <div class="table-responsive">
         <table class="table table-sm table-hover align-middle">
             <thead>
             <tr>
-                <th>@Resources.GameMap</th>
+                <th>@Resources.Monster</th>
+                <th>@Resources.MonsterLevel</th>
+                <th title="@Resources.NumberOfMaximumItemDropsHint">@Resources.NumberOfMaximumItemDrops</th>
                 <th>@Resources.DropItemGroups</th>
                 <th>@Resources.GuaranteedDrops</th>
                 <th>@Resources.TotalChance</th>
                 <th>@Resources.NoDropChance</th>
             </tr>
             </thead>
-            <tbody>
-            @foreach (var map in this.FilteredMaps)
+            @foreach (var (map, overviews) in this.MonsterDropOverviewsPerMap)
             {
-                var chanceSum = map.DropItemGroups.Where(g => g.Chance < 1.0).Sum(g => g.Chance);
-                <tr @key="map">
-                    <td>@map.Number - @map.Name</td>
-                    <td title="@string.Join(Environment.NewLine, map.DropItemGroups.OrderByDescending(g => g.Chance).Select(g => $"{g.Chance:P2} {g.Description}"))">@map.DropItemGroups.Count</td>
-                    <td>@map.DropItemGroups.Count(g => g.Chance >= 1.0)</td>
-                    <td class="@(chanceSum > 1.0 ? "text-danger fw-bold" : string.Empty)" title="@(chanceSum > 1.0 ? Resources.TotalChanceExceedsHint : null)">@chanceSum.ToString("P2")</td>
-                    <td>@Math.Max(0, 1.0 - chanceSum).ToString("P2")</td>
+                <tbody @key="map">
+                <tr class="table-secondary">
+                    <th colspan="7">@map.Number - @map.Name</th>
                 </tr>
+                @foreach (var overview in overviews)
+                {
+                    <tr @key="overview.Monster">
+                        <td>@overview.Monster.Number - @overview.Monster.Designation</td>
+                        <td>@overview.Level</td>
+                        <td>@overview.Monster.NumberOfMaximumItemDrops</td>
+                        <td title="@overview.GroupsTooltip">@overview.Groups.Count</td>
+                        <td>@overview.GuaranteedDrops</td>
+                        <td class="@(overview.TotalChance > 1.0 ? "text-danger fw-bold" : string.Empty)" title="@(overview.TotalChance > 1.0 ? Resources.TotalChanceExceedsHint : null)">@overview.TotalChance.ToString("P2")</td>
+                        <td>@overview.NoDropChance.ToString("P2")</td>
+                    </tr>
+                }
+                </tbody>
             }
-            </tbody>
         </table>
     </div>
 </CollapsibleSection>

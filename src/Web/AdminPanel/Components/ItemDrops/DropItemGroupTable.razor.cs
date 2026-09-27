@@ -17,8 +17,6 @@ using MUnique.OpenMU.Web.AdminPanel.Properties;
 /// </summary>
 public partial class DropItemGroupTable
 {
-    private const int MaximumItemNamesInSummary = 3;
-
     private static readonly CultureInfo NeutralCulture = CultureInfo.GetCultureInfo(LocalizedString.NeutralLanguageCode);
 
     private readonly HashSet<DropItemGroup> _expandedGroups = [];
@@ -77,7 +75,7 @@ public partial class DropItemGroupTable
     [Parameter]
     public EventCallback OnMapsChanged { get; set; }
 
-    private int ColumnCount => (this.IsItemBoxDrop ? 11 : 8) + (this.UsageProvider is null ? 0 : 1);
+    private int ColumnCount => (this.IsItemBoxDrop ? 10 : 7) + (this.UsageProvider is null ? 0 : 1);
 
     private static double ToPercent(double chance) => Math.Round(chance * 100.0, 8);
 
@@ -101,26 +99,9 @@ public partial class DropItemGroupTable
             };
         }
 
-        var names = group.PossibleItems
-            .Take(MaximumItemNamesInSummary)
-            .Select(item => item.GetNameForLevel(group.ItemLevel ?? 0));
-        var summary = string.Join(", ", names);
-        if (group.PossibleItems.Count > MaximumItemNamesInSummary)
-        {
-            summary += string.Format(CultureInfo.InvariantCulture, " (+{0})", group.PossibleItems.Count - MaximumItemNamesInSummary);
-        }
-
-        return summary;
-    }
-
-    private static string? GetItemsTooltip(DropItemGroup group)
-    {
-        if (group.PossibleItems.Count <= MaximumItemNamesInSummary)
-        {
-            return null;
-        }
-
-        return string.Join(Environment.NewLine, group.PossibleItems.Select(item => item.Name.ToString()));
+        return string.Join(", ", group.PossibleItems
+            .Select(item => item.GetNameForLevel(group.ItemLevel ?? 0))
+            .Order(StringComparer.CurrentCultureIgnoreCase));
     }
 
     private void ToggleExpanded(DropItemGroup group)
