@@ -1302,4 +1302,17 @@
   <data name="DoppelgangerFeaturePlugIn_Description" xml:space="preserve">
     <value>Configures the run of the doppelganger event, e.g. its monsters, their paths and multipliers.</value>
   </data>
+  <data name="WeeklyQuestsPlugIn_Name" xml:space="preserve">
+    <value>Weekly Quests</value>
+  </data>
+  <data name="WeeklyQuestsPlugIn_Description" xml:space="preserve">
+    <value>Quests de historia, diarias, semanales, de clase y de zona, con uno o varios pasos (kills, niveles, resets, eventos, PvP, items, hablar con NPCs, entrar a mapas) y premios configurables.</value>
+  </data>
+  <data name="WeeklyQuestsChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Weekly quests chat command</value>
+  </data>
+  <data name="WeeklyQuestsChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/weekly'. Shows the progress of the weekly quests.</value>
+  </data>
+  </data>
 </root>

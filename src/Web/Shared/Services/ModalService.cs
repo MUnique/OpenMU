@@ -10,9 +10,14 @@ using MUnique.OpenMU.Web.Shared.Components.Modal;
 /// <summary>
 /// Default implementation of <see cref="IModalService"/>.
 /// </summary>
+/// <remarks>
+/// Modals are stacked: a modal which is shown from within another one (e.g. the selection of
+/// objects for a field of an object which is being created) is shown on top of it, and the
+/// underlying modal keeps its state until the top one is closed.
+/// </remarks>
 public sealed class ModalService : IModalService, IDisposable
 {
-    private ModalState? _state;
+    private readonly List<ModalState> _stack = new();
 
     /// <summary>
     /// Occurs when the modal state changes (shown, closed).
@@ -20,9 +25,14 @@ public sealed class ModalService : IModalService, IDisposable
     public event Action? StateChanged;
 
     /// <summary>
-    /// Gets the current modal state, or <see langword="null"/> if none is active.
+    /// Gets the open modals, from the bottom to the top.
     /// </summary>
-    internal ModalState? Current => this._state;
+    internal IReadOnlyList<ModalState> Modals => this._stack;
+
+    /// <summary>
+    /// Gets the modal on top, or <see langword="null"/> if none is active.
+    /// </summary>
+    internal ModalState? Current => this._stack.Count > 0 ? this._stack[^1] : null;
 
     /// <inheritdoc />
     public IModalReference Show<TComponent>(string title, ModalParameters? parameters = null, ModalOptions? options = null)
@@ -34,14 +44,13 @@ public sealed class ModalService : IModalService, IDisposable
     /// <inheritdoc />
     public IModalReference Show(Type componentType, string title, ModalParameters? parameters = null, ModalOptions? options = null)
     {
-        if (this._state is { } state)
-        {
-            state.Reference.TrySetResult(ModalResult.Cancel());
-        }
-
         var reference = new ModalReference();
-        var instance = new ModalInstance(reference, this.Dismiss);
-        this._state = new ModalState(componentType, title, parameters, options, instance, reference);
+        ModalState? state = null;
+
+        // The instance closes exactly its own modal, even if another one has been opened on top of it meanwhile.
+        var instance = new ModalInstance(reference, () => this.Close(state!));
+        state = new ModalState(componentType, title, parameters, options, instance, reference);
+        this._stack.Add(state);
         this.StateChanged?.Invoke();
         return reference;
     }
@@ -49,26 +58,36 @@ public sealed class ModalService : IModalService, IDisposable
     /// <inheritdoc />
     public void Dispose()
     {
-        if (this._state is { } state)
+        foreach (var state in this._stack)
         {
             state.Reference.TrySetResult(ModalResult.Cancel());
         }
 
-        this._state = null;
+        this._stack.Clear();
     }
 
     /// <summary>
-    /// Dismisses the currently active modal.
+    /// Dismisses the modal on top.
     /// </summary>
     internal void Dismiss()
     {
-        if (this._state is { } state)
+        if (this.Current is { } state)
         {
-            state.Reference.TrySetResult(ModalResult.Cancel());
+            this.Close(state);
         }
+    }
 
-        this._state = null;
-        this.StateChanged?.Invoke();
+    /// <summary>
+    /// Closes the specified modal. If it's already closed with a result, it stays like that.
+    /// </summary>
+    /// <param name="state">The modal.</param>
+    private void Close(ModalState state)
+    {
+        state.Reference.TrySetResult(ModalResult.Cancel());
+        if (this._stack.Remove(state))
+        {
+            this.StateChanged?.Invoke();
+        }
     }
 
     /// <summary>

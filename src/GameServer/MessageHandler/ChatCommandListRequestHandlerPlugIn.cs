@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
+using MUnique.OpenMU.GameLogic.PlugIns.WeeklyQuests;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.Network.Packets.ClientToServer;
 using MUnique.OpenMU.Network.PlugIns;
@@ -38,5 +39,13 @@ internal class ChatCommandListRequestHandlerPlugIn : ISubPacketHandlerPlugIn
 
         var commands = player.GetAvailableChatCommandInfos().ToList();
         await player.InvokeViewPlugInAsync<IChatCommandListViewPlugIn>(p => p.ShowChatCommandListAsync(commands)).ConfigureAwait(false);
+
+        // The client asks for its lists when it entered the map, which makes this the moment
+        // where it's ready to receive the weekly quests, too.
+        if (player.GameContext.PlugInManager.IsPlugInActive(typeof(WeeklyQuestsPlugIn).GUID)
+            && WeeklyQuestsPlugIn.GetTrackingPlugIn(player) is { } weeklyQuests)
+        {
+            await weeklyQuests.SendListAsync(player).ConfigureAwait(false);
+        }
     }
 }

@@ -17,6 +17,8 @@ using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.AdminAuth;
 using MUnique.OpenMU.Persistence.EntityFramework;
 using MUnique.OpenMU.Persistence.EntityFramework.AdminAuth;
+using MUnique.OpenMU.Persistence.EntityFramework.WeeklyQuests;
+using MUnique.OpenMU.Persistence.WeeklyQuests;
 using MUnique.OpenMU.PlugIns;
 using Nito.AsyncEx.Synchronous;
 using OpenTelemetry.Exporter;
@@ -57,6 +59,7 @@ public static class Extensions
             .AddSingleton(s => (IPersistenceContextProvider)s.GetService<IMigratableDatabaseContextProvider>()!)
             .AddSingleton(s => new Lazy<IPersistenceContextProvider>(s.GetRequiredService<IPersistenceContextProvider>))
             .AddAdminUserRepository()
+            .AddWeeklyQuestProgressRepository()
             .AddSingleton<IBackupService>(s => new BackupService(
                 s.GetRequiredService<IPersistenceContextProvider>(),
                 s.GetRequiredService<IAdminUserRepository>()))
@@ -245,6 +248,7 @@ public static class Extensions
         var useReverseProxy = !string.IsNullOrWhiteSpace(pathBase);
 
         var app = builder.Build();
+        WeeklyQuestProgressRepositoryRegistry.Current = app.Services.GetService<IWeeklyQuestProgressRepository>();
 
         if (useReverseProxy)
         {

@@ -7151,5 +7151,23 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("CastleSiegeLifeStoneStatePlugIn_Name", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Weekly quest list view.
+        /// </summary>
+        public static string WeeklyQuestListViewPlugIn_Name {
+            get {
+                return ResourceManager.GetString("WeeklyQuestListViewPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Sends the weekly quests and their progress, so that the client can show them in a window..
+        /// </summary>
+        public static string WeeklyQuestListViewPlugIn_Description {
+            get {
+                return ResourceManager.GetString("WeeklyQuestListViewPlugIn_Description", resourceCulture);
+            }
+        }
     }
 }
