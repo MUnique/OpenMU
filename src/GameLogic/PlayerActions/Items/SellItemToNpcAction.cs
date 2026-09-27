@@ -47,6 +47,17 @@ public class SellItemToNpcAction
             return false;
         }
 
+        if (item.Definition is { IsSellableToNpc: false })
+        {
+            player.Logger.LogWarning(
+                "Player {0} tried to sell {1} to an npc, which its item definition doesn't allow. The client item data may differ from the server.",
+                player,
+                item);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.ItemCannotBeSoldToNpc)).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IItemSoldToNpcPlugIn>(p => p.ItemSoldToNpcAsync(false)).ConfigureAwait(false);
+            return false;
+        }
+
         if (item.Definition is null || (item.Definition.IsBoundToCharacter && (item.Definition.Durability == 0 || item.Durability > 0)))
         {
             await player.InvokeViewPlugInAsync<IItemSoldToNpcPlugIn>(p => p.ItemSoldToNpcAsync(false)).ConfigureAwait(false);

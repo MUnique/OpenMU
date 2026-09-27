@@ -844,6 +844,60 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This item can't be dropped..
+        /// </summary>
+        public static string ItemCannotBeDropped {
+            get {
+                return ResourceManager.GetString("ItemCannotBeDropped", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This item can't be repaired..
+        /// </summary>
+        public static string ItemCannotBeRepaired {
+            get {
+                return ResourceManager.GetString("ItemCannotBeRepaired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This item can't be sold in a personal store..
+        /// </summary>
+        public static string ItemCannotBeSoldInPersonalStore {
+            get {
+                return ResourceManager.GetString("ItemCannotBeSoldInPersonalStore", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This item can't be sold..
+        /// </summary>
+        public static string ItemCannotBeSoldToNpc {
+            get {
+                return ResourceManager.GetString("ItemCannotBeSoldToNpc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This item can't be stored in the vault..
+        /// </summary>
+        public static string ItemCannotBeStored {
+            get {
+                return ResourceManager.GetString("ItemCannotBeStored", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This item can't be traded..
+        /// </summary>
+        public static string ItemCannotBeTraded {
+            get {
+                return ResourceManager.GetString("ItemCannotBeTraded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This item is bound to the inventory of this character..
         /// </summary>
         public static string ItemIsBoundToInventoryOfCharacter {
