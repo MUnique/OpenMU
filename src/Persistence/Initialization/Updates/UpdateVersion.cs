@@ -586,7 +586,17 @@ public enum UpdateVersion
     AddDoppelgangerData = 115,
 
     /// <summary>
+    /// The version of the <see cref="AddItemRuleFlagsPlugIn"/>.
+    /// </summary>
+    AddItemRuleFlags = 116,
+
+    /// <summary>
+    /// The version of the <see cref="AddDarkHorseCanFlyPlugIn"/>.
+    /// </summary>
+    AddDarkHorseCanFly = 117,
+
+    /// <summary>
     /// The version of the <see cref="RefreshKanturuDataUpdatePlugIn"/>.
     /// </summary>
-    RefreshKanturuData = 116,
+    RefreshKanturuData = 118,
 }

@@ -56,6 +56,18 @@ public class MoveItemAction
             return;
         }
 
+        if (fromStorage != toStorage && GetRuleBlockingMove(item, toStorage) is { } blockedMessage)
+        {
+            player.Logger.LogWarning(
+                "Player {0} tried to move {1} into the {2}, which its item definition doesn't allow. The client item data may differ from the server.",
+                player,
+                item,
+                toStorage);
+            await player.ShowLocalizedBlueMessageAsync(blockedMessage).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IItemMoveFailedPlugIn>(p => p.ItemMoveFailedAsync(item)).ConfigureAwait(false);
+            return;
+        }
+
         var toStorageInfo = this.GetStorageInfo(player, toStorage);
         var toItemStorage = toStorageInfo?.Storage;
 
@@ -98,6 +110,27 @@ public class MoveItemAction
         {
             await itemStackedPlugIn.ItemStackedAsync(player, item, target).ConfigureAwait(false);
         }
+    }
+
+    /// <summary>
+    /// Gets the message to show when the item rules of the item definition don't allow
+    /// moving it into the target storage, or <c>null</c> when they do.
+    /// </summary>
+    private static string? GetRuleBlockingMove(Item item, Storages toStorage)
+    {
+        var definition = item.Definition;
+        if (definition is null)
+        {
+            return null;
+        }
+
+        return toStorage switch
+        {
+            Storages.Trade when !definition.IsTradable => nameof(PlayerMessage.ItemCannotBeTraded),
+            Storages.Vault when !definition.IsStorable => nameof(PlayerMessage.ItemCannotBeStored),
+            Storages.PersonalStore when !definition.IsPersonalStoreSellable => nameof(PlayerMessage.ItemCannotBeSoldInPersonalStore),
+            _ => null,
+        };
     }
 
     private async ValueTask FullStackAsync(Player player, IStorage sourceStorage, Item sourceItem, Item targetItem)
