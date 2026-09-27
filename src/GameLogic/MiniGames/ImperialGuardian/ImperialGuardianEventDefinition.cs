@@ -40,7 +40,7 @@ public class ImperialGuardianEventDefinition
     /// <summary>
     /// Gets or sets a value indicating whether the event can only be entered as member of a party.
     /// </summary>
-    public bool IsPartyRequired { get; set; }
+    public bool IsPartyRequired { get; set; } = true;
 
     /// <summary>
     /// Gets or sets a fixed day of the week (1 = monday, ..., 7 = sunday) for the event, e.g. for testing.
