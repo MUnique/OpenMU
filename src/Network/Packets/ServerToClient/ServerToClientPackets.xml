@@ -11652,6 +11652,171 @@
       </Structures>
     </Packet>
     <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>F5</Code>
+      <SubCode>04</SubCode>
+      <Name>SkillRequirements</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>Once after a successful login, before the character selection.</SentWhen>
+      <CausedReaction>The client uses these requirements and costs for the rest of the session, instead of the ones of its own data files, so that it shows and checks exactly what the server checks.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>SkillCount</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Structure[]</Type>
+          <TypeName>SkillRequirement</TypeName>
+          <Name>Skills</Name>
+          <ItemCountField>SkillCount</ItemCountField>
+          <Description>The requirements of every skill of the game configuration.</Description>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>SkillRequirement</Name>
+          <Description>The requirements and costs of a skill, as the server checks them. A value of 0 means there is no such requirement.</Description>
+          <Length>16</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>SkillNumber</Name>
+            </Field>
+            <Field>
+              <Index>2</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>Level</Name>
+              <Description>The required character level.</Description>
+            </Field>
+            <Field>
+              <Index>4</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>Energy</Name>
+              <Description>The required total energy.</Description>
+            </Field>
+            <Field>
+              <Index>6</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>Leadership</Name>
+              <Description>The required total leadership (command).</Description>
+            </Field>
+            <Field>
+              <Index>8</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>Strength</Name>
+              <Description>The required total strength.</Description>
+            </Field>
+            <Field>
+              <Index>10</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>Agility</Name>
+              <Description>The required total agility.</Description>
+            </Field>
+            <Field>
+              <Index>12</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>Mana</Name>
+              <Description>The mana which is consumed by using the skill.</Description>
+            </Field>
+            <Field>
+              <Index>14</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>AbilityGauge</Name>
+              <Description>The ability (AG) which is consumed by using the skill.</Description>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
+    </Packet>
+    <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>F5</Code>
+      <SubCode>05</SubCode>
+      <Name>LearnableItemRequirements</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>Once after a successful login, right after the SkillRequirements message.</SentWhen>
+      <CausedReaction>The client shows these requirements for the items which teach a skill (orbs, scrolls, parchments, crystals), instead of the ones it calculates from its own data files.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>ItemCount</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Structure[]</Type>
+          <TypeName>LearnableItemRequirement</TypeName>
+          <Name>Items</Name>
+          <ItemCountField>ItemCount</ItemCountField>
+          <Description>The requirements to learn the skill of each item.</Description>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>LearnableItemRequirement</Name>
+          <Description>The requirements to learn a skill with an item: the highest of the requirements of the item and the requirements of the skill. A value of 0 means there is no such requirement.</Description>
+          <Length>16</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>Byte</Type>
+              <Name>Group</Name>
+            </Field>
+            <Field>
+              <Index>1</Index>
+              <Type>Byte</Type>
+              <Name>ItemLevel</Name>
+              <Description>The item level these requirements are for, or 0xFF if they apply to every level. Items which teach a different skill per level (Orb of Summoning) have one entry per level.</Description>
+            </Field>
+            <Field>
+              <Index>2</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>Number</Name>
+            </Field>
+            <Field>
+              <Index>4</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>Level</Name>
+              <Description>The required character level.</Description>
+            </Field>
+            <Field>
+              <Index>6</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>Energy</Name>
+              <Description>The required total energy.</Description>
+            </Field>
+            <Field>
+              <Index>8</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>Leadership</Name>
+              <Description>The required total leadership (command).</Description>
+            </Field>
+            <Field>
+              <Index>10</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>Strength</Name>
+              <Description>The required total strength.</Description>
+            </Field>
+            <Field>
+              <Index>12</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>Agility</Name>
+              <Description>The required total agility.</Description>
+            </Field>
+            <Field>
+              <Index>14</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>SkillNumber</Name>
+              <Description>The skill which is learned with the item.</Description>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
+    </Packet>
+    <Packet>
       <HeaderType>C1Header</HeaderType>
       <Code>94</Code>
       <Name>EventChipRegistrationResult</Name>
