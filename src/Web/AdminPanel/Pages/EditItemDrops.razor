@@ -1,0 +1,234 @@
+@page "/edit-item-drops"
+
+@using MUnique.OpenMU.DataModel.Configuration
+@using MUnique.OpenMU.DataModel.Configuration.Items
+@using MUnique.OpenMU.Persistence
+@using MUnique.OpenMU.Web.AdminPanel.Components.ItemDrops
+@using MUnique.OpenMU.Web.AdminPanel.Properties
+
+<PageTitle>OpenMU: @Resources.ItemDrops</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="@Resources.ItemDrops" />
+
+<h1>@Resources.ItemDrops</h1>
+<p class="text-muted">@Resources.ItemDropsPageDescription</p>
+
+@if (this._gameConfiguration is not { } gameConfiguration || this._persistenceContext is null)
+{
+    return;
+}
+
+<CascadingValue TValue="IContext" Value="this._persistenceContext" IsFixed="true">
+<CascadingValue TValue="IContext" Name="PersistenceContext" Value="this._persistenceContext" IsFixed="true">
+
+<div class="item-drops-toolbar d-flex flex-wrap align-items-center gap-2 mb-3">
+    <div class="flex-grow-1 auto-form-search-group">
+        <input type="text" class="form-control" placeholder="@($"{Resources.Search}...")"
+               @bind="this._filter" @bind:event="oninput" />
+    </div>
+    <button type="button" class="btn btn-primary" @onclick="this.OnSaveButtonClickAsync">@Resources.SaveChanges</button>
+    <button type="button" class="btn btn-secondary" @onclick="this.OnCancelButtonClickAsync">@Resources.DiscardChanges</button>
+</div>
+
+<CollapsibleSection Title="@Resources.GeneralDropSettings" InitiallyExpanded="true">
+    <div class="row g-3">
+        <div class="col-md-3">
+            <div class="form-check">
+                <input id="shouldDropMoney" type="checkbox" class="form-check-input" @bind="gameConfiguration.ShouldDropMoney" />
+                <label for="shouldDropMoney" class="form-check-label">@Resources.ShouldDropMoney</label>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <label for="itemDropDuration" class="form-label">@Resources.ItemDropDurationSeconds</label>
+            <input id="itemDropDuration" type="number" class="form-control form-control-sm" min="1"
+                   @bind:get="gameConfiguration.ItemDropDuration.TotalSeconds"
+                   @bind:set="@(value => gameConfiguration.ItemDropDuration = TimeSpan.FromSeconds(Math.Max(1, value)))" />
+        </div>
+        <div class="col-md-3">
+            <label for="maximumItemOptionLevelDrop" class="form-label" title="@Resources.MaximumItemOptionLevelDropHint">@Resources.MaximumItemOptionLevelDrop</label>
+            <input id="maximumItemOptionLevelDrop" type="number" class="form-control form-control-sm" min="1" max="4" @bind="gameConfiguration.MaximumItemOptionLevelDrop" />
+        </div>
+        <div class="col-md-3">
+            <label for="excellentItemDropLevelDelta" class="form-label" title="@Resources.ExcellentItemDropLevelDeltaHint">@Resources.ExcellentItemDropLevelDelta</label>
+            <input id="excellentItemDropLevelDelta" type="number" class="form-control form-control-sm" min="0" max="255" @bind="gameConfiguration.ExcellentItemDropLevelDelta" />
+        </div>
+    </div>
+</CollapsibleSection>
+
+<CollapsibleSection Title="@Resources.MapDropChanceOverview" Description="@Resources.MapDropChanceOverviewDescription" Badge="@this.FilteredMaps.Count().ToString()">
+    <div class="table-responsive">
+        <table class="table table-sm table-hover align-middle">
+            <thead>
+            <tr>
+                <th>@Resources.GameMap</th>
+                <th>@Resources.DropItemGroups</th>
+                <th>@Resources.GuaranteedDrops</th>
+                <th>@Resources.TotalChance</th>
+                <th>@Resources.NoDropChance</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var map in this.FilteredMaps)
+            {
+                var chanceSum = map.DropItemGroups.Where(g => g.Chance < 1.0).Sum(g => g.Chance);
+                <tr @key="map">
+                    <td>@map.Number - @map.Name</td>
+                    <td class="small">@string.Join(", ", map.DropItemGroups.Select(g => $"{g.Description} ({g.Chance:P2})"))</td>
+                    <td>@map.DropItemGroups.Count(g => g.Chance >= 1.0)</td>
+                    <td class="@(chanceSum > 1.0 ? "text-danger fw-bold" : string.Empty)" title="@(chanceSum > 1.0 ? Resources.TotalChanceExceedsHint : null)">@chanceSum.ToString("P2")</td>
+                    <td>@Math.Max(0, 1.0 - chanceSum).ToString("P2")</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</CollapsibleSection>
+
+<CollapsibleSection Title="@Resources.MapDropItemGroups" Description="@Resources.MapDropItemGroupsDescription" Badge="@this.MapGroups.Count.ToString()" InitiallyExpanded="true">
+    <DropItemGroupTable Groups="@this.MapGroups"
+                        Maps="@this._maps"
+                        ShowMonsterRestriction="true"
+                        OnMapsChanged="@this.StateHasChanged"
+                        OnRemove="@this.OnDeleteGroupAsync"
+                        RemoveTitle="@Resources.Delete" />
+    <button type="button" class="btn btn-sm btn-outline-primary" @onclick="this.OnAddMapGroup">
+        <span class="oi oi-plus" aria-hidden="true"></span> @Resources.AddDropItemGroup
+    </button>
+</CollapsibleSection>
+
+<CollapsibleSection Title="@Resources.MonsterDrops" Description="@Resources.MonsterDropsDescription" Badge="@this.FilteredMonsters.Count().ToString()">
+    @foreach (var monster in this.FilteredMonsters)
+    {
+        <div @key="monster" class="mb-4">
+            <div class="d-flex flex-wrap align-items-center gap-3 mb-2">
+                <h6 class="mb-0">@monster.Number - @monster.Designation</h6>
+                <label class="d-flex align-items-center gap-2 mb-0 small" title="@Resources.NumberOfMaximumItemDropsHint">
+                    @Resources.NumberOfMaximumItemDrops
+                    <input type="number" class="form-control form-control-sm monster-max-drops" min="0" @bind="monster.NumberOfMaximumItemDrops" />
+                </label>
+            </div>
+            <DropItemGroupTable Groups="@this.GetMonsterGroups(monster)"
+                                ShowMonsterRestriction="false"
+                                UsageProvider="@this.GetUsage"
+                                OnRemove="@(group => this.OnRemoveGroupFromMonsterAsync(monster, group))"
+                                RemoveTitle="@Resources.RemoveFromMonster" />
+            <button type="button" class="btn btn-sm btn-outline-primary" @onclick="() => this.OnAddMonsterGroup(monster)">
+                <span class="oi oi-plus" aria-hidden="true"></span> @Resources.AddDropItemGroup
+            </button>
+        </div>
+    }
+    <CascadingValue Value="this._additionEditContext" IsFixed="true">
+        <div class="d-flex flex-wrap align-items-end gap-2 border-top pt-3">
+            <div class="flex-grow-1">
+                <LookupField TObject="MonsterDefinition"
+                             Label="@Resources.AddDropsForMonster"
+                             @bind-Value="this._addition.Monster" />
+            </div>
+            <button type="button" class="btn btn-sm btn-primary mb-3" disabled="@(this._addition.Monster is null)" @onclick="this.OnAddGroupForSelectedMonster">
+                <span class="oi oi-plus" aria-hidden="true"></span> @Resources.AddDropItemGroup
+            </button>
+        </div>
+    </CascadingValue>
+</CollapsibleSection>
+
+<CollapsibleSection Title="@Resources.QuestAndEventDropItemGroups" Description="@Resources.QuestAndEventDropItemGroupsDescription" Badge="@this.QuestAndEventGroups.Count.ToString()">
+    <DropItemGroupTable Groups="@this.QuestAndEventGroups"
+                        Maps="@this._maps"
+                        ShowMonsterRestriction="true"
+                        UsageProvider="@this.GetUsage"
+                        OnMapsChanged="@this.StateHasChanged" />
+</CollapsibleSection>
+
+<CollapsibleSection Title="@Resources.ItemBoxDrops" Description="@Resources.ItemBoxDropsDescription" Badge="@this.FilteredBoxItems.Count().ToString()">
+    @foreach (var boxItem in this.FilteredBoxItems)
+    {
+        <div @key="boxItem" class="mb-4">
+            <h6>@boxItem.Name <small class="text-muted">(@boxItem.Group, @boxItem.Number)</small></h6>
+            <DropItemGroupTable Groups="@this.GetBoxGroups(boxItem)"
+                                IsItemBoxDrop="true"
+                                OnRemove="@(group => this.OnRemoveBoxGroupAsync(boxItem, group))"
+                                RemoveTitle="@Resources.Delete" />
+            <button type="button" class="btn btn-sm btn-outline-primary" @onclick="() => this.OnAddBoxGroup(boxItem)">
+                <span class="oi oi-plus" aria-hidden="true"></span> @Resources.AddDropItemGroup
+            </button>
+        </div>
+    }
+    <CascadingValue Value="this._additionEditContext" IsFixed="true">
+        <div class="d-flex flex-wrap align-items-end gap-2 border-top pt-3">
+            <div class="flex-grow-1">
+                <LookupField TObject="ItemDefinition"
+                             Label="@Resources.AddDropsForItem"
+                             @bind-Value="this._addition.Item" />
+            </div>
+            <button type="button" class="btn btn-sm btn-primary mb-3" disabled="@(this._addition.Item is null)" @onclick="this.OnAddGroupForSelectedItem">
+                <span class="oi oi-plus" aria-hidden="true"></span> @Resources.AddDropItemGroup
+            </button>
+        </div>
+    </CascadingValue>
+</CollapsibleSection>
+
+<CollapsibleSection Title="@Resources.RandomlyDroppedItems" Description="@Resources.RandomlyDroppedItemsDescription" Badge="@($"{gameConfiguration.Items.Count(i => i.DropsFromMonsters)} / {gameConfiguration.Items.Count}")">
+    <div class="form-check mb-2">
+        <input id="onlyDroppable" type="checkbox" class="form-check-input" @bind="this._showOnlyDroppableItems" />
+        <label for="onlyDroppable" class="form-check-label">@Resources.ShowOnlyDroppableItems</label>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-sm table-hover align-middle">
+            <thead>
+            <tr>
+                <th>@Resources.Item</th>
+                <th>@Resources.DropsFromMonsters</th>
+                <th title="@Resources.DropLevelHint">@Resources.DropLevel</th>
+                <th title="@Resources.MaximumDropLevelHint">@Resources.MaximumDropLevel</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in this.FilteredItems)
+            {
+                <tr @key="item">
+                    <td>@item.Name <small class="text-muted">(@item.Group, @item.Number)</small></td>
+                    <td><input type="checkbox" class="form-check-input" @bind="item.DropsFromMonsters" /></td>
+                    <td><input type="number" class="form-control form-control-sm monster-max-drops" min="0" max="255" @bind="item.DropLevel" /></td>
+                    <td><input type="number" class="form-control form-control-sm monster-max-drops" min="0" max="255" @bind="item.MaximumDropLevel" /></td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</CollapsibleSection>
+
+<CollapsibleSection Title="@Resources.ItemOptionDropChances" Description="@Resources.ItemOptionDropChancesDescription">
+    <div class="table-responsive">
+        <table class="table table-sm table-hover align-middle">
+            <thead>
+            <tr>
+                <th>@Resources.ItemOption</th>
+                <th>@Resources.AddsRandomly</th>
+                <th>@Resources.AddChancePercent</th>
+                <th>@Resources.MaximumOptionsPerItem</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var option in this.FilteredOptions)
+            {
+                <tr @key="option">
+                    <td>@option.Name</td>
+                    <td><input type="checkbox" class="form-check-input" @bind="option.AddsRandomly" /></td>
+                    <td>
+                        <input type="number" class="form-control form-control-sm monster-max-drops" step="any" min="0" max="100"
+                               @bind:get="ToPercent(option.AddChance)" @bind:set="@(value => option.AddChance = FromPercent(value))" />
+                    </td>
+                    <td><input type="number" class="form-control form-control-sm monster-max-drops" min="1" max="@option.PossibleOptions.Count" @bind="option.MaximumOptionsPerItem" /></td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</CollapsibleSection>
+
+<div class="d-flex gap-2 mb-5">
+    <button type="button" class="btn btn-primary" @onclick="this.OnSaveButtonClickAsync">@Resources.SaveChanges</button>
+    <button type="button" class="btn btn-secondary" @onclick="this.OnCancelButtonClickAsync">@Resources.DiscardChanges</button>
+</div>
+
+</CascadingValue>
+</CascadingValue>

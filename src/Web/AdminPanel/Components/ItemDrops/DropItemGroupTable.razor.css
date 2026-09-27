@@ -1,0 +1,23 @@
+.drop-group-table .description-column {
+    min-width: 16rem;
+}
+
+.drop-group-table .number-input {
+    width: 6rem;
+}
+
+.drop-group-table .money-input {
+    width: 8rem;
+}
+
+.drop-group-table .items-column {
+    max-width: 20rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.drop-group-table .details-row > td {
+    padding: 0.75rem 1rem;
+    border-left: 3px solid var(--bs-primary, #0d6efd);
+}
