@@ -596,7 +596,12 @@ public enum UpdateVersion
     AddDarkHorseCanFly = 117,
 
     /// <summary>
+    /// The version of the <see cref="AddRaklionEventUpdatePlugIn"/>.
+    /// </summary>
+    AddRaklionEvent = 118,
+
+    /// <summary>
     /// The version of the <see cref="RefreshKanturuDataUpdatePlugIn"/>.
     /// </summary>
-    RefreshKanturuData = 118,
+    RefreshKanturuData = 119,
 }
