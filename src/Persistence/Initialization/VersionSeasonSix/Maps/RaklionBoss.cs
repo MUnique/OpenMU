@@ -131,6 +131,7 @@ internal class RaklionBoss : BaseMapInitializer
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             monster.SetGuid(monster.Number);
+
             // The attack skills of Selupan are used by its intelligence of the raklion event,
             // which passes them to the damage calculation so that their multipliers apply.
         }

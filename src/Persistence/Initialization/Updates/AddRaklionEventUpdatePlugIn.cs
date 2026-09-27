@@ -84,35 +84,35 @@ public class AddRaklionEventUpdatePlugIn : UpdatePlugInBase
 
     private static void AddSelupanSkills(IContext context, GameConfiguration gameConfiguration)
     {
-        CreateSkill(SkillNumber.SelupanPoison, "Selupan Poison", 2.0f);
-        CreateSkill(SkillNumber.SelupanIceStorm, "Selupan Ice Storm", 2.2f);
-        CreateSkill(SkillNumber.SelupanIceStrike, "Selupan Ice Strike", 2.3f);
+        CreateSkill(context, gameConfiguration, SkillNumber.SelupanPoison, "Selupan Poison", 2.0f);
+        CreateSkill(context, gameConfiguration, SkillNumber.SelupanIceStorm, "Selupan Ice Storm", 2.2f);
+        CreateSkill(context, gameConfiguration, SkillNumber.SelupanIceStrike, "Selupan Ice Strike", 2.3f);
+    }
 
-        void CreateSkill(SkillNumber number, string name, float damageMultiplier)
+    private static void CreateSkill(IContext context, GameConfiguration gameConfiguration, SkillNumber number, string name, float damageMultiplier)
+    {
+        if (gameConfiguration.Skills.Any(skill => skill.Number == (short)number))
         {
-            if (gameConfiguration.Skills.Any(skill => skill.Number == (short)number))
-            {
-                return;
-            }
-
-            var skill = context.CreateNew<Skill>();
-            gameConfiguration.Skills.Add(skill);
-            skill.Number = (short)number;
-            skill.Name = name;
-            skill.DamageType = DamageType.Physical;
-            skill.Range = 10;
-            skill.SkillType = SkillType.AreaSkillExplicitTarget;
-            skill.Target = SkillTarget.Explicit;
-            skill.SetGuid(skill.Number);
-
-            skill.AttributeRelationships.Add(CharacterClassHelper.CreateAttributeRelationship(
-                context,
-                gameConfiguration,
-                Stats.SkillFinalMultiplier,
-                damageMultiplier,
-                Stats.SkillMultiplier,
-                InputOperator.Maximum));
+            return;
         }
+
+        var skill = context.CreateNew<Skill>();
+        gameConfiguration.Skills.Add(skill);
+        skill.Number = (short)number;
+        skill.Name = name;
+        skill.DamageType = DamageType.Physical;
+        skill.Range = 10;
+        skill.SkillType = SkillType.AreaSkillExplicitTarget;
+        skill.Target = SkillTarget.Explicit;
+        skill.SetGuid(skill.Number);
+
+        skill.AttributeRelationships.Add(CharacterClassHelper.CreateAttributeRelationship(
+            context,
+            gameConfiguration,
+            Stats.SkillFinalMultiplier,
+            damageMultiplier,
+            Stats.SkillMultiplier,
+            InputOperator.Maximum));
     }
 
     private static byte? GetWaveNumber(short? monsterNumber)
