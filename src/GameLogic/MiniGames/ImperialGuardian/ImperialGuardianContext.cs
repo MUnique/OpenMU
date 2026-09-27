@@ -166,8 +166,16 @@ public sealed class ImperialGuardianContext : MiniGameContext
         {
             await this.SpawnGatesAsync(0).ConfigureAwait(false);
             using var timer = new PeriodicTimer(TimerInterval);
+            var isCountdownShown = false;
             while (await timer.WaitForNextTickAsync(cancellationToken).ConfigureAwait(false))
             {
+                if (!isCountdownShown && this.State == MiniGameState.Closed)
+                {
+                    // The entering phase is over, e.g. because it was skipped, so the countdown until the start is shown.
+                    isCountdownShown = true;
+                    this.SetTimer(ImperialGuardianTimerType.Standby, CountdownDuration);
+                }
+
                 var remaining = this._timerEndsAtUtc - DateTime.UtcNow;
                 var type = this._timerType;
                 var monsterCount = this.RemainingMonsterCount;
@@ -361,7 +369,9 @@ public sealed class ImperialGuardianContext : MiniGameContext
             {
                 if (this._definition.TrapNumbers.Contains(definition.Number))
                 {
-                    await this.AddNpcAsync(new Trap(spawnArea, definition, this.Map, new RandomAttackInRangeTrapIntelligence(this.Map))).ConfigureAwait(false);
+                    // The traps are invisible, like in the original game. The game client doesn't know them.
+                    var trap = new Trap(spawnArea, definition, this.Map, new RandomAttackInRangeTrapIntelligence(this.Map)) { IsInvisible = true };
+                    await this.AddNpcAsync(trap).ConfigureAwait(false);
                     continue;
                 }
 
