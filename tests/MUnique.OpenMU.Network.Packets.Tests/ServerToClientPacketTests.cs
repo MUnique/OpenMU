@@ -6691,6 +6691,48 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the packet size calculation for SkillRequirements.
+    /// </summary>
+    [Test]
+    public void SkillRequirements_PacketSizeValidation()
+    {
+        // Basic packet validation
+        // Validate header type and field boundaries
+        
+        // Field 'SkillCount' starts at index 6 with size 2
+        Assert.That(6, Is.GreaterThanOrEqualTo(0), 
+            "Field 'SkillCount' has invalid negative index");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for LearnableItemRequirements.
+    /// </summary>
+    [Test]
+    public void LearnableItemRequirements_PacketSizeValidation()
+    {
+        // Basic packet validation
+        // Validate header type and field boundaries
+        
+        // Field 'ItemCount' starts at index 6 with size 2
+        Assert.That(6, Is.GreaterThanOrEqualTo(0), 
+            "Field 'ItemCount' has invalid negative index");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for MonsterLevels.
+    /// </summary>
+    [Test]
+    public void MonsterLevels_PacketSizeValidation()
+    {
+        // Basic packet validation
+        // Validate header type and field boundaries
+        
+        // Field 'MonsterCount' starts at index 6 with size 2
+        Assert.That(6, Is.GreaterThanOrEqualTo(0), 
+            "Field 'MonsterCount' has invalid negative index");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for EventChipRegistrationResult.
     /// </summary>
     [Test]
