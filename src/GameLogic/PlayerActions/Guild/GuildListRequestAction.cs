@@ -30,8 +30,7 @@ public class GuildListRequestAction
             // The client displays the members in the received order, so we sort by rank
             // (master, assistant, battle master, normal members) and then by name.
             var players = (await guildServer.GetGuildListAsync(player.GuildStatus.GuildId).ConfigureAwait(false))
-                .OrderBy(member => member.PlayerPosition, GuildPositionComparer.Instance)
-                .ThenBy(member => member.PlayerName, StringComparer.OrdinalIgnoreCase)
+                .Order(GuildPositionComparer.Instance)
                 .ToList();
             await player.InvokeViewPlugInAsync<IShowGuildListPlugIn>(p => p.ShowGuildListAsync(players, guild)).ConfigureAwait(false);
         }

@@ -230,6 +230,11 @@ public class GuildServer : IGuildServer
                 return;
             }
 
+            if (!this.CheckRoleLimits(guild, guildId, characterId, characterId.ToString(), role, null))
+            {
+                return;
+            }
+
             await this.ApplyPositionChangeAsync(guildId, guild, guildMember, role).ConfigureAwait(false);
         }
         catch (Exception ex)
@@ -239,7 +244,7 @@ public class GuildServer : IGuildServer
     }
 
     /// <inheritdoc/>
-    public async ValueTask<bool> ChangeGuildMemberPositionByNameAsync(uint guildId, string characterName, GuildPosition role)
+    public async ValueTask<bool> ChangeGuildMemberPositionByNameAsync(uint guildId, string characterName, GuildPosition role, int masterTotalLevel)
     {
         try
         {
@@ -262,6 +267,11 @@ public class GuildServer : IGuildServer
             if (guildMember.Status == GuildPosition.GuildMaster)
             {
                 this._logger.LogWarning("Guild {GuildId} member {CharacterName} is the guild master, leadership transfer is not supported.", guildId, characterName);
+                return false;
+            }
+
+            if (!this.CheckRoleLimits(guild, guildId, guildMember.Id, characterName, role, GuildRoleLimits.MaxBattleMasterCount(masterTotalLevel)))
+            {
                 return false;
             }
 
@@ -980,6 +990,37 @@ public class GuildServer : IGuildServer
         }
 
         return guildMember;
+    }
+
+    /// <summary>
+    /// Checks the role count limits against the runtime member list: at most one assistant
+    /// master, and battle masters limited by <paramref name="maxBattleMasters"/> when known.
+    /// </summary>
+    /// <param name="guild">The guild container.</param>
+    /// <param name="guildId">The runtime guild identifier.</param>
+    /// <param name="targetId">The identifier of the targeted member, excluded from the counts.</param>
+    /// <param name="memberIdentity">The member identity used in log messages.</param>
+    /// <param name="role">The requested role.</param>
+    /// <param name="maxBattleMasters">The maximum number of battle masters, or <c>null</c> when unknown (battle limit not checked).</param>
+    /// <returns><c>true</c> if the limits allow the assignment; otherwise, <c>false</c>.</returns>
+    private bool CheckRoleLimits(GuildContainer guild, uint guildId, Guid targetId, string memberIdentity, GuildPosition role, int? maxBattleMasters)
+    {
+        if (role == GuildPosition.AssistantMaster
+            && guild.Members.Any(m => m.Value.PlayerPosition == GuildPosition.AssistantMaster && m.Key != targetId))
+        {
+            this._logger.LogWarning("Guild {GuildId} already has an assistant master, so member {Member} can't be promoted.", guildId, memberIdentity);
+            return false;
+        }
+
+        if (role == GuildPosition.BattleMaster
+            && maxBattleMasters.HasValue
+            && guild.Members.Count(m => m.Value.PlayerPosition == GuildPosition.BattleMaster && m.Key != targetId) >= maxBattleMasters.Value)
+        {
+            this._logger.LogWarning("Guild {GuildId} already has {Max} battle masters, so member {Member} can't be promoted.", guildId, maxBattleMasters.Value, memberIdentity);
+            return false;
+        }
+
+        return true;
     }
 
     /// <summary>

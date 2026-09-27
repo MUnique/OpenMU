@@ -210,7 +210,7 @@ public class GuildServerTest : GuildTestBase
         var guildId = await this.GuildServer.GetGuildIdByNameAsync(GuildName).ConfigureAwait(false);
         await this.GuildServer.CreateGuildMemberAsync(guildId, memberId, testMemberName, GuildPosition.NormalMember, serverId).ConfigureAwait(false);
 
-        var result = await this.GuildServer.ChangeGuildMemberPositionByNameAsync(guildId, testMemberName, GuildPosition.GuildMaster).ConfigureAwait(false);
+        var result = await this.GuildServer.ChangeGuildMemberPositionByNameAsync(guildId, testMemberName, GuildPosition.GuildMaster, 400).ConfigureAwait(false);
 
         var persistedPosition = await this.GuildServer.GetGuildPositionAsync(memberId).ConfigureAwait(false);
         Assert.Multiple(() =>
@@ -248,7 +248,7 @@ public class GuildServerTest : GuildTestBase
         await this.GuildServer.PlayerEnteredGameAsync(this.GuildMaster.Id, this.GuildMaster.Name, serverId).ConfigureAwait(false);
         var guildId = await this.GuildServer.GetGuildIdByNameAsync(GuildName).ConfigureAwait(false);
 
-        var result = await this.GuildServer.ChangeGuildMemberPositionByNameAsync(guildId, "Nobody", GuildPosition.BattleMaster).ConfigureAwait(false);
+        var result = await this.GuildServer.ChangeGuildMemberPositionByNameAsync(guildId, "Nobody", GuildPosition.BattleMaster, 400).ConfigureAwait(false);
 
         Assert.That(result, Is.False);
         this.GameServer1.Verify(g => g.AssignGuildToPlayerAsync("Nobody", It.IsAny<GuildMemberStatus>()), Times.Never);
@@ -264,7 +264,7 @@ public class GuildServerTest : GuildTestBase
         await this.GuildServer.PlayerEnteredGameAsync(this.GuildMaster.Id, this.GuildMaster.Name, serverId).ConfigureAwait(false);
         var guildId = await this.GuildServer.GetGuildIdByNameAsync(GuildName).ConfigureAwait(false);
 
-        var result = await this.GuildServer.ChangeGuildMemberPositionByNameAsync(guildId, this.GuildMaster.Name, GuildPosition.BattleMaster).ConfigureAwait(false);
+        var result = await this.GuildServer.ChangeGuildMemberPositionByNameAsync(guildId, this.GuildMaster.Name, GuildPosition.BattleMaster, 400).ConfigureAwait(false);
 
         var persistedPosition = await this.GuildServer.GetGuildPositionAsync(this.GuildMaster.Id).ConfigureAwait(false);
         Assert.Multiple(() =>
@@ -299,5 +299,71 @@ public class GuildServerTest : GuildTestBase
             Assert.That(persistedPosition, Is.EqualTo(GuildPosition.BattleMaster));
         });
         this.GameServer1.Verify(g => g.AssignGuildToPlayerAsync(testMemberName, It.Is<GuildMemberStatus>(s => s.Position == GuildPosition.BattleMaster)), Times.Never);
+    }
+
+    /// <summary>
+    /// Tests that a second assistant master is rejected at the server boundary, even bypassing the action layer.
+    /// </summary>
+    [Test]
+    public async ValueTask GuildMemberPositionChangeByNameRejectsSecondAssistantAsync()
+    {
+        const byte serverId = 1;
+        var memberId = Guid.NewGuid();
+        await this.GuildServer.PlayerEnteredGameAsync(this.GuildMaster.Id, this.GuildMaster.Name, serverId).ConfigureAwait(false);
+        var guildId = await this.GuildServer.GetGuildIdByNameAsync(GuildName).ConfigureAwait(false);
+        await this.GuildServer.CreateGuildMemberAsync(guildId, Guid.NewGuid(), "Assistant", GuildPosition.AssistantMaster, serverId).ConfigureAwait(false);
+        await this.GuildServer.CreateGuildMemberAsync(guildId, memberId, "TestMember", GuildPosition.NormalMember, serverId).ConfigureAwait(false);
+
+        var result = await this.GuildServer.ChangeGuildMemberPositionByNameAsync(guildId, "TestMember", GuildPosition.AssistantMaster, 400).ConfigureAwait(false);
+
+        var persistedPosition = await this.GuildServer.GetGuildPositionAsync(memberId).ConfigureAwait(false);
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.False);
+            Assert.That(persistedPosition, Is.EqualTo(GuildPosition.NormalMember));
+        });
+    }
+
+    /// <summary>
+    /// Tests that the battle master cap is enforced at the server boundary.
+    /// </summary>
+    [Test]
+    public async ValueTask GuildMemberPositionChangeByNameEnforcesBattleMasterCapAsync()
+    {
+        const byte serverId = 1;
+        var memberId = Guid.NewGuid();
+        await this.GuildServer.PlayerEnteredGameAsync(this.GuildMaster.Id, this.GuildMaster.Name, serverId).ConfigureAwait(false);
+        var guildId = await this.GuildServer.GetGuildIdByNameAsync(GuildName).ConfigureAwait(false);
+        await this.GuildServer.CreateGuildMemberAsync(guildId, Guid.NewGuid(), "FirstBattleMaster", GuildPosition.BattleMaster, serverId).ConfigureAwait(false);
+        await this.GuildServer.CreateGuildMemberAsync(guildId, memberId, "TestMember", GuildPosition.NormalMember, serverId).ConfigureAwait(false);
+
+        // Cap for master total level 100 is 1, and one battle master already exists.
+        var result = await this.GuildServer.ChangeGuildMemberPositionByNameAsync(guildId, "TestMember", GuildPosition.BattleMaster, 100).ConfigureAwait(false);
+
+        var persistedPosition = await this.GuildServer.GetGuildPositionAsync(memberId).ConfigureAwait(false);
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.False);
+            Assert.That(persistedPosition, Is.EqualTo(GuildPosition.NormalMember));
+        });
+    }
+
+    /// <summary>
+    /// Tests that a second assistant master is rejected through the id-based overload as well.
+    /// </summary>
+    [Test]
+    public async ValueTask GuildMemberPositionChangeRejectsSecondAssistantAsync()
+    {
+        const byte serverId = 1;
+        var memberId = Guid.NewGuid();
+        await this.GuildServer.PlayerEnteredGameAsync(this.GuildMaster.Id, this.GuildMaster.Name, serverId).ConfigureAwait(false);
+        var guildId = await this.GuildServer.GetGuildIdByNameAsync(GuildName).ConfigureAwait(false);
+        await this.GuildServer.CreateGuildMemberAsync(guildId, Guid.NewGuid(), "Assistant", GuildPosition.AssistantMaster, serverId).ConfigureAwait(false);
+        await this.GuildServer.CreateGuildMemberAsync(guildId, memberId, "TestMember", GuildPosition.NormalMember, serverId).ConfigureAwait(false);
+
+        await this.GuildServer.ChangeGuildMemberPositionAsync(guildId, memberId, GuildPosition.AssistantMaster).ConfigureAwait(false);
+
+        var persistedPosition = await this.GuildServer.GetGuildPositionAsync(memberId).ConfigureAwait(false);
+        Assert.That(persistedPosition, Is.EqualTo(GuildPosition.NormalMember));
     }
 }

@@ -23,7 +23,8 @@ public enum GuildRoleAssignType : byte
     StandardAlternate = 2,
 
     /// <summary>
-    /// Role assignment which the server forwards without validating the role limits.
+    /// Role assignment validated against the role limits.
+    /// No behavioral difference from <see cref="Standard"/> is known.
     /// </summary>
     Direct = 3,
 }

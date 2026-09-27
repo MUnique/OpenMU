@@ -41,12 +41,14 @@ internal class GuildRoleAssignHandlerPlugIn : IPacketHandlerPlugIn
     {
         if (packet.Length < GuildRoleAssignRequest.Length)
         {
+            player.Logger.LogWarning("Ignoring truncated guild role assign packet of length {Length}.", packet.Length);
             return;
         }
 
         GuildRoleAssignRequest request = packet;
         if (!Enum.IsDefined(typeof(GuildRoleAssignType), request.Type))
         {
+            player.Logger.LogWarning("Ignoring guild role assign request with unknown type {Type}.", request.Type);
             return;
         }
 

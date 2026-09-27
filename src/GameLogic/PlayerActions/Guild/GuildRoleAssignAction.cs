@@ -15,16 +15,6 @@ using MUnique.OpenMU.Interfaces;
 public class GuildRoleAssignAction
 {
     /// <summary>
-    /// The combined guild master levels granting one additional battle master.
-    /// </summary>
-    private const int LevelsPerBattleMaster = 200;
-
-    /// <summary>
-    /// The battle masters a guild may have regardless of the guild master's level.
-    /// </summary>
-    private const int BaseBattleMasterCount = 1;
-
-    /// <summary>
     /// Assigns the specified role to the guild member with the specified nickname.
     /// </summary>
     /// <param name="player">The requesting player. Must be the guild master.</param>
@@ -106,25 +96,16 @@ public class GuildRoleAssignAction
             return;
         }
 
-        if (!this.ValidateRoleLimits(player, members, target, targetName, newPosition))
+        var masterTotalLevel = player.Level + (int)(player.Attributes?[Stats.MasterLevel] ?? 0);
+        if (!this.ValidateRoleLimits(player, members, target, targetName, newPosition, masterTotalLevel))
         {
             return;
         }
 
-        if (!await guildServer.ChangeGuildMemberPositionByNameAsync(guildStatus.GuildId, target.PlayerName, newPosition).ConfigureAwait(false))
+        if (!await guildServer.ChangeGuildMemberPositionByNameAsync(guildStatus.GuildId, target.PlayerName, newPosition, masterTotalLevel).ConfigureAwait(false))
         {
             player.Logger.LogWarning("Rejected guild role assignment: target {TargetName} could not be updated.", targetName);
         }
-    }
-
-    /// <summary>
-    /// Gets the maximum number of battle masters for the given combined level of the guild master.
-    /// </summary>
-    /// <param name="masterTotalLevel">The combined normal and master level of the guild master.</param>
-    /// <returns>The maximum number of battle masters.</returns>
-    private static int GetMaxBattleMasterCount(int masterTotalLevel)
-    {
-        return (masterTotalLevel / LevelsPerBattleMaster) + BaseBattleMasterCount;
     }
 
     /// <summary>
@@ -137,8 +118,9 @@ public class GuildRoleAssignAction
     /// <param name="target">The targeted member entry.</param>
     /// <param name="targetName">The nickname used in log messages.</param>
     /// <param name="newPosition">The requested position.</param>
+    /// <param name="masterTotalLevel">The combined normal and master level of the guild master.</param>
     /// <returns><c>true</c> if the limits allow the assignment; otherwise, <c>false</c>.</returns>
-    private bool ValidateRoleLimits(Player player, IImmutableList<GuildListEntry> members, GuildListEntry target, string targetName, GuildPosition newPosition)
+    private bool ValidateRoleLimits(Player player, IImmutableList<GuildListEntry> members, GuildListEntry target, string targetName, GuildPosition newPosition, int masterTotalLevel)
     {
         if (newPosition == GuildPosition.AssistantMaster
             && members.Any(m => m.PlayerPosition == GuildPosition.AssistantMaster && !string.Equals(m.PlayerName, target.PlayerName, StringComparison.OrdinalIgnoreCase)))
@@ -150,7 +132,7 @@ public class GuildRoleAssignAction
         if (newPosition == GuildPosition.BattleMaster)
         {
             var battleMasterCount = members.Count(m => m.PlayerPosition == GuildPosition.BattleMaster);
-            var maxBattleMasters = GetMaxBattleMasterCount(player.Level + (int)(player.Attributes?[Stats.MasterLevel] ?? 0));
+            var maxBattleMasters = GuildRoleLimits.MaxBattleMasterCount(masterTotalLevel);
             if (battleMasterCount >= maxBattleMasters)
             {
                 player.Logger.LogWarning("Rejected guild role assignment: guild already has {Count} of {Max} battle masters, target {TargetName}.", battleMasterCount, maxBattleMasters, targetName);
