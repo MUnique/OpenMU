@@ -101,7 +101,7 @@ internal class RaklionDataTest
             var relationship = skill.AttributeRelationships.Single(r => r.TargetAttribute?.Id == Stats.SkillFinalMultiplier.Id);
 
             Assert.That(relationship.InputOperand, Is.EqualTo(expected).Within(0.001f), $"Wrong multiplier of skill {number}.");
-            Assert.That(relationship.InputOperator, Is.EqualTo(InputOperator.Maximum), $"The multiplier of skill {number} must be absolute.");
+            Assert.That(relationship.InputOperator, Is.EqualTo(InputOperator.Maximum), $"The multiplier of skill {number} must not be multiplied by the skill multiplier of Selupan.");
             Assert.That(relationship.InputAttribute?.Id, Is.EqualTo(Stats.SkillMultiplier.Id));
         }
     }
