@@ -6841,7 +6841,7 @@ public class PacketStructureTests
     public void CastleSiegeDefenseBuyResponse_PacketSizeValidation()
     {
         // Fixed-length packet validation
-        const int expectedLength = 13;
+        const int expectedLength = 16;
         var actualLength = CastleSiegeDefenseBuyResponseRef.Length;
         
         Assert.That(actualLength, Is.EqualTo(expectedLength), 
@@ -6852,11 +6852,11 @@ public class PacketStructureTests
             "Field 'Result' exceeds packet boundary");
         
         // Validate field 'NpcNumber' boundary
-        Assert.That(5 + 4, Is.LessThanOrEqualTo(expectedLength), 
+        Assert.That(8 + 4, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'NpcNumber' exceeds packet boundary");
         
         // Validate field 'NpcIndex' boundary
-        Assert.That(9 + 4, Is.LessThanOrEqualTo(expectedLength), 
+        Assert.That(12 + 4, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'NpcIndex' exceeds packet boundary");
     }
 
@@ -6867,7 +6867,7 @@ public class PacketStructureTests
     public void CastleSiegeDefenseRepairResponse_PacketSizeValidation()
     {
         // Fixed-length packet validation
-        const int expectedLength = 21;
+        const int expectedLength = 24;
         var actualLength = CastleSiegeDefenseRepairResponseRef.Length;
         
         Assert.That(actualLength, Is.EqualTo(expectedLength), 
@@ -6878,19 +6878,19 @@ public class PacketStructureTests
             "Field 'Result' exceeds packet boundary");
         
         // Validate field 'NpcNumber' boundary
-        Assert.That(5 + 4, Is.LessThanOrEqualTo(expectedLength), 
+        Assert.That(8 + 4, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'NpcNumber' exceeds packet boundary");
         
         // Validate field 'NpcIndex' boundary
-        Assert.That(9 + 4, Is.LessThanOrEqualTo(expectedLength), 
+        Assert.That(12 + 4, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'NpcIndex' exceeds packet boundary");
         
         // Validate field 'CurrentHp' boundary
-        Assert.That(13 + 4, Is.LessThanOrEqualTo(expectedLength), 
+        Assert.That(16 + 4, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'CurrentHp' exceeds packet boundary");
         
         // Validate field 'MaxHp' boundary
-        Assert.That(17 + 4, Is.LessThanOrEqualTo(expectedLength), 
+        Assert.That(20 + 4, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'MaxHp' exceeds packet boundary");
     }
 
@@ -6901,7 +6901,7 @@ public class PacketStructureTests
     public void CastleSiegeDefenseUpgradeResponse_PacketSizeValidation()
     {
         // Fixed-length packet validation
-        const int expectedLength = 21;
+        const int expectedLength = 24;
         var actualLength = CastleSiegeDefenseUpgradeResponseRef.Length;
         
         Assert.That(actualLength, Is.EqualTo(expectedLength), 
@@ -6912,19 +6912,19 @@ public class PacketStructureTests
             "Field 'Result' exceeds packet boundary");
         
         // Validate field 'NpcNumber' boundary
-        Assert.That(5 + 4, Is.LessThanOrEqualTo(expectedLength), 
+        Assert.That(8 + 4, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'NpcNumber' exceeds packet boundary");
         
         // Validate field 'NpcIndex' boundary
-        Assert.That(9 + 4, Is.LessThanOrEqualTo(expectedLength), 
+        Assert.That(12 + 4, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'NpcIndex' exceeds packet boundary");
         
         // Validate field 'NpcUpgradeType' boundary
-        Assert.That(13 + 4, Is.LessThanOrEqualTo(expectedLength), 
+        Assert.That(16 + 4, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'NpcUpgradeType' exceeds packet boundary");
         
         // Validate field 'NpcUpgradeValue' boundary
-        Assert.That(17 + 4, Is.LessThanOrEqualTo(expectedLength), 
+        Assert.That(20 + 4, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'NpcUpgradeValue' exceeds packet boundary");
     }
 
@@ -7109,7 +7109,7 @@ public class PacketStructureTests
     public void CastleSiegeCrownAccessState_PacketSizeValidation()
     {
         // Fixed-length packet validation
-        const int expectedLength = 9;
+        const int expectedLength = 12;
         var actualLength = CastleSiegeCrownAccessStateRef.Length;
         
         Assert.That(actualLength, Is.EqualTo(expectedLength), 
@@ -7120,7 +7120,7 @@ public class PacketStructureTests
             "Field 'State' exceeds packet boundary");
         
         // Validate field 'AccumulatedTimeMs' boundary
-        Assert.That(5 + 4, Is.LessThanOrEqualTo(expectedLength), 
+        Assert.That(8 + 4, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'AccumulatedTimeMs' exceeds packet boundary");
     }
 
@@ -7361,8 +7361,8 @@ public class PacketStructureTests
         Assert.That(4, Is.GreaterThanOrEqualTo(0), 
             "Field 'Result' has invalid negative index");
         
-        // Field 'NpcCount' starts at index 5 with size 4
-        Assert.That(5, Is.GreaterThanOrEqualTo(0), 
+        // Field 'NpcCount' starts at index 8 with size 4
+        Assert.That(8, Is.GreaterThanOrEqualTo(0), 
             "Field 'NpcCount' has invalid negative index");
     }
 
@@ -7379,8 +7379,8 @@ public class PacketStructureTests
         Assert.That(4, Is.GreaterThanOrEqualTo(0), 
             "Field 'Result' has invalid negative index");
         
-        // Field 'GuildCount' starts at index 5 with size 4
-        Assert.That(5, Is.GreaterThanOrEqualTo(0), 
+        // Field 'GuildCount' starts at index 8 with size 4
+        Assert.That(8, Is.GreaterThanOrEqualTo(0), 
             "Field 'GuildCount' has invalid negative index");
     }
 
@@ -7397,8 +7397,8 @@ public class PacketStructureTests
         Assert.That(4, Is.GreaterThanOrEqualTo(0), 
             "Field 'Result' has invalid negative index");
         
-        // Field 'GuildCount' starts at index 5 with size 4
-        Assert.That(5, Is.GreaterThanOrEqualTo(0), 
+        // Field 'GuildCount' starts at index 8 with size 4
+        Assert.That(8, Is.GreaterThanOrEqualTo(0), 
             "Field 'GuildCount' has invalid negative index");
     }
 
@@ -7549,7 +7549,7 @@ public class PacketStructureTests
     public void CastleSiegeHuntingZoneGuardInfo_PacketSizeValidation()
     {
         // Fixed-length packet validation
-        const int expectedLength = 18;
+        const int expectedLength = 20;
         var actualLength = CastleSiegeHuntingZoneGuardInfoRef.Length;
         
         Assert.That(actualLength, Is.EqualTo(expectedLength), 
@@ -7564,15 +7564,15 @@ public class PacketStructureTests
             "Field 'IsEnabled' exceeds packet boundary");
         
         // Validate field 'CurrentPrice' boundary
-        Assert.That(6 + 4, Is.LessThanOrEqualTo(expectedLength), 
+        Assert.That(8 + 4, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'CurrentPrice' exceeds packet boundary");
         
         // Validate field 'MaxPrice' boundary
-        Assert.That(10 + 4, Is.LessThanOrEqualTo(expectedLength), 
+        Assert.That(12 + 4, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'MaxPrice' exceeds packet boundary");
         
         // Validate field 'UnitPrice' boundary
-        Assert.That(14 + 4, Is.LessThanOrEqualTo(expectedLength), 
+        Assert.That(16 + 4, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'UnitPrice' exceeds packet boundary");
     }
 
