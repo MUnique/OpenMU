@@ -657,6 +657,12 @@
   <data name="NoticeChatCommandPlugIn_Description" xml:space="preserve">
     <value>Handles the chat command '/goldnotice message'. Sends a global golden notice message to all players of the game.</value>
   </data>
+  <data name="SlideNoticeChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Slide notice chat command</value>
+  </data>
+  <data name="SlideNoticeChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/slidenotice message'. Sends a global notice to all players of the game which scrolls across the top of their screen.</value>
+  </data>
   <data name="NpcChatCommandPlugIn_Name" xml:space="preserve">
     <value>NPC open merchant chat command</value>
   </data>

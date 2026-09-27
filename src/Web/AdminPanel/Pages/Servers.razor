@@ -22,11 +22,19 @@ else
 <div class="card mb-3">
     <div class="card-body">
         <div class="row g-2 align-items-end">
-            <div class="col-md-5">
+            <div class="col-md-4">
                 <label for="global-message" class="form-label mb-1">@Resources.GlobalMessage</label>
                 <input id="global-message" type="text" class="form-control" placeholder="@Resources.MessagePlaceholder" @bind="_message" @bind:event="oninput" />
             </div>
-            <div class="col-md-4">
+            <div class="col-md-2">
+                <label for="message-type" class="form-label mb-1">@Resources.MessageType</label>
+                <select id="message-type" class="form-select" @bind="_messageType">
+                    <option value="@MessageType.GoldenCenter">@Resources.MessageTypeGolden</option>
+                    <option value="@MessageType.BlueNormal">@Resources.MessageTypeBlue</option>
+                    <option value="@MessageType.SlideNotice">@Resources.MessageTypeSlide</option>
+                </select>
+            </div>
+            <div class="col-md-3">
                 <label for="server-select" class="form-label mb-1">@Resources.Target</label>
                 <select id="server-select" class="form-select" @bind="_selectedServerId">
                     <option value="-1">@Resources.AllGameServers</option>
@@ -111,6 +119,8 @@ else
     private string _message = string.Empty;
 
     private int _selectedServerId = -1;
+
+    private MessageType _messageType = MessageType.GoldenCenter;
 
     /// <summary>
     /// Gets or sets the <see cref="IServerProvider"/>.
@@ -212,7 +222,7 @@ else
         {
             try
             {
-                await server.SendGlobalMessageAsync(message, MessageType.GoldenCenter);
+                await server.SendGlobalMessageAsync(message, _messageType);
                 sent++;
             }
             catch (Exception ex)
