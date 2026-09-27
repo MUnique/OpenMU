@@ -137,6 +137,12 @@ public class RaklionEventDefinition
     public int AreaSkillRadius { get; set; } = 6;
 
     /// <summary>
+    /// Gets or sets the radius around Selupan, in which its fall hits players when it appears.
+    /// Only players which are closer than this radius are hit.
+    /// </summary>
+    public int FallRadius { get; set; } = 4;
+
+    /// <summary>
     /// Gets the pattern (1 to 7) of Selupan by its remaining health.
     /// </summary>
     /// <param name="healthPercentage">The remaining health in percent.</param>

@@ -27,6 +27,7 @@ public sealed class SelupanIntelligence : INpcIntelligence, IDisposable
     private const short PoisonSkillNumber = 250;
     private const short IceStormSkillNumber = 251;
     private const short IceStrikeSkillNumber = 252;
+    private const short FallSkillNumber = 253;
     private static readonly TimeSpan TeleportVanishDuration = TimeSpan.FromMilliseconds(500);
 
     private readonly RaklionContext _context;
@@ -128,8 +129,13 @@ public sealed class SelupanIntelligence : INpcIntelligence, IDisposable
 
         if (this._pattern == 0)
         {
-            // Selupan falls from the sky when it appears.
+            // Selupan falls from the sky when it appears, and hits the players around it.
             await this.ShowSkillAsync(monster, null, SelupanSkill.Fall).ConfigureAwait(false);
+            foreach (var player in this.GetFallTargets(monster))
+            {
+                await player.AttackByAsync(monster, this.GetSkillEntry(SelupanSkill.Fall, player), false).ConfigureAwait(false);
+            }
+
             await this.UpdatePatternAsync(monster, 1).ConfigureAwait(false);
             return;
         }
@@ -155,6 +161,20 @@ public sealed class SelupanIntelligence : INpcIntelligence, IDisposable
 
         var skill = this.ChooseSkill(monster);
         await this.ExecuteSkillAsync(monster, target, skill).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the players which are hit by the fall of Selupan.
+    /// </summary>
+    /// <param name="monster">The monster of Selupan.</param>
+    /// <returns>The players which are closer to Selupan than the <see cref="RaklionEventDefinition.FallRadius"/>.</returns>
+    internal IReadOnlyList<Player> GetFallTargets(Monster monster)
+    {
+        var radius = this._definition.FallRadius;
+        return monster.CurrentMap.GetAttackablesInRange(monster.Position, radius)
+            .OfType<Player>()
+            .Where(player => IsValidTarget(monster, player) && player.GetDistanceTo(monster) < radius)
+            .ToList();
     }
 
     private static double GetHealthPercentage(Monster monster)
@@ -364,6 +384,7 @@ public sealed class SelupanIntelligence : INpcIntelligence, IDisposable
             SelupanSkill.Poison => PoisonSkillNumber,
             SelupanSkill.IceStorm => IceStormSkillNumber,
             SelupanSkill.IceStrike => IceStrikeSkillNumber,
+            SelupanSkill.Fall => FallSkillNumber,
             _ => default(short?),
         };
 
