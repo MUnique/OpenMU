@@ -1,0 +1,19 @@
+name: Docker image
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  build:
+    name: Build the Docker image
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Only verifies that the image can be built. Images are published to Docker Hub separately.
+      - name: Build
+        run: docker build --file src/Startup/Dockerfile --tag munique/openmu:ci src

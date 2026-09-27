@@ -1,0 +1,32 @@
+name: Windows build and test
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  build-and-test:
+    name: Build and test on Windows
+    runs-on: windows-2022
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore
+        run: dotnet restore
+        working-directory: src
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore -p:ci=true
+        working-directory: src
+
+      - name: Test
+        run: dotnet test --configuration Release --no-build
+        working-directory: src
