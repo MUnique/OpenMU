@@ -41,7 +41,7 @@ internal sealed class KanturuNightmareRunner : IKanturuPhaseRunner
     /// <param name="showLiveCountAsync">Broadcasts the remaining minion count.</param>
     /// <param name="waitAsync">Waits for a phase to end; reports whether it completed.</param>
     /// <param name="standbyAsync">Runs the standby time after a phase.</param>
-    /// <param name="waitForSpawnAsync">Waits for the Nightmare boss to spawn.</param>
+    /// <param name="waitForSpawnAsync">Captures the Nightmare boss spawn; the timeout is applied by the caller.</param>
     /// <param name="forEachPlayerAsync">Executes an action for each player.</param>
     /// <param name="spawnWaveAsync">Spawns a configured monster wave on the event map.</param>
     /// <param name="logger">The logger.</param>
@@ -82,10 +82,19 @@ internal sealed class KanturuNightmareRunner : IKanturuPhaseRunner
         // Arm the spawn capture before beginning the phase: the boss spawns
         // synchronously inside BeginPhaseAsync (via GameMap.AddAsync raising
         // ObjectAdded), so subscribing afterwards would miss it. The waiter
-        // subscribes synchronously up to its first await.
+        // subscribes synchronously up to its first await; the timeout only starts
+        // once the phase began, so the start delay doesn't eat into it.
         var spawnTask = this._waitForSpawnAsync(nightmare, cancellationToken);
         await this._beginAsync(phase, cancellationToken).ConfigureAwait(false);
-        this._nightmareMonster = await spawnTask.ConfigureAwait(false);
+        try
+        {
+            this._nightmareMonster = await spawnTask.WaitAsync(nightmare.SpawnTimeout, cancellationToken).ConfigureAwait(false);
+        }
+        catch (TimeoutException)
+        {
+            this._nightmareMonster = null;
+        }
+
         if (this._nightmareMonster is null)
         {
             this._logger.LogWarning(

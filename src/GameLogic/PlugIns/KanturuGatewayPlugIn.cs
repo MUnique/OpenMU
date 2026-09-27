@@ -150,7 +150,15 @@ public class KanturuGatewayPlugIn : IPlayerTalkToNpcPlugIn
 
         // No event game runs, but the tower window is still open (e.g. after a
         // server restart): entering recreates the tower without the event phases.
-        PrewarmTowerGame(player, miniGameDefinition);
+        // The creation starts while the player reads the dialog, so entering itself
+        // feels like any other map. Only prewarm when no instance exists or is being
+        // created yet: the entry recreates a stale one itself, and every dialog
+        // refresh would otherwise dispose and recreate the map again.
+        if (player.GameContext.MiniGames.TryGetRunningMiniGame(miniGameDefinition, null) is null)
+        {
+            PrewarmTowerGame(player, miniGameDefinition);
+        }
+
         return new KanturuDialogInfo(
             KanturuState.Tower,
             (byte)KanturuTowerDetailState.Revitalization,

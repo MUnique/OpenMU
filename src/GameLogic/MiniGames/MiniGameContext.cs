@@ -131,12 +131,13 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
 
     /// <summary>
     /// Gets a value indicating whether players may still enter while the game is
-    /// already running (<see cref="MiniGameState.Playing"/>), e.g. to rejoin an
+    /// already running (<see cref="MiniGameState.Playing"/>), or while it passes through
+    /// <see cref="MiniGameState.Closed"/> on an instant start, e.g. to rejoin an
     /// ongoing event. It's <c>false</c> by default; entering is then only possible
     /// while the game is <see cref="MiniGameState.Open"/>.
     /// </summary>
     internal bool IsJoinable => this.State == MiniGameState.Open
-        || (this.State == MiniGameState.Playing && this.AllowEnterWhilePlaying);
+        || (this.State is MiniGameState.Playing or MiniGameState.Closed && this.AllowEnterWhilePlaying);
 
     /// <summary>
     /// Gets a value indicating whether the map entry requirements are skipped when

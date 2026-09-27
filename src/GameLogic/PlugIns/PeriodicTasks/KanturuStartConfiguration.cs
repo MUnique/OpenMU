@@ -15,7 +15,8 @@ public class KanturuStartConfiguration : MiniGameStartConfiguration
     /// Gets the default configuration for the Kanturu event.
     /// The event runs every 6 hours: each tick opens a silent entry lobby while no
     /// fight runs and the tower is closed. Entry is additionally always open on demand,
-    /// and the tower stays open for <see cref="TowerOpenDuration"/> after Nightmare dies.
+    /// and the tower stays open for <see cref="TowerOpenDuration"/> after Nightmare dies,
+    /// during which scheduled starts are skipped.
     /// There are no entrance announcements; the gateway dialog shows the live state.
     /// </summary>
     public static KanturuStartConfiguration Default =>
@@ -33,6 +34,9 @@ public class KanturuStartConfiguration : MiniGameStartConfiguration
     /// Gets or sets how long the Tower of Refinement stays open after the Nightmare boss
     /// has been defeated. The window is tracked persistently, so it survives server
     /// restarts: players can still re-enter the tower while it lasts.
+    /// While the window is open, scheduled starts are skipped by design — with the
+    /// default 23 hours one victory covers roughly three 6-hour starts. A game master
+    /// start still proceeds and ends the window instead.
     /// </summary>
     /// <remarks>
     /// This takes precedence over <see cref="KanturuEventDefinition.TowerOfRefinementDuration"/>

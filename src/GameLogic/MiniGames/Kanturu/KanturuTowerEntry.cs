@@ -127,8 +127,9 @@ public static class KanturuTowerEntry
     private static bool IsReusableTower(KanturuContext tower)
     {
         // Usability is defined by state, not by lingering players: an ended game
-        // with stragglers still inside is already over.
-        return tower.TowerMode && tower.State is MiniGameState.Open or MiniGameState.Closed or MiniGameState.Playing;
+        // with stragglers still inside is already over. The joinability check owns
+        // the state rule, so both sides can't disagree about it again.
+        return tower.TowerMode && tower.IsJoinable;
     }
 
     private static MiniGameContext? GetLiveGame(Player player, MiniGameDefinition definition)

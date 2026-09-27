@@ -13,8 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Refreshes all Kanturu Refinery Tower data of an existing Season 6 database in
 /// one go: the event map safezone, the participant limit, and the Nightmare summon
-/// waves. The start configuration itself is deleted once, so it's recreated from
-/// scratch with defaults on the next startup; no JSON migration is needed.
+/// waves. The start configuration itself is reset to defaults once, so it's rebuilt
+/// from scratch on the next load; no JSON migration is needed.
 /// Every other step only fills in missing or seeded values, so customized values
 /// are preserved and re-running stays a no-op.
 /// </summary>
@@ -61,12 +61,13 @@ public class RefreshKanturuDataUpdatePlugIn : UpdatePlugInBase
     public override DateTime CreatedAt => new(2026, 09, 25, 12, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
-    protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
+    protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
         FixSafezoneMap(gameConfiguration);
         FixMaximumPlayerCount(gameConfiguration);
-        await DeleteStartConfigurationAsync(context, gameConfiguration).ConfigureAwait(false);
+        ResetStartConfiguration(gameConfiguration);
         new KanturuSummonWaveSeeder(context, gameConfiguration).Seed();
+        return ValueTask.CompletedTask;
     }
 
     /// <summary>
@@ -84,20 +85,19 @@ public class RefreshKanturuDataUpdatePlugIn : UpdatePlugInBase
     }
 
     /// <summary>
-    /// Deletes the persisted start configuration entirely, so it's recreated from
-    /// scratch with defaults on the next startup. This replaces JSON migration:
-    /// whatever archaeology the row holds is discarded once, and the update never
-    /// needs to run again.
+    /// Clears the persisted start configuration, so it's rebuilt from defaults on the
+    /// next load. This replaces JSON migration: whatever archaeology the row holds is
+    /// discarded once, and the update never needs to run again. The row itself (and its
+    /// active flag) is kept: deleting it would deactivate the plug-in on a running
+    /// server until the next restart.
     /// </summary>
-    /// <param name="context">The persistence context.</param>
     /// <param name="gameConfiguration">The game configuration.</param>
-    private static async ValueTask DeleteStartConfigurationAsync(IContext context, GameConfiguration gameConfiguration)
+    private static void ResetStartConfiguration(GameConfiguration gameConfiguration)
     {
         foreach (var stale in gameConfiguration.PlugInConfigurations
-            .Where(c => c.TypeId == typeof(KanturuStartPlugIn).GUID)
-            .ToList())
+            .Where(c => c.TypeId == typeof(KanturuStartPlugIn).GUID))
         {
-            await context.DeleteAsync(stale).ConfigureAwait(false);
+            stale.CustomConfiguration = null;
         }
     }
 

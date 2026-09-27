@@ -47,6 +47,21 @@ public class MiniGamePlayerRegistryTests
     }
 
     /// <summary>
+    /// Tests that entering works while closed when entering while playing is allowed,
+    /// for the instant start which passes through the closed state in milliseconds.
+    /// </summary>
+    [Test]
+    public async Task EnterWhileClosedSucceedsWhenAllowedAsync()
+    {
+        var registry = new MiniGamePlayerRegistry(this.CreateDefinition());
+        await registry.SetStateAsync(MiniGameState.Closed).ConfigureAwait(false);
+
+        var result = await registry.TryEnterAsync(CreatePlayer(), _ => ValueTask.FromResult(true), () => true).ConfigureAwait(false);
+
+        Assert.That(result, Is.EqualTo(EnterResult.Success));
+    }
+
+    /// <summary>
     /// Tests that entering fails when the game is full with other players.
     /// </summary>
     [Test]

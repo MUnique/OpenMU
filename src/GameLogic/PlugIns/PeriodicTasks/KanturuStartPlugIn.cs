@@ -54,7 +54,10 @@ public sealed class KanturuStartPlugIn : MiniGameStartBasePlugIn<KanturuStartCon
     {
         // While the tower window is open, the regular schedule must not start a new
         // event — not even when no game currently runs, e.g. after a server restart.
-        // The window is read live, so this also works where no asynchronous call is possible.
+        // Skipping several starts per victory is intended: the tower cadence (23 hours
+        // by default) deliberately outlasts the event schedule. A game master start
+        // still proceeds and clears the window. The window is read live, so this also
+        // works where no asynchronous call is possible.
         if (KanturuTowerWindow.GetOpenUntilUtc(state.Context) is { } until && until > DateTime.UtcNow)
         {
             return true;

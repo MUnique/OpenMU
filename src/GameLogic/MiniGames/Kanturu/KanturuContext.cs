@@ -171,9 +171,11 @@ public sealed class KanturuContext : MiniGameContext
     /// <summary>
     /// Gets a value indicating whether players may rejoin the open Tower of Refinement
     /// or refill the event during an inter-wave standby. Fights can never be joined
-    /// mid-event.
+    /// mid-event. A tower game is enterable from its creation: its lobby is zero-length,
+    /// so entering must also work while it passes through the closed state.
     /// </summary>
-    protected override bool AllowEnterWhilePlaying => this.CurrentKanturuState == KanturuState.Tower
+    protected override bool AllowEnterWhilePlaying => this.TowerMode
+        || this.CurrentKanturuState == KanturuState.Tower
         || (this.CurrentKanturuState == KanturuState.MayaBattle && Volatile.Read(ref this._inStandby) != 0);
 
     /// <summary>
@@ -213,8 +215,6 @@ public sealed class KanturuContext : MiniGameContext
     {
         await base.OnGameStartAsync(players).ConfigureAwait(false);
 
-        _ = Task.Run(() => this.RunRequiredItemWearAsync(this.GameEndedToken), this.GameEndedToken);
-
         // The flag alone is not enough: it may have been set on a fresh event lobby
         // by an enter racing a scheduler start, which clears the window first.
         if (this.TowerMode
@@ -226,6 +226,8 @@ public sealed class KanturuContext : MiniGameContext
             _ = Task.Run(() => this.RunTowerModeAsync(this.GameEndedToken), this.GameEndedToken);
             return;
         }
+
+        _ = Task.Run(() => this.RunRequiredItemWearAsync(this.GameEndedToken), this.GameEndedToken);
 
         // Maya rises from the depths when the battle begins.
         if (this._definition.IntroSpawnWaveNumber is { } introWave)
@@ -401,8 +403,9 @@ public sealed class KanturuContext : MiniGameContext
     }
 
     /// <summary>
-    /// Waits for the Nightmare boss to spawn, by capturing it from <see cref="GameMap.ObjectAdded"/>.
-    /// Infrastructure for <see cref="KanturuNightmareRunner"/>; returns <c>null</c> on timeout.
+    /// Captures the Nightmare boss spawn from <see cref="GameMap.ObjectAdded"/>.
+    /// Infrastructure for <see cref="KanturuNightmareRunner"/>; the caller applies the
+    /// spawn timeout after the phase began.
     /// </summary>
     private async Task<Monster?> WaitForNightmareSpawnAsync(KanturuNightmareDefinition nightmare, CancellationToken ct)
     {
@@ -421,11 +424,7 @@ public sealed class KanturuContext : MiniGameContext
         this.Map.ObjectAdded += OnObjectAddedAsync;
         try
         {
-            return await nightmareFound.Task.WaitAsync(nightmare.SpawnTimeout, ct).ConfigureAwait(false);
-        }
-        catch (TimeoutException)
-        {
-            return null;
+            return await nightmareFound.Task.WaitAsync(ct).ConfigureAwait(false);
         }
         finally
         {

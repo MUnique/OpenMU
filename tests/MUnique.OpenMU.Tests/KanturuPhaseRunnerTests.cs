@@ -197,6 +197,87 @@ public class KanturuPhaseRunnerTests
     }
 
     /// <summary>
+    /// Tests that the spawn timeout starts after the phase began, not when the capture
+    /// is armed. The boss spawns 150ms after subscribing — past a 100ms timeout counted
+    /// from the subscription, but long done when the 300ms begin ends. Counting from the
+    /// subscription would time out and silently disable the health phases and summons.
+    /// </summary>
+    [Test]
+    public async Task NightmareRunner_SpawnTimeout_StartsAfterPhaseBegin()
+    {
+        var monster = CreateNightmare(this._map, this._gameContext);
+        monster.Health = 700; // 70% of 1000, below the 75% threshold.
+
+        var phase = new KanturuPhaseDefinition
+        {
+            Nightmare = new KanturuNightmareDefinition
+            {
+                SpawnTimeout = TimeSpan.FromMilliseconds(100),
+                HpPhases =
+                [
+                    new KanturuNightmareHpPhase
+                    {
+                        HealthPercentage = 75,
+                        TeleportTargetX = 100,
+                        TeleportTargetY = 100,
+                        SummonWaveNumber = 9,
+                    },
+                ],
+                HealthCheckInterval = TimeSpan.FromMilliseconds(10),
+                TeleportDelay = TimeSpan.Zero,
+                SpecialAttackInterval = TimeSpan.Zero,
+            },
+        };
+
+        var waves = new List<byte>();
+        var summoned = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        // Stands in for BeginPhaseAsync honoring StartDelay.
+        async Task Begin(KanturuPhaseDefinition _, CancellationToken ct)
+        {
+            await Task.Delay(300, ct).ConfigureAwait(false);
+        }
+
+        // The boss spawns while the phase begins, after the timeout counted from the
+        // subscription would already have fired.
+        async Task<Monster?> WaitForSpawn(KanturuNightmareDefinition _, CancellationToken ct)
+        {
+            await Task.Delay(150, ct).ConfigureAwait(false);
+            return monster;
+        }
+
+        Task SpawnWave(byte wave, CancellationToken _)
+        {
+            waves.Add(wave);
+            summoned.TrySetResult();
+            return Task.CompletedTask;
+        }
+
+        async Task<bool> WaitForPhaseEnd(KanturuPhaseDefinition _, CancellationToken ct)
+        {
+            await Task.WhenAny(summoned.Task, Task.Delay(TimeSpan.FromSeconds(2), ct)).ConfigureAwait(false);
+            return true;
+        }
+
+        var runner = new KanturuNightmareRunner(
+            Begin,
+            (_, _) => ValueTask.CompletedTask,
+            _ => ValueTask.CompletedTask,
+            () => ValueTask.CompletedTask,
+            WaitForPhaseEnd,
+            (_, _) => Task.CompletedTask,
+            WaitForSpawn,
+            _ => ValueTask.CompletedTask,
+            SpawnWave,
+            NullLogger.Instance);
+
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+        await runner.RunAsync(phase, timeout.Token).ConfigureAwait(false);
+
+        Assert.That(waves, Does.Contain((byte)9));
+    }
+
+    /// <summary>
     /// Tests that the phase completes once the boss health drops below its threshold.
     /// </summary>
     [Test]

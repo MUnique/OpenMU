@@ -55,6 +55,8 @@ internal sealed class MiniGamePlayerRegistry
 
     /// <summary>
     /// Tries to enter the mini game. It will fail, if it's full, or if it's not in an open state.
+    /// A game which allows entering while playing also accepts entrants while closed,
+    /// for the instant start which passes through that state in milliseconds.
     /// </summary>
     /// <param name="player">The player which tries to enter.</param>
     /// <param name="areEquippedItemsAllowedAsync">A function which checks if the equipped items of the player are allowed.</param>
@@ -65,7 +67,7 @@ internal sealed class MiniGamePlayerRegistry
         using (await this._lock.WriterLockAsync().ConfigureAwait(false))
         {
             if (this._state != MiniGameState.Open
-                && !((allowEnterWhilePlaying?.Invoke() ?? false) && this._state == MiniGameState.Playing))
+                && !((allowEnterWhilePlaying?.Invoke() ?? false) && this._state is MiniGameState.Playing or MiniGameState.Closed))
             {
                 return EnterResult.NotOpen;
             }
