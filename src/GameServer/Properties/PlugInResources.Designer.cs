@@ -7187,5 +7187,23 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("SkillRequirementsViewPlugIn_Description", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Monster levels view.
+        /// </summary>
+        public static string MonsterLevelsViewPlugIn_Name {
+            get {
+                return ResourceManager.GetString("MonsterLevelsViewPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Sends the level of the monsters after the login, so that the client shows it next to their name and health bar..
+        /// </summary>
+        public static string MonsterLevelsViewPlugIn_Description {
+            get {
+                return ResourceManager.GetString("MonsterLevelsViewPlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

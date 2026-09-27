@@ -32474,6 +32474,140 @@ public readonly struct LearnableItemRequirement
 
 
 /// <summary>
+/// Is sent by the server when: Once after a successful login, right after the LearnableItemRequirements message.
+/// Causes reaction on client side: The client shows the level of the monsters next to their name and health bar.
+/// </summary>
+public readonly struct MonsterLevels
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MonsterLevels"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public MonsterLevels(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MonsterLevels"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private MonsterLevels(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xF5;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x06;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the monster count.
+    /// </summary>
+    public ushort MonsterCount
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[6..]);
+        set => WriteUInt16LittleEndian(this._data.Span[6..], value);
+    }
+
+    /// <summary>
+    /// Gets the <see cref="MonsterLevel"/> of the specified index.
+    /// </summary>
+        public MonsterLevel this[int index] => new (this._data.Slice(8 + index * MonsterLevel.Length));
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="MonsterLevels"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator MonsterLevels(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="MonsterLevels"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(MonsterLevels packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="MonsterLevel"/>.
+    /// </summary>
+    /// <param name="monstersCount">The count of <see cref="MonsterLevel"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int monstersCount) => monstersCount * MonsterLevel.Length + 8;
+
+
+/// <summary>
+/// The level of a monster..
+/// </summary>
+public readonly struct MonsterLevel
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MonsterLevel"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public MonsterLevel(Memory<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 4;
+
+    /// <summary>
+    /// Gets or sets the number of the monster, as in the AddMonstersToScope message.
+    /// </summary>
+    public ushort MonsterNumber
+    {
+        get => ReadUInt16LittleEndian(this._data.Span);
+        set => WriteUInt16LittleEndian(this._data.Span, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the level.
+    /// </summary>
+    public ushort Level
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[2..]);
+        set => WriteUInt16LittleEndian(this._data.Span[2..], value);
+    }
+}
+}
+
+
+/// <summary>
 /// Is sent by the server when: The player receives the result of registering Rena or Event Chips at the Golden Archer NPC.
 /// Causes reaction on client side: The client updates the Golden Archer interface with total registered count and remaining count in inventory.
 /// </summary>

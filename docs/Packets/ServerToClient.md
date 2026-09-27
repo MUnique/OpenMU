@@ -288,6 +288,7 @@
   * [C2 F5 03 - QuestDetails (by server)](C2-F5-03-QuestDetails_by-server.md)
   * [C2 F5 04 - SkillRequirements (by server)](C2-F5-04-SkillRequirements_by-server.md)
   * [C2 F5 05 - LearnableItemRequirements (by server)](C2-F5-05-LearnableItemRequirements_by-server.md)
+  * [C2 F5 06 - MonsterLevels (by server)](C2-F5-06-MonsterLevels_by-server.md)
   * [C1 F6 03 - QuestEventResponse (by server)](C1-F6-03-QuestEventResponse_by-server.md)
   * [C1 F6 0A - AvailableQuests (by server)](C1-F6-0A-AvailableQuests_by-server.md)
   * [C1 F6 0B - QuestStepInfo (by server)](C1-F6-0B-QuestStepInfo_by-server.md)
