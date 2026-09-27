@@ -581,7 +581,12 @@ public enum UpdateVersion
     AddKanturuMapContent = 114,
 
     /// <summary>
+    /// The version of the <see cref="AddDoppelgangerDataUpdatePlugIn"/>.
+    /// </summary>
+    AddDoppelgangerData = 115,
+
+    /// <summary>
     /// The version of the <see cref="IllusionTempleDataUpdatePlugIn"/>.
     /// </summary>
-    IllusionTempleData = 115,
+    IllusionTempleData = 116,
 }

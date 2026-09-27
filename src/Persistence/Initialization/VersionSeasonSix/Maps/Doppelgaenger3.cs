@@ -37,6 +37,12 @@ internal class Doppelgaenger3 : BaseMapInitializer
     /// <inheritdoc />
     protected override string MapName => Name;
 
+    /// <summary>
+    /// Gets the safezone map number. Players who die inside the doppelganger event map
+    /// respawn at Elvenland.
+    /// </summary>
+    protected override byte SafezoneMapNumber => Elvenland.Number;
+
     /// <inheritdoc />
     protected override void AdditionalInitialization(GameMapDefinition mapDefinition)
     {
