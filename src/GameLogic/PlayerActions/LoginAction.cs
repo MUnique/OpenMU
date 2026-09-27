@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions;
 
 using System.Threading;
+using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Login;
 
 /// <summary>
@@ -213,5 +214,8 @@ public class LoginAction
         }
 
         await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.Ok)).ConfigureAwait(false);
+
+        // Once per session, so that the client shows and checks the skill requirements of this server.
+        await player.InvokeViewPlugInAsync<ISkillRequirementsViewPlugIn>(p => p.ShowSkillRequirementsAsync()).ConfigureAwait(false);
     }
 }

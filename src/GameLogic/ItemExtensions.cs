@@ -298,6 +298,17 @@ public static class ItemExtensions
     }
 
     /// <summary>
+    /// Gets the attribute of the character which is compared with a requirement attribute of an item,
+    /// e.g. <see cref="Stats.TotalEnergy"/> for <see cref="Stats.TotalEnergyRequirementValue"/>.
+    /// </summary>
+    /// <param name="requirementAttribute">The attribute of the requirement.</param>
+    /// <returns>The attribute of the character which has to reach the required value.</returns>
+    public static AttributeDefinition GetRequiredAttribute(AttributeDefinition requirementAttribute)
+    {
+        return RequirementAttributeMapping.TryGetValue(requirementAttribute, out var totalAttribute) ? totalAttribute : requirementAttribute;
+    }
+
+    /// <summary>
     /// Gets the requirement as a tuple of an attribute and the corresponding value.
     /// </summary>
     /// <param name="item">The item.</param>

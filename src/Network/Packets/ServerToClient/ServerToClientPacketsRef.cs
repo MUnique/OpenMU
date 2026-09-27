@@ -30338,6 +30338,391 @@ public readonly ref struct QuestObjectiveRef
 
 
 /// <summary>
+/// Is sent by the server when: Once after a successful login, before the character selection.
+/// Causes reaction on client side: The client uses these requirements and costs for the rest of the session, instead of the ones of its own data files, so that it shows and checks exactly what the server checks.
+/// </summary>
+public readonly ref struct SkillRequirementsRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SkillRequirementsRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public SkillRequirementsRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SkillRequirementsRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private SkillRequirementsRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xF5;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x04;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the skill count.
+    /// </summary>
+    public ushort SkillCount
+    {
+        get => ReadUInt16LittleEndian(this._data[6..]);
+        set => WriteUInt16LittleEndian(this._data[6..], value);
+    }
+
+    /// <summary>
+    /// Gets the <see cref="SkillRequirementRef"/> of the specified index.
+    /// </summary>
+        public SkillRequirementRef this[int index] => new (this._data[(8 + index * SkillRequirementRef.Length)..]);
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="SkillRequirements"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator SkillRequirementsRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="SkillRequirements"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(SkillRequirementsRef packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="SkillRequirementRef"/>.
+    /// </summary>
+    /// <param name="skillsCount">The count of <see cref="SkillRequirementRef"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int skillsCount) => skillsCount * SkillRequirementRef.Length + 8;
+
+
+/// <summary>
+/// The requirements and costs of a skill, as the server checks them. A value of 0 means there is no such requirement..
+/// </summary>
+public readonly ref struct SkillRequirementRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SkillRequirementRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public SkillRequirementRef(Span<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 16;
+
+    /// <summary>
+    /// Gets or sets the skill number.
+    /// </summary>
+    public ushort SkillNumber
+    {
+        get => ReadUInt16LittleEndian(this._data);
+        set => WriteUInt16LittleEndian(this._data, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the required character level.
+    /// </summary>
+    public ushort Level
+    {
+        get => ReadUInt16LittleEndian(this._data[2..]);
+        set => WriteUInt16LittleEndian(this._data[2..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the required total energy.
+    /// </summary>
+    public ushort Energy
+    {
+        get => ReadUInt16LittleEndian(this._data[4..]);
+        set => WriteUInt16LittleEndian(this._data[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the required total leadership (command).
+    /// </summary>
+    public ushort Leadership
+    {
+        get => ReadUInt16LittleEndian(this._data[6..]);
+        set => WriteUInt16LittleEndian(this._data[6..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the required total strength.
+    /// </summary>
+    public ushort Strength
+    {
+        get => ReadUInt16LittleEndian(this._data[8..]);
+        set => WriteUInt16LittleEndian(this._data[8..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the required total agility.
+    /// </summary>
+    public ushort Agility
+    {
+        get => ReadUInt16LittleEndian(this._data[10..]);
+        set => WriteUInt16LittleEndian(this._data[10..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the mana which is consumed by using the skill.
+    /// </summary>
+    public ushort Mana
+    {
+        get => ReadUInt16LittleEndian(this._data[12..]);
+        set => WriteUInt16LittleEndian(this._data[12..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the ability (AG) which is consumed by using the skill.
+    /// </summary>
+    public ushort AbilityGauge
+    {
+        get => ReadUInt16LittleEndian(this._data[14..]);
+        set => WriteUInt16LittleEndian(this._data[14..], value);
+    }
+}
+}
+
+
+/// <summary>
+/// Is sent by the server when: Once after a successful login, right after the SkillRequirements message.
+/// Causes reaction on client side: The client shows these requirements for the items which teach a skill (orbs, scrolls, parchments, crystals), instead of the ones it calculates from its own data files.
+/// </summary>
+public readonly ref struct LearnableItemRequirementsRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LearnableItemRequirementsRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public LearnableItemRequirementsRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LearnableItemRequirementsRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private LearnableItemRequirementsRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xF5;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x05;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the item count.
+    /// </summary>
+    public ushort ItemCount
+    {
+        get => ReadUInt16LittleEndian(this._data[6..]);
+        set => WriteUInt16LittleEndian(this._data[6..], value);
+    }
+
+    /// <summary>
+    /// Gets the <see cref="LearnableItemRequirementRef"/> of the specified index.
+    /// </summary>
+        public LearnableItemRequirementRef this[int index] => new (this._data[(8 + index * LearnableItemRequirementRef.Length)..]);
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="LearnableItemRequirements"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator LearnableItemRequirementsRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="LearnableItemRequirements"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(LearnableItemRequirementsRef packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="LearnableItemRequirementRef"/>.
+    /// </summary>
+    /// <param name="itemsCount">The count of <see cref="LearnableItemRequirementRef"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int itemsCount) => itemsCount * LearnableItemRequirementRef.Length + 8;
+
+
+/// <summary>
+/// The requirements to learn a skill with an item: the highest of the requirements of the item and the requirements of the skill. A value of 0 means there is no such requirement..
+/// </summary>
+public readonly ref struct LearnableItemRequirementRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LearnableItemRequirementRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public LearnableItemRequirementRef(Span<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 16;
+
+    /// <summary>
+    /// Gets or sets the group.
+    /// </summary>
+    public byte Group
+    {
+        get => this._data[0];
+        set => this._data[0] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the item level these requirements are for, or 0xFF if they apply to every level. Items which teach a different skill per level (Orb of Summoning) have one entry per level.
+    /// </summary>
+    public byte ItemLevel
+    {
+        get => this._data[1];
+        set => this._data[1] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the number.
+    /// </summary>
+    public ushort Number
+    {
+        get => ReadUInt16LittleEndian(this._data[2..]);
+        set => WriteUInt16LittleEndian(this._data[2..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the required character level.
+    /// </summary>
+    public ushort Level
+    {
+        get => ReadUInt16LittleEndian(this._data[4..]);
+        set => WriteUInt16LittleEndian(this._data[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the required total energy.
+    /// </summary>
+    public ushort Energy
+    {
+        get => ReadUInt16LittleEndian(this._data[6..]);
+        set => WriteUInt16LittleEndian(this._data[6..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the required total leadership (command).
+    /// </summary>
+    public ushort Leadership
+    {
+        get => ReadUInt16LittleEndian(this._data[8..]);
+        set => WriteUInt16LittleEndian(this._data[8..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the required total strength.
+    /// </summary>
+    public ushort Strength
+    {
+        get => ReadUInt16LittleEndian(this._data[10..]);
+        set => WriteUInt16LittleEndian(this._data[10..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the required total agility.
+    /// </summary>
+    public ushort Agility
+    {
+        get => ReadUInt16LittleEndian(this._data[12..]);
+        set => WriteUInt16LittleEndian(this._data[12..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the skill which is learned with the item.
+    /// </summary>
+    public ushort SkillNumber
+    {
+        get => ReadUInt16LittleEndian(this._data[14..]);
+        set => WriteUInt16LittleEndian(this._data[14..], value);
+    }
+}
+}
+
+
+/// <summary>
 /// Is sent by the server when: The player receives the result of registering Rena or Event Chips at the Golden Archer NPC.
 /// Causes reaction on client side: The client updates the Golden Archer interface with total registered count and remaining count in inventory.
 /// </summary>

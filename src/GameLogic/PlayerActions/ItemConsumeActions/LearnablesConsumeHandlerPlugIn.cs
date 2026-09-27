@@ -40,8 +40,14 @@ public class LearnablesConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn
     /// <inheritdoc />
     protected override bool CheckPreconditions(Player player, Item item)
     {
-        return base.CheckPreconditions(player, item)
-               && player.CompliesRequirements(item);
+        if (!base.CheckPreconditions(player, item) || !player.CompliesRequirements(item))
+        {
+            return false;
+        }
+
+        // A skill which can't be used after learning it can't be learned either.
+        return this.GetLearnableSkill(item, player.GameContext.Configuration) is not { } skill
+               || player.CompliesRequirements(skill);
     }
 
     /// <summary>
@@ -52,6 +58,8 @@ public class LearnablesConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn
     /// <returns>The skill to learn.</returns>
     protected virtual Skill? GetLearnableSkill(Item item, GameConfiguration gameConfiguration)
     {
-        return item.Definition?.Skill;
+        return item.Definition is { } definition
+            ? LearnableSkillRequirements.GetLearnableSkill(definition, item.Level, gameConfiguration)
+            : null;
     }
 }
