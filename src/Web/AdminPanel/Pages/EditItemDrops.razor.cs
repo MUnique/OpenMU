@@ -105,7 +105,8 @@ public partial class EditItemDrops : ComponentBase, IAsyncDisposable
             return this._gameConfiguration!.DropItemGroups
                 .Where(g => g is not ItemDropItemGroup && !monsterGroups.Contains(g) && !this._usages.ContainsKey(g))
                 .Where(this.IsMatchingFilter)
-                .OrderByDescending(g => this._maps.Count(m => m.DropItemGroups.Contains(g)))
+                .OrderByDescending(g => g.PossibleItems.Count == 0)
+                .ThenByDescending(g => g.Chance)
                 .ThenBy(g => g.Description.ValueInNeutralLanguage)
                 .ToList();
         }

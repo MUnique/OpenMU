@@ -21,3 +21,7 @@
     padding: 0.75rem 1rem;
     border-left: 3px solid var(--bs-primary, #0d6efd);
 }
+
+.drop-group-table .type-select {
+    min-width: 9rem;
+}
