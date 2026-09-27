@@ -72,7 +72,7 @@
                 var chanceSum = map.DropItemGroups.Where(g => g.Chance < 1.0).Sum(g => g.Chance);
                 <tr @key="map">
                     <td>@map.Number - @map.Name</td>
-                    <td class="small">@string.Join(", ", map.DropItemGroups.Select(g => $"{g.Description} ({g.Chance:P2})"))</td>
+                    <td title="@string.Join(Environment.NewLine, map.DropItemGroups.OrderByDescending(g => g.Chance).Select(g => $"{g.Chance:P2} {g.Description}"))">@map.DropItemGroups.Count</td>
                     <td>@map.DropItemGroups.Count(g => g.Chance >= 1.0)</td>
                     <td class="@(chanceSum > 1.0 ? "text-danger fw-bold" : string.Empty)" title="@(chanceSum > 1.0 ? Resources.TotalChanceExceedsHint : null)">@chanceSum.ToString("P2")</td>
                     <td>@Math.Max(0, 1.0 - chanceSum).ToString("P2")</td>
