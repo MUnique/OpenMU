@@ -103,3 +103,13 @@
         overflow-y: auto;
     }
 }
+
+/* Section headings which group the menu entries. */
+.nav-section {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.6;
+    padding-top: 0.9rem;
+    padding-bottom: 0.25rem;
+}
