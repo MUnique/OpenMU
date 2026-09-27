@@ -1314,5 +1314,4 @@
   <data name="WeeklyQuestsChatCommandPlugIn_Description" xml:space="preserve">
     <value>Handles the chat command '/weekly'. Shows the progress of the weekly quests.</value>
   </data>
-  </data>
 </root>
