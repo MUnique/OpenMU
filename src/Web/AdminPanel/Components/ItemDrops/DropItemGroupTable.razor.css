@@ -1,13 +1,13 @@
 .drop-group-table .description-column {
-    min-width: 16rem;
+    min-width: 14rem;
 }
 
 .drop-group-table .number-input {
-    width: 6rem;
+    width: 4.5rem;
 }
 
 .drop-group-table .money-input {
-    width: 8rem;
+    width: 7rem;
 }
 
 .drop-group-table .group-row > td {
