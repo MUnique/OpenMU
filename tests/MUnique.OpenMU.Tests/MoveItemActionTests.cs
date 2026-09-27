@@ -239,6 +239,71 @@ public class MoveItemActionTests
         Assert.That(vaultStorage.Items.Count(i => ReferenceEquals(i, movedItem)), Is.EqualTo(1));
     }
 
+    /// <summary>
+    /// Verifies that an item which isn't tradable can't be put into a trade, while a tradable one can.
+    /// </summary>
+    [Test]
+    public async ValueTask ItemWhichIsNotTradableIsNotMovedIntoTradeAsync()
+    {
+        var trader1 = await CreateTestPlayerAsync().ConfigureAwait(false);
+        var trader2 = await CreateTestPlayerAsync().ConfigureAwait(false);
+        var notTradable = CreateItem(CreateDefinition(), 1);
+        notTradable.Definition!.IsTradable = false;
+        var tradable = CreateItem(CreateDefinition(), 1);
+        await trader1.Inventory!.AddItemAsync(20, notTradable).ConfigureAwait(false);
+        await trader1.Inventory.AddItemAsync(21, tradable).ConfigureAwait(false);
+
+        await new TradeRequestAction().RequestTradeAsync(trader1, trader2).ConfigureAwait(false);
+        await new TradeAcceptAction().HandleTradeAcceptAsync(trader2, true).ConfigureAwait(false);
+
+        var action = new MoveItemAction();
+        await action.MoveItemAsync(trader1, 20, Storages.Inventory, 0, Storages.Trade).ConfigureAwait(false);
+        await action.MoveItemAsync(trader1, 21, Storages.Inventory, 1, Storages.Trade).ConfigureAwait(false);
+
+        Assert.That(trader1.Inventory.GetItem(20), Is.SameAs(notTradable));
+        Assert.That(trader1.TemporaryStorage!.GetItem(0), Is.Null);
+        Assert.That(trader1.TemporaryStorage.GetItem(1), Is.SameAs(tradable));
+    }
+
+    /// <summary>
+    /// Verifies that an item which isn't storable can't be moved into the vault.
+    /// </summary>
+    [Test]
+    public async ValueTask ItemWhichIsNotStorableIsNotMovedIntoVaultAsync()
+    {
+        var player = await CreateTestPlayerAsync().ConfigureAwait(false);
+        var vaultStorage = CreateVaultStorage();
+        player.Vault = vaultStorage;
+        player.OpenedNpc = new NonPlayerCharacter(null!, new MonsterDefinition { NpcWindow = NpcWindow.VaultStorage }, null!);
+        Assert.That(await player.PlayerState.TryAdvanceToAsync(PlayerState.NpcDialogOpened).ConfigureAwait(false), Is.True);
+
+        var item = CreateItem(CreateDefinition(), 1);
+        item.Definition!.IsStorable = false;
+        await player.Inventory!.AddItemAsync(20, item).ConfigureAwait(false);
+
+        await new MoveItemAction().MoveItemAsync(player, 20, Storages.Inventory, 0, Storages.Vault).ConfigureAwait(false);
+
+        Assert.That(player.Inventory.GetItem(20), Is.SameAs(item));
+        Assert.That(vaultStorage.GetItem(0), Is.Null);
+    }
+
+    /// <summary>
+    /// Verifies that an item which isn't sellable in a personal store can't be moved into it.
+    /// </summary>
+    [Test]
+    public async ValueTask ItemWhichIsNotPersonalStoreSellableIsNotMovedIntoPersonalStoreAsync()
+    {
+        var player = await CreateTestPlayerAsync().ConfigureAwait(false);
+        var item = CreateItem(CreateDefinition(), 1);
+        item.Definition!.IsPersonalStoreSellable = false;
+        await player.Inventory!.AddItemAsync(20, item).ConfigureAwait(false);
+
+        await new MoveItemAction().MoveItemAsync(player, 20, Storages.Inventory, InventoryConstants.FirstStoreItemSlotIndex, Storages.PersonalStore).ConfigureAwait(false);
+
+        Assert.That(player.Inventory.GetItem(20), Is.SameAs(item));
+        Assert.That(player.ShopStorage!.GetItem(InventoryConstants.FirstStoreItemSlotIndex), Is.Null);
+    }
+
     private static Storage CreateVaultStorage()
     {
         var itemStorage = new Mock<ItemStorage>();
