@@ -93,6 +93,10 @@ public static class Extensions
     /// </summary>
     /// <param name="enterResult">The enter result.</param>
     /// <returns>The enter result of the imperial guardian event.</returns>
+    /// <remarks>
+    /// The client knows no result for a character level which is too high, so this and all other results
+    /// without a counterpart are shown as <see cref="ImperialGuardianEnterResult.EnterResult.NotOpen"/>.
+    /// </remarks>
     public static ImperialGuardianEnterResult.EnterResult ToImperialGuardianEnterResult(this EnterResult enterResult)
     {
         return enterResult switch
