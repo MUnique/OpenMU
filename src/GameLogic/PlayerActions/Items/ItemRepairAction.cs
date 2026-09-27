@@ -35,6 +35,16 @@ public class ItemRepairAction
             return;
         }
 
+        if (!item.CanBeRepaired())
+        {
+            player.Logger.LogWarning(
+                "Player {0} tried to repair {1}, which its item definition doesn't allow. The client item data may differ from the server.",
+                player,
+                item);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.ItemCannotBeRepaired)).ConfigureAwait(false);
+            return;
+        }
+
         if ((byte)item.Durability == item.GetMaximumDurabilityOfOnePiece())
         {
             return;
@@ -77,7 +87,7 @@ public class ItemRepairAction
             }
 
             var item = player.Inventory?.GetItem(i);
-            if (item is null)
+            if (item is null || !item.CanBeRepaired())
             {
                 continue;
             }

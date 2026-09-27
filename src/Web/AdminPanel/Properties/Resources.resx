@@ -1266,4 +1266,250 @@
   <data name="Party" xml:space="preserve">
     <value>Party</value>
   </data>
+  <data name="AddChancePercent" xml:space="preserve">
+    <value>Add chance (%)</value>
+  </data>
+  <data name="AddDropItemGroup" xml:space="preserve">
+    <value>Add drop item group</value>
+  </data>
+  <data name="AddDropsForItem" xml:space="preserve">
+    <value>Add drops for another item (e.g. a box)</value>
+  </data>
+  <data name="AddDropsForMonster" xml:space="preserve">
+    <value>Add drops for another monster</value>
+  </data>
+  <data name="AddsRandomly" xml:space="preserve">
+    <value>Adds randomly</value>
+  </data>
+  <data name="AreYouSure" xml:space="preserve">
+    <value>Are you sure?</value>
+  </data>
+  <data name="AssignToAllMaps" xml:space="preserve">
+    <value>Assign to all maps</value>
+  </data>
+  <data name="AssignedMaps" xml:space="preserve">
+    <value>Assigned maps</value>
+  </data>
+  <data name="ChanceHint" xml:space="preserve">
+    <value>The chance that this group is selected for a drop, from 0 to 100 %. A chance of 100 % means that the group drops always, in addition to the chance based groups.</value>
+  </data>
+  <data name="ChancePercent" xml:space="preserve">
+    <value>Chance (%)</value>
+  </data>
+  <data name="DeleteDropItemGroupQuestion" xml:space="preserve">
+    <value>You're about to delete the drop item group '{0}'. Are you sure?</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="DropEffect" xml:space="preserve">
+    <value>Drop effect</value>
+  </data>
+  <data name="DropItemGroupStillUsed" xml:space="preserve">
+    <value>The drop item group '{0}' can't be deleted, because it's still used by: {1}</value>
+  </data>
+  <data name="DropLevel" xml:space="preserve">
+    <value>Drop level</value>
+  </data>
+  <data name="DropLevelHint" xml:space="preserve">
+    <value>The minimum monster level at which the item can drop randomly.</value>
+  </data>
+  <data name="DropsFromMonsters" xml:space="preserve">
+    <value>Drops from monsters</value>
+  </data>
+  <data name="EditDetails" xml:space="preserve">
+    <value>Edit details</value>
+  </data>
+  <data name="ExcellentItemDropLevelDelta" xml:space="preserve">
+    <value>Excellent item drop level delta</value>
+  </data>
+  <data name="ExcellentItemDropLevelDeltaHint" xml:space="preserve">
+    <value>A monster must be at least this many levels above the drop level of an item, so that the item can drop as excellent item.</value>
+  </data>
+  <data name="GameMap" xml:space="preserve">
+    <value>Map</value>
+  </data>
+  <data name="GeneralDropSettings" xml:space="preserve">
+    <value>General settings</value>
+  </data>
+  <data name="GuaranteedDrops" xml:space="preserve">
+    <value>Guaranteed drops</value>
+  </data>
+  <data name="Item" xml:space="preserve">
+    <value>Item</value>
+  </data>
+  <data name="ItemBoxDrops" xml:space="preserve">
+    <value>Item box drops</value>
+  </data>
+  <data name="ItemBoxDropsDescription" xml:space="preserve">
+    <value>Defines what drops when a player drops an item like a box (e.g. Box of Luck, Box of Kundun). One of the groups of the matching source item level is selected by its chance.</value>
+  </data>
+  <data name="ItemDropDurationSeconds" xml:space="preserve">
+    <value>Item drop duration (seconds)</value>
+  </data>
+  <data name="ItemDrops" xml:space="preserve">
+    <value>Item Drops</value>
+  </data>
+  <data name="ItemDropsPageDescription" xml:space="preserve">
+    <value>Configure all item drops on one page. Changes are only applied after saving.</value>
+  </data>
+  <data name="ItemLevel" xml:space="preserve">
+    <value>Item level</value>
+  </data>
+  <data name="ItemLevelHint" xml:space="preserve">
+    <value>The item level which is assigned to the dropped item. If empty, the level is determined by the monster level for random items.</value>
+  </data>
+  <data name="ItemOption" xml:space="preserve">
+    <value>Item option</value>
+  </data>
+  <data name="ItemOptionDropChances" xml:space="preserve">
+    <value>Item option chances</value>
+  </data>
+  <data name="ItemOptionDropChancesDescription" xml:space="preserve">
+    <value>The chances that options are added randomly to dropped items.</value>
+  </data>
+  <data name="ItemType" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="MapDropItemGroups" xml:space="preserve">
+    <value>Map drop groups</value>
+  </data>
+  <data name="MapDropItemGroupsDescription" xml:space="preserve">
+    <value>Drop groups which apply to monsters on the assigned maps. Groups which are not assigned to any map don't drop.</value>
+  </data>
+  <data name="MaximumDropLevel" xml:space="preserve">
+    <value>Maximum drop level</value>
+  </data>
+  <data name="MaximumDropLevelHint" xml:space="preserve">
+    <value>The maximum monster level at which the item can drop randomly. If empty, there is no upper limit.</value>
+  </data>
+  <data name="MaximumItemLevel" xml:space="preserve">
+    <value>Max. item level</value>
+  </data>
+  <data name="MaximumItemOptionLevelDrop" xml:space="preserve">
+    <value>Maximum item option level</value>
+  </data>
+  <data name="MaximumItemOptionLevelDropHint" xml:space="preserve">
+    <value>The maximum level of the item option (e.g. +4, +8, +12, +16) which can be added to a dropped item.</value>
+  </data>
+  <data name="MaximumMonsterLevel" xml:space="preserve">
+    <value>Max. monster level</value>
+  </data>
+  <data name="MaximumOptionsPerItem" xml:space="preserve">
+    <value>Maximum options per item</value>
+  </data>
+  <data name="MiniGameUsage" xml:space="preserve">
+    <value>Mini game '{0}'</value>
+  </data>
+  <data name="MinimumItemLevel" xml:space="preserve">
+    <value>Min. item level</value>
+  </data>
+  <data name="MinimumMonsterLevel" xml:space="preserve">
+    <value>Min. monster level</value>
+  </data>
+  <data name="Money" xml:space="preserve">
+    <value>Money</value>
+  </data>
+  <data name="MoneyAmount" xml:space="preserve">
+    <value>Money amount</value>
+  </data>
+  <data name="MonsterDrops" xml:space="preserve">
+    <value>Monster drops</value>
+  </data>
+  <data name="MonsterDropsDescription" xml:space="preserve">
+    <value>Drop groups of specific monsters. They are considered in addition to the map drop groups when the monster is killed.</value>
+  </data>
+  <data name="NewDropItemGroup" xml:space="preserve">
+    <value>New drop item group</value>
+  </data>
+  <data name="NewDropItemGroupOf" xml:space="preserve">
+    <value>Drop of {0}</value>
+  </data>
+  <data name="NoDropChance" xml:space="preserve">
+    <value>No drop</value>
+  </data>
+  <data name="NoDropItemGroups" xml:space="preserve">
+    <value>There are no drop item groups.</value>
+  </data>
+  <data name="NoItems" xml:space="preserve">
+    <value>No items</value>
+  </data>
+  <data name="NumberOfMaximumItemDrops" xml:space="preserve">
+    <value>Maximum item drops</value>
+  </data>
+  <data name="NumberOfMaximumItemDropsHint" xml:space="preserve">
+    <value>The maximum number of items which this monster drops when it's killed.</value>
+  </data>
+  <data name="OnlyForMonster" xml:space="preserve">
+    <value>Only for monster</value>
+  </data>
+  <data name="PossibleItems" xml:space="preserve">
+    <value>Possible items</value>
+  </data>
+  <data name="PossibleItemsHint" xml:space="preserve">
+    <value>If no items are selected, random items are dropped depending on the type and monster level.</value>
+  </data>
+  <data name="QuestAndEventDropItemGroups" xml:space="preserve">
+    <value>Quest and event drop groups</value>
+  </data>
+  <data name="QuestAndEventDropItemGroupsDescription" xml:space="preserve">
+    <value>Drop groups which are used by quests or mini game rewards.</value>
+  </data>
+  <data name="QuestUsage" xml:space="preserve">
+    <value>Quest '{0}'</value>
+  </data>
+  <data name="RandomAncientItems" xml:space="preserve">
+    <value>Random ancient items</value>
+  </data>
+  <data name="RandomItemsByMonsterLevel" xml:space="preserve">
+    <value>Random items by monster level</value>
+  </data>
+  <data name="RandomlyDroppedItems" xml:space="preserve">
+    <value>Randomly dropped items</value>
+  </data>
+  <data name="RandomlyDroppedItemsDescription" xml:space="preserve">
+    <value>Defines which items can drop as random items (e.g. by the common and excellent drop groups) and at which monster levels.</value>
+  </data>
+  <data name="RemoveFromAllMaps" xml:space="preserve">
+    <value>Remove from all maps</value>
+  </data>
+  <data name="RemoveFromMonster" xml:space="preserve">
+    <value>Remove from monster</value>
+  </data>
+  <data name="RequiredCharacterLevel" xml:space="preserve">
+    <value>Required character level</value>
+  </data>
+  <data name="ShouldDropMoney" xml:space="preserve">
+    <value>Drop money (instead of adding it to the inventory directly)</value>
+  </data>
+  <data name="ShowOnlyDroppableItems" xml:space="preserve">
+    <value>Show only items which drop from monsters</value>
+  </data>
+  <data name="SourceItemLevel" xml:space="preserve">
+    <value>Source item level</value>
+  </data>
+  <data name="SourceItemLevelHint" xml:space="preserve">
+    <value>The level of the dropped item (e.g. the box) for which this group applies.</value>
+  </data>
+  <data name="TotalChance" xml:space="preserve">
+    <value>Total chance</value>
+  </data>
+  <data name="TotalChanceExceedsHint" xml:space="preserve">
+    <value>The total chance exceeds 100 %. The chances are scaled down proportionally.</value>
+  </data>
+  <data name="UsedBy" xml:space="preserve">
+    <value>Used by</value>
+  </data>
+  <data name="Monster" xml:space="preserve">
+    <value>Monster</value>
+  </data>
+  <data name="MonsterLevel" xml:space="preserve">
+    <value>Level</value>
+  </data>
+  <data name="MonsterDropChanceOverview" xml:space="preserve">
+    <value>Drop chance overview per monster</value>
+  </data>
+  <data name="MonsterDropChanceOverviewDescription" xml:space="preserve">
+    <value>The drop chances of each monster which is spawned on a map, considering the monster level restrictions of the map drop groups and the monster specific drop groups. The chances apply to each drop roll, a monster rolls up to its maximum item drops. Quest item drops are not included. If the total chance exceeds 100 %, the chances are scaled down proportionally and there is no chance for no drop.</value>
+  </data>
 </root>

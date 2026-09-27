@@ -24,6 +24,7 @@
         <h6 class="dropdown-header">Ítems y economía</h6>
         <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(ItemDefinition).FullName}/")" @onclick="() => NavigationHistory.Clear()" title="Definiciones de ítems: poder, requisitos, precio, tamaño de pila (Durability) y drops.">@Resources.Items</NavLink>
         <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(DropItemGroup).FullName}/")" @onclick="() => NavigationHistory.Clear()" title="Grupos de drop: qué cae, con qué probabilidad y en qué monstruos o mapas.">@Resources.DropItemGroups</NavLink>
+        <NavLink class="dropdown-item" href="edit-item-drops" @onclick="() => NavigationHistory.Clear()" title="Todos los drops de ítems en una sola página: qué cae, dónde y con qué probabilidad.">@Resources.ItemDrops</NavLink>
         <NavLink class="dropdown-item" href="@($"merchants/")" @onclick="() => NavigationHistory.Clear()" title="Qué vende cada NPC comerciante y en qué cantidad.">@Resources.MerchantStores</NavLink>
         <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(JewelMix).FullName}/")" @onclick="() => NavigationHistory.Clear()" title="Cómo se combinan y se separan las joyas en packs de 10, 20 o 30.">@Resources.JewelMixes</NavLink>
         <hr class="dropdown-divider"/>
