@@ -15,6 +15,16 @@ using MUnique.OpenMU.Interfaces;
 public class GuildRoleAssignAction
 {
     /// <summary>
+    /// The combined guild master levels granting one additional battle master.
+    /// </summary>
+    private const int LevelsPerBattleMaster = 200;
+
+    /// <summary>
+    /// The battle masters a guild may have regardless of the guild master's level.
+    /// </summary>
+    private const int BaseBattleMasterCount = 1;
+
+    /// <summary>
     /// Assigns the specified role to the guild member with the specified nickname.
     /// </summary>
     /// <param name="player">The requesting player. Must be the guild master.</param>
@@ -108,14 +118,13 @@ public class GuildRoleAssignAction
     }
 
     /// <summary>
-    /// Gets the maximum number of battle masters for the given combined level of the guild master:
-    /// <c>(level / 200) + 1</c> with integer division.
+    /// Gets the maximum number of battle masters for the given combined level of the guild master.
     /// </summary>
     /// <param name="masterTotalLevel">The combined normal and master level of the guild master.</param>
     /// <returns>The maximum number of battle masters.</returns>
     private static int GetMaxBattleMasterCount(int masterTotalLevel)
     {
-        return (masterTotalLevel / 200) + 1;
+        return (masterTotalLevel / LevelsPerBattleMaster) + BaseBattleMasterCount;
     }
 
     /// <summary>

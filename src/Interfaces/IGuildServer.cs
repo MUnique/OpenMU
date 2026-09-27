@@ -188,7 +188,7 @@ public interface IGuildServer
     /// </summary>
     /// <param name="guildId">The guild identifier.</param>
     /// <param name="characterName">The name of the character.</param>
-    /// <param name="role">The role.</param>
+    /// <param name="role">The role. Only normal member, battle master and assistant master are accepted.</param>
     /// <returns><c>true</c> if the member was found and the position was changed; otherwise, <c>false</c>.</returns>
     ValueTask<bool> ChangeGuildMemberPositionByNameAsync(uint guildId, string characterName, GuildPosition role);
 
