@@ -9437,42 +9437,42 @@
           <Name>RemainingSeconds</Name>
         </Field>
         <Field>
-          <Index>4</Index>
+          <Index>6</Index>
           <Type>ShortLittleEndian</Type>
           <Name>PlayerIndex</Name>
         </Field>
         <Field>
-          <Index>6</Index>
+          <Index>8</Index>
           <Type>Byte</Type>
           <Name>PositionX</Name>
         </Field>
         <Field>
-          <Index>7</Index>
+          <Index>9</Index>
           <Type>Byte</Type>
           <Name>PositionY</Name>
         </Field>
         <Field>
-          <Index>8</Index>
+          <Index>10</Index>
           <Type>Byte</Type>
           <Name>Team1Points</Name>
         </Field>
         <Field>
-          <Index>9</Index>
+          <Index>11</Index>
           <Type>Byte</Type>
           <Name>Team2Points</Name>
         </Field>
         <Field>
-          <Index>10</Index>
+          <Index>12</Index>
           <Type>Byte</Type>
           <Name>MyTeam</Name>
         </Field>
         <Field>
-          <Index>11</Index>
+          <Index>13</Index>
           <Type>Byte</Type>
           <Name>PartyCount</Name>
         </Field>
         <Field>
-          <Index>12</Index>
+          <Index>14</Index>
           <Type>Structure[]</Type>
           <TypeName>IllusionTemplePartyEntry</TypeName>
           <Name>PartyMembers</Name>
@@ -9482,7 +9482,7 @@
         <Structure>
           <Name>IllusionTemplePartyEntry</Name>
           <Description>Contains the info about a party member in illusion temple.</Description>
-          <Length>5</Length>
+          <Length>6</Length>
           <Fields>
             <Field>
               <Index>0</Index>
@@ -9491,7 +9491,7 @@
             </Field>
             <Field>
               <Index>2</Index>
-              <Type>ShortLittleEndian</Type>
+              <Type>Byte</Type>
               <Name>MapNumber</Name>
             </Field>
             <Field>
@@ -9607,7 +9607,7 @@
           <Name>PlayerCount</Name>
         </Field>
         <Field>
-          <Index>10</Index>
+          <Index>7</Index>
           <Type>Structure[]</Type>
           <TypeName>PlayerResult</TypeName>
           <Name>Players</Name>
@@ -9618,12 +9618,13 @@
         <Structure>
           <Name>PlayerResult</Name>
           <Description>Contains the result of a player in the event.</Description>
-          <Length>17</Length>
+          <Length>20</Length>
           <Fields>
             <Field>
               <Index>0</Index>
               <Type>String</Type>
               <Name>Name</Name>
+              <Length>10</Length>
             </Field>
             <Field>
               <Index>10</Index>
@@ -9641,7 +9642,7 @@
               <Name>Class</Name>
             </Field>
             <Field>
-              <Index>13</Index>
+              <Index>16</Index>
               <Type>IntegerLittleEndian</Type>
               <Name>AddedExperience</Name>
             </Field>

@@ -24536,8 +24536,8 @@ public readonly ref struct IllusionTempleStateRef
     /// </summary>
     public ushort PlayerIndex
     {
-        get => ReadUInt16LittleEndian(this._data[4..]);
-        set => WriteUInt16LittleEndian(this._data[4..], value);
+        get => ReadUInt16LittleEndian(this._data[6..]);
+        set => WriteUInt16LittleEndian(this._data[6..], value);
     }
 
     /// <summary>
@@ -24545,8 +24545,8 @@ public readonly ref struct IllusionTempleStateRef
     /// </summary>
     public byte PositionX
     {
-        get => this._data[6];
-        set => this._data[6] = value;
+        get => this._data[8];
+        set => this._data[8] = value;
     }
 
     /// <summary>
@@ -24554,8 +24554,8 @@ public readonly ref struct IllusionTempleStateRef
     /// </summary>
     public byte PositionY
     {
-        get => this._data[7];
-        set => this._data[7] = value;
+        get => this._data[9];
+        set => this._data[9] = value;
     }
 
     /// <summary>
@@ -24563,8 +24563,8 @@ public readonly ref struct IllusionTempleStateRef
     /// </summary>
     public byte Team1Points
     {
-        get => this._data[8];
-        set => this._data[8] = value;
+        get => this._data[10];
+        set => this._data[10] = value;
     }
 
     /// <summary>
@@ -24572,8 +24572,8 @@ public readonly ref struct IllusionTempleStateRef
     /// </summary>
     public byte Team2Points
     {
-        get => this._data[9];
-        set => this._data[9] = value;
+        get => this._data[11];
+        set => this._data[11] = value;
     }
 
     /// <summary>
@@ -24581,8 +24581,8 @@ public readonly ref struct IllusionTempleStateRef
     /// </summary>
     public byte MyTeam
     {
-        get => this._data[10];
-        set => this._data[10] = value;
+        get => this._data[12];
+        set => this._data[12] = value;
     }
 
     /// <summary>
@@ -24590,14 +24590,14 @@ public readonly ref struct IllusionTempleStateRef
     /// </summary>
     public byte PartyCount
     {
-        get => this._data[11];
-        set => this._data[11] = value;
+        get => this._data[13];
+        set => this._data[13] = value;
     }
 
     /// <summary>
     /// Gets the <see cref="IllusionTemplePartyEntryRef"/> of the specified index.
     /// </summary>
-        public IllusionTemplePartyEntryRef this[int index] => new (this._data[(12 + index * IllusionTemplePartyEntryRef.Length)..]);
+        public IllusionTemplePartyEntryRef this[int index] => new (this._data[(14 + index * IllusionTemplePartyEntryRef.Length)..]);
 
     /// <summary>
     /// Performs an implicit conversion from a Span of bytes to a <see cref="IllusionTempleState"/>.
@@ -24618,7 +24618,7 @@ public readonly ref struct IllusionTempleStateRef
     /// </summary>
     /// <param name="partyMembersCount">The count of <see cref="IllusionTemplePartyEntryRef"/> from which the size will be calculated.</param>
         
-    public static int GetRequiredSize(int partyMembersCount) => partyMembersCount * IllusionTemplePartyEntryRef.Length + 12;
+    public static int GetRequiredSize(int partyMembersCount) => partyMembersCount * IllusionTemplePartyEntryRef.Length + 14;
 
 
 /// <summary>
@@ -24640,7 +24640,7 @@ public readonly ref struct IllusionTemplePartyEntryRef
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 5;
+    public static int Length => 6;
 
     /// <summary>
     /// Gets or sets the player id.
@@ -24654,10 +24654,10 @@ public readonly ref struct IllusionTemplePartyEntryRef
     /// <summary>
     /// Gets or sets the map number.
     /// </summary>
-    public ushort MapNumber
+    public byte MapNumber
     {
-        get => ReadUInt16LittleEndian(this._data[2..]);
-        set => WriteUInt16LittleEndian(this._data[2..], value);
+        get => this._data[2];
+        set => this._data[2] = value;
     }
 
     /// <summary>
@@ -25011,7 +25011,7 @@ public readonly ref struct IllusionTempleResultRef
     /// <summary>
     /// Gets the <see cref="PlayerResultRef"/> of the specified index.
     /// </summary>
-        public PlayerResultRef this[int index] => new (this._data[(10 + index * PlayerResultRef.Length)..]);
+        public PlayerResultRef this[int index] => new (this._data[(7 + index * PlayerResultRef.Length)..]);
 
     /// <summary>
     /// Performs an implicit conversion from a Span of bytes to a <see cref="IllusionTempleResult"/>.
@@ -25032,7 +25032,7 @@ public readonly ref struct IllusionTempleResultRef
     /// </summary>
     /// <param name="playersCount">The count of <see cref="PlayerResultRef"/> from which the size will be calculated.</param>
         
-    public static int GetRequiredSize(int playersCount) => playersCount * PlayerResultRef.Length + 10;
+    public static int GetRequiredSize(int playersCount) => playersCount * PlayerResultRef.Length + 7;
 
 
 /// <summary>
@@ -25054,15 +25054,15 @@ public readonly ref struct PlayerResultRef
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 17;
+    public static int Length => 20;
 
     /// <summary>
     /// Gets or sets the name.
     /// </summary>
     public string Name
     {
-        get => this._data.ExtractString(0, this._data.Length - 0, System.Text.Encoding.UTF8);
-        set => this._data.Slice(0).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.ExtractString(0, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(0, 10).WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
@@ -25097,21 +25097,9 @@ public readonly ref struct PlayerResultRef
     /// </summary>
     public uint AddedExperience
     {
-        get => ReadUInt32LittleEndian(this._data[13..]);
-        set => WriteUInt32LittleEndian(this._data[13..], value);
+        get => ReadUInt32LittleEndian(this._data[16..]);
+        set => WriteUInt32LittleEndian(this._data[16..], value);
     }
-
-    /// <summary>
-    /// Calculates the size of the packet for the specified field content.
-    /// </summary>
-    /// <param name="content">The content of the variable 'Name' field from which the size will be calculated.</param>
-    public static int GetRequiredSize(string content) => System.Text.Encoding.UTF8.GetByteCount(content) + 1 + 0;
-
-    /// <summary>
-    /// Calculates the size of the packet for the specified field content.
-    /// </summary>
-    /// <param name="contentLength">The content length in bytes of the variable 'Name' field from which the size will be calculated.</param>
-    public static int GetRequiredSize(int contentLength) => contentLength + 1 + 0;
 }
 }
 

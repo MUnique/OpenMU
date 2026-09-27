@@ -17,24 +17,24 @@ The client shows the state in the user interface.
 | 2 | 1 |    Byte   | 0xBF  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x01  | Packet header - sub packet type identifier |
 | 4 | 2 | ShortLittleEndian |  | RemainingSeconds |
-| 4 | 2 | ShortLittleEndian |  | PlayerIndex |
-| 6 | 1 | Byte |  | PositionX |
-| 7 | 1 | Byte |  | PositionY |
-| 8 | 1 | Byte |  | Team1Points |
-| 9 | 1 | Byte |  | Team2Points |
-| 10 | 1 | Byte |  | MyTeam |
-| 11 | 1 | Byte |  | PartyCount |
-| 12 | IllusionTemplePartyEntry.Length *  | Array of IllusionTemplePartyEntry |  | PartyMembers |
+| 6 | 2 | ShortLittleEndian |  | PlayerIndex |
+| 8 | 1 | Byte |  | PositionX |
+| 9 | 1 | Byte |  | PositionY |
+| 10 | 1 | Byte |  | Team1Points |
+| 11 | 1 | Byte |  | Team2Points |
+| 12 | 1 | Byte |  | MyTeam |
+| 13 | 1 | Byte |  | PartyCount |
+| 14 | IllusionTemplePartyEntry.Length *  | Array of IllusionTemplePartyEntry |  | PartyMembers |
 
 ### IllusionTemplePartyEntry Structure
 
 Contains the info about a party member in illusion temple.
 
-Length: 5 Bytes
+Length: 6 Bytes
 
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
 | 0 | 2 | ShortLittleEndian |  | PlayerId |
-| 2 | 2 | ShortLittleEndian |  | MapNumber |
+| 2 | 1 | Byte |  | MapNumber |
 | 3 | 1 | Byte |  | PositionX |
 | 4 | 1 | Byte |  | PositionY |
