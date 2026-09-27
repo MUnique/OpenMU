@@ -46,6 +46,10 @@ public static partial class SpanishHelp
         Add(e, "GameConfiguration.CharacterClasses", "Lista de las clases de personaje.");
         Add(e, "GameConfiguration.DropItemGroups", "Grupos de drop que se pueden asignar a mapas y personajes.");
         Add(e, "GameConfiguration.PlugInConfigurations", "Configuración de los plugins (comandos, eventos, Happy Hour, etc.). Se edita mejor desde la pantalla Plugins.");
+
+        // Founder Experience Bonus plugin (Plugins page).
+        Add(e, "FounderBonusConfiguration.CutoffDate", "Fecha y hora (en UTC) hasta la cual una cuenta cuenta como Fundadora.", "Tiene que coincidir con la apertura de la beta que muestra la web (variable BETA_OPENS_AT), convertida a UTC. Por ejemplo, 12/10 10:00 hora Argentina es 12/10 13:00 UTC.");
+        Add(e, "FounderBonusConfiguration.BonusMultiplier", "Multiplicador de experiencia extra para las cuentas Fundadoras. 1.05 es +5%.", "Se aplica sobre la experiencia normal y la de Master Level, encima de las demás bonificaciones. Ponerlo en 1.00 deja el plugin activo sin dar ningún extra.");
     }
 
     private static void AddMaps(Dictionary<string, Entry> e)
