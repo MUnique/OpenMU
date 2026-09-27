@@ -48,8 +48,7 @@ public sealed class ImperialGuardianContext : MiniGameContext
     private readonly ConcurrentDictionary<ImperialGuardianGate, byte> _gates = new();
 
     private int _zone;
-    private ImperialGuardianTimerType _timerType = ImperialGuardianTimerType.Standby;
-    private DateTime _timerEndsAtUtc;
+    private TimerState _timer;
     private ImperialGuardianMonsterScaling? _monsterScaling;
 
     /// <summary>
@@ -77,7 +76,7 @@ public sealed class ImperialGuardianContext : MiniGameContext
             .DefaultIfEmpty(0)
             .Max());
         this._weather = (ImperialGuardianWeather)Rand.NextInt(0, 4);
-        this._timerEndsAtUtc = this.EnterEndsAtUtc.Add(CountdownDuration);
+        this._timer = new TimerState(ImperialGuardianTimerType.Standby, this.EnterEndsAtUtc.Add(CountdownDuration));
 
         _ = Task.Run(() => this.RunTimerLoopAsync(this.GameEndedToken), this.GameEndedToken);
     }
@@ -176,8 +175,9 @@ public sealed class ImperialGuardianContext : MiniGameContext
                     this.SetTimer(ImperialGuardianTimerType.Standby, CountdownDuration);
                 }
 
-                var remaining = this._timerEndsAtUtc - DateTime.UtcNow;
-                var type = this._timerType;
+                var timerState = Volatile.Read(ref this._timer);
+                var remaining = timerState.EndsAtUtc - DateTime.UtcNow;
+                var type = timerState.Type;
                 var monsterCount = this.RemainingMonsterCount;
                 await this.ForEachPlayerAsync(player => player.InvokeViewPlugInAsync<IImperialGuardianViewPlugIn>(p =>
                     p.ShowTimerAsync(type, remaining > TimeSpan.Zero ? remaining : TimeSpan.Zero, monsterCount)).AsTask()).ConfigureAwait(false);
@@ -256,7 +256,7 @@ public sealed class ImperialGuardianContext : MiniGameContext
             }
 
             var isCleared = this.RemainingMonsterCount == 0;
-            var isTimeOver = DateTime.UtcNow >= this._timerEndsAtUtc;
+            var isTimeOver = DateTime.UtcNow >= Volatile.Read(ref this._timer).EndsAtUtc;
             if (isCleared && (isLastZone || this._definition.StartNextZoneWhenCleared || isTimeOver))
             {
                 return true;
@@ -300,13 +300,12 @@ public sealed class ImperialGuardianContext : MiniGameContext
 
     private void SetTimer(ImperialGuardianTimerType type, TimeSpan duration)
     {
-        this._timerType = type;
-        this._timerEndsAtUtc = DateTime.UtcNow.Add(duration);
+        Volatile.Write(ref this._timer, new TimerState(type, DateTime.UtcNow.Add(duration)));
     }
 
     private ValueTask ShowZoneAsync(Player player)
     {
-        var remaining = this._timerEndsAtUtc - DateTime.UtcNow;
+        var remaining = Volatile.Read(ref this._timer).EndsAtUtc - DateTime.UtcNow;
         return player.InvokeViewPlugInAsync<IImperialGuardianViewPlugIn>(p =>
             p.ShowEnterResultAsync(ImperialGuardianEnterResult.Success, this.Day, this.Zone, this._weather, remaining > TimeSpan.Zero ? remaining : TimeSpan.Zero));
     }
@@ -490,4 +489,11 @@ public sealed class ImperialGuardianContext : MiniGameContext
 
         this.Logger.LogDebug("{context}: {boss} dropped {count} {fragment}.", this, boss, count, fragment.Name);
     }
+
+    /// <summary>
+    /// The state of the timer, which is shown to the players. It's replaced as a whole, so that its type and end always match.
+    /// </summary>
+    /// <param name="Type">The type of the timer.</param>
+    /// <param name="EndsAtUtc">The time when the timer ends.</param>
+    private sealed record TimerState(ImperialGuardianTimerType Type, DateTime EndsAtUtc);
 }
