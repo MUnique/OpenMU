@@ -5,7 +5,11 @@
 namespace MUnique.OpenMU.Persistence.Initialization.Updates;
 
 using System.Runtime.InteropServices;
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
+using MUnique.OpenMU.Persistence.Initialization.Skills;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 using MUnique.OpenMU.PlugIns;
 
@@ -15,6 +19,7 @@ using MUnique.OpenMU.PlugIns;
 /// <remarks>
 /// The spider eggs, Selupan and the monsters summoned by Selupan were spawned automatically.
 /// Now they're spawned by the raklion event, depending on its state.
+/// It also adds the attack skills of Selupan, which carry its damage multipliers.
 /// </remarks>
 [PlugIn]
 [Display(Name = PlugInName, Description = PlugInDescription)]
@@ -72,7 +77,42 @@ public class AddRaklionEventUpdatePlugIn : UpdatePlugInBase
             }
         }
 
+        AddSelupanSkills(context, gameConfiguration);
+
         return ValueTask.CompletedTask;
+    }
+
+    private static void AddSelupanSkills(IContext context, GameConfiguration gameConfiguration)
+    {
+        CreateSkill(SkillNumber.SelupanPoison, "Selupan Poison", 2.0f);
+        CreateSkill(SkillNumber.SelupanIceStorm, "Selupan Ice Storm", 2.2f);
+        CreateSkill(SkillNumber.SelupanIceStrike, "Selupan Ice Strike", 2.3f);
+
+        void CreateSkill(SkillNumber number, string name, float damageMultiplier)
+        {
+            if (gameConfiguration.Skills.Any(skill => skill.Number == (short)number))
+            {
+                return;
+            }
+
+            var skill = context.CreateNew<Skill>();
+            gameConfiguration.Skills.Add(skill);
+            skill.Number = (short)number;
+            skill.Name = name;
+            skill.DamageType = DamageType.Physical;
+            skill.Range = 10;
+            skill.SkillType = SkillType.AreaSkillExplicitTarget;
+            skill.Target = SkillTarget.Explicit;
+            skill.SetGuid(skill.Number);
+
+            skill.AttributeRelationships.Add(CharacterClassHelper.CreateAttributeRelationship(
+                context,
+                gameConfiguration,
+                Stats.SkillFinalMultiplier,
+                damageMultiplier,
+                Stats.SkillMultiplier,
+                InputOperator.Maximum));
+        }
     }
 
     private static byte? GetWaveNumber(short? monsterNumber)

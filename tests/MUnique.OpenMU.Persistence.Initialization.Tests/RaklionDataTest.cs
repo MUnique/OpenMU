@@ -5,7 +5,9 @@
 namespace MUnique.OpenMU.Persistence.Initialization.Tests;
 
 using Microsoft.Extensions.Logging.Abstractions;
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Raklion;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
 using MUnique.OpenMU.Persistence.InMemory;
@@ -17,6 +19,9 @@ using MUnique.OpenMU.Persistence.InMemory;
 internal class RaklionDataTest
 {
     private const short HatcheryNumber = 58;
+    private const short PoisonSkillNumber = 250;
+    private const short IceStormSkillNumber = 251;
+    private const short IceStrikeSkillNumber = 252;
 
     /// <summary>
     /// Tests that the monsters of the hatchery of a new database are spawned by the event.
@@ -28,6 +33,7 @@ internal class RaklionDataTest
         var gameConfiguration = await CreateConfigurationAsync(contextProvider).ConfigureAwait(false);
 
         AssertEventSpawns(gameConfiguration);
+        AssertSelupanSkills(gameConfiguration);
     }
 
     /// <summary>
@@ -45,11 +51,17 @@ internal class RaklionDataTest
             spawn.WaveNumber = 0;
         }
 
+        foreach (var skill in gameConfiguration.Skills.Where(IsSelupanSkill).ToList())
+        {
+            gameConfiguration.Skills.Remove(skill);
+        }
+
         var update = new AddRaklionEventUpdatePlugIn();
         await update.ApplyUpdateAsync(contextProvider.CreateNewContext(), gameConfiguration).ConfigureAwait(false);
         await update.ApplyUpdateAsync(contextProvider.CreateNewContext(), gameConfiguration).ConfigureAwait(false);
 
         AssertEventSpawns(gameConfiguration);
+        AssertSelupanSkills(gameConfiguration);
     }
 
     private static async Task<GameConfiguration> CreateConfigurationAsync(InMemoryPersistenceContextProvider contextProvider)
@@ -63,6 +75,35 @@ internal class RaklionDataTest
     private static GameMapDefinition GetHatchery(GameConfiguration gameConfiguration)
     {
         return gameConfiguration.Maps.Single(map => map.Number == HatcheryNumber);
+    }
+
+    private static bool IsSelupanSkill(Skill skill)
+    {
+        return skill.Number is PoisonSkillNumber or IceStormSkillNumber or IceStrikeSkillNumber;
+    }
+
+    /// <summary>
+    /// Asserts that the attack skills of Selupan exist exactly once and carry their damage multiplier.
+    /// Without the multiplier, the three skills would hit exactly the same.
+    /// </summary>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    private static void AssertSelupanSkills(GameConfiguration gameConfiguration)
+    {
+        Assert.That(gameConfiguration.Skills.Where(IsSelupanSkill).ToList(), Has.Count.EqualTo(3));
+
+        AssertMultiplier(PoisonSkillNumber, 2.0f);
+        AssertMultiplier(IceStormSkillNumber, 2.2f);
+        AssertMultiplier(IceStrikeSkillNumber, 2.3f);
+
+        void AssertMultiplier(short number, float expected)
+        {
+            var skill = gameConfiguration.Skills.Single(s => s.Number == number);
+            var relationship = skill.AttributeRelationships.Single(r => r.TargetAttribute?.Id == Stats.SkillFinalMultiplier.Id);
+
+            Assert.That(relationship.InputOperand, Is.EqualTo(expected).Within(0.001f), $"Wrong multiplier of skill {number}.");
+            Assert.That(relationship.InputOperator, Is.EqualTo(InputOperator.Maximum), $"The multiplier of skill {number} must be absolute.");
+            Assert.That(relationship.InputAttribute?.Id, Is.EqualTo(Stats.SkillMultiplier.Id));
+        }
     }
 
     private static void AssertEventSpawns(GameConfiguration gameConfiguration)

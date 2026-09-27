@@ -24,6 +24,9 @@ public sealed class SelupanIntelligence : INpcIntelligence, IDisposable
     private const short StunnedMagicEffectNumber = 61;
     private const int TeleportTries = 10;
     private const short TeleportSkillNumber = 6;
+    private const short PoisonSkillNumber = 250;
+    private const short IceStormSkillNumber = 251;
+    private const short IceStrikeSkillNumber = 252;
     private static readonly TimeSpan TeleportVanishDuration = TimeSpan.FromMilliseconds(500);
 
     private readonly RaklionContext _context;
@@ -31,6 +34,7 @@ public sealed class SelupanIntelligence : INpcIntelligence, IDisposable
     private readonly ILogger _logger;
     private readonly List<(IElement Element, AttributeDefinition Target)> _berserkElements = new();
     private readonly SimpleElement _invincibilityElement = new(0, AggregateType.Multiplicate);
+    private readonly Dictionary<SelupanSkill, SkillEntry?> _skillEntries = new();
     private Timer? _timer;
     private Monster? _monster;
     private IAttackable? _attacker;
@@ -295,7 +299,7 @@ public sealed class SelupanIntelligence : INpcIntelligence, IDisposable
             case SelupanSkill.IceStorm:
             case SelupanSkill.IceStrike:
                 await this.ShowSkillAsync(monster, target, skill).ConfigureAwait(false);
-                await this.AttackAreaAsync(monster, target).ConfigureAwait(false);
+                await this.AttackAreaAsync(monster, target, skill).ConfigureAwait(false);
                 break;
             case SelupanSkill.Freeze:
                 await this.ShowSkillAsync(monster, target, skill).ConfigureAwait(false);
@@ -329,7 +333,7 @@ public sealed class SelupanIntelligence : INpcIntelligence, IDisposable
         }
     }
 
-    private async ValueTask AttackAreaAsync(Monster monster, IAttackable target)
+    private async ValueTask AttackAreaAsync(Monster monster, IAttackable target, SelupanSkill skill)
     {
         var targets = monster.CurrentMap.GetAttackablesInRange(target.Position, this._definition.AreaSkillRadius)
             .OfType<Player>()
@@ -337,8 +341,45 @@ public sealed class SelupanIntelligence : INpcIntelligence, IDisposable
             .ToList();
         foreach (var player in targets)
         {
-            await player.AttackByAsync(monster, null, false).ConfigureAwait(false);
+            await player.AttackByAsync(monster, this.GetSkillEntry(skill, player), false).ConfigureAwait(false);
         }
+    }
+
+    /// <summary>
+    /// Gets the skill entry of an attack skill of Selupan, so that its damage multiplier is applied.
+    /// Without a skill, the damage calculation skips the multiplier of the attacker entirely.
+    /// </summary>
+    /// <param name="skill">The skill which is used.</param>
+    /// <param name="target">The attacked player, to get to the game configuration.</param>
+    /// <returns>The skill entry; otherwise, <see langword="null"/>.</returns>
+    private SkillEntry? GetSkillEntry(SelupanSkill skill, Player target)
+    {
+        if (this._skillEntries.TryGetValue(skill, out var cached))
+        {
+            return cached;
+        }
+
+        var skillNumber = skill switch
+        {
+            SelupanSkill.Poison => PoisonSkillNumber,
+            SelupanSkill.IceStorm => IceStormSkillNumber,
+            SelupanSkill.IceStrike => IceStrikeSkillNumber,
+            _ => default(short?),
+        };
+
+        SkillEntry? entry = null;
+        if (skillNumber is { } number
+            && target.GameContext.Configuration.Skills.FirstOrDefault(definition => definition.Number == number) is { } skillDefinition)
+        {
+            entry = new SkillEntry { Skill = skillDefinition, Level = 0 };
+        }
+        else
+        {
+            this._logger.LogWarning("Raklion: The skill {Skill} of Selupan is not configured; it attacks without its damage multiplier.", skill);
+        }
+
+        this._skillEntries[skill] = entry;
+        return entry;
     }
 
     private async ValueTask TeleportAsync(Monster monster)
