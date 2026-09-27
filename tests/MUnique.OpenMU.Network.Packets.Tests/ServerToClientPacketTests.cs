@@ -7749,4 +7749,122 @@ public class PacketStructureTests
         Assert.That(5 + 1, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'UserCount' exceeds packet boundary");
     }
+
+    /// <summary>
+    /// Tests the packet size calculation for RaklionStateInfo.
+    /// </summary>
+    [Test]
+    public void RaklionStateInfo_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 12;
+        var actualLength = RaklionStateInfoRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'State' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'State' exceeds packet boundary");
+        
+        // Validate field 'DetailState' boundary
+        Assert.That(5 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'DetailState' exceeds packet boundary");
+        
+        // Validate field 'CanEnter' boundary
+        Assert.That(6 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'CanEnter' exceeds packet boundary");
+        
+        // Validate field 'RemainingSeconds' boundary
+        Assert.That(8 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'RemainingSeconds' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for RaklionCurrentState.
+    /// </summary>
+    [Test]
+    public void RaklionCurrentState_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 6;
+        var actualLength = RaklionCurrentStateRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'State' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'State' exceeds packet boundary");
+        
+        // Validate field 'DetailState' boundary
+        Assert.That(5 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'DetailState' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for RaklionStateChange.
+    /// </summary>
+    [Test]
+    public void RaklionStateChange_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 6;
+        var actualLength = RaklionStateChangeRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'State' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'State' exceeds packet boundary");
+        
+        // Validate field 'DetailState' boundary
+        Assert.That(5 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'DetailState' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for RaklionBattleResult.
+    /// </summary>
+    [Test]
+    public void RaklionBattleResult_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 5;
+        var actualLength = RaklionBattleResultRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Result' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Result' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for MonsterSkillAnimation.
+    /// </summary>
+    [Test]
+    public void MonsterSkillAnimation_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 10;
+        var actualLength = MonsterSkillAnimationRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'SkillNumber' boundary
+        Assert.That(3 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'SkillNumber' exceeds packet boundary");
+        
+        // Validate field 'AttackerId' boundary
+        Assert.That(6 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'AttackerId' exceeds packet boundary");
+        
+        // Validate field 'TargetId' boundary
+        Assert.That(8 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'TargetId' exceeds packet boundary");
+    }
 }

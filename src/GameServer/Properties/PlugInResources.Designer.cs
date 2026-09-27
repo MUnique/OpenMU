@@ -4795,6 +4795,42 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sends the state of the raklion event and the skills of Selupan to the client..
+        /// </summary>
+        public static string RaklionEventViewPlugIn_Description {
+            get {
+                return ResourceManager.GetString("RaklionEventViewPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Raklion Event View.
+        /// </summary>
+        public static string RaklionEventViewPlugIn_Name {
+            get {
+                return ResourceManager.GetString("RaklionEventViewPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the request of the client for the state of the raklion event..
+        /// </summary>
+        public static string RaklionStateInfoRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("RaklionStateInfoRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Raklion State Info Request Handler.
+        /// </summary>
+        public static string RaklionStateInfoRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("RaklionStateInfoRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handler for remove alliance guild request packets..
         /// </summary>
         public static string RemoveAllianceGuildHandlerPlugIn_Description {
