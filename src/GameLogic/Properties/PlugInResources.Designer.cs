@@ -2790,6 +2790,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handles the chat command &apos;/slidenotice message&apos;. Sends a global notice to all players of the game which scrolls across the top of their screen..
+        /// </summary>
+        public static string SlideNoticeChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("SlideNoticeChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Slide notice chat command.
+        /// </summary>
+        public static string SlideNoticeChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("SlideNoticeChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Plugin which handles the small complex potion consumption..
         /// </summary>
         public static string SmallComplexPotionConsumeHandlerPlugIn_Description {
