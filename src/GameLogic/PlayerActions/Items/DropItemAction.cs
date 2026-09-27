@@ -38,6 +38,17 @@ public class DropItemAction
             return;
         }
 
+        if (item.Definition is { IsDroppable: false })
+        {
+            player.Logger.LogWarning(
+                "Player {0} tried to drop {1}, which its item definition doesn't allow. The client item data may differ from the server.",
+                player,
+                item);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.ItemCannotBeDropped)).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IItemDropResultPlugIn>(p => p.ItemDropResultAsync(slot, false)).ConfigureAwait(false);
+            return;
+        }
+
         if (player.GameContext.PlugInManager.GetPlugInPoint<IItemDropPlugIn>() is { } plugInPoint)
         {
             var dropArguments = new ItemDropArguments();
