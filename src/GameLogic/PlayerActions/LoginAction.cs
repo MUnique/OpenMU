@@ -217,5 +217,8 @@ public class LoginAction
 
         // Once per session, so that the client shows and checks the skill requirements of this server.
         await player.InvokeViewPlugInAsync<ISkillRequirementsViewPlugIn>(p => p.ShowSkillRequirementsAsync()).ConfigureAwait(false);
+
+        // Once per session, so that the client shows the level of the monsters of this server.
+        await player.InvokeViewPlugInAsync<IMonsterLevelsViewPlugIn>(p => p.ShowMonsterLevelsAsync()).ConfigureAwait(false);
     }
 }
