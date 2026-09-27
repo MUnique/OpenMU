@@ -154,8 +154,28 @@ internal class EntityFrameworkContextBase : IContext
                 this.DetachInternal(obj);
                 break;
             default:
+                // Removing the parent cascades to its children and detaches Added entries.
+                // Remember their states first: removing such a child again would reattach it
+                // as Deleted, issuing a DELETE for a row which has never been inserted.
+                var aggregates = new List<(EntityEntry Entry, EntityState State)>();
+                this.ForEachAggregate(obj, a =>
+                {
+                    var aggregateEntry = this.Context.Entry(a);
+                    aggregates.Add((aggregateEntry, aggregateEntry.State));
+                });
                 this.Context.Remove(obj);
-                this.ForEachAggregate(obj, a => this.Context.Remove(a));
+                foreach (var aggregate in aggregates)
+                {
+                    if (aggregate.State == EntityState.Added)
+                    {
+                        aggregate.Entry.State = EntityState.Detached;
+                    }
+                    else
+                    {
+                        this.Context.Remove(aggregate.Entry.Entity);
+                    }
+                }
+
                 break;
         }
 
@@ -328,6 +348,21 @@ internal class EntityFrameworkContextBase : IContext
             {
                 await this.OnSavedChangesAsync(sender, args).ConfigureAwait(false);
             }
+        }
+        catch (DbUpdateConcurrencyException exception)
+        {
+            foreach (var entry in exception.Entries)
+            {
+                var key = entry.Metadata.FindPrimaryKey()?.Properties
+                    .Select(property => $"{property.Name}={entry.Property(property.Name).CurrentValue}");
+                this._logger.LogWarning(
+                    "Save conflict for {EntityType} ({EntityKey}), state {EntityState}.",
+                    entry.Metadata.ClrType.Name,
+                    key is null ? "unknown" : string.Join(", ", key),
+                    entry.State);
+            }
+
+            throw;
         }
         finally
         {
