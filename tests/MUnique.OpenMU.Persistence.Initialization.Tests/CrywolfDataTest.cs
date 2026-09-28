@@ -51,6 +51,8 @@ internal class CrywolfDataTest
             spawn.MonsterDefinition!.ObjectKind = NpcObjectKind.Monster;
         }
 
+        gameConfiguration.WarpList.Remove(gameConfiguration.WarpList.Single(warp => warp.Index == 26));
+
         var update = new AddCrywolfEventUpdatePlugIn();
         await update.ApplyUpdateAsync(contextProvider.CreateNewContext(), gameConfiguration).ConfigureAwait(false);
         await update.ApplyUpdateAsync(contextProvider.CreateNewContext(), gameConfiguration).ConfigureAwait(false);
@@ -101,5 +103,9 @@ internal class CrywolfDataTest
         Assert.That(statueAndAltars, Has.Count.EqualTo(6));
         Assert.That(statueAndAltars.Select(spawn => spawn.SpawnTrigger), Is.All.EqualTo(SpawnTrigger.Automatic));
         Assert.That(statueAndAltars.Select(spawn => spawn.MonsterDefinition!.ObjectKind), Is.All.EqualTo(NpcObjectKind.PassiveNpc));
+
+        var warp = gameConfiguration.WarpList.Single(warp => warp.Index == 26);
+        Assert.That(warp.Gate?.Map, Is.SameAs(map));
+        Assert.That(warp.LevelRequirement, Is.EqualTo(190));
     }
 }

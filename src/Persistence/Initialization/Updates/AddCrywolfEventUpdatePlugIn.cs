@@ -11,7 +11,8 @@ using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// Adds the data of the crywolf event: the monsters of the army of Balgass and their spawns on the crywolf map.
-/// The statue and the altars of the fortress are always on the map now, as NPCs which can't be attacked.
+/// The statue and the altars of the fortress are always on the map now, as NPCs which can't be attacked,
+/// and the fortress can be warped to.
 /// </summary>
 [PlugIn]
 [Display(Name = PlugInName, Description = PlugInDescription)]
@@ -26,7 +27,7 @@ public class AddCrywolfEventUpdatePlugIn : UpdatePlugInBase
     /// <summary>
     /// The plug-in description.
     /// </summary>
-    internal const string PlugInDescription = "This update adds the monsters of the crywolf event and their spawns, and lets the statue and the altars of the fortress always be on the map.";
+    internal const string PlugInDescription = "This update adds the monsters of the crywolf event and their spawns, lets the statue and the altars of the fortress always be on the map, and adds the warp entry of the fortress.";
 
     /// <inheritdoc />
     public override string Name => PlugInName;
@@ -53,6 +54,7 @@ public class AddCrywolfEventUpdatePlugIn : UpdatePlugInBase
         initializer.CreateMonsters();
         initializer.ConfigureStatueAndAltars();
         initializer.CreateSpawns();
+        initializer.CreateWarpEntry();
         return ValueTask.CompletedTask;
     }
 }

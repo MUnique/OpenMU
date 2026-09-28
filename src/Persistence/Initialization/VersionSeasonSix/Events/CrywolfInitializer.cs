@@ -29,6 +29,11 @@ internal class CrywolfInitializer : InitializerBase
     internal const short LastAltarNumber = 209;
 
     /// <summary>
+    /// The index of the warp entry of the crywolf fortress, which is expected by the client.
+    /// </summary>
+    internal const ushort WarpIndex = 26;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="CrywolfInitializer"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -113,6 +118,26 @@ internal class CrywolfInitializer : InitializerBase
             area.Y2 = spawn.Y;
             map.MonsterSpawns.Add(area);
         }
+    }
+
+    /// <summary>
+    /// Adds the warp entry of the crywolf fortress to existing data, if it doesn't exist yet.
+    /// </summary>
+    internal void CreateWarpEntry()
+    {
+        if (this.GameConfiguration.WarpList.Any(warp => warp.Index == WarpIndex)
+            || this.GetMap()?.ExitGates.FirstOrDefault(gate => gate is { IsSpawnGate: true, X1: 229, Y1: 37 }) is not { } gate)
+        {
+            return;
+        }
+
+        var warpInfo = this.Context.CreateNew<WarpInfo>();
+        warpInfo.Index = WarpIndex;
+        warpInfo.Name = "Crywolf";
+        warpInfo.Costs = 10000;
+        warpInfo.LevelRequirement = 190;
+        warpInfo.Gate = gate;
+        this.GameConfiguration.WarpList.Add(warpInfo);
     }
 
     private static bool IsStatueOrAltar(MonsterDefinition monster)
