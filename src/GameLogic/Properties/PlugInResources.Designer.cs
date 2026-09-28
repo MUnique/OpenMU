@@ -592,7 +592,7 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Lets the crywolf event proceed: it starts the event when it is not running, otherwise the current state ends..
+        ///   Looks up a localized string similar to Lets the crywolf event proceed: it starts the event when it is not running, and during the battle Balgass appears if he did not yet. Otherwise, the current state ends..
         /// </summary>
         public static string CrywolfChatCommandPlugIn_Description {
             get {

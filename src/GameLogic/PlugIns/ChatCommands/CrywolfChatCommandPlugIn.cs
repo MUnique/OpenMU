@@ -10,7 +10,7 @@ using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// A chat command for game masters, which lets the crywolf event proceed: it starts the event
-/// when it's not running, otherwise the current state ends.
+/// when it's not running, and during the battle Balgass appears if he didn't yet. Otherwise, the current state ends.
 /// </summary>
 [Guid("2A7D4F95-8C31-4E6B-9A05-6F2E1B8D3C47")]
 [PlugIn]

@@ -1318,6 +1318,6 @@
     <value>Chat command: /crywolf</value>
   </data>
   <data name="CrywolfChatCommandPlugIn_Description" xml:space="preserve">
-    <value>Lets the crywolf event proceed: it starts the event when it is not running, otherwise the current state ends.</value>
+    <value>Lets the crywolf event proceed: it starts the event when it is not running, and during the battle Balgass appears if he did not yet. Otherwise, the current state ends.</value>
   </data>
 </root>

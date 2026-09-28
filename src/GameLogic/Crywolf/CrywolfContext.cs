@@ -226,13 +226,19 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
     }
 
     /// <summary>
-    /// Forces the event to proceed: it starts when it's not running, otherwise the current state ends.
+    /// Forces the event to proceed: it starts when it's not running, and during the battle Balgass appears
+    /// if he didn't yet. Otherwise, the current state ends.
     /// </summary>
     public void SkipWaitingTime()
     {
         if (this.State == CrywolfState.None)
         {
             this._isStartForced = true;
+        }
+        else if (this.State == CrywolfState.Start && !this._isBalgassAppearanceDone)
+        {
+            // The battle continues at the appearance of Balgass, so that the battle against him can be tested.
+            this._stateStart = DateTime.UtcNow - this._definition.BalgassAppearanceDelay;
         }
         else
         {
