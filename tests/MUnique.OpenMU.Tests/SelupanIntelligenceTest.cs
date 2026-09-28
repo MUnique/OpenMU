@@ -43,6 +43,37 @@ public class SelupanIntelligenceTest
         Assert.That(targets, Does.Not.Contain(atRadius).And.Not.Contain(far));
     }
 
+    /// <summary>
+    /// Tests that the fall pushes a player away from Selupan by the push distance.
+    /// </summary>
+    [Test]
+    public async Task FallPushesPlayerAwayFromSelupanAsync()
+    {
+        var gameContext = (GameContext)GameContextTestHelper.CreateGameContext();
+        var (monster, _) = await CreateSelupanAsync(gameContext, new RaklionEventDefinition()).ConfigureAwait(false);
+        var player = await CreatePlayerAsync(gameContext, new Point(102, 100)).ConfigureAwait(false);
+
+        await SelupanIntelligence.PushAwayAsync(monster, player, 4).ConfigureAwait(false);
+
+        Assert.That(player.Position, Is.EqualTo(new Point(106, 100)));
+    }
+
+    /// <summary>
+    /// Tests that the push stops in front of a field which isn't walkable.
+    /// </summary>
+    [Test]
+    public async Task PushStopsAtUnwalkableFieldAsync()
+    {
+        var gameContext = (GameContext)GameContextTestHelper.CreateGameContext();
+        var (monster, _) = await CreateSelupanAsync(gameContext, new RaklionEventDefinition()).ConfigureAwait(false);
+        var player = await CreatePlayerAsync(gameContext, new Point(102, 100)).ConfigureAwait(false);
+        monster.CurrentMap.Terrain.WalkMap[104, 100] = false;
+
+        await SelupanIntelligence.PushAwayAsync(monster, player, 4).ConfigureAwait(false);
+
+        Assert.That(player.Position, Is.EqualTo(new Point(103, 100)));
+    }
+
     private static async ValueTask<(Monster Monster, SelupanIntelligence Intelligence)> CreateSelupanAsync(GameContext gameContext, RaklionEventDefinition definition)
     {
         var map = await gameContext.GetMapAsync(0).ConfigureAwait(false);

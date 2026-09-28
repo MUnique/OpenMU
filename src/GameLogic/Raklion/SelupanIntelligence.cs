@@ -118,6 +118,50 @@ public sealed class SelupanIntelligence : INpcIntelligence, IDisposable
     }
 
     /// <summary>
+    /// Pushes a player away from Selupan, field by field, until the distance is reached or
+    /// the next field isn't walkable or part of a safezone.
+    /// Stunned and frozen players aren't pushed.
+    /// </summary>
+    /// <param name="monster">The monster of Selupan.</param>
+    /// <param name="player">The player which is pushed.</param>
+    /// <param name="distance">The maximum number of fields the player is pushed.</param>
+    internal static async ValueTask PushAwayAsync(Monster monster, Player player, int distance)
+    {
+        if (distance <= 0
+            || !player.IsAlive
+            || player.Attributes is not { } attributes
+            || attributes[Stats.IsStunned] > 0
+            || attributes[Stats.IsFrozen] > 0)
+        {
+            return;
+        }
+
+        var direction = monster.Position.GetDirectionTo(player.Position);
+        if (direction == Direction.Undefined)
+        {
+            direction = (Direction)Rand.NextInt(1, 9);
+        }
+
+        var terrain = monster.CurrentMap.Terrain;
+        var target = player.Position;
+        for (var i = 0; i < distance; i++)
+        {
+            var next = target.CalculateTargetPoint(direction);
+            if (!terrain.WalkMap[next.X, next.Y] || terrain.SafezoneMap[next.X, next.Y])
+            {
+                break;
+            }
+
+            target = next;
+        }
+
+        if (target != player.Position)
+        {
+            await player.MoveAsync(target).ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
     /// Executes one step of the intelligence. It's called periodically by a timer.
     /// </summary>
     internal async ValueTask TickAsync()
@@ -129,11 +173,12 @@ public sealed class SelupanIntelligence : INpcIntelligence, IDisposable
 
         if (this._pattern == 0)
         {
-            // Selupan falls from the sky when it appears, and hits the players around it.
+            // Selupan falls from the sky when it appears, and hits and pushes away the players around it.
             await this.ShowSkillAsync(monster, null, SelupanSkill.Fall).ConfigureAwait(false);
             foreach (var player in this.GetFallTargets(monster))
             {
                 await player.AttackByAsync(monster, this.GetSkillEntry(SelupanSkill.Fall, player), false).ConfigureAwait(false);
+                await PushAwayAsync(monster, player, this._definition.FallPushDistance).ConfigureAwait(false);
             }
 
             await this.UpdatePatternAsync(monster, 1).ConfigureAwait(false);

@@ -143,6 +143,11 @@ public class RaklionEventDefinition
     public int FallRadius { get; set; } = 4;
 
     /// <summary>
+    /// Gets or sets the number of fields, by which the fall of Selupan pushes the hit players away.
+    /// </summary>
+    public int FallPushDistance { get; set; } = 4;
+
+    /// <summary>
     /// Gets the pattern (1 to 7) of Selupan by its remaining health.
     /// </summary>
     /// <param name="healthPercentage">The remaining health in percent.</param>
