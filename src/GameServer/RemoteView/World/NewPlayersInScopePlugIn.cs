@@ -237,12 +237,14 @@ public class NewPlayersInScopePlugIn : INewPlayersInScopePlugIn
 
             if (newPlayer.ShopStorage?.StoreOpen ?? false)
             {
-                (shopPlayers ??= new List<Player>()).Add(newPlayer);
+                shopPlayers ??= new List<Player>();
+                shopPlayers.Add(newPlayer);
             }
 
             if (newPlayer.GuildStatus != null)
             {
-                (guildPlayers ??= new List<Player>()).Add(newPlayer);
+                guildPlayers ??= new List<Player>();
+                guildPlayers.Add(newPlayer);
             }
         }
 
