@@ -66,7 +66,7 @@ public class BotAccountService : IDataService<BotAccount>
             rows.AddRange(players.OfType<BotPlayer>().Select(p => (serverId, p)));
         }
 
-        var guildNames = await GuildNames.ResolveAsync(
+        var guilds = await GuildNames.ResolveAsync(
                 GuildNames.FindServer(this._serverProvider),
                 rows.Select(r => r.Player.GuildStatus?.GuildId).OfType<uint>())
             .ConfigureAwait(false);
@@ -81,7 +81,7 @@ public class BotAccountService : IDataService<BotAccount>
                     r.ServerId,
                     r.Player.SelectedCharacter?.Name,
                     r.Player.StartTimestamp,
-                    guildId is { } id ? guildNames.GetValueOrDefault(id) : null,
+                    guildId is { } id ? guilds.GetValueOrDefault(id)?.Name : null,
                     partyMaster,
                     partySize);
             })

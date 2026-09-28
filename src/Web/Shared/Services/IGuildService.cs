@@ -12,6 +12,11 @@ using MUnique.OpenMU.Web.Shared.Models;
 public interface IGuildService : IDataService<GuildListItem>
 {
     /// <summary>
+    /// Gets or sets the search filter query which is applied to the guild name.
+    /// </summary>
+    string SearchFilter { get; set; }
+
+    /// <summary>
     /// Gets the guild with the specified persistent identifier.
     /// </summary>
     /// <param name="guildId">The persistent identifier of the guild.</param>

@@ -31,14 +31,23 @@ public class GuildNamesTests
     [Test]
     public async Task DistinctGuilds_LookedUpOnce()
     {
+        var firstId = Guid.NewGuid();
+        var secondId = Guid.NewGuid();
         var guildServer = new Mock<IGuildServer>();
         guildServer.Setup(g => g.GetGuildAsync(1)).Returns(new ValueTask<Guild?>(new Guild { Name = "Knights" }));
         guildServer.Setup(g => g.GetGuildAsync(2)).Returns(new ValueTask<Guild?>(new Guild { Name = "Mages" }));
+        guildServer.Setup(g => g.GetPersistentGuildIdAsync(1)).Returns(new ValueTask<Guid?>(firstId));
+        guildServer.Setup(g => g.GetPersistentGuildIdAsync(2)).Returns(new ValueTask<Guid?>(secondId));
 
         var result = await GuildNames.ResolveAsync(guildServer.Object, new uint[] { 1, 2, 1 });
 
-        Assert.That(result, Is.EqualTo(new Dictionary<uint, string> { [1] = "Knights", [2] = "Mages" }));
+        Assert.That(result, Is.EqualTo(new Dictionary<uint, GuildNames.GuildInfo>
+        {
+            [1] = new GuildNames.GuildInfo("Knights", firstId),
+            [2] = new GuildNames.GuildInfo("Mages", secondId),
+        }));
         guildServer.Verify(g => g.GetGuildAsync(It.IsAny<uint>()), Times.Exactly(2));
+        guildServer.Verify(g => g.GetPersistentGuildIdAsync(It.IsAny<uint>()), Times.Exactly(2));
     }
 
     /// <summary>
@@ -49,6 +58,7 @@ public class GuildNamesTests
     {
         var guildServer = new Mock<IGuildServer>();
         guildServer.Setup(g => g.GetGuildAsync(It.IsAny<uint>())).Returns(new ValueTask<Guild?>(result: null));
+        guildServer.Setup(g => g.GetPersistentGuildIdAsync(It.IsAny<uint>())).Returns(new ValueTask<Guid?>(result: null));
 
         var result = await GuildNames.ResolveAsync(guildServer.Object, new uint[] { 7 });
 
@@ -61,56 +71,51 @@ public class GuildNamesTests
     [Test]
     public async Task FailedLookup_DoesNotFailOthers()
     {
+        var secondId = Guid.NewGuid();
         var guildServer = new Mock<IGuildServer>();
         guildServer.Setup(g => g.GetGuildAsync(1)).Throws(new InvalidOperationException("guild server down"));
+        guildServer.Setup(g => g.GetPersistentGuildIdAsync(1)).Throws(new InvalidOperationException("guild server down"));
         guildServer.Setup(g => g.GetGuildAsync(2)).Returns(new ValueTask<Guild?>(new Guild { Name = "Mages" }));
+        guildServer.Setup(g => g.GetPersistentGuildIdAsync(2)).Returns(new ValueTask<Guid?>(secondId));
 
         var result = await GuildNames.ResolveAsync(guildServer.Object, new uint[] { 1, 2 });
 
-        Assert.That(result, Is.EqualTo(new Dictionary<uint, string> { [2] = "Mages" }));
+        Assert.That(result, Is.EqualTo(new Dictionary<uint, GuildNames.GuildInfo>
+        {
+            [2] = new GuildNames.GuildInfo("Mages", secondId),
+        }));
     }
 
     /// <summary>
-    /// Without a guild server there are no persistent identifiers to resolve.
+    /// A partially failed guild still resolves the working half, so the row keeps its name or link.
     /// </summary>
     [Test]
-    public async Task PersistentIds_WithoutGuildServer_ReturnsEmpty()
-    {
-        var result = await GuildNames.ResolvePersistentIdsAsync(null, new uint[] { 1, 2 });
-
-        Assert.That(result, Is.Empty);
-    }
-
-    /// <summary>
-    /// Each distinct guild resolves its persistent identifier exactly once.
-    /// </summary>
-    [Test]
-    public async Task PersistentIds_DistinctGuilds_LookedUpOnce()
-    {
-        var firstId = Guid.NewGuid();
-        var secondId = Guid.NewGuid();
-        var guildServer = new Mock<IGuildServer>();
-        guildServer.Setup(g => g.GetPersistentGuildIdAsync(1)).Returns(new ValueTask<Guid?>(firstId));
-        guildServer.Setup(g => g.GetPersistentGuildIdAsync(2)).Returns(new ValueTask<Guid?>(secondId));
-
-        var result = await GuildNames.ResolvePersistentIdsAsync(guildServer.Object, new uint[] { 1, 2, 1 });
-
-        Assert.That(result, Is.EqualTo(new Dictionary<uint, Guid> { [1] = firstId, [2] = secondId }));
-        guildServer.Verify(g => g.GetPersistentGuildIdAsync(It.IsAny<uint>()), Times.Exactly(2));
-    }
-
-    /// <summary>
-    /// Unknown guilds and failed lookups are absent, so the row renders without a link.
-    /// </summary>
-    [Test]
-    public async Task PersistentIds_UnknownOrFailedGuilds_AreAbsent()
+    public async Task PartiallyFailedGuild_ResolvesWorkingHalf()
     {
         var guildServer = new Mock<IGuildServer>();
-        guildServer.Setup(g => g.GetPersistentGuildIdAsync(1)).Returns(new ValueTask<Guid?>(result: null));
-        guildServer.Setup(g => g.GetPersistentGuildIdAsync(2)).Returns(new ValueTask<Guid?>(Guid.Empty));
-        guildServer.Setup(g => g.GetPersistentGuildIdAsync(3)).Throws(new InvalidOperationException("guild server down"));
+        guildServer.Setup(g => g.GetGuildAsync(1)).Throws(new InvalidOperationException("guild server down"));
+        var persistentId = Guid.NewGuid();
+        guildServer.Setup(g => g.GetPersistentGuildIdAsync(1)).Returns(new ValueTask<Guid?>(persistentId));
 
-        var result = await GuildNames.ResolvePersistentIdsAsync(guildServer.Object, new uint[] { 1, 2, 3 });
+        var result = await GuildNames.ResolveAsync(guildServer.Object, new uint[] { 1 });
+
+        Assert.That(result, Is.EqualTo(new Dictionary<uint, GuildNames.GuildInfo>
+        {
+            [1] = new GuildNames.GuildInfo(null, persistentId),
+        }));
+    }
+
+    /// <summary>
+    /// Empty persistent identifiers are treated as unknown, so no dead link is rendered.
+    /// </summary>
+    [Test]
+    public async Task EmptyPersistentId_IsAbsent()
+    {
+        var guildServer = new Mock<IGuildServer>();
+        guildServer.Setup(g => g.GetGuildAsync(1)).Returns(new ValueTask<Guild?>(result: null));
+        guildServer.Setup(g => g.GetPersistentGuildIdAsync(1)).Returns(new ValueTask<Guid?>(Guid.Empty));
+
+        var result = await GuildNames.ResolveAsync(guildServer.Object, new uint[] { 1 });
 
         Assert.That(result, Is.Empty);
     }

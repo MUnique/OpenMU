@@ -21,8 +21,9 @@ else
     public string? GuildName { get; set; }
 
     /// <summary>
-    /// Gets or sets the text which is rendered when no guild name is available.
+    /// Gets or sets the text which is rendered when no guild name is available,
+    /// e.g. <c>Resources.EmptyValue</c> of the consuming page.
     /// </summary>
     [Parameter]
-    public string EmptyText { get; set; } = "—";
+    public string EmptyText { get; set; } = string.Empty;
 }

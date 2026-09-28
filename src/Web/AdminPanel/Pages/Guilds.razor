@@ -2,7 +2,7 @@
 @using MUnique.OpenMU.Web.Shared.Models;
 @using Resources = MUnique.OpenMU.Web.AdminPanel.Properties.Resources
 
-@inject GuildService _guildService;
+@inject IGuildService _guildService;
 
 <PageTitle>OpenMU: @Resources.Guilds</PageTitle>
 <Breadcrumb IsFirstFromRoot="true" Caption="@Resources.Guilds" />
@@ -34,7 +34,7 @@
             <td>@item.MemberCount</td>
             <td>@item.Score</td>
             <td>
-                <AllianceLink AllianceId="@item.AllianceGuildId" AllianceName="@item.AllianceName" />
+                <AllianceLink AllianceId="@item.AllianceGuildId" AllianceName="@item.AllianceName" EmptyText="@Resources.EmptyValue" />
             </td>
         </ItemTemplate>
     </DataTable>

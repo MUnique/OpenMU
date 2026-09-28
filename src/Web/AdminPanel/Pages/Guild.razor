@@ -1,6 +1,5 @@
 @page "/guild/{GuildId:guid}"
 @using MUnique.OpenMU.DataModel
-@using MUnique.OpenMU.DataModel.Entities
 @using MUnique.OpenMU.Web.Shared.Models;
 @using Resources = MUnique.OpenMU.Web.AdminPanel.Properties.Resources
 
@@ -34,7 +33,7 @@ else if (this._guild is { } guild)
         }
         <dt class="col-sm-2">@Resources.Alliance</dt>
         <dd class="col-sm-10">
-            <AllianceLink AllianceId="@guild.AllianceGuildId" AllianceName="@guild.AllianceName" />
+            <AllianceLink AllianceId="@guild.AllianceGuildId" AllianceName="@guild.AllianceName" EmptyText="@Resources.EmptyValue" />
         </dd>
     </dl>
 
@@ -45,7 +44,7 @@ else if (this._guild is { } guild)
     }
     else if (this._members.Count == 0)
     {
-        <p><em>—</em></p>
+        <p><em>@Resources.EmptyValue</em></p>
     }
     else
     {
@@ -68,15 +67,15 @@ else if (this._guild is { } guild)
                             <td>
                                 @if (member.AccountId is { } accountId)
                                 {
-                                    <NavLink href="@($"edit-account/{accountId}/{typeof(Character).FullName}/{member.CharacterId}")">@member.CharacterName</NavLink>
+                                    <NavLink href="@AdminRoutes.EditCharacter(accountId, member.CharacterId)">@member.CharacterName</NavLink>
                                 }
                                 else
                                 {
                                     @member.CharacterName
                                 }
                             </td>
-                            <td>@(member.AccountLoginName ?? "—")</td>
-                            <td>@(member.CharacterClass ?? "—")</td>
+                            <td>@(member.AccountLoginName ?? Resources.EmptyValue)</td>
+                            <td>@(member.CharacterClass ?? Resources.EmptyValue)</td>
                             <td>@member.Level</td>
                             <td>@member.MasterLevel</td>
                             <td>@member.Position.GetEnumCaption()</td>

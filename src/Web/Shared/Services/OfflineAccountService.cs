@@ -66,7 +66,7 @@ public class OfflineAccountService : IDataService<OfflineAccount>, ISupportDataC
                 .Select(p => (ServerId: (byte)((IManageableServer)s).Id, Player: p)))
             .ToList();
 
-        var guildNames = await GuildNames.ResolveAsync(
+        var guilds = await GuildNames.ResolveAsync(
                 GuildNames.FindServer(this._serverProvider),
                 rows.Select(r => r.Player.GuildStatus?.GuildId).OfType<uint>())
             .ConfigureAwait(false);
@@ -81,7 +81,7 @@ public class OfflineAccountService : IDataService<OfflineAccount>, ISupportDataC
                     r.ServerId,
                     r.Player.StartTimestamp,
                     r.Player.SelectedCharacter?.Name,
-                    guildId is { } id ? guildNames.GetValueOrDefault(id) : null,
+                    guildId is { } id ? guilds.GetValueOrDefault(id)?.Name : null,
                     partyMaster,
                     partySize);
             })
