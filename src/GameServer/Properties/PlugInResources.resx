@@ -405,6 +405,12 @@
   <data name="GuildRequestHandlerPlugIn_Description" xml:space="preserve">
     <value>Handler for guild requests.</value>
   </data>
+  <data name="GuildRoleAssignHandlerPlugIn_Name" xml:space="preserve">
+    <value>Guild Role Assign Handler</value>
+  </data>
+  <data name="GuildRoleAssignHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for guild role assign packets.</value>
+  </data>
   <data name="GuildWarResponseHandlerPlugIn_Name" xml:space="preserve">
     <value>Guild War Response Handler</value>
   </data>
