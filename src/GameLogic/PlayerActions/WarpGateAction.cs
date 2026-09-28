@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions;
 
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.Raklion;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Pathfinding;
 
@@ -60,6 +61,12 @@ public class WarpGateAction
         if (player.CurrentMap!.Definition.EnterGates.Contains(enterGate)
             && !(this.IsXInRange(currentPosition, enterGate, inaccuracy)
                  && this.IsYInRange(currentPosition, enterGate, inaccuracy)))
+        {
+            return false;
+        }
+
+        if (RaklionPlugIn.GetContext(player.GameContext) is { } raklion
+            && !await raklion.CanEnterThroughGateAsync(player, enterGate.TargetGate.Map).ConfigureAwait(false))
         {
             return false;
         }
