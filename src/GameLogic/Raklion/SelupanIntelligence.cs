@@ -178,7 +178,7 @@ public sealed class SelupanIntelligence : INpcIntelligence, IDisposable
             foreach (var player in this.GetFallTargets(monster))
             {
                 await player.AttackByAsync(monster, this.GetSkillEntry(SelupanSkill.Fall, player), false).ConfigureAwait(false);
-                await PushAwayAsync(monster, player, this._definition.FallPushDistance).ConfigureAwait(false);
+                await PushAwayAsync(monster, player, this.GetPushDistance(player, this._definition.FallPushDistance)).ConfigureAwait(false);
             }
 
             await this.UpdatePatternAsync(monster, 1).ConfigureAwait(false);
@@ -303,6 +303,11 @@ public sealed class SelupanIntelligence : INpcIntelligence, IDisposable
         await this._context.ChangeSelupanStateAsync((SelupanState)(pattern + (int)SelupanState.Standby)).ConfigureAwait(false);
     }
 
+    private int GetPushDistance(Player player, int distance)
+    {
+        return this._definition.GetPushDistance(player.SelectedCharacter?.CharacterClass?.Number, distance);
+    }
+
     private void UpdateInvincibility(Monster monster)
     {
         if (this._invincibleUntil != DateTime.MinValue && DateTime.UtcNow >= this._invincibleUntil)
@@ -370,7 +375,7 @@ public sealed class SelupanIntelligence : INpcIntelligence, IDisposable
                 await this.ShowSkillAsync(monster, target, skill).ConfigureAwait(false);
                 foreach (var hitPlayer in await this.AttackAreaAsync(monster, target, skill).ConfigureAwait(false))
                 {
-                    await PushAwayAsync(monster, hitPlayer, this._definition.IceStrikePushDistance).ConfigureAwait(false);
+                    await PushAwayAsync(monster, hitPlayer, this.GetPushDistance(hitPlayer, this._definition.IceStrikePushDistance)).ConfigureAwait(false);
                 }
 
                 break;
