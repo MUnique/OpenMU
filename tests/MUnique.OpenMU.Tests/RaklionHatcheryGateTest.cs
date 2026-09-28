@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using System.ComponentModel;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Raklion;
@@ -39,6 +40,22 @@ public class RaklionHatcheryGateTest
         var raklion = new GameMapDefinition { Number = 57 };
 
         Assert.That(await context.CanEnterThroughGateAsync(player, raklion).ConfigureAwait(false), Is.True);
+    }
+
+    /// <summary>
+    /// Tests that the plugin doesn't deny any gate while the raklion event isn't running on the game context.
+    /// </summary>
+    [Test]
+    public async Task GatesAreNotDeniedWithoutRunningEventAsync()
+    {
+        var (_, player, definition) = await CreateAsync().ConfigureAwait(false);
+        var plugIn = new RaklionPlugIn();
+        var eventArgs = new CancelEventArgs();
+        var hatcheryGate = new ExitGate { Map = new GameMapDefinition { Number = definition.HatcheryMapNumber } };
+
+        await plugIn.WarpGateEnteringAsync(player, hatcheryGate, eventArgs).ConfigureAwait(false);
+
+        Assert.That(eventArgs.Cancel, Is.False);
     }
 
     private static async ValueTask<(RaklionContext Context, Player Player, RaklionEventDefinition Definition)> CreateAsync()

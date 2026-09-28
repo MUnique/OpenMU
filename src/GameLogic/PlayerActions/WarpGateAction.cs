@@ -4,8 +4,9 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions;
 
+using System.ComponentModel;
 using MUnique.OpenMU.GameLogic.Attributes;
-using MUnique.OpenMU.GameLogic.Raklion;
+using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Pathfinding;
 
@@ -23,8 +24,13 @@ public class WarpGateAction
     {
         if (await this.IsWarpLegitAsync(player, gate).ConfigureAwait(false))
         {
-            if (RaklionPlugIn.GetContext(player.GameContext) is { } raklion
-                && !await raklion.CanEnterThroughGateAsync(player, gate.TargetGate!.Map!).ConfigureAwait(false))
+            var eventArgs = new CancelEventArgs();
+            if (player.GameContext.PlugInManager.GetPlugInPoint<IWarpGateEnteringPlugIn>() is { } plugInPoint)
+            {
+                await plugInPoint.WarpGateEnteringAsync(player, gate.TargetGate!, eventArgs).ConfigureAwait(false);
+            }
+
+            if (eventArgs.Cancel)
             {
                 // Like the original game, the player is warped to its current position.
                 // The game client shows its loading screen until a map change is completed.

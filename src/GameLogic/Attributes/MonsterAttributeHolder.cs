@@ -170,6 +170,8 @@ public class MonsterAttributeHolder : IAttributeSystem
     /// damage multiplier which depends on the <see cref="Stats.SkillMultiplier"/> of the monster.
     /// The stats of a monster are fixed, so they're returned as constant. Attributes which got elements added,
     /// e.g. by a magic effect, are returned as they are, so that they stay up to date.
+    /// Note that the constant is a snapshot: a relationship which is created from it doesn't see elements
+    /// which are added to the same attribute later. So it shouldn't be used for stats which change at runtime.
     /// </remarks>
     public IElement GetOrCreateAttribute(AttributeDefinition attributeDefinition)
     {
