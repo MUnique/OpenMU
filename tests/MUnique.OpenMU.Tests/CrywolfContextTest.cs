@@ -38,7 +38,23 @@ public class CrywolfContextTest
         var data = (await persistenceContext.GetAsync<CrywolfData>().ConfigureAwait(false)).ToList();
         Assert.That(data, Has.Count.EqualTo(1), "The occupation is saved.");
         Assert.That(data[0].IsOccupied, Is.True);
+        Assert.That(data[0].IsWarRunning, Is.False);
         Assert.That(data[0].LastBattleEnd, Is.Not.Null);
+    }
+
+    /// <summary>
+    /// Tests that the start of the war is saved, so that the other game servers take it over.
+    /// </summary>
+    [Test]
+    public async Task WarIsSavedForTheOtherServersAsync()
+    {
+        var (context, _, gameContext) = await CreateContextAsync().ConfigureAwait(false);
+
+        await ProceedToAsync(context, CrywolfState.Notify2).ConfigureAwait(false);
+
+        var data = await LoadDataAsync(gameContext).ConfigureAwait(false);
+        Assert.That(data?.IsWarRunning, Is.True);
+        Assert.That(data?.IsOccupied, Is.False);
     }
 
     /// <summary>
@@ -48,15 +64,93 @@ public class CrywolfContextTest
     public async Task SavedOccupationIsLoadedAsync()
     {
         var gameContext = (GameContext)GameContextTestHelper.CreateGameContext();
-        using (var persistenceContext = gameContext.PersistenceContextProvider.CreateNewTypedContext(typeof(CrywolfData), false, gameContext.Configuration))
-        {
-            persistenceContext.CreateNew<CrywolfData>().IsOccupied = true;
-            await persistenceContext.SaveChangesAsync().ConfigureAwait(false);
-        }
+        await SaveDataAsync(gameContext, data => data.IsOccupied = true).ConfigureAwait(false);
 
         var (context, _, _) = await CreateContextAsync(gameContext).ConfigureAwait(false);
 
         Assert.That(context.Occupation, Is.EqualTo(CrywolfOccupationState.Occupied));
+    }
+
+    /// <summary>
+    /// Tests that a war, which was interrupted by a restart of the server, is reset, and the result of the last battle stays.
+    /// </summary>
+    [Test]
+    public async Task InterruptedWarIsResetAsync()
+    {
+        var gameContext = (GameContext)GameContextTestHelper.CreateGameContext();
+        await SaveDataAsync(gameContext, data => data.IsWarRunning = true).ConfigureAwait(false);
+
+        var (context, _, _) = await CreateContextAsync(gameContext).ConfigureAwait(false);
+
+        Assert.That(context.State, Is.EqualTo(CrywolfState.None));
+        Assert.That(context.Occupation, Is.EqualTo(CrywolfOccupationState.Peace));
+        var data = await LoadDataAsync(gameContext).ConfigureAwait(false);
+        Assert.That(data?.IsWarRunning, Is.False);
+    }
+
+    /// <summary>
+    /// Tests that a game server, which doesn't run the event, takes over the war of the game server which runs it,
+    /// and doesn't start the event by itself.
+    /// </summary>
+    [Test]
+    public async Task OtherServerTakesOverTheWarAsync()
+    {
+        var gameContext = (GameContext)GameContextTestHelper.CreateGameContext();
+        await SaveDataAsync(gameContext, data => data.IsWarRunning = true).ConfigureAwait(false);
+
+        var (context, _, _) = await CreateContextAsync(gameContext, serverId: 1).ConfigureAwait(false);
+        context.SkipWaitingTime();
+        await context.TickAsync().ConfigureAwait(false);
+
+        Assert.That(context.IsEventServer, Is.False);
+        Assert.That(context.Occupation, Is.EqualTo(CrywolfOccupationState.War));
+        Assert.That(context.State, Is.EqualTo(CrywolfState.None));
+        Assert.That(context.AreBenefitsApplied, Is.False);
+        Assert.That(context.ArePenaltiesApplied, Is.False);
+    }
+
+    /// <summary>
+    /// Tests that the benefits apply after the fortress has been defended, but not before the first battle.
+    /// </summary>
+    [Test]
+    public async Task BenefitsApplyAfterTheFortressHasBeenDefendedAsync()
+    {
+        var (withoutBattle, _, _) = await CreateContextAsync().ConfigureAwait(false);
+        Assert.That(withoutBattle.GetChaosRateBenefit(), Is.Zero);
+        Assert.That(withoutBattle.MonsterHealthMultiplier, Is.EqualTo(1f));
+
+        var gameContext = (GameContext)GameContextTestHelper.CreateGameContext();
+        await SaveDataAsync(gameContext, data => data.LastBattleEnd = DateTime.UtcNow).ConfigureAwait(false);
+        var (context, _, _) = await CreateContextAsync(gameContext).ConfigureAwait(false);
+
+        Assert.That(context.GetChaosRateBenefit(), Is.EqualTo(5));
+        Assert.That(context.MonsterHealthMultiplier, Is.EqualTo(0.9f));
+        Assert.That(context.ExperienceMultiplier, Is.EqualTo(1f));
+    }
+
+    /// <summary>
+    /// Tests that the penalties apply while the fortress is occupied, when they're activated.
+    /// </summary>
+    [Test]
+    public async Task PenaltiesApplyWhileOccupiedAsync()
+    {
+        var gameContext = (GameContext)GameContextTestHelper.CreateGameContext();
+        await SaveDataAsync(gameContext, data =>
+        {
+            data.IsOccupied = true;
+            data.LastBattleEnd = DateTime.UtcNow;
+        }).ConfigureAwait(false);
+
+        var (context, _, _) = await CreateContextAsync(gameContext, configure: d =>
+        {
+            d.IsPenaltyActive = true;
+            d.ExperiencePenaltyPercentage = 80;
+        }).ConfigureAwait(false);
+
+        Assert.That(context.ArePenaltiesApplied, Is.True);
+        Assert.That(context.ExperienceMultiplier, Is.EqualTo(0.8f));
+        Assert.That(context.GetChaosRateBenefit(), Is.Zero);
+        Assert.That(context.MonsterHealthMultiplier, Is.EqualTo(1f));
     }
 
     /// <summary>
@@ -129,7 +223,23 @@ public class CrywolfContextTest
         }
     }
 
-    private static async ValueTask<(CrywolfContext Context, Player Player, GameContext GameContext)> CreateContextAsync(GameContext? gameContext = null)
+    private static async ValueTask SaveDataAsync(GameContext gameContext, Action<CrywolfData> change)
+    {
+        using var persistenceContext = gameContext.PersistenceContextProvider.CreateNewTypedContext(typeof(CrywolfData), false, gameContext.Configuration);
+        change(persistenceContext.CreateNew<CrywolfData>());
+        await persistenceContext.SaveChangesAsync().ConfigureAwait(false);
+    }
+
+    private static async ValueTask<CrywolfData?> LoadDataAsync(GameContext gameContext)
+    {
+        using var persistenceContext = gameContext.PersistenceContextProvider.CreateNewTypedContext(typeof(CrywolfData), false, gameContext.Configuration);
+        return (await persistenceContext.GetAsync<CrywolfData>().ConfigureAwait(false)).SingleOrDefault();
+    }
+
+    private static async ValueTask<(CrywolfContext Context, Player Player, GameContext GameContext)> CreateContextAsync(
+        GameContext? gameContext = null,
+        byte? serverId = null,
+        Action<CrywolfEventDefinition>? configure = null)
     {
         gameContext ??= (GameContext)GameContextTestHelper.CreateGameContext();
         var map = (await gameContext.GetMapAsync(0).ConfigureAwait(false))!;
@@ -141,6 +251,7 @@ public class CrywolfContextTest
             ContractDelay = TimeSpan.Zero,
             MonsterGroups = new List<CrywolfMonsterGroup>(),
         };
+        configure?.Invoke(definition);
 
         await AddNpcAsync(map, definition.StatueNumber, new Point(121, 31)).ConfigureAwait(false);
         for (var i = 0; i < definition.AltarNumbers.Count; i++)
@@ -163,7 +274,7 @@ public class CrywolfContextTest
             WaveNumber = definition.BalgassWaveNumber,
         });
 
-        var context = new CrywolfContext(gameContext, definition);
+        var context = new CrywolfContext(gameContext, definition, serverId);
         await context.InitializeAsync().ConfigureAwait(false);
 
         var player = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);

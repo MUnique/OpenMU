@@ -1214,6 +1214,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<bool>("IsOccupied")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsWarRunning")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTime?>("LastBattleEnd")
                         .HasColumnType("timestamp with time zone");
 

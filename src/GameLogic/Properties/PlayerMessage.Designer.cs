@@ -412,6 +412,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The battle of the Crywolf Fortress takes place on another server..
+        /// </summary>
+        public static string CrywolfBattleOnOtherServer {
+            get {
+                return ResourceManager.GetString("CrywolfBattleOnOtherServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The crywolf event runs on the game server {0}..
+        /// </summary>
+        public static string CrywolfRunsOnOtherServer {
+            get {
+                return ResourceManager.GetString("CrywolfRunsOnOtherServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The crywolf event is not active..
         /// </summary>
         public static string CrywolfNotActive {

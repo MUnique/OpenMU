@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 {
     [DbContext(typeof(EntityDataContext))]
-    [Migration("20260928215953_AddCrywolfData")]
+    [Migration("20260928223416_AddCrywolfData")]
     partial class AddCrywolfData
     {
         /// <inheritdoc />
@@ -1215,6 +1215,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<bool>("IsOccupied")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsWarRunning")
                         .HasColumnType("boolean");
 
                     b.Property<DateTime?>("LastBattleEnd")

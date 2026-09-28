@@ -35,6 +35,12 @@ public class CrywolfChatCommandPlugIn : IChatCommandPlugIn
             return;
         }
 
+        if (!context.IsEventServer)
+        {
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CrywolfRunsOnOtherServer), context.Definition.GameServerId).ConfigureAwait(false);
+            return;
+        }
+
         context.SkipWaitingTime();
         await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CrywolfProceeds), context.State).ConfigureAwait(false);
     }

@@ -21,6 +21,16 @@ public class CrywolfEventDefinition
     public short MapNumber { get; set; } = 34;
 
     /// <summary>
+    /// Gets or sets the id of the game server, which runs the event.
+    /// </summary>
+    /// <remarks>
+    /// Like the castle siege server of the original game, only one game server runs the event. The other
+    /// game servers take over its result from the database, so that the occupation state and its benefits
+    /// and penalties are the same on all of them. On their crywolf map, the battle doesn't take place.
+    /// </remarks>
+    public byte GameServerId { get; set; }
+
+    /// <summary>
     /// Gets or sets the days of the week, on which the event starts.
     /// </summary>
     public IList<DayOfWeek> StartDays { get; set; } = new List<DayOfWeek> { DayOfWeek.Wednesday, DayOfWeek.Saturday };
@@ -239,6 +249,39 @@ public class CrywolfEventDefinition
     /// Gets or sets the numbers of the NPCs of the crywolf map, which stay visible when the fortress is occupied.
     /// </summary>
     public IList<short> AlwaysVisibleNpcNumbers { get; set; } = new List<short> { 406, 407 };
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the benefits apply on all game servers, while the fortress is
+    /// in peace after it has been defended: <see cref="ChaosRateBenefit"/> and <see cref="MonsterHealthBenefitPercentage"/>.
+    /// </summary>
+    public bool IsBenefitActive { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the additional success rate in percent of the chaos machine mixes of the tickets
+    /// of Devil Square, Blood Castle and Illusion Temple, while the benefits apply.
+    /// </summary>
+    public byte ChaosRateBenefit { get; set; } = 5;
+
+    /// <summary>
+    /// Gets or sets the maximum health of the monsters in percent of their normal maximum health, while the benefits apply.
+    /// </summary>
+    public int MonsterHealthBenefitPercentage { get; set; } = 90;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the penalties apply on all game servers, while the fortress is
+    /// occupied: <see cref="JewelDropPenaltyPercentage"/> and <see cref="ExperiencePenaltyPercentage"/>.
+    /// </summary>
+    public bool IsPenaltyActive { get; set; }
+
+    /// <summary>
+    /// Gets or sets the chance in percent, with which a jewel which is dropped by a monster still drops, while the penalties apply.
+    /// </summary>
+    public int JewelDropPenaltyPercentage { get; set; } = 70;
+
+    /// <summary>
+    /// Gets or sets the experience of killed monsters in percent of the normal experience, while the penalties apply.
+    /// </summary>
+    public int ExperiencePenaltyPercentage { get; set; } = 100;
 
     /// <summary>
     /// Determines whether the event starts at the specified local time of the server.

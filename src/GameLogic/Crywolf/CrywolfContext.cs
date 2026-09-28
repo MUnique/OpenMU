@@ -28,11 +28,15 @@ using MUnique.OpenMU.Pathfinding;
 /// </list>
 /// The result of the event (<see cref="Occupation"/>) is kept until the next event. Like in the original game,
 /// it's saved in the database (<see cref="CrywolfData"/>), so that it survives a restart of the server.
+/// Only one game server runs the event (<see cref="CrywolfEventDefinition.GameServerId"/>), like the castle siege
+/// server of the original game. The other game servers take over its occupation state from the database, so that
+/// the benefits and penalties are the same on all of them.
 /// </remarks>
 public sealed class CrywolfContext : IEventStateProvider, IDisposable
 {
     private static readonly TimeSpan AltarInfoInterval = TimeSpan.FromSeconds(2);
     private static readonly TimeSpan BossMonsterInfoInterval = TimeSpan.FromSeconds(5);
+    private static readonly TimeSpan DataSynchronizationInterval = TimeSpan.FromSeconds(5);
 
     private readonly GameContext _gameContext;
     private readonly ILogger<CrywolfContext> _logger;
@@ -42,6 +46,7 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
     private readonly ConcurrentDictionary<Monster, byte> _removedMonsters = new();
     private readonly ConcurrentDictionary<Player, int> _scores = new();
     private readonly List<Player> _heroes = new();
+    private readonly byte? _serverId;
 
     private CrywolfEventDefinition _definition;
     private GameMap? _map;
@@ -62,6 +67,10 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
     private bool _isMissingConfigurationLogged;
     private int _isBalgassDead;
     private Guid? _dataId;
+    private bool _hasBattleResult;
+    private bool _isEventServer = true;
+    private bool _isEventServerLogged;
+    private DateTime _lastDataSynchronization = DateTime.MinValue;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CrywolfContext"/> class.
@@ -69,9 +78,21 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
     /// <param name="gameContext">The game context.</param>
     /// <param name="definition">The definition of the event.</param>
     public CrywolfContext(GameContext gameContext, CrywolfEventDefinition definition)
+        : this(gameContext, definition, (gameContext as IGameServerContext)?.Id)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CrywolfContext"/> class.
+    /// </summary>
+    /// <param name="gameContext">The game context.</param>
+    /// <param name="definition">The definition of the event.</param>
+    /// <param name="serverId">The id of the game server, or <see langword="null"/> if the game context isn't one of a game server.</param>
+    internal CrywolfContext(GameContext gameContext, CrywolfEventDefinition definition, byte? serverId)
     {
         this._gameContext = gameContext;
         this._definition = definition;
+        this._serverId = serverId;
         this._logger = gameContext.LoggerFactory.CreateLogger<CrywolfContext>();
     }
 
@@ -101,6 +122,32 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
     /// Gets the definition of the event.
     /// </summary>
     public CrywolfEventDefinition Definition => this._definition;
+
+    /// <summary>
+    /// Gets a value indicating whether this game server runs the event. Otherwise, it takes over the
+    /// occupation state of the game server which runs it.
+    /// </summary>
+    public bool IsEventServer => this._isEventServer;
+
+    /// <summary>
+    /// Gets a value indicating whether the benefits apply, because the fortress is in peace after it has been defended.
+    /// </summary>
+    public bool AreBenefitsApplied => this._definition.IsBenefitActive && this._hasBattleResult && this.Occupation == CrywolfOccupationState.Peace;
+
+    /// <summary>
+    /// Gets a value indicating whether the penalties apply, because the fortress is occupied.
+    /// </summary>
+    public bool ArePenaltiesApplied => this._definition.IsPenaltyActive && this.Occupation == CrywolfOccupationState.Occupied;
+
+    /// <summary>
+    /// Gets the multiplier of the maximum health of the monsters.
+    /// </summary>
+    public float MonsterHealthMultiplier => this.AreBenefitsApplied ? this._definition.MonsterHealthBenefitPercentage / 100f : 1f;
+
+    /// <summary>
+    /// Gets the multiplier of the experience of killed monsters.
+    /// </summary>
+    public float ExperienceMultiplier => this.ArePenaltiesApplied ? this._definition.ExperiencePenaltyPercentage / 100f : 1f;
 
     /// <inheritdoc />
     public bool IsEventRunning => this.State is >= CrywolfState.Notify2 and <= CrywolfState.End;
@@ -133,18 +180,32 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
     public bool IsSpawnWaveActive(byte waveNumber) => false;
 
     /// <summary>
-    /// Initializes the context by registering at the map of the event.
+    /// Initializes the context by loading the persistent state and registering at the map of the event.
     /// </summary>
     public async ValueTask InitializeAsync()
     {
+        this.UpdateEventServer();
+        if (await this.LoadDataAsync().ConfigureAwait(false) && this._isEventServer)
+        {
+            // The server was stopped during the war. Like in the original game, the event starts
+            // again at its next start time, and the result of the last battle stays.
+            await this.SaveDataAsync(false).ConfigureAwait(false);
+        }
+
+        this._lastDataSynchronization = DateTime.UtcNow;
+
+        // The occupation state applies to game servers without the crywolf map, too.
         this._map = await this._gameContext.GetMapAsync((ushort)this._definition.MapNumber).ConfigureAwait(false);
         if (this._map is null)
         {
-            this._logger.LogWarning("The map {map} of the crywolf event wasn't found.", this._definition.MapNumber);
+            if (this._isEventServer)
+            {
+                this._logger.LogWarning("The map {map} of the crywolf event wasn't found.", this._definition.MapNumber);
+            }
+
             return;
         }
 
-        await this.LoadOccupationAsync().ConfigureAwait(false);
         this._map.ObjectAdded += this.OnObjectAddedToMapAsync;
         this.InitializeNpcs();
         await this.ApplyOccupationAsync().ConfigureAwait(false);
@@ -155,14 +216,26 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
     /// </summary>
     public async ValueTask TickAsync()
     {
-        if (this._map is null)
+        if (this.State == CrywolfState.None)
         {
+            this.UpdateEventServer();
+        }
+
+        if (this._map is not null && this._altars.Count == 0)
+        {
+            this.InitializeNpcs();
+        }
+
+        if (!this._isEventServer)
+        {
+            Interlocked.Exchange(ref this._isSkipRequested, 0);
+            await this.SynchronizeWithEventServerAsync().ConfigureAwait(false);
             return;
         }
 
-        if (this._altars.Count == 0)
+        if (this._map is null)
         {
-            this.InitializeNpcs();
+            return;
         }
 
         if (this._altars.Count != this._definition.AltarNumbers.Count || this._statue is null)
@@ -268,8 +341,7 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
     /// <returns>The additional success rate in percent.</returns>
     public byte GetChaosRateBenefit()
     {
-        // The benefits are part of a separate change.
-        return 0;
+        return this.AreBenefitsApplied ? this._definition.ChaosRateBenefit : (byte)0;
     }
 
     /// <summary>
@@ -285,6 +357,11 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
         }
 
         await player.InvokeViewPlugInAsync<ICrywolfEventViewPlugIn>(p => p.ShowStateAsync(this.Occupation, this.State)).ConfigureAwait(false);
+        if (!this._isEventServer && this.Occupation == CrywolfOccupationState.War)
+        {
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CrywolfBattleOnOtherServer)).ConfigureAwait(false);
+        }
+
         if (this.State is CrywolfState.Ready or CrywolfState.Start)
         {
             var (shield, altarStates) = this.GetStatueAndAltarInfo();
@@ -558,6 +635,7 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
     {
         await this.ShowMessageToAllPlayersAsync(nameof(PlayerMessage.CrywolfNotify2)).ConfigureAwait(false);
         this.Occupation = CrywolfOccupationState.War;
+        await this.SaveDataAsync(false).ConfigureAwait(false);
         await this.ApplyOccupationAsync().ConfigureAwait(false);
         await this.ShowStateToMapPlayersAsync().ConfigureAwait(false);
         await this.RemoveCommonMonstersAsync().ConfigureAwait(false);
@@ -718,7 +796,7 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
             .Select(entry => new CrywolfHero(entry.Key.Name, entry.Value, entry.Key.SelectedCharacter?.CharacterClass?.Number ?? 0))
             .ToList();
         await this.ForEachMapPlayerAsync(player => player.InvokeViewPlugInAsync<ICrywolfEventViewPlugIn>(p => p.ShowHeroListAsync(heroList)).AsTask()).ConfigureAwait(false);
-        await this.SaveOccupationAsync().ConfigureAwait(false);
+        await this.SaveDataAsync(true).ConfigureAwait(false);
     }
 
     private async ValueTask EndCycleAsync()
@@ -921,34 +999,103 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
         await this.UpdateEffectsAsync().ConfigureAwait(false);
     }
 
-    private async ValueTask LoadOccupationAsync()
+    private void UpdateEventServer()
+    {
+        var isEventServer = this._serverId is not { } serverId || serverId == this._definition.GameServerId;
+        if (isEventServer == this._isEventServer && this._isEventServerLogged)
+        {
+            return;
+        }
+
+        this._isEventServer = isEventServer;
+        this._isEventServerLogged = true;
+        if (isEventServer)
+        {
+            this._logger.LogInformation("This game server runs the crywolf event.");
+        }
+        else
+        {
+            this._logger.LogInformation("The crywolf event runs on the game server {serverId}. This game server takes over its occupation state.", this._definition.GameServerId);
+        }
+    }
+
+    private async ValueTask SynchronizeWithEventServerAsync()
+    {
+        var now = DateTime.UtcNow;
+        if (now - this._lastDataSynchronization < DataSynchronizationInterval)
+        {
+            return;
+        }
+
+        this._lastDataSynchronization = now;
+        var previousOccupation = this.Occupation;
+        await this.LoadDataAsync().ConfigureAwait(false);
+        if (this.Occupation == previousOccupation)
+        {
+            return;
+        }
+
+        await this.ApplyOccupationAsync().ConfigureAwait(false);
+        await this.ShowStateToMapPlayersAsync().ConfigureAwait(false);
+        if (this.Occupation == CrywolfOccupationState.War)
+        {
+            await this.ShowMessageToAllPlayersAsync(nameof(PlayerMessage.CrywolfBattleOnOtherServer)).ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Loads the persistent state of the event.
+    /// </summary>
+    /// <returns><c>true</c>, if the war is running according to the persistent state; otherwise, <c>false</c>.</returns>
+    private async ValueTask<bool> LoadDataAsync()
     {
         try
         {
             using var context = this._gameContext.PersistenceContextProvider.CreateNewTypedContext(typeof(CrywolfData), false, this._gameContext.Configuration);
-            if ((await context.GetAsync<CrywolfData>().ConfigureAwait(false)).FirstOrDefault() is { } data)
+            if ((await context.GetAsync<CrywolfData>().ConfigureAwait(false)).FirstOrDefault() is not { } data)
             {
-                this._dataId = data.Id;
-                this.Occupation = data.IsOccupied ? CrywolfOccupationState.Occupied : CrywolfOccupationState.Peace;
+                return false;
             }
+
+            this._dataId = data.Id;
+            this._hasBattleResult = data.LastBattleEnd.HasValue;
+            this.Occupation = data.IsWarRunning && !this._isEventServer
+                ? CrywolfOccupationState.War
+                : data.IsOccupied ? CrywolfOccupationState.Occupied : CrywolfOccupationState.Peace;
+            return data.IsWarRunning;
         }
         catch (Exception ex)
         {
             this._logger.LogError(ex, "Couldn't load the occupation state of the crywolf fortress.");
+            return false;
         }
     }
 
-    private async ValueTask SaveOccupationAsync()
+    /// <summary>
+    /// Saves the persistent state of the event, so that it survives a restart and the other game servers take it over.
+    /// </summary>
+    /// <param name="isBattleEnd">If set to <c>true</c>, the battle just ended.</param>
+    private async ValueTask SaveDataAsync(bool isBattleEnd)
     {
         try
         {
             using var context = this._gameContext.PersistenceContextProvider.CreateNewTypedContext(typeof(CrywolfData), false, this._gameContext.Configuration);
             var data = this._dataId is { } id ? await context.GetByIdAsync<CrywolfData>(id).ConfigureAwait(false) : null;
             data ??= context.CreateNew<CrywolfData>();
-            data.IsOccupied = this.Occupation != CrywolfOccupationState.Peace;
-            data.LastBattleEnd = DateTime.UtcNow;
+            data.IsWarRunning = this.Occupation == CrywolfOccupationState.War;
+            if (!data.IsWarRunning)
+            {
+                data.IsOccupied = this.Occupation == CrywolfOccupationState.Occupied;
+            }
+
+            if (isBattleEnd)
+            {
+                data.LastBattleEnd = DateTime.UtcNow;
+            }
+
             await context.SaveChangesAsync().ConfigureAwait(false);
             this._dataId = data.Id;
+            this._hasBattleResult |= isBattleEnd;
         }
         catch (Exception ex)
         {
