@@ -394,6 +394,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The crywolf event is not active..
+        /// </summary>
+        public static string CrywolfNotActive {
+            get {
+                return ResourceManager.GetString("CrywolfNotActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Balgass has joined forces with Kundun's army and is preparing to attack the Crywolf Fortress..
         /// </summary>
         public static string CrywolfNotify1 {
@@ -408,6 +417,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string CrywolfNotify2 {
             get {
                 return ResourceManager.GetString("CrywolfNotify2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The crywolf event proceeds from the state {0}..
+        /// </summary>
+        public static string CrywolfProceeds {
+            get {
+                return ResourceManager.GetString("CrywolfProceeds", resourceCulture);
             }
         }
         

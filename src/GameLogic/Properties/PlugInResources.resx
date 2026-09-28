@@ -1314,4 +1314,10 @@
   <data name="CrywolfPlugIn_Description" xml:space="preserve">
     <value>The event in the crywolf fortress: the players defend the statue of the holy wolf against the army of Balgass. The result is kept until the next event.</value>
   </data>
+  <data name="CrywolfChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chat command: /crywolf</value>
+  </data>
+  <data name="CrywolfChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Lets the crywolf event proceed: it starts the event when it is not running, otherwise the current state ends.</value>
+  </data>
 </root>

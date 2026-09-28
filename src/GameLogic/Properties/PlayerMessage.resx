@@ -936,4 +936,10 @@
   <data name="CrywolfBarrierStatus" xml:space="preserve">
     <value>Muses protecting the statue of the holy wolf: {0}, barrier: {1}%.</value>
   </data>
+  <data name="CrywolfNotActive" xml:space="preserve">
+    <value>The crywolf event is not active.</value>
+  </data>
+  <data name="CrywolfProceeds" xml:space="preserve">
+    <value>The crywolf event proceeds from the state {0}.</value>
+  </data>
 </root>

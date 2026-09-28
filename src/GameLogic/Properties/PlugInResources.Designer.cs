@@ -592,6 +592,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Lets the crywolf event proceed: it starts the event when it is not running, otherwise the current state ends..
+        /// </summary>
+        public static string CrywolfChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CrywolfChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chat command: /crywolf.
+        /// </summary>
+        public static string CrywolfChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CrywolfChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The event in the crywolf fortress: the players defend the statue of the holy wolf against the army of Balgass. The result is kept until the next event..
         /// </summary>
         public static string CrywolfPlugIn_Description {

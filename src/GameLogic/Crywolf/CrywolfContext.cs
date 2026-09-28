@@ -441,7 +441,7 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
 
     private bool IsCommonNpc(NonPlayerCharacter npc)
     {
-        return npc is not Monster
+        return npc.Definition.ObjectKind != NpcObjectKind.Monster
                && npc.SpawnArea.SpawnTrigger == SpawnTrigger.Automatic
                && npc != this._statue
                && !this._definition.AltarNumbers.Contains(npc.Definition.Number)
@@ -979,7 +979,9 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
 
         var commonMonsters = map.GetNpcsInRange(new Point(128, 128), byte.MaxValue)
             .OfType<Monster>()
-            .Where(monster => monster.SpawnArea.SpawnTrigger == SpawnTrigger.Automatic && monster.IsAlive)
+            .Where(monster => monster.Definition.ObjectKind == NpcObjectKind.Monster
+                              && monster.SpawnArea.SpawnTrigger == SpawnTrigger.Automatic
+                              && monster.IsAlive)
             .ToList();
         foreach (var monster in commonMonsters)
         {
