@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.Attributes;
 
+using System.Collections.Concurrent;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
@@ -20,7 +21,7 @@ public class TrapAttributeHolder : IAttributeSystem
             { Stats.ShieldBypassChance, _ => 1.0f },
         };
 
-    private static readonly IDictionary<MonsterDefinition, IDictionary<AttributeDefinition, float>> MonsterStatAttributesCache = new Dictionary<MonsterDefinition, IDictionary<AttributeDefinition, float>>();
+    private static readonly ConcurrentDictionary<MonsterDefinition, IDictionary<AttributeDefinition, float>> MonsterStatAttributesCache = new();
 
     private readonly Trap _trap;
 
@@ -89,14 +90,14 @@ public class TrapAttributeHolder : IAttributeSystem
 
     private static IDictionary<AttributeDefinition, float> GetStatAttributeOfMonster(MonsterDefinition monsterDef)
     {
-        if (!MonsterStatAttributesCache.TryGetValue(monsterDef, out var result))
-        {
-            result = monsterDef.Attributes.ToDictionary(
-                m => m.AttributeDefinition ?? throw Error.NotInitializedProperty(m, nameof(PowerUpDefinition.TargetAttribute)),
-                m => m.Value);
-            MonsterStatAttributesCache.Add(monsterDef, result);
-        }
+        // Traps are created concurrently, e.g. when several mini games start at the same time.
+        return MonsterStatAttributesCache.GetOrAdd(monsterDef, BuildStatAttributes);
+    }
 
-        return result;
+    private static IDictionary<AttributeDefinition, float> BuildStatAttributes(MonsterDefinition monsterDef)
+    {
+        return monsterDef.Attributes.ToDictionary(
+            m => m.AttributeDefinition ?? throw Error.NotInitializedProperty(m, nameof(PowerUpDefinition.TargetAttribute)),
+            m => m.Value);
     }
 }

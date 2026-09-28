@@ -2495,6 +2495,54 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="AddTransformedCharacterToScopeExtended" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="id">The id.</param>
+    /// <param name="currentPositionX">The current position x.</param>
+    /// <param name="currentPositionY">The current position y.</param>
+    /// <param name="skin">The skin.</param>
+    /// <param name="name">The name.</param>
+    /// <param name="targetPositionX">The target position x.</param>
+    /// <param name="targetPositionY">The target position y.</param>
+    /// <param name="rotation">The rotation.</param>
+    /// <param name="heroState">The hero state.</param>
+    /// <param name="appearanceAndEffects">The appearance data, followed by the number of effects and the effect ids.</param>
+    /// <param name="characterCount">The number of characters in this packet. This packet contains only one character, because the size of the appearance data depends on the used appearance serializer.</param>
+    /// <remarks>
+    /// Is sent by the server when: The player wears a monster transformation ring (extended client).
+    /// Causes reaction on client side: The character appears as monster, defined by the Skin property.
+    /// </remarks>
+    public static async ValueTask SendAddTransformedCharacterToScopeExtendedAsync(this IConnection? connection, ushort @id, byte @currentPositionX, byte @currentPositionY, ushort @skin, string @name, byte @targetPositionX, byte @targetPositionY, byte @rotation, CharacterHeroState @heroState, Memory<byte> @appearanceAndEffects, byte @characterCount = 1)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = AddTransformedCharacterToScopeExtendedRef.GetRequiredSize(appearanceAndEffects.Length);
+            var packet = new AddTransformedCharacterToScopeExtendedRef(connection.Output.GetSpan(length)[..length]);
+            packet.CharacterCount = @characterCount;
+            packet.Id = @id;
+            packet.CurrentPositionX = @currentPositionX;
+            packet.CurrentPositionY = @currentPositionY;
+            packet.Skin = @skin;
+            packet.Name = @name;
+            packet.TargetPositionX = @targetPositionX;
+            packet.TargetPositionY = @targetPositionY;
+            packet.Rotation = @rotation;
+            packet.HeroState = @heroState;
+            @appearanceAndEffects.Span.CopyTo(packet.AppearanceAndEffects);
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="ShowEffect" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
@@ -7775,6 +7823,160 @@ public static class ConnectionExtensions
             var packet = new KanturuMonsterUserCountRef(connection.Output.GetSpan(length)[..length]);
             packet.MonsterCount = @monsterCount;
             packet.UserCount = @userCount;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="RaklionStateInfo" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="state">The state.</param>
+    /// <param name="detailState">The state of Selupan, if the state is DetailState: 0 = none, 1 = standby, 2 to 8 = pattern 1 to 7 (by the remaining health), 9 = dead. Otherwise it is ignored by the client.</param>
+    /// <param name="canEnter">It is not used by the client.</param>
+    /// <param name="remainingSeconds">It is not used by the client. The field is aligned to 4 bytes, because the client structure is not packed.</param>
+    /// <remarks>
+    /// Is sent by the server when: The player requested the state of the raklion event.
+    /// Causes reaction on client side: The client updates the state of the raklion maps, e.g. whether the portal to the hatchery is shown, the effects and the music.
+    /// </remarks>
+    public static async ValueTask SendRaklionStateInfoAsync(this IConnection? connection, RaklionStateInfo.RaklionState @state, byte @detailState, bool @canEnter, uint @remainingSeconds)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = RaklionStateInfoRef.Length;
+            var packet = new RaklionStateInfoRef(connection.Output.GetSpan(length)[..length]);
+            packet.State = @state;
+            packet.DetailState = @detailState;
+            packet.CanEnter = @canEnter;
+            packet.RemainingSeconds = @remainingSeconds;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="RaklionCurrentState" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="state">The state.</param>
+    /// <param name="detailState">The state of Selupan, if the state is DetailState: 0 = none, 1 = standby, 2 to 8 = pattern 1 to 7 (by the remaining health), 9 = dead. Otherwise it is ignored by the client.</param>
+    /// <remarks>
+    /// Is sent by the server when: The player entered one of the raklion maps.
+    /// Causes reaction on client side: The client updates the state of the raklion maps, e.g. whether the portal to the hatchery is shown, the effects and the music.
+    /// </remarks>
+    public static async ValueTask SendRaklionCurrentStateAsync(this IConnection? connection, RaklionCurrentState.RaklionState @state, byte @detailState)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = RaklionCurrentStateRef.Length;
+            var packet = new RaklionCurrentStateRef(connection.Output.GetSpan(length)[..length]);
+            packet.State = @state;
+            packet.DetailState = @detailState;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="RaklionStateChange" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="state">The state.</param>
+    /// <param name="detailState">The state of Selupan, if the state is DetailState: 0 = none, 1 = standby, 2 to 8 = pattern 1 to 7 (by the remaining health), 9 = dead. Otherwise it is ignored by the client.</param>
+    /// <remarks>
+    /// Is sent by the server when: The state of the raklion event or of Selupan changed.
+    /// Causes reaction on client side: The client updates the state of the raklion maps, e.g. whether the portal to the hatchery is shown, the effects and the music.
+    /// </remarks>
+    public static async ValueTask SendRaklionStateChangeAsync(this IConnection? connection, RaklionStateChange.RaklionState @state, byte @detailState)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = RaklionStateChangeRef.Length;
+            var packet = new RaklionStateChangeRef(connection.Output.GetSpan(length)[..length]);
+            packet.State = @state;
+            packet.DetailState = @detailState;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="RaklionBattleResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <remarks>
+    /// Is sent by the server when: The battle against Selupan ended.
+    /// Causes reaction on client side: None, the client ignores it.
+    /// </remarks>
+    public static async ValueTask SendRaklionBattleResultAsync(this IConnection? connection, RaklionBattleResult.BattleResult @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = RaklionBattleResultRef.Length;
+            var packet = new RaklionBattleResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="MonsterSkillAnimation" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="skillNumber">The number of the monster skill of the client, e.g. 34 to 42 for the skills of Selupan.</param>
+    /// <param name="attackerId">The id of the monster. The field is aligned to 2 bytes, because the client structure is not packed.</param>
+    /// <param name="targetId">The id of the target. The highest bit is set, if the skill has been applied successfully.</param>
+    /// <remarks>
+    /// Is sent by the server when: A monster performs a special skill, e.g. Selupan.
+    /// Causes reaction on client side: The client shows the animation of the monster skill.
+    /// </remarks>
+    public static async ValueTask SendMonsterSkillAnimationAsync(this IConnection? connection, ushort @skillNumber, ushort @attackerId, ushort @targetId)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = MonsterSkillAnimationRef.Length;
+            var packet = new MonsterSkillAnimationRef(connection.Output.GetSpan(length)[..length]);
+            packet.SkillNumber = @skillNumber;
+            packet.AttackerId = @attackerId;
+            packet.TargetId = @targetId;
 
             return packet.Header.Length;
         }

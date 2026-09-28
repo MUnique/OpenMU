@@ -405,6 +405,12 @@
   <data name="GuildRequestHandlerPlugIn_Description" xml:space="preserve">
     <value>Handler for guild requests.</value>
   </data>
+  <data name="GuildRoleAssignHandlerPlugIn_Name" xml:space="preserve">
+    <value>Guild Role Assign Handler</value>
+  </data>
+  <data name="GuildRoleAssignHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for guild role assign packets.</value>
+  </data>
   <data name="GuildWarResponseHandlerPlugIn_Name" xml:space="preserve">
     <value>Guild War Response Handler</value>
   </data>
@@ -2480,5 +2486,17 @@
   </data>
   <data name="CastleSiegeLifeStoneStatePlugIn_Description" xml:space="preserve">
     <value>Sends Castle Siege Life Stone creation progress to the game client.</value>
+  </data>
+  <data name="RaklionEventViewPlugIn_Name" xml:space="preserve">
+    <value>Raklion Event View</value>
+  </data>
+  <data name="RaklionEventViewPlugIn_Description" xml:space="preserve">
+    <value>Sends the state of the raklion event and the skills of Selupan to the client.</value>
+  </data>
+  <data name="RaklionStateInfoRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Raklion State Info Request Handler</value>
+  </data>
+  <data name="RaklionStateInfoRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the request of the client for the state of the raklion event.</value>
   </data>
 </root>

@@ -63,7 +63,7 @@ internal sealed class RepairHandler
             }
 
             var item = this._player.Inventory?.GetItem(i);
-            if (item is null)
+            if (item is null || !item.CanBeRepaired())
             {
                 continue;
             }
