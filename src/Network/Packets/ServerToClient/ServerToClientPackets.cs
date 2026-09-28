@@ -31869,6 +31869,916 @@ public readonly struct ChatCommandParameter
 
 
 /// <summary>
+/// Is sent by the server when: After the client requested the list of available chat commands, one message is sent for each active weekly quest. When the progress of a quest changes, a single message is sent as update of this quest.
+/// Causes reaction on client side: The client shows the weekly quests and their progress in a window.
+/// </summary>
+public readonly struct WeeklyQuestEntry
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WeeklyQuestEntry"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public WeeklyQuestEntry(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WeeklyQuestEntry"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private WeeklyQuestEntry(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xF5;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x02;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 520;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the index of this quest within the list, starting at 0. The first message of a list replaces the previously known quests.
+    /// </summary>
+    public byte Index
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the total number of quests. A list without quests is sent as a single message with a count of 0.
+    /// </summary>
+    public byte Count
+    {
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets if true, this message updates the already known quest with the same id, instead of being part of a list.
+    /// </summary>
+    public bool IsUpdate
+    {
+        get => this._data.Span[7..].GetBoolean();
+        set => this._data.Span[7..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the objective of the quest has been reached.
+    /// </summary>
+    public bool IsCompleted
+    {
+        get => this._data.Span[8..].GetBoolean();
+        set => this._data.Span[8..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the rewards of the quest have been handed out. If the quest is completed but not rewarded, the reward is pending, e.g. because the inventory was full.
+    /// </summary>
+    public bool IsRewarded
+    {
+        get => this._data.Span[9..].GetBoolean();
+        set => this._data.Span[9..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the current count.
+    /// </summary>
+    public uint CurrentCount
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[12..]);
+        set => WriteUInt32LittleEndian(this._data.Span[12..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the required count.
+    /// </summary>
+    public uint RequiredCount
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[16..]);
+        set => WriteUInt32LittleEndian(this._data.Span[16..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the seconds until the weekly progress is reset.
+    /// </summary>
+    public uint SecondsUntilReset
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[20..]);
+        set => WriteUInt32LittleEndian(this._data.Span[20..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the identifier of the quest.
+    /// </summary>
+    public string Id
+    {
+        get => this._data.Span.ExtractString(24, 64, System.Text.Encoding.UTF8);
+        set => this._data.Slice(24, 64).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the name.
+    /// </summary>
+    public string Name
+    {
+        get => this._data.Span.ExtractString(88, 48, System.Text.Encoding.UTF8);
+        set => this._data.Slice(88, 48).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the description.
+    /// </summary>
+    public string Description
+    {
+        get => this._data.Span.ExtractString(136, 256, System.Text.Encoding.UTF8);
+        set => this._data.Slice(136, 256).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the rewards of the quest as text, in the language of the player.
+    /// </summary>
+    public string Rewards
+    {
+        get => this._data.Span.ExtractString(392, 128, System.Text.Encoding.UTF8);
+        set => this._data.Slice(392, 128).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="WeeklyQuestEntry"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator WeeklyQuestEntry(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="WeeklyQuestEntry"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(WeeklyQuestEntry packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: Right after each WeeklyQuestEntry message, with the same quest id. Clients which don't know it can ignore it and just show the WeeklyQuestEntry.
+/// Causes reaction on client side: The client shows the quest under the tab of its category, with a checklist of its objectives (steps).
+/// </summary>
+public readonly struct QuestDetails
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="QuestDetails"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public QuestDetails(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="QuestDetails"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private QuestDetails(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xF5;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x03;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the category of the quest: 0 = weekly, 1 = daily, 2 = main story, 3 = class, 4 = zone.
+    /// </summary>
+    public byte Category
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets when the progress starts over: 0 = weekly, 1 = daily, 2 = never (the quest is done once).
+    /// </summary>
+    public byte Period
+    {
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the index of the first objective which isn't done yet. It's the number of objectives when all are done.
+    /// </summary>
+    public byte CurrentStep
+    {
+        get => this._data.Span[7];
+        set => this._data.Span[7] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the objective count.
+    /// </summary>
+    public byte ObjectiveCount
+    {
+        get => this._data.Span[8];
+        set => this._data.Span[8] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets if true, the objectives have to be done in their order.
+    /// </summary>
+    public bool IsSequential
+    {
+        get => this._data.Span[9..].GetBoolean();
+        set => this._data.Span[9..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the seconds until the progress of this quest starts over. 0 for quests which are done once.
+    /// </summary>
+    public uint SecondsUntilReset
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[12..]);
+        set => WriteUInt32LittleEndian(this._data.Span[12..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the identifier of the quest, as in the WeeklyQuestEntry message.
+    /// </summary>
+    public string Id
+    {
+        get => this._data.Span.ExtractString(16, 64, System.Text.Encoding.UTF8);
+        set => this._data.Slice(16, 64).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets the <see cref="QuestObjective"/> of the specified index.
+    /// </summary>
+        public QuestObjective this[int index] => new (this._data.Slice(80 + index * QuestObjective.Length));
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="QuestDetails"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator QuestDetails(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="QuestDetails"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(QuestDetails packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="QuestObjective"/>.
+    /// </summary>
+    /// <param name="objectivesCount">The count of <see cref="QuestObjective"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int objectivesCount) => objectivesCount * QuestObjective.Length + 80;
+
+
+/// <summary>
+/// An objective (step) of a quest..
+/// </summary>
+public readonly struct QuestObjective
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="QuestObjective"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public QuestObjective(Memory<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 76;
+
+    /// <summary>
+    /// Gets or sets the current count.
+    /// </summary>
+    public uint CurrentCount
+    {
+        get => ReadUInt32LittleEndian(this._data.Span);
+        set => WriteUInt32LittleEndian(this._data.Span, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the required count.
+    /// </summary>
+    public uint RequiredCount
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[4..]);
+        set => WriteUInt32LittleEndian(this._data.Span[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the is done.
+    /// </summary>
+    public bool IsDone
+    {
+        get => this._data.Span[8..].GetBoolean();
+        set => this._data.Span[8..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the text of the objective, in the language of the player, e.g. 'Kill 50 Skeletons'.
+    /// </summary>
+    public string Text
+    {
+        get => this._data.Span.ExtractString(12, 64, System.Text.Encoding.UTF8);
+        set => this._data.Slice(12, 64).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+}
+}
+
+
+/// <summary>
+/// Is sent by the server when: Once after a successful login, before the character selection.
+/// Causes reaction on client side: The client uses these requirements and costs for the rest of the session, instead of the ones of its own data files, so that it shows and checks exactly what the server checks.
+/// </summary>
+public readonly struct SkillRequirements
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SkillRequirements"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public SkillRequirements(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SkillRequirements"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private SkillRequirements(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xF5;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x04;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the skill count.
+    /// </summary>
+    public ushort SkillCount
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[6..]);
+        set => WriteUInt16LittleEndian(this._data.Span[6..], value);
+    }
+
+    /// <summary>
+    /// Gets the <see cref="SkillRequirement"/> of the specified index.
+    /// </summary>
+        public SkillRequirement this[int index] => new (this._data.Slice(8 + index * SkillRequirement.Length));
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="SkillRequirements"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator SkillRequirements(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="SkillRequirements"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(SkillRequirements packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="SkillRequirement"/>.
+    /// </summary>
+    /// <param name="skillsCount">The count of <see cref="SkillRequirement"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int skillsCount) => skillsCount * SkillRequirement.Length + 8;
+
+
+/// <summary>
+/// The requirements and costs of a skill, as the server checks them. A value of 0 means there is no such requirement..
+/// </summary>
+public readonly struct SkillRequirement
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SkillRequirement"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public SkillRequirement(Memory<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 16;
+
+    /// <summary>
+    /// Gets or sets the skill number.
+    /// </summary>
+    public ushort SkillNumber
+    {
+        get => ReadUInt16LittleEndian(this._data.Span);
+        set => WriteUInt16LittleEndian(this._data.Span, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the required character level.
+    /// </summary>
+    public ushort Level
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[2..]);
+        set => WriteUInt16LittleEndian(this._data.Span[2..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the required total energy.
+    /// </summary>
+    public ushort Energy
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[4..]);
+        set => WriteUInt16LittleEndian(this._data.Span[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the required total leadership (command).
+    /// </summary>
+    public ushort Leadership
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[6..]);
+        set => WriteUInt16LittleEndian(this._data.Span[6..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the required total strength.
+    /// </summary>
+    public ushort Strength
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[8..]);
+        set => WriteUInt16LittleEndian(this._data.Span[8..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the required total agility.
+    /// </summary>
+    public ushort Agility
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[10..]);
+        set => WriteUInt16LittleEndian(this._data.Span[10..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the mana which is consumed by using the skill.
+    /// </summary>
+    public ushort Mana
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[12..]);
+        set => WriteUInt16LittleEndian(this._data.Span[12..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the ability (AG) which is consumed by using the skill.
+    /// </summary>
+    public ushort AbilityGauge
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[14..]);
+        set => WriteUInt16LittleEndian(this._data.Span[14..], value);
+    }
+}
+}
+
+
+/// <summary>
+/// Is sent by the server when: Once after a successful login, right after the SkillRequirements message.
+/// Causes reaction on client side: The client shows these requirements for the items which teach a skill (orbs, scrolls, parchments, crystals), instead of the ones it calculates from its own data files.
+/// </summary>
+public readonly struct LearnableItemRequirements
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LearnableItemRequirements"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public LearnableItemRequirements(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LearnableItemRequirements"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private LearnableItemRequirements(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xF5;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x05;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the item count.
+    /// </summary>
+    public ushort ItemCount
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[6..]);
+        set => WriteUInt16LittleEndian(this._data.Span[6..], value);
+    }
+
+    /// <summary>
+    /// Gets the <see cref="LearnableItemRequirement"/> of the specified index.
+    /// </summary>
+        public LearnableItemRequirement this[int index] => new (this._data.Slice(8 + index * LearnableItemRequirement.Length));
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="LearnableItemRequirements"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator LearnableItemRequirements(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="LearnableItemRequirements"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(LearnableItemRequirements packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="LearnableItemRequirement"/>.
+    /// </summary>
+    /// <param name="itemsCount">The count of <see cref="LearnableItemRequirement"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int itemsCount) => itemsCount * LearnableItemRequirement.Length + 8;
+
+
+/// <summary>
+/// The requirements to learn a skill with an item: the highest of the requirements of the item and the requirements of the skill. A value of 0 means there is no such requirement..
+/// </summary>
+public readonly struct LearnableItemRequirement
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LearnableItemRequirement"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public LearnableItemRequirement(Memory<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 16;
+
+    /// <summary>
+    /// Gets or sets the group.
+    /// </summary>
+    public byte Group
+    {
+        get => this._data.Span[0];
+        set => this._data.Span[0] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the item level these requirements are for, or 0xFF if they apply to every level. Items which teach a different skill per level (Orb of Summoning) have one entry per level.
+    /// </summary>
+    public byte ItemLevel
+    {
+        get => this._data.Span[1];
+        set => this._data.Span[1] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the number.
+    /// </summary>
+    public ushort Number
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[2..]);
+        set => WriteUInt16LittleEndian(this._data.Span[2..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the required character level.
+    /// </summary>
+    public ushort Level
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[4..]);
+        set => WriteUInt16LittleEndian(this._data.Span[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the required total energy.
+    /// </summary>
+    public ushort Energy
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[6..]);
+        set => WriteUInt16LittleEndian(this._data.Span[6..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the required total leadership (command).
+    /// </summary>
+    public ushort Leadership
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[8..]);
+        set => WriteUInt16LittleEndian(this._data.Span[8..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the required total strength.
+    /// </summary>
+    public ushort Strength
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[10..]);
+        set => WriteUInt16LittleEndian(this._data.Span[10..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the required total agility.
+    /// </summary>
+    public ushort Agility
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[12..]);
+        set => WriteUInt16LittleEndian(this._data.Span[12..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the skill which is learned with the item.
+    /// </summary>
+    public ushort SkillNumber
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[14..]);
+        set => WriteUInt16LittleEndian(this._data.Span[14..], value);
+    }
+}
+}
+
+
+/// <summary>
+/// Is sent by the server when: Once after a successful login, right after the LearnableItemRequirements message.
+/// Causes reaction on client side: The client shows the level of the monsters next to their name and health bar.
+/// </summary>
+public readonly struct MonsterLevels
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MonsterLevels"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public MonsterLevels(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MonsterLevels"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private MonsterLevels(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xF5;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x06;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the monster count.
+    /// </summary>
+    public ushort MonsterCount
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[6..]);
+        set => WriteUInt16LittleEndian(this._data.Span[6..], value);
+    }
+
+    /// <summary>
+    /// Gets the <see cref="MonsterLevel"/> of the specified index.
+    /// </summary>
+        public MonsterLevel this[int index] => new (this._data.Slice(8 + index * MonsterLevel.Length));
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="MonsterLevels"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator MonsterLevels(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="MonsterLevels"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(MonsterLevels packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="MonsterLevel"/>.
+    /// </summary>
+    /// <param name="monstersCount">The count of <see cref="MonsterLevel"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int monstersCount) => monstersCount * MonsterLevel.Length + 8;
+
+
+/// <summary>
+/// The level of a monster..
+/// </summary>
+public readonly struct MonsterLevel
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MonsterLevel"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public MonsterLevel(Memory<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 4;
+
+    /// <summary>
+    /// Gets or sets the number of the monster, as in the AddMonstersToScope message.
+    /// </summary>
+    public ushort MonsterNumber
+    {
+        get => ReadUInt16LittleEndian(this._data.Span);
+        set => WriteUInt16LittleEndian(this._data.Span, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the level.
+    /// </summary>
+    public ushort Level
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[2..]);
+        set => WriteUInt16LittleEndian(this._data.Span[2..], value);
+    }
+}
+}
+
+
+/// <summary>
 /// Is sent by the server when: The player receives the result of registering Rena or Event Chips at the Golden Archer NPC.
 /// Causes reaction on client side: The client updates the Golden Archer interface with total registered count and remaining count in inventory.
 /// </summary>

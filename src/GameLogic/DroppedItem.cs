@@ -74,6 +74,12 @@ public sealed class DroppedItem : AsyncDisposable, ILocateable
     /// </summary>
     public Item Item { get; }
 
+    /// <summary>
+    /// Gets a value indicating whether the item was dropped from the inventory of a player,
+    /// instead of by a monster, an event or a game master.
+    /// </summary>
+    public bool IsDroppedFromInventory { get; init; }
+
     /// <inheritdoc />
     public Point Position { get; set; }
 

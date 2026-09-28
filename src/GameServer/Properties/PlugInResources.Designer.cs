@@ -7205,5 +7205,59 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("CastleSiegeLifeStoneStatePlugIn_Name", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Weekly quest list view.
+        /// </summary>
+        public static string WeeklyQuestListViewPlugIn_Name {
+            get {
+                return ResourceManager.GetString("WeeklyQuestListViewPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Sends the weekly quests and their progress, so that the client can show them in a window..
+        /// </summary>
+        public static string WeeklyQuestListViewPlugIn_Description {
+            get {
+                return ResourceManager.GetString("WeeklyQuestListViewPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Skill requirements view.
+        /// </summary>
+        public static string SkillRequirementsViewPlugIn_Name {
+            get {
+                return ResourceManager.GetString("SkillRequirementsViewPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Sends the requirements of the skills and of the items which teach them after the login, so that the client shows and checks the ones of the server instead of its own data files..
+        /// </summary>
+        public static string SkillRequirementsViewPlugIn_Description {
+            get {
+                return ResourceManager.GetString("SkillRequirementsViewPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Monster levels view.
+        /// </summary>
+        public static string MonsterLevelsViewPlugIn_Name {
+            get {
+                return ResourceManager.GetString("MonsterLevelsViewPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Sends the level of the monsters after the login, so that the client shows it next to their name and health bar..
+        /// </summary>
+        public static string MonsterLevelsViewPlugIn_Description {
+            get {
+                return ResourceManager.GetString("MonsterLevelsViewPlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

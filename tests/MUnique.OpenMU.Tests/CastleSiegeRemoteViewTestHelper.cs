@@ -13,6 +13,7 @@ using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameServer;
 using MUnique.OpenMU.GameServer.RemoteView;
 using MUnique.OpenMU.Network;
+using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
 using Nito.AsyncEx;
@@ -25,8 +26,9 @@ internal static class CastleSiegeRemoteViewTestHelper
     /// <summary>
     /// Creates a remote player and its packet output stream.
     /// </summary>
+    /// <param name="clientVersion">The client version of the player.</param>
     /// <returns>The remote player and output stream.</returns>
-    internal static (RemotePlayer Player, MemoryStream Output) CreatePlayer()
+    internal static (RemotePlayer Player, MemoryStream Output) CreatePlayer(ClientVersion clientVersion = default)
     {
         var manager = new PlugInManager(null, new NullLoggerFactory(), null, null);
         var gameContext = new Mock<IGameServerContext>();
@@ -35,15 +37,16 @@ internal static class CastleSiegeRemoteViewTestHelper
         gameContext.Setup(c => c.Configuration).Returns(new GameConfiguration());
         gameContext.Setup(c => c.PlugInManager).Returns(manager);
         gameContext.Setup(c => c.LoggerFactory).Returns(new NullLoggerFactory());
-        return CreatePlayer(gameContext.Object);
+        return CreatePlayer(gameContext.Object, clientVersion);
     }
 
     /// <summary>
     /// Creates a remote player for an existing game-server context and an in-memory packet output stream.
     /// </summary>
     /// <param name="gameContext">The game-server context.</param>
+    /// <param name="clientVersion">The client version of the player.</param>
     /// <returns>The remote player and output stream.</returns>
-    internal static (RemotePlayer Player, MemoryStream Output) CreatePlayer(IGameServerContext gameContext)
+    internal static (RemotePlayer Player, MemoryStream Output) CreatePlayer(IGameServerContext gameContext, ClientVersion clientVersion = default)
     {
         var output = new MemoryStream();
         var writer = PipeWriter.Create(output, new StreamPipeWriterOptions(leaveOpen: true));
@@ -51,6 +54,6 @@ internal static class CastleSiegeRemoteViewTestHelper
         connection.SetupGet(c => c.Connected).Returns(true);
         connection.SetupGet(c => c.Output).Returns(writer);
         connection.SetupGet(c => c.OutputLock).Returns(new AsyncLock());
-        return (new RemotePlayer(gameContext, connection.Object, default), output);
+        return (new RemotePlayer(gameContext, connection.Object, clientVersion), output);
     }
 }

@@ -1891,6 +1891,42 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Message Type.
+        /// </summary>
+        public static string MessageType {
+            get {
+                return ResourceManager.GetString("MessageType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Blue (system).
+        /// </summary>
+        public static string MessageTypeBlue {
+            get {
+                return ResourceManager.GetString("MessageTypeBlue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Golden (center).
+        /// </summary>
+        public static string MessageTypeGolden {
+            get {
+                return ResourceManager.GetString("MessageTypeGolden", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Slide (top band).
+        /// </summary>
+        public static string MessageTypeSlide {
+            get {
+                return ResourceManager.GetString("MessageTypeSlide", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Metrics.
         /// </summary>
         public static string Metrics {

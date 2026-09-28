@@ -6607,6 +6607,148 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the packet size calculation for WeeklyQuestEntry.
+    /// </summary>
+    [Test]
+    public void WeeklyQuestEntry_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 520;
+        var actualLength = WeeklyQuestEntryRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Index' boundary
+        Assert.That(5 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Index' exceeds packet boundary");
+        
+        // Validate field 'Count' boundary
+        Assert.That(6 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Count' exceeds packet boundary");
+        
+        // Validate field 'IsUpdate' boundary
+        Assert.That(7 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'IsUpdate' exceeds packet boundary");
+        
+        // Validate field 'IsCompleted' boundary
+        Assert.That(8 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'IsCompleted' exceeds packet boundary");
+        
+        // Validate field 'IsRewarded' boundary
+        Assert.That(9 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'IsRewarded' exceeds packet boundary");
+        
+        // Validate field 'CurrentCount' boundary
+        Assert.That(12 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'CurrentCount' exceeds packet boundary");
+        
+        // Validate field 'RequiredCount' boundary
+        Assert.That(16 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'RequiredCount' exceeds packet boundary");
+        
+        // Validate field 'SecondsUntilReset' boundary
+        Assert.That(20 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'SecondsUntilReset' exceeds packet boundary");
+        
+        // Validate field 'Id' boundary
+        Assert.That(24 + 64, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Id' exceeds packet boundary");
+        
+        // Validate field 'Name' boundary
+        Assert.That(88 + 48, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Name' exceeds packet boundary");
+        
+        // Validate field 'Description' boundary
+        Assert.That(136 + 256, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Description' exceeds packet boundary");
+        
+        // Validate field 'Rewards' boundary
+        Assert.That(392 + 128, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Rewards' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for QuestDetails.
+    /// </summary>
+    [Test]
+    public void QuestDetails_PacketSizeValidation()
+    {
+        // Basic packet validation
+        // Validate header type and field boundaries
+        
+        // Field 'Category' starts at index 5 with size 1
+        Assert.That(5, Is.GreaterThanOrEqualTo(0), 
+            "Field 'Category' has invalid negative index");
+        
+        // Field 'Period' starts at index 6 with size 1
+        Assert.That(6, Is.GreaterThanOrEqualTo(0), 
+            "Field 'Period' has invalid negative index");
+        
+        // Field 'CurrentStep' starts at index 7 with size 1
+        Assert.That(7, Is.GreaterThanOrEqualTo(0), 
+            "Field 'CurrentStep' has invalid negative index");
+        
+        // Field 'ObjectiveCount' starts at index 8 with size 1
+        Assert.That(8, Is.GreaterThanOrEqualTo(0), 
+            "Field 'ObjectiveCount' has invalid negative index");
+        
+        // Field 'IsSequential' starts at index 9 with size 1
+        Assert.That(9, Is.GreaterThanOrEqualTo(0), 
+            "Field 'IsSequential' has invalid negative index");
+        
+        // Field 'SecondsUntilReset' starts at index 12 with size 4
+        Assert.That(12, Is.GreaterThanOrEqualTo(0), 
+            "Field 'SecondsUntilReset' has invalid negative index");
+        
+        // Field 'Id' starts at index 16 with size 64
+        Assert.That(16, Is.GreaterThanOrEqualTo(0), 
+            "Field 'Id' has invalid negative index");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for SkillRequirements.
+    /// </summary>
+    [Test]
+    public void SkillRequirements_PacketSizeValidation()
+    {
+        // Basic packet validation
+        // Validate header type and field boundaries
+        
+        // Field 'SkillCount' starts at index 6 with size 2
+        Assert.That(6, Is.GreaterThanOrEqualTo(0), 
+            "Field 'SkillCount' has invalid negative index");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for LearnableItemRequirements.
+    /// </summary>
+    [Test]
+    public void LearnableItemRequirements_PacketSizeValidation()
+    {
+        // Basic packet validation
+        // Validate header type and field boundaries
+        
+        // Field 'ItemCount' starts at index 6 with size 2
+        Assert.That(6, Is.GreaterThanOrEqualTo(0), 
+            "Field 'ItemCount' has invalid negative index");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for MonsterLevels.
+    /// </summary>
+    [Test]
+    public void MonsterLevels_PacketSizeValidation()
+    {
+        // Basic packet validation
+        // Validate header type and field boundaries
+        
+        // Field 'MonsterCount' starts at index 6 with size 2
+        Assert.That(6, Is.GreaterThanOrEqualTo(0), 
+            "Field 'MonsterCount' has invalid negative index");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for EventChipRegistrationResult.
     /// </summary>
     [Test]

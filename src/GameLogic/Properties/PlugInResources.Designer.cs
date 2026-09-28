@@ -2808,6 +2808,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handles the chat command &apos;/slidenotice message&apos;. Sends a global notice to all players of the game which scrolls across the top of their screen..
+        /// </summary>
+        public static string SlideNoticeChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("SlideNoticeChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Slide notice chat command.
+        /// </summary>
+        public static string SlideNoticeChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("SlideNoticeChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Plugin which handles the small complex potion consumption..
         /// </summary>
         public static string SmallComplexPotionConsumeHandlerPlugIn_Description {
@@ -3632,6 +3650,42 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string CastleSiegeLifeStoneConsumeHandlerPlugIn_Name {
             get {
                 return ResourceManager.GetString("CastleSiegeLifeStoneConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Weekly Quests.
+        /// </summary>
+        public static string WeeklyQuestsPlugIn_Name {
+            get {
+                return ResourceManager.GetString("WeeklyQuestsPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Quests semanales con objetivos y premios configurables..
+        /// </summary>
+        public static string WeeklyQuestsPlugIn_Description {
+            get {
+                return ResourceManager.GetString("WeeklyQuestsPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Weekly quests chat command.
+        /// </summary>
+        public static string WeeklyQuestsChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("WeeklyQuestsChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the chat command '/weekly'. Shows the progress of the weekly quests..
+        /// </summary>
+        public static string WeeklyQuestsChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("WeeklyQuestsChatCommandPlugIn_Description", resourceCulture);
             }
         }
     }

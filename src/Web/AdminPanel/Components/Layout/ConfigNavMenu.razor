@@ -1,39 +1,46 @@
-﻿@using MUnique.OpenMU.DataModel.Configuration
+@using MUnique.OpenMU.DataModel.Configuration
 @using MUnique.OpenMU.DataModel.Configuration.Items
 @using MUnique.OpenMU.Web.AdminPanel.Properties
 
+@* The entries are grouped by topic and carry a short Spanish tooltip; labels and links are the original ones. *@
 <li class="nav-item px-3 dropdown@(this._expandGameConfig ? " expanded" : "")">
-    <a class="nav-link dropdown-toggle" href="" role="button" aria-haspopup="true" aria-expanded="@(this._expandGameConfig)" @onclick="ToggleGameConfig" @onclick:preventDefault="true">
+    <a class="nav-link dropdown-toggle" href="" role="button" aria-haspopup="true" aria-expanded="@(this._expandGameConfig)" @onclick="ToggleGameConfig" @onclick:preventDefault="true" title="Todo el contenido del juego: monstruos, ítems, mapas, drops, tiendas y configuración general.">
         <span class="oi oi-cog" aria-hidden="true"></span> @Resources.GameConfiguration
     </a>
     <div class="dropdown-menu@(this._expandGameConfig ? " show" : "")">
-        <NavLink class="dropdown-item" href="@($"edit-config/{typeof(SystemConfiguration).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.System</NavLink>
-        <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(GameClientDefinition).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.GameClients</NavLink>
+        <h6 class="dropdown-header">Ajustes generales</h6>
+        <NavLink class="dropdown-item" href="@($"edit-config/{typeof(GameConfiguration).FullName}/{this.GameConfigurationId}/hide-collections")" @onclick="() => NavigationHistory.Clear()" title="Rates de experiencia, niveles máximos, límites de Zen, party y otros ajustes globales.">@Resources.General</NavLink>
+        <NavLink class="dropdown-item" href="@($"edit-config/{typeof(SystemConfiguration).FullName}/")" @onclick="() => NavigationHistory.Clear()" title="Ajustes del sistema: IP del servidor, base de datos y otras opciones técnicas.">@Resources.System</NavLink>
+        <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(GameClientDefinition).FullName}/")" @onclick="() => NavigationHistory.Clear()" title="Versiones del cliente del juego que pueden conectarse.">@Resources.GameClients</NavLink>
         <hr class="dropdown-divider"/>
-        <NavLink class="dropdown-item" href="@($"edit-config/{typeof(GameConfiguration).FullName}/{this.GameConfigurationId}/hide-collections")" @onclick="() => NavigationHistory.Clear()">@Resources.General</NavLink>
-        <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(MonsterDefinition).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.Monsters</NavLink>
-        <NavLink class="dropdown-item" href="@($"merchants/")" @onclick="() => NavigationHistory.Clear()">@Resources.MerchantStores</NavLink>
-        <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(CharacterClass).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.CharacterClasses</NavLink>
-        <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(Skill).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.Skills</NavLink>
-        <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(ItemDefinition).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.Items</NavLink>
-        <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(DropItemGroup).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.DropItemGroups</NavLink>
-        <NavLink class="dropdown-item" href="edit-item-drops" @onclick="() => NavigationHistory.Clear()">@Resources.ItemDrops</NavLink>
-        <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(GameMapDefinition).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.GameMaps</NavLink>
-        <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(MiniGameDefinition).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.MiniGames</NavLink>
-        <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(WarpInfo).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.WarpList</NavLink>
-        <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(JewelMix).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.JewelMixes</NavLink>
-        <hr class="dropdown-divider"/>
-        <NavLink class="dropdown-item" href="plugins" @onclick="() => NavigationHistory.Clear()">
-            <span class="oi oi-puzzle-piece" aria-hidden="true"></span> @Resources.Plugins
-        </NavLink>
-        <NavLink class="dropdown-item" href="chat-commands" @onclick="() => NavigationHistory.Clear()">
-            <span class="oi oi-terminal" aria-hidden="true"></span> @Resources.ChatCommands
-        </NavLink>
-        <NavLink class="dropdown-item" href="map-editor" @onclick="() => NavigationHistory.Clear()">
+        <h6 class="dropdown-header">Mundo</h6>
+        <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(GameMapDefinition).FullName}/")" @onclick="() => NavigationHistory.Clear()" title="Mapas: multiplicador de experiencia, requisitos de entrada, zonas de aparición y drops propios.">@Resources.GameMaps</NavLink>
+        <NavLink class="dropdown-item" href="map-editor" @onclick="() => NavigationHistory.Clear()" title="Editor visual del mapa: ubicá y agrandá las zonas donde aparecen los monstruos.">
             <span class="oi oi-globe" aria-hidden="true"></span> @Resources.MapEditor
         </NavLink>
+        <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(MonsterDefinition).FullName}/")" @onclick="() => NavigationHistory.Clear()" title="Monstruos y NPC: vida, daño, defensa, velocidad, respawn y qué sueltan.">@Resources.Monsters</NavLink>
+        <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(WarpInfo).FullName}/")" @onclick="() => NavigationHistory.Clear()" title="Lista de teletransportes del comando /warp: costo, nivel mínimo y destino.">@Resources.WarpList</NavLink>
         <hr class="dropdown-divider"/>
-        <NavLink class="dropdown-item" href="@($"edit-config/{typeof(GameConfiguration).FullName}/")" Match="NavLinkMatch.All" @onclick="() => NavigationHistory.Clear()">
+        <h6 class="dropdown-header">Ítems y economía</h6>
+        <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(ItemDefinition).FullName}/")" @onclick="() => NavigationHistory.Clear()" title="Definiciones de ítems: poder, requisitos, precio, tamaño de pila (Durability) y drops.">@Resources.Items</NavLink>
+        <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(DropItemGroup).FullName}/")" @onclick="() => NavigationHistory.Clear()" title="Grupos de drop: qué cae, con qué probabilidad y en qué monstruos o mapas.">@Resources.DropItemGroups</NavLink>
+        <NavLink class="dropdown-item" href="edit-item-drops" @onclick="() => NavigationHistory.Clear()" title="Todos los drops de ítems en una sola página: qué cae, dónde y con qué probabilidad.">@Resources.ItemDrops</NavLink>
+        <NavLink class="dropdown-item" href="@($"merchants/")" @onclick="() => NavigationHistory.Clear()" title="Qué vende cada NPC comerciante y en qué cantidad.">@Resources.MerchantStores</NavLink>
+        <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(JewelMix).FullName}/")" @onclick="() => NavigationHistory.Clear()" title="Cómo se combinan y se separan las joyas en packs de 10, 20 o 30.">@Resources.JewelMixes</NavLink>
+        <hr class="dropdown-divider"/>
+        <h6 class="dropdown-header">Personajes y eventos</h6>
+        <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(CharacterClass).FullName}/")" @onclick="() => NavigationHistory.Clear()" title="Clases de personaje: atributos iniciales, puntos por nivel y evoluciones.">@Resources.CharacterClasses</NavLink>
+        <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(Skill).FullName}/")" @onclick="() => NavigationHistory.Clear()" title="Habilidades: daño, costo de maná y AG, alcance y requisitos.">@Resources.Skills</NavLink>
+        <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(MiniGameDefinition).FullName}/")" @onclick="() => NavigationHistory.Clear()" title="Eventos como Blood Castle, Devil Square y Chaos Castle: niveles, entradas, duración y premios.">@Resources.MiniGames</NavLink>
+        <hr class="dropdown-divider"/>
+        <h6 class="dropdown-header">Avanzado</h6>
+        <NavLink class="dropdown-item" href="plugins" @onclick="() => NavigationHistory.Clear()" title="Activá o desactivá sistemas (Happy Hour, invasiones, resets...) y configurá sus horarios.">
+            <span class="oi oi-puzzle-piece" aria-hidden="true"></span> @Resources.Plugins
+        </NavLink>
+        <NavLink class="dropdown-item" href="chat-commands" @onclick="() => NavigationHistory.Clear()" title="Comandos de chat (/post, /add, /warp...): activarlos y qué jugadores pueden usarlos.">
+            <span class="oi oi-terminal" aria-hidden="true"></span> @Resources.ChatCommands
+        </NavLink>
+        <NavLink class="dropdown-item" href="@($"edit-config/{typeof(GameConfiguration).FullName}/")" Match="NavLinkMatch.All" @onclick="() => NavigationHistory.Clear()" title="Toda la configuración en un solo formulario, con todas las listas. Es la vista más completa y más pesada.">
             <span class="oi oi-cog" aria-hidden="true"></span> @Resources.FullConfiguration
         </NavLink>
     </div>

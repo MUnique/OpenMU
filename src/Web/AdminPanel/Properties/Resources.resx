@@ -642,6 +642,18 @@
   <data name="MessagePlaceholder" xml:space="preserve">
     <value>Enter message...</value>
   </data>
+  <data name="MessageType" xml:space="preserve">
+    <value>Message Type</value>
+  </data>
+  <data name="MessageTypeGolden" xml:space="preserve">
+    <value>Golden (center)</value>
+  </data>
+  <data name="MessageTypeBlue" xml:space="preserve">
+    <value>Blue (system)</value>
+  </data>
+  <data name="MessageTypeSlide" xml:space="preserve">
+    <value>Slide (top band)</value>
+  </data>
   <data name="OnlineCount" xml:space="preserve">
     <value>{0} online</value>
   </data>

@@ -657,6 +657,12 @@
   <data name="NoticeChatCommandPlugIn_Description" xml:space="preserve">
     <value>Handles the chat command '/goldnotice message'. Sends a global golden notice message to all players of the game.</value>
   </data>
+  <data name="SlideNoticeChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Slide notice chat command</value>
+  </data>
+  <data name="SlideNoticeChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/slidenotice message'. Sends a global notice to all players of the game which scrolls across the top of their screen.</value>
+  </data>
   <data name="NpcChatCommandPlugIn_Name" xml:space="preserve">
     <value>NPC open merchant chat command</value>
   </data>
@@ -1301,6 +1307,18 @@
   </data>
   <data name="DoppelgangerFeaturePlugIn_Description" xml:space="preserve">
     <value>Configures the run of the doppelganger event, e.g. its monsters, their paths and multipliers.</value>
+  </data>
+  <data name="WeeklyQuestsPlugIn_Name" xml:space="preserve">
+    <value>Weekly Quests</value>
+  </data>
+  <data name="WeeklyQuestsPlugIn_Description" xml:space="preserve">
+    <value>Quests de historia, diarias, semanales, de clase y de zona, con uno o varios pasos (kills, niveles, resets, eventos, PvP, items, hablar con NPCs, entrar a mapas) y premios configurables.</value>
+  </data>
+  <data name="WeeklyQuestsChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Weekly quests chat command</value>
+  </data>
+  <data name="WeeklyQuestsChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/weekly'. Shows the progress of the weekly quests.</value>
   </data>
   <data name="RaklionPlugIn_Name" xml:space="preserve">
     <value>Raklion Event</value>

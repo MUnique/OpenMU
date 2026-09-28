@@ -2487,6 +2487,24 @@
   <data name="CastleSiegeLifeStoneStatePlugIn_Description" xml:space="preserve">
     <value>Sends Castle Siege Life Stone creation progress to the game client.</value>
   </data>
+  <data name="WeeklyQuestListViewPlugIn_Name" xml:space="preserve">
+    <value>Weekly quest list view</value>
+  </data>
+  <data name="WeeklyQuestListViewPlugIn_Description" xml:space="preserve">
+    <value>Sends the weekly quests and their progress, so that the client can show them in a window.</value>
+  </data>
+  <data name="SkillRequirementsViewPlugIn_Name" xml:space="preserve">
+    <value>Skill requirements view</value>
+  </data>
+  <data name="SkillRequirementsViewPlugIn_Description" xml:space="preserve">
+    <value>Sends the requirements of the skills and of the items which teach them after the login, so that the client shows and checks the ones of the server instead of its own data files.</value>
+  </data>
+  <data name="MonsterLevelsViewPlugIn_Name" xml:space="preserve">
+    <value>Monster levels view</value>
+  </data>
+  <data name="MonsterLevelsViewPlugIn_Description" xml:space="preserve">
+    <value>Sends the level of the monsters after the login, so that the client shows it next to their name and health bar.</value>
+  </data>
   <data name="RaklionEventViewPlugIn_Name" xml:space="preserve">
     <value>Raklion Event View</value>
   </data>

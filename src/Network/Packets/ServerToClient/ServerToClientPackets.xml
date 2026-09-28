@@ -11550,6 +11550,391 @@
       </Structures>
     </Packet>
     <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>F5</Code>
+      <SubCode>02</SubCode>
+      <Name>WeeklyQuestEntry</Name>
+      <Length>520</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the client requested the list of available chat commands, one message is sent for each active weekly quest. When the progress of a quest changes, a single message is sent as update of this quest.</SentWhen>
+      <CausedReaction>The client shows the weekly quests and their progress in a window.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Index</Name>
+          <Description>The index of this quest within the list, starting at 0. The first message of a list replaces the previously known quests.</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>Count</Name>
+          <Description>The total number of quests. A list without quests is sent as a single message with a count of 0.</Description>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Boolean</Type>
+          <Name>IsUpdate</Name>
+          <Description>If true, this message updates the already known quest with the same id, instead of being part of a list.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Boolean</Type>
+          <Name>IsCompleted</Name>
+          <Description>The objective of the quest has been reached.</Description>
+        </Field>
+        <Field>
+          <Index>9</Index>
+          <Type>Boolean</Type>
+          <Name>IsRewarded</Name>
+          <Description>The rewards of the quest have been handed out. If the quest is completed but not rewarded, the reward is pending, e.g. because the inventory was full.</Description>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>CurrentCount</Name>
+        </Field>
+        <Field>
+          <Index>16</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>RequiredCount</Name>
+        </Field>
+        <Field>
+          <Index>20</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>SecondsUntilReset</Name>
+          <Description>The seconds until the weekly progress is reset.</Description>
+        </Field>
+        <Field>
+          <Index>24</Index>
+          <Type>String</Type>
+          <Name>Id</Name>
+          <Length>64</Length>
+          <Description>The identifier of the quest.</Description>
+        </Field>
+        <Field>
+          <Index>88</Index>
+          <Type>String</Type>
+          <Name>Name</Name>
+          <Length>48</Length>
+        </Field>
+        <Field>
+          <Index>136</Index>
+          <Type>String</Type>
+          <Name>Description</Name>
+          <Length>256</Length>
+        </Field>
+        <Field>
+          <Index>392</Index>
+          <Type>String</Type>
+          <Name>Rewards</Name>
+          <Length>128</Length>
+          <Description>The rewards of the quest as text, in the language of the player.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>F5</Code>
+      <SubCode>03</SubCode>
+      <Name>QuestDetails</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>Right after each WeeklyQuestEntry message, with the same quest id. Clients which don't know it can ignore it and just show the WeeklyQuestEntry.</SentWhen>
+      <CausedReaction>The client shows the quest under the tab of its category, with a checklist of its objectives (steps).</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Category</Name>
+          <Description>The category of the quest: 0 = weekly, 1 = daily, 2 = main story, 3 = class, 4 = zone.</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>Period</Name>
+          <Description>When the progress starts over: 0 = weekly, 1 = daily, 2 = never (the quest is done once).</Description>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>CurrentStep</Name>
+          <Description>The index of the first objective which isn't done yet. It's the number of objectives when all are done.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Byte</Type>
+          <Name>ObjectiveCount</Name>
+        </Field>
+        <Field>
+          <Index>9</Index>
+          <Type>Boolean</Type>
+          <Name>IsSequential</Name>
+          <Description>If true, the objectives have to be done in their order.</Description>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>SecondsUntilReset</Name>
+          <Description>The seconds until the progress of this quest starts over. 0 for quests which are done once.</Description>
+        </Field>
+        <Field>
+          <Index>16</Index>
+          <Type>String</Type>
+          <Name>Id</Name>
+          <Length>64</Length>
+          <Description>The identifier of the quest, as in the WeeklyQuestEntry message.</Description>
+        </Field>
+        <Field>
+          <Index>80</Index>
+          <Type>Structure[]</Type>
+          <TypeName>QuestObjective</TypeName>
+          <Name>Objectives</Name>
+          <ItemCountField>ObjectiveCount</ItemCountField>
+          <Description>The objectives of the quest, in their order.</Description>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>QuestObjective</Name>
+          <Description>An objective (step) of a quest.</Description>
+          <Length>76</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>IntegerLittleEndian</Type>
+              <Name>CurrentCount</Name>
+            </Field>
+            <Field>
+              <Index>4</Index>
+              <Type>IntegerLittleEndian</Type>
+              <Name>RequiredCount</Name>
+            </Field>
+            <Field>
+              <Index>8</Index>
+              <Type>Boolean</Type>
+              <Name>IsDone</Name>
+            </Field>
+            <Field>
+              <Index>12</Index>
+              <Type>String</Type>
+              <Name>Text</Name>
+              <Length>64</Length>
+              <Description>The text of the objective, in the language of the player, e.g. 'Kill 50 Skeletons'.</Description>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
+    </Packet>
+    <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>F5</Code>
+      <SubCode>04</SubCode>
+      <Name>SkillRequirements</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>Once after a successful login, before the character selection.</SentWhen>
+      <CausedReaction>The client uses these requirements and costs for the rest of the session, instead of the ones of its own data files, so that it shows and checks exactly what the server checks.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>SkillCount</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Structure[]</Type>
+          <TypeName>SkillRequirement</TypeName>
+          <Name>Skills</Name>
+          <ItemCountField>SkillCount</ItemCountField>
+          <Description>The requirements of every skill of the game configuration.</Description>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>SkillRequirement</Name>
+          <Description>The requirements and costs of a skill, as the server checks them. A value of 0 means there is no such requirement.</Description>
+          <Length>16</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>SkillNumber</Name>
+            </Field>
+            <Field>
+              <Index>2</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>Level</Name>
+              <Description>The required character level.</Description>
+            </Field>
+            <Field>
+              <Index>4</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>Energy</Name>
+              <Description>The required total energy.</Description>
+            </Field>
+            <Field>
+              <Index>6</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>Leadership</Name>
+              <Description>The required total leadership (command).</Description>
+            </Field>
+            <Field>
+              <Index>8</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>Strength</Name>
+              <Description>The required total strength.</Description>
+            </Field>
+            <Field>
+              <Index>10</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>Agility</Name>
+              <Description>The required total agility.</Description>
+            </Field>
+            <Field>
+              <Index>12</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>Mana</Name>
+              <Description>The mana which is consumed by using the skill.</Description>
+            </Field>
+            <Field>
+              <Index>14</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>AbilityGauge</Name>
+              <Description>The ability (AG) which is consumed by using the skill.</Description>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
+    </Packet>
+    <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>F5</Code>
+      <SubCode>05</SubCode>
+      <Name>LearnableItemRequirements</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>Once after a successful login, right after the SkillRequirements message.</SentWhen>
+      <CausedReaction>The client shows these requirements for the items which teach a skill (orbs, scrolls, parchments, crystals), instead of the ones it calculates from its own data files.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>ItemCount</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Structure[]</Type>
+          <TypeName>LearnableItemRequirement</TypeName>
+          <Name>Items</Name>
+          <ItemCountField>ItemCount</ItemCountField>
+          <Description>The requirements to learn the skill of each item.</Description>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>LearnableItemRequirement</Name>
+          <Description>The requirements to learn a skill with an item: the highest of the requirements of the item and the requirements of the skill. A value of 0 means there is no such requirement.</Description>
+          <Length>16</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>Byte</Type>
+              <Name>Group</Name>
+            </Field>
+            <Field>
+              <Index>1</Index>
+              <Type>Byte</Type>
+              <Name>ItemLevel</Name>
+              <Description>The item level these requirements are for, or 0xFF if they apply to every level. Items which teach a different skill per level (Orb of Summoning) have one entry per level.</Description>
+            </Field>
+            <Field>
+              <Index>2</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>Number</Name>
+            </Field>
+            <Field>
+              <Index>4</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>Level</Name>
+              <Description>The required character level.</Description>
+            </Field>
+            <Field>
+              <Index>6</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>Energy</Name>
+              <Description>The required total energy.</Description>
+            </Field>
+            <Field>
+              <Index>8</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>Leadership</Name>
+              <Description>The required total leadership (command).</Description>
+            </Field>
+            <Field>
+              <Index>10</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>Strength</Name>
+              <Description>The required total strength.</Description>
+            </Field>
+            <Field>
+              <Index>12</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>Agility</Name>
+              <Description>The required total agility.</Description>
+            </Field>
+            <Field>
+              <Index>14</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>SkillNumber</Name>
+              <Description>The skill which is learned with the item.</Description>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
+    </Packet>
+    <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>F5</Code>
+      <SubCode>06</SubCode>
+      <Name>MonsterLevels</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>Once after a successful login, right after the LearnableItemRequirements message.</SentWhen>
+      <CausedReaction>The client shows the level of the monsters next to their name and health bar.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MonsterCount</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Structure[]</Type>
+          <TypeName>MonsterLevel</TypeName>
+          <Name>Monsters</Name>
+          <ItemCountField>MonsterCount</ItemCountField>
+          <Description>The level of each monster which has one.</Description>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>MonsterLevel</Name>
+          <Description>The level of a monster.</Description>
+          <Length>4</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>MonsterNumber</Name>
+              <Description>The number of the monster, as in the AddMonstersToScope message.</Description>
+            </Field>
+            <Field>
+              <Index>2</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>Level</Name>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
+    </Packet>
+    <Packet>
       <HeaderType>C1Header</HeaderType>
       <Code>94</Code>
       <Name>EventChipRegistrationResult</Name>

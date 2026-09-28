@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.Resets;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlayerActions;
+using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.GameLogic.Views.Login;
 using MUnique.OpenMU.GameLogic.Views.NPC;
@@ -85,6 +86,12 @@ public class ResetCharacterAction
         this._player.Attributes[Stats.Level] = configuration.LevelAfterReset;
         this._player.SelectedCharacter.Experience = 0;
         this.UpdateStats(configuration, resetProgression);
+
+        if (this._player.GameContext.PlugInManager.GetPlugInPoint<ICharacterResetPlugIn>() is { } resetPlugInPoint)
+        {
+            await resetPlugInPoint.CharacterResetAsync(this._player, resetProgression.NextResetCount).ConfigureAwait(false);
+        }
+
         if (configuration.MoveHome)
         {
             await this.MoveHomeAsync().ConfigureAwait(false);

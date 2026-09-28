@@ -1,0 +1,99 @@
+@page "/ayuda"
+
+@using MUnique.OpenMU.DataModel.Configuration
+@using MUnique.OpenMU.DataModel.Configuration.Items
+
+<PageTitle>Ayuda</PageTitle>
+<h1>Ayuda</h1>
+<Breadcrumb IsFirstFromRoot="true" Caption="Ayuda"/>
+
+<p class="lead">Guía rápida en español para las tareas más comunes del panel. Los nombres de menús y campos siguen en inglés, igual que en el resto de la documentación de MU.</p>
+
+<div class="alert alert-secondary">
+    <span class="oi oi-info" aria-hidden="true"></span>
+    <strong>El ícono de info.</strong> Al lado de casi todos los campos aparece un pequeño ícono de info. Al tocarlo se abre la explicación en español de qué es el campo y, cuando corresponde, qué impacto tiene cambiarlo. Debajo se mantiene el texto original en inglés.
+</div>
+
+<h2 class="mt-4">¿Cómo hago...?</h2>
+
+<div class="table-responsive">
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th>Quiero...</th>
+                <th>Dónde se hace</th>
+                <th>Tené en cuenta</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Cambiar la experiencia del servidor</strong></td>
+                <td><NavLink href="@($"edit-config/{typeof(GameConfiguration).FullName}/")">Game configuration &gt; General</NavLink>: campo <em>Experience Rate</em> (y <em>Master Experience Rate</em>).</td>
+                <td>La experiencia final se multiplica por el rate general, por el rate de cada servidor de juego (en <NavLink href="servers">Servers</NavLink>) y por el multiplicador de cada mapa. El Happy Hour se suma aparte, desde <NavLink href="plugins">Plugins</NavLink>.</td>
+            </tr>
+            <tr>
+                <td><strong>Cambiar qué vende un NPC</strong></td>
+                <td><NavLink href="merchants/">Merchant stores</NavLink>: elegí el NPC, agregá, movés o borrás ítems y guardá con <em>Save changes</em>.</td>
+                <td>La cantidad (<em>Amount</em>) de un ítem apilable no puede superar su <em>Durability</em>. Cada ítem ocupa tantas casillas como su tamaño.</td>
+            </tr>
+            <tr>
+                <td><strong>Vender o apilar más pociones o joyas por casilla</strong></td>
+                <td><NavLink href="@($"edit-config-grid/{typeof(ItemDefinition).FullName}/")">Game configuration &gt; Items</NavLink>: buscá el ítem y subí su campo <em>Durability</em>.</td>
+                <td>Es el tamaño máximo de la pila en todo el juego: inventario, baúl, comercio y tiendas. No cambia lo que ya tienen los jugadores. Probalo en el cliente después de cambiarlo.</td>
+            </tr>
+            <tr>
+                <td><strong>Poner más monstruos en una zona</strong></td>
+                <td><NavLink href="map-editor">Map editor</NavLink>, o <NavLink href="@($"edit-config-grid/{typeof(GameMapDefinition).FullName}/")">Game maps</NavLink> &gt; el mapa &gt; <em>Monster Spawns</em>: campo <em>Quantity</em>.</td>
+                <td>Más monstruos significa más experiencia y drops por hora, pero también más carga para el servidor. Si la zona es chica, quedan apilados: agrandá el rectángulo (X1, Y1, X2, Y2).</td>
+            </tr>
+            <tr>
+                <td><strong>Cambiar la fuerza o la vida de un monstruo</strong></td>
+                <td><NavLink href="@($"edit-config-grid/{typeof(MonsterDefinition).FullName}/")">Game configuration &gt; Monsters</NavLink>: sección <em>Attributes</em>.</td>
+                <td>Afecta a todos los mapas donde aparece ese monstruo. Para un jefe más duro solo en una zona, usá <em>Maximum Health Override</em> en la zona de aparición.</td>
+            </tr>
+            <tr>
+                <td><strong>Cambiar qué sueltan los monstruos</strong></td>
+                <td><NavLink href="@($"edit-config-grid/{typeof(DropItemGroup).FullName}/")">Drop item groups</NavLink> (grupos generales) y el campo <em>Drop Item Groups</em> de cada monstruo o mapa.</td>
+                <td>El campo <em>Chance</em> va de 0.0 a 1.0. Los cambios se notan enseguida en la economía: hacelos de a poco.</td>
+            </tr>
+            <tr>
+                <td><strong>Activar Happy Hour, invasiones o resets</strong></td>
+                <td><NavLink href="plugins">Plugins</NavLink>: activá el plugin y editá sus horarios.</td>
+                <td>Los horarios están en hora UTC. Algunos sistemas vienen apagados por defecto a propósito.</td>
+            </tr>
+            <tr>
+                <td><strong>Habilitar o deshabilitar un comando de chat</strong></td>
+                <td><NavLink href="chat-commands">Chat commands</NavLink>.</td>
+                <td>Hay comandos solo para GM y otros para todos los jugadores.</td>
+            </tr>
+            <tr>
+                <td><strong>Desconectar una cuenta que quedó trabada</strong></td>
+                <td><NavLink href="logged-in">Online Accounts</NavLink>: botón para poner la cuenta offline.</td>
+                <td>Libera la cuenta para que el jugador pueda volver a entrar. Los jugadores también pueden hacerlo desde su cuenta en la web.</td>
+            </tr>
+            <tr>
+                <td><strong>Dar acceso al panel a otra persona</strong></td>
+                <td><NavLink href="users">Users</NavLink>: creá un usuario propio (contraseña de al menos 12 caracteres).</td>
+                <td>Cada persona debería tener su usuario. El rol <em>Administrator</em> puede gestionar usuarios; <em>Operator</em> puede operar el servidor.</td>
+            </tr>
+            <tr>
+                <td><strong>Conectar un programa externo (la web)</strong></td>
+                <td><NavLink href="api-keys">API keys</NavLink>.</td>
+                <td>El rol <em>Operator</em> permite ejecutar acciones, como desconectar cuentas. Guardá la clave solo en el servidor de la web.</td>
+            </tr>
+            <tr>
+                <td><strong>Ver qué pasó con un error</strong></td>
+                <td><NavLink href="logfiles">Log Files</NavLink>.</td>
+                <td>Buscá la hora del problema y el nombre de la cuenta o el personaje.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<h2 class="mt-4">Antes de tocar nada</h2>
+<ul>
+    <li><strong>Hacé un backup de la base de datos</strong> antes de cambios grandes (rates, fórmulas, drops, ítems).</li>
+    <li>Algunos cambios se aplican al instante y otros necesitan <strong>reiniciar el servidor de juego</strong> (desde <NavLink href="servers">Servers</NavLink>). Si no ves el cambio en el juego, reiniciá.</li>
+    <li>Los jugadores conectados no reciben el cambio hasta que vuelven a entrar.</li>
+    <li>Cambiá una cosa por vez y probala en el juego antes de seguir.</li>
+</ul>

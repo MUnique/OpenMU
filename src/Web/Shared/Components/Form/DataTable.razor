@@ -130,6 +130,7 @@
 
     private async Task GetPageAsync(int page)
     {
+        var restartFromFirstPage = false;
         this._isLoading = true;
         try
         {
@@ -151,12 +152,21 @@
             else
             {
                 this._hasMoreEntries = false;
+
+                // A refresh of a page which does not exist anymore (for example after a filter reduced the results) would
+                // show an empty table without a way to notice why. Start over from the first page instead.
+                restartFromFirstPage = isRefresh && page > 1;
             }
         }
         finally
         {
             this._isLoading = false;
             await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
+        }
+
+        if (restartFromFirstPage)
+        {
+            await this.GetPageAsync(1);
         }
     }
 }

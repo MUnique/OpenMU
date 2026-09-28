@@ -6513,6 +6513,56 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="WeeklyQuestEntry" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="index">The index of this quest within the list, starting at 0. The first message of a list replaces the previously known quests.</param>
+    /// <param name="count">The total number of quests. A list without quests is sent as a single message with a count of 0.</param>
+    /// <param name="isUpdate">If true, this message updates the already known quest with the same id, instead of being part of a list.</param>
+    /// <param name="isCompleted">The objective of the quest has been reached.</param>
+    /// <param name="isRewarded">The rewards of the quest have been handed out. If the quest is completed but not rewarded, the reward is pending, e.g. because the inventory was full.</param>
+    /// <param name="currentCount">The current count.</param>
+    /// <param name="requiredCount">The required count.</param>
+    /// <param name="secondsUntilReset">The seconds until the weekly progress is reset.</param>
+    /// <param name="id">The identifier of the quest.</param>
+    /// <param name="name">The name.</param>
+    /// <param name="description">The description.</param>
+    /// <param name="rewards">The rewards of the quest as text, in the language of the player.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the client requested the list of available chat commands, one message is sent for each active weekly quest. When the progress of a quest changes, a single message is sent as update of this quest.
+    /// Causes reaction on client side: The client shows the weekly quests and their progress in a window.
+    /// </remarks>
+    public static async ValueTask SendWeeklyQuestEntryAsync(this IConnection? connection, byte @index, byte @count, bool @isUpdate, bool @isCompleted, bool @isRewarded, uint @currentCount, uint @requiredCount, uint @secondsUntilReset, string @id, string @name, string @description, string @rewards)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = WeeklyQuestEntryRef.Length;
+            var packet = new WeeklyQuestEntryRef(connection.Output.GetSpan(length)[..length]);
+            packet.Index = @index;
+            packet.Count = @count;
+            packet.IsUpdate = @isUpdate;
+            packet.IsCompleted = @isCompleted;
+            packet.IsRewarded = @isRewarded;
+            packet.CurrentCount = @currentCount;
+            packet.RequiredCount = @requiredCount;
+            packet.SecondsUntilReset = @secondsUntilReset;
+            packet.Id = @id;
+            packet.Name = @name;
+            packet.Description = @description;
+            packet.Rewards = @rewards;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="EventChipRegistrationResult" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
