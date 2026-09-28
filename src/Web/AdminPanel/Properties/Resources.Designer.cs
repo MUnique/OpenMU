@@ -151,11 +151,56 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add chance (%).
+        /// </summary>
+        public static string AddChancePercent {
+            get {
+                return ResourceManager.GetString("AddChancePercent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add drop item group.
+        /// </summary>
+        public static string AddDropItemGroup {
+            get {
+                return ResourceManager.GetString("AddDropItemGroup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add drops for another item (e.g. a box).
+        /// </summary>
+        public static string AddDropsForItem {
+            get {
+                return ResourceManager.GetString("AddDropsForItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add drops for another monster.
+        /// </summary>
+        public static string AddDropsForMonster {
+            get {
+                return ResourceManager.GetString("AddDropsForMonster", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add New.
         /// </summary>
         public static string AddNew {
             get {
                 return ResourceManager.GetString("AddNew", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Adds randomly.
+        /// </summary>
+        public static string AddsRandomly {
+            get {
+                return ResourceManager.GetString("AddsRandomly", resourceCulture);
             }
         }
         
@@ -331,6 +376,33 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Are you sure?.
+        /// </summary>
+        public static string AreYouSure {
+            get {
+                return ResourceManager.GetString("AreYouSure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Assigned maps.
+        /// </summary>
+        public static string AssignedMaps {
+            get {
+                return ResourceManager.GetString("AssignedMaps", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Assign to all maps.
+        /// </summary>
+        public static string AssignToAllMaps {
+            get {
+                return ResourceManager.GetString("AssignToAllMaps", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Authenticator code.
         /// </summary>
         public static string AuthenticatorCode {
@@ -417,6 +489,24 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string CapturedPackets {
             get {
                 return ResourceManager.GetString("CapturedPackets", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The chance that this group is selected for a drop, from 0 to 100 %. A chance of 100 % means that the group drops always, in addition to the chance based groups..
+        /// </summary>
+        public static string ChanceHint {
+            get {
+                return ResourceManager.GetString("ChanceHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chance (%).
+        /// </summary>
+        public static string ChancePercent {
+            get {
+                return ResourceManager.GetString("ChancePercent", resourceCulture);
             }
         }
         
@@ -772,11 +862,29 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You're about to delete the drop item group '{0}'. Are you sure?.
+        /// </summary>
+        public static string DeleteDropItemGroupQuestion {
+            get {
+                return ResourceManager.GetString("DeleteDropItemGroupQuestion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Couldn&apos;t delete &apos;{0}&apos;, probably because it&apos;s referenced by another object. For details, see log.
         /// </summary>
         public static string DeleteFailedReferenced {
             get {
                 return ResourceManager.GetString("DeleteFailedReferenced", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Description.
+        /// </summary>
+        public static string Description {
+            get {
+                return ResourceManager.GetString("Description", resourceCulture);
             }
         }
         
@@ -883,11 +991,56 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Drop effect.
+        /// </summary>
+        public static string DropEffect {
+            get {
+                return ResourceManager.GetString("DropEffect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Drop item groups.
         /// </summary>
         public static string DropItemGroups {
             get {
                 return ResourceManager.GetString("DropItemGroups", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The drop item group '{0}' can't be deleted, because it's still used by: {1}.
+        /// </summary>
+        public static string DropItemGroupStillUsed {
+            get {
+                return ResourceManager.GetString("DropItemGroupStillUsed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Drop level.
+        /// </summary>
+        public static string DropLevel {
+            get {
+                return ResourceManager.GetString("DropLevel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The minimum monster level at which the item can drop randomly..
+        /// </summary>
+        public static string DropLevelHint {
+            get {
+                return ResourceManager.GetString("DropLevelHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Drops from monsters.
+        /// </summary>
+        public static string DropsFromMonsters {
+            get {
+                return ResourceManager.GetString("DropsFromMonsters", resourceCulture);
             }
         }
         
@@ -915,6 +1068,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string Edit {
             get {
                 return ResourceManager.GetString("Edit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit details.
+        /// </summary>
+        public static string EditDetails {
+            get {
+                return ResourceManager.GetString("EditDetails", resourceCulture);
             }
         }
         
@@ -951,6 +1113,24 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string ErrorDuplicating {
             get {
                 return ResourceManager.GetString("ErrorDuplicating", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Excellent item drop level delta.
+        /// </summary>
+        public static string ExcellentItemDropLevelDelta {
+            get {
+                return ResourceManager.GetString("ExcellentItemDropLevelDelta", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A monster must be at least this many levels above the drop level of an item, so that the item can drop as excellent item..
+        /// </summary>
+        public static string ExcellentItemDropLevelDeltaHint {
+            get {
+                return ResourceManager.GetString("ExcellentItemDropLevelDeltaHint", resourceCulture);
             }
         }
         
@@ -1099,6 +1279,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Map.
+        /// </summary>
+        public static string GameMap {
+            get {
+                return ResourceManager.GetString("GameMap", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Game maps.
         /// </summary>
         public static string GameMaps {
@@ -1144,6 +1333,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to General settings.
+        /// </summary>
+        public static string GeneralDropSettings {
+            get {
+                return ResourceManager.GetString("GeneralDropSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Generate new recovery codes.
         /// </summary>
         public static string GenerateNewRecoveryCodes {
@@ -1185,6 +1383,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string GlobalMessageSent {
             get {
                 return ResourceManager.GetString("GlobalMessageSent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Guaranteed drops.
+        /// </summary>
+        public static string GuaranteedDrops {
+            get {
+                return ResourceManager.GetString("GuaranteedDrops", resourceCulture);
             }
         }
         
@@ -1297,11 +1504,119 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Item.
+        /// </summary>
+        public static string Item {
+            get {
+                return ResourceManager.GetString("Item", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item box drops.
+        /// </summary>
+        public static string ItemBoxDrops {
+            get {
+                return ResourceManager.GetString("ItemBoxDrops", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Defines what drops when a player drops an item like a box (e.g. Box of Luck, Box of Kundun). One of the groups of the matching source item level is selected by its chance..
+        /// </summary>
+        public static string ItemBoxDropsDescription {
+            get {
+                return ResourceManager.GetString("ItemBoxDropsDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item drop duration (seconds).
+        /// </summary>
+        public static string ItemDropDurationSeconds {
+            get {
+                return ResourceManager.GetString("ItemDropDurationSeconds", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item Drops.
+        /// </summary>
+        public static string ItemDrops {
+            get {
+                return ResourceManager.GetString("ItemDrops", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Configure all item drops on one page. Changes are only applied after saving..
+        /// </summary>
+        public static string ItemDropsPageDescription {
+            get {
+                return ResourceManager.GetString("ItemDropsPageDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item level.
+        /// </summary>
+        public static string ItemLevel {
+            get {
+                return ResourceManager.GetString("ItemLevel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The item level which is assigned to the dropped item. If empty, the level is determined by the monster level for random items..
+        /// </summary>
+        public static string ItemLevelHint {
+            get {
+                return ResourceManager.GetString("ItemLevelHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item option.
+        /// </summary>
+        public static string ItemOption {
+            get {
+                return ResourceManager.GetString("ItemOption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item option chances.
+        /// </summary>
+        public static string ItemOptionDropChances {
+            get {
+                return ResourceManager.GetString("ItemOptionDropChances", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The chances that options are added randomly to dropped items..
+        /// </summary>
+        public static string ItemOptionDropChancesDescription {
+            get {
+                return ResourceManager.GetString("ItemOptionDropChancesDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Items.
         /// </summary>
         public static string Items {
             get {
                 return ResourceManager.GetString("Items", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Type.
+        /// </summary>
+        public static string ItemType {
+            get {
+                return ResourceManager.GetString("ItemType", resourceCulture);
             }
         }
         
@@ -1459,11 +1774,92 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Map drop groups.
+        /// </summary>
+        public static string MapDropItemGroups {
+            get {
+                return ResourceManager.GetString("MapDropItemGroups", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Drop groups which apply to monsters on the assigned maps. Groups which are not assigned to any map don't drop..
+        /// </summary>
+        public static string MapDropItemGroupsDescription {
+            get {
+                return ResourceManager.GetString("MapDropItemGroupsDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Map Editor.
         /// </summary>
         public static string MapEditor {
             get {
                 return ResourceManager.GetString("MapEditor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maximum drop level.
+        /// </summary>
+        public static string MaximumDropLevel {
+            get {
+                return ResourceManager.GetString("MaximumDropLevel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The maximum monster level at which the item can drop randomly. If empty, there is no upper limit..
+        /// </summary>
+        public static string MaximumDropLevelHint {
+            get {
+                return ResourceManager.GetString("MaximumDropLevelHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Max. item level.
+        /// </summary>
+        public static string MaximumItemLevel {
+            get {
+                return ResourceManager.GetString("MaximumItemLevel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maximum item option level.
+        /// </summary>
+        public static string MaximumItemOptionLevelDrop {
+            get {
+                return ResourceManager.GetString("MaximumItemOptionLevelDrop", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The maximum level of the item option (e.g. +4, +8, +12, +16) which can be added to a dropped item..
+        /// </summary>
+        public static string MaximumItemOptionLevelDropHint {
+            get {
+                return ResourceManager.GetString("MaximumItemOptionLevelDropHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Max. monster level.
+        /// </summary>
+        public static string MaximumMonsterLevel {
+            get {
+                return ResourceManager.GetString("MaximumMonsterLevel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maximum options per item.
+        /// </summary>
+        public static string MaximumOptionsPerItem {
+            get {
+                return ResourceManager.GetString("MaximumOptionsPerItem", resourceCulture);
             }
         }
         
@@ -1513,6 +1909,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Mini game '{0}'.
+        /// </summary>
+        public static string MiniGameUsage {
+            get {
+                return ResourceManager.GetString("MiniGameUsage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Required status.
         /// </summary>
         public static string MinimumCharacterStatus {
@@ -1522,11 +1927,101 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Min. item level.
+        /// </summary>
+        public static string MinimumItemLevel {
+            get {
+                return ResourceManager.GetString("MinimumItemLevel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Min. monster level.
+        /// </summary>
+        public static string MinimumMonsterLevel {
+            get {
+                return ResourceManager.GetString("MinimumMonsterLevel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Minor.
         /// </summary>
         public static string MinorVersion {
             get {
                 return ResourceManager.GetString("MinorVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Money.
+        /// </summary>
+        public static string Money {
+            get {
+                return ResourceManager.GetString("Money", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Money amount.
+        /// </summary>
+        public static string MoneyAmount {
+            get {
+                return ResourceManager.GetString("MoneyAmount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Monster.
+        /// </summary>
+        public static string Monster {
+            get {
+                return ResourceManager.GetString("Monster", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Drop chance overview per monster.
+        /// </summary>
+        public static string MonsterDropChanceOverview {
+            get {
+                return ResourceManager.GetString("MonsterDropChanceOverview", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The drop chances of each monster which is spawned on a map, considering the monster level restrictions of the map drop groups and the monster specific drop groups. The chances apply to each drop roll, a monster rolls up to its maximum item drops. Quest item drops are not included. If the total chance exceeds 100 %, the chances are scaled down proportionally and there is no chance for no drop..
+        /// </summary>
+        public static string MonsterDropChanceOverviewDescription {
+            get {
+                return ResourceManager.GetString("MonsterDropChanceOverviewDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Monster drops.
+        /// </summary>
+        public static string MonsterDrops {
+            get {
+                return ResourceManager.GetString("MonsterDrops", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Drop groups of specific monsters. They are considered in addition to the map drop groups when the monster is killed..
+        /// </summary>
+        public static string MonsterDropsDescription {
+            get {
+                return ResourceManager.GetString("MonsterDropsDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Level.
+        /// </summary>
+        public static string MonsterLevel {
+            get {
+                return ResourceManager.GetString("MonsterLevel", resourceCulture);
             }
         }
         
@@ -1563,6 +2058,24 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string NewConfigurationUpdatesAvailable {
             get {
                 return ResourceManager.GetString("NewConfigurationUpdatesAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New drop item group.
+        /// </summary>
+        public static string NewDropItemGroup {
+            get {
+                return ResourceManager.GetString("NewDropItemGroup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Drop of {0}.
+        /// </summary>
+        public static string NewDropItemGroupOf {
+            get {
+                return ResourceManager.GetString("NewDropItemGroupOf", resourceCulture);
             }
         }
         
@@ -1639,11 +2152,38 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No drop.
+        /// </summary>
+        public static string NoDropChance {
+            get {
+                return ResourceManager.GetString("NoDropChance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There are no drop item groups..
+        /// </summary>
+        public static string NoDropItemGroups {
+            get {
+                return ResourceManager.GetString("NoDropItemGroups", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No initialized data found!.
         /// </summary>
         public static string NoInitializedDataFound {
             get {
                 return ResourceManager.GetString("NoInitializedDataFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No items.
+        /// </summary>
+        public static string NoItems {
+            get {
+                return ResourceManager.GetString("NoItems", resourceCulture);
             }
         }
         
@@ -1693,6 +2233,24 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Maximum item drops.
+        /// </summary>
+        public static string NumberOfMaximumItemDrops {
+            get {
+                return ResourceManager.GetString("NumberOfMaximumItemDrops", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The maximum number of items which this monster drops when it's killed..
+        /// </summary>
+        public static string NumberOfMaximumItemDropsHint {
+            get {
+                return ResourceManager.GetString("NumberOfMaximumItemDropsHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Observe.
         /// </summary>
         public static string ObserveAccount {
@@ -1734,6 +2292,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string OnlineCount {
             get {
                 return ResourceManager.GetString("OnlineCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only for monster.
+        /// </summary>
+        public static string OnlyForMonster {
+            get {
+                return ResourceManager.GetString("OnlyForMonster", resourceCulture);
             }
         }
         
@@ -1954,6 +2521,87 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Possible items.
+        /// </summary>
+        public static string PossibleItems {
+            get {
+                return ResourceManager.GetString("PossibleItems", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If no items are selected, random items are dropped depending on the type and monster level..
+        /// </summary>
+        public static string PossibleItemsHint {
+            get {
+                return ResourceManager.GetString("PossibleItemsHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Quest and event drop groups.
+        /// </summary>
+        public static string QuestAndEventDropItemGroups {
+            get {
+                return ResourceManager.GetString("QuestAndEventDropItemGroups", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Drop groups which are used by quests or mini game rewards..
+        /// </summary>
+        public static string QuestAndEventDropItemGroupsDescription {
+            get {
+                return ResourceManager.GetString("QuestAndEventDropItemGroupsDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Quest '{0}'.
+        /// </summary>
+        public static string QuestUsage {
+            get {
+                return ResourceManager.GetString("QuestUsage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Random ancient items.
+        /// </summary>
+        public static string RandomAncientItems {
+            get {
+                return ResourceManager.GetString("RandomAncientItems", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Random items by monster level.
+        /// </summary>
+        public static string RandomItemsByMonsterLevel {
+            get {
+                return ResourceManager.GetString("RandomItemsByMonsterLevel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Randomly dropped items.
+        /// </summary>
+        public static string RandomlyDroppedItems {
+            get {
+                return ResourceManager.GetString("RandomlyDroppedItems", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Defines which items can drop as random items (e.g. by the common and excellent drop groups) and at which monster levels..
+        /// </summary>
+        public static string RandomlyDroppedItemsDescription {
+            get {
+                return ResourceManager.GetString("RandomlyDroppedItemsDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Raw Data.
         /// </summary>
         public static string RawData {
@@ -2071,6 +2719,24 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Remove from all maps.
+        /// </summary>
+        public static string RemoveFromAllMaps {
+            get {
+                return ResourceManager.GetString("RemoveFromAllMaps", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove from monster.
+        /// </summary>
+        public static string RemoveFromMonster {
+            get {
+                return ResourceManager.GetString("RemoveFromMonster", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Remove Server.
         /// </summary>
         public static string RemoveServer {
@@ -2085,6 +2751,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string Required {
             get {
                 return ResourceManager.GetString("Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Required character level.
+        /// </summary>
+        public static string RequiredCharacterLevel {
+            get {
+                return ResourceManager.GetString("RequiredCharacterLevel", resourceCulture);
             }
         }
         
@@ -2341,6 +3016,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Drop money (instead of adding it to the inventory directly).
+        /// </summary>
+        public static string ShouldDropMoney {
+            get {
+                return ResourceManager.GetString("ShouldDropMoney", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Show entry form.
         /// </summary>
         public static string ShowEntryForm {
@@ -2355,6 +3039,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string ShowingXOfYLines {
             get {
                 return ResourceManager.GetString("ShowingXOfYLines", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show only items which drop from monsters.
+        /// </summary>
+        public static string ShowOnlyDroppableItems {
+            get {
+                return ResourceManager.GetString("ShowOnlyDroppableItems", resourceCulture);
             }
         }
         
@@ -2400,6 +3093,24 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string SocketNumber {
             get {
                 return ResourceManager.GetString("SocketNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Source item level.
+        /// </summary>
+        public static string SourceItemLevel {
+            get {
+                return ResourceManager.GetString("SourceItemLevel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The level of the dropped item (e.g. the box) for which this group applies..
+        /// </summary>
+        public static string SourceItemLevelHint {
+            get {
+                return ResourceManager.GetString("SourceItemLevelHint", resourceCulture);
             }
         }
         
@@ -2508,6 +3219,24 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string ToServer {
             get {
                 return ResourceManager.GetString("ToServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total chance.
+        /// </summary>
+        public static string TotalChance {
+            get {
+                return ResourceManager.GetString("TotalChance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The total chance exceeds 100 %. The chances are scaled down proportionally..
+        /// </summary>
+        public static string TotalChanceExceedsHint {
+            get {
+                return ResourceManager.GetString("TotalChanceExceedsHint", resourceCulture);
             }
         }
         
@@ -2715,6 +3444,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string UseAuthenticatorCode {
             get {
                 return ResourceManager.GetString("UseAuthenticatorCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Used by.
+        /// </summary>
+        public static string UsedBy {
+            get {
+                return ResourceManager.GetString("UsedBy", resourceCulture);
             }
         }
         
