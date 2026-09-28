@@ -2725,6 +2725,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handler for guild role assign packets..
+        /// </summary>
+        public static string GuildRoleAssignHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GuildRoleAssignHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Guild Role Assign Handler.
+        /// </summary>
+        public static string GuildRoleAssignHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GuildRoleAssignHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handler for guild war response packets..
         /// </summary>
         public static string GuildWarResponseHandlerPlugIn_Description {
