@@ -586,17 +586,32 @@ public enum UpdateVersion
     AddDoppelgangerData = 115,
 
     /// <summary>
+    /// The version of the <see cref="AddItemRuleFlagsPlugIn"/>.
+    /// </summary>
+    AddItemRuleFlags = 116,
+
+    /// <summary>
+    /// The version of the <see cref="AddDarkHorseCanFlyPlugIn"/>.
+    /// </summary>
+    AddDarkHorseCanFly = 117,
+
+    /// <summary>
+    /// The version of the <see cref="AddRaklionEventUpdatePlugIn"/>.
+    /// </summary>
+    AddRaklionEvent = 118,
+
+    /// <summary>
     /// The version of the <see cref="ItemDurabilityRefactorPlugIn075"/>.
     /// </summary>
-    ItemDurabilityRefactor075 = 116,
+    ItemDurabilityRefactor075 = 119,
 
     /// <summary>
     /// The version of the <see cref="ItemDurabilityRefactorPlugIn095D"/>.
     /// </summary>
-    ItemDurabilityRefactor095d = 117,
+    ItemDurabilityRefactor095d = 120,
 
     /// <summary>
     /// The version of the <see cref="ItemDurabilityRefactorPlugInSeason6"/>.
     /// </summary>
-    ItemDurabilityRefactorSeason6 = 118,
+    ItemDurabilityRefactorSeason6 = 121,
 }

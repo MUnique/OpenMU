@@ -1302,4 +1302,10 @@
   <data name="DoppelgangerFeaturePlugIn_Description" xml:space="preserve">
     <value>Configures the run of the doppelganger event, e.g. its monsters, their paths and multipliers.</value>
   </data>
+  <data name="RaklionPlugIn_Name" xml:space="preserve">
+    <value>Raklion Event</value>
+  </data>
+  <data name="RaklionPlugIn_Description" xml:space="preserve">
+    <value>The event in the hatchery of raklion: when all spider eggs are destroyed, Selupan appears. After the battle, the hatchery is closed for some time.</value>
+  </data>
 </root>

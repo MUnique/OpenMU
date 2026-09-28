@@ -2140,6 +2140,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The event in the hatchery of raklion: when all spider eggs are destroyed, Selupan appears. After the battle, the hatchery is closed for some time..
+        /// </summary>
+        public static string RaklionPlugIn_Description {
+            get {
+                return ResourceManager.GetString("RaklionPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Raklion Event.
+        /// </summary>
+        public static string RaklionPlugIn_Name {
+            get {
+                return ResourceManager.GetString("RaklionPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Defines the value which is additionally recovered. From this value, the character level is subtracted..
         /// </summary>
         public static string RecoverConsumeHandlerConfiguration_AdditionalRecoverMinusCharacterLevel_Description {

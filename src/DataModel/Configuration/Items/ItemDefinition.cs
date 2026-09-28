@@ -67,6 +67,39 @@ public partial class ItemDefinition
     public int StorageLimitPerCharacter { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether items of this kind can be put into a trade with another player.
+    /// </summary>
+    public bool IsTradable { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether items of this kind can be dropped to the ground.
+    /// </summary>
+    public bool IsDroppable { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether items of this kind can be stored in the vault.
+    /// </summary>
+    public bool IsStorable { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether items of this kind can be sold to an NPC merchant.
+    /// </summary>
+    public bool IsSellableToNpc { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether items of this kind can be offered in a personal store.
+    /// </summary>
+    public bool IsPersonalStoreSellable { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether items of this kind can be repaired the normal way:
+    /// by an NPC, or with the repair of the inventory.
+    /// Other ways to restore the durability don't depend on it, e.g. repairing a Horn of Fenrir
+    /// with a Jewel of Bless (see the repair target items of the jewel of bless consume handler).
+    /// </summary>
+    public bool IsRepairable { get; set; } = true;
+
+    /// <summary>
     /// Gets or sets the name of the item.
     /// </summary>
     public LocalizedString Name { get; set; }
