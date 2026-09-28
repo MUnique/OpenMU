@@ -62,6 +62,9 @@ public class ServerAnnouncementsConfiguration
     /// <summary>
     /// Gets or sets the messages, shown one after another in order, looping back to the first when the list ends.
     /// </summary>
+    // The admin panel's form builder (ObjectCollectionFieldBuilder) only recognizes a property
+    // declared exactly as ICollection<T> with a reference-type T; IList<T> doesn't match even
+    // though it implements ICollection<T>, so the field silently disappears from the form.
     [Display(Name = "Messages", Description = "Los mensajes, en el orden en que se muestran. Al llegar al último, se vuelve a empezar por el primero. Con un solo mensaje, ese se repite siempre.", Order = 2)]
-    public IList<AnnouncementMessage> Messages { get; set; } = [];
+    public ICollection<AnnouncementMessage> Messages { get; set; } = [];
 }

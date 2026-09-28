@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlugIns;
 
 using System.Collections.Concurrent;
+using System.Linq;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.PlugIns;
 
@@ -53,7 +54,7 @@ public class ServerAnnouncementsPlugIn : IPeriodicTaskPlugIn, ISupportCustomConf
             return;
         }
 
-        var message = configuration.Messages[state.Index % configuration.Messages.Count];
+        var message = configuration.Messages.ElementAt(state.Index % configuration.Messages.Count);
         state.Index = (state.Index + 1) % configuration.Messages.Count;
         state.NextRunUtc = DateTime.UtcNow.AddMinutes(Math.Max(1, configuration.IntervalMinutes));
 
