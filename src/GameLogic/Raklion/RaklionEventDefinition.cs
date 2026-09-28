@@ -148,6 +148,11 @@ public class RaklionEventDefinition
     public int FallPushDistance { get; set; } = 4;
 
     /// <summary>
+    /// Gets or sets the number of fields, by which the ice strike (frost shock) of Selupan pushes the hit players away.
+    /// </summary>
+    public int IceStrikePushDistance { get; set; } = 10;
+
+    /// <summary>
     /// Gets the pattern (1 to 7) of Selupan by its remaining health.
     /// </summary>
     /// <param name="healthPercentage">The remaining health in percent.</param>

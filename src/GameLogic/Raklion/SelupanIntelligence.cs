@@ -362,9 +362,17 @@ public sealed class SelupanIntelligence : INpcIntelligence, IDisposable
         {
             case SelupanSkill.Poison:
             case SelupanSkill.IceStorm:
-            case SelupanSkill.IceStrike:
                 await this.ShowSkillAsync(monster, target, skill).ConfigureAwait(false);
                 await this.AttackAreaAsync(monster, target, skill).ConfigureAwait(false);
+                break;
+            case SelupanSkill.IceStrike:
+                // The frost shock also pushes the hit players away.
+                await this.ShowSkillAsync(monster, target, skill).ConfigureAwait(false);
+                foreach (var hitPlayer in await this.AttackAreaAsync(monster, target, skill).ConfigureAwait(false))
+                {
+                    await PushAwayAsync(monster, hitPlayer, this._definition.IceStrikePushDistance).ConfigureAwait(false);
+                }
+
                 break;
             case SelupanSkill.Freeze:
                 await this.ShowSkillAsync(monster, target, skill).ConfigureAwait(false);
@@ -398,7 +406,7 @@ public sealed class SelupanIntelligence : INpcIntelligence, IDisposable
         }
     }
 
-    private async ValueTask AttackAreaAsync(Monster monster, IAttackable target, SelupanSkill skill)
+    private async ValueTask<IReadOnlyList<Player>> AttackAreaAsync(Monster monster, IAttackable target, SelupanSkill skill)
     {
         var targets = monster.CurrentMap.GetAttackablesInRange(target.Position, this._definition.AreaSkillRadius)
             .OfType<Player>()
@@ -408,6 +416,8 @@ public sealed class SelupanIntelligence : INpcIntelligence, IDisposable
         {
             await player.AttackByAsync(monster, this.GetSkillEntry(skill, player), false).ConfigureAwait(false);
         }
+
+        return targets;
     }
 
     /// <summary>
