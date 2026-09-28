@@ -24668,12 +24668,12 @@ public readonly ref struct CrywolfContractResultRef
     public C1HeaderWithSubCodeRef Header => new (this._data);
 
     /// <summary>
-    /// Gets or sets a value indicating whether the contract was accepted.
+    /// Gets or sets the result of the contract: 1 when it was accepted, 0 otherwise. The client compares the whole byte, so it's no boolean field.
     /// </summary>
-    public bool Success
+    public byte Result
     {
-        get => this._data[4..].GetBoolean();
-        set => this._data[4..].SetBoolean(value);
+        get => this._data[4];
+        set => this._data[4] = value;
     }
 
     /// <summary>

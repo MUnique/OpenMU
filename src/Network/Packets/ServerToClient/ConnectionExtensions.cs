@@ -5404,14 +5404,14 @@ public static class ConnectionExtensions
     /// Sends a <see cref="CrywolfContractResult" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
-    /// <param name="success">A value indicating whether the contract was accepted.</param>
+    /// <param name="result">The result of the contract: 1 when it was accepted, 0 otherwise. The client compares the whole byte, so it's no boolean field.</param>
     /// <param name="altarState">The new state of the altar, like in the CrywolfStatueAndAltarInfo.</param>
     /// <param name="altarKey">The key of the altar. The client uses the key minus 317 as index into its five altar states without checking the range, so it must be 317 plus the index of the altar (0 to 4).</param>
     /// <remarks>
     /// Is sent by the server when: The player requested to contract an altar.
     /// Causes reaction on client side: On success, the client shows that the player is a guardian of the altar, and lets the character pray. Otherwise, it shows why the contract failed.
     /// </remarks>
-    public static async ValueTask SendCrywolfContractResultAsync(this IConnection? connection, bool @success, byte @altarState, ushort @altarKey)
+    public static async ValueTask SendCrywolfContractResultAsync(this IConnection? connection, byte @result, byte @altarState, ushort @altarKey)
     {
         if (connection is null)
         {
@@ -5422,7 +5422,7 @@ public static class ConnectionExtensions
         {
             var length = CrywolfContractResultRef.Length;
             var packet = new CrywolfContractResultRef(connection.Output.GetSpan(length)[..length]);
-            packet.Success = @success;
+            packet.Result = @result;
             packet.AltarState = @altarState;
             packet.AltarKey = @altarKey;
 

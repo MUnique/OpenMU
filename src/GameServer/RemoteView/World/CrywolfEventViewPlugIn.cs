@@ -60,7 +60,7 @@ public sealed class CrywolfEventViewPlugIn : ICrywolfEventViewPlugIn
     /// <inheritdoc />
     public async ValueTask ShowContractResultAsync(bool success, int altarIndex, byte altarState)
     {
-        await this._player.Connection.SendCrywolfContractResultAsync(success, altarState, (ushort)(FirstAltarKey + Math.Clamp(altarIndex, 0, 4))).ConfigureAwait(false);
+        await this._player.Connection.SendCrywolfContractResultAsync(success ? (byte)1 : (byte)0, altarState, (ushort)(FirstAltarKey + Math.Clamp(altarIndex, 0, 4))).ConfigureAwait(false);
     }
 
     /// <inheritdoc />

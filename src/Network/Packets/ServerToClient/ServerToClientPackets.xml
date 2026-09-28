@@ -9555,9 +9555,9 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>Boolean</Type>
-          <Name>Success</Name>
-          <Description>A value indicating whether the contract was accepted.</Description>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+          <Description>The result of the contract: 1 when it was accepted, 0 otherwise. The client compares the whole byte, so it's no boolean field.</Description>
         </Field>
         <Field>
           <Index>5</Index>
