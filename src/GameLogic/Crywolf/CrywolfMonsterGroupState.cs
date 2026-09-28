@@ -41,6 +41,11 @@ internal sealed class CrywolfMonsterGroupState
     public Monster? Leader { get; private set; }
 
     /// <summary>
+    /// Gets or sets the time, when the leader revived a member of the group the last time.
+    /// </summary>
+    public DateTime LastRevive { get; set; } = DateTime.MinValue;
+
+    /// <summary>
     /// Sets the current monster of a spawn area.
     /// </summary>
     /// <param name="spawnArea">The spawn area.</param>

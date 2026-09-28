@@ -163,6 +163,11 @@ public class CrywolfEventDefinition
     public int BallistaEffectRadius { get; set; } = 10;
 
     /// <summary>
+    /// Gets or sets the interval, in which the leader of a group revives one of its dead members.
+    /// </summary>
+    public TimeSpan MemberReviveInterval { get; set; } = TimeSpan.FromSeconds(5);
+
+    /// <summary>
     /// Gets or sets the distance to the leader, above which the members of a group follow it.
     /// </summary>
     public int FollowLeaderDistance { get; set; } = 6;

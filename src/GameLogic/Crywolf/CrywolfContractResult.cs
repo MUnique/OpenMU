@@ -33,4 +33,14 @@ public enum CrywolfContractResult
     /// The character doesn't stand at the altar.
     /// </summary>
     WrongPosition,
+
+    /// <summary>
+    /// The character rides a mount, which isn't allowed for a contract.
+    /// </summary>
+    Mounted,
+
+    /// <summary>
+    /// The character is already contracting the altar, e.g. because the client sent the request twice.
+    /// </summary>
+    AlreadyContracting,
 }

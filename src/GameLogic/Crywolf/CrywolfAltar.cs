@@ -104,6 +104,11 @@ public sealed class CrywolfAltar
     /// <returns>The result.</returns>
     public CrywolfContractResult TryStartContract(Player player, CrywolfEventDefinition definition, DateTime now)
     {
+        if (this.Contractor == player)
+        {
+            return CrywolfContractResult.AlreadyContracting;
+        }
+
         if (this.State != CrywolfAltarState.Free)
         {
             return CrywolfContractResult.NotAvailable;
@@ -114,6 +119,11 @@ public sealed class CrywolfAltar
             || (player.Attributes?[Stats.Level] ?? 0) < definition.MinimumContractLevel)
         {
             return CrywolfContractResult.NotQualified;
+        }
+
+        if (IsMounted(player))
+        {
+            return CrywolfContractResult.Mounted;
         }
 
         if (now - this.LastChange < definition.AltarCooldown)
@@ -177,6 +187,14 @@ public sealed class CrywolfAltar
         this.LastChange = now;
         this.State = this.ContractCount >= definition.ContractsPerAltar ? CrywolfAltarState.Exhausted : CrywolfAltarState.Free;
         this.UpdateEffect(true);
+    }
+
+    /// <summary>
+    /// Determines whether the player rides a mount (Uniria, Dinorant or Fenrir), like the client checks it.
+    /// </summary>
+    private static bool IsMounted(Player player)
+    {
+        return player.Inventory?.GetItem(InventoryConstants.PetSlot)?.Definition is { Group: 13, Number: 2 or 3 or 37 };
     }
 
     private static bool IsAtAltar(Player player, NonPlayerCharacter altar)

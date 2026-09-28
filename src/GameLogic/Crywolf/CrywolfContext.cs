@@ -32,11 +32,9 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
 {
     private static readonly TimeSpan AltarInfoInterval = TimeSpan.FromSeconds(2);
     private static readonly TimeSpan BossMonsterInfoInterval = TimeSpan.FromSeconds(5);
-    private static readonly TimeSpan RemainingTimeInterval = TimeSpan.FromSeconds(20);
 
     private readonly GameContext _gameContext;
     private readonly ILogger<CrywolfContext> _logger;
-    private readonly List<CrywolfAltar> _altars = new();
     private readonly ConcurrentDictionary<NonPlayerCharacter, CrywolfEffectDisplay> _hiddenNpcs = new();
     private readonly ConcurrentDictionary<byte, CrywolfMonsterGroupState> _groups = new();
     private readonly ConcurrentDictionary<Monster, byte> _eventMonsters = new();
@@ -54,11 +52,13 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
     private DateTime _lastNotification = DateTime.MinValue;
     private DateTime _lastAltarInfo = DateTime.MinValue;
     private DateTime _lastBossMonsterInfo = DateTime.MinValue;
-    private DateTime _lastRemainingTime = DateTime.MinValue;
+    private int _lastRemainingTimeStep = -1;
     private int _contractedAltarCount;
     private bool _isBalgassAppearanceDone;
     private bool _isStatueAttackStarted;
     private bool _isStartForced;
+    private int _isSkipRequested;
+    private IReadOnlyList<CrywolfAltar> _altars = [];
     private bool _isMissingConfigurationLogged;
     private int _isBalgassDead;
 
@@ -178,6 +178,11 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
             return;
         }
 
+        if (Interlocked.Exchange(ref this._isSkipRequested, 0) != 0)
+        {
+            this.Skip();
+        }
+
         var elapsed = DateTime.UtcNow - this._stateStart;
         switch (this.State)
         {
@@ -227,24 +232,24 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
     }
 
     /// <summary>
-    /// Forces the event to proceed: it starts when it's not running, and during the battle Balgass appears
-    /// if he didn't yet. Otherwise, the current state ends.
+    /// Forces the event to proceed with the next step: it starts when it's not running, and during the battle
+    /// Balgass appears if he didn't yet. Otherwise, the current state ends.
     /// </summary>
     public void SkipWaitingTime()
     {
-        if (this.State == CrywolfState.None)
-        {
-            this._isStartForced = true;
-        }
-        else if (this.State == CrywolfState.Start && !this._isBalgassAppearanceDone)
-        {
-            // The battle continues at the appearance of Balgass, so that the battle against him can be tested.
-            this._stateStart = DateTime.UtcNow - this._definition.BalgassAppearanceDelay;
-        }
-        else
-        {
-            this._stateStart = DateTime.MinValue;
-        }
+        // It's applied by the next step, so that it doesn't interfere with a running step.
+        Interlocked.Exchange(ref this._isSkipRequested, 1);
+    }
+
+    /// <summary>
+    /// Determines whether the NPC is hidden, because the fortress isn't in peace.
+    /// Players can't talk to hidden NPCs.
+    /// </summary>
+    /// <param name="npc">The NPC.</param>
+    /// <returns><c>true</c>, if the NPC is hidden; otherwise, <c>false</c>.</returns>
+    public bool IsNpcHidden(NonPlayerCharacter npc)
+    {
+        return this._hiddenNpcs.TryGetValue(npc, out var display) && display.Effect == CrywolfEffect.NpcHidden;
     }
 
     /// <summary>
@@ -289,9 +294,8 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
 
         if (this.State == CrywolfState.Start)
         {
-            var remaining = this.RemainingTime;
+            // The remaining time isn't sent here, because the client expects it every 20 seconds, and would count the seconds wrong.
             var (balgassHealth, darkElfCount) = this.GetBossMonsterInfo();
-            await player.InvokeViewPlugInAsync<ICrywolfEventViewPlugIn>(p => p.ShowRemainingTimeAsync(remaining)).ConfigureAwait(false);
             await player.InvokeViewPlugInAsync<ICrywolfEventViewPlugIn>(p => p.ShowBossMonsterInfoAsync(balgassHealth, darkElfCount)).ConfigureAwait(false);
         }
     }
@@ -326,6 +330,9 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
         var altarNumber = altar.Index + 1;
         switch (result)
         {
+            case CrywolfContractResult.AlreadyContracting:
+                // The client sent the request again, e.g. by a double click. Nothing changed.
+                break;
             case CrywolfContractResult.Success:
                 await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CrywolfContractAttemptInfo), (int)this._definition.ContractDelay.TotalSeconds).ConfigureAwait(false);
                 await this.ShowMessageToMapPlayersAsync(nameof(PlayerMessage.CrywolfContractAttempt), player.Name, altarNumber).ConfigureAwait(false);
@@ -336,13 +343,28 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
             case CrywolfContractResult.WrongPosition:
                 await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CrywolfContractWrongPosition), altarNumber).ConfigureAwait(false);
                 break;
+            case CrywolfContractResult.Mounted:
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CrywolfContractMounted)).ConfigureAwait(false);
+                break;
+            case CrywolfContractResult.NotAvailable when this.State is not (CrywolfState.Ready or CrywolfState.Start):
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CrywolfNotActive)).ConfigureAwait(false);
+                break;
+            case CrywolfContractResult.NotAvailable:
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CrywolfAltarNotAvailable), altarNumber).ConfigureAwait(false);
+                break;
             default:
                 await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CrywolfContractRequirement), this._definition.MinimumContractLevel).ConfigureAwait(false);
                 break;
         }
 
-        var altarState = altar.GetClientState(this._definition.ContractsPerAltar);
-        await player.InvokeViewPlugInAsync<ICrywolfEventViewPlugIn>(p => p.ShowContractResultAsync(result == CrywolfContractResult.Success, altar.Index, altarState)).ConfigureAwait(false);
+        byte altarState;
+        lock (altar)
+        {
+            altarState = altar.GetClientState(this._definition.ContractsPerAltar);
+        }
+
+        var isSuccess = result is CrywolfContractResult.Success or CrywolfContractResult.AlreadyContracting;
+        await player.InvokeViewPlugInAsync<ICrywolfEventViewPlugIn>(p => p.ShowContractResultAsync(isSuccess, altar.Index, altarState)).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -375,10 +397,16 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
             return;
         }
 
-        foreach (var spawnArea in group.GetDeadMembers())
+        // The leader revives one of the dead members at a time.
+        var now = DateTime.UtcNow;
+        if (now - group.LastRevive < this._definition.MemberReviveInterval
+            || group.GetDeadMembers().FirstOrDefault() is not { } spawnArea)
         {
-            await this.SpawnMemberAsync(group, spawnArea).ConfigureAwait(false);
+            return;
         }
+
+        group.LastRevive = now;
+        await this.SpawnMemberAsync(group, spawnArea).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -421,6 +449,26 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
         };
     }
 
+    /// <summary>
+    /// Lets the event proceed, like requested by <see cref="SkipWaitingTime"/>.
+    /// </summary>
+    private void Skip()
+    {
+        if (this.State == CrywolfState.None)
+        {
+            this._isStartForced = true;
+        }
+        else if (this.State == CrywolfState.Start && !this._isBalgassAppearanceDone)
+        {
+            // The battle continues at the appearance of Balgass, so that the battle against him can be tested.
+            this._stateStart = DateTime.UtcNow - this._definition.BalgassAppearanceDelay;
+        }
+        else
+        {
+            this._stateStart = DateTime.MinValue;
+        }
+    }
+
     private void InitializeNpcs()
     {
         if (this._map is not { } map)
@@ -430,15 +478,18 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
 
         var npcs = map.GetNpcsInRange(new Point(128, 128), byte.MaxValue);
         this._statue = npcs.FirstOrDefault(npc => npc.Definition.Number == this._definition.StatueNumber);
-        this._altars.Clear();
+        var altars = new List<CrywolfAltar>();
         for (var i = 0; i < this._definition.AltarNumbers.Count; i++)
         {
             var number = this._definition.AltarNumbers[i];
             if (npcs.FirstOrDefault(npc => npc.Definition.Number == number) is { } npc)
             {
-                this._altars.Add(new CrywolfAltar(i, npc));
+                altars.Add(new CrywolfAltar(i, npc));
             }
         }
+
+        // The list is replaced as a whole, because it's read by the requests of the players.
+        this._altars = altars;
 
         foreach (var npc in npcs.Where(this.IsCommonNpc))
         {
@@ -545,7 +596,7 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
         await this.ShowStateToMapPlayersAsync().ConfigureAwait(false);
         this._lastAltarInfo = DateTime.MinValue;
         this._lastBossMonsterInfo = DateTime.MinValue;
-        this._lastRemainingTime = DateTime.MinValue;
+        this._lastRemainingTimeStep = -1;
         if (this.CountContractedAltars() == 0)
         {
             await this.ShowMessageToMapPlayersAsync(nameof(PlayerMessage.CrywolfNoAltarContracted)).ConfigureAwait(false);
@@ -557,6 +608,15 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
     private async ValueTask UpdateBattleAsync(TimeSpan elapsed)
     {
         await this.UpdateAltarsAsync().ConfigureAwait(false);
+        if (this._balgass is not null && this.IsBalgassDead)
+        {
+            // Balgass is checked first, so that the battle is won when the last contract ended at the same time.
+            await this.ShowMessageToMapPlayersAsync(nameof(PlayerMessage.CrywolfBalgassDefeated)).ConfigureAwait(false);
+            this.Occupation = CrywolfOccupationState.Peace;
+            await this.ChangeStateAsync(CrywolfState.End).ConfigureAwait(false);
+            return;
+        }
+
         if (this.CountContractedAltars() == 0)
         {
             await this.ShowMessageToMapPlayersAsync(nameof(PlayerMessage.CrywolfNoAltarContracted)).ConfigureAwait(false);
@@ -573,11 +633,12 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
             await this.ForEachMapPlayerAsync(player => player.InvokeViewPlugInAsync<ICrywolfEventViewPlugIn>(p => p.ShowBossMonsterInfoAsync(balgassHealth, darkElfCount)).AsTask()).ConfigureAwait(false);
         }
 
-        if (now - this._lastRemainingTime >= RemainingTimeInterval)
+        // The client counts down the seconds of a minute by itself, and expects the remaining time at each 20 seconds of it.
+        var remaining = this.RemainingTime;
+        var remainingTimeStep = (int)Math.Ceiling(remaining.TotalSeconds / 20);
+        if (remainingTimeStep != this._lastRemainingTimeStep)
         {
-            // The client counts down the seconds by itself and expects this every 20 seconds.
-            this._lastRemainingTime = now;
-            var remaining = this.RemainingTime;
+            this._lastRemainingTimeStep = remainingTimeStep;
             await this.ForEachMapPlayerAsync(player => player.InvokeViewPlugInAsync<ICrywolfEventViewPlugIn>(p => p.ShowRemainingTimeAsync(remaining)).AsTask()).ConfigureAwait(false);
         }
 
@@ -592,14 +653,6 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
             this._isBalgassAppearanceDone = true;
             await this.ShowMessageToMapPlayersAsync(nameof(PlayerMessage.CrywolfBalgassAppeared)).ConfigureAwait(false);
             await this.SpawnBalgassAsync().ConfigureAwait(false);
-        }
-
-        if (this._balgass is not null && this.IsBalgassDead)
-        {
-            await this.ShowMessageToMapPlayersAsync(nameof(PlayerMessage.CrywolfBalgassDefeated)).ConfigureAwait(false);
-            this.Occupation = CrywolfOccupationState.Peace;
-            await this.ChangeStateAsync(CrywolfState.End).ConfigureAwait(false);
-            return;
         }
 
         if (elapsed >= this._definition.BattleDuration)
@@ -788,9 +841,17 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
     {
         double health = 0;
         double maximumHealth = 0;
+        var altarStates = new List<byte>();
         foreach (var altar in this._altars)
         {
-            if (altar.State == CrywolfAltarState.Contracted && altar.Contractor?.Attributes is { } attributes)
+            Player? contractor;
+            lock (altar)
+            {
+                contractor = altar.State == CrywolfAltarState.Contracted ? altar.Contractor : null;
+                altarStates.Add(altar.GetClientState(this._definition.ContractsPerAltar));
+            }
+
+            if (contractor?.Attributes is { } attributes)
             {
                 health += attributes[Stats.CurrentHealth];
                 maximumHealth += attributes[Stats.MaximumHealth];
@@ -798,7 +859,6 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
         }
 
         var percentage = maximumHealth > 0 ? (int)Math.Clamp(health * 100 / maximumHealth, 0, 100) : 0;
-        var altarStates = this._altars.Select(altar => altar.GetClientState(this._definition.ContractsPerAltar)).ToList();
         return (percentage, altarStates);
     }
 

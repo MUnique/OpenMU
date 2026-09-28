@@ -187,6 +187,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The altar ({0}) of the holy wolf can not be contracted now..
+        /// </summary>
+        public static string CrywolfAltarNotAvailable {
+            get {
+                return ResourceManager.GetString("CrywolfAltarNotAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The army of Balgass attacks in {0} minute(s)..
         /// </summary>
         public static string CrywolfAttackStartsInMinutes {
@@ -291,6 +300,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string CrywolfContractCancelled {
             get {
                 return ResourceManager.GetString("CrywolfContractCancelled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An altar can not be contracted on a mount..
+        /// </summary>
+        public static string CrywolfContractMounted {
+            get {
+                return ResourceManager.GetString("CrywolfContractMounted", resourceCulture);
             }
         }
         

@@ -942,4 +942,10 @@
   <data name="CrywolfProceeds" xml:space="preserve">
     <value>The crywolf event proceeds from the state {0}.</value>
   </data>
+  <data name="CrywolfAltarNotAvailable" xml:space="preserve">
+    <value>The altar ({0}) of the holy wolf can not be contracted now.</value>
+  </data>
+  <data name="CrywolfContractMounted" xml:space="preserve">
+    <value>An altar can not be contracted on a mount.</value>
+  </data>
 </root>
