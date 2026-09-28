@@ -8,6 +8,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Web.Shared;
 using MUnique.OpenMU.Web.Shared.Components;
 using MUnique.OpenMU.Web.Shared.Components.Form.Modal;
 using MUnique.OpenMU.Web.Shared.Components.Modal;
@@ -20,6 +21,7 @@ public class AccountService : IDataService<Account>, ISupportDataChangedNotifica
 {
     private readonly IDataSource<Account> _dataSource;
     private readonly IModalService _modalService;
+    private readonly IPersistenceContextProvider _contextProvider;
     private readonly Debouncer _debouncer = new(300);
 
     private string _searchFilter = string.Empty;
@@ -29,10 +31,12 @@ public class AccountService : IDataService<Account>, ISupportDataChangedNotifica
     /// </summary>
     /// <param name="dataSource">The player context.</param>
     /// <param name="modalService">The modal service.</param>
-    public AccountService(IDataSource<Account> dataSource, IModalService modalService)
+    /// <param name="contextProvider">The persistence context provider.</param>
+    public AccountService(IDataSource<Account> dataSource, IModalService modalService, IPersistenceContextProvider contextProvider)
     {
         this._dataSource = dataSource;
         this._modalService = modalService;
+        this._contextProvider = contextProvider;
     }
 
     /// <inheritdoc />
@@ -115,6 +119,35 @@ public class AccountService : IDataService<Account>, ISupportDataChangedNotifica
         account.State = AccountState.Normal;
         var context = await this._dataSource.GetContextAsync().ConfigureAwait(false);
         await context.SaveChangesAsync().ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Deletes an account and its dependent data after confirmation.
+    /// </summary>
+    /// <param name="account">The account to delete.</param>
+    /// <returns>Whether the account was deleted.</returns>
+    public async Task<bool> DeleteAsync(Account account)
+    {
+        var confirmed = await this._modalService.ShowQuestionAsync(
+            "Delete account",
+            $"Permanently delete account '{account.LoginName}' and all its characters, items, and related data?").ConfigureAwait(false);
+        if (!confirmed)
+        {
+            return false;
+        }
+
+        using var context = this._contextProvider.CreateNewContext();
+        var storedAccount = await context.GetByIdAsync<Account>(account.GetId()).ConfigureAwait(false);
+        if (storedAccount is null)
+        {
+            return false;
+        }
+
+        // DeleteAsync also removes aggregate members such as the vault; database cascades remove descendants.
+        await context.DeleteAsync(storedAccount).ConfigureAwait(false);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+        this.DataChanged?.Invoke(this, EventArgs.Empty);
+        return true;
     }
 
     /// <summary>

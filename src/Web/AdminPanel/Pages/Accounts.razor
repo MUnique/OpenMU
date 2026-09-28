@@ -35,6 +35,7 @@
             <td>@item.EMail</td>
             <td>
                 <NavLink href="@($"edit-account/{item.GetId()}/{typeof(Account).FullName}/{item.GetId()}")" class="btn btn-primary"><span class="oi oi-pencil" aria-hidden="true"></span> Edit</NavLink>
+                <button type="button" class="btn btn-danger ms-1" @onclick="@(() => this._accountService.DeleteAsync(item))">@Resources.Delete</button>
             </td>
         </ItemTemplate>
         <TableFooter>
