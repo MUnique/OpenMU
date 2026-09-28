@@ -2499,4 +2499,34 @@
   <data name="RaklionStateInfoRequestHandlerPlugIn_Description" xml:space="preserve">
     <value>Handles the request of the client for the state of the raklion event.</value>
   </data>
+  <data name="CrywolfEventViewPlugIn_Name" xml:space="preserve">
+    <value>Crywolf Event View</value>
+  </data>
+  <data name="CrywolfEventViewPlugIn_Description" xml:space="preserve">
+    <value>Sends the state of the crywolf event, its altars and its result to the client.</value>
+  </data>
+  <data name="CrywolfGroupHandlerPlugIn_Name" xml:space="preserve">
+    <value>Crywolf Group Handler</value>
+  </data>
+  <data name="CrywolfGroupHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the packets of the crywolf event.</value>
+  </data>
+  <data name="CrywolfInfoRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Crywolf Info Request Handler</value>
+  </data>
+  <data name="CrywolfInfoRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the request of the client for the state of the crywolf event.</value>
+  </data>
+  <data name="CrywolfContractRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Crywolf Contract Request Handler</value>
+  </data>
+  <data name="CrywolfContractRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the request of an elf to contract an altar of the crywolf event.</value>
+  </data>
+  <data name="CrywolfChaosRateBenefitRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Crywolf Chaos Rate Benefit Request Handler</value>
+  </data>
+  <data name="CrywolfChaosRateBenefitRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the request of the client for the additional success rate of the chaos machine.</value>
+  </data>
 </root>

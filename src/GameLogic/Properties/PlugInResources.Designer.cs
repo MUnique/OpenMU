@@ -592,6 +592,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The event in the crywolf fortress: the players defend the statue of the holy wolf against the army of Balgass. The result is kept until the next event..
+        /// </summary>
+        public static string CrywolfPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CrywolfPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Crywolf Event.
+        /// </summary>
+        public static string CrywolfPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CrywolfPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the chat command &apos;/disconnect &lt;char&gt;&apos;. Disconnects a player from the game server..
         /// </summary>
         public static string DisconnectChatCommandPlugIn_Description {

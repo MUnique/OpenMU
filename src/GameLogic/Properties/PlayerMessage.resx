@@ -846,4 +846,94 @@
   <data name="RaklionDurationMinutes" xml:space="preserve">
     <value>{0} minute(s)</value>
   </data>
+  <data name="CrywolfNotify1" xml:space="preserve">
+    <value>Balgass has joined forces with Kundun's army and is preparing to attack the Crywolf Fortress.</value>
+  </data>
+  <data name="CrywolfNotify2" xml:space="preserve">
+    <value>The army of Balgass is ready to attack the Crywolf Fortress.</value>
+  </data>
+  <data name="CrywolfReady" xml:space="preserve">
+    <value>The army of Balgass is marching towards the Crywolf Fortress.</value>
+  </data>
+  <data name="CrywolfStart" xml:space="preserve">
+    <value>The army of Balgass attacks the Crywolf Fortress!</value>
+  </data>
+  <data name="CrywolfContractsStartInMinutes" xml:space="preserve">
+    <value>The contracts of the wolf altars begin in {0} minute(s).</value>
+  </data>
+  <data name="CrywolfContractsStartInSeconds" xml:space="preserve">
+    <value>The contracts of the wolf altars begin in {0} second(s).</value>
+  </data>
+  <data name="CrywolfAttackStartsInMinutes" xml:space="preserve">
+    <value>The army of Balgass attacks in {0} minute(s).</value>
+  </data>
+  <data name="CrywolfAttackStartsInSeconds" xml:space="preserve">
+    <value>The army of Balgass attacks in {0} second(s).</value>
+  </data>
+  <data name="CrywolfNoAltarContracted" xml:space="preserve">
+    <value>Without the protection of the Muses, the statue of the holy wolf will be stolen.</value>
+  </data>
+  <data name="CrywolfStatueAttack" xml:space="preserve">
+    <value>The army of Balgass starts attacking the statue of the holy wolf!</value>
+  </data>
+  <data name="CrywolfBalgassAppeared" xml:space="preserve">
+    <value>Balgass is coming! Protect the statue of the holy wolf!</value>
+  </data>
+  <data name="CrywolfBalgassDefeated" xml:space="preserve">
+    <value>Balgass has been defeated with the help of the heroes!</value>
+  </data>
+  <data name="CrywolfBalgassAlive" xml:space="preserve">
+    <value>Balgass stayed alive until the end of the battle.</value>
+  </data>
+  <data name="CrywolfDefenseSucceeded" xml:space="preserve">
+    <value>Defending has been successful! The statue of the holy wolf has been protected.</value>
+  </data>
+  <data name="CrywolfDefenseFailed" xml:space="preserve">
+    <value>Defending has failed! The statue of the holy wolf has been taken over by Balgass.</value>
+  </data>
+  <data name="CrywolfRankResult" xml:space="preserve">
+    <value>Your MvP rank is {0}. You received {1} experience points.</value>
+  </data>
+  <data name="CrywolfCurrentScore" xml:space="preserve">
+    <value>Your current MvP score is {0}.</value>
+  </data>
+  <data name="CrywolfBalgassKilled" xml:space="preserve">
+    <value>Balgass has been killed by {0}!</value>
+  </data>
+  <data name="CrywolfDarkElfKilled" xml:space="preserve">
+    <value>The Dark Elf leader ({0}) of the army of Balgass has been killed by {1}!</value>
+  </data>
+  <data name="CrywolfContractAttempt" xml:space="preserve">
+    <value>{0} is trying to contract the altar ({1})!</value>
+  </data>
+  <data name="CrywolfContractAttemptInfo" xml:space="preserve">
+    <value>The contract is valid in {0} seconds. Do not move until it is completed.</value>
+  </data>
+  <data name="CrywolfContractValid" xml:space="preserve">
+    <value>You are connected to the altar ({0}) of the holy wolf.</value>
+  </data>
+  <data name="CrywolfContractValidToOthers" xml:space="preserve">
+    <value>{0} connected the Muse to the altar ({1}) of the holy wolf.</value>
+  </data>
+  <data name="CrywolfContractCancelled" xml:space="preserve">
+    <value>The connection to the altar ({0}) has been cancelled.</value>
+  </data>
+  <data name="CrywolfAltarCooldown" xml:space="preserve">
+    <value>The altar ({0}) of the holy wolf can not be contracted yet.</value>
+  </data>
+  <data name="CrywolfContractWrongPosition" xml:space="preserve">
+    <value>You have to stand on the altar ({0}) of the holy wolf to contract it.</value>
+  </data>
+  <data name="CrywolfContractRequirement" xml:space="preserve">
+    <value>Contracting an altar requires a Muse of level {0} or higher.</value>
+  </data>
+  <data name="CrywolfBarrierCreated" xml:space="preserve">
+    <value>The barrier of the statue of the holy wolf has been created.</value>
+  </data>
+  <data name="CrywolfBarrierDisappeared" xml:space="preserve">
+    <value>The barrier of the statue of the holy wolf has disappeared.</value>
+  </data>
+  <data name="CrywolfBarrierStatus" xml:space="preserve">
+    <value>Muses protecting the statue of the holy wolf: {0}, barrier: {1}%.</value>
+  </data>
 </root>

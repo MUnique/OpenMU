@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.Crywolf;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.PlugIns;
 
@@ -41,9 +42,9 @@ public class PlayerLosesExperienceAfterDeathPlugIn : IAttackableGotKilledPlugIn,
             return;
         }
 
-        const int MAP_INDEX_CRYWOLF_FIRSTZONE = 34;
-        if (player.CurrentMap?.Definition.Number == MAP_INDEX_CRYWOLF_FIRSTZONE)
+        if (CrywolfPlugIn.GetContext(player.GameContext) is { } crywolf && crywolf.KeepsExperienceOnDeath(player.CurrentMap))
         {
+            // During the battle of the crywolf event, the players don't lose experience on its map.
             return;
         }
 

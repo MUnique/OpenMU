@@ -178,6 +178,276 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The altar ({0}) of the holy wolf can not be contracted yet..
+        /// </summary>
+        public static string CrywolfAltarCooldown {
+            get {
+                return ResourceManager.GetString("CrywolfAltarCooldown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The army of Balgass attacks in {0} minute(s)..
+        /// </summary>
+        public static string CrywolfAttackStartsInMinutes {
+            get {
+                return ResourceManager.GetString("CrywolfAttackStartsInMinutes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The army of Balgass attacks in {0} second(s)..
+        /// </summary>
+        public static string CrywolfAttackStartsInSeconds {
+            get {
+                return ResourceManager.GetString("CrywolfAttackStartsInSeconds", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Balgass stayed alive until the end of the battle..
+        /// </summary>
+        public static string CrywolfBalgassAlive {
+            get {
+                return ResourceManager.GetString("CrywolfBalgassAlive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Balgass is coming! Protect the statue of the holy wolf!.
+        /// </summary>
+        public static string CrywolfBalgassAppeared {
+            get {
+                return ResourceManager.GetString("CrywolfBalgassAppeared", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Balgass has been defeated with the help of the heroes!.
+        /// </summary>
+        public static string CrywolfBalgassDefeated {
+            get {
+                return ResourceManager.GetString("CrywolfBalgassDefeated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Balgass has been killed by {0}!.
+        /// </summary>
+        public static string CrywolfBalgassKilled {
+            get {
+                return ResourceManager.GetString("CrywolfBalgassKilled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The barrier of the statue of the holy wolf has been created..
+        /// </summary>
+        public static string CrywolfBarrierCreated {
+            get {
+                return ResourceManager.GetString("CrywolfBarrierCreated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The barrier of the statue of the holy wolf has disappeared..
+        /// </summary>
+        public static string CrywolfBarrierDisappeared {
+            get {
+                return ResourceManager.GetString("CrywolfBarrierDisappeared", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Muses protecting the statue of the holy wolf: {0}, barrier: {1}%..
+        /// </summary>
+        public static string CrywolfBarrierStatus {
+            get {
+                return ResourceManager.GetString("CrywolfBarrierStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} is trying to contract the altar ({1})!.
+        /// </summary>
+        public static string CrywolfContractAttempt {
+            get {
+                return ResourceManager.GetString("CrywolfContractAttempt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The contract is valid in {0} seconds. Do not move until it is completed..
+        /// </summary>
+        public static string CrywolfContractAttemptInfo {
+            get {
+                return ResourceManager.GetString("CrywolfContractAttemptInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The connection to the altar ({0}) has been cancelled..
+        /// </summary>
+        public static string CrywolfContractCancelled {
+            get {
+                return ResourceManager.GetString("CrywolfContractCancelled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contracting an altar requires a Muse of level {0} or higher..
+        /// </summary>
+        public static string CrywolfContractRequirement {
+            get {
+                return ResourceManager.GetString("CrywolfContractRequirement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The contracts of the wolf altars begin in {0} minute(s)..
+        /// </summary>
+        public static string CrywolfContractsStartInMinutes {
+            get {
+                return ResourceManager.GetString("CrywolfContractsStartInMinutes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The contracts of the wolf altars begin in {0} second(s)..
+        /// </summary>
+        public static string CrywolfContractsStartInSeconds {
+            get {
+                return ResourceManager.GetString("CrywolfContractsStartInSeconds", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You are connected to the altar ({0}) of the holy wolf..
+        /// </summary>
+        public static string CrywolfContractValid {
+            get {
+                return ResourceManager.GetString("CrywolfContractValid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} connected the Muse to the altar ({1}) of the holy wolf..
+        /// </summary>
+        public static string CrywolfContractValidToOthers {
+            get {
+                return ResourceManager.GetString("CrywolfContractValidToOthers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You have to stand on the altar ({0}) of the holy wolf to contract it..
+        /// </summary>
+        public static string CrywolfContractWrongPosition {
+            get {
+                return ResourceManager.GetString("CrywolfContractWrongPosition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your current MvP score is {0}..
+        /// </summary>
+        public static string CrywolfCurrentScore {
+            get {
+                return ResourceManager.GetString("CrywolfCurrentScore", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Dark Elf leader ({0}) of the army of Balgass has been killed by {1}!.
+        /// </summary>
+        public static string CrywolfDarkElfKilled {
+            get {
+                return ResourceManager.GetString("CrywolfDarkElfKilled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Defending has failed! The statue of the holy wolf has been taken over by Balgass..
+        /// </summary>
+        public static string CrywolfDefenseFailed {
+            get {
+                return ResourceManager.GetString("CrywolfDefenseFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Defending has been successful! The statue of the holy wolf has been protected..
+        /// </summary>
+        public static string CrywolfDefenseSucceeded {
+            get {
+                return ResourceManager.GetString("CrywolfDefenseSucceeded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Without the protection of the Muses, the statue of the holy wolf will be stolen..
+        /// </summary>
+        public static string CrywolfNoAltarContracted {
+            get {
+                return ResourceManager.GetString("CrywolfNoAltarContracted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Balgass has joined forces with Kundun's army and is preparing to attack the Crywolf Fortress..
+        /// </summary>
+        public static string CrywolfNotify1 {
+            get {
+                return ResourceManager.GetString("CrywolfNotify1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The army of Balgass is ready to attack the Crywolf Fortress..
+        /// </summary>
+        public static string CrywolfNotify2 {
+            get {
+                return ResourceManager.GetString("CrywolfNotify2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your MvP rank is {0}. You received {1} experience points..
+        /// </summary>
+        public static string CrywolfRankResult {
+            get {
+                return ResourceManager.GetString("CrywolfRankResult", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The army of Balgass is marching towards the Crywolf Fortress..
+        /// </summary>
+        public static string CrywolfReady {
+            get {
+                return ResourceManager.GetString("CrywolfReady", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The army of Balgass attacks the Crywolf Fortress!.
+        /// </summary>
+        public static string CrywolfStart {
+            get {
+                return ResourceManager.GetString("CrywolfStart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The army of Balgass starts attacking the statue of the holy wolf!.
+        /// </summary>
+        public static string CrywolfStatueAttack {
+            get {
+                return ResourceManager.GetString("CrywolfStatueAttack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The Ice Walker appeared! Kill it within one minute, or the following monsters become stronger..
         /// </summary>
         public static string DoppelgangerIceWalkerAppeared {
