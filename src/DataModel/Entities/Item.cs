@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.DataModel.Entities;
 
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Globalization;
 using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.DataModel.Configuration.Items;
