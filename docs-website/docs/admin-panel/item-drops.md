@@ -83,6 +83,8 @@ following the rules [above](#how-drops-are-determined):
 
 Quest item drops are not included, because they depend on the player.
 
+![Drop chance overview per monster](/img/admin-panel/drop-chance-overview.png)
+
 ### Map drop groups
 
 The drop groups which apply to the monsters of the maps they are assigned to,
@@ -121,6 +123,8 @@ To add drops to a monster which has none yet, select it at the bottom of the
 section and click **Add drop item group**. Removing a group from a monster
 deletes the group, if nothing else uses it.
 
+![Monster drops](/img/admin-panel/monster-drops.png)
+
 ### Quest and event drop groups
 
 Drop groups which are used by quest item requirements or as mini game rewards.
@@ -141,6 +145,8 @@ map drop groups, a group has:
 | Money amount | The amount of money, for groups of type `Money` |
 | Required character level | The minimum level of the character who drops the box. If the character is below the required level of any of the matching groups, the box can't be dropped at all. |
 | Drop effect | The effect which is shown in the game client, e.g. fireworks |
+
+![Item box drops](/img/admin-panel/item-box-drops.png)
 
 To add drops to an item which has none yet, select it at the bottom of the
 section and click **Add drop item group**.
