@@ -1447,6 +1447,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The default implementation of the IChaosCastleScoreTableViewPlugin which is forwarding everything to the game client with specific data packets..
+        /// </summary>
+        public static string ChaosCastleScoreTableViewPlugin_Description {
+            get {
+                return ResourceManager.GetString("ChaosCastleScoreTableViewPlugin_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chaos Castle Score Table View.
+        /// </summary>
+        public static string ChaosCastleScoreTableViewPlugin_Name {
+            get {
+                return ResourceManager.GetString("ChaosCastleScoreTableViewPlugin_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The default implementation of the IChaosCastleStateViewPlugin which is forwarding everything to the game client with specific data packets..
         /// </summary>
         public static string ChaosCastleStateViewPlugIn_Description {

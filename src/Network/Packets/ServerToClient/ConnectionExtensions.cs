@@ -6359,7 +6359,7 @@ public static class ConnectionExtensions
     /// <param name="totalScore">The total score.</param>
     /// <param name="bonusExperience">The bonus experience.</param>
     /// <param name="bonusMoney">The bonus money.</param>
-    /// <param name="type">The type.</param>
+    /// <param name="type">Identifies the blood castle result. The client shares the code 0x93 with the MiniGameScoreTable and the ChaosCastleScore and distinguishes them by this byte.</param>
     /// <remarks>
     /// Is sent by the server when: The blood castle mini game ended and the score of the player is sent to the player.
     /// Causes reaction on client side: The score is shown at the client.
@@ -6381,6 +6381,44 @@ public static class ConnectionExtensions
             packet.TotalScore = @totalScore;
             packet.BonusExperience = @bonusExperience;
             packet.BonusMoney = @bonusMoney;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ChaosCastleScore" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="success">If the player won the chaos castle.</param>
+    /// <param name="playerName">The player name.</param>
+    /// <param name="monsterKillCount">The monster kill count.</param>
+    /// <param name="bonusExperience">The bonus experience.</param>
+    /// <param name="playerKillCount">The player kill count.</param>
+    /// <param name="type">Identifies the chaos castle result. The client shares the code 0x93 with the MiniGameScoreTable and the BloodCastleScore and distinguishes them by this byte.</param>
+    /// <remarks>
+    /// Is sent by the server when: The chaos castle mini game ended and the score of the player is sent to the player.
+    /// Causes reaction on client side: The client shows the experience and the killed monsters and players.
+    /// </remarks>
+    public static async ValueTask SendChaosCastleScoreAsync(this IConnection? connection, bool @success, string @playerName, uint @monsterKillCount, uint @bonusExperience, uint @playerKillCount, byte @type = 0xFE)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ChaosCastleScoreRef.Length;
+            var packet = new ChaosCastleScoreRef(connection.Output.GetSpan(length)[..length]);
+            packet.Success = @success;
+            packet.Type = @type;
+            packet.PlayerName = @playerName;
+            packet.MonsterKillCount = @monsterKillCount;
+            packet.BonusExperience = @bonusExperience;
+            packet.PlayerKillCount = @playerKillCount;
 
             return packet.Header.Length;
         }

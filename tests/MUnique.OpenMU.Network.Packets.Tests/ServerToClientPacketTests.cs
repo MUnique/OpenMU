@@ -6473,6 +6473,44 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the packet size calculation for ChaosCastleScore.
+    /// </summary>
+    [Test]
+    public void ChaosCastleScore_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 29;
+        var actualLength = ChaosCastleScoreRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Success' boundary
+        Assert.That(3 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Success' exceeds packet boundary");
+        
+        // Validate field 'Type' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Type' exceeds packet boundary");
+        
+        // Validate field 'PlayerName' boundary
+        Assert.That(5 + 10, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'PlayerName' exceeds packet boundary");
+        
+        // Validate field 'MonsterKillCount' boundary
+        Assert.That(17 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'MonsterKillCount' exceeds packet boundary");
+        
+        // Validate field 'BonusExperience' boundary
+        Assert.That(21 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'BonusExperience' exceeds packet boundary");
+        
+        // Validate field 'PlayerKillCount' boundary
+        Assert.That(25 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'PlayerKillCount' exceeds packet boundary");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for BloodCastleEnterResult.
     /// </summary>
     [Test]
