@@ -5377,6 +5377,224 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the packet size calculation for CrywolfInfo.
+    /// </summary>
+    [Test]
+    public void CrywolfInfo_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 6;
+        var actualLength = CrywolfInfoRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Occupation' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Occupation' exceeds packet boundary");
+        
+        // Validate field 'State' boundary
+        Assert.That(5 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'State' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for CrywolfStatueAndAltarInfo.
+    /// </summary>
+    [Test]
+    public void CrywolfStatueAndAltarInfo_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 16;
+        var actualLength = CrywolfStatueAndAltarInfoRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'StatueHealthPercent' boundary
+        Assert.That(4 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'StatueHealthPercent' exceeds packet boundary");
+        
+        // Validate field 'Altar1State' boundary
+        Assert.That(8 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Altar1State' exceeds packet boundary");
+        
+        // Validate field 'Altar2State' boundary
+        Assert.That(9 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Altar2State' exceeds packet boundary");
+        
+        // Validate field 'Altar3State' boundary
+        Assert.That(10 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Altar3State' exceeds packet boundary");
+        
+        // Validate field 'Altar4State' boundary
+        Assert.That(11 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Altar4State' exceeds packet boundary");
+        
+        // Validate field 'Altar5State' boundary
+        Assert.That(12 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Altar5State' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for CrywolfContractResult.
+    /// </summary>
+    [Test]
+    public void CrywolfContractResult_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 8;
+        var actualLength = CrywolfContractResultRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Result' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Result' exceeds packet boundary");
+        
+        // Validate field 'AltarState' boundary
+        Assert.That(5 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'AltarState' exceeds packet boundary");
+        
+        // Validate field 'AltarKey' boundary
+        Assert.That(6 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'AltarKey' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for CrywolfLeftTime.
+    /// </summary>
+    [Test]
+    public void CrywolfLeftTime_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 6;
+        var actualLength = CrywolfLeftTimeRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Hours' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Hours' exceeds packet boundary");
+        
+        // Validate field 'Minutes' boundary
+        Assert.That(5 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Minutes' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for CrywolfBossMonsterInfo.
+    /// </summary>
+    [Test]
+    public void CrywolfBossMonsterInfo_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 12;
+        var actualLength = CrywolfBossMonsterInfoRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'BalgassHealthPercent' boundary
+        Assert.That(4 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'BalgassHealthPercent' exceeds packet boundary");
+        
+        // Validate field 'DarkElfCount' boundary
+        Assert.That(8 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'DarkElfCount' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for CrywolfPersonalRank.
+    /// </summary>
+    [Test]
+    public void CrywolfPersonalRank_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 12;
+        var actualLength = CrywolfPersonalRankRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Rank' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Rank' exceeds packet boundary");
+        
+        // Validate field 'Experience' boundary
+        Assert.That(8 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Experience' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for CrywolfHeroList.
+    /// </summary>
+    [Test]
+    public void CrywolfHeroList_PacketSizeValidation()
+    {
+        // Basic packet validation
+        // Validate header type and field boundaries
+        
+        // Field 'HeroCount' starts at index 4 with size 1
+        Assert.That(4, Is.GreaterThanOrEqualTo(0), 
+            "Field 'HeroCount' has invalid negative index");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for CrywolfBenefitPlusChaosRate.
+    /// </summary>
+    [Test]
+    public void CrywolfBenefitPlusChaosRate_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 5;
+        var actualLength = CrywolfBenefitPlusChaosRateRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'PlusChaosRate' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'PlusChaosRate' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for CrywolfRegionMonsterAttack.
+    /// </summary>
+    [Test]
+    public void CrywolfRegionMonsterAttack_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 10;
+        var actualLength = CrywolfRegionMonsterAttackRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'MonsterNumber' boundary
+        Assert.That(4 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'MonsterNumber' exceeds packet boundary");
+        
+        // Validate field 'SourceX' boundary
+        Assert.That(6 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'SourceX' exceeds packet boundary");
+        
+        // Validate field 'SourceY' boundary
+        Assert.That(7 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'SourceY' exceeds packet boundary");
+        
+        // Validate field 'TargetX' boundary
+        Assert.That(8 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'TargetX' exceeds packet boundary");
+        
+        // Validate field 'TargetY' boundary
+        Assert.That(9 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'TargetY' exceeds packet boundary");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for IllusionTempleEnterResult.
     /// </summary>
     [Test]
