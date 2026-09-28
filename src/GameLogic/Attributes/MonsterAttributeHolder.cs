@@ -165,9 +165,26 @@ public class MonsterAttributeHolder : IAttributeSystem
     }
 
     /// <inheritdoc />
+    /// <remarks>
+    /// This is required when a monster attacks with a skill which has attribute relationships, e.g. a skill
+    /// damage multiplier which depends on the <see cref="Stats.SkillMultiplier"/> of the monster.
+    /// The stats of a monster are fixed, so they're returned as constant. Attributes which got elements added,
+    /// e.g. by a magic effect, are returned as they are, so that they stay up to date.
+    /// </remarks>
     public IElement GetOrCreateAttribute(AttributeDefinition attributeDefinition)
     {
-        throw new NotImplementedException();
+        IDictionary<AttributeDefinition, IComposableAttribute>? attributes;
+        lock (this._attributesLock)
+        {
+            attributes = this._attributes;
+        }
+
+        if (attributes is not null && attributes.TryGetValue(attributeDefinition, out var attribute))
+        {
+            return attribute;
+        }
+
+        return new ConstantElement(this.GetValueOfAttribute(attributeDefinition));
     }
 
     /// <summary>

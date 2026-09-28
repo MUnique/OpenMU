@@ -5,14 +5,18 @@
 namespace MUnique.OpenMU.Tests;
 
 using Microsoft.Extensions.Logging.Abstractions;
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Raklion;
 using MUnique.OpenMU.Pathfinding;
+using AttributeRelationship = MUnique.OpenMU.Persistence.BasicModel.AttributeRelationship;
 using MonsterAttribute = MUnique.OpenMU.Persistence.BasicModel.MonsterAttribute;
 using MonsterDefinition = MUnique.OpenMU.Persistence.BasicModel.MonsterDefinition;
+using Skill = MUnique.OpenMU.Persistence.BasicModel.Skill;
 
 /// <summary>
 /// Tests for the <see cref="SelupanIntelligence"/>.
@@ -74,11 +78,31 @@ public class SelupanIntelligenceTest
         Assert.That(player.Position, Is.EqualTo(new Point(103, 100)));
     }
 
+    /// <summary>
+    /// Tests that the damage multiplier of a skill of Selupan can be calculated with the attributes of the monster.
+    /// The attribute system of a monster didn't support attribute relationships, so the first attack with each
+    /// skill threw an exception, and the multiplier was missing afterwards.
+    /// </summary>
+    [Test]
+    public async Task SkillMultiplierIsCalculatedWithMonsterAttributesAsync()
+    {
+        var gameContext = (GameContext)GameContextTestHelper.CreateGameContext();
+        var (monster, _) = await CreateSelupanAsync(gameContext, new RaklionEventDefinition()).ConfigureAwait(false);
+        var skill = new Skill { Number = 253, Name = "Selupan Fall" };
+        skill.AttributeRelationships.Add(new AttributeRelationship(Stats.SkillFinalMultiplier, 2.5f, Stats.SkillMultiplier, AggregateType.AddRaw) { InputOperator = InputOperator.Maximum });
+        var skillEntry = new SkillEntry { Skill = skill };
+
+        var skillAttributes = skillEntry.EnsureSkillAttributes(monster.Attributes);
+
+        Assert.That(skillAttributes?[Stats.SkillFinalMultiplier], Is.EqualTo(2.5f).Within(0.001f));
+    }
+
     private static async ValueTask<(Monster Monster, SelupanIntelligence Intelligence)> CreateSelupanAsync(GameContext gameContext, RaklionEventDefinition definition)
     {
         var map = await gameContext.GetMapAsync(0).ConfigureAwait(false);
         var monsterDefinition = new MonsterDefinition { Id = Guid.NewGuid(), Number = 459, ObjectKind = NpcObjectKind.Monster, AttackRange = 10 };
         monsterDefinition.Attributes.Add(new MonsterAttribute { AttributeDefinition = Stats.MaximumHealth, Value = 100 });
+        monsterDefinition.Attributes.Add(new MonsterAttribute { AttributeDefinition = Stats.SkillMultiplier, Value = 2 });
         var spawnArea = new MonsterSpawnArea
         {
             MonsterDefinition = monsterDefinition,
