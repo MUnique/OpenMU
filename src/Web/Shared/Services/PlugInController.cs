@@ -20,6 +20,7 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
 {
     private readonly IDataSource<GameConfiguration> _dataSource;
     private readonly IModalService _modalService;
+    private readonly IPersistenceContextProvider _persistenceContextProvider;
 
     private Guid _pointFilter;
     private string _nameFilter = string.Empty;
@@ -30,10 +31,12 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
     /// </summary>
     /// <param name="dataSource">The data source.</param>
     /// <param name="modalService">The modal service.</param>
-    public PlugInController(IDataSource<GameConfiguration> dataSource, IModalService modalService)
+    /// <param name="persistenceContextProvider">The persistence context provider.</param>
+    public PlugInController(IDataSource<GameConfiguration> dataSource, IModalService modalService, IPersistenceContextProvider persistenceContextProvider)
     {
         this._dataSource = dataSource;
         this._modalService = modalService;
+        this._persistenceContextProvider = persistenceContextProvider;
     }
 
     /// <inheritdoc />
@@ -194,6 +197,8 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
             throw new ArgumentException($"{nameof(item.ConfigurationType)} must not be null.", nameof(item));
         }
 
+        await this.RefreshCustomConfigurationAsync(item).ConfigureAwait(true);
+
         var referenceResolver = new ByDataSourceReferenceHandler(this._dataSource);
 
         var configuration = item.Configuration.GetConfiguration(item.ConfigurationType, referenceResolver)
@@ -330,6 +335,32 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
         item.Configuration.IsActive = value;
         await (await this._dataSource.GetContextAsync().ConfigureAwait(true)).SaveChangesAsync().ConfigureAwait(true);
         this.DataChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>
+    /// Refreshes the custom configuration of the item with the persisted one.
+    /// </summary>
+    /// <remarks>
+    /// The data source keeps the configuration which it loaded first, but a plugin may change its own
+    /// configuration on the game server, e.g. the bot feature clears its "Reset bots" flag after a reset.
+    /// Without refreshing, the dialog would show the outdated values, and saving it would write them back.
+    /// </remarks>
+    /// <param name="item">The item.</param>
+    private async ValueTask RefreshCustomConfigurationAsync(PlugInConfigurationViewItem item)
+    {
+        try
+        {
+            using var context = this._persistenceContextProvider.CreateNewTypedContext(typeof(PlugInConfiguration), false);
+            if (await context.GetByIdAsync<PlugInConfiguration>(item.Id).ConfigureAwait(true) is { } persisted
+                && persisted.CustomConfiguration != item.Configuration.CustomConfiguration)
+            {
+                item.Configuration.CustomConfiguration = persisted.CustomConfiguration;
+            }
+        }
+        catch (NotImplementedException)
+        {
+            // Ignored.
+        }
     }
 
     private bool FilterByTypeName(Type plugInType)

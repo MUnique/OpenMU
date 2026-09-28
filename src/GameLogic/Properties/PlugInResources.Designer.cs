@@ -610,6 +610,42 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Configures the run of the doppelganger event, e.g. its monsters, their paths and multipliers..
+        /// </summary>
+        public static string DoppelgangerFeaturePlugIn_Description {
+            get {
+                return ResourceManager.GetString("DoppelgangerFeaturePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Doppelganger event.
+        /// </summary>
+        public static string DoppelgangerFeaturePlugIn_Name {
+            get {
+                return ResourceManager.GetString("DoppelgangerFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Opens the reward chests of the doppelganger event, when a player talks to them..
+        /// </summary>
+        public static string DoppelgangerRewardChestPlugIn_Description {
+            get {
+                return ResourceManager.GetString("DoppelgangerRewardChestPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Doppelganger reward chests.
+        /// </summary>
+        public static string DoppelgangerRewardChestPlugIn_Name {
+            get {
+                return ResourceManager.GetString("DoppelgangerRewardChestPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the dragon roar skill of the rage fighter class. Additionally to the attacked target, it will hit up to seven additional targets..
         /// </summary>
         public static string DragonRoarSkillPlugIn_Description {
@@ -2104,6 +2140,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The event in the hatchery of raklion: when all spider eggs are destroyed, Selupan appears. After the battle, the hatchery is closed for some time..
+        /// </summary>
+        public static string RaklionPlugIn_Description {
+            get {
+                return ResourceManager.GetString("RaklionPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Raklion Event.
+        /// </summary>
+        public static string RaklionPlugIn_Name {
+            get {
+                return ResourceManager.GetString("RaklionPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Defines the value which is additionally recovered. From this value, the character level is subtracted..
         /// </summary>
         public static string RecoverConsumeHandlerConfiguration_AdditionalRecoverMinusCharacterLevel_Description {
@@ -2696,6 +2750,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string SiegePotionConsumeHandlerPlugIn_Name {
             get {
                 return ResourceManager.GetString("SiegePotionConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Transforms a full stack of signs of dimensions into a mirror of dimensions..
+        /// </summary>
+        public static string SignOfDimensionsStackedPlugIn_Description {
+            get {
+                return ResourceManager.GetString("SignOfDimensionsStackedPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sign of dimensions stack transformation.
+        /// </summary>
+        public static string SignOfDimensionsStackedPlugIn_Name {
+            get {
+                return ResourceManager.GetString("SignOfDimensionsStackedPlugIn_Name", resourceCulture);
             }
         }
         

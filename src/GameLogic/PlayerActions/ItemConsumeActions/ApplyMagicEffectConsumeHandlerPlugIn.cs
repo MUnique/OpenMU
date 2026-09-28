@@ -47,7 +47,7 @@ public class ApplyMagicEffectConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn
             return false;
         }
 
-        if (await player.MagicEffectList.TryGetActiveEffectOfSubTypeAsync(effectDefinition.SubType).ConfigureAwait(false) is { } existingEffect)
+        if (player.MagicEffectList.TryGetActiveEffectOfSubType(effectDefinition.SubType) is { } existingEffect)
         {
             await existingEffect.DisposeAsync().ConfigureAwait(false);
         }

@@ -206,9 +206,14 @@ public class GuildServer : IGuildServer
     {
         try
         {
-            if (!this._guildDictionary.TryGetValue(guildId, out var guild))
+            if (!IsRoleAssignable(role))
             {
-                this._logger.LogWarning("Guild {GuildId} not found, so the position of member {CharacterId} can't be changed.", guildId, characterId);
+                this._logger.LogWarning("Guild {GuildId} member {CharacterId} can't be assigned to {Role}, leadership transfer is not supported.", guildId, characterId, role);
+                return;
+            }
+
+            if (this.GetGuildContainer(guildId, characterId.ToString()) is not { } guild)
+            {
                 return;
             }
 
@@ -219,25 +224,63 @@ public class GuildServer : IGuildServer
                 return;
             }
 
-            guildMember.Status = role;
-            await guild.DatabaseContext.SaveChangesAsync().ConfigureAwait(false);
-                    if (guild.Members.TryGetValue(characterId, out var listEntry))
-                    {
-                        listEntry.PlayerPosition = role;
+            if (guildMember.Status == GuildPosition.GuildMaster)
+            {
+                this._logger.LogWarning("Guild {GuildId} member {CharacterId} is the guild master, leadership transfer is not supported.", guildId, characterId);
+                return;
+            }
 
-                        // Offline members keep their cached name while their server id is
-                        // OfflineServerId; publishing to them is pointless (dropped or, over
-                        // Dapr, an error on every call). They pick up the persisted position
-                        // on next login through PlayerEnteredGameAsync.
-                        if (listEntry.PlayerName is not null && listEntry.ServerId != OfflineServerId)
-                        {
-                            await this._changePublisher.AssignGuildToPlayerAsync(listEntry.ServerId, listEntry.PlayerName, new GuildMemberStatus(guildId, role)).ConfigureAwait(false);
-                        }
-                    }
+            if (!this.CheckRoleLimits(guild, guildId, characterId, characterId.ToString(), role, null))
+            {
+                return;
+            }
+
+            await this.ApplyPositionChangeAsync(guildId, guild, guildMember, role).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
             this._logger.LogError(ex, "Error when saving a changed guild member.");
+        }
+    }
+
+    /// <inheritdoc/>
+    public async ValueTask<bool> ChangeGuildMemberPositionByNameAsync(uint guildId, string characterName, GuildPosition role, int masterTotalLevel)
+    {
+        try
+        {
+            if (!IsRoleAssignable(role))
+            {
+                this._logger.LogWarning("Guild {GuildId} member {CharacterName} can't be assigned to {Role}, leadership transfer is not supported.", guildId, characterName, role);
+                return false;
+            }
+
+            if (this.GetGuildContainer(guildId, characterName) is not { } guild)
+            {
+                return false;
+            }
+
+            if (this.FindGuildMember(guild, guildId, characterName) is not { } guildMember)
+            {
+                return false;
+            }
+
+            if (guildMember.Status == GuildPosition.GuildMaster)
+            {
+                this._logger.LogWarning("Guild {GuildId} member {CharacterName} is the guild master, leadership transfer is not supported.", guildId, characterName);
+                return false;
+            }
+
+            if (!this.CheckRoleLimits(guild, guildId, guildMember.Id, characterName, role, GuildRoleLimits.MaxBattleMasterCount(masterTotalLevel)))
+            {
+                return false;
+            }
+
+            return await this.ApplyPositionChangeAsync(guildId, guild, guildMember, role).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Error when saving a changed guild member.");
+            return false;
         }
     }
 
@@ -677,6 +720,18 @@ public class GuildServer : IGuildServer
     }
 
     /// <summary>
+    /// Determines whether the specified role may be assigned through a position change.
+    /// Leadership transfer and undefined roles are rejected at the server boundary,
+    /// so no caller can create a second guild master.
+    /// </summary>
+    /// <param name="role">The requested role.</param>
+    /// <returns><c>true</c> if the role may be assigned; otherwise, <c>false</c>.</returns>
+    private static bool IsRoleAssignable(GuildPosition role)
+    {
+        return role is GuildPosition.NormalMember or GuildPosition.BattleMaster or GuildPosition.AssistantMaster;
+    }
+
+    /// <summary>
     /// Removes a guild from the server and the database.
     /// First we are trying to get the guild out of our dictionary.
     /// We are assuming that all guilds are in the dictionary, because
@@ -892,5 +947,130 @@ public class GuildServer : IGuildServer
             .Where(kvp => GetAllianceMasterGuid(kvp.Value.Guild) == masterGuid)
             .Select(kvp => kvp.Key)
             .ToList();
+    }
+
+    /// <summary>
+    /// Gets the guild container, logging a warning when the guild is unknown.
+    /// </summary>
+    /// <param name="guildId">The runtime guild identifier.</param>
+    /// <param name="memberIdentity">The member identity used in the log message.</param>
+    /// <returns>The guild container, or <c>null</c> when the guild is unknown.</returns>
+    private GuildContainer? GetGuildContainer(uint guildId, string memberIdentity)
+    {
+        if (!this._guildDictionary.TryGetValue(guildId, out var guild))
+        {
+            this._logger.LogWarning("Guild {GuildId} not found, so the position of member {Member} can't be changed.", guildId, memberIdentity);
+            return null;
+        }
+
+        return guild;
+    }
+
+    /// <summary>
+    /// Finds the persistent guild member for the specified character name.
+    /// </summary>
+    /// <param name="guild">The guild container.</param>
+    /// <param name="guildId">The runtime guild identifier.</param>
+    /// <param name="characterName">The name of the character.</param>
+    /// <returns>The persistent guild member, or <c>null</c> when not found.</returns>
+    private GuildMember? FindGuildMember(GuildContainer guild, uint guildId, string characterName)
+    {
+        var entry = guild.Members.FirstOrDefault(m => string.Equals(m.Value.PlayerName, characterName, StringComparison.OrdinalIgnoreCase));
+        if (default(KeyValuePair<Guid, GuildListEntry>).Equals(entry))
+        {
+            this._logger.LogWarning("Guild {GuildId} member {CharacterName} not found, so its position can't be changed.", guildId, characterName);
+            return null;
+        }
+
+        var guildMember = guild.Guild.Members.FirstOrDefault(m => m.Id == entry.Key);
+        if (guildMember is null)
+        {
+            this._logger.LogWarning("Guild {GuildId} member {CharacterName} not found, so its position can't be changed.", guildId, characterName);
+            return null;
+        }
+
+        return guildMember;
+    }
+
+    /// <summary>
+    /// Checks the role count limits against the runtime member list: at most one assistant
+    /// master, and battle masters limited by <paramref name="maxBattleMasters"/> when known.
+    /// </summary>
+    /// <param name="guild">The guild container.</param>
+    /// <param name="guildId">The runtime guild identifier.</param>
+    /// <param name="targetId">The identifier of the targeted member, excluded from the counts.</param>
+    /// <param name="memberIdentity">The member identity used in log messages.</param>
+    /// <param name="role">The requested role.</param>
+    /// <param name="maxBattleMasters">The maximum number of battle masters, or <c>null</c> when unknown (battle limit not checked).</param>
+    /// <returns><c>true</c> if the limits allow the assignment; otherwise, <c>false</c>.</returns>
+    private bool CheckRoleLimits(GuildContainer guild, uint guildId, Guid targetId, string memberIdentity, GuildPosition role, int? maxBattleMasters)
+    {
+        if (role == GuildPosition.AssistantMaster
+            && guild.Members.Any(m => m.Value.PlayerPosition == GuildPosition.AssistantMaster && m.Key != targetId))
+        {
+            this._logger.LogWarning("Guild {GuildId} already has an assistant master, so member {Member} can't be promoted.", guildId, memberIdentity);
+            return false;
+        }
+
+        if (role == GuildPosition.BattleMaster
+            && maxBattleMasters.HasValue
+            && guild.Members.Count(m => m.Value.PlayerPosition == GuildPosition.BattleMaster && m.Key != targetId) >= maxBattleMasters.Value)
+        {
+            this._logger.LogWarning("Guild {GuildId} already has {Max} battle masters, so member {Member} can't be promoted.", guildId, maxBattleMasters.Value, memberIdentity);
+            return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Persists a guild member position change and publishes it to the game server of the member.
+    /// </summary>
+    /// <param name="guildId">The runtime guild identifier.</param>
+    /// <param name="guild">The guild container.</param>
+    /// <param name="guildMember">The persistent guild member.</param>
+    /// <param name="role">The new role.</param>
+    /// <returns><c>true</c> if the position was persisted and applied; otherwise, <c>false</c>.</returns>
+    private async ValueTask<bool> ApplyPositionChangeAsync(uint guildId, GuildContainer guild, GuildMember guildMember, GuildPosition role)
+    {
+        var characterId = guildMember.Id;
+        var previousRole = guildMember.Status;
+        guildMember.Status = role;
+        try
+        {
+            if (!await guild.DatabaseContext.SaveChangesAsync().ConfigureAwait(false))
+            {
+                guildMember.Status = previousRole;
+                this._logger.LogWarning("Guild {GuildId} member {CharacterId} position change to {Role} was not saved, so it is not published.", guildId, characterId, role);
+                return false;
+            }
+        }
+        catch (Exception ex)
+        {
+            // Restore the staged value: otherwise the failed change would linger on the
+            // tracked entity and get committed silently by the next save of this guild.
+            guildMember.Status = previousRole;
+            this._logger.LogError(ex, "Error when saving a changed guild member.");
+            return false;
+        }
+
+        if (!guild.Members.TryGetValue(characterId, out var listEntry))
+        {
+            this._logger.LogWarning("Guild {GuildId} member {CharacterId} position was saved, but no runtime entry exists, so it is not published.", guildId, characterId);
+            return false;
+        }
+
+        listEntry.PlayerPosition = role;
+
+        // Offline members keep their cached name while their server id is
+        // OfflineServerId; publishing to them is pointless (dropped or, over
+        // Dapr, an error on every call). They pick up the persisted position
+        // on next login through PlayerEnteredGameAsync.
+        if (listEntry.PlayerName is not null && listEntry.ServerId != OfflineServerId)
+        {
+            await this._changePublisher.AssignGuildToPlayerAsync(listEntry.ServerId, listEntry.PlayerName, new GuildMemberStatus(guildId, role)).ConfigureAwait(false);
+        }
+
+        return true;
     }
 }

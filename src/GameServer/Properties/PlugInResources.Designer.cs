@@ -3211,6 +3211,42 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handler for the request to enter the doppelganger event through the NPC Lugard..
+        /// </summary>
+        public static string DoppelgangerEnterRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("DoppelgangerEnterRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Doppelganger Enter Request Handler.
+        /// </summary>
+        public static string DoppelgangerEnterRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("DoppelgangerEnterRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends the doppelganger event packets (0xBF 0x0F - 0x14) to the client..
+        /// </summary>
+        public static string DoppelgangerEventViewPlugIn_Description {
+            get {
+                return ResourceManager.GetString("DoppelgangerEventViewPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Doppelganger Event View.
+        /// </summary>
+        public static string DoppelgangerEventViewPlugIn_Name {
+            get {
+                return ResourceManager.GetString("DoppelgangerEventViewPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Sends Kanturu event state/result/HUD packets (0xD1 group) to the client..
         /// </summary>
         public static string KanturuEventViewPlugIn_Description {
@@ -4773,6 +4809,42 @@ namespace MUnique.OpenMU.GameServer.Properties {
         public static string RageSkillAttackRequestHandlerPlugIn_Name {
             get {
                 return ResourceManager.GetString("RageSkillAttackRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends the state of the raklion event and the skills of Selupan to the client..
+        /// </summary>
+        public static string RaklionEventViewPlugIn_Description {
+            get {
+                return ResourceManager.GetString("RaklionEventViewPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Raklion Event View.
+        /// </summary>
+        public static string RaklionEventViewPlugIn_Name {
+            get {
+                return ResourceManager.GetString("RaklionEventViewPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the request of the client for the state of the raklion event..
+        /// </summary>
+        public static string RaklionStateInfoRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("RaklionStateInfoRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Raklion State Info Request Handler.
+        /// </summary>
+        public static string RaklionStateInfoRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("RaklionStateInfoRequestHandlerPlugIn_Name", resourceCulture);
             }
         }
         

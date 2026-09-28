@@ -423,10 +423,11 @@ public class Gates : InitializerBase
         targetGates.Add(328, this.CreateExitGate(maps[72], 241, 23, 243, 25, 0, true));
 
         // Doppelgaenger
-        targetGates.Add(329, this.CreateExitGate(maps[65], 193, 26, 200, 32, 0, true));
-        targetGates.Add(330, this.CreateExitGate(maps[66], 133, 68, 139, 74, 0, true));
-        targetGates.Add(331, this.CreateExitGate(maps[67], 106, 58, 111, 62, 0, true));
-        targetGates.Add(332, this.CreateExitGate(maps[68], 90, 10, 97, 17, 0, true));
+        // The full areas of these gates contain non-walkable coordinates, so they're reduced to their walkable part.
+        targetGates.Add(329, this.CreateExitGate(maps[65], 194, 26, 199, 32, 0, true));
+        targetGates.Add(330, this.CreateExitGate(maps[66], 134, 69, 139, 74, 0, true));
+        targetGates.Add(331, this.CreateExitGate(maps[67], 106, 60, 111, 62, 0, true));
+        targetGates.Add(332, this.CreateExitGate(maps[68], 92, 13, 97, 17, 0, true));
 
         // Loren Market
         targetGates.Add(333, this.CreateExitGate(maps[79], 126, 142, 129, 148, 0, true));

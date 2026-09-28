@@ -65,6 +65,7 @@ public class Pets : InitializerBase
 
         var darkHorse = this.CreatePet(4, SkillNumber.Earthshake, 1, 1, "Dark Horse", 218, false, false,
             (Stats.IsHorseEquipped, 1, AggregateType.AddRaw),
+            (Stats.CanFly, 1.0f, AggregateType.AddRaw),
             (Stats.MovementSpeed, MovementSpeedConstants.HorseOrFenrirMovementSpeed, AggregateType.Maximum),
             (Stats.MovementSpeedUnderwater, MovementSpeedConstants.HorseOrFenrirMovementSpeed, AggregateType.Maximum));
         this.AddDarkHorseOptions(darkHorse);

@@ -20,7 +20,7 @@ using MUnique.OpenMU.Web.AdminPanel.Properties;
 /// </summary>
 public partial class Setup
 {
-    private bool _isDataInitialized;
+    private DataInitializationState _dataState;
 
     private ClientVersion? _gameClientVersion;
 
@@ -66,13 +66,9 @@ public partial class Setup
     public IJSRuntime JsRuntime { get; set; } = null!;
 
     /// <inheritdoc />
-    protected override async Task OnInitializedAsync()
+    protected override Task OnInitializedAsync()
     {
-        this._isDataInitialized = await this.SetupService.IsDataInitializedAsync().ConfigureAwait(false);
-        if (this._isDataInitialized)
-        {
-            this._gameClientVersion = await this.SetupService.GetCurrentGameClientVersionAsync().ConfigureAwait(false);
-        }
+        return this.LoadDataStateAsync();
     }
 
     private static async Task<MemoryStream> ReadFileAsync(IBrowserFile file)
@@ -86,9 +82,28 @@ public partial class Setup
         return memoryStream;
     }
 
-    private Task OnUpdateClickAsync()
+    private async Task LoadDataStateAsync()
     {
-        return this.SetupService.InstallUpdatesAsync(default);
+        this._dataState = await this.SetupService.GetDataInitializationStateAsync().ConfigureAwait(false);
+        this._gameClientVersion = this._dataState == DataInitializationState.Initialized
+            ? await this.SetupService.GetCurrentGameClientVersionAsync().ConfigureAwait(false)
+            : null;
+    }
+
+    private async Task OnInstallationFinishedAsync()
+    {
+        // We load the state first, so that the page doesn't show the state of the
+        // uninitialized database for a moment when it's rendered again.
+        await this.LoadDataStateAsync().ConfigureAwait(false);
+        this.ShowInstall = false;
+    }
+
+    private async Task OnUpdateClickAsync()
+    {
+        await this.SetupService.InstallUpdatesAsync(default).ConfigureAwait(false);
+
+        // Before the update, the state could not be determined on the outdated schema.
+        await this.LoadDataStateAsync().ConfigureAwait(false);
     }
 
     private void OnInstallClick()

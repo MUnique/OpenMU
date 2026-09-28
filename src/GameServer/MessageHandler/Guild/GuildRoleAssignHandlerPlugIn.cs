@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlayerActions.Guild;
+using MUnique.OpenMU.GameLogic.Views.Guild;
 using MUnique.OpenMU.GameServer.RemoteView.Guild;
 using MUnique.OpenMU.Network.Packets.ClientToServer;
 using MUnique.OpenMU.PlugIns;
@@ -16,9 +17,11 @@ using MUnique.OpenMU.PlugIns;
 /// Handler for guild role assign packets.
 /// </summary>
 /// <remarks>
-/// The request's <c>Type</c> byte semantics (values 1..3) are undocumented, so it is
-/// intentionally ignored. No dedicated server response packet exists; on success the
-/// guild server publishes the change which updates the member's guild status and views.
+/// Only known <see cref="GuildRoleAssignType"/> values are processed, anything else is ignored.
+/// The role limits are always enforced server-side for every known request type, because
+/// the type byte is client-controlled input. No dedicated
+/// server response packet exists; on success the guild server publishes the change which updates
+/// the member's guild status and views.
 /// </remarks>
 [PlugIn]
 [Display(Name = nameof(PlugInResources.GuildRoleAssignHandlerPlugIn_Name), Description = nameof(PlugInResources.GuildRoleAssignHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
@@ -36,7 +39,19 @@ internal class GuildRoleAssignHandlerPlugIn : IPacketHandlerPlugIn
     /// <inheritdoc/>
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
+        if (packet.Length < GuildRoleAssignRequest.Length)
+        {
+            player.Logger.LogWarning("Ignoring truncated guild role assign packet of length {Length}.", packet.Length);
+            return;
+        }
+
         GuildRoleAssignRequest request = packet;
+        if (!Enum.IsDefined(typeof(GuildRoleAssignType), request.Type))
+        {
+            player.Logger.LogWarning("Ignoring guild role assign request with unknown type {Type}.", request.Type);
+            return;
+        }
+
         var position = request.Role.ConvertToPosition();
 
         if (position is null)

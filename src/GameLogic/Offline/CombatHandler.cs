@@ -604,8 +604,11 @@ public sealed class CombatHandler
 
     private bool IsMonsterAttackable(Monster monster)
     {
+        // A summoned monster (e.g. an elf's summon) is a Monster with a Monster definition, but it
+        // belongs to a player: hitting it counts as an attack on the owner and grants self-defense against the bot.
         return monster.IsAlive
                && !monster.IsAtSafezone()
+               && monster.SummonedBy is null
                && monster.Definition.ObjectKind == NpcObjectKind.Monster
                && this.IsWithinSafeHuntLevel(monster);
     }

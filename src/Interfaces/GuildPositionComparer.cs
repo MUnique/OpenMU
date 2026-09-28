@@ -27,7 +27,7 @@ public sealed class GuildPositionComparer : IComparer<GuildPosition>, IComparer<
     /// </summary>
     /// <param name="position">The guild position.</param>
     /// <returns>The rank of the position.</returns>
-    public static int GetRank(GuildPosition position)
+    private static int GetRank(GuildPosition position)
     {
         return position switch
         {

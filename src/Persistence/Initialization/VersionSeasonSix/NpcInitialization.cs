@@ -771,6 +771,7 @@ internal partial class NpcInitialization : Version095d.NpcInitialization
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 540;
             def.Designation = "Lugard";
+            def.NpcWindow = NpcWindow.LugardDoppelgangerEntry;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
             this.GameConfiguration.Monsters.Add(def);
             def.SetGuid(def.Number);

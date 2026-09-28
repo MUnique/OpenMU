@@ -39,6 +39,12 @@ internal class EventTicketItems : InitializerBase
         this.CreateEventItem(50, 13, 1, 2, "Illusion Sorcerer Covenant", false, 6, 70, 76, 82, 88, 94, 100);
         this.CreateEventItem(51, 13, 2, 2, "Scroll of Blood", false, 6);
 
+        // Doppelganger:
+        if (this.CreateDoppelgangerItems() is { } signOfDimensionsDropGroup)
+        {
+            BaseMapInitializer.RegisterDefaultDropItemGroup(signOfDimensionsDropGroup);
+        }
+
         // Devil Square:
         this.CreateEventItem(17, 14, 1, 1, "Devil's Eye", false, 7, 2, 36, 47, 60, 70, 80, 90);
         this.CreateEventItem(18, 14, 1, 1, "Devil's Key", false, 7, 2, 36, 47, 60, 70, 80, 90);
@@ -55,6 +61,43 @@ internal class EventTicketItems : InitializerBase
         this.CreateEventItem(107, 14, 1, 1, "Fifth Secromicon Fragment", false);
         this.CreateEventItem(108, 14, 1, 1, "Sixth Secromicon Fragment", false);
         this.CreateEventItem(109, 14, 1, 1, "Complete Secromicon", false);
+    }
+
+    /// <summary>
+    /// Creates the items of the doppelganger event, which don't exist yet:
+    /// The Mirror of Dimensions and the Doppelganger Free Ticket, which allow to enter the event,
+    /// and the Sign of Dimensions, of which five transform into a Mirror of Dimensions.
+    /// </summary>
+    /// <returns>The drop item group of the Sign of Dimensions, if it was created.</returns>
+    internal DropItemGroup? CreateDoppelgangerItems()
+    {
+        if (!this.GameConfiguration.Items.Any(item => item is { Group: 14, Number: 111 }))
+        {
+            this.CreateEventItem(111, 14, 1, 1, "Mirror of Dimensions", false);
+        }
+
+        if (!this.GameConfiguration.Items.Any(item => item is { Group: 13, Number: 125 }))
+        {
+            this.CreateEventItem(125, 13, 1, 1, "Doppelganger Free Ticket", false);
+        }
+
+        if (this.GameConfiguration.Items.Any(item => item is { Group: 14, Number: 110 }))
+        {
+            return null;
+        }
+
+        // It's stackable up to five pieces, which transform into a Mirror of Dimensions.
+        var signOfDimensions = this.CreateEventItem(110, 14, 1, 1, "Sign of Dimensions", true);
+        signOfDimensions.Durability = 5;
+
+        var dropItemGroup = this.Context.CreateNew<DropItemGroup>();
+        dropItemGroup.SetGuid(14, 110);
+        dropItemGroup.Chance = 0.001;
+        dropItemGroup.Description = "Sign of Dimensions";
+        dropItemGroup.MinimumMonsterLevel = 32;
+        dropItemGroup.PossibleItems.Add(signOfDimensions);
+        this.GameConfiguration.DropItemGroups.Add(dropItemGroup);
+        return dropItemGroup;
     }
 
     private ItemDefinition CreateEventItem(byte number, byte group, byte width, byte height, string name, bool dropsFromMonsters, byte maxItemLevel = 0, params byte[] dropLevels)

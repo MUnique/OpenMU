@@ -579,6 +579,24 @@
   <data name="ItemIsBoundToInventoryOfCharacter" xml:space="preserve">
     <value>This item is bound to the inventory of this character.</value>
   </data>
+  <data name="ItemCannotBeDropped" xml:space="preserve">
+    <value>This item can't be dropped.</value>
+  </data>
+  <data name="ItemCannotBeRepaired" xml:space="preserve">
+    <value>This item can't be repaired.</value>
+  </data>
+  <data name="ItemCannotBeSoldInPersonalStore" xml:space="preserve">
+    <value>This item can't be sold in a personal store.</value>
+  </data>
+  <data name="ItemCannotBeSoldToNpc" xml:space="preserve">
+    <value>This item can't be sold.</value>
+  </data>
+  <data name="ItemCannotBeStored" xml:space="preserve">
+    <value>This item can't be stored in the vault.</value>
+  </data>
+  <data name="ItemCannotBeTraded" xml:space="preserve">
+    <value>This item can't be traded.</value>
+  </data>
   <data name="NotEnoughMoneyToSendLetter" xml:space="preserve">
     <value>Not enough Zen to send a letter.</value>
   </data>
@@ -791,5 +809,41 @@
   </data>
   <data name="CharacterNotStrongEnoughMessage" xml:space="preserve">
     <value>You are not strong enough for this yet.</value>
+  </data>
+  <data name="DoppelgangerIceWalkerAppeared" xml:space="preserve">
+    <value>The Ice Walker appeared! Kill it within one minute, or the following monsters become stronger.</value>
+  </data>
+  <data name="DoppelgangerIceWalkerEscaped" xml:space="preserve">
+    <value>The Ice Walker escaped! The following monsters are stronger.</value>
+  </data>
+  <data name="DoppelgangerIceWalkerKilled" xml:space="preserve">
+    <value>The Ice Walker has been defeated!</value>
+  </data>
+  <data name="RaklionSelupanAppeared" xml:space="preserve">
+    <value>Selupan has appeared. The Hatchery Gates will be closed in {0} minute(s).</value>
+  </data>
+  <data name="RaklionHatcheryClosed" xml:space="preserve">
+    <value>The Hatchery Gate is closed.</value>
+  </data>
+  <data name="RaklionHatcheryOpensIn" xml:space="preserve">
+    <value>The Hatchery Gates will open in {0}.</value>
+  </data>
+  <data name="RaklionHatcheryIsClosed" xml:space="preserve">
+    <value>The Hatchery Gate is closed, you cannot enter.</value>
+  </data>
+  <data name="RaklionHatcheryOpened" xml:space="preserve">
+    <value>The Hatchery Gate is opened.</value>
+  </data>
+  <data name="RaklionSelupanDefeated" xml:space="preserve">
+    <value>{0} defeated Selupan! The Hatchery Gates will open in {1}.</value>
+  </data>
+  <data name="RaklionBattleFailed" xml:space="preserve">
+    <value>The battle against Selupan has failed. The Hatchery Gates will open in {0}.</value>
+  </data>
+  <data name="RaklionDurationHoursMinutes" xml:space="preserve">
+    <value>{0} hour(s) {1} minute(s)</value>
+  </data>
+  <data name="RaklionDurationMinutes" xml:space="preserve">
+    <value>{0} minute(s)</value>
   </data>
 </root>

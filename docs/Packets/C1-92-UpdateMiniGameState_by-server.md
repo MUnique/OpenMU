@@ -35,3 +35,7 @@ The state of the mini games.
 | 11 | ChaosCastleOpened | The chaos castle game is opened for entrance. "Chaos Castle Penetration (in x seconds)". |
 | 12 | ChaosCastleEnding | The chaos castle game is ending. "Chaos Castle Event ends (in x seconds)". |
 | 13 | ChaosCastleFinished | The chaos castle game is finished. Chaos Castle Event shuts down (in x seconds)". |
+| 16 | DoppelgangerEntranceClosing | The entrance of the doppelganger event closes in 30 seconds. The client shows the countdown only on the doppelganger maps. |
+| 17 | DoppelgangerStarting | The doppelganger event starts in 30 seconds. The client shows the countdown only on the doppelganger maps. |
+| 18 | DoppelgangerIceWalkerCountdown | The ice walker has to be killed within 30 seconds. The client shows the countdown only on the doppelganger maps. |
+| 19 | DoppelgangerEnding | The doppelganger event ends in 30 seconds. The client shows the countdown only on the doppelganger maps. |

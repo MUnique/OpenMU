@@ -1341,6 +1341,18 @@
   <data name="ChaosCastleStateViewPlugIn_Description" xml:space="preserve">
     <value>The default implementation of the IChaosCastleStateViewPlugin which is forwarding everything to the game client with specific data packets.</value>
   </data>
+  <data name="DoppelgangerEnterRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Doppelganger Enter Request Handler</value>
+  </data>
+  <data name="DoppelgangerEnterRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for the request to enter the doppelganger event through the NPC Lugard.</value>
+  </data>
+  <data name="DoppelgangerEventViewPlugIn_Name" xml:space="preserve">
+    <value>Doppelganger Event View</value>
+  </data>
+  <data name="DoppelgangerEventViewPlugIn_Description" xml:space="preserve">
+    <value>Sends the doppelganger event packets (0xBF 0x0F - 0x14) to the client.</value>
+  </data>
   <data name="KanturuEventViewPlugIn_Name" xml:space="preserve">
     <value>Kanturu Event View</value>
   </data>
@@ -2474,5 +2486,17 @@
   </data>
   <data name="CastleSiegeLifeStoneStatePlugIn_Description" xml:space="preserve">
     <value>Sends Castle Siege Life Stone creation progress to the game client.</value>
+  </data>
+  <data name="RaklionEventViewPlugIn_Name" xml:space="preserve">
+    <value>Raklion Event View</value>
+  </data>
+  <data name="RaklionEventViewPlugIn_Description" xml:space="preserve">
+    <value>Sends the state of the raklion event and the skills of Selupan to the client.</value>
+  </data>
+  <data name="RaklionStateInfoRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Raklion State Info Request Handler</value>
+  </data>
+  <data name="RaklionStateInfoRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the request of the client for the state of the raklion event.</value>
   </data>
 </root>

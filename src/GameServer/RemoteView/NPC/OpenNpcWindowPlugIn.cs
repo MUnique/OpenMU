@@ -37,6 +37,10 @@ public class OpenNpcWindowPlugIn : IOpenNpcWindowPlugIn
                 await this._player.Connection.SendOpenNpcDialogAsync(this._player.OpenedNpc.Definition.Number.ToUnsigned(), 0).ConfigureAwait(false);
             }
         }
+        else if (window == NpcWindow.LugardDoppelgangerEntry)
+        {
+            await this.OpenDoppelgangerEntryWindowAsync().ConfigureAwait(false);
+        }
         else
         {
             await this._player.Connection.SendNpcWindowResponseAsync(Convert(window)).ConfigureAwait(false);
@@ -76,5 +80,33 @@ public class OpenNpcWindowPlugIn : IOpenNpcWindowPlugIn
             NpcWindow.LegacyQuest => throw new ArgumentException("The legacy quest dialog is opened by another action"),
             _ => throw new ArgumentException($"Unhandled case {window}."),
         };
+    }
+
+    /// <summary>
+    /// Opens the entrance window of the doppelganger event.
+    /// The client reads the minutes until the entrance opens from the byte after the window.
+    /// The event can always be entered, so it's 0 ("You may now enter.").
+    /// </summary>
+    private async ValueTask OpenDoppelgangerEntryWindowAsync()
+    {
+        if (this._player.Connection is not { Connected: true } connection)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = NpcWindowResponseRef.Length;
+            var span = connection.Output.GetSpan(length)[..length];
+            span.Clear();
+            _ = new NpcWindowResponseRef(span)
+            {
+                Window = NpcWindowResponse.NpcWindow.LugardDoppelgangerEntry,
+            };
+
+            return length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
     }
 }

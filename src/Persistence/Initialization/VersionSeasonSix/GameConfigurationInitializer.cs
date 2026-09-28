@@ -91,6 +91,10 @@ public class GameConfigurationInitializer : GameConfigurationInitializerBase
         new ChaosCastleInitializer(this.Context, this.GameConfiguration).Initialize();
         new CastleSiegeInitializer(this.Context, this.GameConfiguration).Initialize();
         new KanturuInitializer(this.Context, this.GameConfiguration).Initialize();
+        new DoppelgangerInitializer(this.Context, this.GameConfiguration).Initialize();
+
+        // After all items exist.
+        new ItemRules(this.Context, this.GameConfiguration).Initialize();
     }
 
     /// <summary>

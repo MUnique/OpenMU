@@ -178,6 +178,33 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The Ice Walker appeared! Kill it within one minute, or the following monsters become stronger..
+        /// </summary>
+        public static string DoppelgangerIceWalkerAppeared {
+            get {
+                return ResourceManager.GetString("DoppelgangerIceWalkerAppeared", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Ice Walker escaped! The following monsters are stronger..
+        /// </summary>
+        public static string DoppelgangerIceWalkerEscaped {
+            get {
+                return ResourceManager.GetString("DoppelgangerIceWalkerEscaped", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Ice Walker has been defeated!.
+        /// </summary>
+        public static string DoppelgangerIceWalkerKilled {
+            get {
+                return ResourceManager.GetString("DoppelgangerIceWalkerKilled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Your {0} has been destroyed! You are falling out of the Kanturu Refinery Tower..
         /// </summary>
         public static string KanturuRequiredItemDestroyed {
@@ -817,6 +844,60 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This item can't be dropped..
+        /// </summary>
+        public static string ItemCannotBeDropped {
+            get {
+                return ResourceManager.GetString("ItemCannotBeDropped", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This item can't be repaired..
+        /// </summary>
+        public static string ItemCannotBeRepaired {
+            get {
+                return ResourceManager.GetString("ItemCannotBeRepaired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This item can't be sold in a personal store..
+        /// </summary>
+        public static string ItemCannotBeSoldInPersonalStore {
+            get {
+                return ResourceManager.GetString("ItemCannotBeSoldInPersonalStore", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This item can't be sold..
+        /// </summary>
+        public static string ItemCannotBeSoldToNpc {
+            get {
+                return ResourceManager.GetString("ItemCannotBeSoldToNpc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This item can't be stored in the vault..
+        /// </summary>
+        public static string ItemCannotBeStored {
+            get {
+                return ResourceManager.GetString("ItemCannotBeStored", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This item can't be traded..
+        /// </summary>
+        public static string ItemCannotBeTraded {
+            get {
+                return ResourceManager.GetString("ItemCannotBeTraded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This item is bound to the inventory of this character..
         /// </summary>
         public static string ItemIsBoundToInventoryOfCharacter {
@@ -993,6 +1074,87 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string KillAllMonstersFormat {
             get {
                 return ResourceManager.GetString("KillAllMonstersFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The battle against Selupan has failed. The Hatchery Gates will open in {0}..
+        /// </summary>
+        public static string RaklionBattleFailed {
+            get {
+                return ResourceManager.GetString("RaklionBattleFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} hour(s) {1} minute(s).
+        /// </summary>
+        public static string RaklionDurationHoursMinutes {
+            get {
+                return ResourceManager.GetString("RaklionDurationHoursMinutes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} minute(s).
+        /// </summary>
+        public static string RaklionDurationMinutes {
+            get {
+                return ResourceManager.GetString("RaklionDurationMinutes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Hatchery Gate is closed..
+        /// </summary>
+        public static string RaklionHatcheryClosed {
+            get {
+                return ResourceManager.GetString("RaklionHatcheryClosed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Hatchery Gate is closed, you cannot enter..
+        /// </summary>
+        public static string RaklionHatcheryIsClosed {
+            get {
+                return ResourceManager.GetString("RaklionHatcheryIsClosed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Hatchery Gate is opened..
+        /// </summary>
+        public static string RaklionHatcheryOpened {
+            get {
+                return ResourceManager.GetString("RaklionHatcheryOpened", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Hatchery Gates will open in {0}..
+        /// </summary>
+        public static string RaklionHatcheryOpensIn {
+            get {
+                return ResourceManager.GetString("RaklionHatcheryOpensIn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selupan has appeared. The Hatchery Gates will be closed in {0} minute(s)..
+        /// </summary>
+        public static string RaklionSelupanAppeared {
+            get {
+                return ResourceManager.GetString("RaklionSelupanAppeared", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} defeated Selupan! The Hatchery Gates will open in {1}..
+        /// </summary>
+        public static string RaklionSelupanDefeated {
+            get {
+                return ResourceManager.GetString("RaklionSelupanDefeated", resourceCulture);
             }
         }
         

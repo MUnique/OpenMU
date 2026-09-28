@@ -147,7 +147,7 @@ public class GuildService : IGuildService, ISupportDataChangedNotification, IDis
 
                 result.Sort(static (x, y) =>
                 {
-                    var rankComparison = GuildPositionComparer.GetRank(x.Position).CompareTo(GuildPositionComparer.GetRank(y.Position));
+                    var rankComparison = GuildPositionComparer.Instance.Compare(x.Position, y.Position);
                     return rankComparison != 0
                         ? rankComparison
                         : StringComparer.OrdinalIgnoreCase.Compare(x.CharacterName, y.CharacterName);
