@@ -45,18 +45,13 @@ public abstract class ItemDurabilityRefactorPlugInBase : UpdatePlugInBase
 
         var jewelryAndWingsDurationIncrease = Stats.JewelryAndWingsDurationIncrease.GetPersistent(gameConfiguration);
 
-        // Add new base attribute
+        // Add new base attribute (WeaponAndArmorDurationIncrease is the old ItemDurationIncrease)
         gameConfiguration.CharacterClasses.ForEach(charClass =>
         {
-            void AddBaseAttributeIfNotExists(AttributeDefinition attribute)
+            if (charClass.BaseAttributeValues.All(ba => ba.Definition != jewelryAndWingsDurationIncrease))
             {
-                if (charClass.BaseAttributeValues.All(ba => ba.Definition != attribute))
-                {
-                    charClass.BaseAttributeValues.Add(context.CreateNew<ConstValueAttribute>(1f, jewelryAndWingsDurationIncrease, AggregateType.AddRaw));
-                }
+                charClass.BaseAttributeValues.Add(context.CreateNew<ConstValueAttribute>(1f, jewelryAndWingsDurationIncrease, AggregateType.AddRaw));
             }
-
-            AddBaseAttributeIfNotExists(jewelryAndWingsDurationIncrease);
         });
 
         gameConfiguration.DamagePerOneItemDurability = 69;
