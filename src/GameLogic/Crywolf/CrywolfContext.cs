@@ -42,6 +42,7 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
     private readonly ConcurrentDictionary<Monster, byte> _eventMonsters = new();
     private readonly ConcurrentDictionary<Monster, byte> _removedMonsters = new();
     private readonly ConcurrentDictionary<Player, int> _scores = new();
+    private readonly List<Player> _heroes = new();
     private readonly Func<CrywolfEventDefinition, ValueTask> _saveDefinition;
 
     private CrywolfEventDefinition _definition;
@@ -650,6 +651,21 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
         }
 
         await this.ForEachMapPlayerAsync(player => this.RewardExperienceAsync(player, isDefended).AsTask()).ConfigureAwait(false);
+
+        // Unlike the original game, the heroes are shown already at the end of the battle. The client shows
+        // them in the result dialog, which it opens after an animation of some frames, so with a higher frame
+        // rate than the original client, the heroes wouldn't arrive in time at the end of the event.
+        var heroes = this._scores
+            .Where(entry => entry.Key.CurrentMap == this._map)
+            .OrderByDescending(entry => entry.Value)
+            .Take(Math.Min(this._definition.HeroCount, 5))
+            .ToList();
+        this._heroes.Clear();
+        this._heroes.AddRange(heroes.Select(entry => entry.Key));
+        var heroList = heroes
+            .Select(entry => new CrywolfHero(entry.Key.Name, entry.Value, entry.Key.SelectedCharacter?.CharacterClass?.Number ?? 0))
+            .ToList();
+        await this.ForEachMapPlayerAsync(player => player.InvokeViewPlugInAsync<ICrywolfEventViewPlugIn>(p => p.ShowHeroListAsync(heroList)).AsTask()).ConfigureAwait(false);
         await this.SaveOccupationAsync().ConfigureAwait(false);
     }
 
@@ -660,24 +676,16 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
         await this.RestoreCommonMonstersAsync().ConfigureAwait(false);
         await this.ShowStateToMapPlayersAsync().ConfigureAwait(false);
 
-        var isDefended = this.Occupation == CrywolfOccupationState.Peace;
-        var heroes = this._scores
-            .Where(entry => entry.Key.CurrentMap == this._map)
-            .OrderByDescending(entry => entry.Value)
-            .Take(Math.Min(this._definition.HeroCount, 5))
-            .ToList();
-        var heroList = heroes
-            .Select(entry => new CrywolfHero(entry.Key.Name, entry.Value, entry.Key.SelectedCharacter?.CharacterClass?.Number ?? 0))
-            .ToList();
-        await this.ForEachMapPlayerAsync(player => player.InvokeViewPlugInAsync<ICrywolfEventViewPlugIn>(p => p.ShowHeroListAsync(heroList)).AsTask()).ConfigureAwait(false);
-        if (isDefended)
+        if (this.Occupation == CrywolfOccupationState.Peace)
         {
-            foreach (var (hero, _) in heroes)
+            // Like in the original game, the heroes get their reward at the end of the event.
+            foreach (var hero in this._heroes)
             {
                 await this.DropRewardAsync(hero).ConfigureAwait(false);
             }
         }
 
+        this._heroes.Clear();
         this._scores.Clear();
     }
 
