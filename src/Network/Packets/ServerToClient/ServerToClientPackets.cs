@@ -12870,6 +12870,177 @@ public readonly struct EffectId
 
 
 /// <summary>
+/// Is sent by the server when: The player wears a monster transformation ring (extended client).
+/// Causes reaction on client side: The character appears as monster, defined by the Skin property.
+/// </summary>
+public readonly struct AddTransformedCharacterToScopeExtended
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AddTransformedCharacterToScopeExtended"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public AddTransformedCharacterToScopeExtended(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AddTransformedCharacterToScopeExtended"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private AddTransformedCharacterToScopeExtended(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)data.Length;
+            this.CharacterCount = 1;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0x45;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2Header Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the number of characters in this packet. This packet contains only one character, because the size of the appearance data depends on the used appearance serializer.
+    /// </summary>
+    public byte CharacterCount
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the id.
+    /// </summary>
+    public ushort Id
+    {
+        get => ReadUInt16BigEndian(this._data.Span[5..]);
+        set => WriteUInt16BigEndian(this._data.Span[5..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the current position x.
+    /// </summary>
+    public byte CurrentPositionX
+    {
+        get => this._data.Span[7];
+        set => this._data.Span[7] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the current position y.
+    /// </summary>
+    public byte CurrentPositionY
+    {
+        get => this._data.Span[8];
+        set => this._data.Span[8] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the skin.
+    /// </summary>
+    public ushort Skin
+    {
+        get => ReadUInt16BigEndian(this._data.Span[9..]);
+        set => WriteUInt16BigEndian(this._data.Span[9..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the name.
+    /// </summary>
+    public string Name
+    {
+        get => this._data.Span.ExtractString(11, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(11, 10).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the target position x.
+    /// </summary>
+    public byte TargetPositionX
+    {
+        get => this._data.Span[21];
+        set => this._data.Span[21] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the target position y.
+    /// </summary>
+    public byte TargetPositionY
+    {
+        get => this._data.Span[22];
+        set => this._data.Span[22] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the rotation.
+    /// </summary>
+    public byte Rotation
+    {
+        get => this._data.Span[23..].GetByteValue(4, 4);
+        set => this._data.Span[23..].SetByteValue(value, 4, 4);
+    }
+
+    /// <summary>
+    /// Gets or sets the hero state.
+    /// </summary>
+    public CharacterHeroState HeroState
+    {
+        get => (CharacterHeroState)this._data.Span[23..].GetByteValue(4, 0);
+        set => this._data.Span[23..].SetByteValue((byte)value, 4, 0);
+    }
+
+    /// <summary>
+    /// Gets or sets the appearance data, followed by the number of effects and the effect ids.
+    /// </summary>
+    public Span<byte> AppearanceAndEffects
+    {
+        get => this._data.Slice(24).Span;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="AddTransformedCharacterToScopeExtended"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator AddTransformedCharacterToScopeExtended(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="AddTransformedCharacterToScopeExtended"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(AddTransformedCharacterToScopeExtended packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified length of <see cref="AppearanceAndEffects"/>.
+    /// </summary>
+    /// <param name="appearanceAndEffectsLength">The length in bytes of <see cref="AppearanceAndEffects"/> on which the required size depends.</param>
+        
+    public static int GetRequiredSize(int appearanceAndEffectsLength) => appearanceAndEffectsLength + 24;
+}
+
+
+/// <summary>
 /// Is sent by the server when: The server wants to alter the terrain attributes of a map at runtime.
 /// Causes reaction on client side: The client updates the terrain attributes on its side.
 /// </summary>

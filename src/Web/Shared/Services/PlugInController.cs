@@ -370,7 +370,14 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
 
     private bool FilterByName(Type plugInType)
     {
-        return string.IsNullOrWhiteSpace(this.NameFilter) || GetPlugInName(plugInType).Contains(this.NameFilter, StringComparison.InvariantCultureIgnoreCase);
+        if (string.IsNullOrWhiteSpace(this.NameFilter))
+        {
+            return true;
+        }
+
+        var description = plugInType.GetCustomAttribute<DisplayAttribute>()?.GetDescription();
+        return GetPlugInName(plugInType).Contains(this.NameFilter, StringComparison.InvariantCultureIgnoreCase)
+            || (description?.Contains(this.NameFilter, StringComparison.InvariantCultureIgnoreCase) ?? false);
     }
 
     private bool FilterByPoint(Type plugInType)

@@ -56,12 +56,13 @@ with different rates: open the game server on the
 
 ## Change a drop
 
-1. Go to **Configuration → Drop item groups**
-   ([Game configuration](game-configuration.md#drop-item-groups)).
-2. Edit the group — or duplicate an existing one and adapt the copy.
-3. Assign the group where it should apply: globally, on a map, or on a monster
-   ([Monsters](game-configuration.md#monsters)).
-4. Save and reload the configuration.
+1. Go to **Configuration → Item drops** ([Item drops](item-drops.md)).
+2. Edit the group in its section — *Map drop groups*, *Monster drops* or
+   *Item box drops* — or add a new one there.
+3. For a map drop group, open its details and assign the maps where it should
+   apply.
+4. Check the result in the *Drop chance overview per monster*.
+5. Save and reload the configuration.
 
 ## Switch to another game version
 
