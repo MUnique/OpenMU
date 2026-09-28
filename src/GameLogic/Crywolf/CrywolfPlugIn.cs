@@ -61,6 +61,11 @@ public sealed class CrywolfPlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISuppor
 
     private int _isUpdatingMultipliers;
 
+    /// <summary>
+    /// The benefits and penalties which apply, so that their changes are logged.
+    /// </summary>
+    private (bool Benefits, bool Penalties)? _appliedEffects;
+
     /// <inheritdoc />
     public CrywolfEventDefinition? Configuration { get; set; }
 
@@ -99,7 +104,7 @@ public sealed class CrywolfPlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISuppor
             }
 
             await context.TickAsync().ConfigureAwait(false);
-            await this.UpdateMultipliersAsync().ConfigureAwait(false);
+            await this.UpdateMultipliersAsync(gameContext).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -201,7 +206,30 @@ public sealed class CrywolfPlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISuppor
                && monster.SpawnArea.MaximumHealthOverride is null;
     }
 
-    private async ValueTask UpdateMultipliersAsync()
+    private static void LogAppliedEffects(ILogger logger, CrywolfContext context)
+    {
+        var definition = context.Definition;
+        if (context.AreBenefitsApplied)
+        {
+            logger.LogInformation(
+                "The crywolf fortress is in peace. The benefits apply on all game servers: chaos mix success rate +{chaosRate} %, monster health {monsterHealth} %.",
+                definition.ChaosRateBenefit,
+                definition.MonsterHealthBenefitPercentage);
+        }
+        else if (context.ArePenaltiesApplied)
+        {
+            logger.LogInformation(
+                "The crywolf fortress is occupied. The penalties apply on all game servers: jewel drop chance {jewelDrop} %, experience {experience} %.",
+                definition.JewelDropPenaltyPercentage,
+                definition.ExperiencePenaltyPercentage);
+        }
+        else
+        {
+            logger.LogInformation("Neither the benefits nor the penalties of the crywolf fortress apply. Occupation: {occupation}.", context.Occupation);
+        }
+    }
+
+    private async ValueTask UpdateMultipliersAsync(GameContext gameContext)
     {
         if (Interlocked.Exchange(ref this._isUpdatingMultipliers, 1) != 0)
         {
@@ -215,6 +243,13 @@ public sealed class CrywolfPlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISuppor
             if (context is null)
             {
                 return;
+            }
+
+            var appliedEffects = (context.AreBenefitsApplied, context.ArePenaltiesApplied);
+            if (this._appliedEffects != appliedEffects)
+            {
+                this._appliedEffects = appliedEffects;
+                LogAppliedEffects(gameContext.LoggerFactory.CreateLogger<CrywolfPlugIn>(), context);
             }
 
             var experienceMultiplier = context.ExperienceMultiplier;
