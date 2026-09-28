@@ -41,10 +41,20 @@ public class GuildKickPlayerAction
             return;
         }
 
-        if (player.Account!.SecurityCode != null && player.Account.SecurityCode != securityCode)
+        // Same fallback as DeleteCharacterAction: an account with no security code ever set (the
+        // default, "" - there is no in-game or web flow to configure one) is checked against the
+        // account password instead. Without this fallback, "" != null is always true, so the check
+        // below would always run against an empty string that no legitimate input can match, and a
+        // guild could never be kicked from - or disbanded, since a self-kick by the guild master is
+        // how disbanding works below.
+        var checkAsPassword = string.IsNullOrEmpty(player.Account!.SecurityCode);
+        var securityCodeIsWrong = checkAsPassword
+            ? !BCrypt.Net.BCrypt.Verify(securityCode, player.Account.PasswordHash)
+            : player.Account.SecurityCode != securityCode;
+        if (securityCodeIsWrong)
         {
             await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.WrongSecurityCode)).ConfigureAwait(false);
-            player.Logger.LogDebug("Wrong Security Code: [{0}] <> [{1}], Player: {2}", securityCode, player.Account.SecurityCode, player.SelectedCharacter?.Name);
+            player.Logger.LogDebug("Wrong Security Code, Player: {0}", player.SelectedCharacter?.Name);
 
             await player.InvokeViewPlugInAsync<IGuildKickResultPlugIn>(p => p.GuildKickResultAsync(GuildKickSuccess.Failed)).ConfigureAwait(false);
             return;
