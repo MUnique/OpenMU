@@ -102,4 +102,67 @@ public class NewPlayersInScopeExtendedPlugIn : NewPlayersInScopePlugIn, INewPlay
 
         await connection.SendAsync(Write).ConfigureAwait(false);
     }
+
+    /// <inheritdoc />
+    protected override async ValueTask SendTransformedCharacterAsync(Player newPlayer, bool isSpawned)
+    {
+        var connection = this.Player.Connection;
+        if (connection is null)
+        {
+            return;
+        }
+
+        var selectedCharacter = newPlayer.SelectedCharacter;
+        if (selectedCharacter is null)
+        {
+            return;
+        }
+
+        int Write()
+        {
+            var appearanceSerializer = this.Player.AppearanceSerializer;
+            var activeEffects = newPlayer.MagicEffectList.VisibleEffects;
+            var requiredSize = AddTransformedCharacterToScopeExtendedRef.GetRequiredSize(appearanceSerializer.NeededSpace + activeEffects.Count + 1);
+
+            var span = connection.Output.GetSpan(requiredSize)[..requiredSize];
+            var packet = new AddTransformedCharacterToScopeExtendedRef(span);
+
+            packet.Id = newPlayer.GetId(this.Player);
+            if (isSpawned)
+            {
+                packet.Id |= 0x8000;
+            }
+
+            packet.CurrentPositionX = newPlayer.Position.X;
+            packet.CurrentPositionY = newPlayer.Position.Y;
+            packet.Skin = (ushort)newPlayer.Attributes![Stats.TransformationSkin];
+            packet.Name = selectedCharacter.Name;
+            if (newPlayer.IsWalking)
+            {
+                packet.TargetPositionX = newPlayer.WalkTarget.X;
+                packet.TargetPositionY = newPlayer.WalkTarget.Y;
+            }
+            else
+            {
+                packet.TargetPositionX = newPlayer.Position.X;
+                packet.TargetPositionY = newPlayer.Position.Y;
+            }
+
+            packet.Rotation = newPlayer.Rotation.ToPacketByte();
+            packet.HeroState = selectedCharacter.State.Convert();
+
+            appearanceSerializer.WriteAppearanceData(packet.AppearanceAndEffects, newPlayer.AppearanceData, true);
+
+            var effectsStartIndex = appearanceSerializer.NeededSpace;
+            packet.AppearanceAndEffects[effectsStartIndex] = (byte)activeEffects.Count;
+            for (int e = 0; e < activeEffects.Count; ++e)
+            {
+                packet.AppearanceAndEffects[effectsStartIndex + 1 + e] = (byte)activeEffects[e].Id;
+            }
+
+            return span.Length;
+        }
+
+        await connection.SendAsync(Write).ConfigureAwait(false);
+    }
 }
