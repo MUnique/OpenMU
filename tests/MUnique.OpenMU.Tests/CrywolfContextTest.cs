@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Tests;
 
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Crywolf;
@@ -22,19 +23,40 @@ public class CrywolfContextTest
     private static readonly Point AltarPosition = new(125, 27);
 
     /// <summary>
-    /// Tests that the battle is lost, when no altar is contracted when it starts.
+    /// Tests that the battle is lost, when no altar is contracted when it starts, and that the occupation is saved in the database.
     /// </summary>
     [Test]
     public async Task BattleIsLostWithoutContractedAltarAsync()
     {
-        var (context, _, saved) = await CreateContextAsync().ConfigureAwait(false);
+        var (context, _, gameContext) = await CreateContextAsync().ConfigureAwait(false);
 
         await ProceedToAsync(context, CrywolfState.Start).ConfigureAwait(false);
 
         Assert.That(context.State, Is.EqualTo(CrywolfState.End));
         Assert.That(context.Occupation, Is.EqualTo(CrywolfOccupationState.Occupied));
-        Assert.That(saved, Has.Count.EqualTo(1), "The occupation is saved.");
-        Assert.That(saved[0], Is.EqualTo(CrywolfOccupationState.Occupied));
+        using var persistenceContext = gameContext.PersistenceContextProvider.CreateNewTypedContext(typeof(CrywolfData), false, gameContext.Configuration);
+        var data = (await persistenceContext.GetAsync<CrywolfData>().ConfigureAwait(false)).ToList();
+        Assert.That(data, Has.Count.EqualTo(1), "The occupation is saved.");
+        Assert.That(data[0].IsOccupied, Is.True);
+        Assert.That(data[0].LastBattleEnd, Is.Not.Null);
+    }
+
+    /// <summary>
+    /// Tests that the saved occupation is loaded, so that it survives a restart of the server.
+    /// </summary>
+    [Test]
+    public async Task SavedOccupationIsLoadedAsync()
+    {
+        var gameContext = (GameContext)GameContextTestHelper.CreateGameContext();
+        using (var persistenceContext = gameContext.PersistenceContextProvider.CreateNewTypedContext(typeof(CrywolfData), false, gameContext.Configuration))
+        {
+            persistenceContext.CreateNew<CrywolfData>().IsOccupied = true;
+            await persistenceContext.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        var (context, _, _) = await CreateContextAsync(gameContext).ConfigureAwait(false);
+
+        Assert.That(context.Occupation, Is.EqualTo(CrywolfOccupationState.Occupied));
     }
 
     /// <summary>
@@ -107,9 +129,9 @@ public class CrywolfContextTest
         }
     }
 
-    private static async ValueTask<(CrywolfContext Context, Player Player, List<CrywolfOccupationState> Saved)> CreateContextAsync()
+    private static async ValueTask<(CrywolfContext Context, Player Player, GameContext GameContext)> CreateContextAsync(GameContext? gameContext = null)
     {
-        var gameContext = (GameContext)GameContextTestHelper.CreateGameContext();
+        gameContext ??= (GameContext)GameContextTestHelper.CreateGameContext();
         var map = (await gameContext.GetMapAsync(0).ConfigureAwait(false))!;
         var definition = new CrywolfEventDefinition
         {
@@ -141,12 +163,7 @@ public class CrywolfContextTest
             WaveNumber = definition.BalgassWaveNumber,
         });
 
-        var saved = new List<CrywolfOccupationState>();
-        var context = new CrywolfContext(gameContext, definition, d =>
-        {
-            saved.Add(d.Occupation);
-            return ValueTask.CompletedTask;
-        });
+        var context = new CrywolfContext(gameContext, definition);
         await context.InitializeAsync().ConfigureAwait(false);
 
         var player = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
@@ -154,7 +171,7 @@ public class CrywolfContextTest
         player.IsAlive = true;
         player.Position = AltarPosition;
         await player.CurrentMap!.AddAsync(player).ConfigureAwait(false);
-        return (context, player, saved);
+        return (context, player, gameContext);
     }
 
     private static async ValueTask AddNpcAsync(GameMap map, short number, Point position)

@@ -78,6 +78,9 @@ public static class MapsterConfigurator
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Entities.CharacterQuestState, MUnique.OpenMU.DataModel.Entities.CharacterQuestState>()
             .Include<CharacterQuestState, BasicModel.CharacterQuestState>();
 
+        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Entities.CrywolfData, MUnique.OpenMU.DataModel.Entities.CrywolfData>()
+            .Include<CrywolfData, BasicModel.CrywolfData>();
+
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Entities.Guild, MUnique.OpenMU.DataModel.Entities.Guild>()
             .Include<Guild, BasicModel.Guild>();
 

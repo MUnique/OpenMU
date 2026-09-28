@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 /// <remarks>
 /// The event starts at the configured times. The result of the event, the occupation state of the fortress,
-/// is kept until the next event and saved in the configuration of this plugin.
+/// is kept until the next event and saved in the database.
 /// </remarks>
 [PlugIn]
 [Display(Name = nameof(PlugInResources.CrywolfPlugIn_Name), Description = nameof(PlugInResources.CrywolfPlugIn_Description), ResourceType = typeof(PlugInResources))]
@@ -52,7 +52,7 @@ public sealed class CrywolfPlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISuppor
             var definition = this.Configuration ??= new CrywolfEventDefinition();
             if (!this._contexts.TryGetValue(gameContext, out var context))
             {
-                context = new CrywolfContext(gameContext, definition, d => SaveConfigurationAsync(gameContext, d));
+                context = new CrywolfContext(gameContext, definition);
                 await context.InitializeAsync().ConfigureAwait(false);
                 this._contexts[gameContext] = context;
             }
@@ -97,24 +97,5 @@ public sealed class CrywolfPlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISuppor
         }
 
         this._contexts.Clear();
-    }
-
-    /// <summary>
-    /// Saves the configuration, so that the occupation state of the fortress survives a restart of the server.
-    /// </summary>
-    private static async ValueTask SaveConfigurationAsync(GameContext gameContext, CrywolfEventDefinition definition)
-    {
-        // The configuration is loaded through a new context, so that the change is tracked and saved.
-        using var context = gameContext.PersistenceContextProvider.CreateNewContext();
-        var typeId = typeof(CrywolfPlugIn).GUID;
-        var gameConfiguration = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).FirstOrDefault();
-        if (gameConfiguration?.PlugInConfigurations.FirstOrDefault(c => c.TypeId == typeId) is not { } configuration)
-        {
-            gameContext.LoggerFactory.CreateLogger<CrywolfPlugIn>().LogWarning("The configuration of the crywolf event wasn't found, so its occupation state isn't saved.");
-            return;
-        }
-
-        configuration.SetConfiguration(definition, gameContext.PlugInManager.CustomConfigReferenceHandler);
-        await context.SaveChangesAsync().ConfigureAwait(false);
     }
 }

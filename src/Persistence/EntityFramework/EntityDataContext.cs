@@ -27,6 +27,11 @@ public class EntityDataContext : ExtendedTypeContext
     internal DbSet<CastleSiegeData> CastleSiegeData => this.Set<CastleSiegeData>();
 
     /// <summary>
+    /// Gets the persistent state of the crywolf event.
+    /// </summary>
+    internal DbSet<CrywolfData> CrywolfData => this.Set<CrywolfData>();
+
+    /// <summary>
     /// Gets the Castle Siege guild registrations.
     /// </summary>
     internal DbSet<CastleSiegeGuildRegistration> CastleSiegeGuildRegistrations => this.Set<CastleSiegeGuildRegistration>();

@@ -37,6 +37,7 @@ public class BackupService : IBackupService
         ("ConfigurationUpdateState_", typeof(BasicModel.ConfigurationUpdateState)),
         ("Account_", typeof(BasicModel.Account)),
         ("CastleSiegeData_", typeof(BasicModel.CastleSiegeData)),
+        ("CrywolfData_", typeof(BasicModel.CrywolfData)),
     ];
 
     private readonly IPersistenceContextProvider _contextProvider;
@@ -90,6 +91,7 @@ public class BackupService : IBackupService
         }
 
         await ExportAsync<CastleSiegeData, BasicModel.CastleSiegeData>(archive, "CastleSiegeData_", context, sharedHandler, cancellationToken).ConfigureAwait(false);
+        await ExportAsync<CrywolfData, BasicModel.CrywolfData>(archive, "CrywolfData_", context, sharedHandler, cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -280,6 +282,11 @@ public class BackupService : IBackupService
         if (basicModelType == typeof(BasicModel.CastleSiegeData))
         {
             return deserializer.Deserialize<BasicModel.CastleSiegeData>(ms, referenceHandler);
+        }
+
+        if (basicModelType == typeof(BasicModel.CrywolfData))
+        {
+            return deserializer.Deserialize<BasicModel.CrywolfData>(ms, referenceHandler);
         }
 
         if (basicModelType == typeof(AdminUser))

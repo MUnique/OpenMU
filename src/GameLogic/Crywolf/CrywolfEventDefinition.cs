@@ -241,14 +241,6 @@ public class CrywolfEventDefinition
     public IList<short> AlwaysVisibleNpcNumbers { get; set; } = new List<short> { 406, 407 };
 
     /// <summary>
-    /// Gets or sets the occupation state of the fortress. It's the result of the last event, which is kept until the next one.
-    /// </summary>
-    /// <remarks>
-    /// It's saved by the event, so that it survives a restart of the server.
-    /// </remarks>
-    public CrywolfOccupationState Occupation { get; set; } = CrywolfOccupationState.Peace;
-
-    /// <summary>
     /// Determines whether the event starts at the specified local time of the server.
     /// </summary>
     /// <param name="localTime">The local time of the server.</param>

@@ -26,7 +26,8 @@ using MUnique.OpenMU.Pathfinding;
 ///   <item>The result is shown, and the players get experience depending on their score (<see cref="CrywolfState.End"/>).</item>
 ///   <item>The army disappears and the common monsters return. The heroes are shown (<see cref="CrywolfState.EndCycle"/>).</item>
 /// </list>
-/// The result of the event (<see cref="Occupation"/>) is kept until the next event.
+/// The result of the event (<see cref="Occupation"/>) is kept until the next event. Like in the original game,
+/// it's saved in the database (<see cref="CrywolfData"/>), so that it survives a restart of the server.
 /// </remarks>
 public sealed class CrywolfContext : IEventStateProvider, IDisposable
 {
@@ -41,7 +42,6 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
     private readonly ConcurrentDictionary<Monster, byte> _removedMonsters = new();
     private readonly ConcurrentDictionary<Player, int> _scores = new();
     private readonly List<Player> _heroes = new();
-    private readonly Func<CrywolfEventDefinition, ValueTask> _saveDefinition;
 
     private CrywolfEventDefinition _definition;
     private GameMap? _map;
@@ -61,20 +61,18 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
     private IReadOnlyList<CrywolfAltar> _altars = [];
     private bool _isMissingConfigurationLogged;
     private int _isBalgassDead;
+    private Guid? _dataId;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CrywolfContext"/> class.
     /// </summary>
     /// <param name="gameContext">The game context.</param>
     /// <param name="definition">The definition of the event.</param>
-    /// <param name="saveDefinition">The function which saves the definition, when the occupation changed.</param>
-    public CrywolfContext(GameContext gameContext, CrywolfEventDefinition definition, Func<CrywolfEventDefinition, ValueTask> saveDefinition)
+    public CrywolfContext(GameContext gameContext, CrywolfEventDefinition definition)
     {
         this._gameContext = gameContext;
         this._definition = definition;
-        this._saveDefinition = saveDefinition;
         this._logger = gameContext.LoggerFactory.CreateLogger<CrywolfContext>();
-        this.Occupation = definition.Occupation;
     }
 
     /// <summary>
@@ -85,7 +83,7 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
     /// <summary>
     /// Gets the occupation state of the fortress.
     /// </summary>
-    public CrywolfOccupationState Occupation { get; private set; }
+    public CrywolfOccupationState Occupation { get; private set; } = CrywolfOccupationState.Peace;
 
     /// <summary>
     /// Gets the stage of the army: 0, when it doesn't move, 1 when it advances, and 2 when it attacks the statue.
@@ -146,6 +144,7 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
             return;
         }
 
+        await this.LoadOccupationAsync().ConfigureAwait(false);
         this._map.ObjectAdded += this.OnObjectAddedToMapAsync;
         this.InitializeNpcs();
         await this.ApplyOccupationAsync().ConfigureAwait(false);
@@ -922,17 +921,34 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
         await this.UpdateEffectsAsync().ConfigureAwait(false);
     }
 
-    private async ValueTask SaveOccupationAsync()
+    private async ValueTask LoadOccupationAsync()
     {
-        if (this._definition.Occupation == this.Occupation)
-        {
-            return;
-        }
-
-        this._definition.Occupation = this.Occupation;
         try
         {
-            await this._saveDefinition(this._definition).ConfigureAwait(false);
+            using var context = this._gameContext.PersistenceContextProvider.CreateNewTypedContext(typeof(CrywolfData), false, this._gameContext.Configuration);
+            if ((await context.GetAsync<CrywolfData>().ConfigureAwait(false)).FirstOrDefault() is { } data)
+            {
+                this._dataId = data.Id;
+                this.Occupation = data.IsOccupied ? CrywolfOccupationState.Occupied : CrywolfOccupationState.Peace;
+            }
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Couldn't load the occupation state of the crywolf fortress.");
+        }
+    }
+
+    private async ValueTask SaveOccupationAsync()
+    {
+        try
+        {
+            using var context = this._gameContext.PersistenceContextProvider.CreateNewTypedContext(typeof(CrywolfData), false, this._gameContext.Configuration);
+            var data = this._dataId is { } id ? await context.GetByIdAsync<CrywolfData>(id).ConfigureAwait(false) : null;
+            data ??= context.CreateNew<CrywolfData>();
+            data.IsOccupied = this.Occupation != CrywolfOccupationState.Peace;
+            data.LastBattleEnd = DateTime.UtcNow;
+            await context.SaveChangesAsync().ConfigureAwait(false);
+            this._dataId = data.Id;
         }
         catch (Exception ex)
         {
