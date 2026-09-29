@@ -134,6 +134,12 @@ public sealed class CrywolfEventViewPlugIn : ICrywolfEventViewPlugIn
     }
 
     /// <inheritdoc />
+    public async ValueTask ShowMonsterSkillAsync(IAttacker monster, IIdentifiable target, short skillNumber)
+    {
+        await this._player.Connection.SendMonsterSkillAnimationAsync((ushort)skillNumber, monster.GetId(this._player), target.GetId(this._player)).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
     public async ValueTask ShowEffectAsync(NonPlayerCharacter npc, CrywolfEffect effect, bool isActive)
     {
         await this._player.Connection.SendMagicEffectStatusAsync(isActive, npc.GetId(this._player), (byte)effect).ConfigureAwait(false);

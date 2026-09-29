@@ -76,6 +76,14 @@ public interface ICrywolfEventViewPlugIn : IViewPlugIn
     ValueTask ShowBallistaAttackAsync(NonPlayerCharacter ballista, Point target);
 
     /// <summary>
+    /// Shows the animation of a skill of a monster of the army.
+    /// </summary>
+    /// <param name="monster">The monster.</param>
+    /// <param name="target">The target of the skill.</param>
+    /// <param name="skillNumber">The number of the skill.</param>
+    ValueTask ShowMonsterSkillAsync(IAttacker monster, IIdentifiable target, short skillNumber);
+
+    /// <summary>
     /// Shows or hides an effect of the event at an object, e.g. the state of an altar.
     /// </summary>
     /// <param name="npc">The object.</param>

@@ -198,6 +198,60 @@ public class CrywolfEventDefinition
     public byte BalgassGoalY { get; set; } = 36;
 
     /// <summary>
+    /// Gets or sets the interval, in which Balgass acts. Like in the original game, it's shorter than his attack delay.
+    /// </summary>
+    public TimeSpan BalgassActionInterval { get; set; } = TimeSpan.FromSeconds(1);
+
+    /// <summary>
+    /// Gets or sets the health, below which Balgass tries to escape from his target. When it's 0, he doesn't escape.
+    /// </summary>
+    public int BalgassEscapeHealth { get; set; } = 10_000;
+
+    /// <summary>
+    /// Gets or sets the chance in percent, with which Balgass escapes instead of attacking, when his health is below <see cref="BalgassEscapeHealth"/>.
+    /// </summary>
+    public int BalgassEscapeChance { get; set; } = 70;
+
+    /// <summary>
+    /// Gets or sets the distance, which Balgass walks away from his target when he escapes.
+    /// </summary>
+    public int BalgassEscapeDistance { get; set; } = 5;
+
+    /// <summary>
+    /// Gets or sets the chance in percent, with which a monster of the army uses one of its <see cref="MonsterSkills"/> instead of a normal attack.
+    /// </summary>
+    public int SkillChance { get; set; } = 75;
+
+    /// <summary>
+    /// Gets or sets the number of the skill, which the client shows when a Dark Elf revives a member of its group.
+    /// </summary>
+    public short ReviveSkillNumber { get; set; } = 6;
+
+    /// <summary>
+    /// Gets or sets the skills of the monsters of the army, like the monster skill units of the original game.
+    /// </summary>
+    public IList<CrywolfMonsterSkill> MonsterSkills { get; set; } = new List<CrywolfMonsterSkill>
+    {
+        // Balgass: two skills around him, which push and stun the players, and remove the greater defense of the elves.
+        new() { MonsterNumber = 349, SkillNumber = 12, Radius = 6, PushChance = 50, StunChance = 50, RemovedMagicEffectNumber = 2, RemoveEffectChance = 50 },
+
+        // The original game rolls the stun of this skill twice with 50 %.
+        new() { MonsterNumber = 349, SkillNumber = 13, Radius = 6, PushChance = 50, StunChance = 75 },
+
+        // Dark Elf: stuns its target.
+        new() { MonsterNumber = 340, SkillNumber = 8, StunChance = 50 },
+
+        // Balram: removes the greater defense of its target.
+        new() { MonsterNumber = 344, SkillNumber = 9, RemovedMagicEffectNumber = 2, RemoveEffectChance = 50 },
+
+        // Death Spirit: decreases the mana and the ability of its target.
+        new() { MonsterNumber = 345, SkillNumber = 10, ManaDecreaseChance = 50, AbilityDecreaseChance = 50 },
+
+        // Soram: pushes the players around it.
+        new() { MonsterNumber = 341, SkillNumber = 11, Radius = 6, PushChance = 50 },
+    };
+
+    /// <summary>
     /// Gets or sets the scores which the players get for killing the monsters of the army.
     /// </summary>
     public IList<CrywolfMonsterScore> MonsterScores { get; set; } = new List<CrywolfMonsterScore>

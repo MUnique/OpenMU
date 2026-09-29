@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.Crywolf;
 
 using System.Threading;
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.Pathfinding;
@@ -18,8 +19,9 @@ using MUnique.OpenMU.Pathfinding;
 ///   <item>The Dark Elf which leads a group marches to the goal of the group and revives the dead members of its group.</item>
 ///   <item>The soldiers follow their leader and attack the players around them.</item>
 ///   <item>The ballistas bombard a point of the fortress.</item>
-///   <item>Balgass marches to the statue.</item>
+///   <item>Balgass marches to the statue. When his health is low, he tries to escape from his target.</item>
 /// </list>
+/// The monsters use their skills (<see cref="CrywolfEventDefinition.MonsterSkills"/>) instead of a normal attack with a chance.
 /// The goals are too far away for the path finder, so the monsters walk along the waypoints of the map.
 /// </remarks>
 public sealed class CrywolfMonsterIntelligence : INpcIntelligence, IDisposable
@@ -34,6 +36,11 @@ public sealed class CrywolfMonsterIntelligence : INpcIntelligence, IDisposable
     /// </summary>
     private const int WaypointDistance = 20;
 
+    /// <summary>
+    /// The number of the magic effect of a stun.
+    /// </summary>
+    private const short StunnedMagicEffectNumber = 61;
+
     private readonly CrywolfContext _context;
     private readonly CrywolfMonsterGroup? _group;
     private readonly CrywolfBallista? _ballista;
@@ -41,6 +48,7 @@ public sealed class CrywolfMonsterIntelligence : INpcIntelligence, IDisposable
     private Timer? _timer;
     private Monster? _monster;
     private IAttackable? _attacker;
+    private IReadOnlyList<CrywolfMonsterSkill>? _skills;
     private int _isRunning;
 
     /// <summary>
@@ -96,7 +104,10 @@ public sealed class CrywolfMonsterIntelligence : INpcIntelligence, IDisposable
     /// <inheritdoc />
     public void Start()
     {
-        this._timer ??= new Timer(state => _ = this.SafeTickAsync(), null, this.Monster.Definition.AttackDelay, this.Monster.Definition.AttackDelay);
+        var interval = this.Role == CrywolfMonsterRole.Balgass && this._context.Definition.BalgassActionInterval > TimeSpan.Zero
+            ? this._context.Definition.BalgassActionInterval
+            : this.Monster.Definition.AttackDelay;
+        this._timer ??= new Timer(state => _ = this.SafeTickAsync(), null, interval, interval);
     }
 
     /// <inheritdoc />
@@ -177,7 +188,7 @@ public sealed class CrywolfMonsterIntelligence : INpcIntelligence, IDisposable
 
         if (await this.SearchTargetAsync(monster).ConfigureAwait(false) is { } target)
         {
-            await monster.AttackAsync(target).ConfigureAwait(false);
+            await this.AttackAsync(monster, target).ConfigureAwait(false);
             return;
         }
 
@@ -194,6 +205,89 @@ public sealed class CrywolfMonsterIntelligence : INpcIntelligence, IDisposable
         }
     }
 
+    /// <summary>
+    /// Pushes the player away from the monster, as far as the terrain allows it.
+    /// </summary>
+    /// <param name="monster">The monster.</param>
+    /// <param name="player">The player.</param>
+    /// <param name="distance">The distance.</param>
+    internal static async ValueTask PushAwayAsync(Monster monster, Player player, int distance)
+    {
+        if (distance <= 0
+            || player.Attributes is not { } attributes
+            || attributes[Stats.IsStunned] > 0
+            || attributes[Stats.IsFrozen] > 0)
+        {
+            return;
+        }
+
+        var target = GetPointAwayFrom(monster.CurrentMap.Terrain, monster.Position, player.Position, distance, point => true);
+        if (target != player.Position)
+        {
+            await player.MoveAsync(target).ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Gets the point, which is up to the specified distance away from the origin, in the direction from the origin to the start.
+    /// It stops before tiles which can't be walked on or are in a safezone.
+    /// </summary>
+    /// <param name="terrain">The terrain.</param>
+    /// <param name="origin">The origin, from which the point is away.</param>
+    /// <param name="start">The start point.</param>
+    /// <param name="distance">The maximum distance.</param>
+    /// <param name="canWalkOn">A function which determines, if a point can be walked on in addition to the terrain.</param>
+    /// <returns>The point.</returns>
+    internal static Point GetPointAwayFrom(GameMapTerrain terrain, Point origin, Point start, int distance, Func<Point, bool> canWalkOn)
+    {
+        var direction = origin.GetDirectionTo(start);
+        if (direction == Direction.Undefined)
+        {
+            direction = (Direction)Rand.NextInt(1, 9);
+        }
+
+        var target = start;
+        for (var i = 0; i < distance; i++)
+        {
+            var next = target.CalculateTargetPoint(direction);
+            if (!terrain.WalkMap[next.X, next.Y] || terrain.SafezoneMap[next.X, next.Y] || !canWalkOn(next))
+            {
+                break;
+            }
+
+            target = next;
+        }
+
+        return target;
+    }
+
+    private static bool IsChance(int percentage)
+    {
+        return percentage > 0 && Rand.NextInt(0, 100) < percentage;
+    }
+
+    private static async ValueTask StunAsync(Player player, TimeSpan duration)
+    {
+        if (player.Attributes is not { } attributes
+            || player.GameContext.Configuration.MagicEffects.FirstOrDefault(m => m.Number == StunnedMagicEffectNumber) is not { } definition
+            || definition.PowerUpDefinitions.FirstOrDefault(p => p.TargetAttribute == Stats.IsStunned) is not { } powerUpDefinition)
+        {
+            return;
+        }
+
+        var powerUp = attributes.CreateElement(powerUpDefinition);
+        var effect = new MagicEffect(duration, definition, [new MagicEffect.ElementWithTarget(powerUp, Stats.IsStunned)]);
+        await player.MagicEffectList.AddEffectAsync(effect).ConfigureAwait(false);
+    }
+
+    private static void Decrease(Player player, AttributeDefinition attribute, int percentage)
+    {
+        if (player.Attributes is { } attributes)
+        {
+            attributes[attribute] = attributes[attribute] * (100 - Math.Clamp(percentage, 0, 100)) / 100f;
+        }
+    }
+
     private static bool IsValidTarget(Monster monster, IAttackable target)
     {
         return target is Player { IsInvisible: false }
@@ -201,6 +295,90 @@ public sealed class CrywolfMonsterIntelligence : INpcIntelligence, IDisposable
                && !target.IsAtSafezone()
                && target.IsInRange(monster.Position, monster.Definition.AttackRange)
                && monster.HasLineOfSightTo(target);
+    }
+
+    private async ValueTask AttackAsync(Monster monster, IAttackable target)
+    {
+        if (this.Role == CrywolfMonsterRole.Balgass && await this.TryEscapeAsync(monster, target).ConfigureAwait(false))
+        {
+            return;
+        }
+
+        var definition = this._context.Definition;
+        this._skills ??= definition.MonsterSkills.Where(skill => skill.MonsterNumber == monster.Definition.Number).ToList();
+        if (this._skills.Count == 0 || !IsChance(definition.SkillChance))
+        {
+            await monster.AttackAsync(target).ConfigureAwait(false);
+            return;
+        }
+
+        await this.UseSkillAsync(monster, target, this._skills[Rand.NextInt(0, this._skills.Count)]).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Lets Balgass try to escape from his target, when his health is low, like in the original game.
+    /// </summary>
+    private async ValueTask<bool> TryEscapeAsync(Monster monster, IAttackable target)
+    {
+        var definition = this._context.Definition;
+        if (definition.BalgassEscapeHealth <= 0
+            || monster.Health >= definition.BalgassEscapeHealth
+            || !IsChance(definition.BalgassEscapeChance)
+            || monster.Attributes[Stats.IsFrozen] > 0)
+        {
+            return false;
+        }
+
+        var escapeTarget = GetPointAwayFrom(monster.CurrentMap.Terrain, target.Position, monster.Position, definition.BalgassEscapeDistance, this.CanWalkOn);
+        return escapeTarget != monster.Position && await monster.WalkToAsync(escapeTarget).ConfigureAwait(false);
+    }
+
+    private async ValueTask UseSkillAsync(Monster monster, IAttackable target, CrywolfMonsterSkill skill)
+    {
+        await monster.ForEachWorldObserverAsync<ICrywolfEventViewPlugIn>(p => p.ShowMonsterSkillAsync(monster, target, skill.SkillNumber), true).ConfigureAwait(false);
+
+        IReadOnlyList<Player> players = skill.Radius > 0
+            ? monster.CurrentMap.GetAttackablesInRange(monster.Position, skill.Radius)
+                .OfType<Player>()
+                .Where(player => player.IsActive() && !player.IsAtSafezone())
+                .ToList()
+            : target is Player targetPlayer ? [targetPlayer] : [];
+        foreach (var player in players)
+        {
+            await player.AttackByAsync(monster, null, false).ConfigureAwait(false);
+            if (!player.IsAlive)
+            {
+                continue;
+            }
+
+            // The push comes first, because a stunned player isn't pushed.
+            if (IsChance(skill.PushChance))
+            {
+                await PushAwayAsync(monster, player, skill.PushDistance).ConfigureAwait(false);
+            }
+
+            if (IsChance(skill.StunChance))
+            {
+                await StunAsync(player, skill.StunDuration).ConfigureAwait(false);
+            }
+
+            if (skill.RemovedMagicEffectNumber > 0
+                && IsChance(skill.RemoveEffectChance)
+                && player.MagicEffectList.TryGetEffect(skill.RemovedMagicEffectNumber, out var effect))
+            {
+                await effect.DisposeAsync().ConfigureAwait(false);
+            }
+
+            if (IsChance(skill.ManaDecreaseChance))
+            {
+                Decrease(player, Stats.CurrentMana, skill.DecreasePercentage);
+            }
+
+            if (IsChance(skill.AbilityDecreaseChance))
+            {
+                Decrease(player, Stats.CurrentAbility, skill.DecreasePercentage);
+            }
+        }
     }
 
     private Point? GetGoal(Monster monster)

@@ -482,7 +482,13 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
         }
 
         group.LastRevive = now;
-        await this.SpawnMemberAsync(group, spawnArea).ConfigureAwait(false);
+        if (await this.SpawnMemberAsync(group, spawnArea).ConfigureAwait(false) is { } member
+            && group.Leader is { IsAlive: true } leader)
+        {
+            // Like in the original game, the client shows the revival as a skill of the leader.
+            var skillNumber = this._definition.ReviveSkillNumber;
+            await leader.ForEachWorldObserverAsync<ICrywolfEventViewPlugIn>(p => p.ShowMonsterSkillAsync(leader, member, skillNumber), true).ConfigureAwait(false);
+        }
     }
 
     /// <summary>
@@ -1126,7 +1132,7 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
         }
     }
 
-    private async ValueTask SpawnMemberAsync(CrywolfMonsterGroupState group, MonsterSpawnArea spawnArea)
+    private async ValueTask<Monster?> SpawnMemberAsync(CrywolfMonsterGroupState group, MonsterSpawnArea spawnArea)
     {
         var monsterDefinition = spawnArea.MonsterDefinition!;
         var ballista = this._definition.Ballistas.FirstOrDefault(b => b.X == spawnArea.X1 && b.Y == spawnArea.Y1);
@@ -1137,7 +1143,10 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
         if (await this.SpawnMonsterAsync(spawnArea, intelligence).ConfigureAwait(false) is { } monster)
         {
             group.SetMonster(spawnArea, monster, role == CrywolfMonsterRole.Leader);
+            return monster;
         }
+
+        return null;
     }
 
     private async ValueTask SpawnBalgassAsync()

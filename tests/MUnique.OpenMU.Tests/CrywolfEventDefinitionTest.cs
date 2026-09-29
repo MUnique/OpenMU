@@ -4,7 +4,9 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Crywolf;
+using MUnique.OpenMU.Pathfinding;
 
 /// <summary>
 /// Tests the <see cref="CrywolfEventDefinition"/>.
@@ -90,5 +92,45 @@ public class CrywolfEventDefinitionTest
         Assert.That(waypoint, Is.Not.EqualTo(goal));
         Assert.That(waypoint.EuclideanDistanceTo(start), Is.LessThan(20));
         Assert.That(waypoint.EuclideanDistanceTo(goal), Is.LessThan(start.EuclideanDistanceTo(goal)));
+    }
+
+    /// <summary>
+    /// Tests that Balgass and the army have the skills of the original game by default.
+    /// </summary>
+    [Test]
+    public void DefaultMonsterSkills()
+    {
+        var skills = new CrywolfEventDefinition().MonsterSkills;
+
+        var balgassSkills = skills.Where(skill => skill.MonsterNumber == 349).ToList();
+        Assert.That(balgassSkills.Select(skill => skill.SkillNumber), Is.EquivalentTo(new short[] { 12, 13 }));
+        Assert.That(balgassSkills.Select(skill => skill.Radius), Is.All.EqualTo(6));
+        Assert.That(skills.Select(skill => skill.MonsterNumber).Distinct(), Is.EquivalentTo(new short[] { 340, 341, 344, 345, 349 }));
+    }
+
+    /// <summary>
+    /// Tests that a pushed or escaping object moves away from the origin, but not onto blocked tiles or into a safezone.
+    /// </summary>
+    [Test]
+    public void PointAwayFromOriginStopsAtObstacles()
+    {
+        var terrain = new GameMapTerrain((byte[]?)null);
+        var origin = new Point(100, 100);
+        var start = new Point(101, 100);
+        var direction = origin.GetDirectionTo(start);
+        var first = start.CalculateTargetPoint(direction);
+        var second = first.CalculateTargetPoint(direction);
+        var third = second.CalculateTargetPoint(direction);
+        terrain.WalkMap[first.X, first.Y] = true;
+        terrain.WalkMap[second.X, second.Y] = true;
+        terrain.WalkMap[third.X, third.Y] = true;
+
+        Assert.That(CrywolfMonsterIntelligence.GetPointAwayFrom(terrain, origin, start, 3, _ => true), Is.EqualTo(third));
+
+        terrain.WalkMap[third.X, third.Y] = false;
+        Assert.That(CrywolfMonsterIntelligence.GetPointAwayFrom(terrain, origin, start, 3, _ => true), Is.EqualTo(second));
+
+        terrain.SafezoneMap[first.X, first.Y] = true;
+        Assert.That(CrywolfMonsterIntelligence.GetPointAwayFrom(terrain, origin, start, 3, _ => true), Is.EqualTo(start));
     }
 }
