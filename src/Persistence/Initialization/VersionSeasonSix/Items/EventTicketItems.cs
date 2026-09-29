@@ -61,6 +61,34 @@ internal class EventTicketItems : InitializerBase
         this.CreateEventItem(107, 14, 1, 1, "Fifth Secromicon Fragment", false);
         this.CreateEventItem(108, 14, 1, 1, "Sixth Secromicon Fragment", false);
         this.CreateEventItem(109, 14, 1, 1, "Complete Secromicon", false);
+        if (this.CreateSuspiciousScrapOfPaperDropGroup() is { } scrapOfPaperDropGroup)
+        {
+            BaseMapInitializer.RegisterDefaultDropItemGroup(scrapOfPaperDropGroup);
+        }
+    }
+
+    /// <summary>
+    /// Creates the drop item group of the suspicious scrap of paper, of which five transform into a
+    /// Gaion's Order, the ticket of the imperial guardian event.
+    /// </summary>
+    /// <returns>The drop item group, if it was created.</returns>
+    internal DropItemGroup? CreateSuspiciousScrapOfPaperDropGroup()
+    {
+        var scrapOfPaper = this.GameConfiguration.Items.FirstOrDefault(item => item is { Group: 14, Number: 101 });
+        var id = GuidHelper.CreateGuid<DropItemGroup>(14, 101);
+        if (scrapOfPaper is null || this.GameConfiguration.DropItemGroups.Any(group => group.GetId() == id))
+        {
+            return null;
+        }
+
+        var dropItemGroup = this.Context.CreateNew<DropItemGroup>();
+        dropItemGroup.SetGuid(14, 101);
+        dropItemGroup.Chance = 0.001;
+        dropItemGroup.Description = "Suspicious Scrap of Paper";
+        dropItemGroup.MinimumMonsterLevel = 32;
+        dropItemGroup.PossibleItems.Add(scrapOfPaper);
+        this.GameConfiguration.DropItemGroups.Add(dropItemGroup);
+        return dropItemGroup;
     }
 
     /// <summary>

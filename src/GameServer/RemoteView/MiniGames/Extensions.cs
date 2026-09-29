@@ -89,6 +89,26 @@ public static class Extensions
     }
 
     /// <summary>
+    /// Converts the enter result to the one of the imperial guardian event.
+    /// </summary>
+    /// <param name="enterResult">The enter result.</param>
+    /// <returns>The enter result of the imperial guardian event.</returns>
+    /// <remarks>
+    /// The client knows no result for a character level which is too high, so this and all other results
+    /// without a counterpart are shown as <see cref="ImperialGuardianEnterResult.EnterResult.NotOpen"/>.
+    /// </remarks>
+    public static ImperialGuardianEnterResult.EnterResult ToImperialGuardianEnterResult(this EnterResult enterResult)
+    {
+        return enterResult switch
+        {
+            EnterResult.Success => ImperialGuardianEnterResult.EnterResult.Success,
+            EnterResult.Full => ImperialGuardianEnterResult.EnterResult.Full,
+            EnterResult.CharacterLevelTooLow => ImperialGuardianEnterResult.EnterResult.CharacterLevelTooLow,
+            _ => ImperialGuardianEnterResult.EnterResult.NotOpen,
+        };
+    }
+
+    /// <summary>
     /// Converts the <see cref="EnterResult"/> to the corresponding <see cref="KanturuEnterResult.EnterResult"/>.
     /// </summary>
     /// <param name="enterResult">The enter result.</param>
