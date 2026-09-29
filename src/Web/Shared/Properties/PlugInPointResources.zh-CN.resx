@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="Sub-Packet Handlers" xml:space="preserve">
+    <value>子数据包处理</value>
+  </data>
+  <data name="Plugin Container for sub packet handlers which belong to a group." xml:space="preserve">
+    <value>管理属于某一协议分组的子数据包处理器。</value>
+  </data>
+  <data name="Packet Handlers" xml:space="preserve">
+    <value>数据包处理</value>
+  </data>
+  <data name="Plugin Container for packet handlers." xml:space="preserve">
+    <value>管理数据包处理器。</value>
+  </data>
+  <data name="Network Encryption Factories" xml:space="preserve">
+    <value>网络加密方案</value>
+  </data>
+  <data name="Plugins which will be executed when a client connects to a server. It provides network packet encryptors and decryptors for a specific game client version." xml:space="preserve">
+    <value>客户端连接服务器时执行，为特定版本的客户端提供网络数据包加密和解密器。</value>
+  </data>
+  <data name="Data initialization" xml:space="preserve">
+    <value>数据初始化</value>
+  </data>
+  <data name="Provides an initialization for initial data." xml:space="preserve">
+    <value>提供初始数据的初始化功能。</value>
+  </data>
+  <data name="Configuration update" xml:space="preserve">
+    <value>配置更新</value>
+  </data>
+  <data name="Provides updates for initialized data." xml:space="preserve">
+    <value>为已初始化的数据提供更新。</value>
+  </data>
+  <data name="Feature Plugins" xml:space="preserve">
+    <value>功能插件</value>
+  </data>
+  <data name="Feature plugins can group other plugins and provide a configuration." xml:space="preserve">
+    <value>将其他插件组合为一项功能并提供配置。</value>
+  </data>
+  <data name="Object removed from map" xml:space="preserve">
+    <value>对象离开地图</value>
+  </data>
+  <data name="Plugins which will be executed when any object is removed from the game map." xml:space="preserve">
+    <value>任意对象从游戏地图移除时执行。</value>
+  </data>
+  <data name="Item moving" xml:space="preserve">
+    <value>物品移动前</value>
+  </data>
+  <data name="Plugins which are called when an item is about to be moved by the player." xml:space="preserve">
+    <value>玩家即将移动物品时调用。</value>
+  </data>
+  <data name="Targeted skill plugins" xml:space="preserve">
+    <value>指向技能</value>
+  </data>
+  <data name="Is called when a target got attacked by a targeted skill." xml:space="preserve">
+    <value>目标受到指向技能攻击时调用。</value>
+  </data>
+  <data name="Area skill target filter" xml:space="preserve">
+    <value>范围技能目标过滤</value>
+  </data>
+  <data name="Plugins which will be executed when an area skill is about to hit its targets. It allows to filter out targets which are out of range." xml:space="preserve">
+    <value>范围技能即将命中目标时执行，可过滤超出范围的目标。</value>
+  </data>
+  <data name="Player spawn gate selection" xml:space="preserve">
+    <value>玩家出生点选择</value>
+  </data>
+  <data name="Plugins which determine the gate at which a player is spawned." xml:space="preserve">
+    <value>决定玩家生成时使用的入口。</value>
+  </data>
+  <data name="Item sold to merchant npc" xml:space="preserve">
+    <value>向商人出售物品</value>
+  </data>
+  <data name="Is called when an item got sold to a merchant npc." xml:space="preserve">
+    <value>物品出售给商人 NPC 后调用。</value>
+  </data>
+  <data name="Character deleted" xml:space="preserve">
+    <value>角色删除</value>
+  </data>
+  <data name="Is called when a character got deleted." xml:space="preserve">
+    <value>角色删除后调用。</value>
+  </data>
+  <data name="Player talks to NPC" xml:space="preserve">
+    <value>玩家与 NPC 对话</value>
+  </data>
+  <data name="Plugins which will be executed when a player talks to an npc." xml:space="preserve">
+    <value>玩家与 NPC 对话时执行。</value>
+  </data>
+  <data name="Object added to map" xml:space="preserve">
+    <value>对象加入地图</value>
+  </data>
+  <data name="Plugins which will be executed when any object is added to the game map." xml:space="preserve">
+    <value>任意对象加入游戏地图时执行。</value>
+  </data>
+  <data name="Chat message received" xml:space="preserve">
+    <value>收到聊天消息</value>
+  </data>
+  <data name="Plugins which will be executed when a chat message arrives." xml:space="preserve">
+    <value>收到聊天消息时执行。</value>
+  </data>
+  <data name="Item sold to other player" xml:space="preserve">
+    <value>个人商店出售物品</value>
+  </data>
+  <data name="Is called when an item got sold to another player through the personal store." xml:space="preserve">
+    <value>物品通过个人商店出售给其他玩家后调用。</value>
+  </data>
+  <data name="Attackable moved" xml:space="preserve">
+    <value>可攻击对象移动</value>
+  </data>
+  <data name="Plugins which are called when an attackable object moved on the game map." xml:space="preserve">
+    <value>可攻击对象在地图上移动后调用。</value>
+  </data>
+  <data name="Item consumed" xml:space="preserve">
+    <value>物品使用后</value>
+  </data>
+  <data name="Plugins which will be executed when an item got consumed." xml:space="preserve">
+    <value>物品消耗后执行。</value>
+  </data>
+  <data name="Attackable got hit" xml:space="preserve">
+    <value>可攻击对象受击</value>
+  </data>
+  <data name="Plugins which will be executed when an attackable object got hit by an attacker." xml:space="preserve">
+    <value>可攻击对象受到攻击时执行。</value>
+  </data>
+  <data name="Player gained master level" xml:space="preserve">
+    <value>玩家大师等级提升</value>
+  </data>
+  <data name="Plugins which will be executed when a player gained a master level." xml:space="preserve">
+    <value>玩家大师等级提升时执行。</value>
+  </data>
+  <data name="Attackable got killed" xml:space="preserve">
+    <value>可攻击对象死亡</value>
+  </data>
+  <data name="Plugins which will be executed when an attackable object got killed by an attacker." xml:space="preserve">
+    <value>可攻击对象被攻击者击杀时执行。</value>
+  </data>
+  <data name="Area skill plugins" xml:space="preserve">
+    <value>范围技能</value>
+  </data>
+  <data name="Is called when a target got attacked by an area skill." xml:space="preserve">
+    <value>目标受到范围技能攻击时调用。</value>
+  </data>
+  <data name="Player gained experience" xml:space="preserve">
+    <value>玩家获得经验</value>
+  </data>
+  <data name="Plugins which are executed after a player gained experience for a kill." xml:space="preserve">
+    <value>玩家击杀目标并获得经验后执行。</value>
+  </data>
+  <data name="Item dropping" xml:space="preserve">
+    <value>物品丢弃</value>
+  </data>
+  <data name="Plugins which are called when an item has been dropped to the ground by the player." xml:space="preserve">
+    <value>玩家将物品丢到地面后调用。</value>
+  </data>
+  <data name="Item destroyed" xml:space="preserve">
+    <value>物品销毁</value>
+  </data>
+  <data name="Is called when an item got destroyed, e.g. because it has been consumed or destroyed by the chaos machine or disappeared as item drop." xml:space="preserve">
+    <value>物品销毁时调用，例如被消耗、在玛雅合成中损毁或地面掉落物消失。</value>
+  </data>
+  <data name="Player state changed" xml:space="preserve">
+    <value>玩家状态变更后</value>
+  </data>
+  <data name="Is called when a player state got changed." xml:space="preserve">
+    <value>玩家状态改变后调用。</value>
+  </data>
+  <data name="Item bought from merchant npc" xml:space="preserve">
+    <value>从商人购买物品</value>
+  </data>
+  <data name="Is called when an item got bought from a merchant npc." xml:space="preserve">
+    <value>从商人 NPC 购买物品后调用。</value>
+  </data>
+  <data name="Whisper chat message received" xml:space="preserve">
+    <value>收到私聊消息</value>
+  </data>
+  <data name="Plugins which will be executed when a whispered chat message arrives." xml:space="preserve">
+    <value>收到私聊消息时执行。</value>
+  </data>
+  <data name="Item stacked" xml:space="preserve">
+    <value>物品叠加</value>
+  </data>
+  <data name="Plugins which are called when an item has been stacked by the player." xml:space="preserve">
+    <value>玩家叠加物品后调用。</value>
+  </data>
+  <data name="Item moved" xml:space="preserve">
+    <value>物品移动后</value>
+  </data>
+  <data name="Plugins which are called when an item has been moved by the player." xml:space="preserve">
+    <value>玩家移动物品后调用。</value>
+  </data>
+  <data name="Player leveled up" xml:space="preserve">
+    <value>玩家升级</value>
+  </data>
+  <data name="Plugins which will be executed when a player leveled up." xml:space="preserve">
+    <value>玩家升级后执行。</value>
+  </data>
+  <data name="Character created" xml:space="preserve">
+    <value>角色创建</value>
+  </data>
+  <data name="Is called when a character got created." xml:space="preserve">
+    <value>角色创建后调用。</value>
+  </data>
+  <data name="Speedhack Cheat Check" xml:space="preserve">
+    <value>加速作弊检测</value>
+  </data>
+  <data name="Is called for walk/attack speedhack checks and movement state resets." xml:space="preserve">
+    <value>检查移动和攻击加速，以及重置移动状态时调用。</value>
+  </data>
+  <data name="Item traded" xml:space="preserve">
+    <value>物品交易</value>
+  </data>
+  <data name="Is called when an item got traded to another player." xml:space="preserve">
+    <value>物品交易给其他玩家后调用。</value>
+  </data>
+  <data name="Item consuming" xml:space="preserve">
+    <value>物品使用前</value>
+  </data>
+  <data name="Plugins which will be executed when an item is about to get consumed." xml:space="preserve">
+    <value>即将消耗物品时执行。</value>
+  </data>
+  <data name="Periodic Tasks" xml:space="preserve">
+    <value>定时任务</value>
+  </data>
+  <data name="Is called in an periodic interval." xml:space="preserve">
+    <value>按固定时间间隔调用。</value>
+  </data>
+  <data name="Player state changing" xml:space="preserve">
+    <value>玩家状态变更前</value>
+  </data>
+  <data name="Is called when a player state changes." xml:space="preserve">
+    <value>玩家状态即将改变时调用。</value>
+  </data>
+  <data name="Experience calculation" xml:space="preserve">
+    <value>经验计算</value>
+  </data>
+  <data name="Plugins which modify the amount of experience which a player gains for a kill." xml:space="preserve">
+    <value>调整玩家击杀目标后获得的经验量。</value>
+  </data>
+  <data name="Periodic Mini Game Start Plugins" xml:space="preserve">
+    <value>定时开启活动副本</value>
+  </data>
+  <data name="Plugin Container for mini game start plugins, e.g. for chaos castle." xml:space="preserve">
+    <value>管理定时开启活动副本的插件，例如赤色要塞。</value>
+  </data>
+  <data name="Chat commands" xml:space="preserve">
+    <value>聊天命令</value>
+  </data>
+  <data name="Plugins which will be executed when a chat message arrives with a slash prefix." xml:space="preserve">
+    <value>收到以斜杠开头的聊天消息时执行。</value>
+  </data>
+  <data name="Item consume handlers" xml:space="preserve">
+    <value>物品使用处理</value>
+  </data>
+  <data name="Plugins which will be executed to consume an item." xml:space="preserve">
+    <value>使用并消耗物品时执行。</value>
+  </data>
+  <data name="Item Registration Strategies" xml:space="preserve">
+    <value>物品登记策略</value>
+  </data>
+  <data name="Plugins which implement item registration for specific NPCs." xml:space="preserve">
+    <value>为特定 NPC 实现物品登记功能。</value>
+  </data>
+  <data name="View PlugIns" xml:space="preserve">
+    <value>客户端显示</value>
+  </data>
+  <data name="This is a custom plugin point which collects all view plugins which are suitable for a specific game client version." xml:space="preserve">
+    <value>收集适用于特定客户端版本的所有显示插件。</value>
+  </data>
+</root>

@@ -26,6 +26,6 @@ public partial class GameServerConfiguration
     /// <inheritdoc />
     public override string ToString()
     {
-        return $"Default ({this.MaximumPlayers} players)"; // TODO Add Description field
+        return string.Format(MUnique.OpenMU.DataModel.Properties.Resources.GameServerConfigSummary, this.MaximumPlayers); // TODO Add Description field
     }
 }

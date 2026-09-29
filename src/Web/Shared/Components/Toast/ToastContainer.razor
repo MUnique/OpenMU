@@ -21,7 +21,7 @@
                             <div>@toast.Message</div>
                         </div>
                     </div>
-                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close" @onclick="() => this.CloseAsync(toast)"></button>
+                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="@Resources.Close" @onclick="() => this.CloseAsync(toast)"></button>
                 </div>
             </div>
         }

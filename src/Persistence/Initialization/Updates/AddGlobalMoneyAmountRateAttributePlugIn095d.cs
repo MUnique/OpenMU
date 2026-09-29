@@ -11,7 +11,7 @@ using MUnique.OpenMU.PlugIns;
 /// This update moves the MoneyAmountRate attribute to global base attributes for version 0.95d.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddGlobalMoneyAmountRateAttributePlugInBase_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddGlobalMoneyAmountRateAttributePlugInBase_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("B2C3D4E5-F6A7-8901-BCDE-F12345678901")]
 public class AddGlobalMoneyAmountRateAttributePlugIn095d : AddGlobalMoneyAmountRateAttributePlugInBase
 {

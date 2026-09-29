@@ -266,6 +266,7 @@ public partial class Merchants : ComponentBase, IAsyncDisposable
         /// <summary>
         /// Gets the items of the merchant.
         /// </summary>
+        [System.ComponentModel.DataAnnotations.Display(Name = nameof(Resources.Items), ResourceType = typeof(Resources))]
         public ICollection<Item> Items => this.Merchant.MerchantStore!.Items;
     }
 }

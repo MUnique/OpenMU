@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 /// This update adds missing area skill settings for summoner curse (book) and lightning shock skills.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixSummonerCurseSkillsPlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixSummonerCurseSkillsPlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("A3B4C8DB-2F39-4C81-A2D9-5E4FA5B9E004")]
 public class FixSummonerCurseSkillsPlugIn : UpdatePlugInBase
 {

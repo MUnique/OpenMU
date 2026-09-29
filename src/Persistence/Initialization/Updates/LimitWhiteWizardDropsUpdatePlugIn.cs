@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// This update limits the Wizard's Ring to one per character for existing databases.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.LimitWhiteWizardDropsUpdatePlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.LimitWhiteWizardDropsUpdatePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("A7B3E5F1-8C2D-4E6F-9A1B-3D5C7E8F2A4B")]
 public class LimitWhiteWizardDropsUpdatePlugIn : UpdatePlugInBase
 {

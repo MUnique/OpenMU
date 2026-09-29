@@ -12,7 +12,7 @@ using MUnique.OpenMU.PlugIns;
 /// This update fixes character stats, skills, magic effects, items, and options related to damage.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixDamageCalcsPlugInBase_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixDamageCalcsPlugInBase_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("A4410B7B-7E5F-409C-9F6F-4E216208829A")]
 public class FixDamageCalcsPlugIn095D : FixDamageCalcsPlugInBase
 {

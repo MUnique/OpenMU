@@ -102,11 +102,11 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
                 var customContainer = group.Key?.GetCustomAttribute<CustomPlugInContainerAttribute>();
                 if (plugInPoint != null)
                 {
-                    dto.Name = plugInPoint.Name;
+                    dto.Name = PlugInPointCaption.Get(plugInPoint.Name);
                 }
                 else if (customContainer != null)
                 {
-                    dto.Name = customContainer.Name;
+                    dto.Name = PlugInPointCaption.Get(customContainer.Name);
                 }
                 else
                 {
@@ -257,14 +257,14 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
 
         if (plugInPoint != null)
         {
-            viewItem.PlugInPointName = plugInPoint.Name;
-            viewItem.PlugInPointDescription = plugInPoint.Description;
+            viewItem.PlugInPointName = PlugInPointCaption.Get(plugInPoint.Name);
+            viewItem.PlugInPointDescription = PlugInPointCaption.Get(plugInPoint.Description);
         }
         else if (customPlugInContainer != null)
         {
             var customPlugInInterface = plugInType.GetInterfaces().FirstOrDefault(intf => intf.GetInterfaces().Any(i => i.GetCustomAttribute<CustomPlugInContainerAttribute>() != null));
-            viewItem.PlugInPointName = customPlugInInterface is null ? customPlugInContainer.Name : $"{customPlugInContainer.Name} - {customPlugInInterface.Name}";
-            viewItem.PlugInPointDescription = customPlugInContainer.Description;
+            viewItem.PlugInPointName = customPlugInInterface is null ? PlugInPointCaption.Get(customPlugInContainer.Name) : $"{PlugInPointCaption.Get(customPlugInContainer.Name)} - {customPlugInInterface.Name}";
+            viewItem.PlugInPointDescription = PlugInPointCaption.Get(customPlugInContainer.Description);
         }
         else
         {

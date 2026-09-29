@@ -34,10 +34,10 @@ public partial class CultureSelector
     /// </summary>
     public string SelectedCultureCode
     {
-        get => CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+        get => CultureInfo.CurrentUICulture.Name;
         set
         {
-            if (CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == value)
+            if (CultureInfo.CurrentUICulture.Name == value)
             {
                 return;
             }

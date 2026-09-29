@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 /// This update adds the missing RegisteredRenas and TotalRegisteredRenas attributes.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddItemRegistrationAttributesUpdatePlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddItemRegistrationAttributesUpdatePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("182FC652-3277-4CDB-8BA8-DE70311E67C9")]
 public class AddItemRegistrationAttributesUpdatePlugIn : UpdatePlugInBase
 {

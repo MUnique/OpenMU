@@ -12,7 +12,7 @@ using MUnique.OpenMU.PlugIns;
 /// This update fixes and reworks some regeneration attributes (health, mana, ability).
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.RegenerationsRefactorPlugInBase_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.RegenerationsRefactorPlugInBase_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("F079402E-F557-423C-B376-80A1B87D842D")]
 public class RegenerationsRefactorPlugIn075 : RegenerationsRefactorPlugInBase
 {

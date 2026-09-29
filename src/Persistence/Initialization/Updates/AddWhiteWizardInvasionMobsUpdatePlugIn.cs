@@ -18,7 +18,7 @@ using MUnique.OpenMU.PlugIns;
 /// has already run but before White Wizard monsters were defined.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddWhiteWizardInvasionMobsUpdatePlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddWhiteWizardInvasionMobsUpdatePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("D8F4E2C0-5A6B-4C3D-9E7F-1B2A4C6D8E0F")]
 public class AddWhiteWizardInvasionMobsUpdatePlugIn : UpdatePlugInBase
 {
