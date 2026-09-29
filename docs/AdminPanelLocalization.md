@@ -29,7 +29,8 @@ configuration initialization, gameplay values, or database schemas.
 Add neutral text to the corresponding `Properties/*.resx` file. Chinese
 translations are optional: missing keys fall back to English and do not block
 other contributions. When adding a translation to `*.zh-CN.resx`, use the same
-key and keep formatting placeholders unchanged. Model captions use the naming conventions in `ModelResourceProvider`;
+key and keep formatting placeholders unchanged. Model captions use the naming
+conventions in `ModelResourceProvider`;
 plugin `DisplayAttribute` metadata must reference public resource properties.
 Use `{Type}_{Property}_Name` / `_Description` for property metadata and
 `{Type}_Name` / `_Description` for type metadata, rather than numbered keys.
@@ -45,5 +46,5 @@ dotnet test tests/MUnique.OpenMU.Web.Tests/MUnique.OpenMU.Web.Tests.csproj \
 ```
 
 Localization tests cover culture selection, enum round trips, model captions and
-summaries, plugin resource metadata, English fallback and translated placeholders, and
-paging with the shared grid state.
+summaries, plugin resource metadata, English fallback and translated placeholders,
+and paging with the shared grid state.
