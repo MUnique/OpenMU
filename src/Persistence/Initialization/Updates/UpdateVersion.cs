@@ -601,7 +601,12 @@ public enum UpdateVersion
     AddRaklionEvent = 118,
 
     /// <summary>
+    /// The version of the <see cref="AddSelupanFallSkillUpdatePlugIn"/>.
+    /// </summary>
+    AddSelupanFallSkill = 120,
+
+    /// <summary>
     /// The version of the <see cref="IllusionTempleDataUpdatePlugIn"/>.
     /// </summary>
-    IllusionTempleData = 119,
+    IllusionTempleData = 121,
 }
