@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// Ice Storm had an incorrect 200ms delay between hits.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixAreaSkillsUpdatePlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixAreaSkillsUpdatePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("B9938E4D-8F63-48DF-AE45-6739D1E2A8C7")]
 public class FixAreaSkillsUpdatePlugIn : UpdatePlugInBase
 {

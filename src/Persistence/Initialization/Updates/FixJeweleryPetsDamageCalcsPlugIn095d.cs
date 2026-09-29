@@ -11,7 +11,7 @@ using MUnique.OpenMU.PlugIns;
 /// This update fixes jewelery items and pet options related to damage.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixJeweleryPetsDamageCalcsPlugInBase_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixJeweleryPetsDamageCalcsPlugInBase_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("BF56A0E2-D7B3-4456-81F7-249440489607")]
 public class FixJeweleryPetsDamageCalcsPlugIn095D : FixJeweleryPetsDamageCalcsPlugInBase
 {

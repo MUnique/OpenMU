@@ -65,6 +65,6 @@ public partial class LevelBonus
     /// <inheritdoc />
     public override string ToString()
     {
-        return $"Level: {this.Level}: {this.AdditionalValue}";
+        return string.Format(MUnique.OpenMU.DataModel.Properties.Resources.LevelValueSummary, this.Level, this.AdditionalValue);
     }
 }

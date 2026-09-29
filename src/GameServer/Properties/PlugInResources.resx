@@ -405,12 +405,6 @@
   <data name="GuildRequestHandlerPlugIn_Description" xml:space="preserve">
     <value>Handler for guild requests.</value>
   </data>
-  <data name="GuildRoleAssignHandlerPlugIn_Name" xml:space="preserve">
-    <value>Guild Role Assign Handler</value>
-  </data>
-  <data name="GuildRoleAssignHandlerPlugIn_Description" xml:space="preserve">
-    <value>Handler for guild role assign packets.</value>
-  </data>
   <data name="GuildWarResponseHandlerPlugIn_Name" xml:space="preserve">
     <value>Guild War Response Handler</value>
   </data>
@@ -2486,6 +2480,14 @@
   </data>
   <data name="CastleSiegeLifeStoneStatePlugIn_Description" xml:space="preserve">
     <value>Sends Castle Siege Life Stone creation progress to the game client.</value>
+  </data>
+  <data name="EnterMarketPlace_Name" xml:space="preserve"><value>Enter Market Place Handler</value></data>
+  <data name="EnterMarketPlace_Description" xml:space="preserve"><value>Handler which warps a player between Lorencia and the Loren Market when using the 'Warp' button of Market Union Member Julia.</value></data>
+  <data name="GuildRoleAssignHandlerPlugIn_Name" xml:space="preserve">
+    <value>Guild Role Assign Handler</value>
+  </data>
+  <data name="GuildRoleAssignHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for guild role assign packets.</value>
   </data>
   <data name="RaklionEventViewPlugIn_Name" xml:space="preserve">
     <value>Raklion Event View</value>

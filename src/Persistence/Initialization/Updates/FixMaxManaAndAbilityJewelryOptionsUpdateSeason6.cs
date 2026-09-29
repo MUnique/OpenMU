@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// This update fixes the calculation for max mana/AG % increase provided by Ring of Magic/Pendant of Ability options.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixMaxManaAndAbilityJewelryOptionsUpdateSeason6_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixMaxManaAndAbilityJewelryOptionsUpdateSeason6_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("EAC7C809-D4B8-443F-BE52-E56560003483")]
 public class FixMaxManaAndAbilityJewelryOptionsUpdateSeason6 : UpdatePlugInBase
 {

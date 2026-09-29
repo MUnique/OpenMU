@@ -12,7 +12,7 @@ using MUnique.OpenMU.PlugIns;
 /// This update sets the right settings for the wings and capes craftings.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixWingsAndCapesCraftingsUpdatePlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixWingsAndCapesCraftingsUpdatePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("618A53AF-ED2A-4C78-A103-BAD061FFB0D2")]
 public class FixWingsAndCapesCraftingsUpdatePlugIn : UpdatePlugInBase
 {

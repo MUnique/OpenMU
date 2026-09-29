@@ -28,7 +28,7 @@ public class KanturuNightmareDefinition
     public TimeSpan HealthCheckInterval { get; set; } = TimeSpan.FromSeconds(1);
 
     /// <summary>
-    /// Gets or sets the delay between restoring the boss' health and teleporting it, so the
+    /// Gets or sets the delay before the boss teleports, so the
     /// clients can process the health update first.
     /// </summary>
     public TimeSpan TeleportDelay { get; set; } = TimeSpan.FromMilliseconds(500);

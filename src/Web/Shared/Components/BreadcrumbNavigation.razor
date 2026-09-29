@@ -4,13 +4,13 @@
 
 @inject NavigationHistory History;
 
-<div class="btn-group" role="group" aria-label="Navigation arrows">
+<div class="btn-group" role="group" aria-label="@Resources.Navigation">
   @if (this.History.CanGoBackward)
   {
     <button class="btn btn-sm btn-outline-secondary"
       aria-disabled="False"
-      title="Previous"
-      aria-label="Previous"
+      title="@Resources.Previous"
+      aria-label="@Resources.Previous"
       @onclick="() => this.History.GoBackward()">
       <span class="oi oi-arrow-circle-left"></span>
     </button>
@@ -19,8 +19,8 @@
   {
     <button class="btn btn-sm btn-outline-secondary"
             aria-disabled="True"
-            title="Previous"
-            aria-label="Previous"
+            title="@Resources.Previous"
+            aria-label="@Resources.Previous"
             disabled>
       <span class="oi oi-arrow-circle-left"></span>
     </button>
@@ -30,8 +30,8 @@
   {
     <button class="btn btn-sm btn-outline-secondary"
           aria-disabled="False"
-          title="Next"
-          aria-label="Next"
+          title="@Resources.Next"
+          aria-label="@Resources.Next"
           @onclick="() => this.History.GoForward()">
       <span class="oi oi-arrow-circle-right"></span>
     </button>
@@ -40,14 +40,14 @@
   {
     <button class="btn btn-sm btn-outline-secondary"
             aria-disabled="True"
-            title="Next"
-            aria-label="Next"
+            title="@Resources.Next"
+            aria-label="@Resources.Next"
             disabled>
       <span class="oi oi-arrow-circle-right"></span>
     </button>
   }
 </div>
-<nav aria-label="breadcrumb" class="breadcrumb-nav">
+<nav aria-label="@Resources.Breadcrumb" class="breadcrumb-nav">
   <ol class="breadcrumb">
 
   @foreach (var item in this.History.Previous)

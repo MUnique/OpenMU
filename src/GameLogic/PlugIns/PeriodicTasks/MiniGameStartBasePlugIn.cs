@@ -32,7 +32,7 @@ public abstract class MiniGameStartBasePlugIn<TConfiguration, TGameState> : Peri
     }
 
     /// <inheritdoc />
-    public async ValueTask DisposeRunningGamesAsync(IGameContext gameContext)
+    public virtual async ValueTask DisposeRunningGamesAsync(IGameContext gameContext)
     {
         Announcements.TryRemove((this.GetType(), gameContext), out _);
         var logger = gameContext.LoggerFactory.CreateLogger(this.GetType());
@@ -52,7 +52,7 @@ public abstract class MiniGameStartBasePlugIn<TConfiguration, TGameState> : Peri
     }
 
     /// <inheritdoc />
-    public ValueTask<TimeSpan?> GetDurationUntilNextStartAsync(IGameContext gameContext, MiniGameDefinition miniGameDefinition)
+    public virtual ValueTask<TimeSpan?> GetDurationUntilNextStartAsync(IGameContext gameContext, MiniGameDefinition miniGameDefinition)
     {
         var state = this.GetStateByGameContext(gameContext);
         if (state.State == PeriodicTaskState.Prepared)
@@ -212,6 +212,12 @@ public abstract class MiniGameStartBasePlugIn<TConfiguration, TGameState> : Peri
         return ValueTask.CompletedTask;
     }
 
+    private static bool IsActive(MiniGameContext game)
+    {
+        return !game.IsDisposed && !game.IsDisposing
+            && game.State is MiniGameState.Open or MiniGameState.Closed or MiniGameState.Playing;
+    }
+
     /// <summary>
     /// Disposes previously started games which already ended, so that starting a new event
     /// always creates fresh game instances instead of reusing a stale one.
@@ -226,12 +232,6 @@ public abstract class MiniGameStartBasePlugIn<TConfiguration, TGameState> : Peri
                 await game.DisposeAsync().ConfigureAwait(false);
             }
         }
-    }
-
-    private static bool IsActive(MiniGameContext game)
-    {
-        return !game.IsDisposed && !game.IsDisposing
-            && game.State is MiniGameState.Open or MiniGameState.Closed or MiniGameState.Playing;
     }
 
     /// <summary>

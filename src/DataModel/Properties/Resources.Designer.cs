@@ -334,5 +334,107 @@ namespace MUnique.OpenMU.DataModel.Properties {
                 return ResourceManager.GetString("SystemConfiguration_NetworkObservationRetentionDays_Description", resourceCulture);
             }
         }
+        /// <summary>
+        ///   Looks up a localized string similar to {0} on {1} at {2:D2}:{3:D2}.
+        /// </summary>
+        public static string CastleSiegeScheduleSummary {
+            get {
+                return ResourceManager.GetString("CastleSiegeScheduleSummary", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Level {0}: Value={1}, Jewels={2}, Zen={3}.
+        /// </summary>
+        public static string CastleSiegeUpgradeSummary {
+            get {
+                return ResourceManager.GetString("CastleSiegeUpgradeSummary", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to {0} / {1} to {2} / {3}.
+        /// </summary>
+        public static string CastleSiegeZoneSummary {
+            get {
+                return ResourceManager.GetString("CastleSiegeZoneSummary", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to {0} Items, {1} Money.
+        /// </summary>
+        public static string ItemStorageSummary {
+            get {
+                return ResourceManager.GetString("ItemStorageSummary", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets the localized SpawnPointSummary text.</summary>
+        public static string SpawnPointSummary => ResourceManager.GetString("SpawnPointSummary", resourceCulture)!;
+
+        /// <summary>Gets the localized SpawnAreaSummary text.</summary>
+        public static string SpawnAreaSummary => ResourceManager.GetString("SpawnAreaSummary", resourceCulture)!;
+
+        /// <summary>Gets the localized SpawnWaveSummary text.</summary>
+        public static string SpawnWaveSummary => ResourceManager.GetString("SpawnWaveSummary", resourceCulture)!;
+
+        /// <summary>Gets the localized EnterGateSummary text.</summary>
+        public static string EnterGateSummary => ResourceManager.GetString("EnterGateSummary", resourceCulture)!;
+
+        /// <summary>Gets the localized WaveSummary text.</summary>
+        public static string WaveSummary => ResourceManager.GetString("WaveSummary", resourceCulture)!;
+
+        /// <summary>Gets the localized LevelValueSummary text.</summary>
+        public static string LevelValueSummary => ResourceManager.GetString("LevelValueSummary", resourceCulture)!;
+
+        /// <summary>Gets the localized RectangleSummary text.</summary>
+        public static string RectangleSummary => ResourceManager.GetString("RectangleSummary", resourceCulture)!;
+
+        /// <summary>Gets the localized BattleZoneSummary text.</summary>
+        public static string BattleZoneSummary => ResourceManager.GetString("BattleZoneSummary", resourceCulture)!;
+
+        /// <summary>Gets the localized CastleNpcSummary text.</summary>
+        public static string CastleNpcSummary => ResourceManager.GetString("CastleNpcSummary", resourceCulture)!;
+
+        /// <summary>Gets the localized DuelConfigSummary text.</summary>
+        public static string DuelConfigSummary => ResourceManager.GetString("DuelConfigSummary", resourceCulture)!;
+
+        /// <summary>Gets the localized GameServerConfigSummary text.</summary>
+        public static string GameServerConfigSummary => ResourceManager.GetString("GameServerConfigSummary", resourceCulture)!;
+
+        /// <summary>Gets the localized RandomItemSummary text.</summary>
+        public static string RandomItemSummary => ResourceManager.GetString("RandomItemSummary", resourceCulture)!;
+
+        /// <summary>Gets the localized OptionRequirementSummary text.</summary>
+        public static string OptionRequirementSummary => ResourceManager.GetString("OptionRequirementSummary", resourceCulture)!;
+
+        /// <summary>Gets the localized SkillRewardSummary text.</summary>
+        public static string SkillRewardSummary => ResourceManager.GetString("SkillRewardSummary", resourceCulture)!;
+
+        /// <summary>Gets the localized AttributeRewardSummary text.</summary>
+        public static string AttributeRewardSummary => ResourceManager.GetString("AttributeRewardSummary", resourceCulture)!;
+
+        /// <summary>Gets the localized TerrainChangeSummary text.</summary>
+        public static string TerrainChangeSummary => ResourceManager.GetString("TerrainChangeSummary", resourceCulture)!;
+
+        /// <summary>Gets the localized TerrainSet text.</summary>
+        public static string TerrainSet => ResourceManager.GetString("TerrainSet", resourceCulture)!;
+
+        /// <summary>Gets the localized TerrainRemove text.</summary>
+        public static string TerrainRemove => ResourceManager.GetString("TerrainRemove", resourceCulture)!;
+
+        /// <summary>Gets the localized TerrainWithClientUpdate text.</summary>
+        public static string TerrainWithClientUpdate => ResourceManager.GetString("TerrainWithClientUpdate", resourceCulture)!;
+
+        /// <summary>Gets the localized TerrainWithoutClientUpdate text.</summary>
+        public static string TerrainWithoutClientUpdate => ResourceManager.GetString("TerrainWithoutClientUpdate", resourceCulture)!;
+
+        /// <summary>Gets the localized ChatServerSummary text.</summary>
+        public static string ChatServerSummary => ResourceManager.GetString("ChatServerSummary", resourceCulture)!;
+
+        /// <summary>Gets the localized ServerEndpointSummary text.</summary>
+        public static string ServerEndpointSummary => ResourceManager.GetString("ServerEndpointSummary", resourceCulture)!;
+
     }
 }

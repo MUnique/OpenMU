@@ -20,7 +20,7 @@ using MUnique.OpenMU.PlugIns;
 /// fit either of them.
 /// </remarks>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddMissingMerchantStoresPlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddMissingMerchantStoresPlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("f78d6e1d-1cb5-45f7-912d-54b2cb1220eb")]
 public class AddMissingMerchantStoresPlugIn : UpdatePlugInBase
 {

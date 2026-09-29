@@ -87,4 +87,16 @@ public static class Extensions
             _ => DoppelgangerEnterResult.EnterResult.Failed,
         };
     }
+
+    /// <summary>
+    /// Converts the <see cref="EnterResult"/> to the corresponding <see cref="KanturuEnterResult.EnterResult"/>.
+    /// </summary>
+    /// <param name="enterResult">The enter result.</param>
+    /// <returns>The converted result.</returns>
+    public static KanturuEnterResult.EnterResult ToKanturuEnterResult(this EnterResult enterResult)
+    {
+        return enterResult == EnterResult.Success
+            ? KanturuEnterResult.EnterResult.Success
+            : KanturuEnterResult.EnterResult.Failed;
+    }
 }

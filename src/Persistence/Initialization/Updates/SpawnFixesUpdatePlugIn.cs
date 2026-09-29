@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// The chaos castle update plugin.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.SpawnFixesUpdatePlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.SpawnFixesUpdatePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("15FB42DE-A032-49B5-98B8-4CF34744B3A6")]
 public class SpawnFixesUpdatePlugIn : UpdatePlugInBase
 {
