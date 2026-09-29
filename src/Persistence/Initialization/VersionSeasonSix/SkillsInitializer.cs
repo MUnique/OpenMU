@@ -255,6 +255,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.CreateSkill(SkillNumber.SelupanPoison, "Selupan Poison", damageType: DamageType.Physical, distance: 10, skillType: SkillType.AreaSkillExplicitTarget);
         this.CreateSkill(SkillNumber.SelupanIceStorm, "Selupan Ice Storm", damageType: DamageType.Physical, distance: 10, skillType: SkillType.AreaSkillExplicitTarget);
         this.CreateSkill(SkillNumber.SelupanIceStrike, "Selupan Ice Strike", damageType: DamageType.Physical, distance: 10, skillType: SkillType.AreaSkillExplicitTarget);
+        this.CreateSkill(SkillNumber.SelupanFall, "Selupan Fall", damageType: DamageType.Physical, distance: 10, skillType: SkillType.AreaSkillExplicitTarget);
 
         // Master skills:
         // Common:
@@ -650,6 +651,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.AddAttributeRelationship(SkillNumber.SelupanPoison, Stats.SkillFinalMultiplier, 2.0f, Stats.SkillMultiplier, InputOperator.Maximum);
         this.AddAttributeRelationship(SkillNumber.SelupanIceStorm, Stats.SkillFinalMultiplier, 2.2f, Stats.SkillMultiplier, InputOperator.Maximum);
         this.AddAttributeRelationship(SkillNumber.SelupanIceStrike, Stats.SkillFinalMultiplier, 2.3f, Stats.SkillMultiplier, InputOperator.Maximum);
+        this.AddAttributeRelationship(SkillNumber.SelupanFall, Stats.SkillFinalMultiplier, 2.5f, Stats.SkillMultiplier, InputOperator.Maximum);
 
         this.AddAttributeRelationship(SkillNumber.Explosion223, Stats.SkillFinalDamageBonus, 1.0f, Stats.ExplosionBonusDmg);
         this.AddAttributeRelationship(SkillNumber.Requiem, Stats.SkillFinalDamageBonus, 1.0f, Stats.RequiemBonusDmg);
