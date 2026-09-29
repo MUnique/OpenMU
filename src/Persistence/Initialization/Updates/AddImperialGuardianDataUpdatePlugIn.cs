@@ -59,7 +59,7 @@ public class AddImperialGuardianDataUpdatePlugIn : UpdatePlugInBase
     public override bool IsMandatory => false;
 
     /// <inheritdoc />
-    public override DateTime CreatedAt => new(2026, 09, 24, 0, 0, 0, DateTimeKind.Utc);
+    public override DateTime CreatedAt => new(2026, 09, 28, 0, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
