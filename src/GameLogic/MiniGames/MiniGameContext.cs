@@ -62,7 +62,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         // instead of the game context one: ChaosCastleDropGenerator only overrides monster
         // kill drops and delegates reward generation back to the context generator,
         // so this is behavior-preserving while staying correct for custom generators.
-        this._rewards = new MiniGameRewardService(this.Definition, this._gameContext, this.Map, () => this.DropGenerator, () => this.RemainingTime, () => this.Winner, this.Logger, this);
+        this._rewards = new MiniGameRewardService(this.Definition, this._gameContext, this.Map, () => this.DropGenerator, () => this.RemainingTime, () => this.Winner, this.IsWinner, this.IsInWinningParty, this.Logger, this);
 
         this._changeEvents = new MiniGameChangeEventProcessor(
             this.Definition,
@@ -167,9 +167,10 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     protected IDropGenerator DropGenerator { get; set; }
 
     /// <summary>
-    /// Gets the minimum player count to start the game.
+    /// Gets the minimum player count to start the game. Reads <see cref="MiniGameDefinition.MinimumPlayerCount"/>
+    /// when it's configured (greater than 0); otherwise falls back to the game type's built-in default.
     /// </summary>
-    protected virtual int MinimumPlayerCount => 1;
+    protected virtual int MinimumPlayerCount => this.Definition.MinimumPlayerCount > 0 ? this.Definition.MinimumPlayerCount : 1;
 
     /// <summary>
     /// Tries to enter the mini game. It fails if it's full or if it's not in an open state.
@@ -221,6 +222,13 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     {
         return this._spawnWaves.IsActive(waveNumber);
     }
+
+    /// <summary>
+    /// Gets the spawn gate at which the specified player should be placed on this game's map.
+    /// </summary>
+    /// <param name="player">The player for which the spawn gate is requested.</param>
+    /// <returns>The spawn gate, or <c>null</c> if this game doesn't define one for the player.</returns>
+    public virtual ExitGate? GetSpawnGate(Player player) => null;
 
     /// <summary>
     /// Determines whether an item allowed to be equipped during this game.
@@ -496,11 +504,32 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     /// </summary>
     /// <param name="player">The player who should receive the rewards.</param>
     /// <param name="rank">The rank of the player in the current game.</param>
+    /// <param name="rewardFilter">
+    /// An optional filter which selects the rewards to give. Games which hand out their rewards in
+    /// more than one step (e.g. the illusion temple, which grants the experience right away but the
+    /// rest only when the player claims it) use it to pick the part they're granting right now.
+    /// </param>
     /// <returns>The bonus score and the given money.</returns>
-    protected Task<(int BonusScore, int GivenMoney)> GiveRewardsAndGetBonusScoreAsync(Player player, int rank)
+    protected Task<(int BonusScore, int GivenMoney)> GiveRewardsAndGetBonusScoreAsync(Player player, int rank, Func<MiniGameReward, bool>? rewardFilter = null)
     {
-        return this._rewards.GiveRewardsAndGetBonusScoreAsync(player, rank);
+        return this._rewards.GiveRewardsAndGetBonusScoreAsync(player, rank, rewardFilter);
     }
+
+    /// <summary>
+    /// Determines whether the specified player is a winner of this game.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <returns><c>true</c>, if the player is a winner; otherwise, <c>false</c>.</returns>
+    protected virtual bool IsWinner(Player player) => this.Winner == player;
+
+    /// <summary>
+    /// Determines whether the specified player belongs to the winning party. Games which don't decide
+    /// their winners by party (e.g. the team based illusion temple) override this accordingly.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <returns><c>true</c>, if the player belongs to the winning party; otherwise, <c>false</c>.</returns>
+    protected virtual bool IsInWinningParty(Player player)
+        => this.Winner?.Party is { } winningParty && winningParty == player.Party;
 
     /// <summary>
     /// Saves the ranking of this game.

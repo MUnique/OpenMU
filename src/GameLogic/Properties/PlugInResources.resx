@@ -735,6 +735,12 @@
   <data name="StartChaosCastleEventChatCommandPlugIn_Description" xml:space="preserve">
     <value>Handles the chat command '/startcc'. Starts the chaos castle event at the next possible time.</value>
   </data>
+  <data name="StartIllusionTempleEventChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Start Illusion Temple Event Chat Command</value>
+  </data>
+  <data name="StartIllusionTempleEventChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/startit'. Starts the illusion temple event at the next possible time.</value>
+  </data>
   <data name="StartDevilSquareEventChatCommandPlugIn_Name" xml:space="preserve">
     <value>Start Devil Square Event Chat Command</value>
   </data>
@@ -1307,5 +1313,11 @@
   </data>
   <data name="RaklionPlugIn_Description" xml:space="preserve">
     <value>The event in the hatchery of raklion: when all spider eggs are destroyed, Selupan appears. After the battle, the hatchery is closed for some time.</value>
+  </data>
+  <data name="StartIllusionTempleEventChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Start Illusion Temple Event Chat Command</value>
+  </data>
+  <data name="StartIllusionTempleEventChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Starts the Illusion Temple event.</value>
   </data>
 </root>
