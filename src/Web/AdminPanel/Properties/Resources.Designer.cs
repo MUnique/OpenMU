@@ -4328,5 +4328,107 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("PartyBadgeTitle", resourceCulture);
             }
         }
+        /// <summary>Gets the localized CreateGameServer_ServerId text.</summary>
+        public static string CreateGameServer_ServerId => ResourceManager.GetString("CreateGameServer_ServerId", resourceCulture);
+
+        /// <summary>Gets the localized CreateGameServer_Description text.</summary>
+        public static string CreateGameServer_Description => ResourceManager.GetString("CreateGameServer_Description", resourceCulture);
+
+        /// <summary>Gets the localized CreateGameServer_ExperienceRate text.</summary>
+        public static string CreateGameServer_ExperienceRate => ResourceManager.GetString("CreateGameServer_ExperienceRate", resourceCulture);
+
+        /// <summary>Gets the localized CreateGameServer_PvpEnabled text.</summary>
+        public static string CreateGameServer_PvpEnabled => ResourceManager.GetString("CreateGameServer_PvpEnabled", resourceCulture);
+
+        /// <summary>Gets the localized CreateGameServer_ServerConfiguration text.</summary>
+        public static string CreateGameServer_ServerConfiguration => ResourceManager.GetString("CreateGameServer_ServerConfiguration", resourceCulture);
+
+        /// <summary>Gets the localized CreateGameServer_Client text.</summary>
+        public static string CreateGameServer_Client => ResourceManager.GetString("CreateGameServer_Client", resourceCulture);
+
+        /// <summary>Gets the localized CreateGameServer_NetworkPort text.</summary>
+        public static string CreateGameServer_NetworkPort => ResourceManager.GetString("CreateGameServer_NetworkPort", resourceCulture);
+
+        /// <summary>Gets the localized CreateConnectServer_ServerId text.</summary>
+        public static string CreateConnectServer_ServerId => ResourceManager.GetString("CreateConnectServer_ServerId", resourceCulture);
+
+        /// <summary>Gets the localized CreateConnectServer_Description text.</summary>
+        public static string CreateConnectServer_Description => ResourceManager.GetString("CreateConnectServer_Description", resourceCulture);
+
+        /// <summary>Gets the localized CreateConnectServer_Client text.</summary>
+        public static string CreateConnectServer_Client => ResourceManager.GetString("CreateConnectServer_Client", resourceCulture);
+
+        /// <summary>Gets the localized CreateConnectServer_NetworkPort text.</summary>
+        public static string CreateConnectServer_NetworkPort => ResourceManager.GetString("CreateConnectServer_NetworkPort", resourceCulture);
+
+        /// <summary>Gets the localized PageNotFound text.</summary>
+        public static string PageNotFound => ResourceManager.GetString("PageNotFound", resourceCulture);
+
+        /// <summary>Gets the localized PageNotFoundDescription text.</summary>
+        public static string PageNotFoundDescription => ResourceManager.GetString("PageNotFoundDescription", resourceCulture);
+
+        /// <summary>Gets the localized PartySummary text.</summary>
+        public static string PartySummary => ResourceManager.GetString("PartySummary", resourceCulture);
+
+        /// <summary>Gets the localized DeletedSuccessfully text.</summary>
+        public static string DeletedSuccessfully => ResourceManager.GetString("DeletedSuccessfully", resourceCulture);
+
+        /// <summary>Gets the localized InvalidCloneMethod text.</summary>
+        public static string InvalidCloneMethod => ResourceManager.GetString("InvalidCloneMethod", resourceCulture);
+
+        /// <summary>Gets the localized ConfigurationEntryName text.</summary>
+        public static string ConfigurationEntryName => ResourceManager.GetString("ConfigurationEntryName", resourceCulture);
+
+        /// <summary>Gets the localized LogReadError text.</summary>
+        public static string LogReadError => ResourceManager.GetString("LogReadError", resourceCulture);
+
+        /// <summary>Gets the localized CouldNotSaveEntry text.</summary>
+        public static string CouldNotSaveEntry => ResourceManager.GetString("CouldNotSaveEntry", resourceCulture);
+
+        /// <summary>Gets the localized ConfirmDelete text.</summary>
+        public static string ConfirmDelete => ResourceManager.GetString("ConfirmDelete", resourceCulture);
+
+        /// <summary>Gets the localized ConfirmDeleteEntry text.</summary>
+        public static string ConfirmDeleteEntry => ResourceManager.GetString("ConfirmDeleteEntry", resourceCulture);
+
+        /// <summary>Gets the localized CreateEntry text.</summary>
+        public static string CreateEntry => ResourceManager.GetString("CreateEntry", resourceCulture);
+
+        /// <summary>Gets the localized DuplicateEntry text.</summary>
+        public static string DuplicateEntry => ResourceManager.GetString("DuplicateEntry", resourceCulture);
+
+        /// <summary>Gets the localized ReconnectJoining text.</summary>
+        public static string ReconnectJoining => ResourceManager.GetString("ReconnectJoining", resourceCulture);
+
+        /// <summary>Gets the localized ReconnectRetryBefore text.</summary>
+        public static string ReconnectRetryBefore => ResourceManager.GetString("ReconnectRetryBefore", resourceCulture);
+
+        /// <summary>Gets the localized ReconnectRetryAfter text.</summary>
+        public static string ReconnectRetryAfter => ResourceManager.GetString("ReconnectRetryAfter", resourceCulture);
+
+        /// <summary>Gets the localized ReconnectFailed text.</summary>
+        public static string ReconnectFailed => ResourceManager.GetString("ReconnectFailed", resourceCulture);
+
+        /// <summary>Gets the localized ReconnectRetry text.</summary>
+        public static string ReconnectRetry => ResourceManager.GetString("ReconnectRetry", resourceCulture);
+
+        /// <summary>Gets the localized ReconnectPaused text.</summary>
+        public static string ReconnectPaused => ResourceManager.GetString("ReconnectPaused", resourceCulture);
+
+        /// <summary>Gets the localized ReconnectResume text.</summary>
+        public static string ReconnectResume => ResourceManager.GetString("ReconnectResume", resourceCulture);
+
+        /// <summary>Gets the localized ReconnectResumeFailed text.</summary>
+        public static string ReconnectResumeFailed => ResourceManager.GetString("ReconnectResumeFailed", resourceCulture);
+
+        /// <summary>Gets the localized RoleAdministrator text.</summary>
+        public static string RoleAdministrator => ResourceManager.GetString("RoleAdministrator", resourceCulture);
+
+        /// <summary>Gets the localized RoleOperator text.</summary>
+        public static string RoleOperator => ResourceManager.GetString("RoleOperator", resourceCulture);
+
+        /// <summary>Gets the localized RoleViewer text.</summary>
+        public static string RoleViewer => ResourceManager.GetString("RoleViewer", resourceCulture);
+
     }
 }

@@ -41,8 +41,8 @@ public static class ModelResourceProvider
     public static string GetTypeCaption(this Type modelType, CultureInfo? cultureInfo = null)
     {
         cultureInfo ??= CultureInfo.CurrentUICulture;
-        var resourceKey = modelType.Name + "_TypeCaption";
-        return GetResourceManager(modelType)?.GetString(resourceKey, cultureInfo) ?? SeparateWords(modelType.Name);
+        var resourceKey = "TypeCaption";
+        return GetModelResourceString(modelType, resourceKey, cultureInfo) ?? SeparateWords(modelType.Name);
     }
 
     /// <summary>
@@ -67,8 +67,8 @@ public static class ModelResourceProvider
     public static string GetPluralizedTypeCaption(this Type modelType, CultureInfo? cultureInfo = null)
     {
         cultureInfo ??= CultureInfo.CurrentUICulture;
-        var resourceKey = modelType.Name + "_TypeCaptionPlural";
-        return GetResourceManager(modelType)?.GetString(resourceKey, cultureInfo) ?? SeparateWords(modelType.Name);
+        var resourceKey = "TypeCaptionPlural";
+        return GetModelResourceString(modelType, resourceKey, cultureInfo) ?? SeparateWords(modelType.Name);
     }
 
     /// <summary>
@@ -93,8 +93,8 @@ public static class ModelResourceProvider
     public static string GetTypeDescription(this Type modelType, CultureInfo? cultureInfo = null)
     {
         cultureInfo ??= CultureInfo.CurrentUICulture;
-        var resourceKey = modelType.Name + "_TypeDescription";
-        return GetResourceManager(modelType)?.GetString(resourceKey, cultureInfo) ?? string.Empty;
+        var resourceKey = "TypeDescription";
+        return GetModelResourceString(modelType, resourceKey, cultureInfo) ?? string.Empty;
     }
 
     /// <summary>
@@ -121,8 +121,8 @@ public static class ModelResourceProvider
     public static string GetPropertyCaption(this Type modelType, string propertyName, CultureInfo? cultureInfo = null)
     {
         cultureInfo ??= CultureInfo.CurrentUICulture;
-        var resourceKey = $"{modelType.Name}_{propertyName}_Caption";
-        return GetResourceManager(modelType)?.GetString(resourceKey, cultureInfo) ?? SeparateWords(propertyName);
+        var resourceKey = $"{propertyName}_Caption";
+        return GetModelResourceString(modelType, resourceKey, cultureInfo) ?? SeparateWords(propertyName);
     }
 
     /// <summary>
@@ -149,8 +149,8 @@ public static class ModelResourceProvider
     public static string GetPropertyDescription(this Type modelType, string propertyName, CultureInfo? cultureInfo = null)
     {
         cultureInfo ??= CultureInfo.CurrentUICulture;
-        var resourceKey = $"{modelType.Name}_{propertyName}_Description";
-        return GetResourceManager(modelType)?.GetString(resourceKey, cultureInfo) ?? string.Empty;
+        var resourceKey = $"{propertyName}_Description";
+        return GetModelResourceString(modelType, resourceKey, cultureInfo) ?? string.Empty;
     }
 
     /// <summary>
@@ -181,6 +181,27 @@ public static class ModelResourceProvider
         cultureInfo ??= CultureInfo.CurrentUICulture;
         var resourceKey = $"{enumType.Name}_{enumValue}_Caption";
         return GetResourceManager(enumType)?.GetString(resourceKey, cultureInfo) ?? SeparateWords(enumValue.ToString());
+    }
+
+    /// <summary>
+    /// Resolves model resources through base types, including persistence-generated models.
+    /// </summary>
+    /// <param name="modelType">The runtime model type.</param>
+    /// <param name="keySuffix">The resource key suffix after the model type name.</param>
+    /// <param name="cultureInfo">The requested culture.</param>
+    /// <returns>The first matching resource, or null if none exists.</returns>
+    private static string? GetModelResourceString(Type modelType, string keySuffix, CultureInfo cultureInfo)
+    {
+        for (Type? type = modelType; type is not null; type = type.BaseType)
+        {
+            var value = GetResourceManager(type)?.GetString($"{type.Name}_{keySuffix}", cultureInfo);
+            if (value is not null)
+            {
+                return value;
+            }
+        }
+
+        return null;
     }
 
     /// <summary>

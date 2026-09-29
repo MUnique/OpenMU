@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// Adds the missing Life Stone combat attributes to existing Season 6 databases.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.ConfigureCastleSiegeLifeStoneUpdatePlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.ConfigureCastleSiegeLifeStoneUpdatePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("654C871C-6BC2-41C4-BAC1-8DA2D9399B54")]
 public sealed class ConfigureCastleSiegeLifeStoneUpdatePlugIn : UpdatePlugInBase
 {

@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// This adds the items required to enter the kalima map.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddKalimaPlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddKalimaPlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("0C99155F-1289-4E73-97F0-47CB67C3716F")]
 public class AddKalimaPlugIn : UpdatePlugInBase
 {

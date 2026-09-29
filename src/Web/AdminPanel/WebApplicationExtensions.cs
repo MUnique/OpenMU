@@ -48,7 +48,7 @@ public static class WebApplicationExtensions
 
         var supportedCultures = CultureHelper
             .GetAvailableCultures<Properties.Resources>()
-            .Select(culture => culture.TwoLetterISOLanguageName)
+            .Select(culture => culture.Name)
             .ToArray();
         services.AddLocalization()
             .Configure<RequestLocalizationOptions>(o =>

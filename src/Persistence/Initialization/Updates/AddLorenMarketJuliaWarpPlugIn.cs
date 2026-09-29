@@ -19,7 +19,7 @@ using MUnique.OpenMU.PlugIns;
 /// player uses the 'Warp' button of the (client-side) Julia window.
 /// </remarks>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddLorenMarketJuliaWarpPlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddLorenMarketJuliaWarpPlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("ed2f1728-b35c-4a3d-810e-eab5b6e12a82")]
 public class AddLorenMarketJuliaWarpPlugIn : UpdatePlugInBase
 {

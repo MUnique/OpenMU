@@ -18,7 +18,7 @@
 <div class="map-select">
     <label for="mapSelect">@Resources.SelectedMap:</label>
     <div class="d-flex align-items-center gap-2">
-        <select class="form-select flex-grow-1" title="Map" @onchange=this.OnMapSelectedAsync id="mapSelect" autocomplete="off" @ref="_mapSelectRef">
+        <select class="form-select flex-grow-1" title="@Resources.Map" @onchange=this.OnMapSelectedAsync id="mapSelect" autocomplete="off" @ref="_mapSelectRef">
             @foreach (var map in this.Maps ?? Enumerable.Empty<GameMapDefinition>())
             {
                 <option value="@map.GetId()" selected=@(object.Equals(this.SelectedMap, map))>@Resources.Map: @map.ToString()</option>
@@ -212,7 +212,7 @@
                        placeholder="@Resources.Search ..." />
             </div>
             <div class="map-object-select">
-                <select title="Object"
+                <select title="@Resources.Object"
                         id="objectSelect"
                         class="form-control"
                         size="@this.GetObjectListSize()"

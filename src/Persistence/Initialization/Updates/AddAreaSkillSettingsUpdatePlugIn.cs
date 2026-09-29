@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// This adds the items required to enter the kalima map.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddAreaSkillSettingsUpdatePlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddAreaSkillSettingsUpdatePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("D01DA745-BF72-40C4-BD90-D2D637AEDF99")]
 public class AddAreaSkillSettingsUpdatePlugIn : UpdatePlugInBase
 {

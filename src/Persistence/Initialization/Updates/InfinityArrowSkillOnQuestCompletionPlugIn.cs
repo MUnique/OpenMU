@@ -16,7 +16,7 @@ using MUnique.OpenMU.PlugIns;
 /// This update adds the infinity arrow skill as quest reward for 'Gain Hero Status (Muse Elf)'.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.InfinityArrowSkillOnQuestCompletionPlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.InfinityArrowSkillOnQuestCompletionPlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("A78B7540-75AC-494C-9AEC-BC943D929C98")]
 public class InfinityArrowSkillOnQuestCompletionPlugIn : UpdatePlugInBase
 {
