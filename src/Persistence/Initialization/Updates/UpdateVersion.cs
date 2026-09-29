@@ -601,6 +601,11 @@ public enum UpdateVersion
     AddRaklionEvent = 118,
 
     /// <summary>
+    /// The version of the <see cref="RefreshKanturuDataUpdatePlugIn"/>.
+    /// </summary>
+    RefreshKanturuData = 119,
+
+    /// <summary>
     /// The version of the <see cref="AddSelupanFallSkillUpdatePlugIn"/>.
     /// </summary>
     AddSelupanFallSkill = 120,
