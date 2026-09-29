@@ -9712,6 +9712,7 @@
           <Index>6</Index>
           <Type>String</Type>
           <Name>Name</Name>
+          <Length>10</Length>
         </Field>
       </Fields>
     </Packet>

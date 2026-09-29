@@ -25360,8 +25360,8 @@ public readonly ref struct IllusionTempleHolyItemRelicsRef
     /// </summary>
     public string Name
     {
-        get => this._data.ExtractString(6, this._data.Length - 6, System.Text.Encoding.UTF8);
-        set => this._data.Slice(6).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.ExtractString(6, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(6, 10).WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
@@ -25377,18 +25377,6 @@ public readonly ref struct IllusionTempleHolyItemRelicsRef
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
     public static implicit operator Span<byte>(IllusionTempleHolyItemRelicsRef packet) => packet._data; 
-
-    /// <summary>
-    /// Calculates the size of the packet for the specified field content.
-    /// </summary>
-    /// <param name="content">The content of the variable 'Name' field from which the size will be calculated.</param>
-    public static int GetRequiredSize(string content) => System.Text.Encoding.UTF8.GetByteCount(content) + 1 + 6;
-
-    /// <summary>
-    /// Calculates the size of the packet for the specified field content.
-    /// </summary>
-    /// <param name="contentLength">The content length in bytes of the variable 'Name' field from which the size will be calculated.</param>
-    public static int GetRequiredSize(int contentLength) => contentLength + 1 + 6;
 }
 
 

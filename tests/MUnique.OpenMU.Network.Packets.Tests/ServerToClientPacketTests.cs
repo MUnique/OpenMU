@@ -5572,14 +5572,20 @@ public class PacketStructureTests
     [Test]
     public void IllusionTempleHolyItemRelics_PacketSizeValidation()
     {
-        // Variable-length packet validation
-        // Test GetRequiredSize method with sample data
-        const string testString = "TestData";
-        var calculatedSize = IllusionTempleHolyItemRelicsRef.GetRequiredSize(testString);
-        var expectedMinSize = Encoding.UTF8.GetByteCount(testString) + 1 + 6;
+        // Fixed-length packet validation
+        const int expectedLength = 16;
+        var actualLength = IllusionTempleHolyItemRelicsRef.Length;
         
-        Assert.That(calculatedSize, Is.GreaterThanOrEqualTo(expectedMinSize), 
-            "GetRequiredSize calculation incorrect for string field");
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'UserIndex' boundary
+        Assert.That(4 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'UserIndex' exceeds packet boundary");
+        
+        // Validate field 'Name' boundary
+        Assert.That(6 + 10, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Name' exceeds packet boundary");
     }
 
     /// <summary>
