@@ -613,5 +613,5 @@ public enum UpdateVersion
     /// <summary>
     /// The version of the <see cref="AddCrywolfEventUpdatePlugIn"/>.
     /// </summary>
-    AddCrywolfEvent = 121,
+    AddCrywolfEvent = 122,
 }

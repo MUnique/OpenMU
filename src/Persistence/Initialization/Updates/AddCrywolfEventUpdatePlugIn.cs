@@ -45,7 +45,7 @@ public class AddCrywolfEventUpdatePlugIn : UpdatePlugInBase
     public override bool IsMandatory => true;
 
     /// <inheritdoc />
-    public override DateTime CreatedAt => new(2026, 09, 28, 0, 0, 0, DateTimeKind.Utc);
+    public override DateTime CreatedAt => new(2026, 09, 29, 0, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
