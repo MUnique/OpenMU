@@ -34,19 +34,6 @@ using MUnique.OpenMU.PlugIns;
 public sealed class CrywolfPlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCustomConfiguration<CrywolfEventDefinition>, ISupportDefaultCustomConfiguration,
     IObjectAddedToMapPlugIn, IObjectRemovedFromMapPlugIn, IPlayerStateChangedPlugIn, IMonsterItemDropPlugIn, IDisposable
 {
-    /// <summary>
-    /// The jewels which drop less often while the penalties apply, like in the original game.
-    /// </summary>
-    private static readonly HashSet<(byte Group, short Number)> PenaltyJewels = new()
-    {
-        (14, 13), // Jewel of Bless
-        (14, 14), // Jewel of Soul
-        (14, 16), // Jewel of Life
-        (14, 22), // Jewel of Creation
-        (12, 15), // Jewel of Chaos
-        (14, 31), // Jewel of Guardian
-    };
-
     private readonly ConcurrentDictionary<IGameContext, CrywolfContext> _contexts = new();
     private readonly ConcurrentDictionary<IGameContext, int> _runningTicks = new();
 
@@ -209,9 +196,9 @@ public sealed class CrywolfPlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISuppor
     public void ItemDropping(AttackableNpcBase monster, Player killer, Item item, CancelEventArgs eventArgs)
     {
         if (item.Definition is { } definition
-            && PenaltyJewels.Contains((definition.Group, definition.Number))
             && this._contexts.TryGetValue(killer.GameContext, out var context)
             && context.ArePenaltiesApplied
+            && context.Definition.PenaltyJewels.Any(jewel => jewel.Matches(definition))
             && Rand.NextInt(0, 100) >= context.Definition.JewelDropPenaltyPercentage)
         {
             eventArgs.Cancel = true;

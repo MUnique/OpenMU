@@ -333,6 +333,19 @@ public class CrywolfEventDefinition
     public int JewelDropPenaltyPercentage { get; set; } = 70;
 
     /// <summary>
+    /// Gets or sets the jewels which drop less often while the penalties apply. The defaults are the ones of the original game.
+    /// </summary>
+    public IList<CrywolfItemIdentifier> PenaltyJewels { get; set; } = new List<CrywolfItemIdentifier>
+    {
+        new() { Group = 14, Number = 13 }, // Jewel of Bless
+        new() { Group = 14, Number = 14 }, // Jewel of Soul
+        new() { Group = 14, Number = 16 }, // Jewel of Life
+        new() { Group = 14, Number = 22 }, // Jewel of Creation
+        new() { Group = 12, Number = 15 }, // Jewel of Chaos
+        new() { Group = 14, Number = 31 }, // Jewel of Guardian
+    };
+
+    /// <summary>
     /// Gets or sets the experience of killed monsters in percent of the normal experience, while the penalties apply.
     /// </summary>
     public int ExperiencePenaltyPercentage { get; set; } = 100;

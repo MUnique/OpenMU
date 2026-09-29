@@ -29,6 +29,10 @@ public sealed class CrywolfMonsterIntelligence : INpcIntelligence, IDisposable
     /// <summary>
     /// The number of the magic effect of a stun.
     /// </summary>
+    /// <remarks>
+    /// It isn't part of the configuration, because the client shows the stun by this number. The other stuns of
+    /// the game logic use the same number (e.g. <see cref="AttackableExtensions.ApplyMaceMasteryStunEffectAsync"/>).
+    /// </remarks>
     internal const short StunnedMagicEffectNumber = 61;
 
     /// <summary>
