@@ -205,62 +205,6 @@ public sealed class CrywolfMonsterIntelligence : INpcIntelligence, IDisposable
         }
     }
 
-    /// <summary>
-    /// Pushes the player away from the monster, as far as the terrain allows it.
-    /// </summary>
-    /// <param name="monster">The monster.</param>
-    /// <param name="player">The player.</param>
-    /// <param name="distance">The distance.</param>
-    internal static async ValueTask PushAwayAsync(Monster monster, Player player, int distance)
-    {
-        if (distance <= 0
-            || player.Attributes is not { } attributes
-            || attributes[Stats.IsStunned] > 0
-            || attributes[Stats.IsFrozen] > 0)
-        {
-            return;
-        }
-
-        var target = GetPointAwayFrom(monster.CurrentMap.Terrain, monster.Position, player.Position, distance, point => true);
-        if (target != player.Position)
-        {
-            await player.MoveAsync(target).ConfigureAwait(false);
-        }
-    }
-
-    /// <summary>
-    /// Gets the point, which is up to the specified distance away from the origin, in the direction from the origin to the start.
-    /// It stops before tiles which can't be walked on or are in a safezone.
-    /// </summary>
-    /// <param name="terrain">The terrain.</param>
-    /// <param name="origin">The origin, from which the point is away.</param>
-    /// <param name="start">The start point.</param>
-    /// <param name="distance">The maximum distance.</param>
-    /// <param name="canWalkOn">A function which determines, if a point can be walked on in addition to the terrain.</param>
-    /// <returns>The point.</returns>
-    internal static Point GetPointAwayFrom(GameMapTerrain terrain, Point origin, Point start, int distance, Func<Point, bool> canWalkOn)
-    {
-        var direction = origin.GetDirectionTo(start);
-        if (direction == Direction.Undefined)
-        {
-            direction = (Direction)Rand.NextInt(1, 9);
-        }
-
-        var target = start;
-        for (var i = 0; i < distance; i++)
-        {
-            var next = target.CalculateTargetPoint(direction);
-            if (!terrain.WalkMap[next.X, next.Y] || terrain.SafezoneMap[next.X, next.Y] || !canWalkOn(next))
-            {
-                break;
-            }
-
-            target = next;
-        }
-
-        return target;
-    }
-
     private static bool IsChance(int percentage)
     {
         return percentage > 0 && Rand.NextInt(0, 100) < percentage;
@@ -329,7 +273,7 @@ public sealed class CrywolfMonsterIntelligence : INpcIntelligence, IDisposable
             return false;
         }
 
-        var escapeTarget = GetPointAwayFrom(monster.CurrentMap.Terrain, target.Position, monster.Position, definition.BalgassEscapeDistance, this.CanWalkOn);
+        var escapeTarget = monster.CurrentMap.Terrain.GetPointAwayFrom(target.Position, monster.Position, definition.BalgassEscapeDistance, this.CanWalkOn);
         return escapeTarget != monster.Position && await monster.WalkToAsync(escapeTarget).ConfigureAwait(false);
     }
 
@@ -354,7 +298,7 @@ public sealed class CrywolfMonsterIntelligence : INpcIntelligence, IDisposable
             // The push comes first, because a stunned player isn't pushed.
             if (IsChance(skill.PushChance))
             {
-                await PushAwayAsync(monster, player, skill.PushDistance).ConfigureAwait(false);
+                await monster.PushAwayAsync(player, skill.PushDistance).ConfigureAwait(false);
             }
 
             if (IsChance(skill.StunChance))

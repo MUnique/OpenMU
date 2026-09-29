@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Tests;
 
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Crywolf;
+using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.Pathfinding;
 
 /// <summary>
@@ -125,12 +126,12 @@ public class CrywolfEventDefinitionTest
         terrain.WalkMap[second.X, second.Y] = true;
         terrain.WalkMap[third.X, third.Y] = true;
 
-        Assert.That(CrywolfMonsterIntelligence.GetPointAwayFrom(terrain, origin, start, 3, _ => true), Is.EqualTo(third));
+        Assert.That(terrain.GetPointAwayFrom(origin, start, 3), Is.EqualTo(third));
 
         terrain.WalkMap[third.X, third.Y] = false;
-        Assert.That(CrywolfMonsterIntelligence.GetPointAwayFrom(terrain, origin, start, 3, _ => true), Is.EqualTo(second));
+        Assert.That(terrain.GetPointAwayFrom(origin, start, 3), Is.EqualTo(second));
 
         terrain.SafezoneMap[first.X, first.Y] = true;
-        Assert.That(CrywolfMonsterIntelligence.GetPointAwayFrom(terrain, origin, start, 3, _ => true), Is.EqualTo(start));
+        Assert.That(terrain.GetPointAwayFrom(origin, start, 3), Is.EqualTo(start));
     }
 }
