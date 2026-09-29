@@ -14,11 +14,11 @@
         {
             @if (this._isCollapsed)
             {
-                <button type="button" class="btn btn-outline-info ms-3" @onclick="@this.OnToggleCollapseClick">Expand (@(this.Value?.Count) Items)</button>
+                <button type="button" class="btn btn-outline-info ms-3" @onclick="@this.OnToggleCollapseClick">@string.Format(Resources.ExpandItems, this.Value?.Count)</button>
             }
             else
             {
-                <button type="button" class="btn btn-outline-info ms-3" @onclick="@this.OnToggleCollapseClick">Collapse</button>
+                <button type="button" class="btn btn-outline-info ms-3" @onclick="@this.OnToggleCollapseClick">@Resources.Collapse</button>
             }
         }
         </h5>
@@ -77,14 +77,14 @@
                                   urlPrefix = "edit-account";
                                 }
 
-                                <a href="@($"{urlPrefix}/{typeof(TItem).FullName}/{item.Id}")" class="btn btn-primary"><span class="oi oi-pencil" aria-hidden="true"></span> Edit</a>
+                                <a href="@($"{urlPrefix}/{typeof(TItem).FullName}/{item.Id}")" class="btn btn-primary"><span class="oi oi-pencil" aria-hidden="true"></span> @Resources.Edit</a>
                               }
                             </td>
                         }
                             <td>
                                 @if (this._isEditable)
                                 {
-                                    <button type="button" class="btn btn-danger" @onclick="@(() => OnRemoveClickAsync(item.Item))"><span class="oi oi-trash" aria-hidden="true"></span> Remove</button>
+                                    <button type="button" class="btn btn-danger" @onclick="@(() => OnRemoveClickAsync(item.Item))"><span class="oi oi-trash" aria-hidden="true"></span> @Resources.Remove</button>
                                 }
                             </td>
                         </tr>
@@ -95,12 +95,12 @@
                             <td colspan="3" class="border-bottom-0">
                                 @if (this._isAddingSupported)
                                 {
-                                    <button type="button" class="btn btn-primary" @onclick="@OnAddClickAsync">Add</button>
+                                    <button type="button" class="btn btn-primary" @onclick="@OnAddClickAsync">@Resources.Add</button>
                                 }
 
                                 @if (this._isCreatingSupported)
                                 {
-                                    <button type="button" class="btn btn-primary" @onclick="@OnCreateClickAsync">Create</button>
+                                    <button type="button" class="btn btn-primary" @onclick="@OnCreateClickAsync">@Resources.Create</button>
                                 }
                             </td>
                         </tr>

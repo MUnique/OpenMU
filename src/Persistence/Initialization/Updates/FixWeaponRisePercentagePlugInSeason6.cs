@@ -20,7 +20,7 @@ using static MUnique.OpenMU.Persistence.Initialization.CharacterClasses.Characte
 /// This update fixes weapons (staff, stick, book, scepter) rise percentage increase; Summoner weapons and wings wizardry/curse options; and Wing of Dimension (inc/dec), Cape of Overrule (inc/dec), Cape of Emperor (dec) damage rates..
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixWeaponRisePercentagePlugInSeason6_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixWeaponRisePercentagePlugInSeason6_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("58740F26-6496-4CCA-8C90-C4749E09DDB2")]
 public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugInBase
 {

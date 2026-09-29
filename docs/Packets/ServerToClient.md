@@ -91,6 +91,7 @@
   * [C1 44 - PartyHealthUpdate (by server)](C1-44-PartyHealthUpdate_by-server.md)
   * [C2 45 - AddTransformedCharactersToScope075 (by server)](C2-45-AddTransformedCharactersToScope075_by-server.md)
   * [C2 45 - AddTransformedCharactersToScope (by server)](C2-45-AddTransformedCharactersToScope_by-server.md)
+  * [C2 45 - AddTransformedCharacterToScopeExtended (by server)](C2-45-AddTransformedCharacterToScopeExtended_by-server.md)
   * [C1 46 - ChangeTerrainAttributes (by server)](C1-46-ChangeTerrainAttributes_by-server.md)
   * [C1 48 - ShowEffect (by server)](C1-48-ShowEffect_by-server.md)
   * [C3 4A - RageAttack (by server)](C3-4A-RageAttack_by-server.md)

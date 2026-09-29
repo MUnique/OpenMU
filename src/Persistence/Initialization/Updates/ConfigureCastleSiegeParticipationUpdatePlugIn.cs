@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// Configures the client-visible Castle Siege participant effects in an existing Season 6 database.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.ConfigureCastleSiegeParticipationUpdatePlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.ConfigureCastleSiegeParticipationUpdatePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("31F81908-548B-482E-A018-1ED0D1B8D89B")]
 public class ConfigureCastleSiegeParticipationUpdatePlugIn : UpdatePlugInBase
 {

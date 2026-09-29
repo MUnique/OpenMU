@@ -249,6 +249,12 @@ internal sealed class PlayerMapTransitions
         await player.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.EnteredWorld).ConfigureAwait(false);
         player.IsAlive = true;
 
+        if (player.CurrentMiniGame?.GetEntrySpawnPosition(player) is { } spawnPosition)
+        {
+            player.SelectedCharacter.PositionX = spawnPosition.X;
+            player.SelectedCharacter.PositionY = spawnPosition.Y;
+        }
+
         await player.CurrentMap!.AddAsync(player).ConfigureAwait(false);
         if (!player.CurrentMap.Terrain.WalkMap[player.SelectedCharacter.PositionX, player.SelectedCharacter.PositionY]
             && await this.RecoverFromBlockedSpawnAsync().ConfigureAwait(false))

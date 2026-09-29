@@ -4818,6 +4818,80 @@
       </Structures>
     </Packet>
     <Packet>
+      <HeaderType>C2Header</HeaderType>
+      <Code>45</Code>
+      <Name>AddTransformedCharacterToScopeExtended</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player wears a monster transformation ring (extended client).</SentWhen>
+      <CausedReaction>The character appears as monster, defined by the Skin property.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>CharacterCount</Name>
+          <Description>The number of characters in this packet. This packet contains only one character, because the size of the appearance data depends on the used appearance serializer.</Description>
+          <DefaultValue>1</DefaultValue>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Id</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>CurrentPositionX</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Byte</Type>
+          <Name>CurrentPositionY</Name>
+        </Field>
+        <Field>
+          <Index>9</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Skin</Name>
+        </Field>
+        <Field>
+          <Index>11</Index>
+          <Type>String</Type>
+          <Name>Name</Name>
+          <Length>10</Length>
+        </Field>
+        <Field>
+          <Index>21</Index>
+          <Type>Byte</Type>
+          <Name>TargetPositionX</Name>
+        </Field>
+        <Field>
+          <Index>22</Index>
+          <Type>Byte</Type>
+          <Name>TargetPositionY</Name>
+        </Field>
+        <Field>
+          <Index>23</Index>
+          <LeftShifted>4</LeftShifted>
+          <Type>Byte</Type>
+          <Name>Rotation</Name>
+          <Length>4</Length>
+        </Field>
+        <Field>
+          <Index>23</Index>
+          <LeftShifted>0</LeftShifted>
+          <Type>Enum</Type>
+          <TypeName>CharacterHeroState</TypeName>
+          <Name>HeroState</Name>
+          <Length>4</Length>
+        </Field>
+        <Field>
+          <Index>24</Index>
+          <Type>Binary</Type>
+          <Name>AppearanceAndEffects</Name>
+          <Description>The appearance data, followed by the number of effects and the effect ids.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
       <HeaderType>C1Header</HeaderType>
       <Code>46</Code>
       <Name>ChangeTerrainAttributes</Name>

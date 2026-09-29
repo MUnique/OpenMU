@@ -66,7 +66,9 @@ internal class KanturuEvent : BaseMapInitializer
     /// </summary>
     /// <remarks>
     /// It's shared with <c>AddKanturuMapContentUpdatePlugIn</c>, which adds these spawns to
-    /// databases which were created before the event existed.
+    /// databases which were created before the event existed, and with the summon seeder
+    /// of <c>RefreshKanturuDataUpdatePlugIn</c>, which adds the missing Nightmare summon
+    /// waves 9-11.
     /// Boss positions: Maya Left (202, 83), Maya Right (189, 82), Nightmare (78, 143).
     /// Maya room (bounded by laser traps): X:174-217, Y:54-83. Nightmare zone: X:75-88, Y:97-143.
     /// </remarks>
@@ -105,6 +107,12 @@ internal class KanturuEvent : BaseMapInitializer
 
         // Wave 8: Nightmare.
         (270, NightmareNumber, 78, 78, 143, 143, 1, 8),
+
+        // Waves 9-11: Nightmare summons — 7 Dread Fear around each teleport target
+        // of the health phases ((79, 100), (78, 124), (78, 141)).
+        (280, DreadfearNumber, 77, 81, 98, 102, 7, 9),
+        (281, DreadfearNumber, 76, 80, 122, 126, 7, 10),
+        (282, DreadfearNumber, 76, 80, 139, 143, 7, 11),
     ];
 
     /// <inheritdoc/>

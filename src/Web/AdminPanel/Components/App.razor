@@ -10,11 +10,11 @@
 }
 
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="@this.CurrentTheme">
+<html lang="@System.Globalization.CultureInfo.CurrentUICulture.Name" data-bs-theme="@this.CurrentTheme">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>OpenMU AdminPanel</title>
+    <title>@MUnique.OpenMU.Web.AdminPanel.Properties.Resources.OpenMUAdminPanel</title>
     <base href="/" />
     <ResourcePreloader />
     <link href="@Assets["MUnique.OpenMU.Startup.styles.css"]" rel="stylesheet" />

@@ -104,17 +104,28 @@ Item definitions with their requirements, level tables, possible options, socket
 and the classes which may equip them. Items use a dedicated editor with a
 graphical representation instead of the plain generic form.
 
+## Item drops
+
+Route `edit-item-drops`
+
+All drops on one page: the drop item groups of maps, monsters, quests and boxes,
+the drop chances per monster, the randomly dropped items and the item option
+chances. See [Item drops](item-drops.md).
+
 ## Drop item groups
 
 Route `edit-config-grid/…DropItemGroup/`
 
-Which items drop with which chance. Groups can be assigned globally, to a map or
-to a monster, which is how the drop tables are composed.
+Which items drop with which chance, as generic grid. Groups can be assigned to a
+map or to a monster, which is how the drop tables are composed. The
+[Item drops](item-drops.md) page is usually more comfortable.
 
 :::tip[Changing drop rates]
-The chance of a group is a value between 0 and 1. Beware that groups are
-evaluated in order and the *money* group is usually the fallback — increasing one
-group's chance implicitly lowers what is left for the others.
+The chance of a group is a value between 0 and 1. The chances of all groups which
+apply to a monster are added up, and one of them is selected per drop — so
+increasing one group's chance lowers the chance that nothing drops, and once the
+sum exceeds 1, it lowers the share of all other groups. See
+[How drops are determined](item-drops.md#how-drops-are-determined).
 :::
 
 ## Game maps

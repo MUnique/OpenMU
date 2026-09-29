@@ -193,4 +193,59 @@ or behind a firewall) and you want to use it within your computer or private net
 	<data name="SystemConfiguration_NetworkObservationRetentionDays_Description" xml:space="preserve">
 		<value>The number of days after which an archived session is removed. A value of 0 means that the sessions are kept forever.</value>
 	</data>
+  <data name="CastleSiegeScheduleSummary" xml:space="preserve">
+    <value>{0} on {1} at {2:D2}:{3:D2}</value>
+  </data>
+  <data name="CastleSiegeUpgradeSummary" xml:space="preserve">
+    <value>Level {0}: Value={1}, Jewels={2}, Zen={3}</value>
+  </data>
+  <data name="CastleSiegeZoneSummary" xml:space="preserve">
+    <value>{0} / {1} to {2} / {3}</value>
+  </data>
+  <data name="ItemStorageSummary" xml:space="preserve">
+    <value>{0} Items, {1} Money</value>
+  </data>
+  <data name="DayOfWeek_Sunday" xml:space="preserve">
+    <value>Sunday</value>
+  </data>
+  <data name="DayOfWeek_Monday" xml:space="preserve">
+    <value>Monday</value>
+  </data>
+  <data name="DayOfWeek_Tuesday" xml:space="preserve">
+    <value>Tuesday</value>
+  </data>
+  <data name="DayOfWeek_Wednesday" xml:space="preserve">
+    <value>Wednesday</value>
+  </data>
+  <data name="DayOfWeek_Thursday" xml:space="preserve">
+    <value>Thursday</value>
+  </data>
+  <data name="DayOfWeek_Friday" xml:space="preserve">
+    <value>Friday</value>
+  </data>
+  <data name="DayOfWeek_Saturday" xml:space="preserve">
+    <value>Saturday</value>
+  </data>
+  <data name="SpawnPointSummary" xml:space="preserve"><value>{0} - Qty: {1} @ {2}/{3}</value></data>
+  <data name="SpawnAreaSummary" xml:space="preserve"><value>{0} - Qty: {1} @ {2}/{3} to {4}/{5}</value></data>
+  <data name="SpawnWaveSummary" xml:space="preserve"><value> - Wave: {0}</value></data>
+  <data name="EnterGateSummary" xml:space="preserve"><value>{0} ({1}) (Level {2}) to {3}</value></data>
+  <data name="WaveSummary" xml:space="preserve"><value>Wave {0}: {1}</value></data>
+  <data name="LevelValueSummary" xml:space="preserve"><value>Level {0}: {1}</value></data>
+  <data name="RectangleSummary" xml:space="preserve"><value>{0} / {1} to {2} / {3}</value></data>
+  <data name="BattleZoneSummary" xml:space="preserve"><value>Battle Zone ({0})</value></data>
+  <data name="CastleNpcSummary" xml:space="preserve"><value>{0} #{1} at ({2},{3})</value></data>
+  <data name="DuelConfigSummary" xml:space="preserve"><value>Duel Configuration {0} Arenas, Exit: {1}</value></data>
+  <data name="GameServerConfigSummary" xml:space="preserve"><value>Default ({0} players)</value></data>
+  <data name="RandomItemSummary" xml:space="preserve"><value>Random Item</value></data>
+  <data name="OptionRequirementSummary" xml:space="preserve"><value>{0}: SubOption Type {1}, Min. Count {2}</value></data>
+  <data name="SkillRewardSummary" xml:space="preserve"><value>Skill: {0}</value></data>
+  <data name="AttributeRewardSummary" xml:space="preserve"><value>Attribute: {0} x {1}</value></data>
+  <data name="TerrainChangeSummary" xml:space="preserve"><value>{0} attribute '{1}' from ({2}, {3}) to ({4}, {5}); {6}</value></data>
+  <data name="TerrainSet" xml:space="preserve"><value>Set</value></data>
+  <data name="TerrainRemove" xml:space="preserve"><value>Remove</value></data>
+  <data name="TerrainWithClientUpdate" xml:space="preserve"><value>with client update</value></data>
+  <data name="TerrainWithoutClientUpdate" xml:space="preserve"><value>without client update</value></data>
+  <data name="ChatServerSummary" xml:space="preserve"><value>[ChatServerDefinition ServerID={0}, Description={1}]</value></data>
+  <data name="ServerEndpointSummary" xml:space="preserve"><value>Client: {0}; Port: {1}</value></data>
 </root>

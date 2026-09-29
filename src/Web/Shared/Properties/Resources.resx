@@ -312,4 +312,185 @@
   <data name="No" xml:space="preserve">
     <value>No</value>
   </data>
+  <data name="Create" xml:space="preserve">
+    <value>Create</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Change" xml:space="preserve">
+    <value>Change</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Collapse" xml:space="preserve">
+    <value>Collapse</value>
+  </data>
+  <data name="ExpandItems" xml:space="preserve">
+    <value>Expand ({0} Items)</value>
+  </data>
+  <data name="Previous" xml:space="preserve">
+    <value>Previous</value>
+  </data>
+  <data name="Next" xml:space="preserve">
+    <value>Next</value>
+  </data>
+  <data name="Navigation" xml:space="preserve">
+    <value>Navigation</value>
+  </data>
+  <data name="Breadcrumb" xml:space="preserve">
+    <value>Breadcrumb</value>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="PageNumber" xml:space="preserve">
+    <value>Page {0}</value>
+  </data>
+  <data name="Download" xml:space="preserve">
+    <value>Download</value>
+  </data>
+  <data name="LoadFile" xml:space="preserve">
+    <value>Load file</value>
+  </data>
+  <data name="CurrentByteSize" xml:space="preserve">
+    <value>Current size: {0} bytes</value>
+  </data>
+  <data name="EmptyBinaryValue" xml:space="preserve">
+    <value>It is currently empty. Either type in the value as a hex string or upload a file.</value>
+  </data>
+  <data name="NewPasswordPlaceholder" xml:space="preserve">
+    <value>New password ...</value>
+  </data>
+  <data name="RepeatPasswordPlaceholder" xml:space="preserve">
+    <value>Repeat password ...</value>
+  </data>
+  <data name="PasswordMinimumLength" xml:space="preserve">
+    <value>Enter at least 3 characters.</value>
+  </data>
+  <data name="PasswordsDoNotMatch" xml:space="preserve">
+    <value>The passwords don't match.</value>
+  </data>
+  <data name="ExtensionNumber" xml:space="preserve">
+    <value>Extension {0}</value>
+  </data>
+  <data name="PersonalStore" xml:space="preserve">
+    <value>Personal Store</value>
+  </data>
+  <data name="SelectType" xml:space="preserve">
+    <value>Select {0}</value>
+  </data>
+  <data name="CreateType" xml:space="preserve">
+    <value>Create {0}</value>
+  </data>
+  <data name="NoMoreAvailable" xml:space="preserve">
+    <value>No more available</value>
+  </data>
+  <data name="AddPlaceholder" xml:space="preserve">
+    <value>Add ...</value>
+  </data>
+  <data name="Object" xml:space="preserve">
+    <value>Object</value>
+  </data>
+  <data name="ExitGateSelector" xml:space="preserve">
+    <value>Exit gate selector</value>
+  </data>
+  <data name="NumberRangeError" xml:space="preserve">
+    <value>The {0} field must be a number between {1} and {2}.</value>
+  </data>
+  <data name="InvalidField" xml:space="preserve">
+    <value>The {0} field is not valid.</value>
+  </data>
+  <data name="ItemBonusAtLevel" xml:space="preserve">
+    <value>+{0} {1} (Level {2})</value>
+  </data>
+  <data name="ItemEdit_ItemSlot" xml:space="preserve">
+    <value>Item Slot</value>
+  </data>
+  <data name="ItemEdit_Definition" xml:space="preserve">
+    <value>Definition</value>
+  </data>
+  <data name="ItemEdit_Level" xml:space="preserve">
+    <value>Level</value>
+  </data>
+  <data name="ItemEdit_Durability" xml:space="preserve">
+    <value>Durability</value>
+  </data>
+  <data name="ItemEdit_Amount" xml:space="preserve">
+    <value>Amount</value>
+  </data>
+  <data name="ItemEdit_PetExperience" xml:space="preserve">
+    <value>Pet Experience</value>
+  </data>
+  <data name="ItemEdit_HasSkill" xml:space="preserve">
+    <value>Has Skill</value>
+  </data>
+  <data name="ItemEdit_HasLuck" xml:space="preserve">
+    <value>Has Luck</value>
+  </data>
+  <data name="ItemEdit_AncientSet" xml:space="preserve">
+    <value>Ancient Set</value>
+  </data>
+  <data name="ItemEdit_ExcellentOptions" xml:space="preserve">
+    <value>Excellent Options</value>
+  </data>
+  <data name="ItemEdit_WingOptions" xml:space="preserve">
+    <value>Wing Options</value>
+  </data>
+  <data name="ItemEdit_NormalOption" xml:space="preserve">
+    <value>Additional Option</value>
+  </data>
+  <data name="ItemEdit_HasOption" xml:space="preserve">
+    <value>Has Additional Option</value>
+  </data>
+  <data name="ItemEdit_HarmonyOption" xml:space="preserve">
+    <value>Harmony Option</value>
+  </data>
+  <data name="ItemEdit_SocketCount" xml:space="preserve">
+    <value>Socket Count</value>
+  </data>
+  <data name="ItemEdit_SocketBonusOption" xml:space="preserve">
+    <value>Socket Bonus Option</value>
+  </data>
+  <data name="ItemEdit_FenrirOption" xml:space="preserve">
+    <value>Fenrir Option</value>
+  </data>
+  <data name="ItemEdit_HasGuardianOption" xml:space="preserve">
+    <value>Has Guardian Option</value>
+  </data>
+  <data name="WrongFormat" xml:space="preserve">
+    <value>Wrong format.</value>
+  </data>
+  <data name="HexFormatError" xml:space="preserve">
+    <value>Wrong format. Expected example: AB 03 DC</value>
+  </data>
+  <data name="IntegerListFormatError" xml:space="preserve">
+    <value>Wrong format. Expected example: 1;2;3</value>
+  </data>
+  <data name="UnknownTimeZone" xml:space="preserve">
+    <value>Unknown time zone id '{0}'. Leave empty for UTC or pick a suggestion, e.g. Europe/Warsaw.</value>
+  </data>
+  <data name="MillisecondsHint" xml:space="preserve">
+    <value>{0} in milliseconds</value>
+  </data>
+  <data name="FileLoaded" xml:space="preserve">
+    <value>Loaded {0} with {1} bytes.</value>
+  </data>
+  <data name="PaginationItems" xml:space="preserve"><value>{0} items</value></data>
+  <data name="PaginationPage" xml:space="preserve"><value>Page {0} of {1}</value></data>
+  <data name="FirstPage" xml:space="preserve"><value>First page</value></data>
+  <data name="LastPage" xml:space="preserve"><value>Last page</value></data>
+  <data name="InvalidNumber" xml:space="preserve"><value>The {0} field must be a number.</value></data>
+  <data name="MonsterLabel" xml:space="preserve"><value>Monster</value></data>
+  <data name="MapsLabel" xml:space="preserve"><value>Maps</value></data>
 </root>

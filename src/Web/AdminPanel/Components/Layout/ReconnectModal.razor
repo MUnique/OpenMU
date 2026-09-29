@@ -1,4 +1,6 @@
-﻿<script type="module" src="@Assets["Components/Layout/ReconnectModal.razor.js"]"></script>
+﻿@using MUnique.OpenMU.Web.AdminPanel.Properties
+
+<script type="module" src="@Assets["Components/Layout/ReconnectModal.razor.js"]"></script>
 
 <dialog id="components-reconnect-modal" data-nosnippet>
     <div class="components-reconnect-container">
@@ -7,25 +9,25 @@
             <div></div>
         </div>
         <p class="components-reconnect-first-attempt-visible">
-            Rejoining the server...
+            @Resources.ReconnectJoining
         </p>
         <p class="components-reconnect-repeated-attempt-visible">
-            Rejoin failed... trying again in <span id="components-seconds-to-next-attempt"></span> seconds.
+            @Resources.ReconnectRetryBefore<span id="components-seconds-to-next-attempt"></span>@Resources.ReconnectRetryAfter
         </p>
         <p class="components-reconnect-failed-visible">
-            Failed to rejoin.<br />Please retry or reload the page.
+            @Resources.ReconnectFailed
         </p>
         <button id="components-reconnect-button" class="components-reconnect-failed-visible">
-            Retry
+            @Resources.ReconnectRetry
         </button>
         <p class="components-pause-visible">
-            The session has been paused by the server.
+            @Resources.ReconnectPaused
         </p>
         <button id="components-resume-button" class="components-pause-visible">
-            Resume
+            @Resources.ReconnectResume
         </button>
         <p class="components-resume-failed-visible">
-            Failed to resume the session.<br />Please reload the page.
+            @Resources.ReconnectResumeFailed
         </p>
     </div>
 </dialog>

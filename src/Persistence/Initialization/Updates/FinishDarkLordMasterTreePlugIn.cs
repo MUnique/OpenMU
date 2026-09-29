@@ -16,7 +16,7 @@ using MUnique.OpenMU.PlugIns;
 /// This update completes the dark lord master tree skills and effects.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FinishDarkLordMasterTreePlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FinishDarkLordMasterTreePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("1A2B3C4D-5E6F-7890-ABCD-EF1234567890")]
 public class FinishDarkLordMasterTreePlugIn : UpdatePlugInBase
 {

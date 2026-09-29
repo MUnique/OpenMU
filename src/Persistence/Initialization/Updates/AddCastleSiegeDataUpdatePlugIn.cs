@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// Adds the Castle Siege configuration and persistent state to an existing Season 6 database.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddCastleSiegeDataUpdatePlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddCastleSiegeDataUpdatePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("CD201E33-37C9-4C85-95CC-16042B28E974")]
 public class AddCastleSiegeDataUpdatePlugIn : UpdatePlugInBase
 {

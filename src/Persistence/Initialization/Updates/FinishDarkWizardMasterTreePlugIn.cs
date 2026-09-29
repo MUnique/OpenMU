@@ -16,7 +16,7 @@ using MUnique.OpenMU.PlugIns;
 /// This update completes the dark wizard master tree expansion of wizardry effects.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FinishDarkWizardMasterTreePlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FinishDarkWizardMasterTreePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("C1D2E3F4-5A6B-7C8D-9E0F-1A2B3C4D5E6F")]
 public class FinishDarkWizardMasterTreePlugIn : UpdatePlugInBase
 {

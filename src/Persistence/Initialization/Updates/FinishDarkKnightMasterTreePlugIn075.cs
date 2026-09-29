@@ -12,7 +12,7 @@ using MUnique.OpenMU.PlugIns;
 /// This update completes the dark knight master tree skills and effects. It also fixes the double wield damage calculations.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FinishDarkKnightMasterTreePlugInBase_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FinishDarkKnightMasterTreePlugInBase_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("B8F3E2C1-4D5A-6F78-9B0C-2E7D1A3F5B6C")]
 public class FinishDarkKnightMasterTreePlugIn075 : FinishDarkKnightMasterTreePlugInBase
 {

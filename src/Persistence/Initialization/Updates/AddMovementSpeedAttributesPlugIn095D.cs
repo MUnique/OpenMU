@@ -11,7 +11,7 @@ using MUnique.OpenMU.PlugIns;
 /// Adds movement speed attributes to 0.95d game configurations.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddMovementSpeedAttributesPlugInBase_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddMovementSpeedAttributesPlugInBase_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("7C38C30F-163B-4625-A82D-5C3A0A9ED883")]
 public class AddMovementSpeedAttributesPlugIn095D : AddMovementSpeedAttributesPlugInBase
 {

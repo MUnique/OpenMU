@@ -5,13 +5,13 @@
     <InputSelect class="form-select form-select-sm" @bind-Value="this.SelectedCultureCode">
       @foreach (var culture in this.SupportedUICultures)
       {
-        if (object.Equals(culture.TwoLetterISOLanguageName, this.SelectedCultureCode))
+        if (object.Equals(culture.Name, this.SelectedCultureCode))
         {
-          <option value="@culture.TwoLetterISOLanguageName" selected="selected">@culture.NativeName</option>
+          <option value="@culture.Name" selected="selected">@(culture.Name == "zh-CN" ? "简体中文" : culture.NativeName)</option>
         }
         else
         {
-          <option value="@culture.TwoLetterISOLanguageName">@culture.NativeName</option>
+          <option value="@culture.Name">@(culture.Name == "zh-CN" ? "简体中文" : culture.NativeName)</option>
         }
       }
     </InputSelect>

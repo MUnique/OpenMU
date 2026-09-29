@@ -19,7 +19,7 @@ using MUnique.OpenMU.PlugIns;
 /// This update adds Dark Horse options, fixes Gold Fenrir options and Soul Barrier effects.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixHorseFenrirOptionsSoulBarrierPlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixHorseFenrirOptionsSoulBarrierPlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("3E362629-AAF3-40E0-BC6D-32230285FB03")]
 public class FixHorseFenrirOptionsSoulBarrierPlugIn : UpdatePlugInBase
 {

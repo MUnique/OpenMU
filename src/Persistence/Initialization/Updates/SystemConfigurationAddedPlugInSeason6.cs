@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// for season 6.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.SystemConfigurationAddedPlugInBase_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.SystemConfigurationAddedPlugInBase_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("7231172F-51AD-4129-9003-C1ACC7E04147")]
 public class SystemConfigurationAddedPlugInSeason6 : SystemConfigurationAddedPlugInBase
 {

@@ -2495,6 +2495,54 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="AddTransformedCharacterToScopeExtended" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="id">The id.</param>
+    /// <param name="currentPositionX">The current position x.</param>
+    /// <param name="currentPositionY">The current position y.</param>
+    /// <param name="skin">The skin.</param>
+    /// <param name="name">The name.</param>
+    /// <param name="targetPositionX">The target position x.</param>
+    /// <param name="targetPositionY">The target position y.</param>
+    /// <param name="rotation">The rotation.</param>
+    /// <param name="heroState">The hero state.</param>
+    /// <param name="appearanceAndEffects">The appearance data, followed by the number of effects and the effect ids.</param>
+    /// <param name="characterCount">The number of characters in this packet. This packet contains only one character, because the size of the appearance data depends on the used appearance serializer.</param>
+    /// <remarks>
+    /// Is sent by the server when: The player wears a monster transformation ring (extended client).
+    /// Causes reaction on client side: The character appears as monster, defined by the Skin property.
+    /// </remarks>
+    public static async ValueTask SendAddTransformedCharacterToScopeExtendedAsync(this IConnection? connection, ushort @id, byte @currentPositionX, byte @currentPositionY, ushort @skin, string @name, byte @targetPositionX, byte @targetPositionY, byte @rotation, CharacterHeroState @heroState, Memory<byte> @appearanceAndEffects, byte @characterCount = 1)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = AddTransformedCharacterToScopeExtendedRef.GetRequiredSize(appearanceAndEffects.Length);
+            var packet = new AddTransformedCharacterToScopeExtendedRef(connection.Output.GetSpan(length)[..length]);
+            packet.CharacterCount = @characterCount;
+            packet.Id = @id;
+            packet.CurrentPositionX = @currentPositionX;
+            packet.CurrentPositionY = @currentPositionY;
+            packet.Skin = @skin;
+            packet.Name = @name;
+            packet.TargetPositionX = @targetPositionX;
+            packet.TargetPositionY = @targetPositionY;
+            packet.Rotation = @rotation;
+            packet.HeroState = @heroState;
+            @appearanceAndEffects.Span.CopyTo(packet.AppearanceAndEffects);
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="ShowEffect" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
