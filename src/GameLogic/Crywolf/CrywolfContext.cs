@@ -206,6 +206,16 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
             return;
         }
 
+        if (this._isEventServer
+            && this._definition.MonsterSkills.Any(skill => skill.StunChance > 0)
+            && this._gameContext.Configuration.MagicEffects.All(effect => effect.Number != CrywolfMonsterIntelligence.StunnedMagicEffectNumber))
+        {
+            this._logger.LogWarning(
+                "The magic effect {effect} of the stun is missing in the configuration, so the monsters of the crywolf event can't stun. It's added by the data update {update}.",
+                CrywolfMonsterIntelligence.StunnedMagicEffectNumber,
+                "Fix summoner curse skills");
+        }
+
         this._map.ObjectAdded += this.OnObjectAddedToMapAsync;
         this.InitializeNpcs();
         await this.ApplyOccupationAsync().ConfigureAwait(false);

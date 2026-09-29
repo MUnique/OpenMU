@@ -27,6 +27,11 @@ using MUnique.OpenMU.Pathfinding;
 public sealed class CrywolfMonsterIntelligence : INpcIntelligence, IDisposable
 {
     /// <summary>
+    /// The number of the magic effect of a stun.
+    /// </summary>
+    internal const short StunnedMagicEffectNumber = 61;
+
+    /// <summary>
     /// The distance to the goal, below which a monster walks directly to it.
     /// </summary>
     private const int DirectWalkDistance = 10;
@@ -35,11 +40,6 @@ public sealed class CrywolfMonsterIntelligence : INpcIntelligence, IDisposable
     /// The maximum distance of a waypoint, which a monster walks to.
     /// </summary>
     private const int WaypointDistance = 20;
-
-    /// <summary>
-    /// The number of the magic effect of a stun.
-    /// </summary>
-    private const short StunnedMagicEffectNumber = 61;
 
     private readonly CrywolfContext _context;
     private readonly CrywolfMonsterGroup? _group;
