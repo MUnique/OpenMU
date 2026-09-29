@@ -129,13 +129,13 @@ public class PkClearChatCommandPlugIn : ChatCommandPlugInBase<PkClearChatCommand
         /// <summary>
         /// Gets or sets the Zen cost per kill.
         /// </summary>
-        [Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.PKClearChatCommandPlugIn_Display1_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.PKClearChatCommandPlugIn_Display1_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
+        [Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.PKClearConfiguration_ZenCostPerKill_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.PKClearConfiguration_ZenCostPerKill_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
         public int ZenCostPerKill { get; set; } = 10_000_000;
 
         /// <summary>
         /// Gets or sets a value indicating whether regular players are allowed to clear their PK status.
         /// </summary>
-        [Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.PKClearChatCommandPlugIn_Display2_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.PKClearChatCommandPlugIn_Display2_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
+        [Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.PKClearConfiguration_AllowRegularPlayers_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.PKClearConfiguration_AllowRegularPlayers_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
         public bool AllowRegularPlayers { get; set; } = true;
     }
 }

@@ -18,7 +18,7 @@ using MUnique.OpenMU.PlugIns;
 /// prioritized - struck only once the game's own rules make it legal (see <see cref="BotPvpRules"/>).
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BotRevengePlugIn_Display1_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BotRevengePlugIn_Display1_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
+[Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BotRevengePlugIn_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BotRevengePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
 [Guid("29B871B0-FBCF-44D4-A677-8A9832AAC193")]
 public class BotRevengePlugIn : IAttackableGotKilledPlugIn
 {

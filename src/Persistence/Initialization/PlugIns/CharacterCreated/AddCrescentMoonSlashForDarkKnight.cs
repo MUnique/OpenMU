@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("2BB94D35-0DEF-4458-84AC-ECAAE6E896BE")]
 [PlugIn]
-[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddCrescentMoonSlashForDarkKnight_Display1_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddCrescentMoonSlashForDarkKnight_Display1_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddCrescentMoonSlashForDarkKnight_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddCrescentMoonSlashForDarkKnight_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 public class AddCrescentMoonSlashForDarkKnight : AddInitialSkillPlugInBase
 {
     /// <summary>

@@ -347,35 +347,35 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("DataInitialization095d_Name", resourceCulture);
             }
         }
-        /// <summary>Gets the localized AddCrescentMoonSlashForDarkKnight_Display1_Name text.</summary>
-        public static string AddCrescentMoonSlashForDarkKnight_Display1_Name => ResourceManager.GetString("AddCrescentMoonSlashForDarkKnight_Display1_Name", resourceCulture)!;
+        /// <summary>Gets the localized AddCrescentMoonSlashForDarkKnight_Name text.</summary>
+        public static string AddCrescentMoonSlashForDarkKnight_Name => ResourceManager.GetString("AddCrescentMoonSlashForDarkKnight_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized AddCrescentMoonSlashForDarkKnight_Display1_Description text.</summary>
-        public static string AddCrescentMoonSlashForDarkKnight_Display1_Description => ResourceManager.GetString("AddCrescentMoonSlashForDarkKnight_Display1_Description", resourceCulture)!;
+        /// <summary>Gets the localized AddCrescentMoonSlashForDarkKnight_Description text.</summary>
+        public static string AddCrescentMoonSlashForDarkKnight_Description => ResourceManager.GetString("AddCrescentMoonSlashForDarkKnight_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized AddStarfallForFairyElf_Display1_Name text.</summary>
-        public static string AddStarfallForFairyElf_Display1_Name => ResourceManager.GetString("AddStarfallForFairyElf_Display1_Name", resourceCulture)!;
+        /// <summary>Gets the localized AddStarfallForFairyElf_Name text.</summary>
+        public static string AddStarfallForFairyElf_Name => ResourceManager.GetString("AddStarfallForFairyElf_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized AddStarfallForFairyElf_Display1_Description text.</summary>
-        public static string AddStarfallForFairyElf_Display1_Description => ResourceManager.GetString("AddStarfallForFairyElf_Display1_Description", resourceCulture)!;
+        /// <summary>Gets the localized AddStarfallForFairyElf_Description text.</summary>
+        public static string AddStarfallForFairyElf_Description => ResourceManager.GetString("AddStarfallForFairyElf_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized AddManaRaysForMagicGladiator_Display1_Name text.</summary>
-        public static string AddManaRaysForMagicGladiator_Display1_Name => ResourceManager.GetString("AddManaRaysForMagicGladiator_Display1_Name", resourceCulture)!;
+        /// <summary>Gets the localized AddManaRaysForMagicGladiator_Name text.</summary>
+        public static string AddManaRaysForMagicGladiator_Name => ResourceManager.GetString("AddManaRaysForMagicGladiator_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized AddManaRaysForMagicGladiator_Display1_Description text.</summary>
-        public static string AddManaRaysForMagicGladiator_Display1_Description => ResourceManager.GetString("AddManaRaysForMagicGladiator_Display1_Description", resourceCulture)!;
+        /// <summary>Gets the localized AddManaRaysForMagicGladiator_Description text.</summary>
+        public static string AddManaRaysForMagicGladiator_Description => ResourceManager.GetString("AddManaRaysForMagicGladiator_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized AddFireBlastForDarkLord_Display1_Name text.</summary>
-        public static string AddFireBlastForDarkLord_Display1_Name => ResourceManager.GetString("AddFireBlastForDarkLord_Display1_Name", resourceCulture)!;
+        /// <summary>Gets the localized AddFireBlastForDarkLord_Name text.</summary>
+        public static string AddFireBlastForDarkLord_Name => ResourceManager.GetString("AddFireBlastForDarkLord_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized AddFireBlastForDarkLord_Display1_Description text.</summary>
-        public static string AddFireBlastForDarkLord_Display1_Description => ResourceManager.GetString("AddFireBlastForDarkLord_Display1_Description", resourceCulture)!;
+        /// <summary>Gets the localized AddFireBlastForDarkLord_Description text.</summary>
+        public static string AddFireBlastForDarkLord_Description => ResourceManager.GetString("AddFireBlastForDarkLord_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized AddSpiralSlashForMagicGladiator_Display1_Name text.</summary>
-        public static string AddSpiralSlashForMagicGladiator_Display1_Name => ResourceManager.GetString("AddSpiralSlashForMagicGladiator_Display1_Name", resourceCulture)!;
+        /// <summary>Gets the localized AddSpiralSlashForMagicGladiator_Name text.</summary>
+        public static string AddSpiralSlashForMagicGladiator_Name => ResourceManager.GetString("AddSpiralSlashForMagicGladiator_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized AddSpiralSlashForMagicGladiator_Display1_Description text.</summary>
-        public static string AddSpiralSlashForMagicGladiator_Display1_Description => ResourceManager.GetString("AddSpiralSlashForMagicGladiator_Display1_Description", resourceCulture)!;
+        /// <summary>Gets the localized AddSpiralSlashForMagicGladiator_Description text.</summary>
+        public static string AddSpiralSlashForMagicGladiator_Description => ResourceManager.GetString("AddSpiralSlashForMagicGladiator_Description", resourceCulture)!;
 
         /// <summary>Gets the localized FixWeaponRisePercentagePlugInSeason6_Name text.</summary>
         public static string FixWeaponRisePercentagePlugInSeason6_Name => ResourceManager.GetString("FixWeaponRisePercentagePlugInSeason6_Name", resourceCulture)!;

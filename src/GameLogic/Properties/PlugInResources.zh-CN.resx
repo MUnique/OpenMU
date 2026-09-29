@@ -1243,277 +1243,277 @@
   <data name="DoppelgangerFeaturePlugIn_Description" xml:space="preserve">
     <value>配置镜像世界的怪物、行进路线和倍率等内容。</value>
   </data>
-  <data name="BotConfiguration_Display1_Name" xml:space="preserve">
+  <data name="BotConfiguration_Enabled_Name" xml:space="preserve">
     <value>启用</value>
   </data>
-  <data name="BotConfiguration_Display1_Description" xml:space="preserve">
+  <data name="BotConfiguration_Enabled_Description" xml:space="preserve">
     <value>启用后，服务器启动时生成机器人。</value>
   </data>
-  <data name="BotConfiguration_Display2_Name" xml:space="preserve">
+  <data name="BotConfiguration_ResetBots_Name" xml:space="preserve">
     <value>重建机器人</value>
   </data>
-  <data name="BotConfiguration_Display2_Description" xml:space="preserve">
+  <data name="BotConfiguration_ResetBots_Description" xml:space="preserve">
     <value>下次启动时删除所有机器人账号和角色并重新生成，完成后自动关闭此选项。</value>
   </data>
-  <data name="BotConfiguration_Display3_Name" xml:space="preserve">
+  <data name="BotConfiguration_PurgeBots_Name" xml:space="preserve">
     <value>清除机器人</value>
   </data>
-  <data name="BotConfiguration_Display3_Description" xml:space="preserve">
+  <data name="BotConfiguration_PurgeBots_Description" xml:space="preserve">
     <value>删除所有机器人账号和角色并关闭机器人功能，不再生成新机器人，完成后自动关闭此选项。</value>
   </data>
-  <data name="BotConfiguration_Display4_Name" xml:space="preserve">
+  <data name="BotConfiguration_StartAsFreshCharacters_Name" xml:space="preserve">
     <value>以新角色状态开始</value>
   </data>
-  <data name="BotConfiguration_Display4_Description" xml:space="preserve">
+  <data name="BotConfiguration_StartAsFreshCharacters_Description" xml:space="preserve">
     <value>新生成的机器人以 1 级、未强化的初始装备开始，如同新建玩家角色，不使用随机等级、转生记录和强化装备。</value>
   </data>
-  <data name="BotConfiguration_Display5_Name" xml:space="preserve">
+  <data name="BotConfiguration_PresenceRotation_Name" xml:space="preserve">
     <value>轮换在线</value>
   </data>
-  <data name="BotConfiguration_Display5_Description" xml:space="preserve">
+  <data name="BotConfiguration_PresenceRotation_Description" xml:space="preserve">
     <value>机器人按时段轮流上下线，深夜在线最少、晚间最多，不再全天全部在线。</value>
   </data>
-  <data name="BotConfiguration_Display6_Name" xml:space="preserve">
+  <data name="BotConfiguration_MinOnlineSharePercent_Name" xml:space="preserve">
     <value>最低在线比例（%）</value>
   </data>
-  <data name="BotConfiguration_Display6_Description" xml:space="preserve">
+  <data name="BotConfiguration_MinOnlineSharePercent_Description" xml:space="preserve">
     <value>最冷清时段保持在线的机器人占比；设为 100 时不产生轮换效果。</value>
   </data>
-  <data name="BotConfiguration_Display7_Name" xml:space="preserve">
+  <data name="BotConfiguration_NumberOfAccounts_Name" xml:space="preserve">
     <value>账号数量</value>
   </data>
-  <data name="BotConfiguration_Display7_Description" xml:space="preserve">
+  <data name="BotConfiguration_NumberOfAccounts_Description" xml:space="preserve">
     <value>需要维持的机器人账号数量。</value>
   </data>
-  <data name="BotConfiguration_Display8_Name" xml:space="preserve">
+  <data name="BotConfiguration_MaxCharactersPerAccount_Name" xml:space="preserve">
     <value>每个账号的角色数</value>
   </data>
-  <data name="BotConfiguration_Display8_Description" xml:space="preserve">
+  <data name="BotConfiguration_MaxCharactersPerAccount_Description" xml:space="preserve">
     <value>每个机器人账号拥有的角色数，最多 5 个。</value>
   </data>
-  <data name="BotConfiguration_Display9_Name" xml:space="preserve">
+  <data name="BotConfiguration_BotCapacityPercent_Name" xml:space="preserve">
     <value>机器人名额占比（%）</value>
   </data>
-  <data name="BotConfiguration_Display9_Description" xml:space="preserve">
+  <data name="BotConfiguration_BotCapacityPercent_Description" xml:space="preserve">
     <value>机器人最多可占用服务器玩家容量的比例，其余名额留给真人玩家。</value>
   </data>
-  <data name="BotConfiguration_Display10_Name" xml:space="preserve">
+  <data name="BotConfiguration_BotsPayResetCosts_Name" xml:space="preserve">
     <value>机器人支付转生费用</value>
   </data>
-  <data name="BotConfiguration_Display10_Description" xml:space="preserve">
+  <data name="BotConfiguration_BotsPayResetCosts_Description" xml:space="preserve">
     <value>启用后，机器人转生时与真人玩家一样支付配置的金币和物品费用；默认免费转生。</value>
   </data>
-  <data name="BotConfiguration_Display11_Name" xml:space="preserve">
+  <data name="BotConfiguration_JewelStockPerKind_Name" xml:space="preserve">
     <value>每种宝石储备量</value>
   </data>
-  <data name="BotConfiguration_Display11_Description" xml:space="preserve">
+  <data name="BotConfiguration_JewelStockPerKind_Description" xml:space="preserve">
     <value>机器人分别保留的祝福、灵魂、生命宝石数量；超过后停止拾取并出售多余部分。</value>
   </data>
-  <data name="BotConfiguration_Display12_Name" xml:space="preserve">
+  <data name="BotConfiguration_PotionStockCharges_Name" xml:space="preserve">
     <value>药水储备量（使用次数）</value>
   </data>
-  <data name="BotConfiguration_Display12_Description" xml:space="preserve">
+  <data name="BotConfiguration_PotionStockCharges_Description" xml:space="preserve">
     <value>机器人在商店补充治疗和魔力药水时，分别补足的可使用次数。</value>
   </data>
-  <data name="BotConfiguration_Display13_Name" xml:space="preserve">
+  <data name="BotConfiguration_ProofOfConceptAccounts_Name" xml:space="preserve">
     <value>额外托管账号</value>
   </data>
-  <data name="BotConfiguration_Display13_Description" xml:space="preserve">
+  <data name="BotConfiguration_ProofOfConceptAccounts_Description" xml:space="preserve">
     <value>除自动生成的机器人外，额外托管为机器人的现有账号登录名，以逗号分隔。</value>
   </data>
-  <data name="BotSelfDefensePlugIn_Display1_Name" xml:space="preserve">
+  <data name="BotSelfDefensePlugIn_Name" xml:space="preserve">
     <value>机器人自卫</value>
   </data>
-  <data name="BotSelfDefensePlugIn_Display1_Description" xml:space="preserve">
+  <data name="BotSelfDefensePlugIn_Description" xml:space="preserve">
     <value>玩家攻击服务器机器人时，机器人会反击。</value>
   </data>
-  <data name="BotRevengePlugIn_Display1_Name" xml:space="preserve">
+  <data name="BotRevengePlugIn_Name" xml:space="preserve">
     <value>机器人复仇</value>
   </data>
-  <data name="BotRevengePlugIn_Display1_Description" xml:space="preserve">
+  <data name="BotRevengePlugIn_Description" xml:space="preserve">
     <value>服务器机器人返回死亡地点，向击杀自己的玩家复仇。</value>
   </data>
-  <data name="BotSkillProgressionPlugIn_Display1_Name" xml:space="preserve">
+  <data name="BotSkillProgressionPlugIn_Name" xml:space="preserve">
     <value>机器人成长</value>
   </data>
-  <data name="BotSkillProgressionPlugIn_Display1_Description" xml:space="preserve">
+  <data name="BotSkillProgressionPlugIn_Description" xml:space="preserve">
     <value>服务器机器人升级时分配属性点，并学习适合其职业和等级的新技能。</value>
   </data>
-  <data name="BotFeaturePlugIn_Display1_Name" xml:space="preserve">
+  <data name="BotFeaturePlugIn_Name" xml:space="preserve">
     <value>机器人</value>
   </data>
-  <data name="BotFeaturePlugIn_Display1_Description" xml:space="preserve">
+  <data name="BotFeaturePlugIn_Description" xml:space="preserve">
     <value>生成在地图上打怪的服务器机器人。配置需要托管的账号并启用此功能。</value>
   </data>
-  <data name="MaximumConnectionsPerIpPlugIn_Display1_Name" xml:space="preserve">
+  <data name="MaximumConnectionsPerIpPlugIn_Name" xml:space="preserve">
     <value>每个 IP 的最大连接数</value>
   </data>
-  <data name="MaximumConnectionsPerIpPlugIn_Display1_Description" xml:space="preserve">
+  <data name="MaximumConnectionsPerIpPlugIn_Description" xml:space="preserve">
     <value>限制同一 IP 地址的最大同时连接数。</value>
   </data>
-  <data name="SpeedHackDetectPlugIn_Display1_Name" xml:space="preserve">
+  <data name="SpeedHackDetectPlugIn_Name" xml:space="preserve">
     <value>移动与攻击加速检测</value>
   </data>
-  <data name="SpeedHackDetectPlugIn_Display1_Description" xml:space="preserve">
+  <data name="SpeedHackDetectPlugIn_Description" xml:space="preserve">
     <value>检测并阻止玩家使用移动或攻击加速作弊。</value>
   </data>
-  <data name="KanturuGatewayPlugIn_Display1_Name" xml:space="preserve">
+  <data name="KanturuGatewayPlugIn_Name" xml:space="preserve">
     <value>坎特鲁入口机器</value>
   </data>
-  <data name="KanturuGatewayPlugIn_Display1_Description" xml:space="preserve">
+  <data name="KanturuGatewayPlugIn_Description" xml:space="preserve">
     <value>处理坎特鲁入口机器 NPC 的副本入场交互。</value>
   </data>
-  <data name="SymbolOfKundunStackedPlugIn_Display1_Name" xml:space="preserve">
+  <data name="SymbolOfKundunStackedPlugIn_Name" xml:space="preserve">
     <value>昆顿印记合成</value>
   </data>
-  <data name="SymbolOfKundunStackedPlugIn_Display1_Description" xml:space="preserve">
+  <data name="SymbolOfKundunStackedPlugIn_Description" xml:space="preserve">
     <value>将叠满的昆顿印记转换为失落的地图。</value>
   </data>
-  <data name="DuelSpawnGatePlugIn_Display1_Name" xml:space="preserve">
+  <data name="DuelSpawnGatePlugIn_Name" xml:space="preserve">
     <value>决斗出生点选择</value>
   </data>
-  <data name="DuelSpawnGatePlugIn_Display1_Description" xml:space="preserve">
+  <data name="DuelSpawnGatePlugIn_Description" xml:space="preserve">
     <value>将决斗中的玩家生成在决斗区域中所属的一侧。</value>
   </data>
-  <data name="SoccerSpawnGatePlugIn_Display1_Name" xml:space="preserve">
+  <data name="SoccerSpawnGatePlugIn_Name" xml:space="preserve">
     <value>战盟足球出生点选择</value>
   </data>
-  <data name="SoccerSpawnGatePlugIn_Display1_Description" xml:space="preserve">
+  <data name="SoccerSpawnGatePlugIn_Description" xml:space="preserve">
     <value>将正在参加足球比赛的玩家生成在足球场上。</value>
   </data>
-  <data name="PetExperiencePlugIn_Display1_Name" xml:space="preserve">
+  <data name="PetExperiencePlugIn_Name" xml:space="preserve">
     <value>宠物经验分配</value>
   </data>
-  <data name="PetExperiencePlugIn_Display1_Description" xml:space="preserve">
+  <data name="PetExperiencePlugIn_Description" xml:space="preserve">
     <value>将玩家击杀所得经验的一部分分配给可培养的宠物。</value>
   </data>
-  <data name="PeriodicInvasionConfiguration_Display1_Name" xml:space="preserve">
+  <data name="PeriodicInvasionConfiguration_ForceSingleMap_Name" xml:space="preserve">
     <value>强制在同一地图刷新</value>
   </data>
-  <data name="PeriodicInvasionConfiguration_Display2_Name" xml:space="preserve">
+  <data name="PeriodicInvasionConfiguration_Mobs_Name" xml:space="preserve">
     <value>怪物刷新配置</value>
   </data>
-  <data name="WhiteWizardInvasionPlugIn_Display1_Name" xml:space="preserve">
+  <data name="WhiteWizardInvasionPlugIn_Name" xml:space="preserve">
     <value>白魔法师入侵</value>
   </data>
-  <data name="WhiteWizardInvasionPlugIn_Display1_Description" xml:space="preserve">
+  <data name="WhiteWizardInvasionPlugIn_Description" xml:space="preserve">
     <value>启用白魔法师入侵活动。</value>
   </data>
-  <data name="ItemRegistrationConfiguration_Display1_Name" xml:space="preserve">
+  <data name="ItemRegistrationConfiguration_Rules_Name" xml:space="preserve">
     <value>NPC 物品登记规则</value>
   </data>
-  <data name="ItemRegistrationConfiguration_Display1_Description" xml:space="preserve">
+  <data name="ItemRegistrationConfiguration_Rules_Description" xml:space="preserve">
     <value>配置不同 NPC 接收物品登记的规则。</value>
   </data>
-  <data name="NpcItemRegistrationRule_Display1_Name" xml:space="preserve">
+  <data name="NpcItemRegistrationRule_NpcNumber_Name" xml:space="preserve">
     <value>NPC 编号</value>
   </data>
-  <data name="NpcItemRegistrationRule_Display1_Description" xml:space="preserve">
+  <data name="NpcItemRegistrationRule_NpcNumber_Description" xml:space="preserve">
     <value>NPC 定义编号，例如黄金弓箭手为 236。</value>
   </data>
-  <data name="NpcItemRegistrationRule_Display2_Name" xml:space="preserve">
+  <data name="NpcItemRegistrationRule_AcceptedItemGroup_Name" xml:space="preserve">
     <value>接收物品的分组</value>
   </data>
-  <data name="NpcItemRegistrationRule_Display2_Description" xml:space="preserve">
+  <data name="NpcItemRegistrationRule_AcceptedItemGroup_Description" xml:space="preserve">
     <value>允许登记的物品分组，例如活动物品为 14。</value>
   </data>
-  <data name="NpcItemRegistrationRule_Display3_Name" xml:space="preserve">
+  <data name="NpcItemRegistrationRule_AcceptedItemNumber_Name" xml:space="preserve">
     <value>接收物品的编号</value>
   </data>
-  <data name="NpcItemRegistrationRule_Display3_Description" xml:space="preserve">
+  <data name="NpcItemRegistrationRule_AcceptedItemNumber_Description" xml:space="preserve">
     <value>允许登记的物品编号，例如蕾娜为 21。</value>
   </data>
-  <data name="NpcItemRegistrationRule_Display4_Name" xml:space="preserve">
+  <data name="NpcItemRegistrationRule_RequiredItemsCount_Name" xml:space="preserve">
     <value>所需物品数量</value>
   </data>
-  <data name="NpcItemRegistrationRule_Display4_Description" xml:space="preserve">
+  <data name="NpcItemRegistrationRule_RequiredItemsCount_Description" xml:space="preserve">
     <value>领取奖励所需登记的物品数量。</value>
   </data>
-  <data name="NpcItemRegistrationRule_Display5_Name" xml:space="preserve">
+  <data name="NpcItemRegistrationRule_RewardZen_Name" xml:space="preserve">
     <value>奖励金币</value>
   </data>
-  <data name="NpcItemRegistrationRule_Display5_Description" xml:space="preserve">
+  <data name="NpcItemRegistrationRule_RewardZen_Description" xml:space="preserve">
     <value>登记物品达到要求数量时奖励的金币。</value>
   </data>
-  <data name="NpcItemRegistrationRule_Display6_Name" xml:space="preserve">
+  <data name="NpcItemRegistrationRule_RewardDropItemGroup_Name" xml:space="preserve">
     <value>奖励物品掉落组</value>
   </data>
-  <data name="NpcItemRegistrationRule_Display6_Description" xml:space="preserve">
+  <data name="NpcItemRegistrationRule_RewardDropItemGroup_Description" xml:space="preserve">
     <value>用于生成物品奖励的掉落组。留空时不掉落物品，仅奖励金币。</value>
   </data>
-  <data name="ChaosCastleStartPlugIn_Display1_Name" xml:space="preserve">
+  <data name="ChaosCastleStartPlugIn_Name" xml:space="preserve">
     <value>赤色要塞定时开启</value>
   </data>
-  <data name="ChaosCastleStartPlugIn_Display1_Description" xml:space="preserve">
+  <data name="ChaosCastleStartPlugIn_Description" xml:space="preserve">
     <value>赤色要塞活动。</value>
   </data>
-  <data name="KanturuStartPlugIn_Display1_Name" xml:space="preserve">
+  <data name="KanturuStartPlugIn_Name" xml:space="preserve">
     <value>坎特鲁副本定时开启</value>
   </data>
-  <data name="KanturuStartPlugIn_Display1_Description" xml:space="preserve">
+  <data name="KanturuStartPlugIn_Description" xml:space="preserve">
     <value>坎特鲁提炼之塔活动。</value>
   </data>
-  <data name="BloodCastleStartPlugIn_Display1_Name" xml:space="preserve">
+  <data name="BloodCastleStartPlugIn_Name" xml:space="preserve">
     <value>血色城堡定时开启</value>
   </data>
-  <data name="BloodCastleStartPlugIn_Display1_Description" xml:space="preserve">
+  <data name="BloodCastleStartPlugIn_Description" xml:space="preserve">
     <value>血色城堡活动。</value>
   </data>
-  <data name="DevilSquareStartPlugIn_Display1_Name" xml:space="preserve">
+  <data name="DevilSquareStartPlugIn_Name" xml:space="preserve">
     <value>恶魔广场定时开启</value>
   </data>
-  <data name="DevilSquareStartPlugIn_Display1_Description" xml:space="preserve">
+  <data name="DevilSquareStartPlugIn_Description" xml:space="preserve">
     <value>恶魔广场活动。</value>
   </data>
-  <data name="PKClearChatCommandPlugIn_Display1_Name" xml:space="preserve">
+  <data name="PKClearConfiguration_ZenCostPerKill_Name" xml:space="preserve">
     <value>每点杀人数清除费用（金币）</value>
   </data>
-  <data name="PKClearChatCommandPlugIn_Display1_Description" xml:space="preserve">
+  <data name="PKClearConfiguration_ZenCostPerKill_Description" xml:space="preserve">
     <value>清除一点杀人数所需的金币。</value>
   </data>
-  <data name="PKClearChatCommandPlugIn_Display2_Name" xml:space="preserve">
+  <data name="PKClearConfiguration_AllowRegularPlayers_Name" xml:space="preserve">
     <value>允许普通玩家使用</value>
   </data>
-  <data name="PKClearChatCommandPlugIn_Display2_Description" xml:space="preserve">
+  <data name="PKClearConfiguration_AllowRegularPlayers_Description" xml:space="preserve">
     <value>允许普通玩家支付金币，使用此命令清除自身 PK 状态。</value>
   </data>
-  <data name="LostMapDroppedPlugIn_Display1_Name" xml:space="preserve">
+  <data name="LostMapDroppedPlugIn_Name" xml:space="preserve">
     <value>失落的地图入口生成</value>
   </data>
-  <data name="LostMapDroppedPlugIn_Display1_Description" xml:space="preserve">
+  <data name="LostMapDroppedPlugIn_Description" xml:space="preserve">
     <value>处理丢弃失落的地图的操作，创建通往卡利玛神庙的入口。</value>
   </data>
-  <data name="ItemBoxDroppedPlugIn_Display1_Name" xml:space="preserve">
+  <data name="ItemBoxDroppedPlugIn_Name" xml:space="preserve">
     <value>宝箱掉落处理</value>
   </data>
-  <data name="ItemBoxDroppedPlugIn_Display1_Description" xml:space="preserve">
+  <data name="ItemBoxDroppedPlugIn_Description" xml:space="preserve">
     <value>处理丢弃宝箱的操作，例如昆顿宝箱。</value>
   </data>
-  <data name="ResetConfiguration_Display1_Name" xml:space="preserve">
+  <data name="ResetConfiguration_RequiredResetItem_Name" xml:space="preserve">
     <value>转生所需物品</value>
   </data>
-  <data name="ResetConfiguration_Display2_Name" xml:space="preserve">
+  <data name="ResetConfiguration_ItemCostTiers_Name" xml:space="preserve">
     <value>物品费用档位</value>
   </data>
-  <data name="ResetConfiguration_Display3_Name" xml:space="preserve">
+  <data name="ResetConfiguration_PointsTiers_Name" xml:space="preserve">
     <value>属性点档位</value>
   </data>
-  <data name="ResetConfiguration_Display4_Name" xml:space="preserve">
+  <data name="ResetPointTier_MinimumResetCount_Name" xml:space="preserve">
     <value>最低转生次数</value>
   </data>
-  <data name="ResetConfiguration_Display5_Name" xml:space="preserve">
+  <data name="ResetPointTier_PointsGranted_Name" xml:space="preserve">
     <value>发放属性点</value>
   </data>
-  <data name="ResetConfiguration_Display6_Name" xml:space="preserve">
+  <data name="ResetItemCostTier_MinimumResetCount_Name" xml:space="preserve">
     <value>最低转生次数</value>
   </data>
-  <data name="ResetConfiguration_Display7_Name" xml:space="preserve">
+  <data name="ResetItemCostTier_RequiredItemAmount_Name" xml:space="preserve">
     <value>所需物品数量</value>
   </data>
-  <data name="ActorHitRecorderPlugIn_Display1_Name" xml:space="preserve">
+  <data name="ActorHitRecorderPlugIn_Name" xml:space="preserve">
     <value>测试角色攻击记录</value>
   </data>
-  <data name="ActorHitRecorderPlugIn_Display1_Description" xml:space="preserve">
+  <data name="ActorHitRecorderPlugIn_Description" xml:space="preserve">
     <value>将脚本测试角色造成和受到的攻击记录到其事件流中。</value>
   </data>
   <data name="MonsterAttributeScalerConfiguration_HealthPercentage_Caption" xml:space="preserve"><value>最大生命值增幅（%）</value></data>

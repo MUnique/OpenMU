@@ -16,7 +16,7 @@ public class ItemRegistrationConfiguration
     /// <summary>
     /// Gets or sets the list of item registration rules for NPCs.
     /// </summary>
-    [Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.ItemRegistrationConfiguration_Display1_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.ItemRegistrationConfiguration_Display1_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
+    [Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.ItemRegistrationConfiguration_Rules_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.ItemRegistrationConfiguration_Rules_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
     [MemberOfAggregate]
     [ScaffoldColumn(true)]
     public ICollection<NpcItemRegistrationRule> Rules { get; set; } = new List<NpcItemRegistrationRule>

@@ -3616,278 +3616,278 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("CastleSiegeLifeStoneConsumeHandlerPlugIn_Name", resourceCulture);
             }
         }
-        /// <summary>Gets the localized BotConfiguration_Display1_Name text.</summary>
-        public static string BotConfiguration_Display1_Name => ResourceManager.GetString("BotConfiguration_Display1_Name", resourceCulture)!;
+        /// <summary>Gets the localized BotConfiguration_Enabled_Name text.</summary>
+        public static string BotConfiguration_Enabled_Name => ResourceManager.GetString("BotConfiguration_Enabled_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized BotConfiguration_Display1_Description text.</summary>
-        public static string BotConfiguration_Display1_Description => ResourceManager.GetString("BotConfiguration_Display1_Description", resourceCulture)!;
+        /// <summary>Gets the localized BotConfiguration_Enabled_Description text.</summary>
+        public static string BotConfiguration_Enabled_Description => ResourceManager.GetString("BotConfiguration_Enabled_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized BotConfiguration_Display2_Name text.</summary>
-        public static string BotConfiguration_Display2_Name => ResourceManager.GetString("BotConfiguration_Display2_Name", resourceCulture)!;
+        /// <summary>Gets the localized BotConfiguration_ResetBots_Name text.</summary>
+        public static string BotConfiguration_ResetBots_Name => ResourceManager.GetString("BotConfiguration_ResetBots_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized BotConfiguration_Display2_Description text.</summary>
-        public static string BotConfiguration_Display2_Description => ResourceManager.GetString("BotConfiguration_Display2_Description", resourceCulture)!;
+        /// <summary>Gets the localized BotConfiguration_ResetBots_Description text.</summary>
+        public static string BotConfiguration_ResetBots_Description => ResourceManager.GetString("BotConfiguration_ResetBots_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized BotConfiguration_Display3_Name text.</summary>
-        public static string BotConfiguration_Display3_Name => ResourceManager.GetString("BotConfiguration_Display3_Name", resourceCulture)!;
+        /// <summary>Gets the localized BotConfiguration_PurgeBots_Name text.</summary>
+        public static string BotConfiguration_PurgeBots_Name => ResourceManager.GetString("BotConfiguration_PurgeBots_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized BotConfiguration_Display3_Description text.</summary>
-        public static string BotConfiguration_Display3_Description => ResourceManager.GetString("BotConfiguration_Display3_Description", resourceCulture)!;
+        /// <summary>Gets the localized BotConfiguration_PurgeBots_Description text.</summary>
+        public static string BotConfiguration_PurgeBots_Description => ResourceManager.GetString("BotConfiguration_PurgeBots_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized BotConfiguration_Display4_Name text.</summary>
-        public static string BotConfiguration_Display4_Name => ResourceManager.GetString("BotConfiguration_Display4_Name", resourceCulture)!;
+        /// <summary>Gets the localized BotConfiguration_StartAsFreshCharacters_Name text.</summary>
+        public static string BotConfiguration_StartAsFreshCharacters_Name => ResourceManager.GetString("BotConfiguration_StartAsFreshCharacters_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized BotConfiguration_Display4_Description text.</summary>
-        public static string BotConfiguration_Display4_Description => ResourceManager.GetString("BotConfiguration_Display4_Description", resourceCulture)!;
+        /// <summary>Gets the localized BotConfiguration_StartAsFreshCharacters_Description text.</summary>
+        public static string BotConfiguration_StartAsFreshCharacters_Description => ResourceManager.GetString("BotConfiguration_StartAsFreshCharacters_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized BotConfiguration_Display5_Name text.</summary>
-        public static string BotConfiguration_Display5_Name => ResourceManager.GetString("BotConfiguration_Display5_Name", resourceCulture)!;
+        /// <summary>Gets the localized BotConfiguration_PresenceRotation_Name text.</summary>
+        public static string BotConfiguration_PresenceRotation_Name => ResourceManager.GetString("BotConfiguration_PresenceRotation_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized BotConfiguration_Display5_Description text.</summary>
-        public static string BotConfiguration_Display5_Description => ResourceManager.GetString("BotConfiguration_Display5_Description", resourceCulture)!;
+        /// <summary>Gets the localized BotConfiguration_PresenceRotation_Description text.</summary>
+        public static string BotConfiguration_PresenceRotation_Description => ResourceManager.GetString("BotConfiguration_PresenceRotation_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized BotConfiguration_Display6_Name text.</summary>
-        public static string BotConfiguration_Display6_Name => ResourceManager.GetString("BotConfiguration_Display6_Name", resourceCulture)!;
+        /// <summary>Gets the localized BotConfiguration_MinOnlineSharePercent_Name text.</summary>
+        public static string BotConfiguration_MinOnlineSharePercent_Name => ResourceManager.GetString("BotConfiguration_MinOnlineSharePercent_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized BotConfiguration_Display6_Description text.</summary>
-        public static string BotConfiguration_Display6_Description => ResourceManager.GetString("BotConfiguration_Display6_Description", resourceCulture)!;
+        /// <summary>Gets the localized BotConfiguration_MinOnlineSharePercent_Description text.</summary>
+        public static string BotConfiguration_MinOnlineSharePercent_Description => ResourceManager.GetString("BotConfiguration_MinOnlineSharePercent_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized BotConfiguration_Display7_Name text.</summary>
-        public static string BotConfiguration_Display7_Name => ResourceManager.GetString("BotConfiguration_Display7_Name", resourceCulture)!;
+        /// <summary>Gets the localized BotConfiguration_NumberOfAccounts_Name text.</summary>
+        public static string BotConfiguration_NumberOfAccounts_Name => ResourceManager.GetString("BotConfiguration_NumberOfAccounts_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized BotConfiguration_Display7_Description text.</summary>
-        public static string BotConfiguration_Display7_Description => ResourceManager.GetString("BotConfiguration_Display7_Description", resourceCulture)!;
+        /// <summary>Gets the localized BotConfiguration_NumberOfAccounts_Description text.</summary>
+        public static string BotConfiguration_NumberOfAccounts_Description => ResourceManager.GetString("BotConfiguration_NumberOfAccounts_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized BotConfiguration_Display8_Name text.</summary>
-        public static string BotConfiguration_Display8_Name => ResourceManager.GetString("BotConfiguration_Display8_Name", resourceCulture)!;
+        /// <summary>Gets the localized BotConfiguration_MaxCharactersPerAccount_Name text.</summary>
+        public static string BotConfiguration_MaxCharactersPerAccount_Name => ResourceManager.GetString("BotConfiguration_MaxCharactersPerAccount_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized BotConfiguration_Display8_Description text.</summary>
-        public static string BotConfiguration_Display8_Description => ResourceManager.GetString("BotConfiguration_Display8_Description", resourceCulture)!;
+        /// <summary>Gets the localized BotConfiguration_MaxCharactersPerAccount_Description text.</summary>
+        public static string BotConfiguration_MaxCharactersPerAccount_Description => ResourceManager.GetString("BotConfiguration_MaxCharactersPerAccount_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized BotConfiguration_Display9_Name text.</summary>
-        public static string BotConfiguration_Display9_Name => ResourceManager.GetString("BotConfiguration_Display9_Name", resourceCulture)!;
+        /// <summary>Gets the localized BotConfiguration_BotCapacityPercent_Name text.</summary>
+        public static string BotConfiguration_BotCapacityPercent_Name => ResourceManager.GetString("BotConfiguration_BotCapacityPercent_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized BotConfiguration_Display9_Description text.</summary>
-        public static string BotConfiguration_Display9_Description => ResourceManager.GetString("BotConfiguration_Display9_Description", resourceCulture)!;
+        /// <summary>Gets the localized BotConfiguration_BotCapacityPercent_Description text.</summary>
+        public static string BotConfiguration_BotCapacityPercent_Description => ResourceManager.GetString("BotConfiguration_BotCapacityPercent_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized BotConfiguration_Display10_Name text.</summary>
-        public static string BotConfiguration_Display10_Name => ResourceManager.GetString("BotConfiguration_Display10_Name", resourceCulture)!;
+        /// <summary>Gets the localized BotConfiguration_BotsPayResetCosts_Name text.</summary>
+        public static string BotConfiguration_BotsPayResetCosts_Name => ResourceManager.GetString("BotConfiguration_BotsPayResetCosts_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized BotConfiguration_Display10_Description text.</summary>
-        public static string BotConfiguration_Display10_Description => ResourceManager.GetString("BotConfiguration_Display10_Description", resourceCulture)!;
+        /// <summary>Gets the localized BotConfiguration_BotsPayResetCosts_Description text.</summary>
+        public static string BotConfiguration_BotsPayResetCosts_Description => ResourceManager.GetString("BotConfiguration_BotsPayResetCosts_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized BotConfiguration_Display11_Name text.</summary>
-        public static string BotConfiguration_Display11_Name => ResourceManager.GetString("BotConfiguration_Display11_Name", resourceCulture)!;
+        /// <summary>Gets the localized BotConfiguration_JewelStockPerKind_Name text.</summary>
+        public static string BotConfiguration_JewelStockPerKind_Name => ResourceManager.GetString("BotConfiguration_JewelStockPerKind_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized BotConfiguration_Display11_Description text.</summary>
-        public static string BotConfiguration_Display11_Description => ResourceManager.GetString("BotConfiguration_Display11_Description", resourceCulture)!;
+        /// <summary>Gets the localized BotConfiguration_JewelStockPerKind_Description text.</summary>
+        public static string BotConfiguration_JewelStockPerKind_Description => ResourceManager.GetString("BotConfiguration_JewelStockPerKind_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized BotConfiguration_Display12_Name text.</summary>
-        public static string BotConfiguration_Display12_Name => ResourceManager.GetString("BotConfiguration_Display12_Name", resourceCulture)!;
+        /// <summary>Gets the localized BotConfiguration_PotionStockCharges_Name text.</summary>
+        public static string BotConfiguration_PotionStockCharges_Name => ResourceManager.GetString("BotConfiguration_PotionStockCharges_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized BotConfiguration_Display12_Description text.</summary>
-        public static string BotConfiguration_Display12_Description => ResourceManager.GetString("BotConfiguration_Display12_Description", resourceCulture)!;
+        /// <summary>Gets the localized BotConfiguration_PotionStockCharges_Description text.</summary>
+        public static string BotConfiguration_PotionStockCharges_Description => ResourceManager.GetString("BotConfiguration_PotionStockCharges_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized BotConfiguration_Display13_Name text.</summary>
-        public static string BotConfiguration_Display13_Name => ResourceManager.GetString("BotConfiguration_Display13_Name", resourceCulture)!;
+        /// <summary>Gets the localized BotConfiguration_ProofOfConceptAccounts_Name text.</summary>
+        public static string BotConfiguration_ProofOfConceptAccounts_Name => ResourceManager.GetString("BotConfiguration_ProofOfConceptAccounts_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized BotConfiguration_Display13_Description text.</summary>
-        public static string BotConfiguration_Display13_Description => ResourceManager.GetString("BotConfiguration_Display13_Description", resourceCulture)!;
+        /// <summary>Gets the localized BotConfiguration_ProofOfConceptAccounts_Description text.</summary>
+        public static string BotConfiguration_ProofOfConceptAccounts_Description => ResourceManager.GetString("BotConfiguration_ProofOfConceptAccounts_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized BotSelfDefensePlugIn_Display1_Name text.</summary>
-        public static string BotSelfDefensePlugIn_Display1_Name => ResourceManager.GetString("BotSelfDefensePlugIn_Display1_Name", resourceCulture)!;
+        /// <summary>Gets the localized BotSelfDefensePlugIn_Name text.</summary>
+        public static string BotSelfDefensePlugIn_Name => ResourceManager.GetString("BotSelfDefensePlugIn_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized BotSelfDefensePlugIn_Display1_Description text.</summary>
-        public static string BotSelfDefensePlugIn_Display1_Description => ResourceManager.GetString("BotSelfDefensePlugIn_Display1_Description", resourceCulture)!;
+        /// <summary>Gets the localized BotSelfDefensePlugIn_Description text.</summary>
+        public static string BotSelfDefensePlugIn_Description => ResourceManager.GetString("BotSelfDefensePlugIn_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized BotRevengePlugIn_Display1_Name text.</summary>
-        public static string BotRevengePlugIn_Display1_Name => ResourceManager.GetString("BotRevengePlugIn_Display1_Name", resourceCulture)!;
+        /// <summary>Gets the localized BotRevengePlugIn_Name text.</summary>
+        public static string BotRevengePlugIn_Name => ResourceManager.GetString("BotRevengePlugIn_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized BotRevengePlugIn_Display1_Description text.</summary>
-        public static string BotRevengePlugIn_Display1_Description => ResourceManager.GetString("BotRevengePlugIn_Display1_Description", resourceCulture)!;
+        /// <summary>Gets the localized BotRevengePlugIn_Description text.</summary>
+        public static string BotRevengePlugIn_Description => ResourceManager.GetString("BotRevengePlugIn_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized BotSkillProgressionPlugIn_Display1_Name text.</summary>
-        public static string BotSkillProgressionPlugIn_Display1_Name => ResourceManager.GetString("BotSkillProgressionPlugIn_Display1_Name", resourceCulture)!;
+        /// <summary>Gets the localized BotSkillProgressionPlugIn_Name text.</summary>
+        public static string BotSkillProgressionPlugIn_Name => ResourceManager.GetString("BotSkillProgressionPlugIn_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized BotSkillProgressionPlugIn_Display1_Description text.</summary>
-        public static string BotSkillProgressionPlugIn_Display1_Description => ResourceManager.GetString("BotSkillProgressionPlugIn_Display1_Description", resourceCulture)!;
+        /// <summary>Gets the localized BotSkillProgressionPlugIn_Description text.</summary>
+        public static string BotSkillProgressionPlugIn_Description => ResourceManager.GetString("BotSkillProgressionPlugIn_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized BotFeaturePlugIn_Display1_Name text.</summary>
-        public static string BotFeaturePlugIn_Display1_Name => ResourceManager.GetString("BotFeaturePlugIn_Display1_Name", resourceCulture)!;
+        /// <summary>Gets the localized BotFeaturePlugIn_Name text.</summary>
+        public static string BotFeaturePlugIn_Name => ResourceManager.GetString("BotFeaturePlugIn_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized BotFeaturePlugIn_Display1_Description text.</summary>
-        public static string BotFeaturePlugIn_Display1_Description => ResourceManager.GetString("BotFeaturePlugIn_Display1_Description", resourceCulture)!;
+        /// <summary>Gets the localized BotFeaturePlugIn_Description text.</summary>
+        public static string BotFeaturePlugIn_Description => ResourceManager.GetString("BotFeaturePlugIn_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized MaximumConnectionsPerIpPlugIn_Display1_Name text.</summary>
-        public static string MaximumConnectionsPerIpPlugIn_Display1_Name => ResourceManager.GetString("MaximumConnectionsPerIpPlugIn_Display1_Name", resourceCulture)!;
+        /// <summary>Gets the localized MaximumConnectionsPerIpPlugIn_Name text.</summary>
+        public static string MaximumConnectionsPerIpPlugIn_Name => ResourceManager.GetString("MaximumConnectionsPerIpPlugIn_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized MaximumConnectionsPerIpPlugIn_Display1_Description text.</summary>
-        public static string MaximumConnectionsPerIpPlugIn_Display1_Description => ResourceManager.GetString("MaximumConnectionsPerIpPlugIn_Display1_Description", resourceCulture)!;
+        /// <summary>Gets the localized MaximumConnectionsPerIpPlugIn_Description text.</summary>
+        public static string MaximumConnectionsPerIpPlugIn_Description => ResourceManager.GetString("MaximumConnectionsPerIpPlugIn_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized SpeedHackDetectPlugIn_Display1_Name text.</summary>
-        public static string SpeedHackDetectPlugIn_Display1_Name => ResourceManager.GetString("SpeedHackDetectPlugIn_Display1_Name", resourceCulture)!;
+        /// <summary>Gets the localized SpeedHackDetectPlugIn_Name text.</summary>
+        public static string SpeedHackDetectPlugIn_Name => ResourceManager.GetString("SpeedHackDetectPlugIn_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized SpeedHackDetectPlugIn_Display1_Description text.</summary>
-        public static string SpeedHackDetectPlugIn_Display1_Description => ResourceManager.GetString("SpeedHackDetectPlugIn_Display1_Description", resourceCulture)!;
+        /// <summary>Gets the localized SpeedHackDetectPlugIn_Description text.</summary>
+        public static string SpeedHackDetectPlugIn_Description => ResourceManager.GetString("SpeedHackDetectPlugIn_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized KanturuGatewayPlugIn_Display1_Name text.</summary>
-        public static string KanturuGatewayPlugIn_Display1_Name => ResourceManager.GetString("KanturuGatewayPlugIn_Display1_Name", resourceCulture)!;
+        /// <summary>Gets the localized KanturuGatewayPlugIn_Name text.</summary>
+        public static string KanturuGatewayPlugIn_Name => ResourceManager.GetString("KanturuGatewayPlugIn_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized KanturuGatewayPlugIn_Display1_Description text.</summary>
-        public static string KanturuGatewayPlugIn_Display1_Description => ResourceManager.GetString("KanturuGatewayPlugIn_Display1_Description", resourceCulture)!;
+        /// <summary>Gets the localized KanturuGatewayPlugIn_Description text.</summary>
+        public static string KanturuGatewayPlugIn_Description => ResourceManager.GetString("KanturuGatewayPlugIn_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized SymbolOfKundunStackedPlugIn_Display1_Name text.</summary>
-        public static string SymbolOfKundunStackedPlugIn_Display1_Name => ResourceManager.GetString("SymbolOfKundunStackedPlugIn_Display1_Name", resourceCulture)!;
+        /// <summary>Gets the localized SymbolOfKundunStackedPlugIn_Name text.</summary>
+        public static string SymbolOfKundunStackedPlugIn_Name => ResourceManager.GetString("SymbolOfKundunStackedPlugIn_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized SymbolOfKundunStackedPlugIn_Display1_Description text.</summary>
-        public static string SymbolOfKundunStackedPlugIn_Display1_Description => ResourceManager.GetString("SymbolOfKundunStackedPlugIn_Display1_Description", resourceCulture)!;
+        /// <summary>Gets the localized SymbolOfKundunStackedPlugIn_Description text.</summary>
+        public static string SymbolOfKundunStackedPlugIn_Description => ResourceManager.GetString("SymbolOfKundunStackedPlugIn_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized DuelSpawnGatePlugIn_Display1_Name text.</summary>
-        public static string DuelSpawnGatePlugIn_Display1_Name => ResourceManager.GetString("DuelSpawnGatePlugIn_Display1_Name", resourceCulture)!;
+        /// <summary>Gets the localized DuelSpawnGatePlugIn_Name text.</summary>
+        public static string DuelSpawnGatePlugIn_Name => ResourceManager.GetString("DuelSpawnGatePlugIn_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized DuelSpawnGatePlugIn_Display1_Description text.</summary>
-        public static string DuelSpawnGatePlugIn_Display1_Description => ResourceManager.GetString("DuelSpawnGatePlugIn_Display1_Description", resourceCulture)!;
+        /// <summary>Gets the localized DuelSpawnGatePlugIn_Description text.</summary>
+        public static string DuelSpawnGatePlugIn_Description => ResourceManager.GetString("DuelSpawnGatePlugIn_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized SoccerSpawnGatePlugIn_Display1_Name text.</summary>
-        public static string SoccerSpawnGatePlugIn_Display1_Name => ResourceManager.GetString("SoccerSpawnGatePlugIn_Display1_Name", resourceCulture)!;
+        /// <summary>Gets the localized SoccerSpawnGatePlugIn_Name text.</summary>
+        public static string SoccerSpawnGatePlugIn_Name => ResourceManager.GetString("SoccerSpawnGatePlugIn_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized SoccerSpawnGatePlugIn_Display1_Description text.</summary>
-        public static string SoccerSpawnGatePlugIn_Display1_Description => ResourceManager.GetString("SoccerSpawnGatePlugIn_Display1_Description", resourceCulture)!;
+        /// <summary>Gets the localized SoccerSpawnGatePlugIn_Description text.</summary>
+        public static string SoccerSpawnGatePlugIn_Description => ResourceManager.GetString("SoccerSpawnGatePlugIn_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized PetExperiencePlugIn_Display1_Name text.</summary>
-        public static string PetExperiencePlugIn_Display1_Name => ResourceManager.GetString("PetExperiencePlugIn_Display1_Name", resourceCulture)!;
+        /// <summary>Gets the localized PetExperiencePlugIn_Name text.</summary>
+        public static string PetExperiencePlugIn_Name => ResourceManager.GetString("PetExperiencePlugIn_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized PetExperiencePlugIn_Display1_Description text.</summary>
-        public static string PetExperiencePlugIn_Display1_Description => ResourceManager.GetString("PetExperiencePlugIn_Display1_Description", resourceCulture)!;
+        /// <summary>Gets the localized PetExperiencePlugIn_Description text.</summary>
+        public static string PetExperiencePlugIn_Description => ResourceManager.GetString("PetExperiencePlugIn_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized PeriodicInvasionConfiguration_Display1_Name text.</summary>
-        public static string PeriodicInvasionConfiguration_Display1_Name => ResourceManager.GetString("PeriodicInvasionConfiguration_Display1_Name", resourceCulture)!;
+        /// <summary>Gets the localized PeriodicInvasionConfiguration_ForceSingleMap_Name text.</summary>
+        public static string PeriodicInvasionConfiguration_ForceSingleMap_Name => ResourceManager.GetString("PeriodicInvasionConfiguration_ForceSingleMap_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized PeriodicInvasionConfiguration_Display2_Name text.</summary>
-        public static string PeriodicInvasionConfiguration_Display2_Name => ResourceManager.GetString("PeriodicInvasionConfiguration_Display2_Name", resourceCulture)!;
+        /// <summary>Gets the localized PeriodicInvasionConfiguration_Mobs_Name text.</summary>
+        public static string PeriodicInvasionConfiguration_Mobs_Name => ResourceManager.GetString("PeriodicInvasionConfiguration_Mobs_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized WhiteWizardInvasionPlugIn_Display1_Name text.</summary>
-        public static string WhiteWizardInvasionPlugIn_Display1_Name => ResourceManager.GetString("WhiteWizardInvasionPlugIn_Display1_Name", resourceCulture)!;
+        /// <summary>Gets the localized WhiteWizardInvasionPlugIn_Name text.</summary>
+        public static string WhiteWizardInvasionPlugIn_Name => ResourceManager.GetString("WhiteWizardInvasionPlugIn_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized WhiteWizardInvasionPlugIn_Display1_Description text.</summary>
-        public static string WhiteWizardInvasionPlugIn_Display1_Description => ResourceManager.GetString("WhiteWizardInvasionPlugIn_Display1_Description", resourceCulture)!;
+        /// <summary>Gets the localized WhiteWizardInvasionPlugIn_Description text.</summary>
+        public static string WhiteWizardInvasionPlugIn_Description => ResourceManager.GetString("WhiteWizardInvasionPlugIn_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized ItemRegistrationConfiguration_Display1_Name text.</summary>
-        public static string ItemRegistrationConfiguration_Display1_Name => ResourceManager.GetString("ItemRegistrationConfiguration_Display1_Name", resourceCulture)!;
+        /// <summary>Gets the localized ItemRegistrationConfiguration_Rules_Name text.</summary>
+        public static string ItemRegistrationConfiguration_Rules_Name => ResourceManager.GetString("ItemRegistrationConfiguration_Rules_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized ItemRegistrationConfiguration_Display1_Description text.</summary>
-        public static string ItemRegistrationConfiguration_Display1_Description => ResourceManager.GetString("ItemRegistrationConfiguration_Display1_Description", resourceCulture)!;
+        /// <summary>Gets the localized ItemRegistrationConfiguration_Rules_Description text.</summary>
+        public static string ItemRegistrationConfiguration_Rules_Description => ResourceManager.GetString("ItemRegistrationConfiguration_Rules_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized NpcItemRegistrationRule_Display1_Name text.</summary>
-        public static string NpcItemRegistrationRule_Display1_Name => ResourceManager.GetString("NpcItemRegistrationRule_Display1_Name", resourceCulture)!;
+        /// <summary>Gets the localized NpcItemRegistrationRule_NpcNumber_Name text.</summary>
+        public static string NpcItemRegistrationRule_NpcNumber_Name => ResourceManager.GetString("NpcItemRegistrationRule_NpcNumber_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized NpcItemRegistrationRule_Display1_Description text.</summary>
-        public static string NpcItemRegistrationRule_Display1_Description => ResourceManager.GetString("NpcItemRegistrationRule_Display1_Description", resourceCulture)!;
+        /// <summary>Gets the localized NpcItemRegistrationRule_NpcNumber_Description text.</summary>
+        public static string NpcItemRegistrationRule_NpcNumber_Description => ResourceManager.GetString("NpcItemRegistrationRule_NpcNumber_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized NpcItemRegistrationRule_Display2_Name text.</summary>
-        public static string NpcItemRegistrationRule_Display2_Name => ResourceManager.GetString("NpcItemRegistrationRule_Display2_Name", resourceCulture)!;
+        /// <summary>Gets the localized NpcItemRegistrationRule_AcceptedItemGroup_Name text.</summary>
+        public static string NpcItemRegistrationRule_AcceptedItemGroup_Name => ResourceManager.GetString("NpcItemRegistrationRule_AcceptedItemGroup_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized NpcItemRegistrationRule_Display2_Description text.</summary>
-        public static string NpcItemRegistrationRule_Display2_Description => ResourceManager.GetString("NpcItemRegistrationRule_Display2_Description", resourceCulture)!;
+        /// <summary>Gets the localized NpcItemRegistrationRule_AcceptedItemGroup_Description text.</summary>
+        public static string NpcItemRegistrationRule_AcceptedItemGroup_Description => ResourceManager.GetString("NpcItemRegistrationRule_AcceptedItemGroup_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized NpcItemRegistrationRule_Display3_Name text.</summary>
-        public static string NpcItemRegistrationRule_Display3_Name => ResourceManager.GetString("NpcItemRegistrationRule_Display3_Name", resourceCulture)!;
+        /// <summary>Gets the localized NpcItemRegistrationRule_AcceptedItemNumber_Name text.</summary>
+        public static string NpcItemRegistrationRule_AcceptedItemNumber_Name => ResourceManager.GetString("NpcItemRegistrationRule_AcceptedItemNumber_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized NpcItemRegistrationRule_Display3_Description text.</summary>
-        public static string NpcItemRegistrationRule_Display3_Description => ResourceManager.GetString("NpcItemRegistrationRule_Display3_Description", resourceCulture)!;
+        /// <summary>Gets the localized NpcItemRegistrationRule_AcceptedItemNumber_Description text.</summary>
+        public static string NpcItemRegistrationRule_AcceptedItemNumber_Description => ResourceManager.GetString("NpcItemRegistrationRule_AcceptedItemNumber_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized NpcItemRegistrationRule_Display4_Name text.</summary>
-        public static string NpcItemRegistrationRule_Display4_Name => ResourceManager.GetString("NpcItemRegistrationRule_Display4_Name", resourceCulture)!;
+        /// <summary>Gets the localized NpcItemRegistrationRule_RequiredItemsCount_Name text.</summary>
+        public static string NpcItemRegistrationRule_RequiredItemsCount_Name => ResourceManager.GetString("NpcItemRegistrationRule_RequiredItemsCount_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized NpcItemRegistrationRule_Display4_Description text.</summary>
-        public static string NpcItemRegistrationRule_Display4_Description => ResourceManager.GetString("NpcItemRegistrationRule_Display4_Description", resourceCulture)!;
+        /// <summary>Gets the localized NpcItemRegistrationRule_RequiredItemsCount_Description text.</summary>
+        public static string NpcItemRegistrationRule_RequiredItemsCount_Description => ResourceManager.GetString("NpcItemRegistrationRule_RequiredItemsCount_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized NpcItemRegistrationRule_Display5_Name text.</summary>
-        public static string NpcItemRegistrationRule_Display5_Name => ResourceManager.GetString("NpcItemRegistrationRule_Display5_Name", resourceCulture)!;
+        /// <summary>Gets the localized NpcItemRegistrationRule_RewardZen_Name text.</summary>
+        public static string NpcItemRegistrationRule_RewardZen_Name => ResourceManager.GetString("NpcItemRegistrationRule_RewardZen_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized NpcItemRegistrationRule_Display5_Description text.</summary>
-        public static string NpcItemRegistrationRule_Display5_Description => ResourceManager.GetString("NpcItemRegistrationRule_Display5_Description", resourceCulture)!;
+        /// <summary>Gets the localized NpcItemRegistrationRule_RewardZen_Description text.</summary>
+        public static string NpcItemRegistrationRule_RewardZen_Description => ResourceManager.GetString("NpcItemRegistrationRule_RewardZen_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized NpcItemRegistrationRule_Display6_Name text.</summary>
-        public static string NpcItemRegistrationRule_Display6_Name => ResourceManager.GetString("NpcItemRegistrationRule_Display6_Name", resourceCulture)!;
+        /// <summary>Gets the localized NpcItemRegistrationRule_RewardDropItemGroup_Name text.</summary>
+        public static string NpcItemRegistrationRule_RewardDropItemGroup_Name => ResourceManager.GetString("NpcItemRegistrationRule_RewardDropItemGroup_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized NpcItemRegistrationRule_Display6_Description text.</summary>
-        public static string NpcItemRegistrationRule_Display6_Description => ResourceManager.GetString("NpcItemRegistrationRule_Display6_Description", resourceCulture)!;
+        /// <summary>Gets the localized NpcItemRegistrationRule_RewardDropItemGroup_Description text.</summary>
+        public static string NpcItemRegistrationRule_RewardDropItemGroup_Description => ResourceManager.GetString("NpcItemRegistrationRule_RewardDropItemGroup_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized ChaosCastleStartPlugIn_Display1_Name text.</summary>
-        public static string ChaosCastleStartPlugIn_Display1_Name => ResourceManager.GetString("ChaosCastleStartPlugIn_Display1_Name", resourceCulture)!;
+        /// <summary>Gets the localized ChaosCastleStartPlugIn_Name text.</summary>
+        public static string ChaosCastleStartPlugIn_Name => ResourceManager.GetString("ChaosCastleStartPlugIn_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized ChaosCastleStartPlugIn_Display1_Description text.</summary>
-        public static string ChaosCastleStartPlugIn_Display1_Description => ResourceManager.GetString("ChaosCastleStartPlugIn_Display1_Description", resourceCulture)!;
+        /// <summary>Gets the localized ChaosCastleStartPlugIn_Description text.</summary>
+        public static string ChaosCastleStartPlugIn_Description => ResourceManager.GetString("ChaosCastleStartPlugIn_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized KanturuStartPlugIn_Display1_Name text.</summary>
-        public static string KanturuStartPlugIn_Display1_Name => ResourceManager.GetString("KanturuStartPlugIn_Display1_Name", resourceCulture)!;
+        /// <summary>Gets the localized KanturuStartPlugIn_Name text.</summary>
+        public static string KanturuStartPlugIn_Name => ResourceManager.GetString("KanturuStartPlugIn_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized KanturuStartPlugIn_Display1_Description text.</summary>
-        public static string KanturuStartPlugIn_Display1_Description => ResourceManager.GetString("KanturuStartPlugIn_Display1_Description", resourceCulture)!;
+        /// <summary>Gets the localized KanturuStartPlugIn_Description text.</summary>
+        public static string KanturuStartPlugIn_Description => ResourceManager.GetString("KanturuStartPlugIn_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized BloodCastleStartPlugIn_Display1_Name text.</summary>
-        public static string BloodCastleStartPlugIn_Display1_Name => ResourceManager.GetString("BloodCastleStartPlugIn_Display1_Name", resourceCulture)!;
+        /// <summary>Gets the localized BloodCastleStartPlugIn_Name text.</summary>
+        public static string BloodCastleStartPlugIn_Name => ResourceManager.GetString("BloodCastleStartPlugIn_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized BloodCastleStartPlugIn_Display1_Description text.</summary>
-        public static string BloodCastleStartPlugIn_Display1_Description => ResourceManager.GetString("BloodCastleStartPlugIn_Display1_Description", resourceCulture)!;
+        /// <summary>Gets the localized BloodCastleStartPlugIn_Description text.</summary>
+        public static string BloodCastleStartPlugIn_Description => ResourceManager.GetString("BloodCastleStartPlugIn_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized DevilSquareStartPlugIn_Display1_Name text.</summary>
-        public static string DevilSquareStartPlugIn_Display1_Name => ResourceManager.GetString("DevilSquareStartPlugIn_Display1_Name", resourceCulture)!;
+        /// <summary>Gets the localized DevilSquareStartPlugIn_Name text.</summary>
+        public static string DevilSquareStartPlugIn_Name => ResourceManager.GetString("DevilSquareStartPlugIn_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized DevilSquareStartPlugIn_Display1_Description text.</summary>
-        public static string DevilSquareStartPlugIn_Display1_Description => ResourceManager.GetString("DevilSquareStartPlugIn_Display1_Description", resourceCulture)!;
+        /// <summary>Gets the localized DevilSquareStartPlugIn_Description text.</summary>
+        public static string DevilSquareStartPlugIn_Description => ResourceManager.GetString("DevilSquareStartPlugIn_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized PKClearChatCommandPlugIn_Display1_Name text.</summary>
-        public static string PKClearChatCommandPlugIn_Display1_Name => ResourceManager.GetString("PKClearChatCommandPlugIn_Display1_Name", resourceCulture)!;
+        /// <summary>Gets the localized PKClearConfiguration_ZenCostPerKill_Name text.</summary>
+        public static string PKClearConfiguration_ZenCostPerKill_Name => ResourceManager.GetString("PKClearConfiguration_ZenCostPerKill_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized PKClearChatCommandPlugIn_Display1_Description text.</summary>
-        public static string PKClearChatCommandPlugIn_Display1_Description => ResourceManager.GetString("PKClearChatCommandPlugIn_Display1_Description", resourceCulture)!;
+        /// <summary>Gets the localized PKClearConfiguration_ZenCostPerKill_Description text.</summary>
+        public static string PKClearConfiguration_ZenCostPerKill_Description => ResourceManager.GetString("PKClearConfiguration_ZenCostPerKill_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized PKClearChatCommandPlugIn_Display2_Name text.</summary>
-        public static string PKClearChatCommandPlugIn_Display2_Name => ResourceManager.GetString("PKClearChatCommandPlugIn_Display2_Name", resourceCulture)!;
+        /// <summary>Gets the localized PKClearConfiguration_AllowRegularPlayers_Name text.</summary>
+        public static string PKClearConfiguration_AllowRegularPlayers_Name => ResourceManager.GetString("PKClearConfiguration_AllowRegularPlayers_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized PKClearChatCommandPlugIn_Display2_Description text.</summary>
-        public static string PKClearChatCommandPlugIn_Display2_Description => ResourceManager.GetString("PKClearChatCommandPlugIn_Display2_Description", resourceCulture)!;
+        /// <summary>Gets the localized PKClearConfiguration_AllowRegularPlayers_Description text.</summary>
+        public static string PKClearConfiguration_AllowRegularPlayers_Description => ResourceManager.GetString("PKClearConfiguration_AllowRegularPlayers_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized LostMapDroppedPlugIn_Display1_Name text.</summary>
-        public static string LostMapDroppedPlugIn_Display1_Name => ResourceManager.GetString("LostMapDroppedPlugIn_Display1_Name", resourceCulture)!;
+        /// <summary>Gets the localized LostMapDroppedPlugIn_Name text.</summary>
+        public static string LostMapDroppedPlugIn_Name => ResourceManager.GetString("LostMapDroppedPlugIn_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized LostMapDroppedPlugIn_Display1_Description text.</summary>
-        public static string LostMapDroppedPlugIn_Display1_Description => ResourceManager.GetString("LostMapDroppedPlugIn_Display1_Description", resourceCulture)!;
+        /// <summary>Gets the localized LostMapDroppedPlugIn_Description text.</summary>
+        public static string LostMapDroppedPlugIn_Description => ResourceManager.GetString("LostMapDroppedPlugIn_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized ItemBoxDroppedPlugIn_Display1_Name text.</summary>
-        public static string ItemBoxDroppedPlugIn_Display1_Name => ResourceManager.GetString("ItemBoxDroppedPlugIn_Display1_Name", resourceCulture)!;
+        /// <summary>Gets the localized ItemBoxDroppedPlugIn_Name text.</summary>
+        public static string ItemBoxDroppedPlugIn_Name => ResourceManager.GetString("ItemBoxDroppedPlugIn_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized ItemBoxDroppedPlugIn_Display1_Description text.</summary>
-        public static string ItemBoxDroppedPlugIn_Display1_Description => ResourceManager.GetString("ItemBoxDroppedPlugIn_Display1_Description", resourceCulture)!;
+        /// <summary>Gets the localized ItemBoxDroppedPlugIn_Description text.</summary>
+        public static string ItemBoxDroppedPlugIn_Description => ResourceManager.GetString("ItemBoxDroppedPlugIn_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized ResetConfiguration_Display1_Name text.</summary>
-        public static string ResetConfiguration_Display1_Name => ResourceManager.GetString("ResetConfiguration_Display1_Name", resourceCulture)!;
+        /// <summary>Gets the localized ResetConfiguration_RequiredResetItem_Name text.</summary>
+        public static string ResetConfiguration_RequiredResetItem_Name => ResourceManager.GetString("ResetConfiguration_RequiredResetItem_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized ResetConfiguration_Display2_Name text.</summary>
-        public static string ResetConfiguration_Display2_Name => ResourceManager.GetString("ResetConfiguration_Display2_Name", resourceCulture)!;
+        /// <summary>Gets the localized ResetConfiguration_ItemCostTiers_Name text.</summary>
+        public static string ResetConfiguration_ItemCostTiers_Name => ResourceManager.GetString("ResetConfiguration_ItemCostTiers_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized ResetConfiguration_Display3_Name text.</summary>
-        public static string ResetConfiguration_Display3_Name => ResourceManager.GetString("ResetConfiguration_Display3_Name", resourceCulture)!;
+        /// <summary>Gets the localized ResetConfiguration_PointsTiers_Name text.</summary>
+        public static string ResetConfiguration_PointsTiers_Name => ResourceManager.GetString("ResetConfiguration_PointsTiers_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized ResetConfiguration_Display4_Name text.</summary>
-        public static string ResetConfiguration_Display4_Name => ResourceManager.GetString("ResetConfiguration_Display4_Name", resourceCulture)!;
+        /// <summary>Gets the localized ResetPointTier_MinimumResetCount_Name text.</summary>
+        public static string ResetPointTier_MinimumResetCount_Name => ResourceManager.GetString("ResetPointTier_MinimumResetCount_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized ResetConfiguration_Display5_Name text.</summary>
-        public static string ResetConfiguration_Display5_Name => ResourceManager.GetString("ResetConfiguration_Display5_Name", resourceCulture)!;
+        /// <summary>Gets the localized ResetPointTier_PointsGranted_Name text.</summary>
+        public static string ResetPointTier_PointsGranted_Name => ResourceManager.GetString("ResetPointTier_PointsGranted_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized ResetConfiguration_Display6_Name text.</summary>
-        public static string ResetConfiguration_Display6_Name => ResourceManager.GetString("ResetConfiguration_Display6_Name", resourceCulture)!;
+        /// <summary>Gets the localized ResetItemCostTier_MinimumResetCount_Name text.</summary>
+        public static string ResetItemCostTier_MinimumResetCount_Name => ResourceManager.GetString("ResetItemCostTier_MinimumResetCount_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized ResetConfiguration_Display7_Name text.</summary>
-        public static string ResetConfiguration_Display7_Name => ResourceManager.GetString("ResetConfiguration_Display7_Name", resourceCulture)!;
+        /// <summary>Gets the localized ResetItemCostTier_RequiredItemAmount_Name text.</summary>
+        public static string ResetItemCostTier_RequiredItemAmount_Name => ResourceManager.GetString("ResetItemCostTier_RequiredItemAmount_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized ActorHitRecorderPlugIn_Display1_Name text.</summary>
-        public static string ActorHitRecorderPlugIn_Display1_Name => ResourceManager.GetString("ActorHitRecorderPlugIn_Display1_Name", resourceCulture)!;
+        /// <summary>Gets the localized ActorHitRecorderPlugIn_Name text.</summary>
+        public static string ActorHitRecorderPlugIn_Name => ResourceManager.GetString("ActorHitRecorderPlugIn_Name", resourceCulture)!;
 
-        /// <summary>Gets the localized ActorHitRecorderPlugIn_Display1_Description text.</summary>
-        public static string ActorHitRecorderPlugIn_Display1_Description => ResourceManager.GetString("ActorHitRecorderPlugIn_Display1_Description", resourceCulture)!;
+        /// <summary>Gets the localized ActorHitRecorderPlugIn_Description text.</summary>
+        public static string ActorHitRecorderPlugIn_Description => ResourceManager.GetString("ActorHitRecorderPlugIn_Description", resourceCulture)!;
 
         /// <summary>Gets the localized MonsterAttributeScalerConfiguration_HealthPercentage_Caption text.</summary>
         public static string MonsterAttributeScalerConfiguration_HealthPercentage_Caption => ResourceManager.GetString("MonsterAttributeScalerConfiguration_HealthPercentage_Caption", resourceCulture)!;

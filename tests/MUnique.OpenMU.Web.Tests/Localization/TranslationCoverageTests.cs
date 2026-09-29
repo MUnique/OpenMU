@@ -22,9 +22,9 @@ using MUnique.OpenMU.Web.Shared.Services;
 [NonParallelizable]
 public class TranslationCoverageTests
 {
-    /// <summary>Checks completeness and format arguments of every included Chinese resource set.</summary>
+    /// <summary>Checks format arguments of existing Chinese translations, allowing English fallback.</summary>
     [Test]
-    public void ChineseResourceSetsMatchNeutralKeysAndPlaceholders()
+    public void ExistingChineseResourcesMatchNeutralPlaceholders()
     {
         var sets = new (Type Anchor, string Resource)[]
         {
@@ -49,22 +49,22 @@ public class TranslationCoverageTests
             using var neutral = manager.GetResourceSet(CultureInfo.InvariantCulture, true, false)!;
             using var chinese = manager.GetResourceSet(CultureInfo.GetCultureInfo("zh-CN"), true, false)!;
             Assert.That(chinese, Is.Not.Null, name);
-            foreach (DictionaryEntry entry in neutral)
-            {
-                var key = (string)entry.Key;
-                var original = (string)entry.Value!;
-                var translated = chinese.GetString(key);
-                Assert.That(translated, Is.Not.Null, $"{name}.{key}");
-                if (original.Length > 0)
-                {
-                    Assert.That(translated, Is.Not.Empty, $"{name}.{key}");
-                }
-
-                var originalArguments = Regex.Matches(original, @"\{[^{}]+\}").Select(match => match.Value);
-                var translatedArguments = Regex.Matches(translated!, @"\{[^{}]+\}").Select(match => match.Value);
-                Assert.That(translatedArguments, Is.EquivalentTo(originalArguments), $"{name}.{key}");
-            }
+            AssertExistingTranslations(neutral, chinese, name);
         }
+    }
+
+    /// <summary>A new English-only key remains usable without requiring a Chinese translation.</summary>
+    [Test]
+    public void MissingChineseKeyFallsBackToEnglish()
+    {
+        var manager = new ResourceManager("MUnique.OpenMU.Web.Tests.Localization.FallbackResources", typeof(TranslationCoverageTests).Assembly);
+        var culture = CultureInfo.GetCultureInfo("zh-CN");
+        using var neutral = manager.GetResourceSet(CultureInfo.InvariantCulture, true, false)!;
+        using var chinese = manager.GetResourceSet(culture, true, false)!;
+        AssertExistingTranslations(neutral, chinese, manager.BaseName);
+        Assert.That(chinese.GetString("EnglishOnly"), Is.Null);
+        Assert.That(manager.GetString("EnglishOnly", culture), Is.EqualTo("New English text {0}"));
+        Assert.That(manager.GetString("Translated", culture), Is.EqualTo("中文 {0}"));
     }
 
     /// <summary>Ensures all built-in display attributes resolve valid resource properties.</summary>
@@ -159,6 +159,30 @@ public class TranslationCoverageTests
         finally
         {
             CultureInfo.CurrentUICulture = previous;
+        }
+    }
+
+    private static void AssertExistingTranslations(ResourceSet neutral, ResourceSet chinese, string name)
+    {
+        // Missing Chinese keys intentionally use ResourceManager's normal English fallback.
+        foreach (DictionaryEntry entry in neutral)
+        {
+            var key = (string)entry.Key;
+            var original = (string)entry.Value!;
+            var translated = chinese.GetString(key);
+            if (translated is null)
+            {
+                continue;
+            }
+
+            if (original.Length > 0)
+            {
+                Assert.That(translated, Is.Not.Empty, $"{name}.{key}");
+            }
+
+            var originalArguments = Regex.Matches(original, @"\{[^{}]+\}").Select(match => match.Value);
+            var translatedArguments = Regex.Matches(translated, @"\{[^{}]+\}").Select(match => match.Value);
+            Assert.That(translatedArguments, Is.EquivalentTo(originalArguments), $"{name}.{key}");
         }
     }
 }

@@ -10,6 +10,8 @@ using System.Resources;
 /// <summary>Localizes plugin extension point metadata for the admin interface.</summary>
 public static class PlugInPointCaption
 {
+    // The original English attribute text is the key. If it changes, update the resource key
+    // as well; until translated, new or changed extension point text falls back to English.
     private static readonly ResourceManager ResourceManager = new("MUnique.OpenMU.Web.Shared.Properties.PlugInPointResources", typeof(PlugInPointCaption).Assembly);
 
     /// <summary>Gets translated metadata, preserving unknown external plugin text.</summary>

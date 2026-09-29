@@ -135,34 +135,34 @@
   <data name="AddSmallShieldForMagicGladiator_Description" xml:space="preserve">
     <value>为新建的魔剑士角色添加小盾。</value>
   </data>
-  <data name="AddCrescentMoonSlashForDarkKnight_Display1_Name" xml:space="preserve">
+  <data name="AddCrescentMoonSlashForDarkKnight_Name" xml:space="preserve">
     <value>剑士初始半月斩</value>
   </data>
-  <data name="AddCrescentMoonSlashForDarkKnight_Display1_Description" xml:space="preserve">
+  <data name="AddCrescentMoonSlashForDarkKnight_Description" xml:space="preserve">
     <value>为新建剑士添加攻城战专用的半月斩技能。</value>
   </data>
-  <data name="AddStarfallForFairyElf_Display1_Name" xml:space="preserve">
+  <data name="AddStarfallForFairyElf_Name" xml:space="preserve">
     <value>弓箭手初始星落</value>
   </data>
-  <data name="AddStarfallForFairyElf_Display1_Description" xml:space="preserve">
+  <data name="AddStarfallForFairyElf_Description" xml:space="preserve">
     <value>为新建弓箭手添加攻城战专用的星落技能。</value>
   </data>
-  <data name="AddManaRaysForMagicGladiator_Display1_Name" xml:space="preserve">
+  <data name="AddManaRaysForMagicGladiator_Name" xml:space="preserve">
     <value>魔剑士初始魔力射线</value>
   </data>
-  <data name="AddManaRaysForMagicGladiator_Display1_Description" xml:space="preserve">
+  <data name="AddManaRaysForMagicGladiator_Description" xml:space="preserve">
     <value>为新建魔剑士添加攻城战专用的魔力射线技能。</value>
   </data>
-  <data name="AddFireBlastForDarkLord_Display1_Name" xml:space="preserve">
+  <data name="AddFireBlastForDarkLord_Name" xml:space="preserve">
     <value>圣导师初始火焰爆发</value>
   </data>
-  <data name="AddFireBlastForDarkLord_Display1_Description" xml:space="preserve">
+  <data name="AddFireBlastForDarkLord_Description" xml:space="preserve">
     <value>为新建圣导师添加攻城战专用的火焰爆发技能。</value>
   </data>
-  <data name="AddSpiralSlashForMagicGladiator_Display1_Name" xml:space="preserve">
+  <data name="AddSpiralSlashForMagicGladiator_Name" xml:space="preserve">
     <value>魔剑士初始螺旋斩</value>
   </data>
-  <data name="AddSpiralSlashForMagicGladiator_Display1_Description" xml:space="preserve">
+  <data name="AddSpiralSlashForMagicGladiator_Description" xml:space="preserve">
     <value>为新建魔剑士添加攻城战专用的螺旋斩技能。</value>
   </data>
   <data name="FixWeaponRisePercentagePlugInSeason6_Name" xml:space="preserve"><value>修正武器增幅及召唤装备、三代翅膀属性</value></data>

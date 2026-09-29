@@ -17,8 +17,8 @@ culture name.
 
 Plugin extension point names and authorization roles are translated for display.
 Their stored identifiers are unchanged. Protocol identifiers, command words,
-external plugin text without a translation, and diagnostic logs retain their
-original text.
+external plugin text without a translation retain their original text. Model
+`ToString()` summaries are culture-dependent and may also appear localized in logs.
 
 Names stored in game configuration data are separate from UI resource files.
 Adding these resources does not translate existing database records or alter
@@ -26,10 +26,13 @@ configuration initialization, gameplay values, or database schemas.
 
 ## Maintaining translations
 
-Add neutral text to the corresponding `Properties/*.resx` file and add the
-translation under the same key in `*.zh-CN.resx`. Keep formatting placeholders
-unchanged. Model captions use the naming conventions in `ModelResourceProvider`;
+Add neutral text to the corresponding `Properties/*.resx` file. Chinese
+translations are optional: missing keys fall back to English and do not block
+other contributions. When adding a translation to `*.zh-CN.resx`, use the same
+key and keep formatting placeholders unchanged. Model captions use the naming conventions in `ModelResourceProvider`;
 plugin `DisplayAttribute` metadata must reference public resource properties.
+Use `{Type}_{Property}_Name` / `_Description` for property metadata and
+`{Type}_Name` / `_Description` for type metadata, rather than numbered keys.
 
 Keep contribution descriptions, source comments, and documentation in English.
 Do not translate command syntax, packet identifiers, or authorization values.
@@ -42,5 +45,5 @@ dotnet test tests/MUnique.OpenMU.Web.Tests/MUnique.OpenMU.Web.Tests.csproj \
 ```
 
 Localization tests cover culture selection, enum round trips, model captions and
-summaries, plugin resource metadata, resource completeness and placeholders, and
+summaries, plugin resource metadata, English fallback and translated placeholders, and
 paging with the shared grid state.
