@@ -601,17 +601,22 @@ public enum UpdateVersion
     AddRaklionEvent = 118,
 
     /// <summary>
+    /// The version of the <see cref="AddSelupanFallSkillUpdatePlugIn"/>.
+    /// </summary>
+    AddSelupanFallSkill = 120,
+
+    /// <summary>
     /// The version of the <see cref="ItemDurabilityRefactorPlugIn075"/>.
     /// </summary>
-    ItemDurabilityRefactor075 = 119,
+    ItemDurabilityRefactor075 = 121,
 
     /// <summary>
     /// The version of the <see cref="ItemDurabilityRefactorPlugIn095D"/>.
     /// </summary>
-    ItemDurabilityRefactor095d = 120,
+    ItemDurabilityRefactor095d = 122,
 
     /// <summary>
     /// The version of the <see cref="ItemDurabilityRefactorPlugInSeason6"/>.
     /// </summary>
-    ItemDurabilityRefactorSeason6 = 121,
+    ItemDurabilityRefactorSeason6 = 123,
 }

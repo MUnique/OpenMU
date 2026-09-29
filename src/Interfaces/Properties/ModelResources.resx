@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
@@ -326,6 +326,12 @@
     <value>Battle Master</value>
   </data>
   <data name="GuildPosition_BattleMaster_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GuildPosition_AssistantMaster_Caption" xml:space="preserve">
+    <value>Assistant Master</value>
+  </data>
+  <data name="GuildPosition_AssistantMaster_Description" xml:space="preserve">
     <value></value>
   </data>
   <data name="LocalizableExceptionBase_TypeCaption" xml:space="preserve">

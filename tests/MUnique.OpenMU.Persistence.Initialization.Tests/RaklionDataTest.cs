@@ -22,6 +22,7 @@ internal class RaklionDataTest
     private const short PoisonSkillNumber = 250;
     private const short IceStormSkillNumber = 251;
     private const short IceStrikeSkillNumber = 252;
+    private const short FallSkillNumber = 253;
 
     /// <summary>
     /// Tests that the monsters of the hatchery of a new database are spawned by the event.
@@ -37,8 +38,8 @@ internal class RaklionDataTest
     }
 
     /// <summary>
-    /// Tests that the update changes the automatic spawns of the hatchery of an existing database to the waves of the event,
-    /// and that applying it twice doesn't change anything.
+    /// Tests that the updates change the automatic spawns of the hatchery of an existing database to the waves of the event
+    /// and add the skills of Selupan, and that applying them twice doesn't change anything.
     /// </summary>
     [Test]
     public async Task UpdateChangesSpawnsOfExistingDatabaseAsync()
@@ -56,9 +57,13 @@ internal class RaklionDataTest
             gameConfiguration.Skills.Remove(skill);
         }
 
-        var update = new AddRaklionEventUpdatePlugIn();
-        await update.ApplyUpdateAsync(contextProvider.CreateNewContext(), gameConfiguration).ConfigureAwait(false);
-        await update.ApplyUpdateAsync(contextProvider.CreateNewContext(), gameConfiguration).ConfigureAwait(false);
+        var raklionUpdate = new AddRaklionEventUpdatePlugIn();
+        var fallUpdate = new AddSelupanFallSkillUpdatePlugIn();
+        for (var i = 0; i < 2; i++)
+        {
+            await raklionUpdate.ApplyUpdateAsync(contextProvider.CreateNewContext(), gameConfiguration).ConfigureAwait(false);
+            await fallUpdate.ApplyUpdateAsync(contextProvider.CreateNewContext(), gameConfiguration).ConfigureAwait(false);
+        }
 
         AssertEventSpawns(gameConfiguration);
         AssertSelupanSkills(gameConfiguration);
@@ -79,7 +84,7 @@ internal class RaklionDataTest
 
     private static bool IsSelupanSkill(Skill skill)
     {
-        return skill.Number is PoisonSkillNumber or IceStormSkillNumber or IceStrikeSkillNumber;
+        return skill.Number is PoisonSkillNumber or IceStormSkillNumber or IceStrikeSkillNumber or FallSkillNumber;
     }
 
     /// <summary>
@@ -89,11 +94,12 @@ internal class RaklionDataTest
     /// <param name="gameConfiguration">The game configuration.</param>
     private static void AssertSelupanSkills(GameConfiguration gameConfiguration)
     {
-        Assert.That(gameConfiguration.Skills.Where(IsSelupanSkill).ToList(), Has.Count.EqualTo(3));
+        Assert.That(gameConfiguration.Skills.Where(IsSelupanSkill).ToList(), Has.Count.EqualTo(4));
 
         AssertMultiplier(PoisonSkillNumber, 2.0f);
         AssertMultiplier(IceStormSkillNumber, 2.2f);
         AssertMultiplier(IceStrikeSkillNumber, 2.3f);
+        AssertMultiplier(FallSkillNumber, 2.5f);
 
         void AssertMultiplier(short number, float expected)
         {

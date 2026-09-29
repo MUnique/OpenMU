@@ -59,6 +59,40 @@ public class AddRaklionEventUpdatePlugIn : UpdatePlugInBase
     /// <inheritdoc />
     public override DateTime CreatedAt => new(2026, 09, 24, 0, 0, 0, DateTimeKind.Utc);
 
+    /// <summary>
+    /// Creates an attack skill of Selupan with its damage multiplier, if it doesn't exist yet.
+    /// </summary>
+    /// <param name="context">The context.</param>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    /// <param name="number">The number of the skill.</param>
+    /// <param name="name">The name of the skill.</param>
+    /// <param name="damageMultiplier">The damage multiplier of the skill.</param>
+    internal static void CreateSkill(IContext context, GameConfiguration gameConfiguration, SkillNumber number, string name, float damageMultiplier)
+    {
+        if (gameConfiguration.Skills.Any(skill => skill.Number == (short)number))
+        {
+            return;
+        }
+
+        var skill = context.CreateNew<Skill>();
+        gameConfiguration.Skills.Add(skill);
+        skill.Number = (short)number;
+        skill.Name = name;
+        skill.DamageType = DamageType.Physical;
+        skill.Range = 10;
+        skill.SkillType = SkillType.AreaSkillExplicitTarget;
+        skill.Target = SkillTarget.Explicit;
+        skill.SetGuid(skill.Number);
+
+        skill.AttributeRelationships.Add(CharacterClassHelper.CreateAttributeRelationship(
+            context,
+            gameConfiguration,
+            Stats.SkillFinalMultiplier,
+            damageMultiplier,
+            Stats.SkillMultiplier,
+            InputOperator.Maximum));
+    }
+
     /// <inheritdoc />
     protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
@@ -84,35 +118,9 @@ public class AddRaklionEventUpdatePlugIn : UpdatePlugInBase
 
     private static void AddSelupanSkills(IContext context, GameConfiguration gameConfiguration)
     {
-        CreateSkill(SkillNumber.SelupanPoison, "Selupan Poison", 2.0f);
-        CreateSkill(SkillNumber.SelupanIceStorm, "Selupan Ice Storm", 2.2f);
-        CreateSkill(SkillNumber.SelupanIceStrike, "Selupan Ice Strike", 2.3f);
-
-        void CreateSkill(SkillNumber number, string name, float damageMultiplier)
-        {
-            if (gameConfiguration.Skills.Any(skill => skill.Number == (short)number))
-            {
-                return;
-            }
-
-            var skill = context.CreateNew<Skill>();
-            gameConfiguration.Skills.Add(skill);
-            skill.Number = (short)number;
-            skill.Name = name;
-            skill.DamageType = DamageType.Physical;
-            skill.Range = 10;
-            skill.SkillType = SkillType.AreaSkillExplicitTarget;
-            skill.Target = SkillTarget.Explicit;
-            skill.SetGuid(skill.Number);
-
-            skill.AttributeRelationships.Add(CharacterClassHelper.CreateAttributeRelationship(
-                context,
-                gameConfiguration,
-                Stats.SkillFinalMultiplier,
-                damageMultiplier,
-                Stats.SkillMultiplier,
-                InputOperator.Maximum));
-        }
+        CreateSkill(context, gameConfiguration, SkillNumber.SelupanPoison, "Selupan Poison", 2.0f);
+        CreateSkill(context, gameConfiguration, SkillNumber.SelupanIceStorm, "Selupan Ice Storm", 2.2f);
+        CreateSkill(context, gameConfiguration, SkillNumber.SelupanIceStrike, "Selupan Ice Strike", 2.3f);
     }
 
     private static byte? GetWaveNumber(short? monsterNumber)

@@ -9,4 +9,4 @@ using MUnique.OpenMU.Interfaces;
 /// <summary>
 /// Arguments for a guild member role change by character name.
 /// </summary>
-public record GuildMemberRoleChangeByNameArguments(uint GuildId, string CharacterName, GuildPosition NewRole);
+public record GuildMemberRoleChangeByNameArguments(uint GuildId, string CharacterName, GuildPosition NewRole, int MasterTotalLevel);
