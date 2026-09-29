@@ -25,6 +25,11 @@ public class ItemConstants
     public static ItemIdentifier Imp => new(1, 13);
 
     /// <summary>
+    /// Gets the identifier for the uniria.
+    /// </summary>
+    public static ItemIdentifier Uniria => new(2, 13);
+
+    /// <summary>
     /// Gets the identifier for the dinorant.
     /// </summary>
     public static ItemIdentifier Dinorant => new(3, 13);

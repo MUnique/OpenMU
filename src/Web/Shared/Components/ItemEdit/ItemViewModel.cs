@@ -512,6 +512,7 @@ public class ItemViewModel : INotifyPropertyChanged
             {
                 var itemOfSet = value.Items.First(ios => ios.ItemDefinition == this.Definition);
                 this.ItemSetGroups.Add(itemOfSet);
+                this.Item.DurabilityThresholds = null;
 
                 if (itemOfSet.BonusOption is { } bonusOption)
                 {

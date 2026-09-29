@@ -99,19 +99,13 @@ public sealed class ChaosCastleContext : MiniGameContext
             return false;
         }
 
-        switch (definition.Group, definition.Number)
+        var identifier = new ItemIdentifier(definition.Number, definition.Group);
+        if (identifier == ItemConstants.Uniria
+            || identifier == ItemConstants.Dinorant
+            || identifier == ItemConstants.Fenrir
+            || item.IsTransformationRing())
         {
-            case (13, 2): // Uniria
-            case (13, 3): // Dino
-            case (13, 37): // Fenrir
-                return false;
-            default:
-                if (item.IsTransformationRing())
-                {
-                    return false;
-                }
-
-                break;
+            return false;
         }
 
         return base.IsItemAllowedToEquip(item);
