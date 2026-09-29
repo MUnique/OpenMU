@@ -434,5 +434,65 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
                 return ResourceManager.GetString("No", resourceCulture);
             }
         }
+        
+        public static string UnknownSkill {
+            get {
+                return ResourceManager.GetString("UnknownSkill", resourceCulture);
+            }
+        }
+        
+        public static string AddSkill {
+            get {
+                return ResourceManager.GetString("AddSkill", resourceCulture);
+            }
+        }
+        
+        public static string MasterSkillTree {
+            get {
+                return ResourceManager.GetString("MasterSkillTree", resourceCulture);
+            }
+        }
+        
+        public static string SpentMasterPoints {
+            get {
+                return ResourceManager.GetString("SpentMasterPoints", resourceCulture);
+            }
+        }
+        
+        public static string ResetMasterSkillTree {
+            get {
+                return ResourceManager.GetString("ResetMasterSkillTree", resourceCulture);
+            }
+        }
+        
+        public static string ResetMasterSkillTreeQuestion {
+            get {
+                return ResourceManager.GetString("ResetMasterSkillTreeQuestion", resourceCulture);
+            }
+        }
+        
+        public static string ResetMasterSkillTreeAndRefundQuestion {
+            get {
+                return ResourceManager.GetString("ResetMasterSkillTreeAndRefundQuestion", resourceCulture);
+            }
+        }
+        
+        public static string MasterSkillTooltip {
+            get {
+                return ResourceManager.GetString("MasterSkillTooltip", resourceCulture);
+            }
+        }
+        
+        public static string MasterSkillRequirementsNotFulfilled {
+            get {
+                return ResourceManager.GetString("MasterSkillRequirementsNotFulfilled", resourceCulture);
+            }
+        }
+        
+        public static string MasterSkillRequirementsNotYetFulfilled {
+            get {
+                return ResourceManager.GetString("MasterSkillRequirementsNotYetFulfilled", resourceCulture);
+            }
+        }
     }
 }
