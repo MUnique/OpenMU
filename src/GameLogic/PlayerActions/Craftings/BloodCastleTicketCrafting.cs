@@ -23,9 +23,6 @@ public class BloodCastleTicketCrafting : BaseEventTicketCrafting
     protected override CraftingResult IncorrectMixItemsResult => CraftingResult.IncorrectBloodCastleItems;
 
     /// <inheritdoc />
-    protected override byte MaximumSuccessRate => 80;
-
-    /// <inheritdoc />
     protected override int GetPrice(int eventLevel)
     {
         return eventLevel switch
