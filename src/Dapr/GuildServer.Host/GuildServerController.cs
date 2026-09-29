@@ -170,7 +170,7 @@ public class GuildServerController : ControllerBase
     [HttpPost(nameof(IGuildServer.ChangeGuildMemberPositionByNameAsync))]
     public ValueTask<bool> ChangeGuildMemberPositionByNameAsync([FromBody] GuildMemberRoleChangeByNameArguments data)
     {
-        return this._guildServer.ChangeGuildMemberPositionByNameAsync(data.GuildId, data.CharacterName, data.NewRole);
+        return this._guildServer.ChangeGuildMemberPositionByNameAsync(data.GuildId, data.CharacterName, data.NewRole, data.MasterTotalLevel);
     }
 
     /// <summary>

@@ -202,11 +202,11 @@ public class GuildServer : IGuildServer
     }
 
     /// <inheritdoc />
-    public async ValueTask<bool> ChangeGuildMemberPositionByNameAsync(uint guildId, string characterName, GuildPosition role)
+    public async ValueTask<bool> ChangeGuildMemberPositionByNameAsync(uint guildId, string characterName, GuildPosition role, int masterTotalLevel)
     {
         try
         {
-            return await this._daprClient.InvokeMethodAsync<GuildMemberRoleChangeByNameArguments, bool>(this._targetAppId, nameof(this.ChangeGuildMemberPositionByNameAsync), new GuildMemberRoleChangeByNameArguments(guildId, characterName, role)).ConfigureAwait(false);
+            return await this._daprClient.InvokeMethodAsync<GuildMemberRoleChangeByNameArguments, bool>(this._targetAppId, nameof(this.ChangeGuildMemberPositionByNameAsync), new GuildMemberRoleChangeByNameArguments(guildId, characterName, role, masterTotalLevel)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
