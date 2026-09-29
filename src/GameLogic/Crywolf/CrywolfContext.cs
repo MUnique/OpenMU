@@ -226,9 +226,17 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
     /// </summary>
     public async ValueTask TickAsync()
     {
-        if (this.State == CrywolfState.None)
+        if (this.State == CrywolfState.None && this.UpdateEventServer())
         {
-            this.UpdateEventServer();
+            // This game server took over the event, e.g. because the configuration changed. A war of the
+            // previous game server is reset, like after a restart.
+            if (await this.LoadDataAsync().ConfigureAwait(false))
+            {
+                await this.SaveDataAsync(false).ConfigureAwait(false);
+            }
+
+            await this.ApplyOccupationAsync().ConfigureAwait(false);
+            await this.ShowStateToMapPlayersAsync().ConfigureAwait(false);
         }
 
         if (this._map is not null && this._altars.Count == 0)
@@ -240,6 +248,9 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
         {
             Interlocked.Exchange(ref this._isSkipRequested, 0);
             await this.SynchronizeWithEventServerAsync().ConfigureAwait(false);
+
+            // The hidden NPCs have to be shown as hidden to the players which see them for the first time.
+            await this.UpdateEffectsAsync().ConfigureAwait(false);
             return;
         }
 
@@ -1015,14 +1026,19 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
         await this.UpdateEffectsAsync().ConfigureAwait(false);
     }
 
-    private void UpdateEventServer()
+    /// <summary>
+    /// Updates whether this game server runs the event, according to the definition.
+    /// </summary>
+    /// <returns><c>true</c>, if this game server took over the event from another game server; otherwise, <c>false</c>.</returns>
+    private bool UpdateEventServer()
     {
         var isEventServer = this._serverId is not { } serverId || serverId == this._definition.GameServerId;
         if (isEventServer == this._isEventServer && this._isEventServerLogged)
         {
-            return;
+            return false;
         }
 
+        var isTakeOver = isEventServer && !this._isEventServer && this._isEventServerLogged;
         this._isEventServer = isEventServer;
         this._isEventServerLogged = true;
         if (isEventServer)
@@ -1033,6 +1049,8 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
         {
             this._logger.LogInformation("The crywolf event runs on the game server {serverId}. This game server takes over its occupation state.", this._definition.GameServerId);
         }
+
+        return isTakeOver;
     }
 
     private async ValueTask SynchronizeWithEventServerAsync()

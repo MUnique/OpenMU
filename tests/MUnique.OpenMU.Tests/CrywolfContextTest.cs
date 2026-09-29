@@ -110,6 +110,29 @@ public class CrywolfContextTest
     }
 
     /// <summary>
+    /// Tests that a game server, which takes over the event, e.g. after a change of the configuration,
+    /// resets the war of the previous game server instead of staying in it.
+    /// </summary>
+    [Test]
+    public async Task TakeOverResetsTheWarOfTheOtherServerAsync()
+    {
+        var gameContext = (GameContext)GameContextTestHelper.CreateGameContext();
+        await SaveDataAsync(gameContext, data => data.IsWarRunning = true).ConfigureAwait(false);
+        var (context, _, _) = await CreateContextAsync(gameContext, serverId: 1).ConfigureAwait(false);
+        Assert.That(context.Occupation, Is.EqualTo(CrywolfOccupationState.War));
+
+        var definition = context.Definition;
+        definition.GameServerId = 1;
+        context.UpdateDefinition(definition);
+        await context.TickAsync().ConfigureAwait(false);
+
+        Assert.That(context.IsEventServer, Is.True);
+        Assert.That(context.Occupation, Is.EqualTo(CrywolfOccupationState.Peace));
+        var data = await LoadDataAsync(gameContext).ConfigureAwait(false);
+        Assert.That(data?.IsWarRunning, Is.False);
+    }
+
+    /// <summary>
     /// Tests that the benefits apply after the fortress has been defended, but not before the first battle.
     /// </summary>
     [Test]

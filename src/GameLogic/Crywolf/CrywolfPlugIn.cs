@@ -95,7 +95,17 @@ public sealed class CrywolfPlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISuppor
             if (!this._contexts.TryGetValue(gameContext, out var context))
             {
                 context = new CrywolfContext(gameContext, definition);
-                await context.InitializeAsync().ConfigureAwait(false);
+                try
+                {
+                    await context.InitializeAsync().ConfigureAwait(false);
+                }
+                catch
+                {
+                    // It's created again at the next tick, so the handlers of this one must not stay registered.
+                    context.Dispose();
+                    throw;
+                }
+
                 this._contexts[gameContext] = context;
             }
             else
