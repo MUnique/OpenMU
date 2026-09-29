@@ -27,6 +27,7 @@ public sealed class SelupanIntelligence : INpcIntelligence, IDisposable
     private const short PoisonSkillNumber = 250;
     private const short IceStormSkillNumber = 251;
     private const short IceStrikeSkillNumber = 252;
+    private const short FallSkillNumber = 253;
     private static readonly TimeSpan TeleportVanishDuration = TimeSpan.FromMilliseconds(500);
 
     private readonly RaklionContext _context;
@@ -117,6 +118,50 @@ public sealed class SelupanIntelligence : INpcIntelligence, IDisposable
     }
 
     /// <summary>
+    /// Pushes a player away from Selupan, field by field, until the distance is reached or
+    /// the next field isn't walkable or part of a safezone.
+    /// Stunned and frozen players aren't pushed.
+    /// </summary>
+    /// <param name="monster">The monster of Selupan.</param>
+    /// <param name="player">The player which is pushed.</param>
+    /// <param name="distance">The maximum number of fields the player is pushed.</param>
+    internal static async ValueTask PushAwayAsync(Monster monster, Player player, int distance)
+    {
+        if (distance <= 0
+            || !player.IsAlive
+            || player.Attributes is not { } attributes
+            || attributes[Stats.IsStunned] > 0
+            || attributes[Stats.IsFrozen] > 0)
+        {
+            return;
+        }
+
+        var direction = monster.Position.GetDirectionTo(player.Position);
+        if (direction == Direction.Undefined)
+        {
+            direction = (Direction)Rand.NextInt(1, 9);
+        }
+
+        var terrain = monster.CurrentMap.Terrain;
+        var target = player.Position;
+        for (var i = 0; i < distance; i++)
+        {
+            var next = target.CalculateTargetPoint(direction);
+            if (!terrain.WalkMap[next.X, next.Y] || terrain.SafezoneMap[next.X, next.Y])
+            {
+                break;
+            }
+
+            target = next;
+        }
+
+        if (target != player.Position)
+        {
+            await player.MoveAsync(target).ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
     /// Executes one step of the intelligence. It's called periodically by a timer.
     /// </summary>
     internal async ValueTask TickAsync()
@@ -128,8 +173,14 @@ public sealed class SelupanIntelligence : INpcIntelligence, IDisposable
 
         if (this._pattern == 0)
         {
-            // Selupan falls from the sky when it appears.
+            // Selupan falls from the sky when it appears, and hits and pushes away the players around it.
             await this.ShowSkillAsync(monster, null, SelupanSkill.Fall).ConfigureAwait(false);
+            foreach (var player in this.GetFallTargets(monster))
+            {
+                await player.AttackByAsync(monster, this.GetSkillEntry(SelupanSkill.Fall, player), false).ConfigureAwait(false);
+                await PushAwayAsync(monster, player, this.GetPushDistance(player, this._definition.FallPushDistance)).ConfigureAwait(false);
+            }
+
             await this.UpdatePatternAsync(monster, 1).ConfigureAwait(false);
             return;
         }
@@ -155,6 +206,20 @@ public sealed class SelupanIntelligence : INpcIntelligence, IDisposable
 
         var skill = this.ChooseSkill(monster);
         await this.ExecuteSkillAsync(monster, target, skill).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the players which are hit by the fall of Selupan.
+    /// </summary>
+    /// <param name="monster">The monster of Selupan.</param>
+    /// <returns>The players which are closer to Selupan than the <see cref="RaklionEventDefinition.FallRadius"/>.</returns>
+    internal IReadOnlyList<Player> GetFallTargets(Monster monster)
+    {
+        var radius = this._definition.FallRadius;
+        return monster.CurrentMap.GetAttackablesInRange(monster.Position, radius)
+            .OfType<Player>()
+            .Where(player => IsValidTarget(monster, player) && player.GetDistanceTo(monster) < radius)
+            .ToList();
     }
 
     private static double GetHealthPercentage(Monster monster)
@@ -238,6 +303,11 @@ public sealed class SelupanIntelligence : INpcIntelligence, IDisposable
         await this._context.ChangeSelupanStateAsync((SelupanState)(pattern + (int)SelupanState.Standby)).ConfigureAwait(false);
     }
 
+    private int GetPushDistance(Player player, int distance)
+    {
+        return this._definition.GetPushDistance(player.SelectedCharacter?.CharacterClass?.Number, distance);
+    }
+
     private void UpdateInvincibility(Monster monster)
     {
         if (this._invincibleUntil != DateTime.MinValue && DateTime.UtcNow >= this._invincibleUntil)
@@ -297,9 +367,17 @@ public sealed class SelupanIntelligence : INpcIntelligence, IDisposable
         {
             case SelupanSkill.Poison:
             case SelupanSkill.IceStorm:
-            case SelupanSkill.IceStrike:
                 await this.ShowSkillAsync(monster, target, skill).ConfigureAwait(false);
                 await this.AttackAreaAsync(monster, target, skill).ConfigureAwait(false);
+                break;
+            case SelupanSkill.IceStrike:
+                // The frost shock also pushes the hit players away.
+                await this.ShowSkillAsync(monster, target, skill).ConfigureAwait(false);
+                foreach (var hitPlayer in await this.AttackAreaAsync(monster, target, skill).ConfigureAwait(false))
+                {
+                    await PushAwayAsync(monster, hitPlayer, this.GetPushDistance(hitPlayer, this._definition.IceStrikePushDistance)).ConfigureAwait(false);
+                }
+
                 break;
             case SelupanSkill.Freeze:
                 await this.ShowSkillAsync(monster, target, skill).ConfigureAwait(false);
@@ -333,7 +411,7 @@ public sealed class SelupanIntelligence : INpcIntelligence, IDisposable
         }
     }
 
-    private async ValueTask AttackAreaAsync(Monster monster, IAttackable target, SelupanSkill skill)
+    private async ValueTask<IReadOnlyList<Player>> AttackAreaAsync(Monster monster, IAttackable target, SelupanSkill skill)
     {
         var targets = monster.CurrentMap.GetAttackablesInRange(target.Position, this._definition.AreaSkillRadius)
             .OfType<Player>()
@@ -343,6 +421,8 @@ public sealed class SelupanIntelligence : INpcIntelligence, IDisposable
         {
             await player.AttackByAsync(monster, this.GetSkillEntry(skill, player), false).ConfigureAwait(false);
         }
+
+        return targets;
     }
 
     /// <summary>
@@ -364,6 +444,7 @@ public sealed class SelupanIntelligence : INpcIntelligence, IDisposable
             SelupanSkill.Poison => PoisonSkillNumber,
             SelupanSkill.IceStorm => IceStormSkillNumber,
             SelupanSkill.IceStrike => IceStrikeSkillNumber,
+            SelupanSkill.Fall => FallSkillNumber,
             _ => default(short?),
         };
 
