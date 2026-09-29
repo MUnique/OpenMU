@@ -2169,27 +2169,27 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             else
             {
                 await this.DestroyInventoryItemAsync(pet).ConfigureAwait(false);
+            }
 
-                if ((identifier == ItemConstants.Dinorant || identifier == ItemConstants.Fenrir)
-                    && (this.CurrentMap?.Definition.MapRequirements.Any(req => req.Attribute == Stats.CanFly) ?? false)
-                    && attributes[Stats.CanFly] < 1)
+            if ((identifier == ItemConstants.Dinorant || identifier == ItemConstants.DarkHorse || identifier == ItemConstants.Fenrir)
+                && (this.CurrentMap?.Definition.MapRequirements.Any(req => req.Attribute == Stats.CanFly) ?? false)
+                && attributes[Stats.CanFly] < 1)
+            {
+                if (this.GameContext.Configuration.Items.FirstOrDefault(i =>
+                        i.Group == ItemConstants.Dinorant.Group && i.Number == ItemConstants.Dinorant.Number) is { } dinorantDef
+                    && this.Inventory?.FindItemsByDefinition(dinorantDef).FirstOrDefault() is { } dinorantItem)
                 {
-                    if (this.GameContext.Configuration.Items.FirstOrDefault(i =>
-                            i.Group == ItemConstants.Dinorant.Group && i.Number == ItemConstants.Dinorant.Number) is { } dinorantDef
-                        && this.Inventory?.FindItemsByDefinition(dinorantDef).FirstOrDefault() is { } dinorantItem)
+                    await this._moveAction.MoveItemAsync(this, dinorantItem.ItemSlot, Storages.Inventory, InventoryConstants.PetSlot, Storages.Inventory).ConfigureAwait(false);
+                    if (this.Inventory.GetItem(InventoryConstants.PetSlot) == dinorantItem)
                     {
-                        await this._moveAction.MoveItemAsync(this, dinorantItem.ItemSlot, Storages.Inventory, InventoryConstants.PetSlot, Storages.Inventory).ConfigureAwait(false);
-                        if (this.Inventory.GetItem(InventoryConstants.PetSlot) == dinorantItem)
-                        {
-                            await this.InvokeViewPlugInAsync<IUpdateInventoryListPlugIn>(p => p.UpdateInventoryListAsync()).ConfigureAwait(false);
-                            await this.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.EquipmentHasChangedMessage)).ConfigureAwait(false);
-                            return;
-                        }
+                        await this.InvokeViewPlugInAsync<IUpdateInventoryListPlugIn>(p => p.UpdateInventoryListAsync()).ConfigureAwait(false);
+                        await this.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.EquipmentHasChangedMessage)).ConfigureAwait(false);
+                        return;
                     }
-
-                    await this._movement.StopWalkingAsync().ConfigureAwait(false);
-                    await this.WarpToSafezoneAsync().ConfigureAwait(false);
                 }
+
+                await this._movement.StopWalkingAsync().ConfigureAwait(false);
+                await this.WarpToSafezoneAsync().ConfigureAwait(false);
             }
         }
     }
