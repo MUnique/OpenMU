@@ -91,27 +91,6 @@ public class CrywolfAltarTest
         Assert.That(altar.ContractCount, Is.Zero);
     }
 
-    /// <summary>
-    /// Tests that the safezone of the fortress is removed while it's not in peace, and restored afterward.
-    /// </summary>
-    [Test]
-    public void TerrainOfTheOccupation()
-    {
-        var terrainData = new byte[(256 * 256) + 3];
-        Array.Fill(terrainData, (byte)TerrainAttributeType.Safezone, 3, terrainData.Length - 3);
-        var terrain = new GameMapTerrain(terrainData);
-        var (areaX, areaY, _, _) = CrywolfTerrain.SafezoneRemovedAreas[0];
-        var (blockedX, blockedY, _, _) = CrywolfTerrain.BlockedAreas[0];
-
-        CrywolfTerrain.Apply(terrain, false);
-        Assert.That(terrain.SafezoneMap[areaX, areaY], Is.False);
-        Assert.That(terrain.WalkMap[blockedX, blockedY], Is.False);
-
-        CrywolfTerrain.Apply(terrain, true);
-        Assert.That(terrain.SafezoneMap[areaX, areaY], Is.True);
-        Assert.That(terrain.WalkMap[blockedX, blockedY], Is.True);
-    }
-
     private async ValueTask<(CrywolfAltar Altar, Player Player)> CreateAltarAsync(Point playerPosition)
     {
         var gameContext = GameContextTestHelper.CreateGameContext();

@@ -26,6 +26,27 @@ public partial class GameMapDefinition : MUnique.OpenMU.DataModel.Configuration.
     public Guid Id { get; set; }
     
     /// <summary>
+    /// Gets the raw collection of <see cref="TerrainVariants" />.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonPropertyName("terrainVariants")]
+    public ICollection<GameMapTerrainVariant> RawTerrainVariants { get; } = new List<GameMapTerrainVariant>();
+    
+    /// <inheritdoc/>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.GameMapTerrainVariant> TerrainVariants
+    {
+        get => base.TerrainVariants ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.GameMapTerrainVariant, GameMapTerrainVariant>(this.RawTerrainVariants);
+        protected set
+        {
+            this.TerrainVariants.Clear();
+            foreach (var item in value)
+            {
+                this.TerrainVariants.Add(item);
+            }
+        }
+    }
+
+    /// <summary>
     /// Gets the raw collection of <see cref="MonsterSpawns" />.
     /// </summary>
     [System.Text.Json.Serialization.JsonPropertyName("monsterSpawns")]

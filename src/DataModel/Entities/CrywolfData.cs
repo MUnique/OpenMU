@@ -33,6 +33,15 @@ public class CrywolfData
     public bool IsWarRunning { get; set; }
 
     /// <summary>
+    /// Gets or sets the time (UTC) when the war started, or <see langword="null"/> if it isn't running.
+    /// </summary>
+    /// <remarks>
+    /// The other game servers consider the war as ended after the longest possible duration of the event,
+    /// in case the game server which runs it stopped during the war.
+    /// </remarks>
+    public DateTime? WarStart { get; set; }
+
+    /// <summary>
     /// Gets or sets the time (UTC) when the last battle ended, or <see langword="null"/> if there was no battle yet.
     /// </summary>
     public DateTime? LastBattleEnd { get; set; }

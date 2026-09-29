@@ -45,6 +45,13 @@ public partial class GameMapDefinition
     public byte[]? TerrainData { get; set; }
 
     /// <summary>
+    /// Gets or sets the variants of the terrain, which replace the <see cref="TerrainData"/> in certain states
+    /// of the map, e.g. during an event.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<GameMapTerrainVariant> TerrainVariants { get; protected set; } = null!;
+
+    /// <summary>
     /// Gets or sets the defined monster spawn areas.
     /// </summary>
     [MemberOfAggregate]

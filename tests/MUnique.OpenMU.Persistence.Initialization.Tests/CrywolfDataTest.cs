@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Tests;
 
 using Microsoft.Extensions.Logging.Abstractions;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Crywolf;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
 using MUnique.OpenMU.Persistence.InMemory;
@@ -52,6 +53,7 @@ internal class CrywolfDataTest
         }
 
         gameConfiguration.WarpList.Remove(gameConfiguration.WarpList.Single(warp => warp.Index == 26));
+        map.TerrainVariants.Clear();
 
         var update = new AddCrywolfEventUpdatePlugIn();
         await update.ApplyUpdateAsync(contextProvider.CreateNewContext(), gameConfiguration).ConfigureAwait(false);
@@ -107,5 +109,24 @@ internal class CrywolfDataTest
         var warp = gameConfiguration.WarpList.Single(warp => warp.Index == 26);
         Assert.That(warp.Gate?.Map, Is.SameAs(map));
         Assert.That(warp.LevelRequirement, Is.EqualTo(190));
+
+        Assert.That(map.TerrainVariants.Select(variant => variant.Number), Is.EquivalentTo(new short[] { 1, 2 }));
+        AssertTerrainSwitch(map);
+    }
+
+    /// <summary>
+    /// Asserts that switching to the terrain of an occupation state and back results in exactly the terrain of the respective file.
+    /// </summary>
+    private static void AssertTerrainSwitch(GameMapDefinition map)
+    {
+        var terrain = new GameMapTerrain(map.TerrainData);
+        foreach (var variant in map.TerrainVariants)
+        {
+            Assert.That(variant.TerrainData, Is.Not.Null.And.Not.EqualTo(map.TerrainData), $"Terrain variant {variant}");
+            terrain.LoadTerrainData(variant.TerrainData);
+            Assert.That(terrain.AttributeMap, Is.EqualTo(new GameMapTerrain(variant.TerrainData).AttributeMap), $"Terrain variant {variant}");
+            terrain.LoadTerrainData(map.TerrainData);
+            Assert.That(terrain.AttributeMap, Is.EqualTo(new GameMapTerrain(map.TerrainData).AttributeMap), $"Normal terrain after {variant}");
+        }
     }
 }

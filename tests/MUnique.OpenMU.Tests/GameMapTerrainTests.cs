@@ -1,4 +1,4 @@
-// <copyright file="GameMapTerrainTests.cs" company="MUnique">
+﻿// <copyright file="GameMapTerrainTests.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -65,6 +65,36 @@ public class GameMapTerrainTests
     /// <param name="safezoneAt">The coordinate to mark as safezone, if any.</param>
     /// <param name="walkableAt">The coordinate to mark as walkable but outside the safezone, if any.</param>
     /// <returns>The terrain data, including its three byte header.</returns>
+    /// <summary>
+    /// Tests that loading other terrain data replaces the whole terrain, e.g. to switch to the terrain of an event state
+    /// and back, and that the grids stay the same instances, which are referenced e.g. by the path finder.
+    /// </summary>
+    [Test]
+    public void LoadTerrainDataReplacesTheWholeTerrain()
+    {
+        var peace = CreateTerrainData(safezoneAt: (10, 10), walkableAt: (5, 5));
+        var war = CreateTerrainData(safezoneAt: null, walkableAt: (6, 6));
+        var terrain = new GameMapTerrain(peace);
+        var aiGrid = terrain.AIgrid;
+
+        terrain.LoadTerrainData(war);
+        AssertSameTerrain(terrain, new GameMapTerrain(war));
+        Assert.That(terrain.AIgrid, Is.SameAs(aiGrid));
+        Assert.That(terrain.AnyWalkableCoordinate, Is.EqualTo(new Pathfinding.Point(6, 6)));
+
+        terrain.LoadTerrainData(peace);
+        AssertSameTerrain(terrain, new GameMapTerrain(peace));
+        Assert.That(terrain.AnyWalkableCoordinate, Is.EqualTo(new Pathfinding.Point(10, 10)));
+    }
+
+    private static void AssertSameTerrain(GameMapTerrain actual, GameMapTerrain expected)
+    {
+        Assert.That(actual.AttributeMap, Is.EqualTo(expected.AttributeMap));
+        Assert.That(actual.WalkMap, Is.EqualTo(expected.WalkMap));
+        Assert.That(actual.SafezoneMap, Is.EqualTo(expected.SafezoneMap));
+        Assert.That(actual.AIgrid, Is.EqualTo(expected.AIgrid));
+    }
+
     private static byte[] CreateTerrainData((byte X, byte Y)? safezoneAt, (byte X, byte Y)? walkableAt)
     {
         var data = new byte[ushort.MaxValue + 3];

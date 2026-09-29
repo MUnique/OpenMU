@@ -9,6 +9,7 @@ using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Crywolf;
+using MUnique.OpenMU.GameLogic.PlugIns;
 using ItemDefinition = MUnique.OpenMU.Persistence.BasicModel.ItemDefinition;
 
 /// <summary>
@@ -52,6 +53,42 @@ public class CrywolfPlugInTest
         var (plugIn, gameContext) = await CreatePlugInAsync(isOccupied: true, d => d.ExperiencePenaltyPercentage = 50, execute: false).ConfigureAwait(false);
         var player = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
         await plugIn.PlayerStateChangedAsync(player, PlayerState.CharacterSelection, PlayerState.EnteredWorld).ConfigureAwait(false);
+        var normalRate = player.Attributes![Stats.ExperienceRate];
+
+        await plugIn.ExecuteTaskAsync(gameContext).ConfigureAwait(false);
+
+        Assert.That(player.Attributes[Stats.ExperienceRate], Is.EqualTo(normalRate * 0.5f));
+    }
+
+    /// <summary>
+    /// Tests that deactivating the plugin undoes its multipliers.
+    /// </summary>
+    [Test]
+    public async Task DeactivationUndoesTheMultipliersAsync()
+    {
+        var (plugIn, gameContext) = await CreatePlugInAsync(isOccupied: true, d => d.ExperiencePenaltyPercentage = 50, execute: false).ConfigureAwait(false);
+        var player = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        await plugIn.PlayerStateChangedAsync(player, PlayerState.CharacterSelection, PlayerState.EnteredWorld).ConfigureAwait(false);
+        var normalRate = player.Attributes![Stats.ExperienceRate];
+        await plugIn.ExecuteTaskAsync(gameContext).ConfigureAwait(false);
+        Assert.That(player.Attributes[Stats.ExperienceRate], Is.EqualTo(normalRate * 0.5f), "precondition");
+
+        gameContext.PlugInManager.RegisterPlugIn<IPeriodicTaskPlugIn, CrywolfPlugIn>();
+        gameContext.PlugInManager.DeactivatePlugIn<CrywolfPlugIn>();
+
+        Assert.That(player.Attributes[Stats.ExperienceRate], Is.EqualTo(normalRate));
+    }
+
+    /// <summary>
+    /// Tests that players, which are already in the game when the plugin starts, get the multiplier, too.
+    /// </summary>
+    [Test]
+    public async Task PlayersInTheGameGetTheMultiplierAsync()
+    {
+        var (plugIn, gameContext) = await CreatePlugInAsync(isOccupied: true, d => d.ExperiencePenaltyPercentage = 50, execute: false).ConfigureAwait(false);
+        var player = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        await player.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
+        await gameContext.AddPlayerAsync(player).ConfigureAwait(false);
         var normalRate = player.Attributes![Stats.ExperienceRate];
 
         await plugIn.ExecuteTaskAsync(gameContext).ConfigureAwait(false);

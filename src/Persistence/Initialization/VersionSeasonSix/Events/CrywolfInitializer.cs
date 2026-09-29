@@ -48,6 +48,7 @@ internal class CrywolfInitializer : InitializerBase
     {
         this.CreateMonsters();
         this.CreateSpawns();
+        this.CreateTerrainVariants();
     }
 
     /// <summary>
@@ -117,6 +118,33 @@ internal class CrywolfInitializer : InitializerBase
             area.Y1 = spawn.Y;
             area.Y2 = spawn.Y;
             map.MonsterSpawns.Add(area);
+        }
+    }
+
+    /// <summary>
+    /// Adds the terrains of the crywolf map while it's occupied and during the war, if they don't exist yet.
+    /// Like the terrain files of the client, their numbers are the ones of the occupation states (1 and 2).
+    /// </summary>
+    internal void CreateTerrainVariants()
+    {
+        if (this.GetMap() is not { } map)
+        {
+            return;
+        }
+
+        foreach (var (number, description, fileName) in new (short, string, string)[] { (1, "Occupied", "Terrain35_OCCUPIED.att"), (2, "War", "Terrain35_WAR.att") })
+        {
+            if (map.TerrainVariants.Any(variant => variant.Number == number)
+                || TerrainUpdateHelper.ReadTerrainResource(fileName) is not { } terrainData)
+            {
+                continue;
+            }
+
+            var variant = this.Context.CreateNew<GameMapTerrainVariant>();
+            variant.Number = number;
+            variant.Description = description;
+            variant.TerrainData = terrainData;
+            map.TerrainVariants.Add(variant);
         }
     }
 

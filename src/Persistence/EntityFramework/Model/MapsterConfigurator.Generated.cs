@@ -177,6 +177,9 @@ public static class MapsterConfigurator
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.GameMapDefinition, MUnique.OpenMU.DataModel.Configuration.GameMapDefinition>()
             .Include<GameMapDefinition, BasicModel.GameMapDefinition>();
 
+        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.GameMapTerrainVariant, MUnique.OpenMU.DataModel.Configuration.GameMapTerrainVariant>()
+            .Include<GameMapTerrainVariant, BasicModel.GameMapTerrainVariant>();
+
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.GameServerConfiguration, MUnique.OpenMU.DataModel.Configuration.GameServerConfiguration>()
             .Include<GameServerConfiguration, BasicModel.GameServerConfiguration>();
 

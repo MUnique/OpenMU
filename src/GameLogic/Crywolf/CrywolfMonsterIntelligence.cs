@@ -226,6 +226,7 @@ public sealed class CrywolfMonsterIntelligence : INpcIntelligence, IDisposable
 
     private static void Decrease(Player player, AttributeDefinition attribute, int percentage)
     {
+        // The client gets the new value by the change of the attribute (see Player.OnAttributeValueChanged).
         if (player.Attributes is { } attributes)
         {
             attributes[attribute] = attributes[attribute] * (100 - Math.Clamp(percentage, 0, 100)) / 100f;

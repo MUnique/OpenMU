@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.Crywolf;
 
 using System.Collections.Concurrent;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 using MUnique.OpenMU.AttributeSystem;
@@ -59,7 +60,18 @@ public sealed class CrywolfPlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISuppor
     /// </summary>
     private readonly SimpleElement _experienceMultiplier = new(1.0f, AggregateType.Multiplicate);
 
+    /// <summary>
+    /// The attribute systems of the monsters and players, to which the multipliers are attached.
+    /// </summary>
+    private readonly ConditionalWeakTable<object, object> _attachedAttributeSystems = new();
+
+    /// <summary>
+    /// The game contexts, in which the multipliers were attached to the existing monsters and players since the plugin has been activated.
+    /// </summary>
+    private readonly ConcurrentDictionary<IGameContext, byte> _attachedGameContexts = new();
+
     private int _isUpdatingMultipliers;
+    private int _isSubscribedToDeactivation;
 
     /// <summary>
     /// The benefits and penalties which apply, so that their changes are logged.
@@ -114,6 +126,13 @@ public sealed class CrywolfPlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISuppor
             }
 
             await context.TickAsync().ConfigureAwait(false);
+            this.SubscribeToDeactivation(gameContext.PlugInManager);
+            if (this._attachedGameContexts.TryAdd(gameContext, 0))
+            {
+                // The plugin was just activated, so the monsters and players which exist already didn't get the multipliers.
+                await this.AttachMultipliersAsync(gameContext).ConfigureAwait(false);
+            }
+
             await this.UpdateMultipliersAsync(gameContext).ConfigureAwait(false);
         }
         catch (Exception ex)
@@ -144,10 +163,8 @@ public sealed class CrywolfPlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISuppor
     /// <inheritdoc />
     public ValueTask ObjectAddedToMapAsync(GameMap map, ILocateable addedObject)
     {
-        if (addedObject is Monster monster && IsAffectedByHealthBenefit(monster))
+        if (addedObject is Monster monster && this.TryAttachHealthMultiplier(monster))
         {
-            monster.Attributes.AddElement(this._monsterHealthMultiplier, Stats.MaximumHealth);
-
             // The monster got its health before it was added to the map. When it respawns, it stays on the map and keeps the multiplier.
             monster.Health = (int)monster.Attributes[Stats.MaximumHealth];
         }
@@ -158,7 +175,7 @@ public sealed class CrywolfPlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISuppor
     /// <inheritdoc />
     public ValueTask ObjectRemovedFromMapAsync(GameMap map, ILocateable removedObject)
     {
-        if (removedObject is Monster monster && IsAffectedByHealthBenefit(monster))
+        if (removedObject is Monster monster && this._attachedAttributeSystems.Remove(monster.Attributes))
         {
             monster.Attributes.RemoveElement(this._monsterHealthMultiplier, Stats.MaximumHealth);
         }
@@ -171,15 +188,18 @@ public sealed class CrywolfPlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISuppor
     {
         if (currentState.IsDisconnectedOrFinished())
         {
-            player.Attributes?.RemoveElement(this._experienceMultiplier, Stats.ExperienceRate);
-            player.Attributes?.RemoveElement(this._experienceMultiplier, Stats.MasterExperienceRate);
+            if (player.Attributes is { } attributes && this._attachedAttributeSystems.Remove(attributes))
+            {
+                attributes.RemoveElement(this._experienceMultiplier, Stats.ExperienceRate);
+                attributes.RemoveElement(this._experienceMultiplier, Stats.MasterExperienceRate);
+            }
+
             return ValueTask.CompletedTask;
         }
 
         if (previousState == PlayerState.CharacterSelection && currentState == PlayerState.EnteredWorld)
         {
-            player.Attributes?.AddElement(this._experienceMultiplier, Stats.ExperienceRate);
-            player.Attributes?.AddElement(this._experienceMultiplier, Stats.MasterExperienceRate);
+            this.TryAttachExperienceMultiplier(player);
         }
 
         return ValueTask.CompletedTask;
@@ -201,6 +221,11 @@ public sealed class CrywolfPlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISuppor
     /// <inheritdoc />
     public void Dispose()
     {
+        if (this._contexts.Keys.FirstOrDefault() is { } gameContext)
+        {
+            gameContext.PlugInManager.PlugInDeactivated -= this.OnPlugInDeactivated;
+        }
+
         foreach (var context in this._contexts.Values)
         {
             context.Dispose();
@@ -239,6 +264,78 @@ public sealed class CrywolfPlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISuppor
         {
             logger.LogInformation("Neither the benefits nor the penalties of the crywolf fortress apply. Occupation: {occupation}.", context.Occupation);
         }
+    }
+
+    private bool TryAttachHealthMultiplier(Monster monster)
+    {
+        if (!IsAffectedByHealthBenefit(monster) || this._attachedAttributeSystems.TryGetValue(monster.Attributes, out _))
+        {
+            return false;
+        }
+
+        this._attachedAttributeSystems.AddOrUpdate(monster.Attributes, this);
+        monster.Attributes.AddElement(this._monsterHealthMultiplier, Stats.MaximumHealth);
+        return true;
+    }
+
+    private void TryAttachExperienceMultiplier(Player player)
+    {
+        if (player.Attributes is not { } attributes || this._attachedAttributeSystems.TryGetValue(attributes, out _))
+        {
+            return;
+        }
+
+        this._attachedAttributeSystems.AddOrUpdate(attributes, this);
+        attributes.AddElement(this._experienceMultiplier, Stats.ExperienceRate);
+        attributes.AddElement(this._experienceMultiplier, Stats.MasterExperienceRate);
+    }
+
+    /// <summary>
+    /// Attaches the multipliers to the monsters and players of the game context, which exist already.
+    /// </summary>
+    private async ValueTask AttachMultipliersAsync(IGameContext gameContext)
+    {
+        foreach (var player in await gameContext.GetPlayersAsync().ConfigureAwait(false))
+        {
+            if (player.PlayerState.CurrentState == PlayerState.EnteredWorld)
+            {
+                this.TryAttachExperienceMultiplier(player);
+            }
+        }
+
+        foreach (var map in await gameContext.GetMapsAsync().ConfigureAwait(false))
+        {
+            foreach (var monster in map.GetNpcsInRange(new Point(128, 128), byte.MaxValue).OfType<Monster>())
+            {
+                this.TryAttachHealthMultiplier(monster);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Subscribes to the deactivation of this plugin, so that its effects can be undone.
+    /// </summary>
+    private void SubscribeToDeactivation(PlugInManager plugInManager)
+    {
+        if (Interlocked.Exchange(ref this._isSubscribedToDeactivation, 1) == 0)
+        {
+            plugInManager.PlugInDeactivated += this.OnPlugInDeactivated;
+        }
+    }
+
+    private void OnPlugInDeactivated(object? sender, PlugInEventArgs e)
+    {
+        if (e.PlugInType != this.GetType())
+        {
+            return;
+        }
+
+        // The multipliers stay attached, but without an effect. When the plugin is activated again, they're
+        // attached to the monsters and players which came in the meantime, and get their values again.
+        this._monsterHealthMultiplier.Value = 1;
+        this._experienceMultiplier.Value = 1;
+        this._appliedEffects = null;
+        this._attachedGameContexts.Clear();
     }
 
     private async ValueTask UpdateMultipliersAsync(GameContext gameContext)

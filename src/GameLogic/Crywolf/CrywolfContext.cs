@@ -786,7 +786,8 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
             Player? contractor;
             lock (altar)
             {
-                contractor = altar.Contractor;
+                // An elf which is still attempting the contract doesn't get the score and the reward.
+                contractor = altar.State == CrywolfAltarState.Contracted ? altar.Contractor : null;
                 altar.Reset();
                 altar.Hide();
             }
@@ -1011,9 +1012,18 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
             return;
         }
 
-        // The client loads the terrain of the occupation by itself. The one of the war and the occupation
-        // don't differ for the server.
-        CrywolfTerrain.Apply(map.Terrain, this.Occupation == CrywolfOccupationState.Peace);
+        // Like the client, which loads the terrain of the occupation state by itself, the server uses the terrain
+        // variant of the map with the number of the occupation state. In peace, it's the normal terrain.
+        // The crywolf map has no other changes of the terrain at runtime, so it's just replaced.
+        var terrainVariant = this.Occupation == CrywolfOccupationState.Peace
+            ? null
+            : map.Definition.TerrainVariants.FirstOrDefault(variant => variant.Number == (short)this.Occupation);
+        if (terrainVariant is null && this.Occupation != CrywolfOccupationState.Peace)
+        {
+            this._logger.LogWarning("The terrain of the crywolf map for the occupation state {occupation} is missing.", this.Occupation);
+        }
+
+        map.Terrain.LoadTerrainData(terrainVariant?.TerrainData ?? map.Definition.TerrainData);
         foreach (var display in this._hiddenNpcs.Values)
         {
             display.Effect = this.Occupation == CrywolfOccupationState.Peace ? null : CrywolfEffect.NpcHidden;
@@ -1089,7 +1099,7 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
 
             this._dataId = data.Id;
             this._hasBattleResult = data.LastBattleEnd.HasValue;
-            this.Occupation = data.IsWarRunning && !this._isEventServer
+            this.Occupation = data.IsWarRunning && !this._isEventServer && !this.IsWarOverdue(data)
                 ? CrywolfOccupationState.War
                 : data.IsOccupied ? CrywolfOccupationState.Occupied : CrywolfOccupationState.Peace;
             return data.IsWarRunning;
@@ -1102,6 +1112,19 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
     }
 
     /// <summary>
+    /// Determines whether the war should have ended already, because the longest possible war is over.
+    /// It happens when the game server which runs the event stopped during the war, or doesn't exist.
+    /// </summary>
+    /// <param name="data">The persistent state of the event.</param>
+    /// <returns><c>true</c>, if the war should have ended already; otherwise, <c>false</c>.</returns>
+    private bool IsWarOverdue(CrywolfData data)
+    {
+        var definition = this._definition;
+        var longestWar = definition.Notify2Duration + definition.ReadyDuration + definition.BattleDuration + definition.EndDuration;
+        return data.WarStart is { } warStart && DateTime.UtcNow - warStart > longestWar;
+    }
+
+    /// <summary>
     /// Saves the persistent state of the event, so that it survives a restart and the other game servers take it over.
     /// </summary>
     /// <param name="isBattleEnd">If set to <c>true</c>, the battle just ended.</param>
@@ -1110,9 +1133,13 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
         try
         {
             using var context = this._gameContext.PersistenceContextProvider.CreateNewTypedContext(typeof(CrywolfData), false, this._gameContext.Configuration);
-            var data = this._dataId is { } id ? await context.GetByIdAsync<CrywolfData>(id).ConfigureAwait(false) : null;
+            var data = this._dataId is { } id
+                ? await context.GetByIdAsync<CrywolfData>(id).ConfigureAwait(false)
+                : (await context.GetAsync<CrywolfData>().ConfigureAwait(false)).FirstOrDefault();
             data ??= context.CreateNew<CrywolfData>();
+            var isWarStarting = this.Occupation == CrywolfOccupationState.War && !data.IsWarRunning;
             data.IsWarRunning = this.Occupation == CrywolfOccupationState.War;
+            data.WarStart = data.IsWarRunning ? (isWarStarting ? DateTime.UtcNow : data.WarStart) : null;
             if (!data.IsWarRunning)
             {
                 data.IsOccupied = this.Occupation == CrywolfOccupationState.Occupied;
@@ -1207,6 +1234,9 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
             monster.Initialize();
             await map.AddAsync(monster).ConfigureAwait(false);
             monster.OnSpawn();
+
+            // The monster only starts its intelligence when the first player observes it, but the army acts without observers.
+            intelligence.Start();
             this._eventMonsters.TryAdd(monster, 0);
             monster.Died += this.OnEventMonsterDied;
             return monster;

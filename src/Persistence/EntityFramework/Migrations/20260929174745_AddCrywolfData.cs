@@ -19,6 +19,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     IsOccupied = table.Column<bool>(type: "boolean", nullable: false),
                     IsWarRunning = table.Column<bool>(type: "boolean", nullable: false),
+                    WarStart = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     LastBattleEnd = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>

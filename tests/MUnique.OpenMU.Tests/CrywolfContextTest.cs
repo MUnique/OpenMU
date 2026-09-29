@@ -133,6 +133,46 @@ public class CrywolfContextTest
     }
 
     /// <summary>
+    /// Tests that the other game servers don't stay in the war, when the game server which runs the event
+    /// stopped during the war, and that they fall back to the result of the last battle.
+    /// </summary>
+    [Test]
+    public async Task OverdueWarEndsOnTheOtherServersAsync()
+    {
+        var gameContext = (GameContext)GameContextTestHelper.CreateGameContext();
+        await SaveDataAsync(gameContext, data =>
+        {
+            data.IsWarRunning = true;
+            data.WarStart = DateTime.UtcNow - TimeSpan.FromHours(2);
+            data.IsOccupied = true;
+            data.LastBattleEnd = DateTime.UtcNow - TimeSpan.FromDays(3);
+        }).ConfigureAwait(false);
+
+        var (context, _, _) = await CreateContextAsync(gameContext, serverId: 1).ConfigureAwait(false);
+
+        Assert.That(context.Occupation, Is.EqualTo(CrywolfOccupationState.Occupied));
+    }
+
+    /// <summary>
+    /// Tests that the terrain of the map is replaced by its variant of the occupation state during the war,
+    /// and that the normal terrain is loaded again when the fortress is in peace.
+    /// </summary>
+    [Test]
+    public async Task WarUsesTheTerrainOfTheWarAsync()
+    {
+        var (context, _, _) = await CreateContextAsync().ConfigureAwait(false);
+        var map = context.Map!;
+        var blocked = new Point(100, 100);
+        var warTerrain = new byte[(256 * 256) + 3];
+        warTerrain[3 + blocked.X + (blocked.Y << 8)] = (byte)TerrainAttributeType.Blocked;
+        map.Definition.TerrainVariants.Add(new Persistence.BasicModel.GameMapTerrainVariant { Number = (short)CrywolfOccupationState.War, TerrainData = warTerrain });
+        Assert.That(map.Terrain.WalkMap[blocked.X, blocked.Y], Is.True, "precondition");
+
+        await ProceedToAsync(context, CrywolfState.Notify2).ConfigureAwait(false);
+        Assert.That(map.Terrain.WalkMap[blocked.X, blocked.Y], Is.False);
+    }
+
+    /// <summary>
     /// Tests that the benefits apply after the fortress has been defended, but not before the first battle.
     /// </summary>
     [Test]
