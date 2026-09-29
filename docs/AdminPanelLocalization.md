@@ -18,7 +18,8 @@ culture name.
 Plugin extension point names and authorization roles are translated for display.
 Their stored identifiers are unchanged. Protocol identifiers, command words,
 external plugin text without a translation retain their original text. Model
-`ToString()` summaries are culture-dependent and may also appear localized in logs.
+`ToString()` summaries are culture-dependent and may also appear localized in
+logs.
 
 Names stored in game configuration data are separate from UI resource files.
 Adding these resources does not translate existing database records or alter
@@ -46,5 +47,6 @@ dotnet test tests/MUnique.OpenMU.Web.Tests/MUnique.OpenMU.Web.Tests.csproj \
 ```
 
 Localization tests cover culture selection, enum round trips, model captions and
-summaries, plugin resource metadata, English fallback and translated placeholders,
+summaries, plugin resource metadata, English fallback and translated
+placeholders,
 and paging with the shared grid state.
