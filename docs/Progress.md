@@ -83,7 +83,7 @@ complexity and effort). Complexity 0 means we wont implement it.
 | *LoggedIn*                    | 0xB8              | 100%     | 1          |                                               |
 | RequestGuildMarkCastleOwner | 0xB9              | 0%       | 1          |                                               |
 | *JewelMix*                    | 0xBC              | 100%     | 4          |                                               |
-| CrywolfGroup                | 0xBD              | 0%       | 10         |                                               |
+| *CrywolfGroup*              | 0xBD              | 100%     | 10         |                                               |
 | GuildAssignStatus           | 0xBE              | 0%       | 1          |                                               |
 | FriendListRequest           | 0xC0              | 0%       | 0          | Not needed, friend list is sent automatically |
 | *FriendAdd*                   | 0xC1              | 100%     | 2          |                                               |
