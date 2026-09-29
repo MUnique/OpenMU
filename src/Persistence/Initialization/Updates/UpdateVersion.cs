@@ -611,6 +611,11 @@ public enum UpdateVersion
     AddSelupanFallSkill = 120,
 
     /// <summary>
+    /// The version of the <see cref="AddImperialGuardianDataUpdatePlugIn"/>.
+    /// </summary>
+    AddImperialGuardianData = 121,
+
+    /// <summary>
     /// The version of the <see cref="AddCrywolfEventUpdatePlugIn"/>.
     /// </summary>
     AddCrywolfEvent = 122,

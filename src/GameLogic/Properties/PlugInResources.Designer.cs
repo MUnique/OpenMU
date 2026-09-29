@@ -1177,6 +1177,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Configures the run of the imperial guardian event, e.g. its times, the experience reward and the scaling of the monsters..
+        /// </summary>
+        public static string ImperialGuardianFeaturePlugIn_Description {
+            get {
+                return ResourceManager.GetString("ImperialGuardianFeaturePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Imperial Guardian event.
+        /// </summary>
+        public static string ImperialGuardianFeaturePlugIn_Name {
+            get {
+                return ResourceManager.GetString("ImperialGuardianFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the chat command &apos;/item &lt;group&gt; &lt;number&gt; &lt;lvl?&gt; &lt;exc?&gt; &lt;sk?&gt; &lt;lu?&gt; &lt;opt?&gt; &lt;anc?&gt; &lt;ancBonuslvl?&gt;&apos;. Drops a specific item next to the character..
         /// </summary>
         public static string ItemChatCommandPlugIn_Description {
@@ -3182,6 +3200,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string SummonPartySkillPlugin_Name {
             get {
                 return ResourceManager.GetString("SummonPartySkillPlugin_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Transforms a full stack of suspicious scraps of paper into a Gaion's Order..
+        /// </summary>
+        public static string SuspiciousScrapOfPaperStackedPlugIn_Description {
+            get {
+                return ResourceManager.GetString("SuspiciousScrapOfPaperStackedPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Suspicious scrap of paper stack transformation.
+        /// </summary>
+        public static string SuspiciousScrapOfPaperStackedPlugIn_Name {
+            get {
+                return ResourceManager.GetString("SuspiciousScrapOfPaperStackedPlugIn_Name", resourceCulture);
             }
         }
         

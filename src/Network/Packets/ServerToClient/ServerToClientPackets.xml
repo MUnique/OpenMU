@@ -13875,6 +13875,221 @@
         </Field>
       </Fields>
     </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F7</Code>
+      <SubCode>02</SubCode>
+      <Name>ImperialGuardianEnterResult</Name>
+      <Length>12</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player requested to enter the imperial guardian event, or entered the next zone of it.</SentWhen>
+      <CausedReaction>The client shows a message when entering failed. On success, it remembers the day and zone for the timer and the result, and sets the weather of the map.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>EnterResult</TypeName>
+          <Name>Result</Name>
+          <Description>The result of the request.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Day</Name>
+          <Description>The day of the week, from 1 (monday) to 7 (sunday). The client shows it as the round.</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>Zone</Name>
+          <Description>The zone, starting at 1.</Description>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Enum</Type>
+          <TypeName>WeatherType</TypeName>
+          <Name>Weather</Name>
+          <Description>The weather of the map.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>RemainingMilliseconds</Name>
+          <Description>The remaining time in milliseconds. When the result is NotOpen, the client shows the minutes until the event can be entered. The field is aligned to 4 bytes, because the client structure is not packed.</Description>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>EnterResult</Name>
+          <Description>The result of an enter request.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Success</Name>
+              <Description>The player entered the event.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>NotOpen</Name>
+              <Description>The event can not be entered yet.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>MissingTicket</Name>
+              <Description>The player has no Gaion's Order or Complete Secromicon.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Full</Name>
+              <Description>The zone is full.</Description>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>ZoneTimeRemaining</Name>
+              <Description>There is still time remaining in this zone.</Description>
+              <Value>4</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>PartyRequired</Name>
+              <Description>The player can only enter as a member of a party.</Description>
+              <Value>5</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>CharacterLevelTooLow</Name>
+              <Description>The character level is too low. The client doesn't show a message.</Description>
+              <Value>6</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+        <Enum>
+          <Name>WeatherType</Name>
+          <Description>The weather of the map.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Sun</Name>
+              <Description>The sun shines.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Rain</Name>
+              <Description>It rains.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Fog</Name>
+              <Description>There is fog.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Storm</Name>
+              <Description>There is a storm.</Description>
+              <Value>3</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F7</Code>
+      <SubCode>04</SubCode>
+      <Name>ImperialGuardianTimer</Name>
+      <Length>16</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>Every second during the imperial guardian event.</SentWhen>
+      <CausedReaction>The client shows the timer with the remaining time and the number of remaining monsters. The client doesn't count down the time by itself.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>TimerType</TypeName>
+          <Name>Type</Name>
+          <Description>The type of the timer.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>RemainingMilliseconds</Name>
+          <Description>The remaining time in milliseconds. The field is aligned to 4 bytes, because the client structure is not packed.</Description>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>Byte</Type>
+          <Name>MonsterCount</Name>
+          <Description>The number of remaining monsters.</Description>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>TimerType</Name>
+          <Description>The type of the timer.</Description>
+          <Values>
+            <EnumValue>
+              <Name>LootTime</Name>
+              <Description>The time to collect the loot.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Standby</Name>
+              <Description>The time until the monsters appear.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>TimeAttack</Name>
+              <Description>The time to kill the monsters.</Description>
+              <Value>2</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F7</Code>
+      <SubCode>06</SubCode>
+      <Name>ImperialGuardianResult</Name>
+      <Length>12</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>A zone of the imperial guardian event has been cleared, or the event ended.</SentWhen>
+      <CausedReaction>The client shows the result and hides the timer.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>ResultType</TypeName>
+          <Name>Result</Name>
+          <Description>The result.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Experience</Name>
+          <Description>The rewarded experience, when the event has been completed. The field is aligned to 4 bytes, because the client structure is not packed.</Description>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>ResultType</Name>
+          <Description>The result of the imperial guardian event.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Failed</Name>
+              <Description>The event failed.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>ZoneCleared</Name>
+              <Description>The zone has been cleared.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Success</Name>
+              <Description>The event has been completed.</Description>
+              <Value>2</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
   </Packets>
   <Enums>
     <Enum>

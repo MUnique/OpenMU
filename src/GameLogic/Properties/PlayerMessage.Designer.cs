@@ -529,6 +529,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You need at least level {0} to enter the Fortress of Imperial Guardian..
+        /// </summary>
+        public static string ImperialGuardianLevelTooLow {
+            get {
+                return ResourceManager.GetString("ImperialGuardianLevelTooLow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Your {0} has been destroyed! You are falling out of the Kanturu Refinery Tower..
         /// </summary>
         public static string KanturuRequiredItemDestroyed {

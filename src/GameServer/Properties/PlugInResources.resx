@@ -2531,4 +2531,22 @@
   <data name="CrywolfChaosRateBenefitRequestHandlerPlugIn_Description" xml:space="preserve">
     <value>Handles the request of the client for the additional success rate of the chaos machine.</value>
   </data>
+  <data name="ImperialGuardianGroupHandlerPlugIn_Name" xml:space="preserve">
+    <value>Imperial Guardian Group Handler</value>
+  </data>
+  <data name="ImperialGuardianGroupHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the packets of the imperial guardian event (0xF7).</value>
+  </data>
+  <data name="ImperialGuardianEnterRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Imperial Guardian Enter Request Handler</value>
+  </data>
+  <data name="ImperialGuardianEnterRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the request to enter the imperial guardian event, which is sent by the window of Jerint.</value>
+  </data>
+  <data name="ImperialGuardianViewPlugIn_Name" xml:space="preserve">
+    <value>Imperial Guardian View</value>
+  </data>
+  <data name="ImperialGuardianViewPlugIn_Description" xml:space="preserve">
+    <value>Sends the enter result, the timer and the result of the imperial guardian event to the client.</value>
+  </data>
 </root>

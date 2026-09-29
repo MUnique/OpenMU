@@ -846,6 +846,9 @@
   <data name="RaklionDurationMinutes" xml:space="preserve">
     <value>{0} minute(s)</value>
   </data>
+  <data name="ImperialGuardianLevelTooLow" xml:space="preserve">
+    <value>You need at least level {0} to enter the Fortress of Imperial Guardian.</value>
+  </data>
   <data name="CrywolfNotify1" xml:space="preserve">
     <value>Balgass has joined forces with Kundun's army and is preparing to attack the Crywolf Fortress.</value>
   </data>

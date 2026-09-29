@@ -2905,6 +2905,60 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handles the request to enter the imperial guardian event, which is sent by the window of Jerint..
+        /// </summary>
+        public static string ImperialGuardianEnterRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ImperialGuardianEnterRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Imperial Guardian Enter Request Handler.
+        /// </summary>
+        public static string ImperialGuardianEnterRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ImperialGuardianEnterRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the packets of the imperial guardian event (0xF7)..
+        /// </summary>
+        public static string ImperialGuardianGroupHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ImperialGuardianGroupHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Imperial Guardian Group Handler.
+        /// </summary>
+        public static string ImperialGuardianGroupHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ImperialGuardianGroupHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends the enter result, the timer and the result of the imperial guardian event to the client..
+        /// </summary>
+        public static string ImperialGuardianViewPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ImperialGuardianViewPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Imperial Guardian View.
+        /// </summary>
+        public static string ImperialGuardianViewPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ImperialGuardianViewPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The default implementation of the IInitializeDuelPlugIn which is forwarding everything to the game client with specific data packets..
         /// </summary>
         public static string InitializeDuelPlugIn_Description {
