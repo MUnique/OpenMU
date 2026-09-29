@@ -55,6 +55,44 @@ public class ItemConsumptionTest
     }
 
     /// <summary>
+    /// Tests that the jewel of bless repairs its repair target items (the Horn of Fenrir in season 6),
+    /// even when they can't be repaired the normal way (<see cref="DataModel.Configuration.Items.ItemDefinition.IsRepairable"/>).
+    /// </summary>
+    [Test]
+    public async ValueTask JewelOfBlessRepairsItemWhichIsNotNormallyRepairableAsync()
+    {
+        var player = await this.GetPlayerAsync().ConfigureAwait(false);
+        var fenrirMock = new Mock<Item>();
+        fenrirMock.SetupAllProperties();
+        fenrirMock.Setup(i => i.ItemOptions).Returns(new List<ItemOptionLink>());
+        fenrirMock.Setup(i => i.ItemSetGroups).Returns(new List<ItemOfItemSet>());
+        var fenrir = fenrirMock.Object;
+        fenrir.Definition = new DataModel.Configuration.Items.ItemDefinition
+        {
+            Width = 1,
+            Height = 1,
+            Durability = 255,
+            ItemSlot = new DataModel.Configuration.Items.ItemSlotType(),
+            IsRepairable = false,
+        };
+        fenrir.Durability = 100;
+        var fenrirSlot = (byte)(ItemSlot + 1);
+        await player.Inventory!.AddItemAsync(fenrirSlot, fenrir).ConfigureAwait(false);
+        var bless = this.GetItem();
+        await player.Inventory.AddItemAsync(ItemSlot, bless).ConfigureAwait(false);
+
+        var consumeHandler = new BlessJewelConsumeHandlerPlugIn();
+        var configuration = (BlessJewelConsumeHandlerPlugInConfiguration)consumeHandler.CreateDefaultConfig();
+        configuration.RepairTargetItems.Add(fenrir.Definition);
+        consumeHandler.Configuration = configuration;
+
+        var consumed = await consumeHandler.ConsumeItemAsync(player, bless, fenrir, FruitUsage.Undefined).ConfigureAwait(false);
+
+        Assert.That(consumed, Is.True);
+        Assert.That(fenrir.Durability, Is.EqualTo(255));
+    }
+
+    /// <summary>
     /// Tests the jewel of soul consumption.
     /// </summary>
     /// <param name="itemLevel">The item level before consuming the jewel of soul.</param>

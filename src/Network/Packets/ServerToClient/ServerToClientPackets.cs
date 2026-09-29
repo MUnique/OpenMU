@@ -12870,6 +12870,177 @@ public readonly struct EffectId
 
 
 /// <summary>
+/// Is sent by the server when: The player wears a monster transformation ring (extended client).
+/// Causes reaction on client side: The character appears as monster, defined by the Skin property.
+/// </summary>
+public readonly struct AddTransformedCharacterToScopeExtended
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AddTransformedCharacterToScopeExtended"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public AddTransformedCharacterToScopeExtended(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AddTransformedCharacterToScopeExtended"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private AddTransformedCharacterToScopeExtended(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)data.Length;
+            this.CharacterCount = 1;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0x45;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2Header Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the number of characters in this packet. This packet contains only one character, because the size of the appearance data depends on the used appearance serializer.
+    /// </summary>
+    public byte CharacterCount
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the id.
+    /// </summary>
+    public ushort Id
+    {
+        get => ReadUInt16BigEndian(this._data.Span[5..]);
+        set => WriteUInt16BigEndian(this._data.Span[5..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the current position x.
+    /// </summary>
+    public byte CurrentPositionX
+    {
+        get => this._data.Span[7];
+        set => this._data.Span[7] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the current position y.
+    /// </summary>
+    public byte CurrentPositionY
+    {
+        get => this._data.Span[8];
+        set => this._data.Span[8] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the skin.
+    /// </summary>
+    public ushort Skin
+    {
+        get => ReadUInt16BigEndian(this._data.Span[9..]);
+        set => WriteUInt16BigEndian(this._data.Span[9..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the name.
+    /// </summary>
+    public string Name
+    {
+        get => this._data.Span.ExtractString(11, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(11, 10).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the target position x.
+    /// </summary>
+    public byte TargetPositionX
+    {
+        get => this._data.Span[21];
+        set => this._data.Span[21] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the target position y.
+    /// </summary>
+    public byte TargetPositionY
+    {
+        get => this._data.Span[22];
+        set => this._data.Span[22] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the rotation.
+    /// </summary>
+    public byte Rotation
+    {
+        get => this._data.Span[23..].GetByteValue(4, 4);
+        set => this._data.Span[23..].SetByteValue(value, 4, 4);
+    }
+
+    /// <summary>
+    /// Gets or sets the hero state.
+    /// </summary>
+    public CharacterHeroState HeroState
+    {
+        get => (CharacterHeroState)this._data.Span[23..].GetByteValue(4, 0);
+        set => this._data.Span[23..].SetByteValue((byte)value, 4, 0);
+    }
+
+    /// <summary>
+    /// Gets or sets the appearance data, followed by the number of effects and the effect ids.
+    /// </summary>
+    public Span<byte> AppearanceAndEffects
+    {
+        get => this._data.Slice(24).Span;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="AddTransformedCharacterToScopeExtended"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator AddTransformedCharacterToScopeExtended(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="AddTransformedCharacterToScopeExtended"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(AddTransformedCharacterToScopeExtended packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified length of <see cref="AppearanceAndEffects"/>.
+    /// </summary>
+    /// <param name="appearanceAndEffectsLength">The length in bytes of <see cref="AppearanceAndEffects"/> on which the required size depends.</param>
+        
+    public static int GetRequiredSize(int appearanceAndEffectsLength) => appearanceAndEffectsLength + 24;
+}
+
+
+/// <summary>
 /// Is sent by the server when: The server wants to alter the terrain attributes of a map at runtime.
 /// Causes reaction on client side: The client updates the terrain attributes on its side.
 /// </summary>
@@ -36867,6 +37038,706 @@ public readonly struct KanturuMonsterUserCount
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
     public static implicit operator Memory<byte>(KanturuMonsterUserCount packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: The player requested the state of the raklion event.
+/// Causes reaction on client side: The client updates the state of the raklion maps, e.g. whether the portal to the hatchery is shown, the effects and the music.
+/// </summary>
+public readonly struct RaklionStateInfo
+{
+    /// <summary>
+    /// The state of the raklion event.
+    /// </summary>
+    public enum RaklionState
+    {
+        /// <summary>
+        /// No event activity; the hatchery gate is open.
+        /// </summary>
+            Idle = 0,
+
+        /// <summary>
+        /// Only a few spider eggs are left.
+        /// </summary>
+            Notify1 = 1,
+
+        /// <summary>
+        /// All spider eggs are destroyed and Selupan is about to appear.
+        /// </summary>
+            Standby = 2,
+
+        /// <summary>
+        /// Selupan appeared; the hatchery gate closes soon.
+        /// </summary>
+            Notify2 = 3,
+
+        /// <summary>
+        /// Selupan rises; the client plays the boss music on the hatchery map.
+        /// </summary>
+            Ready = 4,
+
+        /// <summary>
+        /// The battle against Selupan is running.
+        /// </summary>
+            StartBattle = 5,
+
+        /// <summary>
+        /// The hatchery gate is about to close.
+        /// </summary>
+            Notify3 = 6,
+
+        /// <summary>
+        /// The hatchery gate is closed; nobody can enter anymore.
+        /// </summary>
+            CloseDoor = 7,
+
+        /// <summary>
+        /// All players of the battle died or left.
+        /// </summary>
+            AllUserDie = 8,
+
+        /// <summary>
+        /// The battle ended; the hatchery gate opens soon.
+        /// </summary>
+            Notify4 = 9,
+
+        /// <summary>
+        /// The event ended.
+        /// </summary>
+            End = 10,
+
+        /// <summary>
+        /// The detail state contains the state of Selupan.
+        /// </summary>
+            DetailState = 11,
+    }
+
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RaklionStateInfo"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public RaklionStateInfo(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RaklionStateInfo"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private RaklionStateInfo(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xD1;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x10;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 12;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the state.
+    /// </summary>
+    public RaklionStateInfo.RaklionState State
+    {
+        get => (RaklionState)this._data.Span[4];
+        set => this._data.Span[4] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the state of Selupan, if the state is DetailState: 0 = none, 1 = standby, 2 to 8 = pattern 1 to 7 (by the remaining health), 9 = dead. Otherwise it is ignored by the client.
+    /// </summary>
+    public byte DetailState
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets it is not used by the client.
+    /// </summary>
+    public bool CanEnter
+    {
+        get => this._data.Span[6..].GetBoolean();
+        set => this._data.Span[6..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets it is not used by the client. The field is aligned to 4 bytes, because the client structure is not packed.
+    /// </summary>
+    public uint RemainingSeconds
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[8..]);
+        set => WriteUInt32LittleEndian(this._data.Span[8..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="RaklionStateInfo"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator RaklionStateInfo(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="RaklionStateInfo"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(RaklionStateInfo packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: The player entered one of the raklion maps.
+/// Causes reaction on client side: The client updates the state of the raklion maps, e.g. whether the portal to the hatchery is shown, the effects and the music.
+/// </summary>
+public readonly struct RaklionCurrentState
+{
+    /// <summary>
+    /// The state of the raklion event.
+    /// </summary>
+    public enum RaklionState
+    {
+        /// <summary>
+        /// No event activity; the hatchery gate is open.
+        /// </summary>
+            Idle = 0,
+
+        /// <summary>
+        /// Only a few spider eggs are left.
+        /// </summary>
+            Notify1 = 1,
+
+        /// <summary>
+        /// All spider eggs are destroyed and Selupan is about to appear.
+        /// </summary>
+            Standby = 2,
+
+        /// <summary>
+        /// Selupan appeared; the hatchery gate closes soon.
+        /// </summary>
+            Notify2 = 3,
+
+        /// <summary>
+        /// Selupan rises; the client plays the boss music on the hatchery map.
+        /// </summary>
+            Ready = 4,
+
+        /// <summary>
+        /// The battle against Selupan is running.
+        /// </summary>
+            StartBattle = 5,
+
+        /// <summary>
+        /// The hatchery gate is about to close.
+        /// </summary>
+            Notify3 = 6,
+
+        /// <summary>
+        /// The hatchery gate is closed; nobody can enter anymore.
+        /// </summary>
+            CloseDoor = 7,
+
+        /// <summary>
+        /// All players of the battle died or left.
+        /// </summary>
+            AllUserDie = 8,
+
+        /// <summary>
+        /// The battle ended; the hatchery gate opens soon.
+        /// </summary>
+            Notify4 = 9,
+
+        /// <summary>
+        /// The event ended.
+        /// </summary>
+            End = 10,
+
+        /// <summary>
+        /// The detail state contains the state of Selupan.
+        /// </summary>
+            DetailState = 11,
+    }
+
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RaklionCurrentState"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public RaklionCurrentState(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RaklionCurrentState"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private RaklionCurrentState(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xD1;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x11;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 6;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the state.
+    /// </summary>
+    public RaklionCurrentState.RaklionState State
+    {
+        get => (RaklionState)this._data.Span[4];
+        set => this._data.Span[4] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the state of Selupan, if the state is DetailState: 0 = none, 1 = standby, 2 to 8 = pattern 1 to 7 (by the remaining health), 9 = dead. Otherwise it is ignored by the client.
+    /// </summary>
+    public byte DetailState
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="RaklionCurrentState"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator RaklionCurrentState(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="RaklionCurrentState"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(RaklionCurrentState packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: The state of the raklion event or of Selupan changed.
+/// Causes reaction on client side: The client updates the state of the raklion maps, e.g. whether the portal to the hatchery is shown, the effects and the music.
+/// </summary>
+public readonly struct RaklionStateChange
+{
+    /// <summary>
+    /// The state of the raklion event.
+    /// </summary>
+    public enum RaklionState
+    {
+        /// <summary>
+        /// No event activity; the hatchery gate is open.
+        /// </summary>
+            Idle = 0,
+
+        /// <summary>
+        /// Only a few spider eggs are left.
+        /// </summary>
+            Notify1 = 1,
+
+        /// <summary>
+        /// All spider eggs are destroyed and Selupan is about to appear.
+        /// </summary>
+            Standby = 2,
+
+        /// <summary>
+        /// Selupan appeared; the hatchery gate closes soon.
+        /// </summary>
+            Notify2 = 3,
+
+        /// <summary>
+        /// Selupan rises; the client plays the boss music on the hatchery map.
+        /// </summary>
+            Ready = 4,
+
+        /// <summary>
+        /// The battle against Selupan is running.
+        /// </summary>
+            StartBattle = 5,
+
+        /// <summary>
+        /// The hatchery gate is about to close.
+        /// </summary>
+            Notify3 = 6,
+
+        /// <summary>
+        /// The hatchery gate is closed; nobody can enter anymore.
+        /// </summary>
+            CloseDoor = 7,
+
+        /// <summary>
+        /// All players of the battle died or left.
+        /// </summary>
+            AllUserDie = 8,
+
+        /// <summary>
+        /// The battle ended; the hatchery gate opens soon.
+        /// </summary>
+            Notify4 = 9,
+
+        /// <summary>
+        /// The event ended.
+        /// </summary>
+            End = 10,
+
+        /// <summary>
+        /// The detail state contains the state of Selupan.
+        /// </summary>
+            DetailState = 11,
+    }
+
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RaklionStateChange"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public RaklionStateChange(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RaklionStateChange"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private RaklionStateChange(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xD1;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x12;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 6;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the state.
+    /// </summary>
+    public RaklionStateChange.RaklionState State
+    {
+        get => (RaklionState)this._data.Span[4];
+        set => this._data.Span[4] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the state of Selupan, if the state is DetailState: 0 = none, 1 = standby, 2 to 8 = pattern 1 to 7 (by the remaining health), 9 = dead. Otherwise it is ignored by the client.
+    /// </summary>
+    public byte DetailState
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="RaklionStateChange"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator RaklionStateChange(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="RaklionStateChange"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(RaklionStateChange packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: The battle against Selupan ended.
+/// Causes reaction on client side: None, the client ignores it.
+/// </summary>
+public readonly struct RaklionBattleResult
+{
+    /// <summary>
+    /// The result of the battle against Selupan.
+    /// </summary>
+    public enum BattleResult
+    {
+        /// <summary>
+        /// All players of the battle died or left.
+        /// </summary>
+            Failure = 0,
+
+        /// <summary>
+        /// Selupan was killed.
+        /// </summary>
+            Success = 1,
+    }
+
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RaklionBattleResult"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public RaklionBattleResult(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RaklionBattleResult"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private RaklionBattleResult(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xD1;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x13;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 5;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public RaklionBattleResult.BattleResult Result
+    {
+        get => (BattleResult)this._data.Span[4];
+        set => this._data.Span[4] = (byte)value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="RaklionBattleResult"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator RaklionBattleResult(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="RaklionBattleResult"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(RaklionBattleResult packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: A monster performs a special skill, e.g. Selupan.
+/// Causes reaction on client side: The client shows the animation of the monster skill.
+/// </summary>
+public readonly struct MonsterSkillAnimation
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MonsterSkillAnimation"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public MonsterSkillAnimation(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MonsterSkillAnimation"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private MonsterSkillAnimation(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0x69;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 10;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1Header Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the number of the monster skill of the client, e.g. 34 to 42 for the skills of Selupan.
+    /// </summary>
+    public ushort SkillNumber
+    {
+        get => ReadUInt16BigEndian(this._data.Span[3..]);
+        set => WriteUInt16BigEndian(this._data.Span[3..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the id of the monster. The field is aligned to 2 bytes, because the client structure is not packed.
+    /// </summary>
+    public ushort AttackerId
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[6..]);
+        set => WriteUInt16LittleEndian(this._data.Span[6..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the id of the target. The highest bit is set, if the skill has been applied successfully.
+    /// </summary>
+    public ushort TargetId
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[8..]);
+        set => WriteUInt16LittleEndian(this._data.Span[8..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="MonsterSkillAnimation"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator MonsterSkillAnimation(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="MonsterSkillAnimation"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(MonsterSkillAnimation packet) => packet._data; 
 }
     /// <summary>
     /// Defines the role of a guild member.

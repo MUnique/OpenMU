@@ -222,7 +222,13 @@ public class GameServerContext : GameContext, IGameServerContext
         var guildId = guildMember.GuildStatus.GuildId;
         var guildList = this._playersByGuild.GetOrAdd(guildId, id => new LockableList<Player>());
         using var writeLock = await guildList.Lock.WriterLockAsync();
-        guildList.Add(guildMember);
+
+        // Membership changes (e.g. role assignments) re-publish the guild assignment,
+        // so registration must be idempotent to avoid duplicate broadcasts and stale entries.
+        if (!guildList.Contains(guildMember))
+        {
+            guildList.Add(guildMember);
+        }
     }
 
     /// <inheritdoc />

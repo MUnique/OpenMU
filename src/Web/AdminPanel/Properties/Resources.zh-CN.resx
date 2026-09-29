@@ -1347,4 +1347,5 @@
   <data name="RoleAdministrator" xml:space="preserve"><value>管理员</value></data>
   <data name="RoleOperator" xml:space="preserve"><value>操作员</value></data>
   <data name="RoleViewer" xml:space="preserve"><value>只读用户</value></data>
+  <data name="PartyBadgeTitle" xml:space="preserve"><value>{0}的队伍：{1} 名成员</value></data>
 </root>

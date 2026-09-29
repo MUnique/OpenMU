@@ -20,12 +20,12 @@ This page lists every plugin the server knows and lets you turn it on and off.
 | Column | Meaning |
 |---|---|
 | Extension point | The interface this plugin implements. Hover for its description. |
-| Plugin name | The display name. Hover for the plugin's description. |
+| Plugin name / Help | The display name. Hover over the name or expand Help to read the description. |
 | Plugin type | The .NET type. Hover for its type id (a GUID). |
 | Action | Activate/Deactivate and, if the plugin has one, its configuration |
 
-Above the list you can filter by extension point, by name and by type — useful,
-because there are hundreds of plugins.
+Above the list you can filter by extension point, by name or description, and by
+type. The name search highlights matching words in the expanded help text.
 
 ## Activating and deactivating
 

@@ -1421,4 +1421,10 @@
   <data name="InvasionSpawnConfiguration_MonsterId_Caption" xml:space="preserve"><value>Monster Id</value></data>
   <data name="KanturuStartConfiguration_EventDefinition_Caption" xml:space="preserve"><value>Event Definition</value></data>
   <data name="BlessJewelConsumeHandlerPlugInConfiguration_RepairTargetItems_Caption" xml:space="preserve"><value>Repair Target Items</value></data>
+  <data name="RaklionPlugIn_Name" xml:space="preserve">
+    <value>Raklion Event</value>
+  </data>
+  <data name="RaklionPlugIn_Description" xml:space="preserve">
+    <value>The event in the hatchery of raklion: when all spider eggs are destroyed, Selupan appears. After the battle, the hatchery is closed for some time.</value>
+  </data>
 </root>

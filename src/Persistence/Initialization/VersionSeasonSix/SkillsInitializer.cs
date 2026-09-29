@@ -251,6 +251,12 @@ internal class SkillsInitializer : SkillsInitializerBase
         // Generic monster skills:
         this.CreateSkill(SkillNumber.MonsterSkill, "Generic Monster Skill", distance: 5, skillType: SkillType.Other);
 
+        // Skills of Selupan, the boss of the raklion event:
+        this.CreateSkill(SkillNumber.SelupanPoison, "Selupan Poison", damageType: DamageType.Physical, distance: 10, skillType: SkillType.AreaSkillExplicitTarget);
+        this.CreateSkill(SkillNumber.SelupanIceStorm, "Selupan Ice Storm", damageType: DamageType.Physical, distance: 10, skillType: SkillType.AreaSkillExplicitTarget);
+        this.CreateSkill(SkillNumber.SelupanIceStrike, "Selupan Ice Strike", damageType: DamageType.Physical, distance: 10, skillType: SkillType.AreaSkillExplicitTarget);
+        this.CreateSkill(SkillNumber.SelupanFall, "Selupan Fall", damageType: DamageType.Physical, distance: 10, skillType: SkillType.AreaSkillExplicitTarget);
+
         // Master skills:
         // Common:
         this.CreateSkill(SkillNumber.DurabilityReduction1, "Durability Reduction (1)", CharacterClasses.AllMastersExceptFistMaster, damage: 17, skillType: SkillType.PassiveBoost);
@@ -638,6 +644,14 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.AddAttributeRelationship(SkillNumber.IceArrow, Stats.SkillFinalMultiplier, 2.0f, Stats.SkillMultiplier);
         this.AddAttributeRelationship(SkillNumber.Penetration, Stats.SkillFinalMultiplier, 2.0f, Stats.SkillMultiplier);
         this.AddAttributeRelationship(SkillNumber.Starfall, Stats.SkillFinalMultiplier, 2.0f, Stats.SkillMultiplier);
+
+        // The attack skills of Selupan hit harder than its regular attack. The values are the damage
+        // multipliers of the original server; Maximum keeps them absolute, regardless of the
+        // Stats.SkillMultiplier of the monster.
+        this.AddAttributeRelationship(SkillNumber.SelupanPoison, Stats.SkillFinalMultiplier, 2.0f, Stats.SkillMultiplier, InputOperator.Maximum);
+        this.AddAttributeRelationship(SkillNumber.SelupanIceStorm, Stats.SkillFinalMultiplier, 2.2f, Stats.SkillMultiplier, InputOperator.Maximum);
+        this.AddAttributeRelationship(SkillNumber.SelupanIceStrike, Stats.SkillFinalMultiplier, 2.3f, Stats.SkillMultiplier, InputOperator.Maximum);
+        this.AddAttributeRelationship(SkillNumber.SelupanFall, Stats.SkillFinalMultiplier, 2.5f, Stats.SkillMultiplier, InputOperator.Maximum);
 
         this.AddAttributeRelationship(SkillNumber.Explosion223, Stats.SkillFinalDamageBonus, 1.0f, Stats.ExplosionBonusDmg);
         this.AddAttributeRelationship(SkillNumber.Requiem, Stats.SkillFinalDamageBonus, 1.0f, Stats.RequiemBonusDmg);
