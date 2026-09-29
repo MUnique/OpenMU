@@ -10310,7 +10310,7 @@
       <HeaderType>C3Header</HeaderType>
       <Code>C6</Code>
       <Name>AddLetter</Name>
-      <Length>79</Length>
+      <Length>107</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>After a letter has been received or after the player entered the game with a character.</SentWhen>
       <CausedReaction>The letter appears in the letter list.</CausedReaction>
@@ -10336,10 +10336,10 @@
           <Index>46</Index>
           <Type>String</Type>
           <Name>Subject</Name>
-          <Length>32</Length>
+          <Length>60</Length>
         </Field>
         <Field>
-          <Index>78</Index>
+          <Index>106</Index>
           <Type>Enum</Type>
           <TypeName>LetterState</TypeName>
           <Name>State</Name>

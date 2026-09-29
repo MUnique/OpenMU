@@ -27136,7 +27136,7 @@ public readonly ref struct AddLetterRef
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 79;
+    public static int Length => 107;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -27175,8 +27175,8 @@ public readonly ref struct AddLetterRef
     /// </summary>
     public string Subject
     {
-        get => this._data.ExtractString(46, 32, System.Text.Encoding.UTF8);
-        set => this._data.Slice(46, 32).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.ExtractString(46, 60, System.Text.Encoding.UTF8);
+        set => this._data.Slice(46, 60).WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
@@ -27184,8 +27184,8 @@ public readonly ref struct AddLetterRef
     /// </summary>
     public AddLetter.LetterState State
     {
-        get => (AddLetter.LetterState)this._data[78];
-        set => this._data[78] = (byte)value;
+        get => (AddLetter.LetterState)this._data[106];
+        set => this._data[106] = (byte)value;
     }
 
     /// <summary>

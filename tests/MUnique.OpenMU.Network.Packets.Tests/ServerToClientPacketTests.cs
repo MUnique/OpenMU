@@ -5939,7 +5939,7 @@ public class PacketStructureTests
     public void AddLetter_PacketSizeValidation()
     {
         // Fixed-length packet validation
-        const int expectedLength = 79;
+        const int expectedLength = 107;
         var actualLength = AddLetterRef.Length;
         
         Assert.That(actualLength, Is.EqualTo(expectedLength), 
@@ -5958,11 +5958,11 @@ public class PacketStructureTests
             "Field 'Timestamp' exceeds packet boundary");
         
         // Validate field 'Subject' boundary
-        Assert.That(46 + 32, Is.LessThanOrEqualTo(expectedLength), 
+        Assert.That(46 + 60, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'Subject' exceeds packet boundary");
         
         // Validate field 'State' boundary
-        Assert.That(78 + 1, Is.LessThanOrEqualTo(expectedLength), 
+        Assert.That(106 + 1, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'State' exceeds packet boundary");
     }
 

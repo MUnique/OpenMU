@@ -28621,7 +28621,7 @@ public readonly struct AddLetter
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 79;
+    public static int Length => 107;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -28660,8 +28660,8 @@ public readonly struct AddLetter
     /// </summary>
     public string Subject
     {
-        get => this._data.Span.ExtractString(46, 32, System.Text.Encoding.UTF8);
-        set => this._data.Slice(46, 32).Span.WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.Span.ExtractString(46, 60, System.Text.Encoding.UTF8);
+        set => this._data.Slice(46, 60).Span.WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
@@ -28669,8 +28669,8 @@ public readonly struct AddLetter
     /// </summary>
     public AddLetter.LetterState State
     {
-        get => (LetterState)this._data.Span[78];
-        set => this._data.Span[78] = (byte)value;
+        get => (LetterState)this._data.Span[106];
+        set => this._data.Span[106] = (byte)value;
     }
 
     /// <summary>
