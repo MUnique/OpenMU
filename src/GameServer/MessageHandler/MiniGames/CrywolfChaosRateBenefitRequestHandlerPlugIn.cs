@@ -35,7 +35,7 @@ internal class CrywolfChaosRateBenefitRequestHandlerPlugIn : ISubPacketHandlerPl
             return;
         }
 
-        var rate = CrywolfPlugIn.GetContext(player.GameContext)?.GetChaosRateBenefit() ?? 0;
+        var rate = CrywolfPlugIn.GetContext(player.GameContext)?.ChaosRateBenefit ?? 0;
         await player.InvokeViewPlugInAsync<ICrywolfEventViewPlugIn>(p => p.ShowChaosRateBenefitAsync(rate)).ConfigureAwait(false);
     }
 }

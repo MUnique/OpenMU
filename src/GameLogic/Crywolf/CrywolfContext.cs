@@ -149,6 +149,11 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
     /// </summary>
     public float ExperienceMultiplier => this.ArePenaltiesApplied ? this._definition.ExperiencePenaltyPercentage / 100f : 1f;
 
+    /// <summary>
+    /// Gets the additional success rate in percent of the chaos machine mixes of the event tickets, which is also shown to the player.
+    /// </summary>
+    public byte ChaosRateBenefit => this.AreBenefitsApplied ? this._definition.ChaosRateBenefit : (byte)0;
+
     /// <inheritdoc />
     public bool IsEventRunning => this.State is >= CrywolfState.Notify2 and <= CrywolfState.End;
 
@@ -354,15 +359,6 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
     public bool KeepsExperienceOnDeath(GameMap? map)
     {
         return this.IsBattleRunning && map is not null && map == this._map;
-    }
-
-    /// <summary>
-    /// Gets the additional success rate of the chaos machine crafting, which is shown to the player.
-    /// </summary>
-    /// <returns>The additional success rate in percent.</returns>
-    public byte GetChaosRateBenefit()
-    {
-        return this.AreBenefitsApplied ? this._definition.ChaosRateBenefit : (byte)0;
     }
 
     /// <summary>

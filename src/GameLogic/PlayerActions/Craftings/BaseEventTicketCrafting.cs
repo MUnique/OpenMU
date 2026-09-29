@@ -81,7 +81,7 @@ public abstract class BaseEventTicketCrafting : BaseItemCraftingHandler
                 MinimumAmount = 1,
             }));
 
-        var crywolfBenefit = CrywolfPlugIn.GetContext(player.GameContext)?.GetChaosRateBenefit() ?? 0;
+        var crywolfBenefit = CrywolfPlugIn.GetContext(player.GameContext)?.ChaosRateBenefit ?? 0;
         successRate = (byte)Math.Min(this.GetSuccessRate(item1.Level) + crywolfBenefit, this.MaximumSuccessRate);
         return default;
     }

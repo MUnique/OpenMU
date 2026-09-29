@@ -139,14 +139,14 @@ public class CrywolfContextTest
     public async Task BenefitsApplyAfterTheFortressHasBeenDefendedAsync()
     {
         var (withoutBattle, _, _) = await CreateContextAsync().ConfigureAwait(false);
-        Assert.That(withoutBattle.GetChaosRateBenefit(), Is.Zero);
+        Assert.That(withoutBattle.ChaosRateBenefit, Is.Zero);
         Assert.That(withoutBattle.MonsterHealthMultiplier, Is.EqualTo(1f));
 
         var gameContext = (GameContext)GameContextTestHelper.CreateGameContext();
         await SaveDataAsync(gameContext, data => data.LastBattleEnd = DateTime.UtcNow).ConfigureAwait(false);
         var (context, _, _) = await CreateContextAsync(gameContext).ConfigureAwait(false);
 
-        Assert.That(context.GetChaosRateBenefit(), Is.EqualTo(5));
+        Assert.That(context.ChaosRateBenefit, Is.EqualTo(5));
         Assert.That(context.MonsterHealthMultiplier, Is.EqualTo(0.9f));
         Assert.That(context.ExperienceMultiplier, Is.EqualTo(1f));
     }
@@ -172,7 +172,7 @@ public class CrywolfContextTest
 
         Assert.That(context.ArePenaltiesApplied, Is.True);
         Assert.That(context.ExperienceMultiplier, Is.EqualTo(0.8f));
-        Assert.That(context.GetChaosRateBenefit(), Is.Zero);
+        Assert.That(context.ChaosRateBenefit, Is.Zero);
         Assert.That(context.MonsterHealthMultiplier, Is.EqualTo(1f));
     }
 

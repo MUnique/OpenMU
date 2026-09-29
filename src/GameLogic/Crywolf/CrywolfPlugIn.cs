@@ -173,8 +173,10 @@ public sealed class CrywolfPlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISuppor
         {
             player.Attributes?.RemoveElement(this._experienceMultiplier, Stats.ExperienceRate);
             player.Attributes?.RemoveElement(this._experienceMultiplier, Stats.MasterExperienceRate);
+            return ValueTask.CompletedTask;
         }
-        else if (previousState == PlayerState.CharacterSelection && currentState == PlayerState.EnteredWorld)
+
+        if (previousState == PlayerState.CharacterSelection && currentState == PlayerState.EnteredWorld)
         {
             player.Attributes?.AddElement(this._experienceMultiplier, Stats.ExperienceRate);
             player.Attributes?.AddElement(this._experienceMultiplier, Stats.MasterExperienceRate);
