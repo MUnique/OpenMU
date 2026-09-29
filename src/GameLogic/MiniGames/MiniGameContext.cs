@@ -141,7 +141,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
 
     /// <summary>
     /// Gets a value indicating whether the map entry requirements are skipped when
-    /// entering, e.g. an event item which the tower visitors no longer need.
+    /// entering, e.g. an event item which is only needed for the first entry.
     /// </summary>
     internal virtual bool SkipMapEntryRequirements => false;
 
@@ -157,8 +157,8 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     protected virtual TimeSpan CountdownDuration => CountdownMessageDuration;
 
     /// <summary>
-    /// Gets the minimum duration of the entrance phase. Games which don't need a lobby,
-    /// e.g. a reopened tower, override this with <see cref="TimeSpan.Zero"/>.
+    /// Gets the minimum duration of the entrance phase. Games which don't need a lobby
+    /// override this with <see cref="TimeSpan.Zero"/>.
     /// </summary>
     protected virtual TimeSpan MinimumEnterDuration => CountdownMessageDuration;
 

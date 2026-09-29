@@ -198,8 +198,8 @@ public class KanturuPhaseRunnerTests
 
     /// <summary>
     /// Tests that the spawn timeout starts after the phase began, not when the capture
-    /// is armed. The boss spawns 150ms after subscribing — past a 100ms timeout counted
-    /// from the subscription, but long done when the 300ms begin ends. Counting from the
+    /// is armed. The boss spawns as beginning ends — past a timeout counted from the
+    /// subscription, but done when the post-begin timeout starts. Counting from the
     /// subscription would time out and silently disable the health phases and summons.
     /// </summary>
     [Test]
@@ -212,7 +212,7 @@ public class KanturuPhaseRunnerTests
         {
             Nightmare = new KanturuNightmareDefinition
             {
-                SpawnTimeout = TimeSpan.FromMilliseconds(100),
+                SpawnTimeout = TimeSpan.FromMilliseconds(50),
                 HpPhases =
                 [
                     new KanturuNightmareHpPhase
@@ -231,18 +231,19 @@ public class KanturuPhaseRunnerTests
 
         var waves = new List<byte>();
         var summoned = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var began = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
 
-        // Stands in for BeginPhaseAsync honoring StartDelay.
+        // Stands in for BeginPhaseAsync honoring StartDelay; the boss spawns as it ends,
+        // after a timeout counted from the subscription would already have fired.
         async Task Begin(KanturuPhaseDefinition _, CancellationToken ct)
         {
-            await Task.Delay(300, ct).ConfigureAwait(false);
+            await Task.Delay(200, ct).ConfigureAwait(false);
+            began.TrySetResult();
         }
 
-        // The boss spawns while the phase begins, after the timeout counted from the
-        // subscription would already have fired.
         async Task<Monster?> WaitForSpawn(KanturuNightmareDefinition _, CancellationToken ct)
         {
-            await Task.Delay(150, ct).ConfigureAwait(false);
+            await began.Task.WaitAsync(ct).ConfigureAwait(false);
             return monster;
         }
 
@@ -275,6 +276,57 @@ public class KanturuPhaseRunnerTests
         await runner.RunAsync(phase, timeout.Token).ConfigureAwait(false);
 
         Assert.That(waves, Does.Contain((byte)9));
+    }
+
+    /// <summary>
+    /// Tests that a spawn timeout unwinds the waiter: the capture unsubscribes promptly
+    /// instead of lingering on the map until the game ends.
+    /// </summary>
+    [Test]
+    public async Task NightmareRunner_UnwindsWaiter_OnSpawnTimeout()
+    {
+        var unwound = false;
+        async Task<Monster?> WaitForSpawn(KanturuNightmareDefinition _, CancellationToken ct)
+        {
+            try
+            {
+                await Task.Delay(Timeout.InfiniteTimeSpan, ct).ConfigureAwait(false);
+                return null;
+            }
+            catch (OperationCanceledException)
+            {
+                unwound = true;
+                throw;
+            }
+        }
+
+        var phase = new KanturuPhaseDefinition
+        {
+            Nightmare = new KanturuNightmareDefinition
+            {
+                SpawnTimeout = TimeSpan.FromMilliseconds(50),
+                HpPhases = [],
+                HealthCheckInterval = TimeSpan.Zero,
+                SpecialAttackInterval = TimeSpan.Zero,
+            },
+        };
+
+        var runner = new KanturuNightmareRunner(
+            (_, _) => Task.CompletedTask,
+            (_, _) => ValueTask.CompletedTask,
+            _ => ValueTask.CompletedTask,
+            () => ValueTask.CompletedTask,
+            (_, _) => Task.FromResult(true),
+            (_, _) => Task.CompletedTask,
+            WaitForSpawn,
+            _ => ValueTask.CompletedTask,
+            (_, _) => Task.CompletedTask,
+            NullLogger.Instance);
+
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+        await runner.RunAsync(phase, timeout.Token).ConfigureAwait(false);
+
+        Assert.That(unwound, Is.True);
     }
 
     /// <summary>

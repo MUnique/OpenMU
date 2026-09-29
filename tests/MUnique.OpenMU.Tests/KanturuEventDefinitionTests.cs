@@ -10,9 +10,8 @@ using MUnique.OpenMU.GameLogic.MiniGames.Kanturu;
 
 /// <summary>
 /// Tests for the default <see cref="KanturuEventDefinition"/>.
-/// The expected timers and kill targets come from new-requirements.txt:
-/// each wave (monsters + boss together) shares one clock — 15 minutes for
-/// waves 1-2, 20 minutes for waves 3-4.
+/// Each wave (monsters + boss together) shares one clock — 15 minutes for
+/// waves 1-2, 20 minutes for waves 3-4, like the Season 6 event.
 /// </summary>
 [TestFixture]
 public class KanturuEventDefinitionTests

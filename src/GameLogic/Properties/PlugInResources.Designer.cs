@@ -1420,7 +1420,7 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to How long the Tower of Refinement stays open after the Nightmare boss has been defeated..
+        ///   Looks up a localized string similar to How long the Tower of Refinement stays open after the Nightmare boss has been defeated. While the window is open, scheduled event starts are skipped; a game master start still proceeds and ends the window..
         /// </summary>
         public static string KanturuStartConfiguration_TowerOpenDuration_Description {
             get {

@@ -86,7 +86,7 @@ public class RefreshKanturuDataUpdatePlugIn : UpdatePlugInBase
 
     /// <summary>
     /// Clears the persisted start configuration, so it's rebuilt from defaults on the
-    /// next load. This replaces JSON migration: whatever archaeology the row holds is
+    /// next load. This replaces JSON migration: whatever JSON the row holds is
     /// discarded once, and the update never needs to run again. The row itself (and its
     /// active flag) is kept: deleting it would deactivate the plug-in on a running
     /// server until the next restart.

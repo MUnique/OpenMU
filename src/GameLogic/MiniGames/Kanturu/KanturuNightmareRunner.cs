@@ -84,7 +84,12 @@ internal sealed class KanturuNightmareRunner : IKanturuPhaseRunner
         // ObjectAdded), so subscribing afterwards would miss it. The waiter
         // subscribes synchronously up to its first await; the timeout only starts
         // once the phase began, so the start delay doesn't eat into it.
-        var spawnTask = this._waitForSpawnAsync(nightmare, cancellationToken);
+        // The linked token unwinds the waiter on timeout, so it unsubscribes promptly
+        // instead of lingering until the game ends. It's deliberately not disposed:
+        // the waiter may still use its token when beginning the phase fails, and it's
+        // released when the game token fires.
+        var spawnCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        var spawnTask = this._waitForSpawnAsync(nightmare, spawnCts.Token);
         await this._beginAsync(phase, cancellationToken).ConfigureAwait(false);
         try
         {
@@ -92,6 +97,16 @@ internal sealed class KanturuNightmareRunner : IKanturuPhaseRunner
         }
         catch (TimeoutException)
         {
+            await spawnCts.CancelAsync().ConfigureAwait(false);
+            try
+            {
+                await spawnTask.ConfigureAwait(false);
+            }
+            catch (OperationCanceledException)
+            {
+                // Expected: the cancel above unwinds the waiter so it unsubscribes.
+            }
+
             this._nightmareMonster = null;
         }
 

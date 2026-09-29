@@ -46,8 +46,7 @@ public abstract class StartMiniGameEventChatCommandPlugInBase : IChatCommandPlug
         }
 
         // Always dispose first, even without a running game: it's a no-op then, but
-        // clears stale state which would block the forced start (e.g. Kanturu's open
-        // tower window).
+        // clears stale state which would block the forced start.
         await gameStarter.DisposeRunningGamesAsync(player.GameContext).ConfigureAwait(false);
 
         gameStarter.ForceStart();

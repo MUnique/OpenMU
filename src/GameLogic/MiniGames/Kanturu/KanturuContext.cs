@@ -765,6 +765,7 @@ public sealed class KanturuContext : MiniGameContext
     /// <summary>
     /// Wears down the items which are required by the event map, for example the Moonstone
     /// Pendant, and moves the players out of the event when their item is destroyed.
+    /// The wear stops once the tower opens: winners and visitors keep their pendant.
     /// </summary>
     private async Task RunRequiredItemWearAsync(CancellationToken ct)
     {
@@ -776,6 +777,15 @@ public sealed class KanturuContext : MiniGameContext
 
         while (!ct.IsCancellationRequested)
         {
+            // The tower waives the entry requirements, so nothing may wear down anymore.
+            // This also covers the victory in the same context: the game loop falls
+            // through to the tower with this loop still running. The tower is terminal,
+            // so the loop stops for good instead of waking up every minute.
+            if (this.SkipMapEntryRequirements)
+            {
+                break;
+            }
+
             try
             {
                 await Task.Delay(this._definition.RequiredItemDurabilityLossInterval, ct).ConfigureAwait(false);
