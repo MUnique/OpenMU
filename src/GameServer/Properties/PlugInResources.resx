@@ -2519,4 +2519,40 @@
   <data name="ImperialGuardianViewPlugIn_Description" xml:space="preserve">
     <value>Sends the enter result, the timer and the result of the imperial guardian event to the client.</value>
   </data>
+  <data name="GensGroupHandlerPlugIn_Name" xml:space="preserve">
+    <value>Gens group handler</value>
+  </data>
+  <data name="GensGroupHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the packets of the gens system (0xF8).</value>
+  </data>
+  <data name="GensJoinRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Gens join request handler</value>
+  </data>
+  <data name="GensJoinRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the request of a player to join a gens.</value>
+  </data>
+  <data name="GensLeaveRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Gens leave request handler</value>
+  </data>
+  <data name="GensLeaveRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the request of a player to leave the gens.</value>
+  </data>
+  <data name="GensRankingRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Gens ranking request handler</value>
+  </data>
+  <data name="GensRankingRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the request of the gens ranking, which the client sends when it opens the gens info window.</value>
+  </data>
+  <data name="GensViewPlugIn_Name" xml:space="preserve">
+    <value>Gens view</value>
+  </data>
+  <data name="GensViewPlugIn_Description" xml:space="preserve">
+    <value>Shows the results of the gens requests and the gens info of the own player.</value>
+  </data>
+  <data name="AssignPlayersToGensPlugIn_Name" xml:space="preserve">
+    <value>Assign players to gens</value>
+  </data>
+  <data name="AssignPlayersToGensPlugIn_Description" xml:space="preserve">
+    <value>Shows the gens mark and rank of the players in the view.</value>
+  </data>
 </root>
