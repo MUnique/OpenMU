@@ -808,6 +808,42 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Configures the gens system, in which the players can join one of the gens Duprian and Vanert at their npcs..
+        /// </summary>
+        public static string GensFeaturePlugIn_Description {
+            get {
+                return ResourceManager.GetString("GensFeaturePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gens system.
+        /// </summary>
+        public static string GensFeaturePlugIn_Name {
+            get {
+                return ResourceManager.GetString("GensFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loads the gens membership of a character when it enters the game, and shows it to the player..
+        /// </summary>
+        public static string GensMembershipPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GensMembershipPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gens membership.
+        /// </summary>
+        public static string GensMembershipPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GensMembershipPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Gets level of a player. Usage: /getlevel (optional:character).
         /// </summary>
         public static string GetLevelChatCommandPlugIn_Description {

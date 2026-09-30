@@ -1451,4 +1451,16 @@
   <data name="SuspiciousScrapOfPaperStackedPlugIn_Description" xml:space="preserve">
     <value>Transforms a full stack of suspicious scraps of paper into a Gaion's Order.</value>
   </data>
+  <data name="GensFeaturePlugIn_Name" xml:space="preserve">
+    <value>Gens system</value>
+  </data>
+  <data name="GensFeaturePlugIn_Description" xml:space="preserve">
+    <value>Configures the gens system, in which the players can join one of the gens Duprian and Vanert at their npcs.</value>
+  </data>
+  <data name="GensMembershipPlugIn_Name" xml:space="preserve">
+    <value>Gens membership</value>
+  </data>
+  <data name="GensMembershipPlugIn_Description" xml:space="preserve">
+    <value>Loads the gens membership of a character when it enters the game, and shows it to the player.</value>
+  </data>
 </root>
