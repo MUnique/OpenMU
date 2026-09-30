@@ -887,5 +887,23 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized FixChaosMixesPlugInSeason6_Description text.</summary>
         public static string FixChaosMixesPlugInSeason6_Description => ResourceManager.GetString("FixChaosMixesPlugInSeason6_Description", resourceCulture)!;
 
+
+        /// <summary>
+        ///   Looks up a localized string similar to Add Simplified Chinese configuration names.
+        /// </summary>
+        public static string AlignChineseConfigurationNames_Name {
+            get {
+                return ResourceManager.GetString("AlignChineseConfigurationNames_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Adds sourced Chinese class, map, merchant, monster and NPC names. Only missing translations, English copies and listed legacy translations are replaced; other names, languages and gameplay settings are preserved..
+        /// </summary>
+        public static string AlignChineseConfigurationNames_Description {
+            get {
+                return ResourceManager.GetString("AlignChineseConfigurationNames_Description", resourceCulture);
+            }
+        }
     }
 }

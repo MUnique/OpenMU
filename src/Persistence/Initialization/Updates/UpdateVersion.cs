@@ -614,4 +614,19 @@ public enum UpdateVersion
     /// The version of the <see cref="AddImperialGuardianDataUpdatePlugIn"/>.
     /// </summary>
     AddImperialGuardianData = 121,
+
+    /// <summary>
+    /// The version of the <see cref="AlignChineseConfigurationNamesPlugIn075"/>.
+    /// </summary>
+    AlignChineseConfigurationNames075 = 122,
+
+    /// <summary>
+    /// The version of the <see cref="AlignChineseConfigurationNamesPlugIn095d"/>.
+    /// </summary>
+    AlignChineseConfigurationNames095d = 123,
+
+    /// <summary>
+    /// The version of the <see cref="AlignChineseConfigurationNamesPlugInSeason6"/>.
+    /// </summary>
+    AlignChineseConfigurationNamesSeason6 = 124,
 }
