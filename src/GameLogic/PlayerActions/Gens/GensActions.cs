@@ -31,27 +31,40 @@ public class GensActions
             return;
         }
 
-        var result = CheckJoinRequirements(player, configuration);
+        if (player.SelectedCharacter is not { } character)
+        {
+            return;
+        }
+
+        // The requirements are checked in the same exclusive operation in which the membership is changed,
+        // so that two requests can't both pass the check.
+        var result = await player.RunPersistenceExclusiveAsync(async () =>
+        {
+            var member = await GetMemberAsync(player, character).ConfigureAwait(false);
+            var requirementsResult = CheckJoinRequirements(player, member, configuration);
+            if (requirementsResult != GensJoinResult.Success)
+            {
+                return requirementsResult;
+            }
+
+            if (member is null)
+            {
+                member = player.PersistenceContext.CreateNew<GensMember>();
+                member.CharacterId = character.Id;
+                player.GensMember = member;
+            }
+
+            member.Gens = gens;
+            member.Contribution = configuration.StartingContribution;
+            member.Rank = configuration.StartingRank;
+            member.RankingPosition = 0;
+            member.JoinedAt = DateTime.UtcNow;
+            await player.SaveProgressAsync().ConfigureAwait(false);
+            return GensJoinResult.Success;
+        }).ConfigureAwait(false);
+
         if (result == GensJoinResult.Success)
         {
-            await player.RunPersistenceExclusiveAsync(async () =>
-            {
-                var member = player.GensMember;
-                if (member is null)
-                {
-                    member = player.PersistenceContext.CreateNew<GensMember>();
-                    member.CharacterId = player.SelectedCharacter!.Id;
-                    player.GensMember = member;
-                }
-
-                member.Gens = gens;
-                member.Contribution = configuration.StartingContribution;
-                member.Rank = configuration.StartingRank;
-                member.RankingPosition = 0;
-                member.JoinedAt = DateTime.UtcNow;
-                await player.SaveProgressAsync().ConfigureAwait(false);
-            }).ConfigureAwait(false);
-
             player.Logger.LogInformation("Player {player} joined the gens {gens}.", player, gens);
         }
 
@@ -80,22 +93,34 @@ public class GensActions
             return;
         }
 
-        var result = CheckLeaveRequirements(player, npcGens);
+        if (player.SelectedCharacter is not { } character)
+        {
+            return;
+        }
+
+        var leftGens = GensType.None;
+        var result = await player.RunPersistenceExclusiveAsync(async () =>
+        {
+            var member = await GetMemberAsync(player, character).ConfigureAwait(false);
+            var requirementsResult = CheckLeaveRequirements(player, member, npcGens);
+            if (requirementsResult != GensLeaveResult.Success)
+            {
+                return requirementsResult;
+            }
+
+            leftGens = member!.Gens;
+            member.Gens = GensType.None;
+            member.Contribution = 0;
+            member.Rank = 0;
+            member.RankingPosition = 0;
+            member.LeftAt = DateTime.UtcNow;
+            await player.SaveProgressAsync().ConfigureAwait(false);
+            return GensLeaveResult.Success;
+        }).ConfigureAwait(false);
+
         if (result == GensLeaveResult.Success)
         {
-            var gens = player.GensMember!.Gens;
-            await player.RunPersistenceExclusiveAsync(async () =>
-            {
-                var member = player.GensMember!;
-                member.Gens = GensType.None;
-                member.Contribution = 0;
-                member.Rank = 0;
-                member.RankingPosition = 0;
-                member.LeftAt = DateTime.UtcNow;
-                await player.SaveProgressAsync().ConfigureAwait(false);
-            }).ConfigureAwait(false);
-
-            player.Logger.LogInformation("Player {player} left the gens {gens}.", player, gens);
+            player.Logger.LogInformation("Player {player} left the gens {gens}.", player, leftGens);
         }
 
         await player.InvokeViewPlugInAsync<IGensViewPlugIn>(p => p.ShowLeaveResultAsync(result)).ConfigureAwait(false);
@@ -140,7 +165,13 @@ public class GensActions
             return;
         }
 
-        var memberGens = player.GensMember?.Gens ?? GensType.None;
+        if (player.SelectedCharacter is not { } character)
+        {
+            return;
+        }
+
+        var member = await player.RunPersistenceExclusiveAsync(() => GetMemberAsync(player, character)).ConfigureAwait(false);
+        var memberGens = member?.Gens ?? GensType.None;
         var result = memberGens switch
         {
             GensType.None => GensRewardResult.NotJoined,
@@ -157,9 +188,18 @@ public class GensActions
             : GensType.None;
     }
 
-    private static GensJoinResult CheckJoinRequirements(Player player, GensConfiguration configuration)
+    /// <summary>
+    /// Gets the gens membership of the character. It's loaded, if it wasn't loaded when the character entered the game,
+    /// e.g. because the gens system was deactivated at that time. Otherwise, a second membership would be created.
+    /// </summary>
+    private static async ValueTask<GensMember?> GetMemberAsync(Player player, DataModel.Entities.Character character)
     {
-        if (player.GensMember is { } member)
+        return player.GensMember ??= await player.PersistenceContext.GetGensMemberAsync(character.Id).ConfigureAwait(false);
+    }
+
+    private static GensJoinResult CheckJoinRequirements(Player player, GensMember? member, GensConfiguration configuration)
+    {
+        if (member is not null)
         {
             if (member.Gens != GensType.None)
             {
@@ -192,9 +232,9 @@ public class GensActions
         return GensJoinResult.Success;
     }
 
-    private static GensLeaveResult CheckLeaveRequirements(Player player, GensType npcGens)
+    private static GensLeaveResult CheckLeaveRequirements(Player player, GensMember? member, GensType npcGens)
     {
-        if (player.GensMember is not { Gens: not GensType.None } member)
+        if (member is not { Gens: not GensType.None })
         {
             return GensLeaveResult.NotJoined;
         }

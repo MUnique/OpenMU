@@ -187,6 +187,32 @@ public class GensActionsTest
     }
 
     /// <summary>
+    /// Tests that a membership which wasn't loaded when the character entered the game,
+    /// e.g. because the gens system was deactivated at that time, is loaded instead of creating a second one.
+    /// </summary>
+    [Test]
+    public async Task NotLoadedMembershipIsUsedAsync()
+    {
+        var player = await CreatePlayerAsync(DuprianNpcNumber).ConfigureAwait(false);
+        await this._actions.JoinAsync(player, GensType.Duprian).ConfigureAwait(false);
+        await this._actions.LeaveAsync(player).ConfigureAwait(false);
+        var member = player.GensMember;
+        player.GensMember = null;
+
+        await this._actions.JoinAsync(player, GensType.Duprian).ConfigureAwait(false);
+
+        Assert.That(player.GensMember, Is.SameAs(member));
+        Assert.That(member!.Gens, Is.EqualTo(GensType.Duprian));
+        var members = await player.PersistenceContext.GetAsync<GensMember>().ConfigureAwait(false);
+        Assert.That(members.Count(m => m.CharacterId == player.SelectedCharacter!.Id), Is.EqualTo(1));
+
+        player.GensMember = null;
+        await this._actions.JoinAsync(player, GensType.Duprian).ConfigureAwait(false);
+        var view = Mock.Get(player.ViewPlugIns.GetPlugIn<IGensViewPlugIn>()!);
+        view.Verify(v => v.ShowJoinResultAsync(GensJoinResult.AlreadyJoined, GensType.Duprian), Times.Once);
+    }
+
+    /// <summary>
     /// Tests that the request of the gens reward is always answered at a gens npc, because the client waits for it.
     /// The rewards aren't implemented yet, so a member of the gens of the npc is not eligible.
     /// </summary>
