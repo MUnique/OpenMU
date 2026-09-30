@@ -33,9 +33,6 @@ public class FinishRageFighterMasterTreePlugIn : UpdatePlugInBase
     internal const string PlugInDescription = "This update completes the rage fighter master tree and fixes some of its skill values.";
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FinishRageFighterMasterTree;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => DataInitialization.Id;
 
     /// <inheritdoc />

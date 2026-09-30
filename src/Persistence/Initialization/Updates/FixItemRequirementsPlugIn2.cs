@@ -42,9 +42,6 @@ public class FixItemRequirementsPlugIn2 : UpdatePlugInBase
     ];
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixItemRequirements2;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />

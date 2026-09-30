@@ -42,9 +42,6 @@ public class FixSkillMultipliersPlugIn : UpdatePlugInBase
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixSkillMultipliers;
-
-    /// <inheritdoc />
     public override bool IsMandatory => true;
 
     /// <inheritdoc />

@@ -18,9 +18,6 @@ using MUnique.OpenMU.PlugIns;
 public class AddItemDropGroupForJewelsUpdate095D : AddItemDropGroupForJewelsUpdate075
 {
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.AddItemDropGroupForJewels095d;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => Version095d.DataInitialization.Id;
 
     /// <inheritdoc />

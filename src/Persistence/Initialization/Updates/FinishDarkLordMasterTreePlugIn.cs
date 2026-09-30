@@ -31,9 +31,6 @@ public class FinishDarkLordMasterTreePlugIn : UpdatePlugInBase
     internal const string PlugInDescription = "This update completes the dark lord master tree skills and effects.";
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FinishDarkLordMasterTree;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />

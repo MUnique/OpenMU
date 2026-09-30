@@ -19,7 +19,4 @@ public class FixWingsDmgRatesUpdatePlugIn075 : FixWingsDmgRatesUpdatePlugInBase
 {
     /// <inheritdoc />
     public override string DataInitializationKey => Version075.DataInitialization.Id;
-
-    /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixWingsDmgRatesPlugIn075;
 }

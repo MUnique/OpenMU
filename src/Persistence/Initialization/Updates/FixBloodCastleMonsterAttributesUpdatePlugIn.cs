@@ -40,9 +40,6 @@ public class FixBloodCastleMonsterAttributesUpdatePlugIn : UpdatePlugInBase
     private static readonly Guid LightningResistanceId = new("3E339393-2D17-452E-81D9-3987947A407F");
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixBloodCastleMonsterAttributes;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />

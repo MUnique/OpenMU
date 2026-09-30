@@ -43,9 +43,6 @@ public class FixChaosMixesPlugInSeason6 : FixChaosMixesPlugInBase
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixChaosMixesSeason6;
-
-    /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
         // Dark horse spirit and raven spirit drop item groups id fix (do this first because it persists changes to DB)
