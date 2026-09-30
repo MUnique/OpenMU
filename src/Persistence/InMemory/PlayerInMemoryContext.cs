@@ -92,4 +92,15 @@ public class PlayerInMemoryContext : InMemoryContext, IPlayerContext
             .ConfigureAwait(false);
         return pendingRewards.Where(reward => reward.CharacterId == characterId).ToList();
     }
+
+    /// <inheritdoc />
+    public async ValueTask<DataModel.Entities.GensMember?> GetGensMemberAsync(
+        Guid characterId,
+        CancellationToken cancellationToken = default)
+    {
+        var members = await this.Provider.GetRepository<GensMember>()
+            .GetAllAsync(cancellationToken)
+            .ConfigureAwait(false);
+        return members.FirstOrDefault(member => member.CharacterId == characterId);
+    }
 }

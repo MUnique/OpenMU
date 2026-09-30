@@ -36,6 +36,7 @@ public class BackupService : IBackupService
         ("ConfigurationUpdate_", typeof(BasicModel.ConfigurationUpdate)),
         ("ConfigurationUpdateState_", typeof(BasicModel.ConfigurationUpdateState)),
         ("Account_", typeof(BasicModel.Account)),
+        ("GensMember_", typeof(BasicModel.GensMember)),
         ("CastleSiegeData_", typeof(BasicModel.CastleSiegeData)),
     ];
 
@@ -87,6 +88,7 @@ public class BackupService : IBackupService
         if (options.IncludeAccounts)
         {
             await ExportAsync<Account, BasicModel.Account>(archive, "Account_", context, sharedHandler, cancellationToken).ConfigureAwait(false);
+            await ExportAsync<GensMember, BasicModel.GensMember>(archive, "GensMember_", context, sharedHandler, cancellationToken).ConfigureAwait(false);
         }
 
         await ExportAsync<CastleSiegeData, BasicModel.CastleSiegeData>(archive, "CastleSiegeData_", context, sharedHandler, cancellationToken).ConfigureAwait(false);
@@ -280,6 +282,11 @@ public class BackupService : IBackupService
         if (basicModelType == typeof(BasicModel.CastleSiegeData))
         {
             return deserializer.Deserialize<BasicModel.CastleSiegeData>(ms, referenceHandler);
+        }
+
+        if (basicModelType == typeof(BasicModel.GensMember))
+        {
+            return deserializer.Deserialize<BasicModel.GensMember>(ms, referenceHandler);
         }
 
         if (basicModelType == typeof(AdminUser))

@@ -110,4 +110,14 @@ public interface IPlayerContext : IContext
     ValueTask<IReadOnlyList<CastleSiegePendingReward>> GetPendingCastleSiegeRewardsAsync(
         Guid characterId,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets the gens membership of a character.
+    /// </summary>
+    /// <param name="characterId">The persistent character identifier.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The gens membership; Otherwise, null, if the character never joined a gens.</returns>
+    ValueTask<GensMember?> GetGensMemberAsync(
+        Guid characterId,
+        CancellationToken cancellationToken = default);
 }

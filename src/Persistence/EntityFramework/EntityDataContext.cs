@@ -41,6 +41,11 @@ public class EntityDataContext : ExtendedTypeContext
     /// </summary>
     internal DbSet<CastleSiegePendingReward> CastleSiegePendingRewards => this.Set<CastleSiegePendingReward>();
 
+    /// <summary>
+    /// Gets the gens memberships of the characters.
+    /// </summary>
+    internal DbSet<GensMember> GensMembers => this.Set<GensMember>();
+
     /// <inheritdoc/>
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -89,6 +94,7 @@ public class EntityDataContext : ExtendedTypeContext
         modelBuilder.Entity<ExitGate>().Apply();
         modelBuilder.Entity<GameConfiguration>().Apply();
         modelBuilder.Entity<GameMapDefinition>().Apply();
+        modelBuilder.Entity<GensMember>().Apply();
         modelBuilder.Entity<ItemCrafting>().Apply();
         modelBuilder.Entity<ItemDefinition>().Apply();
         modelBuilder.Entity<ItemLevelBonusTable>().Apply();
