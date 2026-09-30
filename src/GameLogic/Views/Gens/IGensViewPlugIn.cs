@@ -25,6 +25,12 @@ public interface IGensViewPlugIn : IViewPlugIn
     ValueTask ShowLeaveResultAsync(GensLeaveResult result);
 
     /// <summary>
+    /// Shows the result of a request of the gens ranking reward.
+    /// </summary>
+    /// <param name="result">The result.</param>
+    ValueTask ShowRewardResultAsync(GensRewardResult result);
+
+    /// <summary>
     /// Shows the gens, rank and contribution of the own player.
     /// </summary>
     ValueTask ShowGensInfoAsync();

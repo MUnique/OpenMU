@@ -2599,6 +2599,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handles the request of a player for the gens ranking reward..
+        /// </summary>
+        public static string GensRewardRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GensRewardRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gens reward request handler.
+        /// </summary>
+        public static string GensRewardRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GensRewardRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Shows the results of the gens requests and the gens info of the own player..
         /// </summary>
         public static string GensViewPlugIn_Description {

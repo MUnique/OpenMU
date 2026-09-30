@@ -11,6 +11,7 @@ using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.PlugIns;
 using GensJoinResult = MUnique.OpenMU.GameLogic.Views.Gens.GensJoinResult;
 using GensLeaveResult = MUnique.OpenMU.GameLogic.Views.Gens.GensLeaveResult;
+using GensRewardResult = MUnique.OpenMU.GameLogic.Views.Gens.GensRewardResult;
 using GensType = MUnique.OpenMU.DataModel.Entities.GensType;
 
 /// <summary>
@@ -40,6 +41,12 @@ public class GensViewPlugIn : IGensViewPlugIn
     public async ValueTask ShowLeaveResultAsync(GensLeaveResult result)
     {
         await this._player.Connection.SendGensLeaveResponseAsync(Convert(result)).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask ShowRewardResultAsync(GensRewardResult result)
+    {
+        await this._player.Connection.SendGensRewardResponseAsync(Convert(result)).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -83,6 +90,17 @@ public class GensViewPlugIn : IGensViewPlugIn
             GensLeaveResult.NotJoined => GensLeaveResponse.GensLeaveResult.NotJoined,
             GensLeaveResult.GuildMaster => GensLeaveResponse.GensLeaveResult.GuildMasterCannotLeave,
             GensLeaveResult.DifferentGensNpc => GensLeaveResponse.GensLeaveResult.DifferentGensNpc,
+            _ => throw new ArgumentException($"Unhandled case {result}.", nameof(result)),
+        };
+    }
+
+    private static GensRewardResponse.GensRewardResult Convert(GensRewardResult result)
+    {
+        return result switch
+        {
+            GensRewardResult.NotEligible => GensRewardResponse.GensRewardResult.NotEligible,
+            GensRewardResult.DifferentGensNpc => GensRewardResponse.GensRewardResult.DifferentGensNpc,
+            GensRewardResult.NotJoined => GensRewardResponse.GensRewardResult.NotJoined,
             _ => throw new ArgumentException($"Unhandled case {result}.", nameof(result)),
         };
     }

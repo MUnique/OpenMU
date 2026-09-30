@@ -38,6 +38,9 @@ the lowest rank, *Private*.
 A player leaves its gens at the npc of its own gens. A guild master can't leave.
 Leaving resets the contribution and the rank.
 
+The option of the gens ranking reward at the npc is answered, but a member
+isn't eligible for a reward yet, because the rewards aren't implemented.
+
 The npc shows the contribution points of a member, when it talks to the npc of
 its own gens. The gens info window (key `B`) shows the gens, the rank and the
 contribution.

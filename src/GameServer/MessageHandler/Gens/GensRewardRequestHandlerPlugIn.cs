@@ -1,4 +1,4 @@
-// <copyright file="GensJoinRequestHandlerPlugIn.cs" company="MUnique">
+// <copyright file="GensRewardRequestHandlerPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -12,14 +12,14 @@ using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// Handler for the request to join a gens.
+/// Handler for the request of the gens ranking reward.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(PlugInResources.GensJoinRequestHandlerPlugIn_Name), Description = nameof(PlugInResources.GensJoinRequestHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
-[Guid("7A1C5E93-2B64-4D8F-A0E7-C3B9F5D21A46")]
+[Display(Name = nameof(PlugInResources.GensRewardRequestHandlerPlugIn_Name), Description = nameof(PlugInResources.GensRewardRequestHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
+[Guid("9B3D7F52-E6A1-4C08-B74F-1A5C8E2D9036")]
 [MinimumClient(6, 0, ClientLanguage.Invariant)]
 [BelongsToGroup(GensGroupHandlerPlugIn.GroupKey)]
-internal class GensJoinRequestHandlerPlugIn : ISubPacketHandlerPlugIn
+internal class GensRewardRequestHandlerPlugIn : ISubPacketHandlerPlugIn
 {
     private readonly GensActions _actions = new();
 
@@ -27,17 +27,17 @@ internal class GensJoinRequestHandlerPlugIn : ISubPacketHandlerPlugIn
     public bool IsEncryptionExpected => false;
 
     /// <inheritdoc/>
-    public byte Key => GensJoinRequest.SubCode;
+    public byte Key => GensRewardRequest.SubCode;
 
     /// <inheritdoc/>
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
-        if (packet.Length < GensJoinRequest.Length)
+        if (packet.Length < GensRewardRequest.Length)
         {
             return;
         }
 
-        GensJoinRequest request = packet;
-        await this._actions.JoinAsync(player, request.GensType.ToGensType()).ConfigureAwait(false);
+        GensRewardRequest request = packet;
+        await this._actions.RequestRewardAsync(player, request.GensType.ToGensType()).ConfigureAwait(false);
     }
 }

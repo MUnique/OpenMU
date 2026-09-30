@@ -6439,6 +6439,24 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the packet size calculation for GensRewardResponse.
+    /// </summary>
+    [Test]
+    public void GensRewardResponse_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 5;
+        var actualLength = GensRewardResponseRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Result' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Result' exceeds packet boundary");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for DevilSquareEnterResult.
     /// </summary>
     [Test]

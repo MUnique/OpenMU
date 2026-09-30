@@ -6355,6 +6355,34 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="GensRewardResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the player requested the gens ranking reward at one of the gens NPCs.
+    /// Causes reaction on client side: The npc dialog shows the result.
+    /// </remarks>
+    public static async ValueTask SendGensRewardResponseAsync(this IConnection? connection, GensRewardResponse.GensRewardResult @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = GensRewardResponseRef.Length;
+            var packet = new GensRewardResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="DevilSquareEnterResult" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>

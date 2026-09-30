@@ -119,6 +119,37 @@ public class GensActions
         await player.InvokeViewPlugInAsync<IGensViewPlugIn>(p => p.ShowGensInfoAsync()).ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// Handles the request of the gens ranking reward, at the npc of the gens.
+    /// The rewards aren't implemented yet, so a member of the gens of the npc is never eligible.
+    /// The game client waits for the result, so it's always sent for a gens npc.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="gens">The gens of the npc, as requested by the game client.</param>
+    public async ValueTask RequestRewardAsync(Player player, GensType gens)
+    {
+        if (GensFeaturePlugIn.GetConfiguration(player.GameContext) is not { } configuration)
+        {
+            return;
+        }
+
+        var npcGens = GetGensOfOpenedNpc(player, configuration);
+        if (npcGens == GensType.None || npcGens != gens)
+        {
+            player.Logger.LogWarning("Player {player} requested the reward of the gens {gens}, but doesn't talk to its npc.", player, gens);
+            return;
+        }
+
+        var memberGens = player.GensMember?.Gens ?? GensType.None;
+        var result = memberGens switch
+        {
+            GensType.None => GensRewardResult.NotJoined,
+            _ when memberGens != npcGens => GensRewardResult.DifferentGensNpc,
+            _ => GensRewardResult.NotEligible,
+        };
+        await player.InvokeViewPlugInAsync<IGensViewPlugIn>(p => p.ShowRewardResultAsync(result)).ConfigureAwait(false);
+    }
+
     private static GensType GetGensOfOpenedNpc(Player player, GensConfiguration configuration)
     {
         return player.OpenedNpc?.Definition is { } npcDefinition

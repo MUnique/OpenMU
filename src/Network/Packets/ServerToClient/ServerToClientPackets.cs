@@ -31004,6 +31004,133 @@ public readonly struct GensInfo
 
 
 /// <summary>
+/// Is sent by the server when: After the player requested the gens ranking reward at one of the gens NPCs.
+/// Causes reaction on client side: The npc dialog shows the result.
+/// </summary>
+public readonly struct GensRewardResponse
+{
+    /// <summary>
+    /// Defines the result of the gens reward request.
+    /// </summary>
+    public enum GensRewardResult
+    {
+        /// <summary>
+        /// The player got the reward.
+        /// </summary>
+            Success = 0,
+
+        /// <summary>
+        /// The rewards are only given out in the reward period, e.g. the first week of a month.
+        /// </summary>
+            OutsideRewardPeriod = 1,
+
+        /// <summary>
+        /// The player is not eligible for a reward.
+        /// </summary>
+            NotEligible = 2,
+
+        /// <summary>
+        /// The inventory of the player has not enough space for the reward.
+        /// </summary>
+            InventoryFull = 3,
+
+        /// <summary>
+        /// The player already got the reward.
+        /// </summary>
+            AlreadyClaimed = 4,
+
+        /// <summary>
+        /// The player is member of a different gens than the one of the npc.
+        /// </summary>
+            DifferentGensNpc = 5,
+
+        /// <summary>
+        /// The player is not member of a gens.
+        /// </summary>
+            NotJoined = 6,
+    }
+
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GensRewardResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public GensRewardResponse(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GensRewardResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private GensRewardResponse(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xF8;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x0A;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 5;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public GensRewardResponse.GensRewardResult Result
+    {
+        get => (GensRewardResult)this._data.Span[4];
+        set => this._data.Span[4] = (byte)value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="GensRewardResponse"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator GensRewardResponse(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="GensRewardResponse"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(GensRewardResponse packet) => packet._data; 
+}
+
+
+/// <summary>
 /// Is sent by the server when: The player requested to enter the devil square mini game through the Charon NPC.
 /// Causes reaction on client side: In case it failed, it shows the corresponding error message.
 /// </summary>

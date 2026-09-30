@@ -2555,4 +2555,10 @@
   <data name="AssignPlayersToGensPlugIn_Description" xml:space="preserve">
     <value>Shows the gens mark and rank of the players in the view.</value>
   </data>
+  <data name="GensRewardRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Gens reward request handler</value>
+  </data>
+  <data name="GensRewardRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the request of a player for the gens ranking reward.</value>
+  </data>
 </root>

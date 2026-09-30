@@ -187,6 +187,31 @@ public class GensActionsTest
     }
 
     /// <summary>
+    /// Tests that the request of the gens reward is always answered at a gens npc, because the client waits for it.
+    /// The rewards aren't implemented yet, so a member of the gens of the npc is not eligible.
+    /// </summary>
+    [Test]
+    public async Task RequestRewardAsync()
+    {
+        var player = await CreatePlayerAsync(DuprianNpcNumber).ConfigureAwait(false);
+        var view = Mock.Get(player.ViewPlugIns.GetPlugIn<IGensViewPlugIn>()!);
+
+        await this._actions.RequestRewardAsync(player, GensType.Duprian).ConfigureAwait(false);
+        view.Verify(v => v.ShowRewardResultAsync(GensRewardResult.NotJoined), Times.Once);
+
+        await this._actions.JoinAsync(player, GensType.Duprian).ConfigureAwait(false);
+        await this._actions.RequestRewardAsync(player, GensType.Duprian).ConfigureAwait(false);
+        view.Verify(v => v.ShowRewardResultAsync(GensRewardResult.NotEligible), Times.Once);
+
+        player.OpenedNpc = CreateNpc(VanertNpcNumber);
+        await this._actions.RequestRewardAsync(player, GensType.Vanert).ConfigureAwait(false);
+        view.Verify(v => v.ShowRewardResultAsync(GensRewardResult.DifferentGensNpc), Times.Once);
+
+        await this._actions.RequestRewardAsync(player, GensType.Duprian).ConfigureAwait(false);
+        view.Verify(v => v.ShowRewardResultAsync(It.IsAny<GensRewardResult>()), Times.Exactly(3), "A request for the gens of another npc is ignored.");
+    }
+
+    /// <summary>
     /// Tests that the membership is loaded when the character enters the game, and removed when it leaves it.
     /// </summary>
     [Test]

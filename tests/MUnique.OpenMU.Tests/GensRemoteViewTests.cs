@@ -26,12 +26,18 @@ public class GensRemoteViewTests
         await view.ShowJoinResultAsync(GensJoinResult.Success, GensType.Vanert).ConfigureAwait(false);
         await view.ShowJoinResultAsync(GensJoinResult.GuildMaster, GensType.Duprian).ConfigureAwait(false);
         await view.ShowLeaveResultAsync(GensLeaveResult.DifferentGensNpc).ConfigureAwait(false);
+        await view.ShowRewardResultAsync(GensRewardResult.NotEligible).ConfigureAwait(false);
+        await view.ShowRewardResultAsync(GensRewardResult.DifferentGensNpc).ConfigureAwait(false);
+        await view.ShowRewardResultAsync(GensRewardResult.NotJoined).ConfigureAwait(false);
 
         Assert.That(output.ToArray(), Is.EqualTo(new byte[]
         {
             0xC1, 6, 0xF8, 0x02, 0, 2,
             0xC1, 6, 0xF8, 0x02, 5, 1,
             0xC1, 5, 0xF8, 0x04, 3,
+            0xC1, 5, 0xF8, 0x0A, 2,
+            0xC1, 5, 0xF8, 0x0A, 5,
+            0xC1, 5, 0xF8, 0x0A, 6,
         }));
     }
 

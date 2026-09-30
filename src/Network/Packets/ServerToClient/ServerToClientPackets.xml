@@ -11114,6 +11114,67 @@
       </Fields>
     </Packet>
     <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F8</Code>
+      <SubCode>0A</SubCode>
+      <Name>GensRewardResponse</Name>
+      <Length>5</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player requested the gens ranking reward at one of the gens NPCs.</SentWhen>
+      <CausedReaction>The npc dialog shows the result.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>GensRewardResult</TypeName>
+          <Name>Result</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>GensRewardResult</Name>
+          <Description>Defines the result of the gens reward request.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Success</Name>
+              <Description>The player got the reward.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>OutsideRewardPeriod</Name>
+              <Description>The rewards are only given out in the reward period, e.g. the first week of a month.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>NotEligible</Name>
+              <Description>The player is not eligible for a reward.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>InventoryFull</Name>
+              <Description>The inventory of the player has not enough space for the reward.</Description>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>AlreadyClaimed</Name>
+              <Description>The player already got the reward.</Description>
+              <Value>4</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>DifferentGensNpc</Name>
+              <Description>The player is member of a different gens than the one of the npc.</Description>
+              <Value>5</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>NotJoined</Name>
+              <Description>The player is not member of a gens.</Description>
+              <Value>6</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
       <HeaderType>C1Header</HeaderType>
       <Code>90</Code>
       <Name>DevilSquareEnterResult</Name>
