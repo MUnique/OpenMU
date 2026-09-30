@@ -15586,8 +15586,8 @@ public readonly ref struct GensJoinRequestRef
     /// </summary>
     public GensType GensType
     {
-        get => (GensType)this._data[3];
-        set => this._data[3] = (byte)value;
+        get => (GensType)this._data[4];
+        set => this._data[4] = (byte)value;
     }
 
     /// <summary>
@@ -15749,8 +15749,8 @@ public readonly ref struct GensRewardRequestRef
     /// </summary>
     public GensType GensType
     {
-        get => (GensType)this._data[3];
-        set => this._data[3] = (byte)value;
+        get => (GensType)this._data[4];
+        set => this._data[4] = (byte)value;
     }
 
     /// <summary>
