@@ -6261,6 +6261,100 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="GensJoinResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="gensType">The gens type.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the player requested to join a gens at one of the gens NPCs.
+    /// Causes reaction on client side: The npc dialog shows the result. When the player joined, the client assigns the gens to the own character.
+    /// </remarks>
+    public static async ValueTask SendGensJoinResponseAsync(this IConnection? connection, GensJoinResponse.GensJoinResult @result, GensType @gensType)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = GensJoinResponseRef.Length;
+            var packet = new GensJoinResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.GensType = @gensType;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="GensLeaveResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the player requested to leave the gens at one of the gens NPCs.
+    /// Causes reaction on client side: The npc dialog shows the result. When the player left, the client removes the gens of the own character.
+    /// </remarks>
+    public static async ValueTask SendGensLeaveResponseAsync(this IConnection? connection, GensLeaveResponse.GensLeaveResult @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = GensLeaveResponseRef.Length;
+            var packet = new GensLeaveResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="GensInfo" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="gensType">The gens type.</param>
+    /// <param name="rankingPosition">The ranking position.</param>
+    /// <param name="rank">The rank.</param>
+    /// <param name="contributionPoints">The contribution points.</param>
+    /// <param name="nextRankContributionPoints">The next rank contribution points.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the player entered the game world, joined or left a gens, or requested the gens ranking.
+    /// Causes reaction on client side: The client shows the gens mark and rank of the own character, and the gens info window shows the ranking and contribution.
+    /// </remarks>
+    public static async ValueTask SendGensInfoAsync(this IConnection? connection, GensType @gensType, uint @rankingPosition, uint @rank, uint @contributionPoints, uint @nextRankContributionPoints)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = GensInfoRef.Length;
+            var packet = new GensInfoRef(connection.Output.GetSpan(length)[..length]);
+            packet.GensType = @gensType;
+            packet.RankingPosition = @rankingPosition;
+            packet.Rank = @rank;
+            packet.ContributionPoints = @contributionPoints;
+            packet.NextRankContributionPoints = @nextRankContributionPoints;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="DevilSquareEnterResult" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>

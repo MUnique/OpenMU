@@ -303,4 +303,8 @@
   * [C1 F7 02 - ImperialGuardianEnterResult (by server)](C1-F7-02-ImperialGuardianEnterResult_by-server.md)
   * [C1 F7 04 - ImperialGuardianTimer (by server)](C1-F7-04-ImperialGuardianTimer_by-server.md)
   * [C1 F7 06 - ImperialGuardianResult (by server)](C1-F7-06-ImperialGuardianResult_by-server.md)
+  * [C1 F8 02 - GensJoinResponse (by server)](C1-F8-02-GensJoinResponse_by-server.md)
+  * [C1 F8 04 - GensLeaveResponse (by server)](C1-F8-04-GensLeaveResponse_by-server.md)
+  * [C2 F8 05 - AssignCharactersToGens (by server)](C2-F8-05-AssignCharactersToGens_by-server.md)
+  * [C1 F8 07 - GensInfo (by server)](C1-F8-07-GensInfo_by-server.md)
   * [C3 F9 01 - OpenNpcDialog (by server)](C3-F9-01-OpenNpcDialog_by-server.md)
