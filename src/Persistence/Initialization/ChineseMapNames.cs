@@ -12,9 +12,9 @@ using MUnique.OpenMU.DataModel.Configuration;
 /// </summary>
 internal static class ChineseMapNames
 {
-    private static readonly CultureInfo Chinese = CultureInfo.GetCultureInfo("zh-CN");
-    private static readonly IReadOnlyDictionary<(short Number, string Neutral), string> Names =
-        new Dictionary<(short Number, string Neutral), string>
+    private static readonly CultureInfo ChineseCulture = CultureInfo.GetCultureInfo("zh-CN");
+    private static readonly IReadOnlyDictionary<(short Number, string NeutralName), string> NamesByNumberAndNeutralName =
+        new Dictionary<(short Number, string NeutralName), string>
         {
             [(0, "Lorencia")] = "勇者大陆",
             [(1, "Dungeon")] = "地下城",
@@ -91,19 +91,19 @@ internal static class ChineseMapNames
     /// Fills missing translations and replaces English copies of built-in maps.
     /// </summary>
     /// <param name="configuration">The game configuration to update.</param>
-    public static void Apply(GameConfiguration configuration)
+    public static void AddMissingTranslations(GameConfiguration configuration)
     {
         foreach (var map in configuration.Maps)
         {
-            if (!Names.TryGetValue((map.Number, map.Name.ValueInNeutralLanguage), out var names))
+            if (!NamesByNumberAndNeutralName.TryGetValue((map.Number, map.Name.ValueInNeutralLanguage), out var chineseName))
             {
                 continue;
             }
 
-            var current = map.Name.GetTranslation(Chinese, fallbackToNeutral: false);
+            var current = map.Name.GetTranslation(ChineseCulture, fallbackToNeutral: false);
             if (string.IsNullOrEmpty(current) || current == map.Name.ValueInNeutralLanguage)
             {
-                map.Name = map.Name.WithTranslation(Chinese, names);
+                map.Name = map.Name.WithTranslation(ChineseCulture, chineseName);
             }
         }
     }

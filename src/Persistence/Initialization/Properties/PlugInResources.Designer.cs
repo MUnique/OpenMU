@@ -889,20 +889,20 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
 
 
         /// <summary>
-        ///   Looks up a localized string similar to Add Simplified Chinese configuration names.
+        ///   Looks up a localized string similar to Add missing Simplified Chinese configuration names.
         /// </summary>
-        public static string AlignChineseConfigurationNames_Name {
+        public static string AddMissingChineseConfigurationNames_Name {
             get {
-                return ResourceManager.GetString("AlignChineseConfigurationNames_Name", resourceCulture);
+                return ResourceManager.GetString("AddMissingChineseConfigurationNames_Name", resourceCulture);
             }
         }
 
         /// <summary>
         ///   Looks up a localized string similar to Adds sourced Chinese class, map, merchant, monster and NPC names. Only missing translations and English copies are replaced; existing Chinese names, other languages and gameplay settings are preserved..
         /// </summary>
-        public static string AlignChineseConfigurationNames_Description {
+        public static string AddMissingChineseConfigurationNames_Description {
             get {
-                return ResourceManager.GetString("AlignChineseConfigurationNames_Description", resourceCulture);
+                return ResourceManager.GetString("AddMissingChineseConfigurationNames_Description", resourceCulture);
             }
         }
     }

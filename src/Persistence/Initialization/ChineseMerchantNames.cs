@@ -12,9 +12,9 @@ using MUnique.OpenMU.DataModel.Configuration;
 /// </summary>
 internal static class ChineseMerchantNames
 {
-    private static readonly CultureInfo Chinese = CultureInfo.GetCultureInfo("zh-CN");
-    private static readonly IReadOnlyDictionary<short, (string Neutral, string Chinese)> Names =
-        new Dictionary<short, (string Neutral, string Chinese)>
+    private static readonly CultureInfo ChineseCulture = CultureInfo.GetCultureInfo("zh-CN");
+    private static readonly IReadOnlyDictionary<short, (string NeutralName, string ChineseName)> NamesByNumber =
+        new Dictionary<short, (string NeutralName, string ChineseName)>
         {
             [230] = ("Alex", "流浪商人阿莱斯"),
             [231] = ("Thompson the Merchant", "武器商人托姆绅"),
@@ -41,21 +41,21 @@ internal static class ChineseMerchantNames
     /// Fills missing translations and replaces English copies of built-in merchants.
     /// </summary>
     /// <param name="configuration">The game configuration to update.</param>
-    public static void Apply(GameConfiguration configuration)
+    public static void AddMissingTranslations(GameConfiguration configuration)
     {
         foreach (var merchant in configuration.Monsters)
         {
             if (merchant.MerchantStore is null
-                || !Names.TryGetValue(merchant.Number, out var names)
-                || merchant.Designation.ValueInNeutralLanguage != names.Neutral)
+                || !NamesByNumber.TryGetValue(merchant.Number, out var names)
+                || merchant.Designation.ValueInNeutralLanguage != names.NeutralName)
             {
                 continue;
             }
 
-            var current = merchant.Designation.GetTranslation(Chinese, fallbackToNeutral: false);
-            if (string.IsNullOrEmpty(current) || current == names.Neutral)
+            var current = merchant.Designation.GetTranslation(ChineseCulture, fallbackToNeutral: false);
+            if (string.IsNullOrEmpty(current) || current == names.NeutralName)
             {
-                merchant.Designation = merchant.Designation.WithTranslation(Chinese, names.Chinese);
+                merchant.Designation = merchant.Designation.WithTranslation(ChineseCulture, names.ChineseName);
             }
         }
     }

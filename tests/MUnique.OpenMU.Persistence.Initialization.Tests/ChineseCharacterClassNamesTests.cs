@@ -103,7 +103,7 @@ internal class ChineseCharacterClassNamesTests
         manager.DiscoverAndRegisterPlugInsOf<IConfigurationUpdatePlugIn>();
         var service = new DataUpdateService(provider, manager);
         var available = (await service.DetermineAvailableUpdatesAsync().ConfigureAwait(false))
-            .OfType<AlignChineseConfigurationNamesPlugInBase>().ToList();
+            .OfType<AddMissingChineseConfigurationNamesPlugInBase>().ToList();
         Assert.That(available.Select(item => item.Version), Is.EqualTo(new[] { update.Version }));
         Assert.That(available.Single().IsMandatory, Is.False);
         await service.ApplyUpdatesAsync(available, new Progress<(UpdateVersion, bool)>()).ConfigureAwait(false);
@@ -122,7 +122,7 @@ internal class ChineseCharacterClassNamesTests
         Assert.That(wizard.NextGenerationClass, Is.SameAs(knight));
         Assert.That(wizard.LevelRequirementByCreation, Is.EqualTo(123));
         Assert.That(configuration.CharacterClasses, Has.Count.EqualTo(7));
-        Assert.That((await service.DetermineAvailableUpdatesAsync().ConfigureAwait(false)).OfType<AlignChineseConfigurationNamesPlugInBase>(), Is.Empty);
+        Assert.That((await service.DetermineAvailableUpdatesAsync().ConfigureAwait(false)).OfType<AddMissingChineseConfigurationNamesPlugInBase>(), Is.Empty);
 
         var names = configuration.CharacterClasses.Select(item => item.Name).ToArray();
         await update.ApplyUpdateAsync(context, configuration).ConfigureAwait(false);
@@ -138,10 +138,10 @@ internal class ChineseCharacterClassNamesTests
         }
     }
 
-    private static AlignChineseConfigurationNamesPlugInBase CreateUpdate(string version) => version switch
+    private static AddMissingChineseConfigurationNamesPlugInBase CreateUpdate(string version) => version switch
     {
-        "075" => new AlignChineseConfigurationNamesPlugIn075(),
-        "095d" => new AlignChineseConfigurationNamesPlugIn095D(),
-        _ => new AlignChineseConfigurationNamesPlugInSeason6(),
+        "075" => new AddMissingChineseConfigurationNamesPlugIn075(),
+        "095d" => new AddMissingChineseConfigurationNamesPlugIn095D(),
+        _ => new AddMissingChineseConfigurationNamesPlugInSeason6(),
     };
 }

@@ -12,9 +12,9 @@ using MUnique.OpenMU.DataModel.Configuration;
 /// </summary>
 internal static class ChineseCharacterClassNames
 {
-    private static readonly CultureInfo Chinese = CultureInfo.GetCultureInfo("zh-CN");
-    private static readonly IReadOnlyDictionary<byte, (string Neutral, string Chinese)> Names =
-        new Dictionary<byte, (string Neutral, string Chinese)>
+    private static readonly CultureInfo ChineseCulture = CultureInfo.GetCultureInfo("zh-CN");
+    private static readonly IReadOnlyDictionary<byte, (string NeutralName, string ChineseName)> NamesByNumber =
+        new Dictionary<byte, (string NeutralName, string ChineseName)>
         {
             [0] = ("Dark Wizard", "魔法师"),
             [2] = ("Soul Master", "魔导师"),
@@ -40,20 +40,20 @@ internal static class ChineseCharacterClassNames
     /// Fills missing translations and replaces English copies of built-in classes.
     /// </summary>
     /// <param name="configuration">The game configuration to update.</param>
-    public static void Apply(GameConfiguration configuration)
+    public static void AddMissingTranslations(GameConfiguration configuration)
     {
         foreach (var characterClass in configuration.CharacterClasses)
         {
-            if (!Names.TryGetValue(characterClass.Number, out var names)
-                || characterClass.Name.ValueInNeutralLanguage != names.Neutral)
+            if (!NamesByNumber.TryGetValue(characterClass.Number, out var names)
+                || characterClass.Name.ValueInNeutralLanguage != names.NeutralName)
             {
                 continue;
             }
 
-            var current = characterClass.Name.GetTranslation(Chinese, fallbackToNeutral: false);
-            if (string.IsNullOrEmpty(current) || current == names.Neutral)
+            var current = characterClass.Name.GetTranslation(ChineseCulture, fallbackToNeutral: false);
+            if (string.IsNullOrEmpty(current) || current == names.NeutralName)
             {
-                characterClass.Name = characterClass.Name.WithTranslation(Chinese, names.Chinese);
+                characterClass.Name = characterClass.Name.WithTranslation(ChineseCulture, names.ChineseName);
             }
         }
     }

@@ -54,10 +54,10 @@ applied on top of a current schema.
 
 ## Simplified Chinese configuration names
 
-The optional **Add Simplified Chinese configuration names** update adds sourced
-Chinese names for built-in classes, maps, merchants, monsters and NPCs. It is
-available for 0.75, 0.95d and Season 6 configurations. Freshly initialized databases
-already include these names.
+The optional **Add missing Simplified Chinese configuration names** update
+adds sourced Chinese names for built-in classes, maps, merchants, monsters and
+NPCs. It is available for 0.75, 0.95d and Season 6 configurations. Freshly
+initialized databases already include these names.
 
 Back up the database, apply the update on `/config-updates`, then restart the
 application. The update fills missing Chinese translations and replaces exact

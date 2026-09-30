@@ -12,9 +12,9 @@ using MUnique.OpenMU.DataModel.Configuration;
 /// </summary>
 internal static class ChineseMonsterNames
 {
-    private static readonly CultureInfo Chinese = CultureInfo.GetCultureInfo("zh-CN");
-    private static readonly IReadOnlyDictionary<short, (string Neutral, string Chinese)> Names =
-        new Dictionary<short, (string Neutral, string Chinese)>
+    private static readonly CultureInfo ChineseCulture = CultureInfo.GetCultureInfo("zh-CN");
+    private static readonly IReadOnlyDictionary<short, (string NeutralName, string ChineseName)> NamesByNumber =
+        new Dictionary<short, (string NeutralName, string ChineseName)>
         {
             [0] = ("Bull Fighter", "牛怪"),
             [1] = ("Hound", "猎犬怪"),
@@ -298,20 +298,20 @@ internal static class ChineseMonsterNames
     /// Fills missing translations and replaces English copies of built-in monsters.
     /// </summary>
     /// <param name="configuration">The game configuration to update.</param>
-    public static void Apply(GameConfiguration configuration)
+    public static void AddMissingTranslations(GameConfiguration configuration)
     {
         foreach (var monster in configuration.Monsters)
         {
-            if (!Names.TryGetValue(monster.Number, out var names)
-                || monster.Designation.ValueInNeutralLanguage != names.Neutral)
+            if (!NamesByNumber.TryGetValue(monster.Number, out var names)
+                || monster.Designation.ValueInNeutralLanguage != names.NeutralName)
             {
                 continue;
             }
 
-            var current = monster.Designation.GetTranslation(Chinese, fallbackToNeutral: false);
-            if (string.IsNullOrEmpty(current) || current == names.Neutral)
+            var current = monster.Designation.GetTranslation(ChineseCulture, fallbackToNeutral: false);
+            if (string.IsNullOrEmpty(current) || current == names.NeutralName)
             {
-                monster.Designation = monster.Designation.WithTranslation(Chinese, names.Chinese);
+                monster.Designation = monster.Designation.WithTranslation(ChineseCulture, names.ChineseName);
             }
         }
     }
