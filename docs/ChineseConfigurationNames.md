@@ -8,22 +8,20 @@ It does not translate client language files, item names or attribute resources.
 
 Mappings require both the built-in numeric identifier and the exact neutral English
 name. Shared map numbers are distinguished by that name. Only a missing Chinese
-translation, a copy of the English name, or the explicitly listed legacy translation
-is replaced. Other translations and custom names are preserved. A custom name equal
-to a listed legacy translation cannot be distinguished from that legacy value.
-The update is therefore optional. No identifiers, progression links, stats, shops,
-drops, spawn areas or map gates are changed.
+translation or an exact copy of the neutral English name is replaced. Any other
+existing Chinese value is preserved, even if it differs from this mapping. Other
+languages and custom neutral names are preserved. No identifiers, progression
+links, stats, shops, drops, spawn areas or map gates are changed.
 
 New initializations apply these mappings before recording installed updates. Existing
 installations use one optional configuration update for their initialization version.
 See the [operator instructions](../docs-website/docs/admin-panel/configuration-updates.md).
 No database schema migration or direct SQL is required.
 
-The exact legacy replacements are listed alongside each mapping in
-[classes](../src/Persistence/Initialization/CharacterClasses/ChineseCharacterClassNames.cs),
-[maps](../src/Persistence/Initialization/ChineseMapNames.cs),
-[merchants](../src/Persistence/Initialization/ChineseMerchantNames.cs) and
-[monsters](../src/Persistence/Initialization/ChineseMonsterNames.cs).
+The upstream initialization sources at `ff14409d9` contain English class, map,
+merchant and monster/NPC names, without Chinese translations in those fields.
+Chinese UI resources are separate from these database values. This contribution
+adds missing translations; it does not repair historical data from a private fork.
 
 `LocalizedString` currently stores these values under its two-letter `zh` key;
 it does not distinguish Simplified and Traditional Chinese database translations.

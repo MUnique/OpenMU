@@ -60,10 +60,10 @@ available for 0.75, 0.95d and Season 6 configurations. Freshly initialized datab
 already include these names.
 
 Back up the database, apply the update on `/config-updates`, then restart the
-application. The update fills missing Chinese translations and replaces English
-copies and explicitly listed legacy translations. Other names and languages are
-preserved. A customized name identical to a listed legacy translation is also
-replaced, so review the mapping before applying it. Gameplay settings are unchanged.
+application. The update fills missing Chinese translations and replaces exact
+copies of the neutral English name. All other existing Chinese names are preserved,
+even if they differ from the provided mapping. Other languages, custom neutral
+names and gameplay settings are unchanged.
 Reapplying the mapping does not create duplicate translations.
 
 Coverage is partial: unverified names retain their existing values. These are

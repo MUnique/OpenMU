@@ -898,7 +898,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         }
 
         /// <summary>
-        ///   Looks up a localized string similar to Adds sourced Chinese class, map, merchant, monster and NPC names. Only missing translations, English copies and listed legacy translations are replaced; other names, languages and gameplay settings are preserved..
+        ///   Looks up a localized string similar to Adds sourced Chinese class, map, merchant, monster and NPC names. Only missing translations and English copies are replaced; existing Chinese names, other languages and gameplay settings are preserved..
         /// </summary>
         public static string AlignChineseConfigurationNames_Description {
             get {

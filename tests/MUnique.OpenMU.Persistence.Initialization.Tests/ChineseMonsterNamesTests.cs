@@ -69,13 +69,13 @@ internal class ChineseMonsterNamesTests
         var configuration = context.CreateNew<GameConfiguration>();
         var update = CreateUpdate(version);
         context.CreateNew<ConfigurationUpdateState>().InitializationKey = update.DataInitializationKey;
-        var bull = AddMonster(4, "Elite Bull Fighter||zh=精英Bull Fighter||de=Elite Stier");
+        var bull = AddMonster(4, "Elite Bull Fighter||zh=Elite Bull Fighter||de=Elite Stier");
         var hydra = AddMonster(49, "Hydra");
         var larva = AddMonster(12, "Larva||zh=幼虫");
         var custom = AddMonster(32, "Stone Golem||zh=我的Stone巨人");
         var unknown = AddMonster(30000, "Hydra");
         var renamed = AddMonster(77, "Custom Phoenix");
-        var gate = AddMonster(152, "Gate to Kalima 1 of {0}||zh=大门 to Kalima 1 的 {0}");
+        var gate = AddMonster(152, "Gate to Kalima 1 of {0}");
         var merchant = AddMonster(251, "Hanzo The Blacksmith||zh=铁匠汉斯");
         var provisional = AddMonster(44, "Red Dragon");
         bull.MoveRange = 9;
@@ -102,7 +102,7 @@ internal class ChineseMonsterNamesTests
         Assert.That(bull.Designation.ValueInNeutralLanguage, Is.EqualTo("Elite Bull Fighter"));
         Assert.That(bull.Designation.GetTranslation(German, false), Is.EqualTo("Elite Stier"));
         Assert.That(hydra.Designation.GetTranslation(Chinese, false), Is.EqualTo("海魔希特拉"));
-        Assert.That(larva.Designation.GetTranslation(Chinese, false), Is.EqualTo("毒虫"));
+        Assert.That(larva.Designation.GetTranslation(Chinese, false), Is.EqualTo("幼虫"));
         Assert.That(custom.Designation.GetTranslation(Chinese, false), Is.EqualTo("我的Stone巨人"));
         Assert.That(unknown.Designation.Value, Is.EqualTo("Hydra"));
         Assert.That(renamed.Designation.Value, Is.EqualTo("Custom Phoenix"));

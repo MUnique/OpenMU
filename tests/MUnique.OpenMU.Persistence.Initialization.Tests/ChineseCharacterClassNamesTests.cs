@@ -88,7 +88,7 @@ internal class ChineseCharacterClassNamesTests
         var configuration = context.CreateNew<GameConfiguration>();
         var update = CreateUpdate(version);
         context.CreateNew<ConfigurationUpdateState>().InitializationKey = update.DataInitializationKey;
-        var wizard = AddClass(0, "Dark Wizard||zh=黑暗巫师||de=Zauberer");
+        var wizard = AddClass(0, "Dark Wizard||zh=Dark Wizard||de=Zauberer");
         var knight = AddClass(6, "Blade Knight||zh=剑圣");
         var fighter = AddClass(24, "Rage Fighter||zh=圣导师");
         var summoner = AddClass(22, "Bloody Summoner");
@@ -111,8 +111,8 @@ internal class ChineseCharacterClassNamesTests
         Assert.That(wizard.Name.GetTranslation(Chinese, false), Is.EqualTo("魔法师"));
         Assert.That(wizard.Name.ValueInNeutralLanguage, Is.EqualTo("Dark Wizard"));
         Assert.That(wizard.Name.GetTranslation(German, false), Is.EqualTo("Zauberer"));
-        Assert.That(knight.Name.GetTranslation(Chinese, false), Is.EqualTo("骑士"));
-        Assert.That(fighter.Name.GetTranslation(Chinese, false), Is.EqualTo("格斗家"));
+        Assert.That(knight.Name.GetTranslation(Chinese, false), Is.EqualTo("剑圣"));
+        Assert.That(fighter.Name.GetTranslation(Chinese, false), Is.EqualTo("圣导师"));
         Assert.That(summoner.Name.GetTranslation(Chinese, false), Is.EqualTo("召唤导师"));
         Assert.That(custom.Name.GetTranslation(Chinese, false), Is.EqualTo("自定义剑士"));
         Assert.That(unknown.Name.GetTranslation(Chinese, false), Is.EqualTo("自定义职业"));

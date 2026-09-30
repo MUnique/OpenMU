@@ -92,7 +92,7 @@ internal class ChineseMerchantNamesTests
         context.CreateNew<ConfigurationUpdateState>().InitializationKey = update.DataInitializationKey;
         var smith = AddMerchant(251, "Hanzo The Blacksmith||de=Schmied");
         var silvia = AddMerchant(415, "Silvia||zh=西尔维娅");
-        var oracle = AddMerchant(259, "Oracle Layla||zh=神谕者莱拉");
+        var oracle = AddMerchant(259, "Oracle Layla||zh=Oracle Layla");
         var custom = AddMerchant(253, "Potion Girl Amy||zh=我的药水商人");
         var unknown = AddMerchant(999, "Alex");
         var renamed = AddMerchant(230, "Custom Alex");
@@ -118,7 +118,7 @@ internal class ChineseMerchantNamesTests
         Assert.That(smith.Designation.GetTranslation(Chinese, false), Is.EqualTo("铁匠汉斯"));
         Assert.That(smith.Designation.ValueInNeutralLanguage, Is.EqualTo("Hanzo The Blacksmith"));
         Assert.That(smith.Designation.GetTranslation(German, false), Is.EqualTo("Schmied"));
-        Assert.That(silvia.Designation.GetTranslation(Chinese, false), Is.EqualTo("塞尔维亚"));
+        Assert.That(silvia.Designation.GetTranslation(Chinese, false), Is.EqualTo("西尔维娅"));
         Assert.That(oracle.Designation.GetTranslation(Chinese, false), Is.EqualTo("雷拉"));
         Assert.That(custom.Designation.GetTranslation(Chinese, false), Is.EqualTo("我的药水商人"));
         Assert.That(unknown.Designation.Value, Is.EqualTo("Alex"));

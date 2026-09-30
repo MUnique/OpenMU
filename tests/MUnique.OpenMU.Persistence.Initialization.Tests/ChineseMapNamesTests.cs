@@ -61,7 +61,7 @@ internal class ChineseMapNamesTests
         var configuration = context.CreateNew<GameConfiguration>();
         var update = CreateUpdate(version);
         context.CreateNew<ConfigurationUpdateState>().InitializationKey = update.DataInitializationKey;
-        var lorencia = AddMap(0, "Lorencia||de=Stadt||zh=洛兰");
+        var lorencia = AddMap(0, "Lorencia||de=Stadt||zh=Lorencia");
         var missing = AddMap(3, "Noria");
         var ice = AddMap(57, "LaCleon||zh=狼魂要塞");
         var wolf = AddMap(34, "Crywolf Fortress||zh=狼魂要塞");
@@ -92,7 +92,7 @@ internal class ChineseMapNamesTests
         Assert.That(lorencia.Name.GetTranslation(Chinese), Is.EqualTo("勇者大陆"));
         Assert.That(lorencia.Name.GetTranslation(CultureInfo.GetCultureInfo("de")), Is.EqualTo("Stadt"));
         Assert.That(missing.Name.GetTranslation(Chinese), Is.EqualTo("仙踪林"));
-        Assert.That(ice.Name.GetTranslation(Chinese), Is.EqualTo("冰霜之城"));
+        Assert.That(ice.Name.GetTranslation(Chinese), Is.EqualTo("狼魂要塞"));
         Assert.That(wolf.Name.GetTranslation(Chinese), Is.EqualTo("狼魂要塞"));
         Assert.That(devil1.Name.GetTranslation(Chinese), Is.EqualTo("恶魔广场 1"));
         Assert.That(devil2.Name.GetTranslation(Chinese), Is.EqualTo("恶魔广场 2"));
