@@ -114,6 +114,11 @@ complexity and effort). Complexity 0 means we wont implement it.
 |   - *Save key configuration* | 0xF330            |      |          |                                               |
 |   - *Master skill level increase request* | 0xF352            |      |          |                                               
 | CashShopGroup               | 0xF5              | 0%       | 10         | Low priority                                  |
+| GensGroup                   | 0xF8              | 40%      | 8          | Joining and leaving a gens. The battle zone, contribution, ranking and rewards are missing. |
+|   - *Join gens request* | 0xF801            |      |          |                                               |
+|   - *Leave gens request* | 0xF803            |      |          |                                               |
+|   - Gens reward request | 0xF809            |      |          |                                               |
+|   - Gens ranking request | 0xF80B            |      |          | Answered with the gens info of the player (0xF807) |
 | *Hit*                         | 0x11      | 100%     | 10         |                                               |
 | *Teleport*                    | 0x15 | 100%     | 2          |                                               |
 | *Walk*                        | 0xD4     | 100%     | 10         |                                               |
