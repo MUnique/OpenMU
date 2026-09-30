@@ -621,7 +621,7 @@ public enum UpdateVersion
     AlignChineseConfigurationNames075 = 122,
 
     /// <summary>
-    /// The version of the <see cref="AlignChineseConfigurationNamesPlugIn095d"/>.
+    /// The version of the <see cref="AlignChineseConfigurationNamesPlugIn095D"/>.
     /// </summary>
     AlignChineseConfigurationNames095d = 123,
 

@@ -1,4 +1,4 @@
-// <copyright file="AlignChineseConfigurationNamesPlugIn095d.cs" company="MUnique">
+// <copyright file="AlignChineseConfigurationNamesPlugIn095D.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 [PlugIn]
 [Display(Name = nameof(PlugInResources.AlignChineseConfigurationNames_Name), Description = nameof(PlugInResources.AlignChineseConfigurationNames_Description), ResourceType = typeof(PlugInResources))]
 [Guid("3871520b-cde6-4dee-aae5-bf15190e6816")]
-public class AlignChineseConfigurationNamesPlugIn095d : AlignChineseConfigurationNamesPlugInBase
+public class AlignChineseConfigurationNamesPlugIn095D : AlignChineseConfigurationNamesPlugInBase
 {
     /// <inheritdoc />
     public override UpdateVersion Version => UpdateVersion.AlignChineseConfigurationNames095d;

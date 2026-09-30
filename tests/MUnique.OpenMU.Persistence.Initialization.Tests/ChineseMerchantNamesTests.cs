@@ -151,7 +151,7 @@ internal class ChineseMerchantNamesTests
     private static AlignChineseConfigurationNamesPlugInBase CreateUpdate(string version) => version switch
     {
         "075" => new AlignChineseConfigurationNamesPlugIn075(),
-        "095d" => new AlignChineseConfigurationNamesPlugIn095d(),
+        "095d" => new AlignChineseConfigurationNamesPlugIn095D(),
         _ => new AlignChineseConfigurationNamesPlugInSeason6(),
     };
 }
