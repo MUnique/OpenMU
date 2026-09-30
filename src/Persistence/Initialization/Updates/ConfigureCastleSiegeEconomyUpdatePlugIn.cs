@@ -35,9 +35,6 @@ public class ConfigureCastleSiegeEconomyUpdatePlugIn : UpdatePlugInBase
     public override string Description => PlugInDescription;
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.ConfigureCastleSiegeEconomy;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />

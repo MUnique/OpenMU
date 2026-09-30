@@ -20,7 +20,7 @@ public class FixAncientDiscriminatorsUpdatePlugIn : UpdatePlugInBase
     /// <summary>
     /// The plug in name.
     /// </summary>
-    internal const string PlugInName = "Fix Warrior Morning Star";
+    internal const string PlugInName = "Fix Ancient Discriminators";
 
     /// <summary>
     /// The plug in description.
@@ -32,9 +32,6 @@ public class FixAncientDiscriminatorsUpdatePlugIn : UpdatePlugInBase
 
     /// <inheritdoc />
     public override string Description => PlugInDescription;
-
-    /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixAncientDiscriminators;
 
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;

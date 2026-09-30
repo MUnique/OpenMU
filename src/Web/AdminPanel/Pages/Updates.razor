@@ -50,7 +50,7 @@
         {
             <InputCheckbox class="form-check-input" @bind-Value="@update.Selected"></InputCheckbox>
         }
-        <span>&nbsp;@update.Name (#@update.Version)</span>
+        <span>&nbsp;@update.Name (@update.UpdatePlugIn.CreatedAt.ToString("yyyy-MM-dd"))</span>
         <hr/>
         <div class="alert alert-secondary">
             <span>@update.Description</span>

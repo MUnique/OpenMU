@@ -230,7 +230,7 @@
   <data name="FinishSummonerMasterTreePlugIn_Description" xml:space="preserve"><value>This update completes the summoner master tree and fixes some of its skill values.</value></data>
   <data name="AddMaximumAllianceSizeUpdatePlugInSeason6_Name" xml:space="preserve"><value>Add Maximum Alliance Size Attribute (Season 6)</value></data>
   <data name="AddMaximumAllianceSizeUpdatePlugInSeason6_Description" xml:space="preserve"><value>Adds the MaximumAllianceSize global base attribute with a default value of 5 to the Season 6 game configuration.</value></data>
-  <data name="FixAncientDiscriminatorsUpdatePlugIn_Name" xml:space="preserve"><value>Fix Warrior Morning Star</value></data>
+  <data name="FixAncientDiscriminatorsUpdatePlugIn_Name" xml:space="preserve"><value>Fix Ancient Discriminators</value></data>
   <data name="FixAncientDiscriminatorsUpdatePlugIn_Description" xml:space="preserve"><value>This update fixes the discriminators of some ancient items.</value></data>
   <data name="AddSummonerBuffSkillsPlugIn_Name" xml:space="preserve"><value>Add Summoner Buff Skills</value></data>
   <data name="AddSummonerBuffSkillsPlugIn_Description" xml:space="preserve"><value>This update adds the Sleep, Innovation, Damage Reflection and Weakness Summoner buff skills. It also fixes the 3rd wing full reflect option.</value></data>

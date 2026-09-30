@@ -20,9 +20,6 @@ public class FixDamageCalcsPlugIn075 : FixDamageCalcsPlugInBase
     public override string DataInitializationKey => Version075.DataInitialization.Id;
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixDamageCalcs075;
-
-    /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
         await base.ApplyAsync(context, gameConfiguration).ConfigureAwait(false);

@@ -136,11 +136,13 @@ wrong.
 
 When writing the update plugin:
 
-* Add a new value to `UpdateVersion` and derive from `UpdatePlugInBase`.
+* Derive from `UpdatePlugInBase` and give the class a fresh `[Guid]` — that GUID **is** the update's identity (`Key` resolves from it automatically); just make sure the GUID is new (rule 5).
+* If the update requires another update to be installed first, declare it with `DependsOn` (referencing the other plugin's GUID) instead of a runtime guard — dependencies are validated eagerly and applied in dependency order.
 * **Never edit an update plugin that has already been released.** Its application
   is recorded per database, so a change has no effect for anyone who already ran
   it. Add a new update instead.
-* `CreatedAt` is **today's actual date**. Don't invent one.
+* `CreatedAt` is **today's actual date**. Don't invent one. It also determines
+  the order in which independent pending updates are applied.
 * Decide `IsMandatory` deliberately: mandatory updates cannot be deselected, so
   they override the server owner's own customizations.
 * Where the change differs per game version, write a shared `…Base` class and

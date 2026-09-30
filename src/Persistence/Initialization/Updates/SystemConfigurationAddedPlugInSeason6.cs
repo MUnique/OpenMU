@@ -19,7 +19,4 @@ public class SystemConfigurationAddedPlugInSeason6 : SystemConfigurationAddedPlu
 {
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
-
-    /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.SystemConfigurationAddedSeason6;
 }

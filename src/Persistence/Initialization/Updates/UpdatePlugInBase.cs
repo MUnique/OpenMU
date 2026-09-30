@@ -13,10 +13,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 public abstract class UpdatePlugInBase : IConfigurationUpdatePlugIn
 {
     /// <inheritdoc />
-    public int Key => (int)this.Version;
-
-    /// <inheritdoc />
-    public abstract UpdateVersion Version { get; }
+    public Guid Key => this.GetType().GUID;
 
     /// <inheritdoc />
     public abstract string DataInitializationKey { get; }
@@ -32,6 +29,9 @@ public abstract class UpdatePlugInBase : IConfigurationUpdatePlugIn
 
     /// <inheritdoc />
     public abstract bool IsMandatory { get; }
+
+    /// <inheritdoc />
+    public virtual IEnumerable<Guid> DependsOn => [];
 
     /// <inheritdoc />
     public async ValueTask ApplyUpdateAsync(IContext context, GameConfiguration gameConfiguration)
@@ -74,7 +74,7 @@ public abstract class UpdatePlugInBase : IConfigurationUpdatePlugIn
     private void AddUpdateEntry(IContext context)
     {
         var entry = context.CreateNew<ConfigurationUpdate>();
-        entry.Version = (int)this.Version;
+        entry.Key = this.Key;
         entry.Name = this.Name;
         entry.Description = this.Description;
         entry.CreatedAt = this.CreatedAt;

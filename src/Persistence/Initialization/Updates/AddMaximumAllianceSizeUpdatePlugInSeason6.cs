@@ -32,9 +32,6 @@ public class AddMaximumAllianceSizeUpdatePlugInSeason6 : UpdatePlugInBase
     internal const string PlugInDescription = "Adds the MaximumAllianceSize global base attribute with a default value of 5 to the Season 6 game configuration.";
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.AddMaximumAllianceSizeSeason6;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />
