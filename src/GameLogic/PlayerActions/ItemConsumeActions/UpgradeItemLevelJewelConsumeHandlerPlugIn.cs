@@ -93,7 +93,6 @@ public abstract class UpgradeItemLevelJewelConsumeHandlerPlugIn<TConfig>
             item.Level = (byte)Math.Max(item.Level - 1, 0);
         }
 
-        item.DurabilityThresholds = null;
         item.Durability = item.GetMaximumDurabilityOfOnePiece();
         return true; // true doesn't mean that it was successful, just that the consumption happened.
     }

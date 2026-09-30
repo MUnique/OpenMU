@@ -148,7 +148,6 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
                     var previousMaxDurability = item.GetMaximumDurabilityOfOnePiece();
 
                     item.Level = (byte)Rand.NextInt(0, previousLevel);
-                    item.DurabilityThresholds = null;
                     if (item.HasSkill && !item.IsExcellent() && Rand.NextRandomBool())
                     {
                         item.HasSkill = false;
@@ -183,7 +182,6 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
                 {
                     var previousLevel = item.Level;
                     item.Level -= (byte)(Rand.NextRandomBool() ? 2 : 3);
-                    item.DurabilityThresholds = null;
                     if (item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.Option) is { } optionLink)
                     {
                         item.ItemOptions.Remove(optionLink);

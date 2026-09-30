@@ -112,7 +112,6 @@ public class ItemViewModel : INotifyPropertyChanged
             }
 
             this.Item.Level = value;
-            this.Item.DurabilityThresholds = null;
             this.OnPropertyChanged();
         }
     }
@@ -512,7 +511,6 @@ public class ItemViewModel : INotifyPropertyChanged
             {
                 var itemOfSet = value.Items.First(ios => ios.ItemDefinition == this.Definition);
                 this.ItemSetGroups.Add(itemOfSet);
-                this.Item.DurabilityThresholds = null;
 
                 if (itemOfSet.BonusOption is { } bonusOption)
                 {
@@ -719,7 +717,6 @@ public class ItemViewModel : INotifyPropertyChanged
 
         // Reassigning the durability will limit it to the maximum value.
         this.Durability = this.Item.GetMaximumDurabilityOfOnePiece();
-        this.Item.DurabilityThresholds = null;
 
         var possibleOptions = this.Definition.PossibleItemOptions.SelectMany(pio => pio.PossibleOptions).ToHashSet();
         var impossibleOptions = this.ItemOptions.Where(iol => iol.ItemOption is null || possibleOptions.Contains(iol.ItemOption)).ToList();

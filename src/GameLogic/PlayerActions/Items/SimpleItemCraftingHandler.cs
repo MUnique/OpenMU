@@ -160,7 +160,6 @@ public class SimpleItemCraftingHandler : BaseItemCraftingHandler
                 {
                     var previousMaxDurability = item.GetMaximumDurabilityOfOnePiece();
                     item.Level += craftingResultItem.AddLevel;
-                    item.DurabilityThresholds = null;
                     item.Durability = item.GetMaximumDurabilityOfOnePiece() * item.Durability / previousMaxDurability;
                     resultList.Add(item);
                 }

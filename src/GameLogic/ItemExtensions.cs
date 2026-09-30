@@ -508,6 +508,9 @@ public static class ItemExtensions
     /// Gets the current durability factor for the item.
     /// </summary>
     /// <param name="item">The item.</param>
+    /// <remarks>
+    /// Directly related to the client's UI item durability icons, whose colors span yellow (&lt;50%), orange (&lt;30%), light red (&lt;20%) and red (exhausted).
+    /// </remarks>
     /// <returns>The factor.</returns>
     public static float GetCurrentDurabilityFactor(this Item item)
     {
@@ -521,34 +524,16 @@ public static class ItemExtensions
             return 1;
         }
 
-        if (item.DurabilityThresholds is null)
+        var maxDurability = item.GetMaximumDurabilityOfOnePiece();
+        for (int i = 0; i < DurabilityFactors.Length; i++)
         {
-            item.CalculateDurabilityThresholds();
-        }
-
-        for (int i = 0; i < item.DurabilityThresholds!.Length; i++)
-        {
-            if (item.Durability < item.DurabilityThresholds[i])
+            if (item.Durability < maxDurability * DurabilityFactors[i])
             {
                 return 1 - DurabilityFactors[^(i + 1)];
             }
         }
 
         return 1;
-    }
-
-    /// <summary>
-    /// Calculates the durability thresholds for the item.
-    /// </summary>
-    /// <param name="item">The item.</param>
-    private static void CalculateDurabilityThresholds(this Item item)
-    {
-        item.DurabilityThresholds ??= new double[3];
-        var maxDurability = item.GetMaximumDurabilityOfOnePiece();
-        for (int i = 0; i < DurabilityFactors.Length; i++)
-        {
-            item.DurabilityThresholds[i] = maxDurability * DurabilityFactors[i];
-        }
     }
 
     private static int CalculateRequirement(this Item item, int requirementValue, int multiplier)

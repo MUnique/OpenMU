@@ -2175,7 +2175,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 && (this.CurrentMap?.Definition.MapRequirements.Any(req => req.Attribute == Stats.CanFly) ?? false)
                 && attributes[Stats.CanFly] < 1)
             {
-                if (this.GameContext.Configuration.Items.FirstOrDefault(i =>
+                if (this.Inventory?.GetItem(InventoryConstants.PetSlot) is null
+                    && this.GameContext.Configuration.Items.FirstOrDefault(i =>
                         i.Group == ItemConstants.Dinorant.Group && i.Number == ItemConstants.Dinorant.Number) is { } dinorantDef
                     && this.Inventory?.FindItemsByDefinition(dinorantDef).FirstOrDefault() is { } dinorantItem)
                 {
