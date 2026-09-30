@@ -25,6 +25,6 @@ public partial class LevelDependentDamage
     /// <inheritdoc />
     public override string ToString()
     {
-        return $"Level {this.Level}: {this.Damage}";
+        return string.Format(MUnique.OpenMU.DataModel.Properties.Resources.LevelValueSummary, this.Level, this.Damage);
     }
 }

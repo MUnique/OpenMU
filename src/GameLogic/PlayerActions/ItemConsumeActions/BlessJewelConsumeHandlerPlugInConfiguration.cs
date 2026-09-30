@@ -14,5 +14,6 @@ public class BlessJewelConsumeHandlerPlugInConfiguration : UpgradeItemLevelConfi
     /// <summary>
     /// Gets or sets the items which can be repaired by consuming a bless on them.
     /// </summary>
+    [System.ComponentModel.DataAnnotations.Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BlessJewelConsumeHandlerPlugInConfiguration_RepairTargetItems_Caption), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
     public ICollection<ItemDefinition> RepairTargetItems { get; set; } = new List<ItemDefinition>();
 }

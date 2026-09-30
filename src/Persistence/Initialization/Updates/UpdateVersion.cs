@@ -601,22 +601,32 @@ public enum UpdateVersion
     AddRaklionEvent = 118,
 
     /// <summary>
+    /// The version of the <see cref="RefreshKanturuDataUpdatePlugIn"/>.
+    /// </summary>
+    RefreshKanturuData = 119,
+
+    /// <summary>
     /// The version of the <see cref="AddSelupanFallSkillUpdatePlugIn"/>.
     /// </summary>
     AddSelupanFallSkill = 120,
 
     /// <summary>
+    /// The version of the <see cref="AddImperialGuardianDataUpdatePlugIn"/>.
+    /// </summary>
+    AddImperialGuardianData = 121,
+
+    /// <summary>
     /// The version of the <see cref="ItemDurabilityRefactorPlugIn075"/>.
     /// </summary>
-    ItemDurabilityRefactor075 = 121,
+    ItemDurabilityRefactor075 = 122,
 
     /// <summary>
     /// The version of the <see cref="ItemDurabilityRefactorPlugIn095D"/>.
     /// </summary>
-    ItemDurabilityRefactor095d = 122,
+    ItemDurabilityRefactor095d = 123,
 
     /// <summary>
     /// The version of the <see cref="ItemDurabilityRefactorPlugInSeason6"/>.
     /// </summary>
-    ItemDurabilityRefactorSeason6 = 123,
+    ItemDurabilityRefactorSeason6 = 124,
 }

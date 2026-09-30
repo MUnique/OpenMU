@@ -637,6 +637,26 @@ public static class AttackableExtensions
     }
 
     /// <summary>
+    /// Applies the stun effect to the player for the specified duration, e.g. by a skill of a monster.
+    /// </summary>
+    /// <param name="target">The player.</param>
+    /// <param name="duration">The duration of the stun.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    public static async ValueTask ApplyStunEffectAsync(this Player target, TimeSpan duration)
+    {
+        if (target.Attributes is not { } attributes
+            || target.GameContext.Configuration.MagicEffects.FirstOrDefault(m => m.Number == StunnedMagicEffectNumber) is not { } effectDefinition
+            || effectDefinition.PowerUpDefinitions.FirstOrDefault(pu => pu.TargetAttribute == Stats.IsStunned) is not { } powerUpDefinition)
+        {
+            return;
+        }
+
+        var powerUp = attributes.CreateElement(powerUpDefinition);
+        var magicEffect = new MagicEffect(duration, effectDefinition, [new MagicEffect.ElementWithTarget(powerUp, Stats.IsStunned)]);
+        await target.MagicEffectList.AddEffectAsync(magicEffect).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Ensures the skill attributes of the specified skill entry are set up.
     /// </summary>
     /// <param name="skillEntry">The skill entry.</param>

@@ -26,6 +26,6 @@ public partial class ItemStorage
     /// <inheritdoc />
     public override string ToString()
     {
-        return $"{this.Items?.Count ?? 0} Items, {this.Money} Money";
+        return string.Format(Properties.Resources.ItemStorageSummary, this.Items?.Count ?? 0, this.Money);
     }
 }

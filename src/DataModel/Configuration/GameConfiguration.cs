@@ -337,6 +337,6 @@ public partial class GameConfiguration
     /// <inheritdoc />
     public override string ToString()
     {
-        return "Default Game Configuration";
+        return typeof(GameConfiguration).GetTypeCaption();
     }
 }

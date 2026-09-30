@@ -405,12 +405,6 @@
   <data name="GuildRequestHandlerPlugIn_Description" xml:space="preserve">
     <value>Handler for guild requests.</value>
   </data>
-  <data name="GuildRoleAssignHandlerPlugIn_Name" xml:space="preserve">
-    <value>Guild Role Assign Handler</value>
-  </data>
-  <data name="GuildRoleAssignHandlerPlugIn_Description" xml:space="preserve">
-    <value>Handler for guild role assign packets.</value>
-  </data>
   <data name="GuildWarResponseHandlerPlugIn_Name" xml:space="preserve">
     <value>Guild War Response Handler</value>
   </data>
@@ -2487,6 +2481,14 @@
   <data name="CastleSiegeLifeStoneStatePlugIn_Description" xml:space="preserve">
     <value>Sends Castle Siege Life Stone creation progress to the game client.</value>
   </data>
+  <data name="EnterMarketPlace_Name" xml:space="preserve"><value>Enter Market Place Handler</value></data>
+  <data name="EnterMarketPlace_Description" xml:space="preserve"><value>Handler which warps a player between Lorencia and the Loren Market when using the 'Warp' button of Market Union Member Julia.</value></data>
+  <data name="GuildRoleAssignHandlerPlugIn_Name" xml:space="preserve">
+    <value>Guild Role Assign Handler</value>
+  </data>
+  <data name="GuildRoleAssignHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for guild role assign packets.</value>
+  </data>
   <data name="RaklionEventViewPlugIn_Name" xml:space="preserve">
     <value>Raklion Event View</value>
   </data>
@@ -2498,5 +2500,23 @@
   </data>
   <data name="RaklionStateInfoRequestHandlerPlugIn_Description" xml:space="preserve">
     <value>Handles the request of the client for the state of the raklion event.</value>
+  </data>
+  <data name="ImperialGuardianGroupHandlerPlugIn_Name" xml:space="preserve">
+    <value>Imperial Guardian Group Handler</value>
+  </data>
+  <data name="ImperialGuardianGroupHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the packets of the imperial guardian event (0xF7).</value>
+  </data>
+  <data name="ImperialGuardianEnterRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Imperial Guardian Enter Request Handler</value>
+  </data>
+  <data name="ImperialGuardianEnterRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the request to enter the imperial guardian event, which is sent by the window of Jerint.</value>
+  </data>
+  <data name="ImperialGuardianViewPlugIn_Name" xml:space="preserve">
+    <value>Imperial Guardian View</value>
+  </data>
+  <data name="ImperialGuardianViewPlugIn_Description" xml:space="preserve">
+    <value>Sends the enter result, the timer and the result of the imperial guardian event to the client.</value>
   </data>
 </root>

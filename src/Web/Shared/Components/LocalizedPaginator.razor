@@ -1,0 +1,51 @@
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using MUnique.OpenMU.Web.Shared.Properties
+@implements IDisposable
+
+@if (State.TotalItemCount is { } count)
+{
+    <div class="d-flex align-items-center gap-2 my-2" role="group" aria-label="@Resources.Navigation">
+        <span class="me-auto">@string.Format(Resources.PaginationItems, count)</span>
+        <button type="button" class="btn btn-outline-secondary btn-sm" disabled="@(count == 0 || State.CurrentPageIndex == 0)" @onclick="@(() => State.SetCurrentPageIndexAsync(0))">@Resources.FirstPage</button>
+        <button type="button" class="btn btn-outline-secondary btn-sm" disabled="@(count == 0 || State.CurrentPageIndex == 0)" @onclick="@(() => State.SetCurrentPageIndexAsync(State.CurrentPageIndex - 1))">@Resources.Previous</button>
+        <span>@string.Format(Resources.PaginationPage, count == 0 ? 1 : State.CurrentPageIndex + 1, (State.LastPageIndex ?? 0) + 1)</span>
+        <button type="button" class="btn btn-outline-secondary btn-sm" disabled="@(State.CurrentPageIndex >= (State.LastPageIndex ?? 0))" @onclick="@(() => State.SetCurrentPageIndexAsync(State.CurrentPageIndex + 1))">@Resources.Next</button>
+        <button type="button" class="btn btn-outline-secondary btn-sm" disabled="@(State.CurrentPageIndex >= (State.LastPageIndex ?? 0))" @onclick="@(() => State.SetCurrentPageIndexAsync(State.LastPageIndex ?? 0))">@Resources.LastPage</button>
+    </div>
+}
+
+@code {
+    private PaginationState? _subscribedState;
+
+    /// <summary>Gets or sets the pagination state shared with the grid.</summary>
+    [Parameter, EditorRequired]
+    public PaginationState State { get; set; } = null!;
+
+    /// <inheritdoc />
+    protected override void OnParametersSet()
+    {
+        if (this._subscribedState == this.State)
+        {
+            return;
+        }
+
+        this.Dispose();
+        this._subscribedState = this.State;
+        this._subscribedState.TotalItemCountChanged += this.OnTotalItemCountChanged;
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        if (this._subscribedState is { } state)
+        {
+            state.TotalItemCountChanged -= this.OnTotalItemCountChanged;
+            this._subscribedState = null;
+        }
+    }
+
+    private void OnTotalItemCountChanged(object? sender, int? count)
+    {
+        _ = this.InvokeAsync(this.StateHasChanged);
+    }
+}

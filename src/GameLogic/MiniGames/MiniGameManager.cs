@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.MiniGames;
 using System.Collections.Concurrent;
 using System.Diagnostics.Metrics;
 using MUnique.OpenMU.GameLogic.MiniGames.Doppelganger;
+using MUnique.OpenMU.GameLogic.MiniGames.ImperialGuardian;
 using MUnique.OpenMU.GameLogic.MiniGames.Kanturu;
 using Nito.AsyncEx;
 
@@ -87,6 +88,9 @@ public sealed class MiniGameManager : IMiniGameManager
                 case MiniGameType.Kanturu:
                     miniGameContext = new KanturuContext(miniGameKey, miniGameDefinition, this._gameContext, this._mapInitializer);
                     break;
+                case MiniGameType.ImperialGuardian:
+                    miniGameContext = new ImperialGuardianContext(miniGameKey, miniGameDefinition, this._gameContext, this._mapInitializer);
+                    break;
                 default:
                     miniGameContext = new MiniGameContext(miniGameKey, miniGameDefinition, this._gameContext, this._mapInitializer);
                     break;
@@ -101,6 +105,10 @@ public sealed class MiniGameManager : IMiniGameManager
         await this._mapInitializer.InitializeStateAsync(createdMap).ConfigureAwait(false);
         this.GameMapCreated?.Invoke(this, createdMap);
         MiniGameCounter.Add(1);
+
+        // The loop starts here and not in the constructor, so overridden members
+        // read their post-construction values from the first tick on.
+        miniGameContext.EnsureGameLoopRunning();
         return miniGameContext;
     }
 

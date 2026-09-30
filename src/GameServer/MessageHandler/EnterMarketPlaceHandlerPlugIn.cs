@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 /// which warps the player between Lorencia and the Loren Market.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(Properties.PlugInResources.EnterMarketPlace_Name), Description = nameof(Properties.PlugInResources.EnterMarketPlace_Description), ResourceType = typeof(MUnique.OpenMU.GameServer.Properties.PlugInResources))]
 [Guid("5e028dcf-a5af-40a0-b958-2deb38aae4bc")]
 [BelongsToGroup(MuHelperGroupHandler.GroupKey)]
 internal class EnterMarketPlaceHandlerPlugIn : ISubPacketHandlerPlugIn

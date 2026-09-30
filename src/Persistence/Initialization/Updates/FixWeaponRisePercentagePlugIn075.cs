@@ -11,7 +11,7 @@ using MUnique.OpenMU.PlugIns;
 /// This update fixes weapons (staff) rise percentage.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixWeaponRisePercentagePlugInBase_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixWeaponRisePercentagePlugInBase_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("5B63534D-E5DF-46B1-992D-C1637B197EE1")]
 public class FixWeaponRisePercentagePlugIn075 : FixWeaponRisePercentagePlugInBase
 {

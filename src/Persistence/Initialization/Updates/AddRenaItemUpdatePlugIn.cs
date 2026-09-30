@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// This update adds the missing Rena item, which is required for the item registration feature.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddRenaItemUpdatePlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddRenaItemUpdatePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("6A1B7C3D-2E5F-4A7B-8C9D-1E1F2A3B4C6E")]
 public class AddRenaItemUpdatePlugIn : UpdatePlugInBase
 {
