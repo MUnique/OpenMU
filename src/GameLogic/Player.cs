@@ -1277,6 +1277,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return;
         }
 
+        if (this.IsExemptedFromPlayerKillPenalty(killedPlayer))
+        {
+            // e.g. a kill between the members of different gens in a battle zone.
+            return;
+        }
+
         // Killing a rival guild member (hostility) is allowed without PK penalty.
         if (this.GuildStatus is { } killerStatus
             && killedPlayer.GuildStatus is { } killedStatus
