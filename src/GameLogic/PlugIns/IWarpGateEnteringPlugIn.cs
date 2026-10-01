@@ -9,14 +9,14 @@ using System.Runtime.InteropServices;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// A plugin interface which is called when a player is about to enter a warp gate.
+/// A plugin interface which is called when a player is about to enter a warp gate, or to warp to a gate by the warp command.
 /// </summary>
 [Guid("3F6C2B1E-9A47-4D8B-B5E2-7C0D1A9E4F36")]
-[PlugInPoint("Warp gate entering", "Plugins which are called when a player is about to enter a warp gate. They can deny the entrance, e.g. while an event map is closed.")]
+[PlugInPoint("Warp gate entering", "Plugins which are called when a player is about to enter a warp gate, or to warp to a gate by the warp command (warp list). They can deny the entrance, e.g. while an event map is closed.")]
 public interface IWarpGateEnteringPlugIn
 {
     /// <summary>
-    /// Is called when a player is about to enter a warp gate.
+    /// Is called when a player is about to enter a warp gate, or to warp to a gate by the warp command.
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="targetGate">The target gate.</param>

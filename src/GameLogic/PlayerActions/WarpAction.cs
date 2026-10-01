@@ -4,8 +4,10 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions;
 
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.Interfaces;
 
@@ -21,6 +23,18 @@ public class WarpAction
     /// <param name="warpInfo">The warp information.</param>
     public async ValueTask WarpToAsync(Player player, WarpInfo warpInfo)
     {
+        if (warpInfo.Gate is { } gate
+            && player.GameContext.PlugInManager.GetPlugInPoint<IWarpGateEnteringPlugIn>() is { } plugInPoint)
+        {
+            // Checked before the requirements, because the costs are paid when they're fulfilled.
+            var eventArgs = new CancelEventArgs();
+            await plugInPoint.WarpGateEnteringAsync(player, gate, eventArgs).ConfigureAwait(false);
+            if (eventArgs.Cancel)
+            {
+                return;
+            }
+        }
+
         if (this.CheckRequirements(player, warpInfo, out var errorMessage))
         {
             await player.WarpToAsync(warpInfo.Gate!).ConfigureAwait(false);

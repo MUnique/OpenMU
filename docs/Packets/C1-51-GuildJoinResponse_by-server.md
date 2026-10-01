@@ -31,3 +31,6 @@ The result of the guild join request.
 | 5 | AlreadyHaveGuild | The player already has a guild. |
 | 6 | GuildMasterOrRequesterIsBusy | he guild master or the requesting player is busy, e.g. by another request or by an ongoing guild war. |
 | 7 | MinimumLevel6 | The requesting player needs a minimum level of 6. |
+| 161 | GuildMasterNotInGens | The guild master is not a member of a gens. |
+| 162 | GuildMasterInDifferentGens | The guild master is a member of a different gens. |
+| 163 | NotInGensOfGuildMaster | The requesting player has to be a member of the gens of the guild master. |

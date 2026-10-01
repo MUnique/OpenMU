@@ -400,6 +400,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <inheritdoc/>
     public GuildMemberStatus? GuildStatus { get; set; }
 
+    /// <summary>
+    /// Gets or sets the gens membership of the selected character.
+    /// It's <c>null</c>, if the character never joined a gens.
+    /// </summary>
+    public GensMember? GensMember { get; set; }
+
     /// <inheritdoc/>
     public Direction Rotation { get; set; }
 
@@ -1323,6 +1329,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             && this.IsSelfDefenseActive(killedPlayer))
         {
             // Self-defense is allowed.
+            return;
+        }
+
+        if (this.IsExemptedFromPlayerKillPenalty(killedPlayer))
+        {
+            // e.g. a kill between the members of different gens in a battle zone.
             return;
         }
 

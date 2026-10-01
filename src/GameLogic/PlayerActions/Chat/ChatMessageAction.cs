@@ -36,6 +36,7 @@ public class ChatMessageAction
             { ChatMessageType.Party, new ChatMessagePartyProcessor() },
             { ChatMessageType.Alliance, new ChatMessageAllianceProcessor() },
             { ChatMessageType.Guild, new ChatMessageGuildProcessor() },
+            { ChatMessageType.Gens, new ChatMessageGensProcessor() },
             { ChatMessageType.GlobalNotification, new ChatMessageGlobalNotificationProcessor() },
             { ChatMessageType.Normal, new ChatMessageNormalProcessor() },
         };
