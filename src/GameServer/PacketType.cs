@@ -531,4 +531,9 @@ public enum PacketType : byte
     /// A group of packets of the imperial guardian event.
     /// </summary>
     ImperialGuardianGroup = 0xF7,
+
+    /// <summary>
+    /// A group of packets of the gens system.
+    /// </summary>
+    GensGroup = 0xF8,
 }

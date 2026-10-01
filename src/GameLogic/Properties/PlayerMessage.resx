@@ -849,4 +849,31 @@
   <data name="ImperialGuardianLevelTooLow" xml:space="preserve">
     <value>You need at least level {0} to enter the Fortress of Imperial Guardian.</value>
   </data>
+  <data name="GensBattleZoneMembersOnly" xml:space="preserve">
+    <value>Only members of a gens can enter the battle zone.</value>
+  </data>
+  <data name="GensContributionGainedFormat" xml:space="preserve">
+    <value>You gained {0} contribution points.</value>
+  </data>
+  <data name="GensContributionLostFormat" xml:space="preserve">
+    <value>You lost {0} contribution points.</value>
+  </data>
+  <data name="GensKillAbuseWarningFormat" xml:space="preserve">
+    <value>You killed {0} {1} times recently. From {2} kills, you get no contribution points for {0} anymore.</value>
+  </data>
+  <data name="GensKillAbuseLimitFormat" xml:space="preserve">
+    <value>You killed {0} too often recently, so you get no contribution points for it.</value>
+  </data>
+  <data name="GensNoPartyWithOtherGens" xml:space="preserve">
+    <value>You cannot form a party with a member of the opposing gens.</value>
+  </data>
+  <data name="GensNoPartyInBattleZone" xml:space="preserve">
+    <value>You cannot form a party within a battle zone.</value>
+  </data>
+  <data name="GensPartyLeftInBattleZone" xml:space="preserve">
+    <value>Parties are not activated within a battle zone, so you left your party.</value>
+  </data>
+  <data name="GensRequiredToCreateGuild" xml:space="preserve">
+    <value>You have to be a member of a gens to create a guild.</value>
+  </data>
 </root>

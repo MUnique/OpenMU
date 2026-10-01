@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild;
 
+using System.ComponentModel;
+using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.Guild;
 
 /// <summary>
@@ -24,6 +26,16 @@ public class GuildCreateAction
         {
             creator.Logger.LogError($"Account {creator.Account?.LoginName} not in the right state, but {creator.PlayerState.CurrentState}.");
             return;
+        }
+
+        if (creator.GameContext.PlugInManager.GetPlugInPoint<IGuildCreatingPlugIn>() is { } plugInPoint)
+        {
+            var eventArgs = new CancelEventArgs();
+            await plugInPoint.GuildCreatingAsync(creator, eventArgs).ConfigureAwait(false);
+            if (eventArgs.Cancel)
+            {
+                return;
+            }
         }
 
         var guildServer = (creator.GameContext as IGameServerContext)?.GuildServer;

@@ -808,6 +808,96 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Only gens members can enter the battle zone. Kills between the members of different gens in it change their contribution points, without making the killer an outlaw..
+        /// </summary>
+        public static string GensBattleZonePlugIn_Description {
+            get {
+                return ResourceManager.GetString("GensBattleZonePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gens battle zone.
+        /// </summary>
+        public static string GensBattleZonePlugIn_Name {
+            get {
+                return ResourceManager.GetString("GensBattleZonePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Configures the gens system, in which the players can join one of the gens Duprian and Vanert at their npcs..
+        /// </summary>
+        public static string GensFeaturePlugIn_Description {
+            get {
+                return ResourceManager.GetString("GensFeaturePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gens system.
+        /// </summary>
+        public static string GensFeaturePlugIn_Name {
+            get {
+                return ResourceManager.GetString("GensFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loads the gens membership of a character when it enters the game, and shows it to the player..
+        /// </summary>
+        public static string GensMembershipPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GensMembershipPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gens membership.
+        /// </summary>
+        public static string GensMembershipPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GensMembershipPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Calculates the ranking of the gens in the configured interval, and updates the ranking positions and ranks of all members..
+        /// </summary>
+        public static string GensRankingPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GensRankingPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gens ranking.
+        /// </summary>
+        public static string GensRankingPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GensRankingPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The rules of the gens for parties, guilds and alliances: no party between different gens and in the battle zone, guilds and alliances only within a gens..
+        /// </summary>
+        public static string GensRelationshipRulesPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GensRelationshipRulesPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gens relationship rules.
+        /// </summary>
+        public static string GensRelationshipRulesPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GensRelationshipRulesPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Gets level of a player. Usage: /getlevel (optional:character).
         /// </summary>
         public static string GetLevelChatCommandPlugIn_Description {
