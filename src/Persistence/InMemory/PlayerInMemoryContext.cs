@@ -103,4 +103,16 @@ public class PlayerInMemoryContext : InMemoryContext, IPlayerContext
             .ConfigureAwait(false);
         return members.FirstOrDefault(member => member.CharacterId == characterId);
     }
+
+    /// <inheritdoc />
+    public async ValueTask<DataModel.Entities.GensAbuse?> GetGensAbuseAsync(
+        Guid killerId,
+        Guid victimId,
+        CancellationToken cancellationToken = default)
+    {
+        var abuses = await this.Provider.GetRepository<GensAbuse>()
+            .GetAllAsync(cancellationToken)
+            .ConfigureAwait(false);
+        return abuses.FirstOrDefault(abuse => abuse.KillerId == killerId && abuse.VictimId == victimId);
+    }
 }

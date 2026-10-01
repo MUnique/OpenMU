@@ -120,4 +120,16 @@ public interface IPlayerContext : IContext
     ValueTask<GensMember?> GetGensMemberAsync(
         Guid characterId,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets the count of the recent kills of a gens member by another gens member.
+    /// </summary>
+    /// <param name="killerId">The persistent identifier of the killing character.</param>
+    /// <param name="victimId">The persistent identifier of the killed character.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The kill count; Otherwise, null, if the killer didn't kill the victim yet.</returns>
+    ValueTask<GensAbuse?> GetGensAbuseAsync(
+        Guid killerId,
+        Guid victimId,
+        CancellationToken cancellationToken = default);
 }

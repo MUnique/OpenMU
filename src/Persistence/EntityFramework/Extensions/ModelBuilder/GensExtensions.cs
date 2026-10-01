@@ -25,4 +25,21 @@ internal static class GensExtensions
             .HasForeignKey(member => member.CharacterId)
             .OnDelete(DeleteBehavior.Cascade);
     }
+
+    /// <summary>
+    /// Applies the settings for the <see cref="GensAbuse"/> entity.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    public static void Apply(this EntityTypeBuilder<GensAbuse> builder)
+    {
+        builder.HasIndex(abuse => new { abuse.KillerId, abuse.VictimId }).IsUnique();
+        builder.HasOne<Character>()
+            .WithMany()
+            .HasForeignKey(abuse => abuse.KillerId)
+            .OnDelete(DeleteBehavior.Cascade);
+        builder.HasOne<Character>()
+            .WithMany()
+            .HasForeignKey(abuse => abuse.VictimId)
+            .OnDelete(DeleteBehavior.Cascade);
+    }
 }

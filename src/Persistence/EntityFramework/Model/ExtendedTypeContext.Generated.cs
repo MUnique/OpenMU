@@ -34,6 +34,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.CastleSiegePendingReward>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.Character>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.CharacterQuestState>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.GensAbuse>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.GensMember>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.Guild>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.GuildMember>();
