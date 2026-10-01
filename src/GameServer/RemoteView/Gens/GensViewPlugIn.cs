@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameServer.RemoteView.Gens;
 
 using System.Runtime.InteropServices;
+using MUnique.OpenMU.GameLogic.Gens;
 using MUnique.OpenMU.GameLogic.Views.Gens;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.Network.PlugIns;
@@ -54,12 +55,14 @@ public class GensViewPlugIn : IGensViewPlugIn
     {
         if (this._player.GensMember is { Gens: not GensType.None } member)
         {
+            var contribution = Math.Max(member.Contribution, 0);
+            var missingContribution = GensFeaturePlugIn.GetConfiguration(this._player.GameContext)?.GetMissingContributionForNextRank(contribution, member.Rank) ?? 0;
             await this._player.Connection.SendGensInfoAsync(
                 member.Gens.ToPacketGensType(),
                 (uint)member.RankingPosition,
                 member.Rank,
-                (uint)Math.Max(member.Contribution, 0),
-                0).ConfigureAwait(false);
+                (uint)contribution,
+                (uint)missingContribution).ConfigureAwait(false);
         }
         else
         {

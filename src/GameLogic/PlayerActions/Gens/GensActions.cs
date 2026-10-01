@@ -71,7 +71,7 @@ public class GensActions
         await player.InvokeViewPlugInAsync<IGensViewPlugIn>(p => p.ShowJoinResultAsync(result, gens)).ConfigureAwait(false);
         if (result == GensJoinResult.Success)
         {
-            await ShowChangedGensAsync(player).ConfigureAwait(false);
+            await player.ShowChangedGensAsync().ConfigureAwait(false);
         }
     }
 
@@ -126,7 +126,7 @@ public class GensActions
         await player.InvokeViewPlugInAsync<IGensViewPlugIn>(p => p.ShowLeaveResultAsync(result)).ConfigureAwait(false);
         if (result == GensLeaveResult.Success)
         {
-            await ShowChangedGensAsync(player).ConfigureAwait(false);
+            await player.ShowChangedGensAsync().ConfigureAwait(false);
         }
     }
 
@@ -250,11 +250,5 @@ public class GensActions
         }
 
         return GensLeaveResult.Success;
-    }
-
-    private static async ValueTask ShowChangedGensAsync(Player player)
-    {
-        await player.InvokeViewPlugInAsync<IGensViewPlugIn>(p => p.ShowGensInfoAsync()).ConfigureAwait(false);
-        await player.ForEachWorldObserverAsync<IAssignPlayersToGensPlugIn>(p => p.AssignPlayersToGensAsync([player]), false).ConfigureAwait(false);
     }
 }
