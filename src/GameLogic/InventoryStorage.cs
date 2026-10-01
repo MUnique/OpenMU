@@ -129,6 +129,17 @@ public class InventoryStorage : Storage, IInventoryStorage
         }
     }
 
+    /// <summary>
+    /// Raises the <see cref="EquippedItemsChanged"/> event.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <param name="isEquipped">Whether <paramref name="item"/> is equipped or not.</param>
+    /// <returns>True, if successful.</returns>
+    public ValueTask RaiseEquippedItemsChangedAsync(Item item, bool isEquipped)
+    {
+        return this.EquippedItemsChanged?.Invoke(new ItemEventArgs(item, isEquipped)) ?? ValueTask.CompletedTask;
+    }
+
     private bool IsWearingSlot(int slot)
     {
         return slot >= FirstEquippableItemSlotIndex && slot <= LastEquippableItemSlotIndex;
