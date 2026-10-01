@@ -4,8 +4,10 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Gens;
 
+using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Gens;
 using MUnique.OpenMU.GameLogic.Views.Gens;
+using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.Interfaces;
 
 /// <summary>
@@ -145,8 +147,8 @@ public class GensActions
     }
 
     /// <summary>
-    /// Handles the request of the gens ranking reward, at the npc of the gens.
-    /// The rewards aren't implemented yet, so a member of the gens of the npc is never eligible.
+    /// Handles the request of the monthly gens ranking reward, at the npc of the gens.
+    /// In the reward period of a month, a member gets the reward of its current rank once.
     /// The game client waits for the result, so it's always sent for a gens npc.
     /// </summary>
     /// <param name="player">The player.</param>
@@ -170,15 +172,94 @@ public class GensActions
             return;
         }
 
-        var member = await player.GetGensMemberAsync().ConfigureAwait(false);
-        var memberGens = member?.Gens ?? GensType.None;
-        var result = memberGens switch
+        // The checks and the claim are done in one exclusive operation, so that two requests can't both get the reward.
+        var result = await player.RunPersistenceExclusiveAsync(async () =>
         {
-            GensType.None => GensRewardResult.NotJoined,
-            _ when memberGens != npcGens => GensRewardResult.DifferentGensNpc,
-            _ => GensRewardResult.NotEligible,
-        };
+            var member = await player.GetGensMemberAsync().ConfigureAwait(false);
+            var memberGens = member?.Gens ?? GensType.None;
+            if (memberGens == GensType.None)
+            {
+                return GensRewardResult.NotJoined;
+            }
+
+            if (memberGens != npcGens)
+            {
+                return GensRewardResult.DifferentGensNpc;
+            }
+
+            var now = DateTime.UtcNow;
+            if (now.Day < configuration.RewardStartDay || now.Day > configuration.RewardEndDay)
+            {
+                return GensRewardResult.OutsideRewardPeriod;
+            }
+
+            if (member!.RewardClaimedAt is { } claimedAt && claimedAt.Year == now.Year && claimedAt.Month == now.Month)
+            {
+                return GensRewardResult.AlreadyClaimed;
+            }
+
+            if (configuration.Rewards.FirstOrDefault(reward => reward.Rank == member.Rank) is not { Count: > 0 } reward
+                || player.GameContext.Configuration.Items.FirstOrDefault(item => item.Group == reward.ItemGroup && item.Number == reward.ItemNumber) is not { } itemDefinition)
+            {
+                return GensRewardResult.NotEligible;
+            }
+
+            if (!await TryAddRewardItemsAsync(player, itemDefinition, reward.Count).ConfigureAwait(false))
+            {
+                return GensRewardResult.InventoryFull;
+            }
+
+            member.RewardClaimedAt = now;
+            await player.SaveProgressAsync().ConfigureAwait(false);
+            return GensRewardResult.Success;
+        }).ConfigureAwait(false);
+
+        if (result == GensRewardResult.Success)
+        {
+            player.Logger.LogInformation("Player {player} claimed the gens reward.", player);
+        }
+
         await player.InvokeViewPlugInAsync<IGensViewPlugIn>(p => p.ShowRewardResultAsync(result)).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Adds the reward items to the inventory of the player. When not all fit into it, the added ones are removed again.
+    /// </summary>
+    private static async ValueTask<bool> TryAddRewardItemsAsync(Player player, ItemDefinition itemDefinition, int count)
+    {
+        if (player.Inventory is not { } inventory
+            || inventory.FreeSlots.Count() < count * itemDefinition.Width * itemDefinition.Height)
+        {
+            return false;
+        }
+
+        var addedItems = new List<Item>(count);
+        for (var i = 0; i < count; i++)
+        {
+            var item = player.PersistenceContext.CreateNew<Item>();
+            item.Definition = itemDefinition;
+            item.Durability = itemDefinition.Durability;
+            if (!await inventory.AddItemAsync(item).ConfigureAwait(false))
+            {
+                await player.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
+                foreach (var addedItem in addedItems)
+                {
+                    await inventory.RemoveItemAsync(addedItem).ConfigureAwait(false);
+                    await player.PersistenceContext.DeleteAsync(addedItem).ConfigureAwait(false);
+                }
+
+                return false;
+            }
+
+            addedItems.Add(item);
+        }
+
+        foreach (var item in addedItems)
+        {
+            await player.InvokeViewPlugInAsync<IItemAppearPlugIn>(p => p.ItemAppearAsync(item)).ConfigureAwait(false);
+        }
+
+        return true;
     }
 
     private static GensType GetGensOfOpenedNpc(Player player, GensConfiguration configuration)
