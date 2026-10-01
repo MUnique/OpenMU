@@ -4429,6 +4429,257 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
 
         /// <summary>Gets the localized RoleViewer text.</summary>
         public static string RoleViewer => ResourceManager.GetString("RoleViewer", resourceCulture);
-
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Captions.
+        /// </summary>
+        public static string Captions {
+            get {
+                return ResourceManager.GetString("Captions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Compares the captions of the configuration, e.g. the names of maps and monsters, with their built-in sources. New and updated translations are selected; customized texts are only changed if you select them..
+        /// </summary>
+        public static string CaptionsDescription {
+            get {
+                return ResourceManager.GetString("CaptionsDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All available localizations are in place..
+        /// </summary>
+        public static string AllLocalizationsInPlace {
+            get {
+                return ResourceManager.GetString("AllLocalizationsInPlace", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Comparing the captions with their sources ....
+        /// </summary>
+        public static string CaptionsLoading {
+            get {
+                return ResourceManager.GetString("CaptionsLoading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}: {1} changes.
+        /// </summary>
+        public static string CaptionLanguageSummary {
+            get {
+                return ResourceManager.GetString("CaptionLanguageSummary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All languages.
+        /// </summary>
+        public static string CaptionAllLanguages {
+            get {
+                return ResourceManager.GetString("CaptionAllLanguages", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All kinds of changes.
+        /// </summary>
+        public static string CaptionAllKinds {
+            get {
+                return ResourceManager.GetString("CaptionAllKinds", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Neutral (English).
+        /// </summary>
+        public static string CaptionNeutralText {
+            get {
+                return ResourceManager.GetString("CaptionNeutralText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Object.
+        /// </summary>
+        public static string CaptionObject {
+            get {
+                return ResourceManager.GetString("CaptionObject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Property.
+        /// </summary>
+        public static string CaptionProperty {
+            get {
+                return ResourceManager.GetString("CaptionProperty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Language.
+        /// </summary>
+        public static string CaptionLanguage {
+            get {
+                return ResourceManager.GetString("CaptionLanguage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change.
+        /// </summary>
+        public static string CaptionChange {
+            get {
+                return ResourceManager.GetString("CaptionChange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current text.
+        /// </summary>
+        public static string CaptionCurrentText {
+            get {
+                return ResourceManager.GetString("CaptionCurrentText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New text.
+        /// </summary>
+        public static string CaptionSourceText {
+            get {
+                return ResourceManager.GetString("CaptionSourceText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New.
+        /// </summary>
+        public static string CaptionChangeKind_Missing {
+            get {
+                return ResourceManager.GetString("CaptionChangeKind_Missing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Updated.
+        /// </summary>
+        public static string CaptionChangeKind_Updated {
+            get {
+                return ResourceManager.GetString("CaptionChangeKind_Updated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Removed.
+        /// </summary>
+        public static string CaptionChangeKind_Removed {
+            get {
+                return ResourceManager.GetString("CaptionChangeKind_Removed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Customized.
+        /// </summary>
+        public static string CaptionChangeKind_Customized {
+            get {
+                return ResourceManager.GetString("CaptionChangeKind_Customized", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select recommended.
+        /// </summary>
+        public static string SelectRecommended {
+            get {
+                return ResourceManager.GetString("SelectRecommended", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select none.
+        /// </summary>
+        public static string SelectNone {
+            get {
+                return ResourceManager.GetString("SelectNone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Apply selected changes.
+        /// </summary>
+        public static string ApplySelectedChanges {
+            get {
+                return ResourceManager.GetString("ApplySelectedChanges", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Applying changes ....
+        /// </summary>
+        public static string ApplyingChanges {
+            get {
+                return ResourceManager.GetString("ApplyingChanges", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} changes have been applied..
+        /// </summary>
+        public static string AppliedCaptionChanges {
+            get {
+                return ResourceManager.GetString("AppliedCaptionChanges", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Link built-in captions.
+        /// </summary>
+        public static string LinkBuiltInCaptions {
+            get {
+                return ResourceManager.GetString("LinkBuiltInCaptions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Configurations which were created with an older version don't know the sources of their built-in captions yet, so they can't receive new translations. Linking executes the data initialization in memory and links the matching captions to their sources. No texts are changed..
+        /// </summary>
+        public static string LinkBuiltInCaptionsDescription {
+            get {
+                return ResourceManager.GetString("LinkBuiltInCaptionsDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Linking built-in captions ....
+        /// </summary>
+        public static string LinkingBuiltInCaptions {
+            get {
+                return ResourceManager.GetString("LinkingBuiltInCaptions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} captions have been linked to their sources. {1} captions were skipped because their neutral text was customized..
+        /// </summary>
+        public static string LinkedBuiltInCaptions {
+            get {
+                return ResourceManager.GetString("LinkedBuiltInCaptions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} sources of captions are not available in this version, so these captions can't be compared, e.g. {1}..
+        /// </summary>
+        public static string CaptionsUnresolvedSources {
+            get {
+                return ResourceManager.GetString("CaptionsUnresolvedSources", resourceCulture);
+            }
+        }
     }
 }

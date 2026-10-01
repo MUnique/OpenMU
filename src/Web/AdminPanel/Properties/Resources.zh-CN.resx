@@ -1348,4 +1348,88 @@
   <data name="RoleOperator" xml:space="preserve"><value>操作员</value></data>
   <data name="RoleViewer" xml:space="preserve"><value>只读用户</value></data>
   <data name="PartyBadgeTitle" xml:space="preserve"><value>{0}的队伍：{1} 名成员</value></data>
+  <data name="Captions" xml:space="preserve">
+    <value>配置名称</value>
+  </data>
+  <data name="CaptionsDescription" xml:space="preserve">
+    <value>将配置中的名称（例如地图和怪物名称）与其内置来源进行比较。新的和已更新的翻译会被选中；自定义文本仅在您选择时才会更改。</value>
+  </data>
+  <data name="AllLocalizationsInPlace" xml:space="preserve">
+    <value>所有可用的本地化内容均已就位。</value>
+  </data>
+  <data name="CaptionsLoading" xml:space="preserve">
+    <value>正在将名称与其来源进行比较……</value>
+  </data>
+  <data name="CaptionLanguageSummary" xml:space="preserve">
+    <value>{0}：{1} 项更改</value>
+  </data>
+  <data name="CaptionAllLanguages" xml:space="preserve">
+    <value>所有语言</value>
+  </data>
+  <data name="CaptionAllKinds" xml:space="preserve">
+    <value>所有更改类型</value>
+  </data>
+  <data name="CaptionNeutralText" xml:space="preserve">
+    <value>中性（英语）</value>
+  </data>
+  <data name="CaptionObject" xml:space="preserve">
+    <value>对象</value>
+  </data>
+  <data name="CaptionProperty" xml:space="preserve">
+    <value>属性</value>
+  </data>
+  <data name="CaptionLanguage" xml:space="preserve">
+    <value>语言</value>
+  </data>
+  <data name="CaptionChange" xml:space="preserve">
+    <value>更改</value>
+  </data>
+  <data name="CaptionCurrentText" xml:space="preserve">
+    <value>当前文本</value>
+  </data>
+  <data name="CaptionSourceText" xml:space="preserve">
+    <value>新文本</value>
+  </data>
+  <data name="CaptionChangeKind_Missing" xml:space="preserve">
+    <value>新增</value>
+  </data>
+  <data name="CaptionChangeKind_Updated" xml:space="preserve">
+    <value>已更新</value>
+  </data>
+  <data name="CaptionChangeKind_Removed" xml:space="preserve">
+    <value>已移除</value>
+  </data>
+  <data name="CaptionChangeKind_Customized" xml:space="preserve">
+    <value>已自定义</value>
+  </data>
+  <data name="SelectRecommended" xml:space="preserve">
+    <value>选择推荐项</value>
+  </data>
+  <data name="SelectNone" xml:space="preserve">
+    <value>全部取消选择</value>
+  </data>
+  <data name="ApplySelectedChanges" xml:space="preserve">
+    <value>应用所选更改</value>
+  </data>
+  <data name="ApplyingChanges" xml:space="preserve">
+    <value>正在应用更改……</value>
+  </data>
+  <data name="AppliedCaptionChanges" xml:space="preserve">
+    <value>已应用 {0} 项更改。</value>
+  </data>
+  <data name="LinkBuiltInCaptions" xml:space="preserve">
+    <value>关联内置名称</value>
+  </data>
+  <data name="LinkBuiltInCaptionsDescription" xml:space="preserve">
+    <value>使用旧版本创建的配置尚不知道其内置名称的来源，因此无法接收新的翻译。关联操作会在内存中执行数据初始化，并将匹配的名称与其来源关联。不会更改任何文本。</value>
+  </data>
+  <data name="LinkingBuiltInCaptions" xml:space="preserve">
+    <value>正在关联内置名称……</value>
+  </data>
+  <data name="LinkedBuiltInCaptions" xml:space="preserve">
+    <value>已将 {0} 个名称与其来源关联。由于中性文本已被自定义，跳过了 {1} 个名称。</value>
+  </data>
+  <data name="CaptionsUnresolvedSources" xml:space="preserve">
+    <value>此版本中有 {0} 个名称来源不可用，因此无法比较这些名称，例如 {1}。</value>
+  </data>
 </root>
