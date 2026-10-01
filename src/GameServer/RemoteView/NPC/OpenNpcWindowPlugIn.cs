@@ -34,7 +34,9 @@ public class OpenNpcWindowPlugIn : IOpenNpcWindowPlugIn
         {
             if (this._player.OpenedNpc is not null)
             {
-                await this._player.Connection.SendOpenNpcDialogAsync(this._player.OpenedNpc.Definition.Number.ToUnsigned(), 0).ConfigureAwait(false);
+                // The client shows the contribution points only at the npc of the own gens.
+                var contribution = (uint)Math.Max(this._player.GensMember?.Contribution ?? 0, 0);
+                await this._player.Connection.SendOpenNpcDialogAsync(this._player.OpenedNpc.Definition.Number.ToUnsigned(), contribution).ConfigureAwait(false);
             }
         }
         else if (window == NpcWindow.LugardDoppelgangerEntry)

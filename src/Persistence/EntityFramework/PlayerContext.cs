@@ -147,4 +147,17 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
                 .ConfigureAwait(false);
         }
     }
+
+    /// <inheritdoc />
+    public async ValueTask<DataModel.Entities.GensMember?> GetGensMemberAsync(
+        Guid characterId,
+        CancellationToken cancellationToken = default)
+    {
+        using (this.RepositoryProvider.ContextStack.UseContext(this))
+        {
+            return await this.Context.Set<GensMember>()
+                .FirstOrDefaultAsync(member => member.CharacterId == characterId, cancellationToken)
+                .ConfigureAwait(false);
+        }
+    }
 }

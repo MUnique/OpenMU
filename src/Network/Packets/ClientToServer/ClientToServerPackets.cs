@@ -15793,8 +15793,8 @@ public readonly struct GensJoinRequest
     /// </summary>
     public GensType GensType
     {
-        get => (GensType)this._data.Span[3];
-        set => this._data.Span[3] = (byte)value;
+        get => (GensType)this._data.Span[4];
+        set => this._data.Span[4] = (byte)value;
     }
 
     /// <summary>
@@ -15956,8 +15956,8 @@ public readonly struct GensRewardRequest
     /// </summary>
     public GensType GensType
     {
-        get => (GensType)this._data.Span[3];
-        set => this._data.Span[3] = (byte)value;
+        get => (GensType)this._data.Span[4];
+        set => this._data.Span[4] = (byte)value;
     }
 
     /// <summary>
