@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.Gens;
 
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Threading;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.PlugIns;
 using Nito.AsyncEx;
@@ -29,9 +30,11 @@ public class GensRankingPlugIn : IPeriodicTaskPlugIn
 
     private DateTime _nextRanking = DateTime.MinValue;
 
-    private int _rankingVersion;
-
-    private IReadOnlyDictionary<Guid, (byte Rank, int Position)> _ranking = new Dictionary<Guid, (byte Rank, int Position)>();
+    /// <summary>
+    /// The last calculated ranking. It's replaced as a whole, so that a game server never applies
+    /// the version of one ranking with the entries of another one.
+    /// </summary>
+    private RankingSnapshot _ranking = new(0, new Dictionary<Guid, (byte Rank, int Position)>());
 
     /// <inheritdoc />
     public async ValueTask ExecuteTaskAsync(GameContext gameContext)
@@ -54,11 +57,11 @@ public class GensRankingPlugIn : IPeriodicTaskPlugIn
         }
 
         var appliedRanking = this._appliedRankings.GetOrCreateValue(gameContext);
-        var rankingVersion = this._rankingVersion;
-        if (appliedRanking.Value != rankingVersion)
+        var ranking = Volatile.Read(ref this._ranking);
+        if (appliedRanking.Value != ranking.Version)
         {
-            appliedRanking.Value = rankingVersion;
-            await UpdateOnlineMembersAsync(gameContext, this._ranking).ConfigureAwait(false);
+            appliedRanking.Value = ranking.Version;
+            await UpdateOnlineMembersAsync(gameContext, ranking.Entries).ConfigureAwait(false);
         }
     }
 
@@ -145,8 +148,7 @@ public class GensRankingPlugIn : IPeriodicTaskPlugIn
 
             await RemoveExpiredKillCountsAsync(gameContext, configuration).ConfigureAwait(false);
 
-            this._ranking = ranking;
-            this._rankingVersion++;
+            Volatile.Write(ref this._ranking, new RankingSnapshot(this._ranking.Version + 1, ranking));
             gameContext.LoggerFactory.CreateLogger<GensRankingPlugIn>().LogInformation("Calculated the gens ranking of {count} members.", ranking.Count);
         }
         catch (Exception ex)
@@ -154,4 +156,11 @@ public class GensRankingPlugIn : IPeriodicTaskPlugIn
             gameContext.LoggerFactory.CreateLogger<GensRankingPlugIn>().LogError(ex, "Error when calculating the gens ranking.");
         }
     }
+
+    /// <summary>
+    /// A calculated ranking.
+    /// </summary>
+    /// <param name="Version">The version of the ranking, which increases with each calculation.</param>
+    /// <param name="Entries">The rank and ranking position of each member, by the identifier of its character.</param>
+    private sealed record RankingSnapshot(int Version, IReadOnlyDictionary<Guid, (byte Rank, int Position)> Entries);
 }

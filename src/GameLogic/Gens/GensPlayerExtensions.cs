@@ -40,17 +40,6 @@ public static class GensPlayerExtensions
     }
 
     /// <summary>
-    /// Determines whether the player is in a map of the battle zone.
-    /// </summary>
-    /// <param name="player">The player.</param>
-    /// <param name="configuration">The configuration of the gens system.</param>
-    /// <returns><c>true</c>, if the player is in a map of the battle zone; otherwise, <c>false</c>.</returns>
-    public static bool IsInBattleZone(this Player player, GensConfiguration configuration)
-    {
-        return player.CurrentMap?.Definition is { } map && configuration.IsBattleZone(map.Number);
-    }
-
-    /// <summary>
     /// Shows the changed gens, rank or contribution of the player to itself and to the observing players.
     /// </summary>
     /// <param name="player">The player.</param>
