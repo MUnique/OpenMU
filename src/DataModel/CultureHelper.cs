@@ -5,10 +5,9 @@
 namespace MUnique.OpenMU.DataModel;
 
 using System.Globalization;
-using System.IO;
 using System.Resources;
+using MUnique.OpenMU.Interfaces;
 using Nito.Disposables;
-using Nito.Disposables.Internals;
 
 /// <summary>
 /// Helper class for culture related operations.
@@ -55,26 +54,15 @@ public static class CultureHelper
     /// <returns>The available cultures of the given resource type.</returns>
     public static IEnumerable<CultureInfo> GetAvailableCultures<TResources>()
     {
-        var resourceManager = new ResourceManager(typeof(TResources));
+        return AvailableCulturesCache<TResources>.Cultures;
+    }
 
-        // ICU can enumerate zh-Hans-CN instead of zh-CN. Include the exact culture names
-        // of deployed satellite assemblies so regional resources are found on every platform.
-        var assembly = typeof(TResources).Assembly;
-        var directory = Path.GetDirectoryName(assembly.Location) ?? AppContext.BaseDirectory;
-        var satelliteName = $"{assembly.GetName().Name}.resources.dll";
-        var deployedCultures = Directory.EnumerateDirectories(directory)
-            .Where(path => File.Exists(Path.Combine(path, satelliteName)))
-            .Select(path => CultureInfo.GetCultureInfo(Path.GetFileName(path)));
-        var cultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
-            .Concat(deployedCultures)
-            .Distinct();
-        var result = cultures
-            .Except([CultureInfo.InvariantCulture])
-            .Where(culture => culture is { IsNeutralCulture: true, TwoLetterISOLanguageName: "en" }
-                              || !object.Equals(resourceManager.GetResourceSet(culture, true, false), null))
-            .WhereNotNull()
-            .ToList();
-
-        return result;
+    private static class AvailableCulturesCache<TResources>
+    {
+        public static readonly IReadOnlyList<CultureInfo> Cultures =
+        [
+            CultureInfo.GetCultureInfo(LocalizedString.NeutralLanguageCode),
+            .. new ResourceManager(typeof(TResources)).AvailableCultures,
+        ];
     }
 }
