@@ -2,19 +2,21 @@
 title: Gens
 sidebar_label: Gens
 sidebar_position: 3
-description: The two families Duprian and Vanert, which players of Season 6 can join at the gens npcs.
+description: The two families Duprian and Vanert, which players of Season 6 can join at the gens npcs, and their fights in the battle zone.
 ---
 
 # Gens
 
 The gens are the two families of Season 6, **Duprian** and **Vanert**. A player
 joins one of them at its npc, and the game client then shows the gens mark and
-rank next to the name of the character.
+rank next to the name of the character. The members of the two gens fight each
+other in the battle zone for contribution points, which give them their rank.
 
 :::note
-The gens system is implemented step by step. Joining and leaving a gens works.
-The battle zone, the contribution for kills, the ranking and the monthly rewards
-are not implemented yet.
+The gens system is implemented step by step. Joining and leaving a gens, the
+battle zone, the contribution for kills and the ranking work. The party, guild
+and alliance rules, the gens chat and the monthly rewards are not implemented
+yet.
 :::
 
 ## Joining and leaving
@@ -42,8 +44,76 @@ The option of the gens ranking reward at the npc is answered, but a member
 isn't eligible for a reward yet, because the rewards aren't implemented.
 
 The npc shows the contribution points of a member, when it talks to the npc of
-its own gens. The gens info window (key `B`) shows the gens, the rank and the
-contribution.
+its own gens. The gens info window (key `B`) shows the gens, the rank, the
+position in the ranking and the contribution, and how many points are missing
+for the next rank.
+
+## Battle zone
+
+The battle zone is Vulcanus by default, which the game client marks as
+*(Battle)* in its warp list. Only gens members can enter it, by the warp list or
+by a warp gate.
+
+When a member kills a member of the other gens in the battle zone:
+
+* the killer doesn't become an outlaw, and attacks don't start the self-defense;
+* the killer gets contribution points, and the victim loses some (never below 0).
+
+The points depend on the level difference:
+
+| Level of the killer | Killer gets | Victim loses |
+|---|---|---|
+| more than 50 below the victim | 7 | 3 |
+| 11 to 50 below the victim | 6 | 3 |
+| up to 10 below or above the victim | 5 | 3 |
+| 11 to 30 above the victim | 3 | 3 |
+| 31 to 50 above the victim | 2 | 1 |
+| more than 50 above the victim | 1 | 1 |
+
+When the victim has a better rank, the killer gets a bonus of 3, 4 or 5 points
+for a difference of 1, 2 or 3 ranks and more. A killer with the rank *Knight*
+(9) or lower gets 1, 2 or 3 bonus points instead. A victim without contribution
+points gives no points.
+
+Repeated kills of the same victim are limited: from the third kill within an
+hour, the killer is warned, and from the sixth one, the kills don't change the
+contribution points anymore. The count starts again an hour after the last kill.
+The counts are saved, so they don't start again when one of the players logs
+out.
+
+Kills during a duel don't change the contribution points.
+
+:::note
+A character which isn't a gens member, but is in the battle zone when it logs
+in (e.g. because the battle zone was configured differently before), isn't
+moved out of it.
+:::
+
+## Ranks and ranking
+
+There are 14 ranks. The lower ranks only depend on the contribution points, the
+higher ones also on the position in the ranking of the own gens:
+
+| Rank | Title | Requirement |
+|---|---|---|
+| 14 | Private | 0 points |
+| 13 | Sergeant | 500 points |
+| 12 | Lieutenant | 1500 points |
+| 11 | Officer | 3000 points |
+| 10 | Guard Prefect | 6000 points |
+| 9 | Knight | 10000 points |
+| 8 | Superior Knight | 10000 points, position 201 to 300 |
+| 7 | Knight Commander | 10000 points, position 101 to 200 |
+| 6 | Baron | 10000 points, position 51 to 100 |
+| 5 | Viscount | 10000 points, position 31 to 50 |
+| 4 | Count | 10000 points, position 11 to 30 |
+| 3 | Marquis | 10000 points, position 6 to 10 |
+| 2 | Duke | 10000 points, position 2 to 5 |
+| 1 | Grand Duke | 10000 points, position 1 |
+
+The ranks by points change right after a kill. The ranking of each gens is
+calculated when the server starts and then every two hours by default; with the
+same points, the member which joined first is ranked higher.
 
 ## Configuration
 
@@ -58,6 +128,16 @@ When the plugin is deactivated, players can't join or leave a gens.
 | Rejoin wait time | 0 | The time a character has to wait after leaving a gens, until it can join again. |
 | Duprian npc number | 543 | The npc of the Duprian gens. |
 | Vanert npc number | 544 | The npc of the Vanert gens. |
+| Battle zone map numbers | 63 | The maps of the battle zone. |
+| Kill contributions | see above | The points of a kill by the level difference. |
+| Rank bonuses | see above | The bonus points for a victim with a better rank. |
+| Low rank bonus from rank | 9 | The rank from which a killer gets the lower bonus. |
+| Minimum victim contribution | 1 | The points which a victim needs, so that the killer gets points. |
+| Abuse warning kill count | 3 | The kills of the same victim from which the killer is warned. |
+| Abuse limit kill count | 6 | The kills of the same victim from which they give no points. |
+| Abuse reset time | 60 minutes | The time after which the count of kills starts again. |
+| Ranks | see above | The ranks and their requirements. |
+| Ranking interval | 2 hours | The interval of the ranking. |
 
-The memberships are kept in their own table (`GensMember`), which is part of the
-backup of the accounts.
+The memberships (`GensMember`) and the counts of the kills (`GensAbuse`) are
+kept in their own tables, which are part of the backup of the accounts.
