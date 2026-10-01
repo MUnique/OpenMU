@@ -39,6 +39,74 @@ internal class CrywolfFortress : BaseMapInitializer
     /// <inheritdoc/>
     protected override string MapName => Name;
 
+    /// <summary>
+    /// Adds the drop item groups for the materials of the Horn of Fenrir to the map, or updates them.
+    /// </summary>
+    /// <remarks>
+    /// In Season 6, the materials drop only in Crywolf. The rates follow the known Season 6 servers:
+    /// Splinter of Armor with 5 %, Bless of Guardian with 2 % and Claw of Beast with 0.5 %, from all monsters of the map.
+    /// These servers roll the materials before the normal drop and skip the normal drop when one of them drops.
+    /// Here, they share the roll with the other drop item groups of the map instead.
+    /// A material which is already dropped by another group of the map (e.g. configured by an admin) is skipped.
+    /// </remarks>
+    /// <param name="context">The context.</param>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    /// <param name="map">The Crywolf map definition.</param>
+    internal static void AddFenrirMaterialDropGroups(IContext context, GameConfiguration gameConfiguration, GameMapDefinition map)
+    {
+        (short Index, short ItemNumber, string Description, double Chance)[] materials =
+        [
+            (1, 32, "Splinter of Armor", 0.05),
+            (2, 33, "Bless of Guardian", 0.02),
+            (3, 34, "Claw of Beast", 0.005),
+        ];
+
+        foreach (var material in materials)
+        {
+            if (gameConfiguration.Items.FirstOrDefault(item => item.Group == 13 && item.Number == material.ItemNumber) is not { } item)
+            {
+                continue;
+            }
+
+            var id = GuidHelper.CreateGuid<DropItemGroup>(Number, material.Index);
+            if (map.DropItemGroups.Any(group => group.GetId() != id && group.PossibleItems.Contains(item)))
+            {
+                continue;
+            }
+
+            var dropGroup = gameConfiguration.DropItemGroups.FirstOrDefault(group => group.GetId() == id);
+            if (dropGroup is null)
+            {
+                dropGroup = context.CreateNew<DropItemGroup>();
+                dropGroup.SetGuid(Number, material.Index);
+                gameConfiguration.DropItemGroups.Add(dropGroup);
+            }
+
+            dropGroup.Description = material.Description;
+            dropGroup.Chance = material.Chance;
+            dropGroup.MinimumMonsterLevel = null;
+            dropGroup.MaximumMonsterLevel = null;
+            dropGroup.ItemLevel = 0;
+            if (dropGroup.PossibleItems.Count != 1 || !dropGroup.PossibleItems.Contains(item))
+            {
+                dropGroup.PossibleItems.Clear();
+                dropGroup.PossibleItems.Add(item);
+            }
+
+            if (!map.DropItemGroups.Contains(dropGroup))
+            {
+                map.DropItemGroups.Add(dropGroup);
+            }
+        }
+    }
+
+    /// <inheritdoc />
+    protected override void InitializeDropItemGroups()
+    {
+        base.InitializeDropItemGroups();
+        AddFenrirMaterialDropGroups(this.Context, this.GameConfiguration, this.MapDefinition!);
+    }
+
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
     {

@@ -45,9 +45,6 @@ public class AddMissingMerchantStoresPlugIn : UpdatePlugInBase
     private static readonly short[] EmptyMerchantNpcNumbers = [545];
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.AddMissingMerchantStores;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />

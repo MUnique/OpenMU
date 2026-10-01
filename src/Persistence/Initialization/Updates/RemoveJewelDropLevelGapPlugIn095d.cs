@@ -20,9 +20,6 @@ public class RemoveJewelDropLevelGapPlugIn095D : RemoveJewelDropLevelGapPlugInBa
     public override string DataInitializationKey => Version095d.DataInitialization.Id;
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.RemoveJewelDropLevelGap095d;
-
-    /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
         await base.ApplyAsync(context, gameConfiguration).ConfigureAwait(false);

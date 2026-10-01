@@ -36,9 +36,6 @@ public class AddCrywolfEventUpdatePlugIn : UpdatePlugInBase
     public override string Description => PlugInDescription;
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.AddCrywolfEvent;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />

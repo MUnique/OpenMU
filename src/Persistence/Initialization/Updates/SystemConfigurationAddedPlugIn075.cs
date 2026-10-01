@@ -19,7 +19,4 @@ public class SystemConfigurationAddedPlugIn075 : SystemConfigurationAddedPlugInB
 {
     /// <inheritdoc />
     public override string DataInitializationKey => Version075.DataInitialization.Id;
-
-    /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.SystemConfigurationAdded075;
 }

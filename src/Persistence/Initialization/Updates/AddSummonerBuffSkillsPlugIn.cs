@@ -40,9 +40,6 @@ public class AddSummonerBuffSkillsPlugIn : UpdatePlugInBase
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.AddSummonerBuffSkills;
-
-    /// <inheritdoc />
     public override bool IsMandatory => true;
 
     /// <inheritdoc />

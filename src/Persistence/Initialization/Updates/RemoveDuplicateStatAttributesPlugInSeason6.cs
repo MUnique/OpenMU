@@ -17,8 +17,5 @@ using MUnique.OpenMU.PlugIns;
 public class RemoveDuplicateStatAttributesPlugInSeason6 : RemoveDuplicateStatAttributesPlugInBase
 {
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.RemoveDuplicateStatAttributesSeason6;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => DataInitialization.Id;
 }

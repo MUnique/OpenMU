@@ -34,9 +34,6 @@ public class ConfigureCastleSiegeParticipationUpdatePlugIn : UpdatePlugInBase
     public override string Description => PlugInDescription;
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.ConfigureCastleSiegeParticipation;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />

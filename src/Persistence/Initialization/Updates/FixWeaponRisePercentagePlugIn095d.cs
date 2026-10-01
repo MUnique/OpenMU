@@ -17,7 +17,4 @@ public class FixWeaponRisePercentagePlugIn095D : FixWeaponRisePercentagePlugInBa
 {
     /// <inheritdoc />
     public override string DataInitializationKey => Version095d.DataInitialization.Id;
-
-    /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixWeaponRisePercentage095d;
 }

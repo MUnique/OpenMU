@@ -28,9 +28,6 @@ public class AddCrestOfMonarchDropGroupUpdateSeason6 : UpdatePlugInBase
     internal const string PlugInDescription = "Adds the Crest of Monarch (Loch's Feather +1) drop item group to Icarus.";
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.AddCrestOfMonarchDropGroupSeason6;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />

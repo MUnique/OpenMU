@@ -3,6 +3,7 @@ using System;
 using MUnique.OpenMU.Persistence.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 {
     [DbContext(typeof(EntityDataContext))]
-    partial class EntityDataContextModelSnapshot : ModelSnapshot
+    [Migration("20260926235208_MigrateConfigurationUpdatesToGuidKey")]
+    partial class MigrateConfigurationUpdatesToGuidKey
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1202,29 +1205,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.ToTable("ConstValueAttribute", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.CrywolfData", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("IsOccupied")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsWarRunning")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime?>("LastBattleEnd")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("WarStart")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("CrywolfData", "data");
-                });
-
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.DropItemGroup", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1638,32 +1618,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasIndex("DropItemGroupId");
 
                     b.ToTable("GameMapDefinitionDropItemGroup", "config");
-                });
-
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GameMapTerrainVariant", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid?>("GameMapDefinitionId")
-                        .HasColumnType("uuid");
-
-                    b.Property<short>("Number")
-                        .HasColumnType("smallint");
-
-                    b.Property<byte[]>("TerrainData")
-                        .HasColumnType("bytea");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GameMapDefinitionId");
-
-                    b.ToTable("GameMapTerrainVariant", "config");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GameServerConfiguration", b =>
@@ -2144,25 +2098,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<bool>("IsBoundToCharacter")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("IsDroppable")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsPersonalStoreSellable")
-                        .HasColumnType("boolean");
-
                     b.Property<bool>("IsQuestItem")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsRepairable")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsSellableToNpc")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsStorable")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsTradable")
                         .HasColumnType("boolean");
 
                     b.Property<Guid?>("ItemSlotId")
@@ -4604,14 +4540,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Navigation("GameMapDefinition");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GameMapTerrainVariant", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameMapDefinition", null)
-                        .WithMany("RawTerrainVariants")
-                        .HasForeignKey("GameMapDefinitionId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GameServerConfigurationGameMapDefinition", b =>
                 {
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameMapDefinition", "GameMapDefinition")
@@ -5828,8 +5756,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Navigation("RawMapRequirements");
 
                     b.Navigation("RawMonsterSpawns");
-
-                    b.Navigation("RawTerrainVariants");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GameServerConfiguration", b =>
