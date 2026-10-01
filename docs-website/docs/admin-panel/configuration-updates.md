@@ -52,18 +52,19 @@ applied on top of a current schema.
   yourself in the [game configuration](game-configuration.md).
 * Apply updates during a maintenance window, since a restart is needed anyway.
 
-## Simplified Chinese configuration names
+## Configuration name translations
 
-The optional **Add missing Simplified Chinese configuration names** update
-adds sourced Chinese names for built-in classes, maps, merchants, monsters and
-NPCs. It is available for 0.75, 0.95d and Season 6 configurations. Freshly
-initialized databases already include these names.
+The optional **Add configuration name translations** update supplements names of
+built-in classes, maps, merchants, monsters and NPCs from the available language
+resources. It supports 0.75, 0.95d and Season 6 configurations. This batch includes
+382 Simplified Chinese name mappings. Freshly initialized databases already
+include the translations and record the corresponding update as installed.
 
 Back up the database, apply the update on `/config-updates`, then restart the
-application. The update fills missing Chinese translations and replaces exact
-copies of the neutral English name. All other existing Chinese names are preserved,
-even if they differ from the provided mapping. Other languages, custom neutral
-names and gameplay settings are unchanged.
+application. Only missing translations and exact copies of the neutral English
+name are filled. Custom neutral names and existing custom translations are
+preserved, including older language-only values such as `zh`. Regional entries
+such as `zh-CN` and `zh-TW` can coexist. Gameplay settings remain unchanged.
 Reapplying the mapping does not create duplicate translations.
 
 Coverage is partial: unverified names retain their existing values. These are

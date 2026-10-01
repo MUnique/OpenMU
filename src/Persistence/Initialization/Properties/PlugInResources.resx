@@ -376,6 +376,6 @@
   <data name="FixChaosMixesPlugInSeason6_Description" xml:space="preserve"><value>This update fixes the Chaos Weapon, First Wings, Dinorant, Item Level Upgrade, Second Wings, Third Wings, Cape, SD Potions, Guardian Option, and Secromicon crafting settings; Blue Fenrir (Protect) damage decrease option value; Wizard's Ring wizardry option; lvl 380 item guardian options for Summoner and Rage Fighter.</value></data>
   <data name="AddFenrirMaterialDropGroupsUpdateSeason6_Name" xml:space="preserve"><value>Add Fenrir Material Drop Groups</value></data>
   <data name="AddFenrirMaterialDropGroupsUpdateSeason6_Description" xml:space="preserve"><value>Adds the drops of Splinter of Armor (5 %), Bless of Guardian (2 %) and Claw of Beast (0.5 %) to all monsters of Crywolf. Materials which already drop on Crywolf by another group are skipped.</value></data>
-  <data name="AddMissingChineseConfigurationNames_Name" xml:space="preserve"><value>Add missing Simplified Chinese configuration names</value></data>
-  <data name="AddMissingChineseConfigurationNames_Description" xml:space="preserve"><value>Adds sourced Chinese class, map, merchant, monster and NPC names. Only missing translations and English copies are replaced; existing Chinese names, other languages and gameplay settings are preserved.</value></data>
+  <data name="AddConfigurationNameTranslations_Name" xml:space="preserve"><value>Add configuration name translations</value></data>
+  <data name="AddConfigurationNameTranslations_Description" xml:space="preserve"><value>Adds available translations of class, map, merchant, monster and NPC names. Only missing translations and copies of the neutral name are replaced; customized names and gameplay settings are preserved.</value></data>
 </root>

@@ -110,7 +110,7 @@ internal class ChineseMerchantNamesTests
         manager.DiscoverAndRegisterPlugInsOf<IConfigurationUpdatePlugIn>();
         var service = new DataUpdateService(provider, manager);
         var available = (await service.DetermineAvailableUpdatesAsync().ConfigureAwait(false))
-            .OfType<AddMissingChineseConfigurationNamesPlugInBase>().ToList();
+            .OfType<AddConfigurationNameTranslationsPlugInBase>().ToList();
         Assert.That(available.Select(item => item.Key), Is.EqualTo(new[] { update.Key }));
         Assert.That(available.Single().IsMandatory, Is.False);
         await service.ApplyUpdatesAsync(available, new Progress<(Guid, bool)>()).ConfigureAwait(false);
@@ -131,7 +131,7 @@ internal class ChineseMerchantNamesTests
         Assert.That(store.Items.Single(), Is.SameAs(item));
         Assert.That(item.Level, Is.EqualTo(7));
         Assert.That(configuration.Monsters, Has.Count.EqualTo(8));
-        Assert.That((await service.DetermineAvailableUpdatesAsync().ConfigureAwait(false)).OfType<AddMissingChineseConfigurationNamesPlugInBase>(), Is.Empty);
+        Assert.That((await service.DetermineAvailableUpdatesAsync().ConfigureAwait(false)).OfType<AddConfigurationNameTranslationsPlugInBase>(), Is.Empty);
 
         var names = configuration.Monsters.Select(monster => monster.Designation).ToArray();
         await update.ApplyUpdateAsync(context, configuration).ConfigureAwait(false);
@@ -148,10 +148,10 @@ internal class ChineseMerchantNamesTests
         }
     }
 
-    private static AddMissingChineseConfigurationNamesPlugInBase CreateUpdate(string version) => version switch
+    private static AddConfigurationNameTranslationsPlugInBase CreateUpdate(string version) => version switch
     {
-        "075" => new AddMissingChineseConfigurationNamesPlugIn075(),
-        "095d" => new AddMissingChineseConfigurationNamesPlugIn095D(),
-        _ => new AddMissingChineseConfigurationNamesPlugInSeason6(),
+        "075" => new AddConfigurationNameTranslationsPlugIn075(),
+        "095d" => new AddConfigurationNameTranslationsPlugIn095D(),
+        _ => new AddConfigurationNameTranslationsPlugInSeason6(),
     };
 }

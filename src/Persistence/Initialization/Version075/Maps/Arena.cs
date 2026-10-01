@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence.Initialization.Version075.Maps;
 
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Initialization for the Arena map.
@@ -35,7 +36,7 @@ internal class Arena : Initialization.BaseMapInitializer
     protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => Name;
+    protected override LocalizedString MapName => Name;
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()

@@ -7,6 +7,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// Initialization of character classes data.
@@ -39,28 +41,28 @@ internal partial class CharacterClassInitialization : InitializerBase
     {
         var bladeMaster = this.CreateBladeMaster();
         var bladeKnight = this.CreateBladeKnight(bladeMaster);
-        this.CreateDarkKnight(CharacterClassNumber.DarkKnight, "Dark Knight", false, bladeKnight, true);
+        this.CreateDarkKnight(CharacterClassNumber.DarkKnight, LocalizedString.FromResource(() => CharacterClassNames.DarkKnight), false, bladeKnight, true);
 
         var grandMaster = this.CreateGrandMaster();
         var soulMaster = this.CreateSoulMaster(grandMaster);
-        this.CreateDarkWizard(CharacterClassNumber.DarkWizard, "Dark Wizard", false, soulMaster, true);
+        this.CreateDarkWizard(CharacterClassNumber.DarkWizard, LocalizedString.FromResource(() => CharacterClassNames.DarkWizard), false, soulMaster, true);
 
         var highElf = this.CreateHighElf();
         var museElf = this.CreateMuseElf(highElf);
-        this.CreateFairyElf(CharacterClassNumber.FairyElf, "Fairy Elf", false, museElf, true);
+        this.CreateFairyElf(CharacterClassNumber.FairyElf, LocalizedString.FromResource(() => CharacterClassNames.FairyElf), false, museElf, true);
 
         var dimensionMaster = this.CreateDimensionMaster();
         var bloodySummoner = this.CreateBloodySummoner(dimensionMaster);
-        this.CreateSummoner(CharacterClassNumber.Summoner, "Summoner", false, bloodySummoner, true);
+        this.CreateSummoner(CharacterClassNumber.Summoner, LocalizedString.FromResource(() => CharacterClassNames.Summoner), false, bloodySummoner, true);
 
         var duelMaster = this.CreateDuelMaster();
-        this.CreateMagicGladiator(CharacterClassNumber.MagicGladiator, "Magic Gladiator", false, duelMaster, true);
+        this.CreateMagicGladiator(CharacterClassNumber.MagicGladiator, LocalizedString.FromResource(() => CharacterClassNames.MagicGladiator), false, duelMaster, true);
 
         var lordEmperor = this.CreateLordEmperor();
-        this.CreateDarkLord(CharacterClassNumber.DarkLord, "Dark Lord", false, lordEmperor, true);
+        this.CreateDarkLord(CharacterClassNumber.DarkLord, LocalizedString.FromResource(() => CharacterClassNames.DarkLord), false, lordEmperor, true);
 
         var fistMaster = this.CreateFistMaster();
-        this.CreateRageFighter(CharacterClassNumber.RageFighter, "Rage Fighter", false, fistMaster, true);
+        this.CreateRageFighter(CharacterClassNumber.RageFighter, LocalizedString.FromResource(() => CharacterClassNames.RageFighter), false, fistMaster, true);
     }
 
     private StatAttributeDefinition CreateStatAttributeDefinition(AttributeDefinition attribute, int value, bool increasableByPlayer)

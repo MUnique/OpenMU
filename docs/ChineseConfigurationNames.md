@@ -1,31 +1,51 @@
 # Simplified Chinese configuration names
 
-This mapping supplements the existing `LocalizedString` data for character classes,
-maps, merchants, monsters and NPCs in the 0.75, 0.95d and Season 6 initializers.
-It does not translate client language files, item names or attribute resources.
+The 382 reviewed names below are stored in `CharacterClassNames.zh-CN.resx`,
+`MapNames.zh-CN.resx`, `MerchantNames.zh-CN.resx` and `MonsterNames.zh-CN.resx`
+under `src/Persistence/Initialization/Properties`. Their neutral `.resx` files
+are the single source of the corresponding English names. This does not translate
+client language files, item names or attribute resources.
 
-## Matching and preservation
+## Initialization and upgrades
 
-Mappings require both the built-in numeric identifier and the exact neutral English
-name. Shared map numbers are distinguished by that name. Only a missing Chinese
-translation or an exact copy of the neutral English name is replaced. Any other
-existing Chinese value is preserved, even if it differs from this mapping. Other
-languages and custom neutral names are preserved. No identifiers, progression
-links, stats, shops, drops, spawn areas or map gates are changed.
+Initializers assign complete `LocalizedString` values directly using
+`LocalizedString.FromResource(() => MapNames.Lorencia)` or the equivalent resource
+manager extension. Satellite resource sets supply available translations without
+copying fallback text. No Chinese post-initialization patch is needed.
 
-New initializations apply these mappings before recording installed updates. Existing
-installations use one optional configuration update for their initialization version.
+Existing installations use the optional **Add configuration name translations**
+update for their initialization version. The shared updater maps built-in entity
+numbers to resource keys and requires an exact neutral-name match. Shared map
+numbers are distinguished by their neutral resource value. Only missing
+translations or exact copies of the neutral name are filled. Existing custom
+translations (including legacy parent-language values such as `zh`) are preserved.
+A translation in a sibling culture such as `zh-TW` does not prevent adding `zh-CN`.
+No identifiers, progression links, stats, shops, drops, spawn areas or gates change.
+
+Translations are stored with full culture codes, for example
+`Lorencia||zh-CN=勇者大陆`. Existing `||zh=` data continues to be read using the
+upstream culture fallback behavior introduced in #1016. The plugin uses the
+upstream GUID-based update mechanism and is not run automatically on deployment.
 See the [operator instructions](../docs-website/docs/admin-panel/configuration-updates.md).
-No database schema migration or direct SQL is required.
 
-The upstream initialization sources at `ff14409d9` contain English class, map,
-merchant and monster/NPC names, without Chinese translations in those fields.
-Chinese UI resources are separate from these database values. This contribution
-adds missing translations; it does not repair historical data from a private fork.
+## Adding translations
 
-`LocalizedString` currently stores these values under its two-letter `zh` key;
-it does not distinguish Simplified and Traditional Chinese database translations.
-This change follows that existing behavior and does not alter language resolution.
+Add a `CategoryNames.<culture>.resx` file using keys from the matching neutral
+resource, for example `MapNames.de.resx` with key `Lorencia`. The four existing
+categories share the same initialization and update logic for every language;
+adding a language requires no C# dictionary or language-specific update class.
+Partial satellites are supported. Keep format placeholders unchanged.
+
+When adding neutral keys, reference the typed property in the initializer and add
+its entity number and resource key to `ConfigurationNameTranslations`. Regenerate
+accessors with `python3 scripts/generate-configuration-name-resources.py`.
+The generated files are committed for CI and use expression-bodied properties.
+
+A future translation batch needs a new thin update subclass for each supported
+initialization version, with fresh GUIDs, reusing the shared update base. Do not
+change an already-released update and expect installed databases to run it again.
+The tests check satellite keys, entity coverage across supported versions,
+initialization, update discovery, custom-name preservation and idempotence.
 
 ## Evidence and limits
 

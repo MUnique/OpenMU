@@ -83,7 +83,7 @@ internal class ChineseMapNamesTests
         var manager = new PlugInManager(null, NullLoggerFactory.Instance, null, null);
         manager.DiscoverAndRegisterPlugInsOf<IConfigurationUpdatePlugIn>();
         var service = new DataUpdateService(provider, manager);
-        var available = (await service.DetermineAvailableUpdatesAsync().ConfigureAwait(false)).OfType<AddMissingChineseConfigurationNamesPlugInBase>().ToList();
+        var available = (await service.DetermineAvailableUpdatesAsync().ConfigureAwait(false)).OfType<AddConfigurationNameTranslationsPlugInBase>().ToList();
         Assert.That(available.Select(item => item.Key), Is.EqualTo(new[] { update.Key }));
         Assert.That(available.Single().IsMandatory, Is.False);
         await service.ApplyUpdatesAsync(available, new Progress<(Guid, bool)>()).ConfigureAwait(false);
@@ -107,7 +107,7 @@ internal class ChineseMapNamesTests
         Assert.That(lorencia.MonsterSpawns.Single(), Is.SameAs(spawn));
         Assert.That(spawn.Quantity, Is.EqualTo(7));
         Assert.That(configuration.Maps, Has.Count.EqualTo(10));
-        Assert.That((await service.DetermineAvailableUpdatesAsync().ConfigureAwait(false)).OfType<AddMissingChineseConfigurationNamesPlugInBase>(), Is.Empty);
+        Assert.That((await service.DetermineAvailableUpdatesAsync().ConfigureAwait(false)).OfType<AddConfigurationNameTranslationsPlugInBase>(), Is.Empty);
         var names = configuration.Maps.Select(map => map.Name).ToArray();
         await update.ApplyUpdateAsync(context, configuration).ConfigureAwait(false);
         Assert.That(configuration.Maps.Select(map => map.Name), Is.EqualTo(names));
@@ -122,10 +122,10 @@ internal class ChineseMapNamesTests
         }
     }
 
-    private static AddMissingChineseConfigurationNamesPlugInBase CreateUpdate(string version) => version switch
+    private static AddConfigurationNameTranslationsPlugInBase CreateUpdate(string version) => version switch
     {
-        "075" => new AddMissingChineseConfigurationNamesPlugIn075(),
-        "095d" => new AddMissingChineseConfigurationNamesPlugIn095D(),
-        _ => new AddMissingChineseConfigurationNamesPlugInSeason6(),
+        "075" => new AddConfigurationNameTranslationsPlugIn075(),
+        "095d" => new AddConfigurationNameTranslationsPlugIn095D(),
+        _ => new AddConfigurationNameTranslationsPlugInSeason6(),
     };
 }

@@ -194,10 +194,6 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
             }
         });
 
-        CharacterClasses.ChineseCharacterClassNames.AddMissingTranslations(this.GameConfiguration);
-        ChineseMerchantNames.AddMissingTranslations(this.GameConfiguration);
-        ChineseMonsterNames.AddMissingTranslations(this.GameConfiguration);
-        ChineseMapNames.AddMissingTranslations(this.GameConfiguration);
         this.AddAllUpdateEntries(plugInManager);
 
         await this.Context.SaveChangesAsync().ConfigureAwait(false);
