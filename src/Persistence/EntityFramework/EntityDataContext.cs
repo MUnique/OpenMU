@@ -46,6 +46,11 @@ public class EntityDataContext : ExtendedTypeContext
     /// </summary>
     internal DbSet<GensMember> GensMembers => this.Set<GensMember>();
 
+    /// <summary>
+    /// Gets the counts of the recent kills between gens members.
+    /// </summary>
+    internal DbSet<GensAbuse> GensAbuses => this.Set<GensAbuse>();
+
     /// <inheritdoc/>
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -95,6 +100,7 @@ public class EntityDataContext : ExtendedTypeContext
         modelBuilder.Entity<GameConfiguration>().Apply();
         modelBuilder.Entity<GameMapDefinition>().Apply();
         modelBuilder.Entity<GensMember>().Apply();
+        modelBuilder.Entity<GensAbuse>().Apply();
         modelBuilder.Entity<ItemCrafting>().Apply();
         modelBuilder.Entity<ItemDefinition>().Apply();
         modelBuilder.Entity<ItemLevelBonusTable>().Apply();

@@ -205,6 +205,51 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Only members of a gens can enter the battle zone..
+        /// </summary>
+        public static string GensBattleZoneMembersOnly {
+            get {
+                return ResourceManager.GetString("GensBattleZoneMembersOnly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You gained {0} contribution points..
+        /// </summary>
+        public static string GensContributionGainedFormat {
+            get {
+                return ResourceManager.GetString("GensContributionGainedFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You lost {0} contribution points..
+        /// </summary>
+        public static string GensContributionLostFormat {
+            get {
+                return ResourceManager.GetString("GensContributionLostFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You killed {0} too often recently, so you get no contribution points for it..
+        /// </summary>
+        public static string GensKillAbuseLimitFormat {
+            get {
+                return ResourceManager.GetString("GensKillAbuseLimitFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You killed {0} {1} times recently. From {2} kills, you get no contribution points for {0} anymore..
+        /// </summary>
+        public static string GensKillAbuseWarningFormat {
+            get {
+                return ResourceManager.GetString("GensKillAbuseWarningFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You need at least level {0} to enter the Fortress of Imperial Guardian..
         /// </summary>
         public static string ImperialGuardianLevelTooLow {

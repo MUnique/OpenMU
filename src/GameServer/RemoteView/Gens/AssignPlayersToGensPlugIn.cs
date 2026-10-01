@@ -62,6 +62,16 @@ public class AssignPlayersToGensPlugIn : IAssignPlayersToGensPlugIn
         await connection.SendAsync(Write).ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// Converts the contribution points for the game client, which keeps them as a byte. It uses them only to hide
+    /// the name of the members of the other gens in the battle zone, which have no contribution points.
+    /// Without the limit, a member with a multiple of 256 points would be hidden, too.
+    /// </summary>
+    private static uint ToClientContribution(int contribution)
+    {
+        return (uint)Math.Clamp(contribution, 0, byte.MaxValue);
+    }
+
     private void SetGensPlayerBlock(AssignCharactersToGensRef.GensMemberRelationRef playerBlock, Player player)
     {
         playerBlock.PlayerId = player.GetId(this._player);
@@ -70,7 +80,7 @@ public class AssignPlayersToGensPlugIn : IAssignPlayersToGensPlugIn
             playerBlock.GensType = member.Gens.ToPacketGensType();
             playerBlock.RankingPosition = (uint)member.RankingPosition;
             playerBlock.Rank = member.Rank;
-            playerBlock.ContributionPoints = (uint)Math.Max(member.Contribution, 0);
+            playerBlock.ContributionPoints = ToClientContribution(member.Contribution);
         }
         else
         {

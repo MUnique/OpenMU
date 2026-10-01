@@ -337,3 +337,12 @@ internal partial class GensMember : IConvertibleTo<BasicModel.GensMember>
         return this.Adapt<BasicModel.GensMember>();
     }
 }
+
+internal partial class GensAbuse : IConvertibleTo<BasicModel.GensAbuse>
+{
+    public BasicModel.GensAbuse Convert()
+    {
+        MapsterConfigurator.EnsureConfigured();
+        return this.Adapt<BasicModel.GensAbuse>();
+    }
+}

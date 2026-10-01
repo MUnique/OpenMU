@@ -808,6 +808,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Only gens members can enter the battle zone. Kills between the members of different gens in it change their contribution points, without making the killer an outlaw..
+        /// </summary>
+        public static string GensBattleZonePlugIn_Description {
+            get {
+                return ResourceManager.GetString("GensBattleZonePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gens battle zone.
+        /// </summary>
+        public static string GensBattleZonePlugIn_Name {
+            get {
+                return ResourceManager.GetString("GensBattleZonePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Configures the gens system, in which the players can join one of the gens Duprian and Vanert at their npcs..
         /// </summary>
         public static string GensFeaturePlugIn_Description {
@@ -840,6 +858,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string GensMembershipPlugIn_Name {
             get {
                 return ResourceManager.GetString("GensMembershipPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Calculates the ranking of the gens in the configured interval, and updates the ranking positions and ranks of all members..
+        /// </summary>
+        public static string GensRankingPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GensRankingPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gens ranking.
+        /// </summary>
+        public static string GensRankingPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GensRankingPlugIn_Name", resourceCulture);
             }
         }
         

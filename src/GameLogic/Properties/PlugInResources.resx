@@ -1463,4 +1463,16 @@
   <data name="GensMembershipPlugIn_Description" xml:space="preserve">
     <value>Loads the gens membership of a character when it enters the game, and shows it to the player.</value>
   </data>
+  <data name="GensBattleZonePlugIn_Name" xml:space="preserve">
+    <value>Gens battle zone</value>
+  </data>
+  <data name="GensBattleZonePlugIn_Description" xml:space="preserve">
+    <value>Only gens members can enter the battle zone. Kills between the members of different gens in it change their contribution points, without making the killer an outlaw.</value>
+  </data>
+  <data name="GensRankingPlugIn_Name" xml:space="preserve">
+    <value>Gens ranking</value>
+  </data>
+  <data name="GensRankingPlugIn_Description" xml:space="preserve">
+    <value>Calculates the ranking of the gens in the configured interval, and updates the ranking positions and ranks of all members.</value>
+  </data>
 </root>

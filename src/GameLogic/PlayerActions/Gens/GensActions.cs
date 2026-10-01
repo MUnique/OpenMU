@@ -40,7 +40,7 @@ public class GensActions
         // so that two requests can't both pass the check.
         var result = await player.RunPersistenceExclusiveAsync(async () =>
         {
-            var member = await GetMemberAsync(player, character).ConfigureAwait(false);
+            var member = await player.GetGensMemberAsync().ConfigureAwait(false);
             var requirementsResult = CheckJoinRequirements(player, member, configuration);
             if (requirementsResult != GensJoinResult.Success)
             {
@@ -71,7 +71,7 @@ public class GensActions
         await player.InvokeViewPlugInAsync<IGensViewPlugIn>(p => p.ShowJoinResultAsync(result, gens)).ConfigureAwait(false);
         if (result == GensJoinResult.Success)
         {
-            await ShowChangedGensAsync(player).ConfigureAwait(false);
+            await player.ShowChangedGensAsync().ConfigureAwait(false);
         }
     }
 
@@ -93,7 +93,7 @@ public class GensActions
             return;
         }
 
-        if (player.SelectedCharacter is not { } character)
+        if (player.SelectedCharacter is null)
         {
             return;
         }
@@ -101,7 +101,7 @@ public class GensActions
         var leftGens = GensType.None;
         var result = await player.RunPersistenceExclusiveAsync(async () =>
         {
-            var member = await GetMemberAsync(player, character).ConfigureAwait(false);
+            var member = await player.GetGensMemberAsync().ConfigureAwait(false);
             var requirementsResult = CheckLeaveRequirements(player, member, npcGens);
             if (requirementsResult != GensLeaveResult.Success)
             {
@@ -126,7 +126,7 @@ public class GensActions
         await player.InvokeViewPlugInAsync<IGensViewPlugIn>(p => p.ShowLeaveResultAsync(result)).ConfigureAwait(false);
         if (result == GensLeaveResult.Success)
         {
-            await ShowChangedGensAsync(player).ConfigureAwait(false);
+            await player.ShowChangedGensAsync().ConfigureAwait(false);
         }
     }
 
@@ -165,12 +165,12 @@ public class GensActions
             return;
         }
 
-        if (player.SelectedCharacter is not { } character)
+        if (player.SelectedCharacter is null)
         {
             return;
         }
 
-        var member = await player.RunPersistenceExclusiveAsync(() => GetMemberAsync(player, character)).ConfigureAwait(false);
+        var member = await player.GetGensMemberAsync().ConfigureAwait(false);
         var memberGens = member?.Gens ?? GensType.None;
         var result = memberGens switch
         {
@@ -186,15 +186,6 @@ public class GensActions
         return player.OpenedNpc?.Definition is { } npcDefinition
             ? configuration.GetGensOfNpc(npcDefinition.Number)
             : GensType.None;
-    }
-
-    /// <summary>
-    /// Gets the gens membership of the character. It's loaded, if it wasn't loaded when the character entered the game,
-    /// e.g. because the gens system was deactivated at that time. Otherwise, a second membership would be created.
-    /// </summary>
-    private static async ValueTask<GensMember?> GetMemberAsync(Player player, DataModel.Entities.Character character)
-    {
-        return player.GensMember ??= await player.PersistenceContext.GetGensMemberAsync(character.Id).ConfigureAwait(false);
     }
 
     private static GensJoinResult CheckJoinRequirements(Player player, GensMember? member, GensConfiguration configuration)
@@ -250,11 +241,5 @@ public class GensActions
         }
 
         return GensLeaveResult.Success;
-    }
-
-    private static async ValueTask ShowChangedGensAsync(Player player)
-    {
-        await player.InvokeViewPlugInAsync<IGensViewPlugIn>(p => p.ShowGensInfoAsync()).ConfigureAwait(false);
-        await player.ForEachWorldObserverAsync<IAssignPlayersToGensPlugIn>(p => p.AssignPlayersToGensAsync([player]), false).ConfigureAwait(false);
     }
 }
