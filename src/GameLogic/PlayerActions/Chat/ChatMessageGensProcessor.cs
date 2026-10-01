@@ -18,7 +18,7 @@ public class ChatMessageGensProcessor : BannableChatMessageBaseProcessor
     /// <inheritdoc/>
     public override async ValueTask SubclassProcessMessageAsync(Player sender, (string Message, string PlayerName) content)
     {
-        var gens = sender.GetGens();
+        var gens = (await sender.GetGensMemberAsync().ConfigureAwait(false))?.Gens ?? GensType.None;
         if (gens == GensType.None || GensFeaturePlugIn.GetConfiguration(sender.GameContext) is null)
         {
             return;
