@@ -44,6 +44,22 @@ public class GensRelationshipRulesTest
     }
 
     /// <summary>
+    /// Tests that a party master without gens can't invite a member of another gens than its party members.
+    /// </summary>
+    [Test]
+    public async Task PartyMembersOfOtherGensAsync()
+    {
+        var (master, duprian) = await CreatePlayersAsync(GensType.None, GensType.Duprian).ConfigureAwait(false);
+        var vanert = await PlayerTestHelper.CreatePlayerAsync(master.GameContext).ConfigureAwait(false);
+        await PreparePlayerAsync(vanert, GensType.Vanert).ConfigureAwait(false);
+        var party = new PartyManager(5, new NullLogger<Party>()).CreateParty();
+        await party.AddAsync(master).ConfigureAwait(false);
+        await party.AddAsync(duprian).ConfigureAwait(false);
+
+        Assert.That(await this.IsPartyDeniedAsync(master, vanert).ConfigureAwait(false), Is.True);
+    }
+
+    /// <summary>
     /// Tests that no party can be formed in the battle zone.
     /// </summary>
     [Test]
