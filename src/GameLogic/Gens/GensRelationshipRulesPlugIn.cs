@@ -37,19 +37,15 @@ public class GensRelationshipRulesPlugIn : IPartyRequestingPlugIn, IGuildJoinReq
             && (IsInBattleZone(requester, configuration) || IsInBattleZone(target, configuration)))
         {
             eventArgs.Cancel = true;
-            await requester.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.GensNoPartyInBattleZone)).ConfigureAwait(false);
+            await ShowToBothAsync(requester, target, nameof(PlayerMessage.GensNoPartyInBattleZone)).ConfigureAwait(false);
             return;
         }
 
-        if (!configuration.AllowPartyWithOtherGens)
+        if (!configuration.AllowPartyWithOtherGens
+            && await HasMemberOfOtherGensAsync(requester, target).ConfigureAwait(false))
         {
-            var requesterGens = (await requester.GetGensMemberAsync().ConfigureAwait(false))?.Gens ?? GensType.None;
-            var targetGens = (await target.GetGensMemberAsync().ConfigureAwait(false))?.Gens ?? GensType.None;
-            if (requesterGens != GensType.None && targetGens != GensType.None && requesterGens != targetGens)
-            {
-                eventArgs.Cancel = true;
-                await requester.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.GensNoPartyWithOtherGens)).ConfigureAwait(false);
-            }
+            eventArgs.Cancel = true;
+            await ShowToBothAsync(requester, target, nameof(PlayerMessage.GensNoPartyWithOtherGens)).ConfigureAwait(false);
         }
     }
 
@@ -121,6 +117,41 @@ public class GensRelationshipRulesPlugIn : IPartyRequestingPlugIn, IGuildJoinReq
 
         await party.KickMySelfAsync(player).ConfigureAwait(false);
         await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.GensPartyLeftInBattleZone)).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Determines whether the party of the requester (or the requester itself, when it has no party yet) has a member
+    /// of another gens than the target. Members without gens are allowed with any gens, so all members are checked,
+    /// not only the party master.
+    /// </summary>
+    private static async ValueTask<bool> HasMemberOfOtherGensAsync(Player requester, Player target)
+    {
+        var targetGens = (await target.GetGensMemberAsync().ConfigureAwait(false))?.Gens ?? GensType.None;
+        if (targetGens == GensType.None)
+        {
+            return false;
+        }
+
+        var members = requester.Party?.PartyList.OfType<Player>().ToList() ?? [requester];
+        foreach (var member in members)
+        {
+            var memberGens = (await member.GetGensMemberAsync().ConfigureAwait(false))?.Gens ?? GensType.None;
+            if (memberGens != GensType.None && memberGens != targetGens)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Shows the reason of a denied party to both players, because the plugin is called for the request and for the answer.
+    /// </summary>
+    private static async ValueTask ShowToBothAsync(Player requester, Player target, string messageKey)
+    {
+        await requester.ShowLocalizedBlueMessageAsync(messageKey).ConfigureAwait(false);
+        await target.ShowLocalizedBlueMessageAsync(messageKey).ConfigureAwait(false);
     }
 
     private static bool IsInBattleZone(Player player, GensConfiguration configuration)
