@@ -87,7 +87,7 @@ public class GensRemoteViewTests
 
         var first = data[6..22];
         Assert.That(first[..3], Is.EqualTo(new byte[] { 2, 0x12, 0x34 }));
-        Assert.That(first[4..], Is.EqualTo(new byte[] { 5, 0, 0, 0, 2, 0, 0, 0, 0x2C, 0x01, 0, 0 }));
+        Assert.That(first[4..], Is.EqualTo(new byte[] { 5, 0, 0, 0, 2, 0, 0, 0, 0xFF, 0, 0, 0 }), "The client keeps the contribution as a byte.");
 
         var second = data[22..];
         Assert.That(second[..3], Is.EqualTo(new byte[] { 0, 0x01, 0x02 }));
