@@ -15,8 +15,6 @@ using System.Resources;
 /// </summary>
 public static class LocalizedStringResourceExtensions
 {
-    private static readonly ConcurrentDictionary<ResourceManager, IReadOnlyList<CultureInfo>> CulturesCache = new();
-
     // StyleCop does not recognize the C# 14 extension receiver as a parameter; it cannot be prefixed with this.
 #pragma warning disable SA1101
     /// <summary>
@@ -78,6 +76,8 @@ public static class LocalizedStringResourceExtensions
             return resourceManager.GetLocalizedString(property.Name);
         }
     }
+
+    private static readonly ConcurrentDictionary<ResourceManager, IReadOnlyList<CultureInfo>> CulturesCache = new();
 
     private static IEnumerable<CultureInfo> GetCultureCandidates()
     {
