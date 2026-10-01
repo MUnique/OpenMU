@@ -215,6 +215,12 @@ public interface IInventoryStorage : IStorage
     /// Gets equipped ammunition item.
     /// </summary>
     Item? EquippedAmmunitionItem { get; }
+
+    /// <summary>
+    /// Gets this instance as <see cref="InventoryStorage"/>.
+    /// </summary>
+    /// <returns>The inventory as <see cref="InventoryStorage"/>.</returns>
+    InventoryStorage? AsInventoryStorage => this as InventoryStorage;
 }
 
 /// <summary>
