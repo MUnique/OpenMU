@@ -14,8 +14,8 @@ other in the battle zone for contribution points, which give them their rank.
 
 :::note
 The gens system is implemented step by step. Joining and leaving a gens, the
-battle zone, the contribution for kills, the ranking and the party, guild and
-alliance rules work. The gens chat and the monthly rewards are not implemented
+battle zone, the contribution for kills, the ranking, the party, guild and
+alliance rules and the gens chat work. The monthly rewards are not implemented
 yet.
 :::
 
@@ -114,6 +114,12 @@ higher ones also on the position in the ranking of the own gens:
 The ranks by points change right after a kill. The ranking of each gens is
 calculated when the server starts and then every two hours by default; with the
 same points, the member which joined first is ranked higher.
+
+## Gens chat
+
+A message which starts with `$` (or which is written in the gens chat mode of
+the client) reaches all members of the own gens on the same game server. A
+player which isn't a gens member can't use it.
 
 ## Parties, guilds and alliances
 
