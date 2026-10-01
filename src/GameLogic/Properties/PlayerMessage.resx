@@ -864,4 +864,16 @@
   <data name="GensKillAbuseLimitFormat" xml:space="preserve">
     <value>You killed {0} too often recently, so you get no contribution points for it.</value>
   </data>
+  <data name="GensNoPartyWithOtherGens" xml:space="preserve">
+    <value>You cannot form a party with a member of the opposing gens.</value>
+  </data>
+  <data name="GensNoPartyInBattleZone" xml:space="preserve">
+    <value>You cannot form a party within a battle zone.</value>
+  </data>
+  <data name="GensPartyLeftInBattleZone" xml:space="preserve">
+    <value>Parties are not activated within a battle zone, so you left your party.</value>
+  </data>
+  <data name="GensRequiredToCreateGuild" xml:space="preserve">
+    <value>You have to be a member of a gens to create a guild.</value>
+  </data>
 </root>

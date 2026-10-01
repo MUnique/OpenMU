@@ -14,8 +14,8 @@ other in the battle zone for contribution points, which give them their rank.
 
 :::note
 The gens system is implemented step by step. Joining and leaving a gens, the
-battle zone, the contribution for kills and the ranking work. The party, guild
-and alliance rules, the gens chat and the monthly rewards are not implemented
+battle zone, the contribution for kills, the ranking and the party, guild and
+alliance rules work. The gens chat and the monthly rewards are not implemented
 yet.
 :::
 
@@ -115,6 +115,20 @@ The ranks by points change right after a kill. The ranking of each gens is
 calculated when the server starts and then every two hours by default; with the
 same points, the member which joined first is ranked higher.
 
+## Parties, guilds and alliances
+
+* Members of different gens can't form a party.
+* No party can be formed in the battle zone, and a player leaves its party when
+  it enters the battle zone.
+
+The original game also limits the guilds and alliances to the gens. Because
+these rules affect all players, also the ones which don't care about the gens,
+they are only active when they're configured:
+
+* Only gens members can create a guild, and a player can only join the guild of
+  a guild master of the same gens.
+* Only the masters of guilds of the same gens can form an alliance.
+
 ## Configuration
 
 The gens system is configured by the **Gens system** plugin in the admin panel.
@@ -138,6 +152,10 @@ When the plugin is deactivated, players can't join or leave a gens.
 | Abuse reset time | 60 minutes | The time after which the count of kills starts again. |
 | Ranks | see above | The ranks and their requirements. |
 | Ranking interval | 2 hours | The interval of the ranking. |
+| Allow party with other gens | no | Whether members of different gens can form a party. |
+| Allow party in battle zone | no | Whether parties can be formed in the battle zone. |
+| Guild requires gens | no | Whether creating and joining a guild requires the gens, like in the original game. |
+| Alliance requires same gens | no | Whether an alliance requires the same gens of the guild masters, like in the original game. |
 
 The memberships (`GensMember`) and the counts of the kills (`GensAbuse`) are
 kept in their own tables, which are part of the backup of the accounts.

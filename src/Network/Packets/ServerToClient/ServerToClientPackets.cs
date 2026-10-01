@@ -20251,6 +20251,21 @@ public readonly struct GuildJoinResponse
         /// The requesting player needs a minimum level of 6.
         /// </summary>
             MinimumLevel6 = 7,
+
+        /// <summary>
+        /// The guild master is not a member of a gens.
+        /// </summary>
+            GuildMasterNotInGens = 161,
+
+        /// <summary>
+        /// The guild master is a member of a different gens.
+        /// </summary>
+            GuildMasterInDifferentGens = 162,
+
+        /// <summary>
+        /// The requesting player has to be a member of the gens of the guild master.
+        /// </summary>
+            NotInGensOfGuildMaster = 163,
     }
 
     private readonly Memory<byte> _data;

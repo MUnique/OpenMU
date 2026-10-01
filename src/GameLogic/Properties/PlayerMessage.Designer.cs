@@ -250,6 +250,42 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You cannot form a party within a battle zone..
+        /// </summary>
+        public static string GensNoPartyInBattleZone {
+            get {
+                return ResourceManager.GetString("GensNoPartyInBattleZone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You cannot form a party with a member of the opposing gens..
+        /// </summary>
+        public static string GensNoPartyWithOtherGens {
+            get {
+                return ResourceManager.GetString("GensNoPartyWithOtherGens", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Parties are not activated within a battle zone, so you left your party..
+        /// </summary>
+        public static string GensPartyLeftInBattleZone {
+            get {
+                return ResourceManager.GetString("GensPartyLeftInBattleZone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You have to be a member of a gens to create a guild..
+        /// </summary>
+        public static string GensRequiredToCreateGuild {
+            get {
+                return ResourceManager.GetString("GensRequiredToCreateGuild", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You need at least level {0} to enter the Fortress of Imperial Guardian..
         /// </summary>
         public static string ImperialGuardianLevelTooLow {

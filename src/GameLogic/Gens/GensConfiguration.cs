@@ -127,6 +127,34 @@ public class GensConfiguration
     public TimeSpan RankingInterval { get; set; } = TimeSpan.FromHours(2);
 
     /// <summary>
+    /// Gets or sets a value indicating whether members of different gens can form a party.
+    /// </summary>
+    public bool AllowPartyWithOtherGens { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether parties can be formed in the battle zone.
+    /// When it's <c>false</c>, a player also leaves its party when it enters the battle zone.
+    /// </summary>
+    public bool AllowPartyInBattleZone { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether a character has to be a member of a gens to create a guild,
+    /// and to be a member of the gens of the guild master to join a guild.
+    /// </summary>
+    /// <remarks>
+    /// The original game requires it. It's not the default, because it affects all players, also the ones which don't care about the gens.
+    /// </remarks>
+    public bool GuildRequiresGens { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the masters of two guilds have to be members of the same gens to form an alliance.
+    /// </summary>
+    /// <remarks>
+    /// The original game requires it. It's not the default, because it affects all guilds, also the ones which don't care about the gens.
+    /// </remarks>
+    public bool AllianceRequiresSameGens { get; set; }
+
+    /// <summary>
     /// Gets the gens of the npc with the specified number.
     /// </summary>
     /// <param name="npcNumber">The number of the npc.</param>
