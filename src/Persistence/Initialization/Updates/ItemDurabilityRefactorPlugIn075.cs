@@ -16,8 +16,5 @@ using MUnique.OpenMU.PlugIns;
 public class ItemDurabilityRefactorPlugIn075 : ItemDurabilityRefactorPlugInBase
 {
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.ItemDurabilityRefactor075;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => Version075.DataInitialization.Id;
 }

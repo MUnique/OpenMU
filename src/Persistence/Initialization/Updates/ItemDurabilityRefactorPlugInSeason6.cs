@@ -30,9 +30,6 @@ public class ItemDurabilityRefactorPlugInSeason6 : ItemDurabilityRefactorPlugInB
     public override string Description => PlugInDescription;
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.ItemDurabilityRefactorSeason6;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => DataInitialization.Id;
 
     /// <inheritdoc />

@@ -27,9 +27,6 @@ public class RegenerationsRefactorPlugInSeason6 : RegenerationsRefactorPlugInBas
     internal new const string PlugInDescription = "This update fixes and reworks some regeneration attributes (health, shield, mana, ability). It also adds default running (and fast swimming) speed for tier 2 chars (MG, DL, RF).";
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.RegenerationsRefactorSeason6;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => DataInitialization.Id;
 
     /// <inheritdoc />

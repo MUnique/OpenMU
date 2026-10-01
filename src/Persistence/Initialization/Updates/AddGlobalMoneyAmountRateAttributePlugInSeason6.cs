@@ -16,8 +16,5 @@ using MUnique.OpenMU.PlugIns;
 public class AddGlobalMoneyAmountRateAttributePlugInSeason6 : AddGlobalMoneyAmountRateAttributePlugInBase
 {
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.AddGlobalMoneyAmountRateAttributeSeason6;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 }

@@ -17,7 +17,4 @@ public class FixCharStatsForceWavePlugIn075 : FixCharStatsForceWavePlugInBase
 {
     /// <inheritdoc />
     public override string DataInitializationKey => Version075.DataInitialization.Id;
-
-    /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixCharStatsForceWave075;
 }

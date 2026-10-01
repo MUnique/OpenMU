@@ -13,9 +13,4 @@ public class ConfigurationUpdateState
     /// Gets or sets the initialization key.
     /// </summary>
     public string? InitializationKey { get; set; }
-
-    /// <summary>
-    /// Gets or sets the highest <see cref="ConfigurationUpdate.Version"/> which is installed.
-    /// </summary>
-    public int CurrentInstalledVersion { get; set; }
 }

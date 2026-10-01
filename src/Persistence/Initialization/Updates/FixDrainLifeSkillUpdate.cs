@@ -30,9 +30,6 @@ public class FixDrainLifeSkillUpdate : UpdatePlugInBase
     internal const string PlugInDescription = "Updates the attributes of the summoner's Drain Life skill to make it work properly.";
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixDrainLifeSkill;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />

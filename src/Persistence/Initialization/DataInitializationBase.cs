@@ -220,9 +220,9 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
 
     private void AddAllUpdateEntries(PlugInManager plugInManager)
     {
-        var updates = plugInManager.GetStrategyProvider<int, IConfigurationUpdatePlugIn>()
+        var updates = plugInManager.GetStrategyProvider<Guid, IConfigurationUpdatePlugIn>()
                           ?.AvailableStrategies.Where(up => up.DataInitializationKey == this.Key)
-                          .OrderBy(up => up.Version)
+                          .OrderBy(up => up.CreatedAt)
                           .ToList();
         if (updates is not { Count: > 0 })
         {
@@ -232,7 +232,7 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
         foreach (var update in updates)
         {
             var entry = this.Context.CreateNew<ConfigurationUpdate>();
-            entry.Version = (int)update.Version;
+            entry.Key = update.Key;
             entry.Name = update.Name;
             entry.Description = update.Description;
             entry.CreatedAt = update.CreatedAt;
@@ -241,7 +241,6 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
 
         var updateState = this.Context.CreateNew<ConfigurationUpdateState>();
         updateState.InitializationKey = this.Key;
-        updateState.CurrentInstalledVersion = updates.Max(u => (int)u.Version);
     }
 
     private async ValueTask CreateConnectServerDefinitionAsync()

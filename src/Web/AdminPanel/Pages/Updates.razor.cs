@@ -73,10 +73,10 @@ public partial class Updates
         this._overallState = UpdateState.Started;
         this.StateHasChanged();
         var selectedUpdates = this._availableUpdates.Where(up => up.Selected).Select(up => up.UpdatePlugIn).ToList();
-        var progress = new Progress<(UpdateVersion CurrentUpdateVersion, bool IsCompleted)>();
+        var progress = new Progress<(Guid CurrentUpdatingKey, bool IsCompleted)>();
         progress.ProgressChanged += this.OnUpdateProgressChanged;
-        var currentUpdateVersion = UpdateVersion.Undefined;
-        progress.ProgressChanged += (_, args) => currentUpdateVersion = args.CurrentUpdateVersion;
+        var currentUpdateKey = Guid.Empty;
+        progress.ProgressChanged += (_, args) => currentUpdateKey = args.CurrentUpdatingKey;
 
         try
         {
@@ -88,7 +88,7 @@ public partial class Updates
         {
             this._exception = ex;
             this._overallState = UpdateState.Failed;
-            if (this._availableUpdates.FirstOrDefault(up => up.Version == currentUpdateVersion) is { } failedUpdate)
+            if (this._availableUpdates.FirstOrDefault(up => up.Key == currentUpdateKey) is { } failedUpdate)
             {
                 failedUpdate.State = UpdateState.Failed;
             }
@@ -99,9 +99,9 @@ public partial class Updates
         }
     }
 
-    private void OnUpdateProgressChanged(object? sender, (UpdateVersion CurrentUpdateVersion, bool IsCompleted) e)
+    private void OnUpdateProgressChanged(object? sender, (Guid CurrentUpdatingKey, bool IsCompleted) e)
     {
-        if (this._availableUpdates.FirstOrDefault(up => up.Version == e.CurrentUpdateVersion) is not { } updateViewModel)
+        if (this._availableUpdates.FirstOrDefault(up => up.Key == e.CurrentUpdatingKey) is not { } updateViewModel)
         {
             return;
         }
@@ -171,7 +171,7 @@ public partial class Updates
 
         public string Name => this._updatePlugIn.Name;
 
-        public UpdateVersion Version => this._updatePlugIn.Version;
+        public Guid Key => this._updatePlugIn.Key;
 
         public string Description => this._updatePlugIn.Description;
 

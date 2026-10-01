@@ -16,9 +16,6 @@ using MUnique.OpenMU.PlugIns;
 public class AddMovementSpeedAttributesPlugIn095D : AddMovementSpeedAttributesPlugInBase
 {
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.AddMovementSpeedAttributes095d;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => Version095d.DataInitialization.Id;
 
     /// <inheritdoc />

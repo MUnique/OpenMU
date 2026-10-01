@@ -17,7 +17,4 @@ public class FixJeweleryPetsDamageCalcsPlugIn075 : FixJeweleryPetsDamageCalcsPlu
 {
     /// <inheritdoc />
     public override string DataInitializationKey => Version075.DataInitialization.Id;
-
-    /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixJeweleryPetsDamageCalcs075;
 }

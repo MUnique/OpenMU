@@ -11,6 +11,9 @@ using System.Globalization;
 /// It's meant for simple usage in database fields and not for complex localization scenarios.
 /// To keep compatibility with normal strings, we simply assume the first string to be in neutral (usually english) language.
 /// Example: "Some text||de=Etwas Text||fr=Un peu de texte" where the first part is english, second german and third french.
+/// Translations can also be stored for specific cultures, e.g. "Some text||zh-CN=简体文本||zh-TW=繁體文本".
+/// When looking up a translation, the exact culture name is tried first, then its parent cultures
+/// (e.g. zh-CN, zh-Hans, zh) and finally any other culture of the same language.
 /// </summary>
 public readonly struct LocalizedString : IEquatable<LocalizedString>
 {
@@ -179,32 +182,38 @@ public readonly struct LocalizedString : IEquatable<LocalizedString>
     /// </returns>
     public ReadOnlySpan<char> GetTranslationAsSpan(CultureInfo cultureInfo, bool fallbackToNeutral = true)
     {
-        // Implementation for retrieving the localized string based on the cultureInfo
         if (this.Value is null)
         {
             return [];
         }
 
-        if (cultureInfo.TwoLetterISOLanguageName == NeutralLanguageCode)
+        if (IsNeutralLanguage(cultureInfo))
         {
             return this.ValueInNeutralLanguageAsSpan;
         }
 
-        var searchPattern = Separator + cultureInfo.TwoLetterISOLanguageName + "=";
-        var startIndex = this.Value.IndexOf(searchPattern, StringComparison.OrdinalIgnoreCase);
-        if (startIndex == -1)
+        // Exact culture first, then the parent cultures, e.g. zh-CN -> zh-Hans -> zh.
+        for (var culture = cultureInfo; !string.IsNullOrEmpty(culture.Name); culture = culture.Parent)
         {
-            return fallbackToNeutral ? this.ValueInNeutralLanguageAsSpan : [];
+            if (this.TryFindTranslation(culture.Name, out var translation))
+            {
+                return translation;
+            }
         }
 
-        var part = this.Value.AsSpan(startIndex + searchPattern.Length);
-        var endIndex = part.IndexOf(Separator);
-        if (endIndex == -1)
+        // The parent chain may differ between platforms (ICU/NLS), so try the plain language code explicitly.
+        if (this.TryFindTranslation(cultureInfo.TwoLetterISOLanguageName, out var languageTranslation))
         {
-            return part;
+            return languageTranslation;
         }
 
-        return part.Slice(0, endIndex);
+        // Last resort: any other culture of the same language, e.g. "zh-CN" when "zh" was requested.
+        if (this.TryFindTranslationOfLanguage(cultureInfo.TwoLetterISOLanguageName, out var siblingTranslation))
+        {
+            return siblingTranslation;
+        }
+
+        return fallbackToNeutral ? this.ValueInNeutralLanguageAsSpan : [];
     }
 
     /// <summary>
@@ -221,7 +230,7 @@ public readonly struct LocalizedString : IEquatable<LocalizedString>
     public LocalizedString WithTranslation(CultureInfo cultureInfo, string? text)
     {
         // Plan (pseudocode):
-        // 1. Determine language code from culture (TwoLetterISOLanguageName).
+        // 1. Determine language code from culture (full culture name, e.g. "de" or "zh-CN").
         // 2. If language is neutral ("en"):
         //    a. If Value is null or empty:
         //       - If text is null or empty: return this (no change).
@@ -240,12 +249,12 @@ public readonly struct LocalizedString : IEquatable<LocalizedString>
         //         ii. Else: replace its content with text.
         //       - If not found and text is not null/empty: append "||xx=text".
         // 4. Return new LocalizedString with computed value.
-        var languageCode = cultureInfo.TwoLetterISOLanguageName;
+        var languageCode = GetLanguageCode(cultureInfo);
 
         // Work with a mutable string representation
         var current = this.Value ?? string.Empty;
 
-        if (languageCode == NeutralLanguageCode)
+        if (IsNeutralLanguage(cultureInfo))
         {
             // Handle neutral language as the base string (before first separator)
             var separatorIndex = current.IndexOf(Separator, StringComparison.OrdinalIgnoreCase);
@@ -350,5 +359,57 @@ public readonly struct LocalizedString : IEquatable<LocalizedString>
     public override int GetHashCode()
     {
         return this.Value != null ? this.Value.GetHashCode() : 0;
+    }
+
+    private static bool IsNeutralLanguage(CultureInfo cultureInfo)
+    {
+        return cultureInfo.TwoLetterISOLanguageName == NeutralLanguageCode;
+    }
+
+    private static string GetLanguageCode(CultureInfo cultureInfo)
+    {
+        return string.IsNullOrEmpty(cultureInfo.Name) ? cultureInfo.TwoLetterISOLanguageName : cultureInfo.Name;
+    }
+
+    private static ReadOnlySpan<char> GetTranslationPart(string value, int partStart)
+    {
+        var part = value.AsSpan(partStart);
+        var endIndex = part.IndexOf(Separator);
+        return endIndex == -1 ? part : part.Slice(0, endIndex);
+    }
+
+    private bool TryFindTranslation(string languageCode, out ReadOnlySpan<char> translation)
+    {
+        var searchPattern = Separator + languageCode + "=";
+        var startIndex = this.Value!.IndexOf(searchPattern, StringComparison.OrdinalIgnoreCase);
+        if (startIndex == -1)
+        {
+            translation = default;
+            return false;
+        }
+
+        translation = GetTranslationPart(this.Value, startIndex + searchPattern.Length);
+        return true;
+    }
+
+    private bool TryFindTranslationOfLanguage(string twoLetterLanguageCode, out ReadOnlySpan<char> translation)
+    {
+        var searchPattern = Separator + twoLetterLanguageCode + "-";
+        var startIndex = this.Value!.IndexOf(searchPattern, StringComparison.OrdinalIgnoreCase);
+        if (startIndex == -1)
+        {
+            translation = default;
+            return false;
+        }
+
+        var equalsIndex = this.Value.IndexOf('=', startIndex + searchPattern.Length);
+        if (equalsIndex == -1)
+        {
+            translation = default;
+            return false;
+        }
+
+        translation = GetTranslationPart(this.Value, equalsIndex + 1);
+        return true;
     }
 }

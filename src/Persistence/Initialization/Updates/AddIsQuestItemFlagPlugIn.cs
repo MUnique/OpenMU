@@ -36,9 +36,6 @@ public class AddIsQuestItemFlagPlugIn : UpdatePlugInBase
     public override string Description => PlugInDescription;
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.AddIsQuestItemFlag;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />
