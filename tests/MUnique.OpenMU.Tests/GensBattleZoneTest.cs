@@ -69,7 +69,7 @@ public class GensBattleZoneTest
     public async Task OnlyMembersCanEnterTheBattleZoneAsync()
     {
         var (member, nonMember) = await CreateEnemiesAsync().ConfigureAwait(false);
-        nonMember.GensMember = null;
+        nonMember.GensMember!.Gens = GensType.None;
         var gate = new ExitGate { Map = member.CurrentMap!.Definition };
 
         var memberArgs = new CancelEventArgs();
@@ -88,7 +88,7 @@ public class GensBattleZoneTest
     public async Task WarpCommandToTheBattleZoneIsDeniedForNonMembersAsync()
     {
         var (member, nonMember) = await CreateEnemiesAsync().ConfigureAwait(false);
-        nonMember.GensMember = null;
+        nonMember.GensMember!.Gens = GensType.None;
         nonMember.GameContext.PlugInManager.RegisterPlugInAtPlugInPoint<IWarpGateEnteringPlugIn>(this._plugIn);
         nonMember.Money = 1000;
         var warpInfo = new WarpInfo { Costs = 100, Gate = new ExitGate { Map = member.CurrentMap!.Definition } };

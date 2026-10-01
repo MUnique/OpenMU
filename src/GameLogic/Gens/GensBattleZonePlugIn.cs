@@ -36,7 +36,7 @@ public class GensBattleZonePlugIn : IPlayerKillPenaltyExemptionPlugIn, IWarpGate
         if (GensFeaturePlugIn.GetConfiguration(player.GameContext) is not { } configuration
             || targetGate.Map is not { } map
             || !configuration.IsBattleZone(map.Number)
-            || player.GetGens() != GensType.None)
+            || (await player.GetGensMemberAsync().ConfigureAwait(false))?.Gens is GensType.Duprian or GensType.Vanert)
         {
             return;
         }

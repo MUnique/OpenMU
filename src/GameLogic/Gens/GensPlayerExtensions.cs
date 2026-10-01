@@ -22,6 +22,24 @@ public static class GensPlayerExtensions
     }
 
     /// <summary>
+    /// Gets the gens membership of the selected character. It's loaded, if it wasn't loaded when the character
+    /// entered the game, e.g. because the gens system was deactivated at that time.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <returns>The gens membership; <c>null</c>, if the character never joined a gens.</returns>
+    public static async ValueTask<GensMember?> GetGensMemberAsync(this Player player)
+    {
+        if (player.GensMember is not null || player.SelectedCharacter is not { } character)
+        {
+            return player.GensMember;
+        }
+
+        return await player.RunPersistenceExclusiveAsync(
+                async () => player.GensMember ??= await player.PersistenceContext.GetGensMemberAsync(character.Id).ConfigureAwait(false))
+            .ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Determines whether the player is in a map of the battle zone.
     /// </summary>
     /// <param name="player">The player.</param>
