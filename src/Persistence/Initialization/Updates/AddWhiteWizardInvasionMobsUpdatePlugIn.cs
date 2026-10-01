@@ -33,9 +33,6 @@ public class AddWhiteWizardInvasionMobsUpdatePlugIn : UpdatePlugInBase
     internal const string PlugInDescription = "Adds White Wizard (135), Destructive Ogre Soldier (136), and Destructive Ogre Archer (137) and drop groups for existing databases.";
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.AddWhiteWizardInvasionMobs;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />

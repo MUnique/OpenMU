@@ -28,9 +28,6 @@ public class FixDuelArenaSafezoneMapUpdate : UpdatePlugInBase
     internal const string PlugInDescription = "Sets the safezone of duel arena to lorencia.";
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixDuelArenaSafezoneMap;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />

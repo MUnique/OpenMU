@@ -3,6 +3,7 @@ using System;
 using MUnique.OpenMU.Persistence.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 {
     [DbContext(typeof(EntityDataContext))]
-    partial class EntityDataContextModelSnapshot : ModelSnapshot
+    [Migration("20260926235208_MigrateConfigurationUpdatesToGuidKey")]
+    partial class MigrateConfigurationUpdatesToGuidKey
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1709,69 +1712,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.ToTable("GameServerEndpoint", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GensAbuse", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("KillCount")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("KillerId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("LastKillAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("VictimId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("VictimId");
-
-                    b.HasIndex("KillerId", "VictimId")
-                        .IsUnique();
-
-                    b.ToTable("GensAbuse", "data");
-                });
-
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GensMember", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("CharacterId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Contribution")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Gens")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("JoinedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("LeftAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<byte>("Rank")
-                        .HasColumnType("smallint");
-
-                    b.Property<int>("RankingPosition")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CharacterId")
-                        .IsUnique();
-
-                    b.ToTable("GensMember", "data");
-                });
-
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.Guild", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2158,25 +2098,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<bool>("IsBoundToCharacter")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("IsDroppable")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsPersonalStoreSellable")
-                        .HasColumnType("boolean");
-
                     b.Property<bool>("IsQuestItem")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsRepairable")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsSellableToNpc")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsStorable")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsTradable")
                         .HasColumnType("boolean");
 
                     b.Property<Guid?>("ItemSlotId")
@@ -4664,30 +4586,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("RawClient");
-                });
-
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GensAbuse", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Character", null)
-                        .WithMany()
-                        .HasForeignKey("KillerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Character", null)
-                        .WithMany()
-                        .HasForeignKey("VictimId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GensMember", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Character", null)
-                        .WithMany()
-                        .HasForeignKey("CharacterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.Guild", b =>

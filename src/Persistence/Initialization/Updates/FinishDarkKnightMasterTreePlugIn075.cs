@@ -17,9 +17,6 @@ using MUnique.OpenMU.PlugIns;
 public class FinishDarkKnightMasterTreePlugIn075 : FinishDarkKnightMasterTreePlugInBase
 {
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FinishDarkKnightMasterTree075;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => Version075.DataInitialization.Id;
 
     /// <inheritdoc />

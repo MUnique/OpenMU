@@ -17,7 +17,4 @@ public class FixChaosMixesUpdatePlugIn075 : FixChaosMixesPlugInBase
 {
     /// <inheritdoc />
     public override string DataInitializationKey => Version075.DataInitialization.Id;
-
-    /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixChaosMixes075;
 }

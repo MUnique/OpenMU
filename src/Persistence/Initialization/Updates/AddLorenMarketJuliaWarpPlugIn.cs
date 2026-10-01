@@ -36,9 +36,6 @@ public class AddLorenMarketJuliaWarpPlugIn : UpdatePlugInBase
     private const short JuliaNpcNumber = 547;
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.AddLorenMarketJuliaWarp;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />

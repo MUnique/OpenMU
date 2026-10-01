@@ -106,9 +106,6 @@ public class FixAttackSpeedCalculationUpdate : UpdatePlugInBase
     };
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixAttackSpeedCalculation;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />

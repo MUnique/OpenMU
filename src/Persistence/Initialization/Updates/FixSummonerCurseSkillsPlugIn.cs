@@ -32,9 +32,6 @@ public class FixSummonerCurseSkillsPlugIn : UpdatePlugInBase
     internal const string PlugInDescription = "This update adds missing area skill settings for summoner curse (book) and lightning shock skills.";
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixSummonerCurseSkills;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />

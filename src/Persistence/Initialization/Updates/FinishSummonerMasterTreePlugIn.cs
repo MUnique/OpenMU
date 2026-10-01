@@ -32,9 +32,6 @@ public class FinishSummonerMasterTreePlugIn : UpdatePlugInBase
     internal const string PlugInDescription = "This update completes the summoner master tree and fixes some of its skill values.";
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FinishSummonerMasterTree;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => DataInitialization.Id;
 
     /// <inheritdoc />

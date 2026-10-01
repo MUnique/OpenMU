@@ -29,9 +29,6 @@ public class AddKalimaPlugIn : UpdatePlugInBase
     internal const string PlugInDescription = "This adds the items required to enter the kalima map.";
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.AddKalima;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />
