@@ -31,13 +31,19 @@ public abstract class UpdatePlugInBase : IConfigurationUpdatePlugIn
     public abstract bool IsMandatory { get; }
 
     /// <inheritdoc />
+    public virtual int Version => 1;
+
+    /// <inheritdoc />
+    public virtual DateTime UpdatedAt => this.CreatedAt;
+
+    /// <inheritdoc />
     public virtual IEnumerable<Guid> DependsOn => [];
 
     /// <inheritdoc />
     public async ValueTask ApplyUpdateAsync(IContext context, GameConfiguration gameConfiguration)
     {
         await this.ApplyAsync(context, gameConfiguration).ConfigureAwait(false);
-        this.AddUpdateEntry(context);
+        await this.AddOrUpdateEntryAsync(context).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -71,13 +77,17 @@ public abstract class UpdatePlugInBase : IConfigurationUpdatePlugIn
         return true;
     }
 
-    private void AddUpdateEntry(IContext context)
+    private async ValueTask AddOrUpdateEntryAsync(IContext context)
     {
-        var entry = context.CreateNew<ConfigurationUpdate>();
+        var entry = (await context.GetAsync<ConfigurationUpdate>().ConfigureAwait(false))
+            .FirstOrDefault(existing => existing.Key == this.Key)
+            ?? context.CreateNew<ConfigurationUpdate>();
         entry.Key = this.Key;
+        entry.Version = this.Version;
         entry.Name = this.Name;
         entry.Description = this.Description;
         entry.CreatedAt = this.CreatedAt;
+        entry.UpdatedAt = this.UpdatedAt;
         entry.InstalledAt = DateTime.UtcNow;
     }
 }

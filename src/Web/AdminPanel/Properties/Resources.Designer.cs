@@ -2098,6 +2098,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Installed on {0}..
+        /// </summary>
+        public static string InstalledOn {
+            get {
+                return ResourceManager.GetString("InstalledOn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No API key has been created yet..
         /// </summary>
         public static string NoApiKeys {

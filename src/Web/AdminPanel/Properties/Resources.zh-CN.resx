@@ -444,6 +444,9 @@
   <data name="PleaseFirstInstallTheDatabaseUpdatesOnTheSetupPage" xml:space="preserve">
     <value>请先在安装设置页面应用数据库更新。</value>
   </data>
+  <data name="InstalledOn" xml:space="preserve">
+    <value>安装于 {0}。</value>
+  </data>
   <data name="NoConfigurationDataUpdateAvailable" xml:space="preserve">
     <value>没有可用的配置数据更新。</value>
   </data>
