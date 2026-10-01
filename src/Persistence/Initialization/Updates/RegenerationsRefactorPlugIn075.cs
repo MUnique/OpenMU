@@ -17,9 +17,6 @@ using MUnique.OpenMU.PlugIns;
 public class RegenerationsRefactorPlugIn075 : RegenerationsRefactorPlugInBase
 {
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.RegenerationsRefactor075;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => Version075.DataInitialization.Id;
 
     /// <inheritdoc />

@@ -28,9 +28,6 @@ public class AddProjectileCountToTripleShotUpdatePlugIn : UpdatePlugInBase
     internal const string PlugInDescription = "Adds the projectile count of 3 to the Triple Shot skill to properly handle arrow directions.";
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.AddProjectileCountToTripleShot;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />

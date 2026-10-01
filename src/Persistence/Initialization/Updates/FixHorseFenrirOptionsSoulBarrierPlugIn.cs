@@ -49,9 +49,6 @@ public class FixHorseFenrirOptionsSoulBarrierPlugIn : UpdatePlugInBase
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixHorseFenrirOptionsSoulBarrierPlugIn;
-
-    /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
         // Update dark horse item crafting

@@ -46,7 +46,7 @@ internal class ChineseMapNamesTests
         }
 
         var updates = await context.GetAsync<ConfigurationUpdate>().ConfigureAwait(false);
-        Assert.That(updates.Any(update => update.Version == (int)CreateUpdate(version).Version && update.InstalledAt is not null), Is.True);
+        Assert.That(updates.Any(update => update.Key == CreateUpdate(version).Key && update.InstalledAt is not null), Is.True);
     }
 
     /// <summary>Updates distinguish shared map numbers, preserve custom names, and are idempotent.</summary>
@@ -84,9 +84,9 @@ internal class ChineseMapNamesTests
         manager.DiscoverAndRegisterPlugInsOf<IConfigurationUpdatePlugIn>();
         var service = new DataUpdateService(provider, manager);
         var available = (await service.DetermineAvailableUpdatesAsync().ConfigureAwait(false)).OfType<AddMissingChineseConfigurationNamesPlugInBase>().ToList();
-        Assert.That(available.Select(item => item.Version), Is.EqualTo(new[] { update.Version }));
+        Assert.That(available.Select(item => item.Key), Is.EqualTo(new[] { update.Key }));
         Assert.That(available.Single().IsMandatory, Is.False);
-        await service.ApplyUpdatesAsync(available, new Progress<(UpdateVersion, bool)>()).ConfigureAwait(false);
+        await service.ApplyUpdatesAsync(available, new Progress<(Guid, bool)>()).ConfigureAwait(false);
 
         Assert.That(lorencia.Name.ValueInNeutralLanguage, Is.EqualTo("Lorencia"));
         Assert.That(lorencia.Name.GetTranslation(Chinese), Is.EqualTo("勇者大陆"));

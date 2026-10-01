@@ -19,7 +19,4 @@ public class FixWingsDmgRatesUpdatePlugInSeason6 : FixWingsDmgRatesUpdatePlugInB
 {
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
-
-    /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixWingsDmgRatesPlugInSeason6;
 }

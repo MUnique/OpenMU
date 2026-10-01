@@ -28,9 +28,6 @@ public class AddAreaSkillSettingsUpdatePlugIn : UpdatePlugInBase
     internal const string PlugInDescription = "Adds the new area skill settings for skills like evil spirit, etc. to make them work properly again.";
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.AddAreaSkillSettings;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />

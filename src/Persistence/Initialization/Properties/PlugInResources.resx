@@ -230,7 +230,7 @@
   <data name="FinishSummonerMasterTreePlugIn_Description" xml:space="preserve"><value>This update completes the summoner master tree and fixes some of its skill values.</value></data>
   <data name="AddMaximumAllianceSizeUpdatePlugInSeason6_Name" xml:space="preserve"><value>Add Maximum Alliance Size Attribute (Season 6)</value></data>
   <data name="AddMaximumAllianceSizeUpdatePlugInSeason6_Description" xml:space="preserve"><value>Adds the MaximumAllianceSize global base attribute with a default value of 5 to the Season 6 game configuration.</value></data>
-  <data name="FixAncientDiscriminatorsUpdatePlugIn_Name" xml:space="preserve"><value>Fix Warrior Morning Star</value></data>
+  <data name="FixAncientDiscriminatorsUpdatePlugIn_Name" xml:space="preserve"><value>Fix Ancient Discriminators</value></data>
   <data name="FixAncientDiscriminatorsUpdatePlugIn_Description" xml:space="preserve"><value>This update fixes the discriminators of some ancient items.</value></data>
   <data name="AddSummonerBuffSkillsPlugIn_Name" xml:space="preserve"><value>Add Summoner Buff Skills</value></data>
   <data name="AddSummonerBuffSkillsPlugIn_Description" xml:space="preserve"><value>This update adds the Sleep, Innovation, Damage Reflection and Weakness Summoner buff skills. It also fixes the 3rd wing full reflect option.</value></data>
@@ -374,6 +374,8 @@
   <data name="FixRageFighterMultipleHitSkillsPlugIn_Description" xml:space="preserve"><value>This update adds the missing multiple hits to the Killing Blow, Beast Uppercut, Chain Drive, Dragon Roar and Phoenix Shot Rage Fighter skills, as well as their magic effects.</value></data>
   <data name="FixChaosMixesPlugInSeason6_Name" xml:space="preserve"><value>Fix Chaos Mixes Settings And Several Options</value></data>
   <data name="FixChaosMixesPlugInSeason6_Description" xml:space="preserve"><value>This update fixes the Chaos Weapon, First Wings, Dinorant, Item Level Upgrade, Second Wings, Third Wings, Cape, SD Potions, Guardian Option, and Secromicon crafting settings; Blue Fenrir (Protect) damage decrease option value; Wizard's Ring wizardry option; lvl 380 item guardian options for Summoner and Rage Fighter.</value></data>
+  <data name="AddFenrirMaterialDropGroupsUpdateSeason6_Name" xml:space="preserve"><value>Add Fenrir Material Drop Groups</value></data>
+  <data name="AddFenrirMaterialDropGroupsUpdateSeason6_Description" xml:space="preserve"><value>Adds the drops of Splinter of Armor (5 %), Bless of Guardian (2 %) and Claw of Beast (0.5 %) to all monsters of Crywolf. Materials which already drop on Crywolf by another group are skipped.</value></data>
   <data name="AddMissingChineseConfigurationNames_Name" xml:space="preserve"><value>Add missing Simplified Chinese configuration names</value></data>
   <data name="AddMissingChineseConfigurationNames_Description" xml:space="preserve"><value>Adds sourced Chinese class, map, merchant, monster and NPC names. Only missing translations and English copies are replaced; existing Chinese names, other languages and gameplay settings are preserved.</value></data>
 </root>

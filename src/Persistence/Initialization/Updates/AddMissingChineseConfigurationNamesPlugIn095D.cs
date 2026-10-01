@@ -17,8 +17,5 @@ using MUnique.OpenMU.PlugIns;
 public class AddMissingChineseConfigurationNamesPlugIn095D : AddMissingChineseConfigurationNamesPlugInBase
 {
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.AddMissingChineseConfigurationNames095D;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => Version095d.DataInitialization.Id;
 }

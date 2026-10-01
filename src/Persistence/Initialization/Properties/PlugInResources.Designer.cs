@@ -887,23 +887,17 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized FixChaosMixesPlugInSeason6_Description text.</summary>
         public static string FixChaosMixesPlugInSeason6_Description => ResourceManager.GetString("FixChaosMixesPlugInSeason6_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized AddFenrirMaterialDropGroupsUpdateSeason6_Name text.</summary>
+        public static string AddFenrirMaterialDropGroupsUpdateSeason6_Name => ResourceManager.GetString("AddFenrirMaterialDropGroupsUpdateSeason6_Name", resourceCulture)!;
 
-        /// <summary>
-        ///   Looks up a localized string similar to Add missing Simplified Chinese configuration names.
-        /// </summary>
-        public static string AddMissingChineseConfigurationNames_Name {
-            get {
-                return ResourceManager.GetString("AddMissingChineseConfigurationNames_Name", resourceCulture);
-            }
-        }
+        /// <summary>Gets the localized AddFenrirMaterialDropGroupsUpdateSeason6_Description text.</summary>
+        public static string AddFenrirMaterialDropGroupsUpdateSeason6_Description => ResourceManager.GetString("AddFenrirMaterialDropGroupsUpdateSeason6_Description", resourceCulture)!;
 
-        /// <summary>
-        ///   Looks up a localized string similar to Adds sourced Chinese class, map, merchant, monster and NPC names. Only missing translations and English copies are replaced; existing Chinese names, other languages and gameplay settings are preserved..
-        /// </summary>
-        public static string AddMissingChineseConfigurationNames_Description {
-            get {
-                return ResourceManager.GetString("AddMissingChineseConfigurationNames_Description", resourceCulture);
-            }
-        }
+        /// <summary>Gets the localized AddMissingChineseConfigurationNames_Name text.</summary>
+        public static string AddMissingChineseConfigurationNames_Name => ResourceManager.GetString("AddMissingChineseConfigurationNames_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddMissingChineseConfigurationNames_Description text.</summary>
+        public static string AddMissingChineseConfigurationNames_Description => ResourceManager.GetString("AddMissingChineseConfigurationNames_Description", resourceCulture)!;
+
     }
 }

@@ -18,9 +18,6 @@ public class AddMovementSpeedAttributesPlugInSeason6 : AddMovementSpeedAttribute
     private const int SeasonSixMaximumItemLevel = 15;
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.AddMovementSpeedAttributesSeason6;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />

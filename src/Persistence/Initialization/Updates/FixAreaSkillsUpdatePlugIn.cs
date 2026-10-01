@@ -30,9 +30,6 @@ public class FixAreaSkillsUpdatePlugIn : UpdatePlugInBase
     internal const string PlugInDescription = "Fixes Hellfire, Decay, and Ice Storm skills' range, effect radius, and delay.";
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixAreaSkills;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />

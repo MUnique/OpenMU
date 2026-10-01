@@ -27,9 +27,6 @@ public class FixEventItemsDropFromMonstersUpdatePlugIn095d : FixEventItemsDropFr
     internal const string PlugInDescription = "This update fixes event items that have DropsFromMonsters set to true, causing them to drop at level 0 instead of using their dedicated DropItemGroups.";
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixEventItemsDropFromMonsters095d;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => Version095d.DataInitialization.Id;
 
     /// <inheritdoc />

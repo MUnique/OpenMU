@@ -13,13 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("C4DB0C18-84DE-40DE-BD4C-22D884FB3790")]
 [PlugInPoint("Configuration update", "Provides updates for initialized data.")]
-public interface IConfigurationUpdatePlugIn : IStrategyPlugIn<int>
+public interface IConfigurationUpdatePlugIn : IStrategyPlugIn<Guid>
 {
-    /// <summary>
-    /// Gets the version number of the update. This must be unique over all <see cref="DataInitializationKey"/>s.
-    /// </summary>
-    UpdateVersion Version { get; }
-
     /// <summary>
     /// Gets the data initialization key to which this update belongs.
     /// </summary>
@@ -43,8 +38,16 @@ public interface IConfigurationUpdatePlugIn : IStrategyPlugIn<int>
 
     /// <summary>
     /// Gets the creation date of the update (at development).
+    /// Also determines the order in which independent pending updates are applied.
     /// </summary>
     DateTime CreatedAt { get; }
+
+    /// <summary>
+    /// Gets the keys of updates that must already be installed (or included in the
+    /// same batch) before this update is applied. Empty for the common case of an
+    /// update with no real dependency on another.
+    /// </summary>
+    IEnumerable<Guid> DependsOn => [];
 
     /// <summary>
     /// Applies this update on the given persistence context.

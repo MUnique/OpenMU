@@ -31,9 +31,6 @@ public class FinishDarkWizardMasterTreePlugIn : UpdatePlugInBase
     internal const string PlugInDescription = "This update completes the dark wizard master tree expansion of wizardry effects.";
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FinishDarkWizardMasterTree;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />
