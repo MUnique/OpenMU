@@ -59,11 +59,14 @@ public interface IConfigurationUpdatePlugIn : IStrategyPlugIn<Guid>
     int Version => 1;
 
     /// <summary>
-    /// Gets the keys of updates that must already be installed (or included in the
+    /// Gets the updates that must already be installed (or included in the
     /// same batch) before this update is applied. Empty for the common case of an
     /// update with no real dependency on another.
+    /// A dependency can require a specific minimum version of another update,
+    /// e.g. <c>DependsOn => [new UpdateDependency(otherUpdateKey, minVersion: 2)]</c>;
+    /// a plain key accepts any installed version.
     /// </summary>
-    IEnumerable<Guid> DependsOn => [];
+    IEnumerable<UpdateDependency> DependsOn => [];
 
     /// <summary>
     /// Applies this update on the given persistence context.

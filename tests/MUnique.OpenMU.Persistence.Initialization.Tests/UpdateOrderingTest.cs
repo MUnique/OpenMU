@@ -23,7 +23,7 @@ internal class UpdateOrderingTest
         var first = new StubUpdatePlugIn(new DateTime(2026, 1, 2, 0, 0, 0, DateTimeKind.Utc));
         var second = new StubUpdatePlugIn(new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc), dependsOn: new[] { first.Key });
 
-        var ordered = DataUpdateService.OrderByDependencies(new IConfigurationUpdatePlugIn[] { second, first }, new HashSet<Guid>());
+        var ordered = DataUpdateService.OrderByDependencies(new IConfigurationUpdatePlugIn[] { second, first }, new Dictionary<Guid, int>());
 
         Assert.That(ordered.Select(up => up.Key), Is.EqualTo(new[] { first.Key, second.Key }));
     }
@@ -37,7 +37,7 @@ internal class UpdateOrderingTest
         var newer = new StubUpdatePlugIn(new DateTime(2026, 2, 1, 0, 0, 0, DateTimeKind.Utc));
         var older = new StubUpdatePlugIn(new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc));
 
-        var ordered = DataUpdateService.OrderByDependencies(new IConfigurationUpdatePlugIn[] { newer, older }, new HashSet<Guid>());
+        var ordered = DataUpdateService.OrderByDependencies(new IConfigurationUpdatePlugIn[] { newer, older }, new Dictionary<Guid, int>());
 
         Assert.That(ordered.Select(up => up.Key), Is.EqualTo(new[] { older.Key, newer.Key }));
     }
@@ -54,7 +54,7 @@ internal class UpdateOrderingTest
             new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
             new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc));
 
-        var ordered = DataUpdateService.OrderByDependencies(new IConfigurationUpdatePlugIn[] { updatedLater, createdLater }, new HashSet<Guid>());
+        var ordered = DataUpdateService.OrderByDependencies(new IConfigurationUpdatePlugIn[] { updatedLater, createdLater }, new Dictionary<Guid, int>());
 
         Assert.That(ordered.Select(up => up.Key), Is.EqualTo(new[] { createdLater.Key, updatedLater.Key }));
     }
@@ -68,7 +68,7 @@ internal class UpdateOrderingTest
         var installedKey = Guid.NewGuid();
         var update = new StubUpdatePlugIn(new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc), dependsOn: new[] { installedKey });
 
-        var ordered = DataUpdateService.OrderByDependencies(new IConfigurationUpdatePlugIn[] { update }, new HashSet<Guid> { installedKey });
+        var ordered = DataUpdateService.OrderByDependencies(new IConfigurationUpdatePlugIn[] { update }, new Dictionary<Guid, int> { [installedKey] = 1 });
 
         Assert.That(ordered.Select(up => up.Key), Is.EqualTo(new[] { update.Key }));
     }
@@ -82,7 +82,7 @@ internal class UpdateOrderingTest
         var missingKey = Guid.NewGuid();
         var update = new StubUpdatePlugIn(new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc), dependsOn: new[] { missingKey });
 
-        Assert.Throws<MissingUpdateDependencyException>(() => DataUpdateService.OrderByDependencies(new IConfigurationUpdatePlugIn[] { update }, new HashSet<Guid>()));
+        Assert.Throws<MissingUpdateDependencyException>(() => DataUpdateService.OrderByDependencies(new IConfigurationUpdatePlugIn[] { update }, new Dictionary<Guid, int>()));
     }
 
     /// <summary>
@@ -93,9 +93,76 @@ internal class UpdateOrderingTest
     {
         var first = new StubUpdatePlugIn(new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc));
         var second = new StubUpdatePlugIn(new DateTime(2026, 1, 2, 0, 0, 0, DateTimeKind.Utc), dependsOn: new[] { first.Key });
-        first.DependsOn = new[] { second.Key };
+        first.DependsOn = new UpdateDependency[] { second.Key };
 
-        Assert.Throws<CircularUpdateDependencyException>(() => DataUpdateService.OrderByDependencies(new IConfigurationUpdatePlugIn[] { first, second }, new HashSet<Guid>()));
+        Assert.Throws<CircularUpdateDependencyException>(() => DataUpdateService.OrderByDependencies(new IConfigurationUpdatePlugIn[] { first, second }, new Dictionary<Guid, int>()));
+    }
+
+    /// <summary>
+    /// Tests that a versioned dependency is accepted when the required version is installed.
+    /// </summary>
+    [Test]
+    public void InstalledMinVersionIsAccepted()
+    {
+        var installedKey = Guid.NewGuid();
+        var update = new StubUpdatePlugIn(new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+        update.DependsOn = new[] { new UpdateDependency(installedKey, 2) };
+
+        var ordered = DataUpdateService.OrderByDependencies(
+            new IConfigurationUpdatePlugIn[] { update },
+            new Dictionary<Guid, int> { [installedKey] = 2 });
+
+        Assert.That(ordered.Select(up => up.Key), Is.EqualTo(new[] { update.Key }));
+    }
+
+    /// <summary>
+    /// Tests that a versioned dependency is accepted when its bump is part of the batch,
+    /// and that the bump is applied first.
+    /// </summary>
+    [Test]
+    public void PendingMinVersionBumpIsAppliedFirst()
+    {
+        var dependency = new StubUpdatePlugIn(new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+        dependency.Version = 2;
+        var update = new StubUpdatePlugIn(new DateTime(2026, 1, 2, 0, 0, 0, DateTimeKind.Utc));
+        update.DependsOn = new[] { new UpdateDependency(dependency.Key, 2) };
+
+        var ordered = DataUpdateService.OrderByDependencies(
+            new IConfigurationUpdatePlugIn[] { update, dependency },
+            new Dictionary<Guid, int> { [dependency.Key] = 1 });
+
+        Assert.That(ordered.Select(up => up.Key), Is.EqualTo(new[] { dependency.Key, update.Key }));
+    }
+
+    /// <summary>
+    /// Tests that a versioned dependency is reported when the installed version is too old
+    /// and no sufficient bump is part of the batch.
+    /// </summary>
+    [Test]
+    public void OutdatedInstalledMinVersionThrows()
+    {
+        var installedKey = Guid.NewGuid();
+        var update = new StubUpdatePlugIn(new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+        update.DependsOn = new[] { new UpdateDependency(installedKey, 2) };
+
+        Assert.Throws<MissingUpdateDependencyException>(() => DataUpdateService.OrderByDependencies(
+            new IConfigurationUpdatePlugIn[] { update },
+            new Dictionary<Guid, int> { [installedKey] = 1 }));
+    }
+
+    /// <summary>
+    /// Tests that a versioned dependency is reported when the batched bump is too old.
+    /// </summary>
+    [Test]
+    public void InsufficientPendingMinVersionThrows()
+    {
+        var dependency = new StubUpdatePlugIn(new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+        var update = new StubUpdatePlugIn(new DateTime(2026, 1, 2, 0, 0, 0, DateTimeKind.Utc));
+        update.DependsOn = new[] { new UpdateDependency(dependency.Key, 2) };
+
+        Assert.Throws<MissingUpdateDependencyException>(() => DataUpdateService.OrderByDependencies(
+            new IConfigurationUpdatePlugIn[] { update, dependency },
+            new Dictionary<Guid, int>()));
     }
 
     /// <summary>
@@ -113,7 +180,7 @@ internal class UpdateOrderingTest
         {
             this.CreatedAt = createdAt;
             this.UpdatedAt = updatedAt ?? createdAt;
-            this.DependsOn = dependsOn;
+            this.DependsOn = dependsOn.Select(key => (UpdateDependency)key).ToList();
         }
 
         /// <inheritdoc />
@@ -138,10 +205,10 @@ internal class UpdateOrderingTest
         public DateTime UpdatedAt { get; }
 
         /// <inheritdoc />
-        public int Version => 1;
+        public int Version { get; set; } = 1;
 
         /// <inheritdoc />
-        public IEnumerable<Guid> DependsOn { get; set; }
+        public IEnumerable<UpdateDependency> DependsOn { get; set; }
 
         /// <inheritdoc />
         public ValueTask ApplyUpdateAsync(IContext context, GameConfiguration gameConfiguration) => ValueTask.CompletedTask;

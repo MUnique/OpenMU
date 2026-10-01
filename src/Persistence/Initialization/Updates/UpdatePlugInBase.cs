@@ -37,13 +37,32 @@ public abstract class UpdatePlugInBase : IConfigurationUpdatePlugIn
     public virtual DateTime UpdatedAt => this.CreatedAt;
 
     /// <inheritdoc />
-    public virtual IEnumerable<Guid> DependsOn => [];
+    public virtual IEnumerable<UpdateDependency> DependsOn => [];
 
     /// <inheritdoc />
     public async ValueTask ApplyUpdateAsync(IContext context, GameConfiguration gameConfiguration)
     {
-        await this.ApplyAsync(context, gameConfiguration).ConfigureAwait(false);
-        await this.AddOrUpdateEntryAsync(context).ConfigureAwait(false);
+        var existing = (await context.GetAsync<ConfigurationUpdate>().ConfigureAwait(false))
+            .FirstOrDefault(entry => entry.Key == this.Key);
+        await this.ApplyAsync(context, gameConfiguration, existing?.Version).ConfigureAwait(false);
+        this.AddOrUpdateEntry(context, existing);
+    }
+
+    /// <summary>
+    /// Applies this update on the given persistence context.
+    /// </summary>
+    /// <param name="context">The persistence context.</param>
+    /// <param name="gameConfiguration">The game configuration which can be updated.</param>
+    /// <param name="installedVersion">The installed version of this update, or <c>null</c> if it's not installed yet.</param>
+    /// <remarks>
+    /// Calling <see cref="IContext.SaveChangesAsync"/> is not required in this implementation.
+    /// It will be called by <see cref="DataUpdateService"/>.
+    /// The default implementation ignores <paramref name="installedVersion"/> and ensures the
+    /// final state cumulatively. Override it only to apply a delta between versions.
+    /// </remarks>
+    protected virtual ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration, int? installedVersion)
+    {
+        return this.ApplyAsync(context, gameConfiguration);
     }
 
     /// <summary>
@@ -77,11 +96,9 @@ public abstract class UpdatePlugInBase : IConfigurationUpdatePlugIn
         return true;
     }
 
-    private async ValueTask AddOrUpdateEntryAsync(IContext context)
+    private void AddOrUpdateEntry(IContext context, ConfigurationUpdate? existing)
     {
-        var entry = (await context.GetAsync<ConfigurationUpdate>().ConfigureAwait(false))
-            .FirstOrDefault(existing => existing.Key == this.Key)
-            ?? context.CreateNew<ConfigurationUpdate>();
+        var entry = existing ?? context.CreateNew<ConfigurationUpdate>();
         entry.Key = this.Key;
         entry.Version = this.Version;
         entry.Name = this.Name;

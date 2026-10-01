@@ -43,7 +43,6 @@ public class DataUpdateService
         var installedVersions = await GetInstalledVersionsAsync(context).ConfigureAwait(false);
 
         var initializationKey = await this.DetermineInitializationKeyAsync(context).ConfigureAwait(false);
-        var installedKeys = installedVersions.Keys.ToHashSet();
 
         var updateStrategyProvider = this._plugInManager.GetStrategyProvider<Guid, IConfigurationUpdatePlugIn>();
         if (updateStrategyProvider is null)
@@ -57,7 +56,7 @@ public class DataUpdateService
             .Where(up => !installedVersions.TryGetValue(up.Key, out var installedVersion) || installedVersion < up.Version)
             .ToList();
 
-        return OrderByDependencies(pending, installedKeys);
+        return OrderByDependencies(pending, installedVersions);
     }
 
     /// <summary>
@@ -81,10 +80,10 @@ public class DataUpdateService
     public async ValueTask ApplyUpdatesAsync(IReadOnlyList<IConfigurationUpdatePlugIn> updates, IProgress<(Guid CurrentUpdatingKey, bool IsCompleted)> progress)
     {
         using var context = this._contextProvider.CreateNewContext();
-        var installedKeys = (await GetInstalledVersionsAsync(context).ConfigureAwait(false)).Keys.ToHashSet();
+        var installedVersions = await GetInstalledVersionsAsync(context).ConfigureAwait(false);
         var gameConfiguration = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).First();
 
-        var orderedUpdates = OrderByDependencies(updates, installedKeys);
+        var orderedUpdates = OrderByDependencies(updates, installedVersions);
         var updateStates = await context.GetAsync<ConfigurationUpdateState>().ConfigureAwait(false);
         var updateState = updateStates.FirstOrDefault() ?? context.CreateNew<ConfigurationUpdateState>();
         foreach (var update in orderedUpdates)
@@ -103,18 +102,27 @@ public class DataUpdateService
     /// <summary>
     /// Orders the pending updates by their dependencies. Independent updates are ordered by <see cref="IConfigurationUpdatePlugIn.UpdatedAt"/>.
     /// </summary>
+    /// <remarks>
+    /// A version bump is ordered by its own <see cref="IConfigurationUpdatePlugIn.UpdatedAt"/>,
+    /// so it can run after a newer independent update it used to run before.
+    /// That is harmless as long as real dependencies are declared with
+    /// <see cref="IConfigurationUpdatePlugIn.DependsOn"/>.
+    /// </remarks>
     /// <param name="pending">The pending updates.</param>
-    /// <param name="alreadyInstalled">The keys of the already installed updates.</param>
+    /// <param name="installedVersions">The installed versions by update key.</param>
     /// <returns>The ordered updates.</returns>
     internal static IReadOnlyList<IConfigurationUpdatePlugIn> OrderByDependencies(
-        IReadOnlyCollection<IConfigurationUpdatePlugIn> pending, IReadOnlySet<Guid> alreadyInstalled)
+        IReadOnlyCollection<IConfigurationUpdatePlugIn> pending,
+        IReadOnlyDictionary<Guid, int> installedVersions)
     {
         var pendingByKey = pending.ToDictionary(p => p.Key);
 
         foreach (var plugin in pending)
         {
             var missing = plugin.DependsOn
-                .Where(dep => !alreadyInstalled.Contains(dep) && !pendingByKey.ContainsKey(dep))
+                .Where(dep => !IsDependencySatisfied(dep, installedVersions, pendingByKey))
+                .Select(dep => dep.Key)
+                .Distinct()
                 .ToList();
             if (missing.Count > 0)
             {
@@ -138,7 +146,9 @@ public class DataUpdateService
                 throw new CircularUpdateDependencyException(plugin);
             }
 
-            foreach (var depKey in plugin.DependsOn.Where(pendingByKey.ContainsKey))
+            foreach (var depKey in plugin.DependsOn
+                .Select(dependency => dependency.Key)
+                .Where(pendingByKey.ContainsKey))
             {
                 Visit(pendingByKey[depKey]);
             }
@@ -154,6 +164,17 @@ public class DataUpdateService
         }
 
         return result;
+    }
+
+    private static bool IsDependencySatisfied(
+        UpdateDependency dependency,
+        IReadOnlyDictionary<Guid, int> installedVersions,
+        IReadOnlyDictionary<Guid, IConfigurationUpdatePlugIn> pendingByKey)
+    {
+        return (installedVersions.TryGetValue(dependency.Key, out var installedVersion)
+                && (dependency.MinVersion is null || installedVersion >= dependency.MinVersion))
+            || (pendingByKey.TryGetValue(dependency.Key, out var pending)
+                && (dependency.MinVersion is null || pending.Version >= dependency.MinVersion));
     }
 
     private static async ValueTask<IReadOnlyDictionary<Guid, int>> GetInstalledVersionsAsync(IContext context)
