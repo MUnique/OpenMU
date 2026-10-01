@@ -880,6 +880,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The rules of the gens for parties, guilds and alliances: no party between different gens and in the battle zone, guilds and alliances only within a gens..
+        /// </summary>
+        public static string GensRelationshipRulesPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GensRelationshipRulesPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gens relationship rules.
+        /// </summary>
+        public static string GensRelationshipRulesPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GensRelationshipRulesPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Gets level of a player. Usage: /getlevel (optional:character).
         /// </summary>
         public static string GetLevelChatCommandPlugIn_Description {
