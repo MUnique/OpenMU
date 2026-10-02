@@ -4,13 +4,12 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
-using MUnique.OpenMU.Network;
-
 /// <summary>
 /// Validator for skill hits, which were done by skills with type <see cref="SkillType.AreaSkillExplicitHits"/>.
 /// </summary>
 public class SkillHitValidator
 {
+    private const int MinimumCounterValue = 1;
     private const int MaximumCounterValue = 0x32;
 
     private const byte TwisterSkillId = 8;
@@ -20,11 +19,6 @@ public class SkillHitValidator
     private static readonly TimeSpan MaxAnimationToHitDelay = TimeSpan.FromSeconds(10);
 
     private readonly ILogger _logger;
-
-    /// <summary>
-    /// The counter which keeps the expected count of the next animation and hit.
-    /// </summary>
-    private readonly Counter _counter = new(1, MaximumCounterValue);
 
     private readonly HitEntry[] _hits = new HitEntry[MaximumCounterValue + 1];
 
@@ -40,13 +34,17 @@ public class SkillHitValidator
     private bool _isFirstAfterConnectionEstablished = true;
 
     /// <summary>
+    /// The expected count of the next animation and hit.
+    /// </summary>
+    private int _expectedCount = MinimumCounterValue;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="SkillHitValidator"/> class.
     /// </summary>
     /// <param name="logger">The logger.</param>
     public SkillHitValidator(ILogger logger)
     {
         this._logger = logger;
-        this._counter.Reset();
     }
 
     /// <summary>
@@ -83,17 +81,17 @@ public class SkillHitValidator
         {
             if (this._isFirstAfterConnectionEstablished)
             {
-                this._counter.Count = animationCounter;
+                this._expectedCount = animationCounter;
                 this._isFirstAfterConnectionEstablished = false;
             }
 
-            if (this._counter.Count != animationCounter)
+            if (this._expectedCount != animationCounter)
             {
-                this._logger.LogWarning($"Animation count out of sync - hacker? Expected: {this._counter.Count}, Actual: {animationCounter}.");
+                this._logger.LogWarning($"Animation count out of sync - hacker? Expected: {this._expectedCount}, Actual: {animationCounter}.");
                 return false;
             }
 
-            this._counter.Increase();
+            this.IncreaseExpectedCount();
         }
 
         this.LastRegisteredSkillId = skillId;
@@ -107,7 +105,7 @@ public class SkillHitValidator
     /// </summary>
     public void IncreaseCounterAfterHit()
     {
-        this._counter.Increase();
+        this.IncreaseExpectedCount();
     }
 
     /// <summary>
@@ -156,10 +154,10 @@ public class SkillHitValidator
                 return (false, false);
             }
 
-            var expectedCount = this._counter.Count;
+            var expectedCount = this._expectedCount;
             if (expectedCount != hitCounter)
             {
-                this._logger.LogWarning($"Hit count out of sync - hacker? Expected: {this._counter.Count}, Actual: {hitCounter}.");
+                this._logger.LogWarning($"Hit count out of sync - hacker? Expected: {this._expectedCount}, Actual: {hitCounter}.");
                 return (false, false);
             }
 
@@ -188,6 +186,11 @@ public class SkillHitValidator
             this._logger.LogWarning("Possible Hacker - Skill Hit Invalid because of missing previous animation.");
             return (false, false);
         }
+    }
+
+    private void IncreaseExpectedCount()
+    {
+        this._expectedCount = this._expectedCount == MaximumCounterValue ? MinimumCounterValue : this._expectedCount + 1;
     }
 
     private record struct HitEntry(ushort Skill, DateTime TimeStamp, bool IsAnimation, int HitCount);
