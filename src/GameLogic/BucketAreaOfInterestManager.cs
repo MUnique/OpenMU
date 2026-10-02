@@ -170,7 +170,7 @@ internal class BucketAreaOfInterestManager : IAreaOfInterestManager
             return false;
         }
 
-        using (await moveLock.LockAsync())
+        using (await moveLock.LockAsync().ConfigureAwait(false))
         {
             var oldPosition = obj.Position;
             Bucket<ILocateable>? oldBucket;

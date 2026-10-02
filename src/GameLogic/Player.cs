@@ -1056,7 +1056,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return;
         }
 
-        using var l = await this.ObserverLock.WriterLockAsync();
+        using var l = await this.ObserverLock.WriterLockAsync().ConfigureAwait(false);
         this.Observers.Add(observer);
         if (this.Party is not null
             && observer is Player observingPlayer
@@ -1070,7 +1070,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <inheritdoc/>
     public async ValueTask RemoveObserverAsync(IWorldObserver observer)
     {
-        using var l = await this.ObserverLock.WriterLockAsync();
+        using var l = await this.ObserverLock.WriterLockAsync().ConfigureAwait(false);
         this.Observers.Remove(observer);
         if (this.Party is not null
             && observer is Player observingPlayer

@@ -70,7 +70,7 @@ public sealed class Walker : IDisposable
             throw new ArgumentException("Maximum number of steps (16) exceeded.", nameof(steps));
         }
 
-        using var writerLock = await this._walkLock.WriterLockAsync();
+        using var writerLock = await this._walkLock.WriterLockAsync().ConfigureAwait(false);
 
         void EnqueueSteps()
         {
@@ -105,7 +105,7 @@ public sealed class Walker : IDisposable
     /// <param name="walkToken">The walk token.</param>
     public async ValueTask StartWalkAsync(Guid walkToken)
     {
-        using var writerLock = await this._walkLock.WriterLockAsync();
+        using var writerLock = await this._walkLock.WriterLockAsync().ConfigureAwait(false);
 
         if (walkToken != this._currentWalkToken)
         {
@@ -142,7 +142,7 @@ public sealed class Walker : IDisposable
     public async ValueTask<int> GetDirectionsAsync(Memory<Direction> directions)
     {
         var count = 0;
-        using var readerLock = await this._walkLock.ReaderLockAsync();
+        using var readerLock = await this._walkLock.ReaderLockAsync().ConfigureAwait(false);
         foreach (var direction in this._currentWalkSteps[..this._currentWalkStepCount].Select(step => step.Direction))
         {
             directions.Span[count] = direction;
@@ -160,7 +160,7 @@ public sealed class Walker : IDisposable
     public async ValueTask<int> GetStepsAsync(Memory<WalkingStep> steps)
     {
         var count = 0;
-        using var readerLock = await this._walkLock.ReaderLockAsync();
+        using var readerLock = await this._walkLock.ReaderLockAsync().ConfigureAwait(false);
         foreach (var direction in this._currentWalkSteps[..this._currentWalkStepCount])
         {
             steps.Span[count] = direction;
@@ -177,7 +177,7 @@ public sealed class Walker : IDisposable
     /// </summary>
     public async ValueTask StopAsync()
     {
-        using var writeLock = await this._walkLock.WriterLockAsync();
+        using var writeLock = await this._walkLock.WriterLockAsync().ConfigureAwait(false);
 
         await this.StopCurrentWalkAsync().ConfigureAwait(false);
     }
@@ -205,7 +205,7 @@ public sealed class Walker : IDisposable
     /// <param name="ownCts">The cancellation token source of the calling walk loop.</param>
     private async ValueTask StopOwnWalkAsync(CancellationTokenSource ownCts)
     {
-        using var writeLock = await this._walkLock.WriterLockAsync();
+        using var writeLock = await this._walkLock.WriterLockAsync().ConfigureAwait(false);
 
         if (!ReferenceEquals(this._walkCts, ownCts))
         {
@@ -290,7 +290,7 @@ public sealed class Walker : IDisposable
             }
 
             bool stop;
-            using (await this._walkLock.ReaderLockAsync(cancellationToken))
+            using (await this._walkLock.ReaderLockAsync(cancellationToken).ConfigureAwait(false))
             {
                 stop = !cancellationToken.IsCancellationRequested && this.ShouldWalkerStop();
             }
@@ -302,7 +302,7 @@ public sealed class Walker : IDisposable
             }
 
             // Update new coords
-            using (await this._walkLock.WriterLockAsync(cancellationToken))
+            using (await this._walkLock.WriterLockAsync(cancellationToken).ConfigureAwait(false))
             {
                 return this.WalkNextStepIfStepAvailable();
             }
