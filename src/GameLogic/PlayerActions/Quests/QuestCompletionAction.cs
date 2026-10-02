@@ -127,6 +127,10 @@ public class QuestCompletionAction
                 {
                     await currentMap.AddAsync(new DroppedItem(item, player.Position, currentMap, player, player.GetAsEnumerable())).ConfigureAwait(false);
                 }
+                else
+                {
+                    player.Logger.LogWarning("Quest reward item {Item} of player {Player} is lost: the inventory is full and the player is on no map.", item, player);
+                }
 
                 break;
             case QuestRewardType.LevelUpPoints:
