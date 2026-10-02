@@ -70,7 +70,7 @@ public class DefaultDropGenerator : IDropGenerator
             return ([], null);
         }
 
-        using var l = await this._lock.LockAsync();
+        using var l = await this._lock.LockAsync().ConfigureAwait(false);
         this._guaranteedDropGroups.Clear();
         this._chanceDropGroups.Clear();
 

@@ -109,6 +109,9 @@ public class GuildWarAnswerAction
     {
         var playerReference = new WeakReference<Player>(guildPlayer);
 
+        // Captured separately, so that the handler doesn't keep a strong reference to the player.
+        var logger = guildPlayer.Logger;
+
 #pragma warning disable VSTHRD100 // Avoid async void methods
         async void OnScorePropertyChanged(object? sender, PropertyChangedEventArgs args)
 #pragma warning restore VSTHRD100 // Avoid async void methods
@@ -126,7 +129,7 @@ public class GuildWarAnswerAction
             }
             catch (Exception ex)
             {
-                guildPlayer.Logger.LogError(ex, "Error handling a changed guild war score.");
+                logger.LogError(ex, "Error handling a changed guild war score.");
             }
         }
 

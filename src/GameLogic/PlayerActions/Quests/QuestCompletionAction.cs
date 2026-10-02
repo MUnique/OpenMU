@@ -123,9 +123,9 @@ public class QuestCompletionAction
                 {
                     await player.InvokeViewPlugInAsync<IItemAppearPlugIn>(p => p.ItemAppearAsync(item)).ConfigureAwait(false);
                 }
-                else
+                else if (player.CurrentMap is { } currentMap)
                 {
-                    player.CurrentMap?.AddAsync(new DroppedItem(item, player.Position, player.CurrentMap, player, player.GetAsEnumerable()));
+                    await currentMap.AddAsync(new DroppedItem(item, player.Position, currentMap, player, player.GetAsEnumerable())).ConfigureAwait(false);
                 }
 
                 break;

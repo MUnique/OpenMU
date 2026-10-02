@@ -120,7 +120,7 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
     protected virtual async ValueTask<IAttackable?> SearchNextTargetAsync()
     {
         List<IWorldObserver> tempObservers;
-        using (await this.Npc.ObserverLock.ReaderLockAsync())
+        using (await this.Npc.ObserverLock.ReaderLockAsync().ConfigureAwait(false))
         {
             if (this.Npc.Observers.Count == 0)
             {
@@ -177,13 +177,13 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
     /// </summary>
     protected async ValueTask<bool> IsObservedByAttackerAsync()
     {
-        using var readerLock = await this.Monster.ObserverLock.ReaderLockAsync();
+        using var readerLock = await this.Monster.ObserverLock.ReaderLockAsync().ConfigureAwait(false);
         return this.Monster.Observers.OfType<IAttacker>().Any();
     }
 
     private async ValueTask<bool> IsTargetInObserversAsync(IAttackable target)
     {
-        using (await this.Npc.ObserverLock.ReaderLockAsync())
+        using (await this.Npc.ObserverLock.ReaderLockAsync().ConfigureAwait(false))
         {
             return target is IWorldObserver worldObserver && this.Npc.Observers.Contains(worldObserver);
         }
