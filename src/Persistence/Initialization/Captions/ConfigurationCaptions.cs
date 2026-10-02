@@ -31,6 +31,16 @@ public static class ConfigurationCaptions
     }
 
     /// <summary>
+    /// Counts the captions which are linked to a source, i.e. which have a <see cref="LocalizedString.SourceKey"/>.
+    /// </summary>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    /// <returns>The number of linked captions.</returns>
+    public static int CountLinkedCaptions(GameConfiguration gameConfiguration)
+    {
+        return LocalizedCaption.FindAll(gameConfiguration).Count(caption => caption.Value.SourceKey is not null);
+    }
+
+    /// <summary>
     /// Finds the source keys of captions which can't be resolved, e.g. because the source isn't registered
     /// at <see cref="LocalizedStringResources"/> or doesn't contain the key anymore.
     /// </summary>

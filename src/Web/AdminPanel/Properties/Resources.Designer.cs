@@ -4681,5 +4681,113 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("CaptionsUnresolvedSources", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Link the built-in captions.
+        /// </summary>
+        public static string CaptionsNotLinkedTitle {
+            get {
+                return ResourceManager.GetString("CaptionsNotLinkedTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The captions of this configuration don't know their sources yet. That's the case for configurations which were created with an older version of OpenMU. Linking is required once; afterwards this page shows which translations can be added or updated..
+        /// </summary>
+        public static string CaptionsNotLinkedDescription {
+            get {
+                return ResourceManager.GetString("CaptionsNotLinkedDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} captions are linked to their sources..
+        /// </summary>
+        public static string CaptionsLinkedCount {
+            get {
+                return ResourceManager.GetString("CaptionsLinkedCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Review and apply the changes.
+        /// </summary>
+        public static string CaptionsReviewTitle {
+            get {
+                return ResourceManager.GetString("CaptionsReviewTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The following captions differ from their sources. The recommended changes are already selected. Customized texts are only changed if you select them..
+        /// </summary>
+        public static string CaptionsReviewDescription {
+            get {
+                return ResourceManager.GetString("CaptionsReviewDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A translation is available, but missing in the configuration, or it's just a copy of the English text..
+        /// </summary>
+        public static string CaptionChangeKind_Missing_Description {
+            get {
+                return ResourceManager.GetString("CaptionChangeKind_Missing_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The built-in text was changed, and the configured text is still the one which was originally taken over..
+        /// </summary>
+        public static string CaptionChangeKind_Updated_Description {
+            get {
+                return ResourceManager.GetString("CaptionChangeKind_Updated_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The built-in translation doesn't exist anymore, and the configured text is still the one which was originally taken over..
+        /// </summary>
+        public static string CaptionChangeKind_Removed_Description {
+            get {
+                return ResourceManager.GetString("CaptionChangeKind_Removed_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The configured text differs, because it was changed or its origin is unknown. It's only overwritten if you select it..
+        /// </summary>
+        public static string CaptionChangeKind_Customized_Description {
+            get {
+                return ResourceManager.GetString("CaptionChangeKind_Customized_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Link captions again.
+        /// </summary>
+        public static string CaptionsLinkAgainTitle {
+            get {
+                return ResourceManager.GetString("CaptionsLinkAgainTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Links the built-in captions which are not linked yet, for example after configuration updates added new objects. Linked captions and texts are not changed..
+        /// </summary>
+        public static string CaptionsLinkAgainDescription {
+            get {
+                return ResourceManager.GetString("CaptionsLinkAgainDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Review the changes below and apply the selected ones..
+        /// </summary>
+        public static string CaptionsNextStepReview {
+            get {
+                return ResourceManager.GetString("CaptionsNextStepReview", resourceCulture);
+            }
+        }
     }
 }

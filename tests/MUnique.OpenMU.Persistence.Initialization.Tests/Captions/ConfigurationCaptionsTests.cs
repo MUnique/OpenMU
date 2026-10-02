@@ -236,10 +236,13 @@ public class ConfigurationCaptionsTests
             targetMonsters[i].SetId(referenceMonsters[i].GetId());
         }
 
+        Assert.That(ConfigurationCaptions.CountLinkedCaptions(target), Is.EqualTo(1));
+
         var (linked, skipped) = ConfigurationCaptions.LinkSourceKeys(target, reference);
 
         Assert.That(linked, Is.EqualTo(1));
         Assert.That(skipped, Is.EqualTo(1));
+        Assert.That(ConfigurationCaptions.CountLinkedCaptions(target), Is.EqualTo(2));
         Assert.That(targetMonsters[0].Designation.Value, Is.EqualTo("Lorencia||zh-CN=罗兰||@src=" + LorenciaKey), "texts are unchanged, no stamp");
         Assert.That(targetMonsters[1].Designation.SourceKey, Is.Null, "customized neutral text");
         Assert.That(targetMonsters[2].Designation.SourceKey, Is.EqualTo("Other/Key"), "existing source keys are kept");
@@ -292,6 +295,17 @@ public class ConfigurationCaptionsTests
         var (targetContext, target) = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
         using var r = referenceContext;
         using var t = targetContext;
+        // Simulates a configuration which was created before captions had source keys.
+        foreach (var monster in target.Monsters)
+        {
+            monster.Designation = monster.Designation.WithSourceKey(null);
+        }
+
+        foreach (var map in target.Maps)
+        {
+            map.Name = map.Name.WithSourceKey(null);
+        }
+
         foreach (var monster in reference.Monsters)
         {
             monster.Designation = monster.Designation.WithSourceKey($"Monsters/{monster.Number}");

@@ -34,17 +34,17 @@ public class ConfigurationCaptionService
     }
 
     /// <summary>
-    /// Determines the differences between the configured captions and their sources.
+    /// Compares the configured captions with their sources.
     /// </summary>
-    /// <returns>
-    /// The differences (if it's empty, all available localizations are in place)
-    /// and the source keys which can't be resolved.
-    /// </returns>
-    public async ValueTask<(IReadOnlyList<CaptionChange> Changes, IReadOnlyList<string> UnresolvedSourceKeys)> DetermineChangesAsync()
+    /// <returns>The result of the comparison.</returns>
+    public async ValueTask<CaptionComparison> CompareAsync()
     {
         using var context = this._contextProvider.CreateNewContext();
         var gameConfiguration = await GetGameConfigurationAsync(context).ConfigureAwait(false);
-        return (ConfigurationCaptions.DetermineChanges(gameConfiguration), ConfigurationCaptions.FindUnresolvedSourceKeys(gameConfiguration));
+        return new CaptionComparison(
+            ConfigurationCaptions.CountLinkedCaptions(gameConfiguration),
+            ConfigurationCaptions.DetermineChanges(gameConfiguration),
+            ConfigurationCaptions.FindUnresolvedSourceKeys(gameConfiguration));
     }
 
     /// <summary>

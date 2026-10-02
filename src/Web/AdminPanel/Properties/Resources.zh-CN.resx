@@ -1471,4 +1471,40 @@
   <data name="EmptyValue" xml:space="preserve">
     <value>—</value>
   </data>
+  <data name="CaptionsNotLinkedTitle" xml:space="preserve">
+    <value>关联内置名称</value>
+  </data>
+  <data name="CaptionsNotLinkedDescription" xml:space="preserve">
+    <value>此配置中的名称尚不知道其来源。使用旧版本 OpenMU 创建的配置都是这种情况。只需关联一次；之后此页面会显示可以添加或更新的翻译。</value>
+  </data>
+  <data name="CaptionsLinkedCount" xml:space="preserve">
+    <value>已有 {0} 个名称与其来源关联。</value>
+  </data>
+  <data name="CaptionsReviewTitle" xml:space="preserve">
+    <value>检查并应用更改</value>
+  </data>
+  <data name="CaptionsReviewDescription" xml:space="preserve">
+    <value>以下名称与其来源不同。推荐的更改已被选中。自定义文本仅在您选择时才会更改。</value>
+  </data>
+  <data name="CaptionChangeKind_Missing_Description" xml:space="preserve">
+    <value>有可用的翻译，但配置中缺少该翻译，或者只是英文文本的副本。</value>
+  </data>
+  <data name="CaptionChangeKind_Updated_Description" xml:space="preserve">
+    <value>内置文本已更改，而配置中的文本仍是最初接收的文本。</value>
+  </data>
+  <data name="CaptionChangeKind_Removed_Description" xml:space="preserve">
+    <value>内置翻译已不存在，而配置中的文本仍是最初接收的文本。</value>
+  </data>
+  <data name="CaptionChangeKind_Customized_Description" xml:space="preserve">
+    <value>配置中的文本不同，因为它已被更改或来源未知。仅在您选择时才会被覆盖。</value>
+  </data>
+  <data name="CaptionsLinkAgainTitle" xml:space="preserve">
+    <value>重新关联名称</value>
+  </data>
+  <data name="CaptionsLinkAgainDescription" xml:space="preserve">
+    <value>关联尚未关联的内置名称，例如在配置更新添加了新对象之后。已关联的名称和文本不会更改。</value>
+  </data>
+  <data name="CaptionsNextStepReview" xml:space="preserve">
+    <value>请检查下方的更改并应用所选更改。</value>
+  </data>
 </root>

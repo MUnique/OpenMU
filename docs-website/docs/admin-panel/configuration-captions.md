@@ -14,8 +14,12 @@ ship additional languages or corrected translations. This page compares the
 captions of your configuration with these built-in sources and lets you decide
 which differences to apply. No configuration update is required for that.
 
-If there are no differences, the page shows
-*All available localizations are in place*.
+The page guides you through two steps:
+
+1. If none of your captions is linked to its source yet (see
+   [Link built-in captions](#link-built-in-captions)), the page only offers to link them.
+2. Afterwards it lists the differences, which you can review and apply. If there
+   are no differences, it shows *All available localizations are in place*.
 
 ## Kinds of changes
 
@@ -41,4 +45,5 @@ older version don't have these references yet, so they don't show any changes.
 in memory and adds the references to the matching captions of your
 configuration. It doesn't change any text. Captions whose English text was
 customized are skipped. This is only required once; afterwards the page shows
-the available differences.
+the available differences. *Link captions again* (at the bottom of the page) links
+captions which aren't linked yet, e.g. after configuration updates added new objects.

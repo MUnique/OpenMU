@@ -31,24 +31,55 @@
     </div>
 }
 
-@if (this._unresolvedSourceKeys.Count > 0)
-{
-    <div class="alert alert-warning" role="alert">@string.Format(Resources.CaptionsUnresolvedSources, this._unresolvedSourceKeys.Count, string.Join(", ", this._unresolvedSourceKeys.Take(5)))</div>
-}
-
-@if (this._changes is null)
+@if (this._comparison is not { } comparison)
 {
     <div class="d-flex align-items-center">
         <div class="spinner-border spinner-border-sm text-secondary me-2" role="status"></div>
-        <span>@Resources.CaptionsLoading</span>
+        <span>@(this._isLinking ? Resources.LinkingBuiltInCaptions : Resources.CaptionsLoading)</span>
     </div>
+    return;
 }
-else if (this._changes.Count == 0)
+
+@if (comparison.UnresolvedSourceKeys.Count > 0)
 {
-    <div class="alert alert-success" role="alert">@Resources.AllLocalizationsInPlace</div>
+    <div class="alert alert-warning" role="alert">@string.Format(Resources.CaptionsUnresolvedSources, comparison.UnresolvedSourceKeys.Count, string.Join(", ", comparison.UnresolvedSourceKeys.Take(5)))</div>
+}
+
+@if (comparison.LinkedCaptions == 0)
+{
+    @* Nothing is linked yet, so the only possible action is linking. *@
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title"><span class="oi oi-link-intact me-2" aria-hidden="true"></span>@Resources.CaptionsNotLinkedTitle</h4>
+            <p class="card-text">@Resources.CaptionsNotLinkedDescription</p>
+            <p class="card-text text-body-secondary">@Resources.LinkBuiltInCaptionsDescription</p>
+            @this.RenderLinkButton("btn-primary")
+        </div>
+    </div>
+    return;
+}
+
+@if (this._changes.Count == 0)
+{
+    <div class="alert alert-success" role="alert">
+        <span class="oi oi-check me-2" aria-hidden="true"></span>@Resources.AllLocalizationsInPlace
+        <br/>
+        <small>@string.Format(Resources.CaptionsLinkedCount, comparison.LinkedCaptions)</small>
+    </div>
 }
 else
 {
+    <h4>@Resources.CaptionsReviewTitle</h4>
+    <p>@Resources.CaptionsReviewDescription</p>
+
+    <dl class="row small">
+        @foreach (var kind in Enum.GetValues<CaptionChangeKind>())
+        {
+            <dt class="col-sm-2"><span class="badge @GetKindCssClass(kind)">@GetKindCaption(kind)</span></dt>
+            <dd class="col-sm-10">@GetKindDescription(kind)</dd>
+        }
+    </dl>
+
     <div class="mb-2">
         @foreach (var group in this._changes.GroupBy(c => c.Change.CultureName).OrderBy(g => g.Key))
         {
@@ -66,7 +97,7 @@ else
         </select>
         <select class="form-select w-auto" @bind="this.KindFilter">
             <option value="">@Resources.CaptionAllKinds</option>
-            @foreach (var kind in Enum.GetValues<CaptionChangeKind>())
+            @foreach (var kind in this._changes.Select(c => c.Change.Kind).Distinct().Order())
             {
                 <option value="@kind">@GetKindCaption(kind)</option>
             }
@@ -105,7 +136,7 @@ else
 
     <div class="alert alert-light">@Resources.TheUpdatesRequireARestartOfTheServerProcessToTakeEffect</div>
 
-    @if (this._isBusy)
+    @if (this._isBusy && !this._isLinking)
     {
         <button class="btn btn-primary" type="button" disabled>
             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -114,21 +145,12 @@ else
     }
     else
     {
-        <button class="btn btn-primary" type="button" disabled="@(!this._changes.Any(c => c.Selected))" @onclick="this.OnApplyClickAsync">@Resources.ApplySelectedChanges</button>
+        <button class="btn btn-primary" type="button" disabled="@(this._isBusy || !this._changes.Any(c => c.Selected))" @onclick="this.OnApplyClickAsync">@Resources.ApplySelectedChanges</button>
     }
 }
 
-<hr/>
-<h4>@Resources.LinkBuiltInCaptions</h4>
-<p>@Resources.LinkBuiltInCaptionsDescription</p>
-@if (this._isLinking)
-{
-    <button class="btn btn-secondary" type="button" disabled>
-        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-        @Resources.LinkingBuiltInCaptions
-    </button>
-}
-else
-{
-    <button class="btn btn-secondary" type="button" disabled="@this._isBusy" @onclick="this.OnLinkClickAsync">@Resources.LinkBuiltInCaptions</button>
-}
+<details class="mt-4">
+    <summary class="text-body-secondary">@Resources.CaptionsLinkAgainTitle</summary>
+    <p class="mt-2 small">@Resources.CaptionsLinkAgainDescription</p>
+    @this.RenderLinkButton("btn-outline-secondary")
+</details>

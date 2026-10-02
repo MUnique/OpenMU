@@ -1722,4 +1722,40 @@
   <data name="CaptionsUnresolvedSources" xml:space="preserve">
     <value>{0} sources of captions are not available in this version, so these captions can't be compared, e.g. {1}.</value>
   </data>
+  <data name="CaptionsNotLinkedTitle" xml:space="preserve">
+    <value>Link the built-in captions</value>
+  </data>
+  <data name="CaptionsNotLinkedDescription" xml:space="preserve">
+    <value>The captions of this configuration don't know their sources yet. That's the case for configurations which were created with an older version of OpenMU. Linking is required once; afterwards this page shows which translations can be added or updated.</value>
+  </data>
+  <data name="CaptionsLinkedCount" xml:space="preserve">
+    <value>{0} captions are linked to their sources.</value>
+  </data>
+  <data name="CaptionsReviewTitle" xml:space="preserve">
+    <value>Review and apply the changes</value>
+  </data>
+  <data name="CaptionsReviewDescription" xml:space="preserve">
+    <value>The following captions differ from their sources. The recommended changes are already selected. Customized texts are only changed if you select them.</value>
+  </data>
+  <data name="CaptionChangeKind_Missing_Description" xml:space="preserve">
+    <value>A translation is available, but missing in the configuration, or it's just a copy of the English text.</value>
+  </data>
+  <data name="CaptionChangeKind_Updated_Description" xml:space="preserve">
+    <value>The built-in text was changed, and the configured text is still the one which was originally taken over.</value>
+  </data>
+  <data name="CaptionChangeKind_Removed_Description" xml:space="preserve">
+    <value>The built-in translation doesn't exist anymore, and the configured text is still the one which was originally taken over.</value>
+  </data>
+  <data name="CaptionChangeKind_Customized_Description" xml:space="preserve">
+    <value>The configured text differs, because it was changed or its origin is unknown. It's only overwritten if you select it.</value>
+  </data>
+  <data name="CaptionsLinkAgainTitle" xml:space="preserve">
+    <value>Link captions again</value>
+  </data>
+  <data name="CaptionsLinkAgainDescription" xml:space="preserve">
+    <value>Links the built-in captions which are not linked yet, for example after configuration updates added new objects. Linked captions and texts are not changed.</value>
+  </data>
+  <data name="CaptionsNextStepReview" xml:space="preserve">
+    <value>Review the changes below and apply the selected ones.</value>
+  </data>
 </root>
