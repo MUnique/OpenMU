@@ -71,7 +71,7 @@ public static class ObservableExtensions
     public static async ValueTask<TObserving?> GetObservingWithIdAsync<TObserving>(this IObservable observable, ushort objectId)
         where TObserving : IWorldObserver, IIdentifiable
     {
-        using var readerLock = await observable.ObserverLock.ReaderLockAsync();
+        using var readerLock = await observable.ObserverLock.ReaderLockAsync().ConfigureAwait(false);
         return observable.Observers.OfType<TObserving>().FirstOrDefault(p => p.Id == objectId);
     }
 
@@ -87,7 +87,7 @@ public static class ObservableExtensions
     {
         try
         {
-            using var readerLock = await observable.ObserverLock.ReaderLockAsync();
+            using var readerLock = await observable.ObserverLock.ReaderLockAsync().ConfigureAwait(false);
             foreach (var obs in observable.Observers.OfType<T>())
             {
                 if (!includeThis && obs.Equals(observable))
