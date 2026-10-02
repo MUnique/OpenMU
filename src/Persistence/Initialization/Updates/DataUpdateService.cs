@@ -41,7 +41,7 @@ public class DataUpdateService
         using var context = this._contextProvider.CreateNewContext();
         var updates = (await context.GetAsync<ConfigurationUpdate>().ConfigureAwait(false)).ToList();
 
-        var initializationKey = await this.DetermineInitializationKeyAsync(context).ConfigureAwait(false);
+        var initializationKey = await DetermineInitializationKeyAsync(context).ConfigureAwait(false);
         var installedKeys = updates
             .Where(up => up.InstalledAt is not null)
             .Select(up => up.Key)
@@ -145,7 +145,12 @@ public class DataUpdateService
         return result;
     }
 
-    private async ValueTask<string> DetermineInitializationKeyAsync(IContext context)
+    /// <summary>
+    /// Determines the key of the data initialization which created the configuration.
+    /// </summary>
+    /// <param name="context">The context.</param>
+    /// <returns>The key of the <see cref="IDataInitializationPlugIn"/>.</returns>
+    internal static async ValueTask<string> DetermineInitializationKeyAsync(IContext context)
     {
         var updateStates = await context.GetAsync<ConfigurationUpdateState>().ConfigureAwait(false);
         if (updateStates.FirstOrDefault() is { InitializationKey: not null } updateState)
