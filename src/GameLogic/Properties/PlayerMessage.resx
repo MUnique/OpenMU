@@ -879,4 +879,35 @@
   <data name="EquipmentHasChangedMessage" xml:space="preserve">
     <value>The equipment has been changed.</value>
   </data>
+  <data name="SpeedHackWarning" xml:space="preserve">
+    <value>Warning: Unusual activity detected (speed check). Repeated violations will result in account restriction.</value>
+  </data>
+  <data name="SummonPartyCountdownFormat" xml:space="preserve">
+    <value>Summoning in {0} second(s)...</value>
+  </data>
+  <data name="SummonPartyCanceled" xml:space="preserve">
+    <value>Summoning canceled.</value>
+  </data>
+  <data name="CharacterInfoAccountNameFormat" xml:space="preserve">
+    <value>Account Name: {0}</value>
+  </data>
+  <data name="CharacterInfoFormat" xml:space="preserve">
+    <value>Id: {0}
+Name: {1}
+Class: {2}
+Slot: {3}
+Create Date: {4}
+Exp: {5}
+Level Up Points: {6}
+Master Exp: {7}
+Master Lv Up Points: {8}
+Location: {9}({10}, {11})
+Kill Count: {12}
+State Remaining Seconds: {13}
+State: {14}
+Status: {15}
+Used Fruit Points: {16}
+Used Neg Fruit Points: {17}
+Inventory Extensions: {18}</value>
+  </data>
 </root>
