@@ -28,7 +28,6 @@ public class DoppelgangerRewardChestPlugIn : IPlayerTalkToNpcPlugIn
             return;
         }
 
-        // Mark as handled before any await, so that the TalkNpcAction sees it synchronously.
         eventArgs.HasBeenHandled = true;
         await context.OpenRewardChestAsync(player, chest).ConfigureAwait(false);
     }
