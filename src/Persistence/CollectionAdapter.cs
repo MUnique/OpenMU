@@ -82,7 +82,9 @@ public class CollectionAdapter<TClass, TEfCore> : ICollection<TClass>, INotifyCo
     {
         if (item is not TEfCore efCoreItem)
         {
-            return false;
+            // The item may still be equal to one of the collection, e.g. an attribute definition of the
+            // game logic (Stats) is equal to its persistent counterpart when it has the same id.
+            return item is not null && this._rawCollection.Any(rawItem => EqualityComparer<TClass>.Default.Equals(rawItem, item));
         }
 
         return this._rawCollection.Contains(efCoreItem);
