@@ -232,15 +232,14 @@ public static class AttackableExtensions
                 dmg += (int)skillAttributes[Stats.SkillFinalDamageBonus];
 
                 var skillMultiplier = skillAttributes[Stats.SkillFinalMultiplier];
-                if (skillMultiplier > 0)
+                var pveSkillMultiplier = skillAttributes[Stats.SkillFinalMultiplierPve];
+                if (!isPvp && pveSkillMultiplier > 0)
+                {
+                    multiplier = pveSkillMultiplier;
+                }
+                else if (skillMultiplier > 0)
                 {
                     multiplier = skillMultiplier;
-
-                    // DragonSlasher.
-                    if (skill.Skill!.Number == 265 && !isPvp)
-                    {
-                        multiplier *= 3;
-                    }
                 }
             }
 
