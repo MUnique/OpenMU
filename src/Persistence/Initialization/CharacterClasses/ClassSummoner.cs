@@ -7,13 +7,15 @@ namespace MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// Initialization of character classes data.
 /// </summary>
 internal partial class CharacterClassInitialization
 {
-    private CharacterClass CreateSummoner(CharacterClassNumber number, string name, bool isMaster, CharacterClass? nextGenerationClass, bool canGetCreated)
+    private CharacterClass CreateSummoner(CharacterClassNumber number, LocalizedString name, bool isMaster, CharacterClass? nextGenerationClass, bool canGetCreated)
     {
         var statsDefense = this.Context.CreateNew<AttributeDefinition>(Guid.NewGuid(), "Stats defense", string.Empty);
         this.GameConfiguration.Attributes.Add(statsDefense);
@@ -154,12 +156,12 @@ internal partial class CharacterClassInitialization
 
     private CharacterClass CreateBloodySummoner(CharacterClass dimensionMaster)
     {
-        return this.CreateSummoner(CharacterClassNumber.BloodySummoner, "Bloody Summoner", false, dimensionMaster, false);
+        return this.CreateSummoner(CharacterClassNumber.BloodySummoner, LocalizedString.FromResource(() => CharacterClassNames.BloodySummoner), false, dimensionMaster, false);
     }
 
     private CharacterClass CreateDimensionMaster()
     {
-        var result = this.CreateSummoner(CharacterClassNumber.DimensionMaster, "Dimension Master", true, null, false);
+        var result = this.CreateSummoner(CharacterClassNumber.DimensionMaster, LocalizedString.FromResource(() => CharacterClassNames.DimensionMaster), true, null, false);
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.MasterLevel, 0, false));
         return result;
     }

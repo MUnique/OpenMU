@@ -5,6 +5,8 @@
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Events;
 
 /// <summary>
@@ -18,11 +20,6 @@ internal class DevilSquare6 : BaseMapInitializer
     internal const byte Number = 32;
 
     /// <summary>
-    /// The Name of the Map.
-    /// </summary>
-    internal const string Name = "Devil Square 6";
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="DevilSquare6"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -32,11 +29,16 @@ internal class DevilSquare6 : BaseMapInitializer
     {
     }
 
+    /// <summary>
+    /// Gets the name of the map.
+    /// </summary>
+    internal static LocalizedString Name => LocalizedString.FromResource(() => MapNames.DevilSquare6);
+
     /// <inheritdoc/>
     protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => Name;
+    protected override LocalizedString MapName => Name;
 
     /// <inheritdoc/>
     protected override byte Discriminator => 6;

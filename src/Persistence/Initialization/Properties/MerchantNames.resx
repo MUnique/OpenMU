@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="Alex" xml:space="preserve"><value>Alex</value></data>
+  <data name="ThompsonTheMerchant" xml:space="preserve"><value>Thompson the Merchant</value></data>
+  <data name="ElfLala" xml:space="preserve"><value>Elf Lala</value></data>
+  <data name="EoTheCraftsman" xml:space="preserve"><value>Eo the Craftsman</value></data>
+  <data name="CarenTheBarmaid" xml:space="preserve"><value>Caren the Barmaid</value></data>
+  <data name="IzabelTheWizard" xml:space="preserve"><value>Izabel The Wizard</value></data>
+  <data name="ZiennaTheWeaponsMerchant" xml:space="preserve"><value>Zienna The Weapons Merchant</value></data>
+  <data name="WanderingMerchantMartin" xml:space="preserve"><value>Wandering Merchant Martin</value></data>
+  <data name="WanderingMerchantHarold" xml:space="preserve"><value>Wandering Merchant Harold</value></data>
+  <data name="HanzoTheBlacksmith" xml:space="preserve"><value>Hanzo The Blacksmith</value></data>
+  <data name="PotionGirlAmy" xml:space="preserve"><value>Potion Girl Amy</value></data>
+  <data name="PasiTheMage" xml:space="preserve"><value>Pasi The Mage</value></data>
+  <data name="LumenTheBarmaid" xml:space="preserve"><value>Lumen the Barmaid</value></data>
+  <data name="OracleLayla" xml:space="preserve"><value>Oracle Layla</value></data>
+  <data name="Silvia" xml:space="preserve"><value>Silvia</value></data>
+  <data name="Rhea" xml:space="preserve"><value>Rhea</value></data>
+  <data name="Marce" xml:space="preserve"><value>Marce</value></data>
+  <data name="LeinaTheGeneralGoodsMerchant" xml:space="preserve"><value>Leina the General Goods Merchant</value></data>
+  <data name="WeaponsMerchantBolo" xml:space="preserve"><value>Weapons Merchant Bolo</value></data>
+</root>
