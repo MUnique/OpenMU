@@ -1,5 +1,6 @@
 ﻿@page "/content-activation"
 
+@using MUnique.OpenMU.DataModel.Configuration
 @using MUnique.OpenMU.Web.AdminPanel.Properties
 
 <PageTitle>OpenMU: @Resources.ContentActivation</PageTitle>
@@ -12,6 +13,17 @@
 {
     return;
 }
+
+<div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+    <select class="form-select w-auto" aria-label="@Resources.RestrictToGameVersion" @bind="this._targetVersion">
+        @foreach (var version in Enum.GetValues<GameVersion>().Where(v => v != GameVersion.Unknown))
+        {
+            <option value="@version">@GetCaption(version)</option>
+        }
+    </select>
+    <button type="button" class="btn btn-outline-primary" title="@Resources.RestrictToGameVersionHint" @onclick="this.RestrictToTargetVersion">@Resources.RestrictToGameVersion</button>
+    <span class="text-muted small">@Resources.RestrictToGameVersionHint</span>
+</div>
 
 <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
     <select class="form-select w-auto" aria-label="@Resources.ContentType" @bind="this.SelectedContentType">
@@ -44,6 +56,7 @@
             <th class="col-1">@Resources.Active</th>
             <th class="col-1">@Resources.Number</th>
             <th>@Resources.Name</th>
+            <th class="col-2">@Resources.IntroducedIn</th>
         </tr>
         </thead>
         <tbody>
@@ -56,6 +69,7 @@
                 </td>
                 <td>@entry.Number</td>
                 <td><MarkedText Marked="@this._filter" Text="@entry.Name" /></td>
+                <td>@GetCaption(entry.IntroducedIn)</td>
             </tr>
         }
         </tbody>

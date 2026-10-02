@@ -1674,4 +1674,25 @@
   <data name="OnlyInactive" xml:space="preserve">
     <value>Only inactive</value>
   </data>
+  <data name="IntroducedIn" xml:space="preserve">
+    <value>Introduced in</value>
+  </data>
+  <data name="GameVersionUnknown" xml:space="preserve">
+    <value>Unknown</value>
+  </data>
+  <data name="GameVersionFormat" xml:space="preserve">
+    <value>Version {0}</value>
+  </data>
+  <data name="SeasonFormat" xml:space="preserve">
+    <value>Season {0}</value>
+  </data>
+  <data name="SeasonEpisodeFormat" xml:space="preserve">
+    <value>Season {0} Episode {1}</value>
+  </data>
+  <data name="RestrictToGameVersion" xml:space="preserve">
+    <value>Restrict to game version</value>
+  </data>
+  <data name="RestrictToGameVersionHint" xml:space="preserve">
+    <value>Activates all content which was introduced up to the selected game version, and deactivates the content which was introduced later. Content of an unknown version is not changed. The changes are stored after saving.</value>
+  </data>
 </root>

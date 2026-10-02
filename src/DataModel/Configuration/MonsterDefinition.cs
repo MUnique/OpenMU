@@ -251,6 +251,15 @@ public partial class MonsterDefinition
     public bool IsActive { get; set; } = true;
 
     /// <summary>
+    /// Gets or sets the version of the original game which introduced this monster.
+    /// </summary>
+    /// <remarks>
+    /// It's informational and allows to activate or deactivate the content of certain game versions
+    /// in batches (see <see cref="IsActive"/>).
+    /// </remarks>
+    public GameVersion IntroducedIn { get; set; }
+
+    /// <summary>
     /// Gets or sets the range in which a monster will move randomly?
     /// It is not used yet. TODO: Find out what it's really good for. Remove, if not needed.
     /// </summary>

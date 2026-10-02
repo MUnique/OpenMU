@@ -47,6 +47,15 @@ public partial class GameMapDefinition
     public bool IsActive { get; set; } = true;
 
     /// <summary>
+    /// Gets or sets the version of the original game which introduced this map.
+    /// </summary>
+    /// <remarks>
+    /// It's informational and allows to activate or deactivate the content of certain game versions
+    /// in batches (see <see cref="IsActive"/>).
+    /// </remarks>
+    public GameVersion IntroducedIn { get; set; }
+
+    /// <summary>
     /// Gets or sets the terrain data.
     /// </summary>
     /// <remarks>

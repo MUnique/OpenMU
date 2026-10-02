@@ -169,8 +169,22 @@ without deleting them from the configuration. This is how a server can be
 restricted to the content of a certain season: deactivate everything which was
 introduced later, and activate it again when you want to offer it.
 
-Pick the kind of content in the first drop-down. The list can be narrowed down
-by its active state and by a search text, and **Activate all shown** /
+Each entry knows in which version of the original game it was introduced, from
+the early versions (0.75, 0.95d, 0.97d, 0.99, 1.00) up to Season 6 Episode 3.
+Select a version at the top and click **Restrict to game version** to activate
+all content up to this version and to deactivate everything which was
+introduced later — for example *Season 2* for a server without Summoners,
+Raklion, socket items and the other later content. Entries with an unknown
+version are left unchanged, so check them afterwards with the version column.
+
+:::note[The versions are best effort]
+The versions were compiled from the original patch notes and OpenMU's data of
+the older versions. Some entries, like a few event items, are *Unknown*. You can
+correct the version of an entry with *Introduced In* on its edit page.
+:::
+
+Pick the kind of content in the second row. The list can be narrowed down
+by its active state and by a search text (which also matches the version), and **Activate all shown** /
 **Deactivate all shown** change all entries of the narrowed list at once — for
 example, search for `Kanturu` and deactivate all shown entries. The changes are
 only stored after **Save changes**.
@@ -185,8 +199,10 @@ What an inactive entry means in the game:
 | Item | Monsters and item boxes don't drop it, and merchants don't offer it. Existing items stay usable. |
 | Mini game | It can't be entered, and its periodic start doesn't open it. |
 
-Entries are active by default, also after updating an existing installation.
-The setting is also available as *Is Active* on the edit page of each entry.
+Entries are active by default, also after updating an existing installation;
+the configuration update *Set the game versions of the content* adds the versions
+to an existing installation. The settings are also available as *Is Active* and
+*Introduced In* on the edit page of each entry.
 
 :::tip[Deactivate the plugins, too]
 Invasions and the periodic starts of the mini games skip inactive content and

@@ -1396,6 +1396,24 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Version {0}.
+        /// </summary>
+        public static string GameVersionFormat {
+            get {
+                return ResourceManager.GetString("GameVersionFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unknown.
+        /// </summary>
+        public static string GameVersionUnknown {
+            get {
+                return ResourceManager.GetString("GameVersionUnknown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to General.
         /// </summary>
         public static string General {
@@ -1554,6 +1572,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string InstallingPleaseWait {
             get {
                 return ResourceManager.GetString("InstallingPleaseWait", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Introduced in.
+        /// </summary>
+        public static string IntroducedIn {
+            get {
+                return ResourceManager.GetString("IntroducedIn", resourceCulture);
             }
         }
         
@@ -2458,6 +2485,24 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Restrict to game version.
+        /// </summary>
+        public static string RestrictToGameVersion {
+            get {
+                return ResourceManager.GetString("RestrictToGameVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Activates all content which was introduced up to the selected game version, and deactivates the content which was introduced later. Content of an unknown version is not changed. The changes are stored after saving..
+        /// </summary>
+        public static string RestrictToGameVersionHint {
+            get {
+                return ResourceManager.GetString("RestrictToGameVersionHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Score.
         /// </summary>
         public static string Score {
@@ -3039,6 +3084,24 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string Search {
             get {
                 return ResourceManager.GetString("Search", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Season {0} Episode {1}.
+        /// </summary>
+        public static string SeasonEpisodeFormat {
+            get {
+                return ResourceManager.GetString("SeasonEpisodeFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Season {0}.
+        /// </summary>
+        public static string SeasonFormat {
+            get {
+                return ResourceManager.GetString("SeasonFormat", resourceCulture);
             }
         }
         

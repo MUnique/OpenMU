@@ -29,6 +29,7 @@ public partial class ContentActivation : ComponentBase, IAsyncDisposable
     private Dictionary<ContentType, IReadOnlyList<ContentEntry>>? _entries;
     private ContentType _selectedContentType = ContentType.Maps;
     private StateFilter _stateFilter = StateFilter.All;
+    private GameVersion _targetVersion = GameVersion.Season6Episode3;
     private string _filter = string.Empty;
 
     /// <summary>
@@ -142,7 +143,8 @@ public partial class ContentActivation : ComponentBase, IAsyncDisposable
             })
             .Where(entry => string.IsNullOrWhiteSpace(this._filter)
                             || entry.Name.Contains(this._filter.Trim(), StringComparison.OrdinalIgnoreCase)
-                            || entry.Number.Contains(this._filter.Trim(), StringComparison.OrdinalIgnoreCase));
+                            || entry.Number.Contains(this._filter.Trim(), StringComparison.OrdinalIgnoreCase)
+                            || GetCaption(entry.IntroducedIn).Contains(this._filter.Trim(), StringComparison.OrdinalIgnoreCase));
 
     private int ActiveCount => this.SelectedEntries.Count(entry => entry.IsActive);
 
@@ -201,6 +203,25 @@ public partial class ContentActivation : ComponentBase, IAsyncDisposable
         };
     }
 
+    /// <summary>
+    /// Gets the caption of a game version, e.g. "Version 0.97d" or "Season 3 Episode 1".
+    /// </summary>
+    /// <param name="version">The game version.</param>
+    /// <returns>The caption of the game version.</returns>
+    private static string GetCaption(GameVersion version)
+    {
+        var value = (int)version;
+        return version switch
+        {
+            GameVersion.Unknown => Resources.GameVersionUnknown,
+            GameVersion.Version095d or GameVersion.Version097d => string.Format(Resources.GameVersionFormat, $"0.{value}d"),
+            _ when value < 100 => string.Format(Resources.GameVersionFormat, $"0.{value}"),
+            _ when value < 1000 => string.Format(Resources.GameVersionFormat, $"{value / 100}.{value % 100:00}"),
+            _ when value % 1000 == 0 => string.Format(Resources.SeasonFormat, value / 1000),
+            _ => string.Format(Resources.SeasonEpisodeFormat, value / 1000, (value % 1000) / 100),
+        };
+    }
+
     private static Dictionary<ContentType, IReadOnlyList<ContentEntry>> CreateEntries(GameConfiguration configuration)
     {
         return new Dictionary<ContentType, IReadOnlyList<ContentEntry>>
@@ -208,27 +229,40 @@ public partial class ContentActivation : ComponentBase, IAsyncDisposable
             [ContentType.Maps] = configuration.Maps
                 .OrderBy(map => map.Number)
                 .ThenBy(map => map.Discriminator)
-                .Select(map => new ContentEntry(map, map.Number.ToString(), map.Name.ToString() ?? string.Empty, () => map.IsActive, value => map.IsActive = value))
+                .Select(map => new ContentEntry(map, map.Number.ToString(), map.Name.ToString() ?? string.Empty, map.IntroducedIn, () => map.IsActive, value => map.IsActive = value))
                 .ToList(),
             [ContentType.CharacterClasses] = configuration.CharacterClasses
                 .OrderBy(characterClass => characterClass.Number)
-                .Select(characterClass => new ContentEntry(characterClass, characterClass.Number.ToString(), characterClass.Name.ToString() ?? string.Empty, () => characterClass.IsActive, value => characterClass.IsActive = value))
+                .Select(characterClass => new ContentEntry(characterClass, characterClass.Number.ToString(), characterClass.Name.ToString() ?? string.Empty, characterClass.IntroducedIn, () => characterClass.IsActive, value => characterClass.IsActive = value))
                 .ToList(),
             [ContentType.Monsters] = configuration.Monsters
                 .OrderBy(monster => monster.Number)
-                .Select(monster => new ContentEntry(monster, monster.Number.ToString(), monster.Designation.ToString() ?? string.Empty, () => monster.IsActive, value => monster.IsActive = value))
+                .Select(monster => new ContentEntry(monster, monster.Number.ToString(), monster.Designation.ToString() ?? string.Empty, monster.IntroducedIn, () => monster.IsActive, value => monster.IsActive = value))
                 .ToList(),
             [ContentType.Items] = configuration.Items
                 .OrderBy(item => item.Group)
                 .ThenBy(item => item.Number)
-                .Select(item => new ContentEntry(item, $"{item.Group}/{item.Number}", item.Name.ToString() ?? string.Empty, () => item.IsActive, value => item.IsActive = value))
+                .Select(item => new ContentEntry(item, $"{item.Group}/{item.Number}", item.Name.ToString() ?? string.Empty, item.IntroducedIn, () => item.IsActive, value => item.IsActive = value))
                 .ToList(),
             [ContentType.MiniGames] = configuration.MiniGameDefinitions
                 .OrderBy(miniGame => miniGame.Type)
                 .ThenBy(miniGame => miniGame.GameLevel)
-                .Select(miniGame => new ContentEntry(miniGame, $"{miniGame.Type} {miniGame.GameLevel}", miniGame.Name.ToString() ?? string.Empty, () => miniGame.IsActive, value => miniGame.IsActive = value))
+                .Select(miniGame => new ContentEntry(miniGame, $"{miniGame.Type} {miniGame.GameLevel}", miniGame.Name.ToString() ?? string.Empty, miniGame.IntroducedIn, () => miniGame.IsActive, value => miniGame.IsActive = value))
                 .ToList(),
         };
+    }
+
+    /// <summary>
+    /// Activates the content of all types which was introduced up to the target version, and
+    /// deactivates the content which was introduced later. Content of an unknown version is not changed.
+    /// </summary>
+    private void RestrictToTargetVersion()
+    {
+        var entries = this._entries?.Values.SelectMany(e => e) ?? [];
+        foreach (var entry in entries.Where(e => e.IntroducedIn != GameVersion.Unknown))
+        {
+            entry.IsActive = entry.IntroducedIn <= this._targetVersion;
+        }
     }
 
     private void SetActiveOfShownEntries(bool isActive)
@@ -331,13 +365,15 @@ public partial class ContentActivation : ComponentBase, IAsyncDisposable
         /// <param name="entity">The entity of the configuration.</param>
         /// <param name="number">The number which identifies the entity.</param>
         /// <param name="name">The name of the entity.</param>
+        /// <param name="introducedIn">The game version which introduced the entity.</param>
         /// <param name="getIsActive">The function which gets the active state of the entity.</param>
         /// <param name="setIsActive">The action which sets the active state of the entity.</param>
-        public ContentEntry(object entity, string number, string name, Func<bool> getIsActive, Action<bool> setIsActive)
+        public ContentEntry(object entity, string number, string name, GameVersion introducedIn, Func<bool> getIsActive, Action<bool> setIsActive)
         {
             this.Entity = entity;
             this.Number = number;
             this.Name = name;
+            this.IntroducedIn = introducedIn;
             this._getIsActive = getIsActive;
             this._setIsActive = setIsActive;
         }
@@ -356,6 +392,11 @@ public partial class ContentActivation : ComponentBase, IAsyncDisposable
         /// Gets the name of the entity.
         /// </summary>
         public string Name { get; }
+
+        /// <summary>
+        /// Gets the game version which introduced the entity.
+        /// </summary>
+        public GameVersion IntroducedIn { get; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the entity is active.

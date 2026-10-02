@@ -38,6 +38,15 @@ public partial class CharacterClass
     public bool IsActive { get; set; } = true;
 
     /// <summary>
+    /// Gets or sets the version of the original game which introduced this character class.
+    /// </summary>
+    /// <remarks>
+    /// It's informational and allows to activate or deactivate the content of certain game versions
+    /// in batches (see <see cref="IsActive"/>).
+    /// </remarks>
+    public GameVersion IntroducedIn { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether this character class can get created by the user.
     /// </summary>
     public bool CanGetCreated { get; set; }
