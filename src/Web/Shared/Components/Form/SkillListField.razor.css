@@ -1,0 +1,88 @@
+.master-skill-tree {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    overflow-x: auto;
+}
+
+.master-skill-root {
+    flex: 1;
+    min-width: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.master-skill-root-header {
+    font-weight: bold;
+    text-align: center;
+    padding: 4px 8px;
+    background-color: #333;
+    color: #f0c040;
+    border-radius: 4px;
+    margin-bottom: 4px;
+}
+
+.master-skill-rank {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    padding: 4px 0;
+    border-bottom: 1px dashed #555;
+}
+
+.master-skill-entry {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 4px 6px;
+    border: 1px solid #666;
+    border-radius: 4px;
+    min-width: 80px;
+    max-width: 120px;
+    background-color: #2a2a2a;
+    color: #ccc;
+}
+
+.master-skill-entry.master-skill-active {
+    border-color: #f0c040;
+    background-color: #3a3000;
+    color: #f0c040;
+}
+
+.master-skill-name {
+    font-size: 0.75rem;
+    text-align: center;
+    word-break: break-word;
+    overflow: hidden;
+    max-height: 2.4em;
+    line-height: 1.2em;
+    margin-bottom: 2px;
+}
+
+.master-skill-requires {
+    font-size: 0.65rem;
+    color: #aaa;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+    margin-bottom: 2px;
+}
+
+.master-skill-active .master-skill-requires {
+    color: #c8a820;
+}
+
+.master-skill-level-input {
+    width: 56px;
+    text-align: center;
+    background-color: #1a1a1a;
+    color: #fff;
+    border: 1px solid #888;
+    border-radius: 3px;
+    font-size: 0.8rem;
+    padding: 1px 2px;
+}

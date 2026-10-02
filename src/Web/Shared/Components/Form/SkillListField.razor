@@ -1,0 +1,99 @@
+@* <copyright file="SkillListField.razor" company="MUnique">
+   Licensed under the MIT License. See LICENSE file in the project root for full license information.
+   </copyright> *@
+
+@using MUnique.OpenMU.DataModel.Configuration
+@using MUnique.OpenMU.DataModel.Entities
+@using MUnique.OpenMU.Persistence
+
+@inherits InputBase<ICollection<SkillEntry>>
+
+<div class="skill-list-field">
+
+    @* ── Regular Skills ─────────────────────────────────────────────────── *@
+    <div class="card mb-3">
+        <h5 class="card-header">
+            <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
+        </h5>
+        <div class="card-body card-text">
+            <table class="table table-sm">
+                <tbody>
+                    @foreach (var entry in this.RegularSkills)
+                    {
+                        <tr>
+                            <td>@(entry.Skill?.GetName() ?? "Unknown Skill")</td>
+                            <td>
+                                <button type="button" class="btn-danger btn-sm"
+                                        @onclick="@(() => this.OnRemoveSkillClickAsync(entry))">
+                                    Remove
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="2">
+                            <button type="button" class="btn-primary"
+                                    @onclick="@this.OnAddRegularSkillClickAsync">
+                                Add Skill
+                            </button>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    @* ── Master Skill Tree ──────────────────────────────────────────────── *@
+    @if (this.MasterSkillRoots.Count > 0)
+    {
+        <div class="card mb-3">
+            <h5 class="card-header d-flex justify-content-between align-items-center">
+                <span>Master Skill Tree</span>
+                <button type="button" class="btn-danger btn-sm"
+                        @onclick="@this.OnResetMasterSkillsClickAsync"
+                        title="Remove all master skill levels">
+                    Reset Master Skills
+                </button>
+            </h5>
+            <div class="card-body">
+                <div class="master-skill-tree">
+                    @foreach (var root in this.MasterSkillRoots)
+                    {
+                        <div class="master-skill-root">
+                            <div class="master-skill-root-header">@root.Name</div>
+                            @foreach (var rank in this.GetRanksForRoot(root))
+                            {
+                                <div class="master-skill-rank">
+                                    @foreach (var skill in this.GetSkillsForRootAndRank(root, rank))
+                                    {
+                                        var level = this.GetMasterSkillLevel(skill);
+                                        var maxLevel = skill.MasterDefinition!.MaximumLevel;
+                                        var requiredNames = this.GetRequiredSkillNames(skill);
+                                        <div class="master-skill-entry @(level > 0 ? "master-skill-active" : string.Empty)">
+                                            <div class="master-skill-name" title="@skill.GetName()">@skill.GetName()</div>
+                                            @if (!string.IsNullOrEmpty(requiredNames))
+                                            {
+                                                <div class="master-skill-requires" title="Requires (level ≥ 10): @requiredNames">
+                                                    ↑ @requiredNames
+                                                </div>
+                                            }
+                                            <input type="number"
+                                                   class="master-skill-level-input"
+                                                   value="@level"
+                                                   min="0"
+                                                   max="@maxLevel"
+                                                   title="Level (0–@maxLevel)"
+                                                   @onchange="@(e => this.OnMasterSkillLevelChangedAsync(skill, e))" />
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
