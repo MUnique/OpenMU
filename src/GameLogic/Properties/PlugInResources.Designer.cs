@@ -4159,5 +4159,14 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>Gets the localized SiegePotionConsumeHandlerConfiguration_SoulEffectNumber_Name text.</summary>
         public static string SiegePotionConsumeHandlerConfiguration_SoulEffectNumber_Name => ResourceManager.GetString("SiegePotionConsumeHandlerConfiguration_SoulEffectNumber_Name", resourceCulture)!;
 
+        /// <summary>Gets the localized BloodCastleArchangelTalkPlugIn_Name text.</summary>
+        public static string BloodCastleArchangelTalkPlugIn_Name => ResourceManager.GetString("BloodCastleArchangelTalkPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BloodCastleArchangelTalkPlugIn_Description text.</summary>
+        public static string BloodCastleArchangelTalkPlugIn_Description => ResourceManager.GetString("BloodCastleArchangelTalkPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BloodCastleArchangelTalkPlugInConfiguration_ArchangelNumber_Name text.</summary>
+        public static string BloodCastleArchangelTalkPlugInConfiguration_ArchangelNumber_Name => ResourceManager.GetString("BloodCastleArchangelTalkPlugInConfiguration_ArchangelNumber_Name", resourceCulture)!;
+
     }
 }
