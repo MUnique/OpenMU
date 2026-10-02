@@ -222,7 +222,7 @@ public class GameContext : AsyncDisposable, IGameContext
     /// </summary>
     public async ValueTask<IEnumerable<GameMap>> GetMapsAsync()
     {
-        using var l = await this._mapInitializerLock.LockAsync();
+        using var l = await this._mapInitializerLock.LockAsync().ConfigureAwait(false);
         return this._mapList.Values.Concat(this.MiniGames.Maps).ToList();
     }
 
@@ -240,7 +240,7 @@ public class GameContext : AsyncDisposable, IGameContext
         }
 
         GameMap? createdMap;
-        using (await this._mapInitializerLock.LockAsync())
+        using (await this._mapInitializerLock.LockAsync().ConfigureAwait(false))
         {
             if (this._mapList.TryGetValue(mapId, out map))
             {
@@ -288,7 +288,7 @@ public class GameContext : AsyncDisposable, IGameContext
         player.PlayerEnteredWorld += this.PlayerEnteredWorldAsync;
         player.PlayerDisconnected += this.RemovePlayerAsync;
 
-        using (await this._playerListLock.WriterLockAsync())
+        using (await this._playerListLock.WriterLockAsync().ConfigureAwait(false))
         {
             this._playerList.Add(player);
         }
@@ -299,7 +299,7 @@ public class GameContext : AsyncDisposable, IGameContext
     /// <inheritdoc />
     public async ValueTask<IList<Player>> GetPlayersAsync()
     {
-        using var l = await this._playerListLock.ReaderLockAsync();
+        using var l = await this._playerListLock.ReaderLockAsync().ConfigureAwait(false);
         if (this._playerList.Count == 0)
         {
             return [];
@@ -315,7 +315,7 @@ public class GameContext : AsyncDisposable, IGameContext
     public virtual async ValueTask RemovePlayerAsync(Player player)
     {
         bool removed;
-        using (await this._playerListLock.WriterLockAsync())
+        using (await this._playerListLock.WriterLockAsync().ConfigureAwait(false))
         {
             removed = this._playerList.Remove(player);
         }
