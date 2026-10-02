@@ -9,7 +9,6 @@ using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.Character;
-using Nito.AsyncEx.Synchronous;
 
 /// <summary>
 /// The implementation of the skill list, which automatically adds the passive skill power ups to the player.
@@ -67,7 +66,7 @@ public sealed class SkillList : ISkillList, IDisposable
         this._player.Inventory.EquippedItems
             .Where(item => item.HasSkill)
             .Where(item => (item.Definition ?? throw Error.NotInitializedProperty(item, nameof(item.Definition))).Skill != null)
-            .ForEach(item => this.AddItemSkillAsync(item.Definition!.Skill!).AsTask().WaitAndUnwrapException());
+            .ForEach(item => this.TryAddItemSkill(item.Definition!.Skill!));
         this._player.Inventory.EquippedItemsChanged += this.Inventory_WearingItemsChangedAsync;
         foreach (var skill in this._learnedSkills
             .Where(s => s.Skill!.SkillType == SkillType.PassiveBoost || this._castedSkillsWithPassiveBoost.Contains(s.Skill.Number)))
@@ -182,15 +181,28 @@ public sealed class SkillList : ISkillList, IDisposable
 
     private async ValueTask AddItemSkillAsync(Skill skill)
     {
+        if (this.TryAddItemSkill(skill))
+        {
+            await this._player.InvokeViewPlugInAsync<ISkillListViewPlugIn>(p => p.AddSkillAsync(skill)).ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Adds the skill of an equipped item, without updating the view.
+    /// </summary>
+    /// <param name="skill">The skill of the item.</param>
+    /// <returns><c>true</c>, if the skill became available by this call; otherwise, <c>false</c>.</returns>
+    private bool TryAddItemSkill(Skill skill)
+    {
         // If character is not selected (e.g., during disconnect cleanup), skill list doesn't need to be updated
         if (this._player.SelectedCharacter is null)
         {
-            return;
+            return false;
         }
 
         if (!skill.QualifiedCharacters.Contains(this._player.SelectedCharacter.CharacterClass!))
         {
-            return;
+            return false;
         }
 
         var skillEntry = new SkillEntry
@@ -201,11 +213,13 @@ public sealed class SkillList : ISkillList, IDisposable
         this._itemSkills.Add(skillEntry);
 
         // Item skills are always level 0, so it doesn't matter which one is added to the dictionary.
-        if (!this.ContainsSkill((ushort)skill.Number))
+        if (this.ContainsSkill((ushort)skill.Number))
         {
-            this._availableSkills.Add(skill.Number.ToUnsigned(), skillEntry);
-            await this._player.InvokeViewPlugInAsync<ISkillListViewPlugIn>(p => p.AddSkillAsync(skill)).ConfigureAwait(false);
+            return false;
         }
+
+        this._availableSkills.Add(skill.Number.ToUnsigned(), skillEntry);
+        return true;
     }
 
     private async ValueTask AddLearnedSkillAsync(SkillEntry skill)
