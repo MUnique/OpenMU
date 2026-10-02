@@ -173,6 +173,7 @@ public class GensActions
         }
 
         // The checks and the claim are done in one exclusive operation, so that two requests can't both get the reward.
+        IReadOnlyList<Item>? rewardItems = null;
         var result = await player.RunPersistenceExclusiveAsync(async () =>
         {
             var member = await player.GetGensMemberAsync().ConfigureAwait(false);
@@ -204,19 +205,29 @@ public class GensActions
                 return GensRewardResult.NotEligible;
             }
 
-            if (!await TryAddRewardItemsAsync(player, itemDefinition, reward.Count).ConfigureAwait(false))
+            if (await TryAddRewardItemsAsync(player, itemDefinition, reward.Count).ConfigureAwait(false) is not { } items)
             {
                 return GensRewardResult.InventoryFull;
             }
 
+            // The claim is set before the items are shown, so that the reward can't be claimed again when showing them fails.
             member.RewardClaimedAt = now;
-            await player.SaveProgressAsync().ConfigureAwait(false);
+            if (!await player.SaveProgressAsync().ConfigureAwait(false))
+            {
+                player.Logger.LogWarning("The gens reward of player {player} couldn't be saved yet. It's saved with the next save of the player.", player);
+            }
+
+            rewardItems = items;
             return GensRewardResult.Success;
         }).ConfigureAwait(false);
 
         if (result == GensRewardResult.Success)
         {
             player.Logger.LogInformation("Player {player} claimed the gens reward.", player);
+            foreach (var item in rewardItems!)
+            {
+                await player.InvokeViewPlugInAsync<IItemAppearPlugIn>(p => p.ItemAppearAsync(item)).ConfigureAwait(false);
+            }
         }
 
         await player.InvokeViewPlugInAsync<IGensViewPlugIn>(p => p.ShowRewardResultAsync(result)).ConfigureAwait(false);
@@ -225,12 +236,13 @@ public class GensActions
     /// <summary>
     /// Adds the reward items to the inventory of the player. When not all fit into it, the added ones are removed again.
     /// </summary>
-    private static async ValueTask<bool> TryAddRewardItemsAsync(Player player, ItemDefinition itemDefinition, int count)
+    /// <returns>The added items; <c>null</c>, if not all of them fit into the inventory.</returns>
+    private static async ValueTask<IReadOnlyList<Item>?> TryAddRewardItemsAsync(Player player, ItemDefinition itemDefinition, int count)
     {
         if (player.Inventory is not { } inventory
             || inventory.FreeSlots.Count() < count * itemDefinition.Width * itemDefinition.Height)
         {
-            return false;
+            return null;
         }
 
         var addedItems = new List<Item>(count);
@@ -248,18 +260,13 @@ public class GensActions
                     await player.PersistenceContext.DeleteAsync(addedItem).ConfigureAwait(false);
                 }
 
-                return false;
+                return null;
             }
 
             addedItems.Add(item);
         }
 
-        foreach (var item in addedItems)
-        {
-            await player.InvokeViewPlugInAsync<IItemAppearPlugIn>(p => p.ItemAppearAsync(item)).ConfigureAwait(false);
-        }
-
-        return true;
+        return addedItems;
     }
 
     private static GensType GetGensOfOpenedNpc(Player player, GensConfiguration configuration)

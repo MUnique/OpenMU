@@ -92,7 +92,11 @@ internal class GensRewardItems : InitializerBase
         AddPossibleItem(gameConfiguration, jewels, 14, 16); // Jewel of Life
         AddPossibleItem(gameConfiguration, jewels, 14, 22); // Jewel of Creation
         AddPossibleItem(gameConfiguration, jewels, 14, 41); // Gemstone
-        item.DropItems.Add(jewels);
+        if (jewels.PossibleItems.Count > 0)
+        {
+            // Without any possible item, an opened case would give nothing instead of money.
+            item.DropItems.Add(jewels);
+        }
 
         var moneyDrop = context.CreateNew<ItemDropItemGroup>();
         moneyDrop.ItemType = SpecialItemType.Money;
