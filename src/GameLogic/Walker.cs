@@ -187,7 +187,8 @@ public sealed class Walker : IDisposable
     /// <remarks>
     /// This doesn't wait for the walk lock, so that disposing never blocks on the walk loop. It only
     /// cancels the running walk: the loop ends at its next step, because it sees the cancellation or
-    /// <see cref="_isDisposed"/>, and no new walk can be initialized afterwards.
+    /// <see cref="_isDisposed"/>, and disposes its cancellation token source when it ends.
+    /// No new walk can be initialized afterwards.
     /// </remarks>
     public void Dispose()
     {
@@ -281,6 +282,13 @@ public sealed class Walker : IDisposable
             {
                 lastOffset = nextDelay.Negate();
             }
+        }
+
+        if (this._isDisposed)
+        {
+            // Dispose only cancels the walk, because the loop may still use the token at that point.
+            // Once the loop is over, nothing uses the source anymore, so it's disposed here.
+            ownCts.Dispose();
         }
     }
 
