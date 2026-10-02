@@ -1481,4 +1481,10 @@
   <data name="GensRelationshipRulesPlugIn_Description" xml:space="preserve">
     <value>The rules of the gens for parties, guilds and alliances: no party between different gens and in the battle zone, guilds and alliances only within a gens.</value>
   </data>
+  <data name="SiegePotionConsumeHandlerConfiguration_BlessEffectNumber_Name" xml:space="preserve">
+    <value>Potion of Bless effect number</value>
+  </data>
+  <data name="SiegePotionConsumeHandlerConfiguration_SoulEffectNumber_Name" xml:space="preserve">
+    <value>Potion of Soul effect number</value>
+  </data>
 </root>
