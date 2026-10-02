@@ -8,7 +8,6 @@ using System.Diagnostics;
 using System.Threading;
 using MUnique.OpenMU.Pathfinding;
 using Nito.AsyncEx;
-using Nito.AsyncEx.Synchronous;
 
 /// <summary>
 /// Class which manages walking for instances of <see cref="ISupportWalk"/>.
@@ -185,12 +184,21 @@ public sealed class Walker : IDisposable
     /// <summary>
     /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
     /// </summary>
+    /// <remarks>
+    /// This doesn't wait for the walk lock, so that disposing never blocks on the walk loop. It only
+    /// cancels the running walk: the loop ends at its next step, because it sees the cancellation or
+    /// <see cref="_isDisposed"/>, and no new walk can be initialized afterwards.
+    /// </remarks>
     public void Dispose()
     {
         this._isDisposed = true;
-        if (this._walkCts is { IsCancellationRequested: false })
+        try
         {
-            this.StopAsync().AsTask().WaitAndUnwrapException();
+            this._walkCts?.Cancel();
+        }
+        catch (ObjectDisposedException)
+        {
+            // The walk was stopped concurrently, which already cancelled it.
         }
     }
 
