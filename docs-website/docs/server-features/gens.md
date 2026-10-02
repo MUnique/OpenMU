@@ -128,7 +128,9 @@ reward of their current rank:
 | 7 Knight Commander | 5 Old Jewellery Cases |
 | 8 Superior Knight | 3 Old Jewellery Cases |
 
-The inventory needs enough free space for all of them. Like other boxes, a
+The days are counted in UTC, so on a server in another time zone, the period
+starts and ends at a different local time. The inventory needs enough free
+space for all of them. Like other boxes, a
 jewellery case is opened by dropping it, and gives a Jewel of Chaos, Bless,
 Soul, Life, Creation or a Gemstone, or money: 90,000 for the Shining and
 Elegant cases, 60,000 for the Steel and Old ones. The chances are part of the
