@@ -60,10 +60,16 @@ internal class BucketAreaOfInterestManager : IAreaOfInterestManager
 
             bucketInfo.OldBucket = newBucket;
             bucketInfo.NewBucket = null;
-            newBucket?.RemoveAsync(obj);
+            if (newBucket is not null)
+            {
+                await newBucket.RemoveAsync(obj).ConfigureAwait(false);
+            }
 
             bucketInfo.OldBucket = newBucket;
-            oldBucket?.RemoveAsync(obj);
+            if (oldBucket is not null)
+            {
+                await oldBucket.RemoveAsync(obj).ConfigureAwait(false);
+            }
 
             bucketInfo.OldBucket = null;
         }
