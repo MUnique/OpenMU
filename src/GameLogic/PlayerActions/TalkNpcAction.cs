@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions;
 
 using MUnique.OpenMU.GameLogic.Crywolf;
-using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlayerActions.Quests;
 using MUnique.OpenMU.GameLogic.PlugIns;
@@ -77,17 +76,14 @@ public class TalkNpcAction
         {
             case NpcWindow.Undefined:
                 var eventArgs = new NpcTalkEventArgs();
-                player.GameContext.PlugInManager.GetPlugInPoint<IPlayerTalkToNpcPlugIn>()?.PlayerTalksToNpcAsync(player, player.OpenedNpc, eventArgs);
+                if (player.GameContext.PlugInManager.GetPlugInPoint<IPlayerTalkToNpcPlugIn>() is { } talkToNpcPlugIn)
+                {
+                    await talkToNpcPlugIn.PlayerTalksToNpcAsync(player, player.OpenedNpc, eventArgs).ConfigureAwait(false);
+                }
+
                 if (!eventArgs.HasBeenHandled)
                 {
-                    if (player.CurrentMiniGame is BloodCastleContext bloodCastle && player.OpenedNpc.Definition.Number == 232)
-                    {
-                        await bloodCastle.TalkToNpcArchangelAsync(player).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.TalkingNotImplementedFormat), npcStats.Number, npcStats.Designation).ConfigureAwait(false);
-                    }
+                    await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.TalkingNotImplementedFormat), npcStats.Number, npcStats.Designation).ConfigureAwait(false);
 
                     await player.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
                 }

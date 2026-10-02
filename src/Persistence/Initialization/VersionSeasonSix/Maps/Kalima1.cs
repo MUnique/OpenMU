@@ -7,6 +7,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 
 /// <summary>
@@ -20,11 +22,6 @@ internal class Kalima1 : KalimaBase
     internal const byte Number = 24;
 
     /// <summary>
-    /// The Name of the Map.
-    /// </summary>
-    internal const string Name = "Kalima 1";
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="Kalima1"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -34,11 +31,16 @@ internal class Kalima1 : KalimaBase
     {
     }
 
+    /// <summary>
+    /// Gets the name of the map.
+    /// </summary>
+    internal static LocalizedString Name => LocalizedString.FromResource(() => MapNames.Kalima1);
+
     /// <inheritdoc/>
     protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => Name;
+    protected override LocalizedString MapName => Name;
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()
@@ -113,7 +115,7 @@ internal class Kalima1 : KalimaBase
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 144;
-            monster.Designation = "Death Angel 1";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.DeathAngel1);
             monster.MoveRange = 2;
             monster.AttackRange = 6;
             monster.ViewRange = 7;
@@ -146,7 +148,7 @@ internal class Kalima1 : KalimaBase
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 145;
-            monster.Designation = "Death Centurion 1";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.DeathCenturion1);
             monster.MoveRange = 3;
             monster.AttackRange = 6;
             monster.ViewRange = 7;
@@ -179,7 +181,7 @@ internal class Kalima1 : KalimaBase
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 146;
-            monster.Designation = "Blood Soldier 1";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.BloodSoldier1);
             monster.MoveRange = 3;
             monster.AttackRange = 2;
             monster.ViewRange = 7;
@@ -212,7 +214,7 @@ internal class Kalima1 : KalimaBase
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 147;
-            monster.Designation = "Aegis 1";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Aegis1);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 7;
@@ -245,7 +247,7 @@ internal class Kalima1 : KalimaBase
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 148;
-            monster.Designation = "Rogue Centurion 1";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.RogueCenturion1);
             monster.MoveRange = 3;
             monster.AttackRange = 2;
             monster.ViewRange = 5;
@@ -278,7 +280,7 @@ internal class Kalima1 : KalimaBase
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 149;
-            monster.Designation = "Necron 1";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Necron1);
             monster.MoveRange = 3;
             monster.AttackRange = 2;
             monster.ViewRange = 5;
@@ -311,7 +313,7 @@ internal class Kalima1 : KalimaBase
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 160;
-            monster.Designation = "Schriker 1";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Schriker1);
             monster.MoveRange = 3;
             monster.AttackRange = 6;
             monster.ViewRange = 7;
@@ -344,7 +346,7 @@ internal class Kalima1 : KalimaBase
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 161;
-            monster.Designation = "Illusion of Kundun 1";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.IllusionOfKundun1);
             monster.MoveRange = 3;
             monster.AttackRange = 10;
             monster.ViewRange = 7;

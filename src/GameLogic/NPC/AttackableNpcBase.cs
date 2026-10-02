@@ -130,7 +130,7 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
 
             if (attacker is Player player)
             {
-                await player.AfterHitTargetAsync().ConfigureAwait(false);
+                await player.AfterHitTargetAsync(this.Attributes[Stats.DefensePvm], skill?.Skill?.DamageType).ConfigureAwait(false);
 
                 if (this.IsAlive && Rand.NextRandomBool(player.Attributes![Stats.MaceMasteryStunChance]))
                 {
@@ -140,7 +140,7 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
 
             if (attacker as IPlayerSurrogate is { } playerSurrogate)
             {
-                await playerSurrogate.Owner.AfterHitTargetAsync().ConfigureAwait(false);
+                await playerSurrogate.Owner.DecreaseRavenDurabilityAfterHitAsync(hitInfo.TotalDamage).ConfigureAwait(false);
             }
         }
 
@@ -233,7 +233,7 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
             return;
         }
 
-        var killed = this.TryHit(hitInfo.HealthDamage + hitInfo.ShieldDamage, attacker);
+        var killed = this.TryHit(hitInfo.TotalDamage, attacker);
 
         var player = this.GetHitNotificationTarget(attacker);
         if (player is not null)

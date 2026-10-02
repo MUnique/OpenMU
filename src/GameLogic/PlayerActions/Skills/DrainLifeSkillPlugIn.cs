@@ -36,7 +36,7 @@ public class DrainLifeSkillPlugIn : IAreaSkillPlugIn
 
         if (target is Player)
         {
-            restoreHealth += (attackerPlayer.Attributes[Stats.TotalEnergy] / 23) + ((hit.HealthDamage + hit.ShieldDamage) * 0.1f);
+            restoreHealth += (attackerPlayer.Attributes[Stats.TotalEnergy] / 23) + (hit.TotalDamage * 0.1f);
         }
         else
         {

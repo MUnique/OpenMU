@@ -123,9 +123,13 @@ public class QuestCompletionAction
                 {
                     await player.InvokeViewPlugInAsync<IItemAppearPlugIn>(p => p.ItemAppearAsync(item)).ConfigureAwait(false);
                 }
+                else if (player.CurrentMap is { } currentMap)
+                {
+                    await currentMap.AddAsync(new DroppedItem(item, player.Position, currentMap, player, player.GetAsEnumerable())).ConfigureAwait(false);
+                }
                 else
                 {
-                    player.CurrentMap?.AddAsync(new DroppedItem(item, player.Position, player.CurrentMap, player, player.GetAsEnumerable()));
+                    player.Logger.LogWarning("Quest reward item {Item} of player {Player} is lost: the inventory is full and the player is on no map.", item, player);
                 }
 
                 break;

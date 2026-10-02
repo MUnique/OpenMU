@@ -465,12 +465,6 @@
   <data name="PhoenixShotSkillPlugIn_Description" xml:space="preserve">
     <value>Handles the phoenix shot weapon skill of the rage fighter class. Additionally to the attacked target, it will hit up to seven additional targets.</value>
   </data>
-  <data name="PlasmaStormSkillPlugIn_Name" xml:space="preserve">
-    <value>Plasma Storm Skill</value>
-  </data>
-  <data name="PlasmaStormSkillPlugIn_Description" xml:space="preserve">
-    <value>Handles the plasma storm skill of the fenrir pet. It randomly halves the durability of a target's equipped item.</value>
-  </data>
   <data name="PollutionSkillPlugIn_Name" xml:space="preserve">
     <value>Pollution Skill</value>
   </data>
@@ -800,6 +794,12 @@
   </data>
   <data name="RedDragonInvasionPlugIn_Description" xml:space="preserve">
     <value>Handle red dragon invasion event</value>
+  </data>
+    <data name="DurabilityDecayPlugIn_Name" xml:space="preserve">
+    <value>Durability Decay</value>
+  </data>
+  <data name="DurabilityDecayPlugIn_Description" xml:space="preserve">
+    <value>Updates the durabilty of time-decaying items.</value>
   </data>
   <data name="HappyHourPlugIn_Name" xml:space="preserve">
     <value>Happy Hour</value>
@@ -1462,5 +1462,50 @@
   </data>
   <data name="SuspiciousScrapOfPaperStackedPlugIn_Description" xml:space="preserve">
     <value>Transforms a full stack of suspicious scraps of paper into a Gaion's Order.</value>
+  </data>
+  <data name="GensFeaturePlugIn_Name" xml:space="preserve">
+    <value>Gens system</value>
+  </data>
+  <data name="GensFeaturePlugIn_Description" xml:space="preserve">
+    <value>Configures the gens system, in which the players can join one of the gens Duprian and Vanert at their npcs.</value>
+  </data>
+  <data name="GensMembershipPlugIn_Name" xml:space="preserve">
+    <value>Gens membership</value>
+  </data>
+  <data name="GensMembershipPlugIn_Description" xml:space="preserve">
+    <value>Loads the gens membership of a character when it enters the game, and shows it to the player.</value>
+  </data>
+  <data name="GensBattleZonePlugIn_Name" xml:space="preserve">
+    <value>Gens battle zone</value>
+  </data>
+  <data name="GensBattleZonePlugIn_Description" xml:space="preserve">
+    <value>Only gens members can enter the battle zone. Kills between the members of different gens in it change their contribution points, without making the killer an outlaw.</value>
+  </data>
+  <data name="GensRankingPlugIn_Name" xml:space="preserve">
+    <value>Gens ranking</value>
+  </data>
+  <data name="GensRankingPlugIn_Description" xml:space="preserve">
+    <value>Calculates the ranking of the gens in the configured interval, and updates the ranking positions and ranks of all members.</value>
+  </data>
+  <data name="GensRelationshipRulesPlugIn_Name" xml:space="preserve">
+    <value>Gens relationship rules</value>
+  </data>
+  <data name="GensRelationshipRulesPlugIn_Description" xml:space="preserve">
+    <value>The rules of the gens for parties, guilds and alliances: no party between different gens and in the battle zone, guilds and alliances only within a gens.</value>
+  </data>
+  <data name="SiegePotionConsumeHandlerConfiguration_BlessEffectNumber_Name" xml:space="preserve">
+    <value>Potion of Bless effect number</value>
+  </data>
+  <data name="SiegePotionConsumeHandlerConfiguration_SoulEffectNumber_Name" xml:space="preserve">
+    <value>Potion of Soul effect number</value>
+  </data>
+  <data name="BloodCastleArchangelTalkPlugIn_Name" xml:space="preserve">
+    <value>Blood Castle Archangel</value>
+  </data>
+  <data name="BloodCastleArchangelTalkPlugIn_Description" xml:space="preserve">
+    <value>Handles talking to the Archangel in the blood castle event, where players hand in the quest item to win the event.</value>
+  </data>
+  <data name="BloodCastleArchangelTalkPlugInConfiguration_ArchangelNumber_Name" xml:space="preserve">
+    <value>Archangel NPC number</value>
   </data>
 </root>

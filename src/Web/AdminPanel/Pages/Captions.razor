@@ -1,0 +1,162 @@
+@page "/config-captions"
+@attribute [Authorize(Policy = AdminPolicies.Administrator)]
+@using MUnique.OpenMU.Persistence.Initialization.Captions
+@using MUnique.OpenMU.Web.AdminPanel.Properties
+
+<PageTitle>OpenMU: @Resources.Captions</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="@Resources.Captions" />
+<h3>@Resources.Captions</h3>
+
+@if (!this.SetupService.IsInstalled || this.SetupService.IsUpdateRequired)
+{
+    <div class="alert alert-info" role="alert"><NavLink href="setup">@Resources.PleaseFirstInstallTheDatabaseUpdatesOnTheSetupPage</NavLink></div>
+    return;
+}
+
+<p>@Resources.CaptionsDescription</p>
+
+@if (this._message is { } message)
+{
+    <div class="alert alert-success" role="status">@message</div>
+}
+
+@if (this._exception is { } exception)
+{
+    <div class="alert alert-danger">
+        <h4 class="alert-heading">
+            <span class="oi oi-bolt"></span><span>&nbsp;@exception.Message</span>
+        </h4>
+        <hr/>
+        <span>@exception.StackTrace</span>
+    </div>
+}
+
+@if (this._isLinking)
+{
+    <CaptionLinkProgress CurrentStep="@this._linkStep" Elapsed="@this._linkStopwatch.Elapsed" StepElapsed="@this._stepStopwatch.Elapsed" />
+    return;
+}
+
+@if (this._comparison is not { } comparison)
+{
+    <div class="d-flex align-items-center">
+        <div class="spinner-border spinner-border-sm text-secondary me-2" role="status"></div>
+        <span>@Resources.CaptionsLoading</span>
+    </div>
+    return;
+}
+
+@if (comparison.UnresolvedSourceKeys.Count > 0)
+{
+    <div class="alert alert-warning" role="alert">@string.Format(Resources.CaptionsUnresolvedSources, comparison.UnresolvedSourceKeys.Count, string.Join(", ", comparison.UnresolvedSourceKeys.Take(5)))</div>
+}
+
+@if (comparison.LinkedCaptions == 0)
+{
+    @* Nothing is linked yet, so the only possible action is linking. *@
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title"><span class="oi oi-link-intact me-2" aria-hidden="true"></span>@Resources.CaptionsNotLinkedTitle</h4>
+            <p class="card-text">@Resources.CaptionsNotLinkedDescription</p>
+            <p class="card-text text-body-secondary">@Resources.LinkBuiltInCaptionsDescription</p>
+            @this.RenderLinkButton("btn-primary")
+        </div>
+    </div>
+    return;
+}
+
+@if (this._changes.Count == 0)
+{
+    <div class="alert alert-success" role="alert">
+        <span class="oi oi-check me-2" aria-hidden="true"></span>@Resources.AllLocalizationsInPlace
+        <br/>
+        <small>@string.Format(Resources.CaptionsLinkedCount, comparison.LinkedCaptions)</small>
+    </div>
+}
+else
+{
+    <h4>@Resources.CaptionsReviewTitle</h4>
+    <p>@Resources.CaptionsReviewDescription</p>
+
+    <dl class="row small">
+        @foreach (var kind in Enum.GetValues<CaptionChangeKind>())
+        {
+            <dt class="col-sm-2"><span class="badge @GetKindCssClass(kind)">@GetKindCaption(kind)</span></dt>
+            <dd class="col-sm-10">@GetKindDescription(kind)</dd>
+        }
+    </dl>
+
+    <div class="mb-2">
+        @foreach (var group in this._changes.GroupBy(c => c.Change.CultureName).OrderBy(g => g.Key))
+        {
+            <span class="badge text-bg-secondary me-1">@string.Format(Resources.CaptionLanguageSummary, GetLanguageCaption(group.Key), group.Count())</span>
+        }
+    </div>
+
+    <div class="d-flex flex-wrap gap-2 mb-2">
+        <select class="form-select w-auto" @bind="this.LanguageFilter">
+            <option value="">@Resources.CaptionAllLanguages</option>
+            @foreach (var language in this._changes.Select(c => c.Change.CultureName ?? NeutralFilterValue).Distinct().Order())
+            {
+                <option value="@language">@GetLanguageCaption(language == NeutralFilterValue ? null : language)</option>
+            }
+        </select>
+        <select class="form-select w-auto" @bind="this.KindFilter">
+            <option value="">@Resources.CaptionAllKinds</option>
+            @foreach (var kind in this._changes.Select(c => c.Change.Kind).Distinct().Order())
+            {
+                <option value="@kind">@GetKindCaption(kind)</option>
+            }
+        </select>
+        <button class="btn btn-outline-secondary" type="button" @onclick="this.SelectRecommended">@Resources.SelectRecommended</button>
+        <button class="btn btn-outline-secondary" type="button" @onclick="this.SelectNone">@Resources.SelectNone</button>
+    </div>
+
+    <table class="table table-sm table-striped">
+        <thead>
+        <tr>
+            <th></th>
+            <th>@Resources.CaptionObject</th>
+            <th>@Resources.CaptionProperty</th>
+            <th>@Resources.CaptionLanguage</th>
+            <th>@Resources.CaptionChange</th>
+            <th>@Resources.CaptionCurrentText</th>
+            <th>@Resources.CaptionSourceText</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var row in this.FilteredChanges)
+        {
+            <tr>
+                <td><input class="form-check-input" type="checkbox" @bind="row.Selected" disabled="@this._isBusy" /></td>
+                <td><span class="text-body-secondary">@row.Change.OwnerType</span> @row.Change.NeutralText</td>
+                <td>@row.Change.PropertyName</td>
+                <td>@GetLanguageCaption(row.Change.CultureName)</td>
+                <td><span class="badge @GetKindCssClass(row.Change.Kind)">@GetKindCaption(row.Change.Kind)</span></td>
+                <td>@row.Change.CurrentText</td>
+                <td>@row.Change.SourceText</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+
+    <div class="alert alert-light">@Resources.TheUpdatesRequireARestartOfTheServerProcessToTakeEffect</div>
+
+    @if (this._isBusy && !this._isLinking)
+    {
+        <button class="btn btn-primary" type="button" disabled>
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            @Resources.ApplyingChanges
+        </button>
+    }
+    else
+    {
+        <button class="btn btn-primary" type="button" disabled="@(this._isBusy || !this._changes.Any(c => c.Selected))" @onclick="this.OnApplyClickAsync">@Resources.ApplySelectedChanges</button>
+    }
+}
+
+<details class="mt-4">
+    <summary class="text-body-secondary">@Resources.CaptionsLinkAgainTitle</summary>
+    <p class="mt-2 small">@Resources.CaptionsLinkAgainDescription</p>
+    @this.RenderLinkButton("btn-outline-secondary")
+</details>

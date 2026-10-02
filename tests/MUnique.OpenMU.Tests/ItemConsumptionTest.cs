@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Tests;
 using Moq;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel;
+using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
@@ -390,6 +391,74 @@ public class ItemConsumptionTest
         var success = await consumeHandler.ConsumeItemAsync(player, item, null, FruitUsage.Undefined).ConfigureAwait(false);
         Assert.That(success, Is.True);
         Assert.That(player.Attributes!.GetValueOfAttribute(Stats.CurrentMana), Is.GreaterThan(0.0f));
+    }
+
+    /// <summary>
+    /// Tests that the Potion of Bless applies the magic effect with the default number when the plugin isn't configured.
+    /// </summary>
+    [Test]
+    public async ValueTask SiegePotionUsesDefaultBlessEffectAsync()
+    {
+        var consumeHandler = new SiegePotionConsumeHandlerPlugIn();
+        var player = await this.GetPlayerAsync().ConfigureAwait(false);
+        SetupMagicEffects(player, CreateConsumableEffect(SiegePotionConsumeHandlerConfiguration.DefaultBlessEffectNumber));
+        var item = this.GetItem();
+        await player.Inventory!.AddItemAsync(ItemSlot, item).ConfigureAwait(false);
+
+        var success = await consumeHandler.ConsumeItemAsync(player, item, null, FruitUsage.Undefined).ConfigureAwait(false);
+
+        Assert.That(success, Is.True);
+    }
+
+    /// <summary>
+    /// Tests that the Potion of Bless applies the magic effect with the configured number instead of the default one.
+    /// </summary>
+    [Test]
+    public async ValueTask SiegePotionUsesConfiguredBlessEffectAsync()
+    {
+        const short configuredEffectNumber = 42;
+        var consumeHandler = new SiegePotionConsumeHandlerPlugIn
+        {
+            Configuration = new SiegePotionConsumeHandlerConfiguration { BlessEffectNumber = configuredEffectNumber },
+        };
+        var player = await this.GetPlayerAsync().ConfigureAwait(false);
+        var defaultEffect = new Persistence.BasicModel.MagicEffectDefinition { Number = SiegePotionConsumeHandlerConfiguration.DefaultBlessEffectNumber };
+        SetupMagicEffects(player, defaultEffect, CreateConsumableEffect(configuredEffectNumber));
+        var item = this.GetItem();
+        await player.Inventory!.AddItemAsync(ItemSlot, item).ConfigureAwait(false);
+
+        var success = await consumeHandler.ConsumeItemAsync(player, item, null, FruitUsage.Undefined).ConfigureAwait(false);
+
+        // The default effect has no power-ups, so the consumption only succeeds with the configured effect.
+        Assert.That(success, Is.True);
+    }
+
+    private static void SetupMagicEffects(Player player, params MagicEffectDefinition[] effects)
+    {
+        Mock.Get(player.GameContext.Configuration).Setup(c => c.MagicEffects).Returns(effects.ToList());
+    }
+
+    private static MagicEffectDefinition CreateConsumableEffect(short number)
+    {
+        return new Persistence.BasicModel.MagicEffectDefinition
+        {
+            Number = number,
+            Duration = new Persistence.BasicModel.PowerUpDefinitionValue
+            {
+                ConstantValue = { Value = 60 },
+            },
+            PowerUpDefinitions =
+            {
+                new Persistence.BasicModel.PowerUpDefinition
+                {
+                    TargetAttribute = Stats.DefenseBase,
+                    Boost = new Persistence.BasicModel.PowerUpDefinitionValue
+                    {
+                        ConstantValue = { Value = 20 },
+                    },
+                },
+            },
+        };
     }
 
     private Item GetItem()

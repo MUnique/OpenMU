@@ -337,3 +337,21 @@ internal partial class CrywolfData : IConvertibleTo<BasicModel.CrywolfData>
         return this.Adapt<BasicModel.CrywolfData>();
     }
 }
+
+internal partial class GensMember : IConvertibleTo<BasicModel.GensMember>
+{
+    public BasicModel.GensMember Convert()
+    {
+        MapsterConfigurator.EnsureConfigured();
+        return this.Adapt<BasicModel.GensMember>();
+    }
+}
+
+internal partial class GensAbuse : IConvertibleTo<BasicModel.GensAbuse>
+{
+    public BasicModel.GensAbuse Convert()
+    {
+        MapsterConfigurator.EnsureConfigured();
+        return this.Adapt<BasicModel.GensAbuse>();
+    }
+}

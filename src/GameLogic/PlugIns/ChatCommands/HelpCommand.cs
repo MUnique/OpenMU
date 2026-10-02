@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("EFE9399A-9A14-4B94-BBC1-20718584C4C2")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.HelpCommand_Name), Description = nameof(PlugInResources.HelpCommand_Description), ResourceType = typeof(PlugInResources))]
-[ChatCommandHelp(Command, "Shows information about the requested command.", typeof(Arguments))]
+[ChatCommandHelp(Command, typeof(Arguments), CharacterStatus.Normal)]
 public class HelpCommand : IChatCommandPlugIn
 {
     private const string Command = "/help";

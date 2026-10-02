@@ -232,15 +232,18 @@ public static class AttackableExtensions
                 dmg += (int)skillAttributes[Stats.SkillFinalDamageBonus];
 
                 var skillMultiplier = skillAttributes[Stats.SkillFinalMultiplier];
-                if (skillMultiplier > 0)
+                var pveSkillMultiplier = skillAttributes[Stats.SkillFinalMultiplierPve];
+                if (!isPvp && pveSkillMultiplier > 0)
+                {
+                    multiplier = pveSkillMultiplier;
+                }
+                else if (skillMultiplier > 0)
                 {
                     multiplier = skillMultiplier;
-
-                    // DragonSlasher.
-                    if (skill.Skill!.Number == 265 && !isPvp)
-                    {
-                        multiplier *= 3;
-                    }
+                }
+                else
+                {
+                    // The skill doesn't define a final multiplier, so the general skill multiplier applies.
                 }
             }
 
@@ -927,13 +930,13 @@ public static class AttackableExtensions
         }
         else if (magicEffectDefinition.PowerUpDefinitions.Any(e => e.TargetAttribute == Stats.IsBleeding))
         {
-            if (hitInfo is not { } hit || hit.HealthDamage + hit.ShieldDamage < 1)
+            if (hitInfo is not { } hit || hit.TotalDamage < 1)
             {
                 return;
             }
 
             var multiplier = magicEffectDefinition.Number == ExplosionMagicEffectNumber ? attacker.Attributes[Stats.BleedingDamageMultiplier] : 0.6f;
-            var damage = (hit.HealthDamage + hit.ShieldDamage) * multiplier;
+            var damage = hit.TotalDamage * multiplier;
             magicEffect = new BleedingMagicEffect(powerUps[0].Boost, magicEffectDefinition, durationSpan, attacker, target, damage);
         }
         else if (magicEffectDefinition.PowerUpDefinitions.Any(e => e.TargetAttribute == Stats.IsStunned))

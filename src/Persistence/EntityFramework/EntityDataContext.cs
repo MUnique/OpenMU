@@ -46,6 +46,16 @@ public class EntityDataContext : ExtendedTypeContext
     /// </summary>
     internal DbSet<CastleSiegePendingReward> CastleSiegePendingRewards => this.Set<CastleSiegePendingReward>();
 
+    /// <summary>
+    /// Gets the gens memberships of the characters.
+    /// </summary>
+    internal DbSet<GensMember> GensMembers => this.Set<GensMember>();
+
+    /// <summary>
+    /// Gets the counts of the recent kills between gens members.
+    /// </summary>
+    internal DbSet<GensAbuse> GensAbuses => this.Set<GensAbuse>();
+
     /// <inheritdoc/>
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -94,6 +104,8 @@ public class EntityDataContext : ExtendedTypeContext
         modelBuilder.Entity<ExitGate>().Apply();
         modelBuilder.Entity<GameConfiguration>().Apply();
         modelBuilder.Entity<GameMapDefinition>().Apply();
+        modelBuilder.Entity<GensMember>().Apply();
+        modelBuilder.Entity<GensAbuse>().Apply();
         modelBuilder.Entity<ItemCrafting>().Apply();
         modelBuilder.Entity<ItemDefinition>().Apply();
         modelBuilder.Entity<ItemLevelBonusTable>().Apply();
@@ -104,7 +116,7 @@ public class EntityDataContext : ExtendedTypeContext
         modelBuilder.Entity<ItemSetGroup>().Apply();
         modelBuilder.Entity<ItemSlotType>().Apply();
         modelBuilder.Entity<ItemStorage>().Apply();
-        modelBuilder.Entity<ItemBasePowerUpDefinition>().Apply();
+        modelBuilder.Entity<ItemBasePowerUpDefinition>();
         modelBuilder.Entity<LevelBonus>().Apply();
         modelBuilder.Entity<MagicEffectDefinition>().Apply();
         modelBuilder.Entity<MasterSkillRoot>().Apply();

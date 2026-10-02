@@ -29958,6 +29958,556 @@ public readonly ref struct OpenNpcDialogRef
 
 
 /// <summary>
+/// Is sent by the server when: After the player requested to join a gens at one of the gens NPCs.
+/// Causes reaction on client side: The npc dialog shows the result. When the player joined, the client assigns the gens to the own character.
+/// </summary>
+public readonly ref struct GensJoinResponseRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GensJoinResponseRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public GensJoinResponseRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GensJoinResponseRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private GensJoinResponseRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xF8;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x02;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 6;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public GensJoinResponse.GensJoinResult Result
+    {
+        get => (GensJoinResponse.GensJoinResult)this._data[4];
+        set => this._data[4] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the gens type.
+    /// </summary>
+    public GensType GensType
+    {
+        get => (GensType)this._data[5];
+        set => this._data[5] = (byte)value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="GensJoinResponse"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator GensJoinResponseRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="GensJoinResponse"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(GensJoinResponseRef packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: After the player requested to leave the gens at one of the gens NPCs.
+/// Causes reaction on client side: The npc dialog shows the result. When the player left, the client removes the gens of the own character.
+/// </summary>
+public readonly ref struct GensLeaveResponseRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GensLeaveResponseRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public GensLeaveResponseRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GensLeaveResponseRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private GensLeaveResponseRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xF8;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x04;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 5;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public GensLeaveResponse.GensLeaveResult Result
+    {
+        get => (GensLeaveResponse.GensLeaveResult)this._data[4];
+        set => this._data[4] = (byte)value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="GensLeaveResponse"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator GensLeaveResponseRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="GensLeaveResponse"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(GensLeaveResponseRef packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: The server wants to visibly assign players to their gens, e.g. when two players met each other, or when a player joined or left a gens.
+/// Causes reaction on client side: The client shows the gens mark and rank next to the names of the players.
+/// </summary>
+public readonly ref struct AssignCharactersToGensRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AssignCharactersToGensRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public AssignCharactersToGensRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AssignCharactersToGensRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private AssignCharactersToGensRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xF8;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x05;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the player count.
+    /// </summary>
+    public byte PlayerCount
+    {
+        get => this._data[5];
+        set => this._data[5] = value;
+    }
+
+    /// <summary>
+    /// Gets the <see cref="GensMemberRelationRef"/> of the specified index.
+    /// </summary>
+        public GensMemberRelationRef this[int index] => new (this._data[(6 + index * GensMemberRelationRef.Length)..]);
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="AssignCharactersToGens"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator AssignCharactersToGensRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="AssignCharactersToGens"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(AssignCharactersToGensRef packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="GensMemberRelationRef"/>.
+    /// </summary>
+    /// <param name="membersCount">The count of <see cref="GensMemberRelationRef"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int membersCount) => membersCount * GensMemberRelationRef.Length + 6;
+
+
+/// <summary>
+/// Relation between a gens and a player..
+/// </summary>
+public readonly ref struct GensMemberRelationRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GensMemberRelationRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public GensMemberRelationRef(Span<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 16;
+
+    /// <summary>
+    /// Gets or sets the gens type.
+    /// </summary>
+    public GensType GensType
+    {
+        get => (GensType)this._data[0];
+        set => this._data[0] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the player id.
+    /// </summary>
+    public ushort PlayerId
+    {
+        get => ReadUInt16BigEndian(this._data[1..]);
+        set => WriteUInt16BigEndian(this._data[1..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the ranking position.
+    /// </summary>
+    public uint RankingPosition
+    {
+        get => ReadUInt32LittleEndian(this._data[4..]);
+        set => WriteUInt32LittleEndian(this._data[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the rank.
+    /// </summary>
+    public uint Rank
+    {
+        get => ReadUInt32LittleEndian(this._data[8..]);
+        set => WriteUInt32LittleEndian(this._data[8..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the contribution points.
+    /// </summary>
+    public uint ContributionPoints
+    {
+        get => ReadUInt32LittleEndian(this._data[12..]);
+        set => WriteUInt32LittleEndian(this._data[12..], value);
+    }
+}
+}
+
+
+/// <summary>
+/// Is sent by the server when: After the player entered the game world, joined or left a gens, or requested the gens ranking.
+/// Causes reaction on client side: The client shows the gens mark and rank of the own character, and the gens info window shows the ranking and contribution.
+/// </summary>
+public readonly ref struct GensInfoRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GensInfoRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public GensInfoRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GensInfoRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private GensInfoRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xF8;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x07;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 24;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the gens type.
+    /// </summary>
+    public GensType GensType
+    {
+        get => (GensType)this._data[4];
+        set => this._data[4] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the ranking position.
+    /// </summary>
+    public uint RankingPosition
+    {
+        get => ReadUInt32LittleEndian(this._data[8..]);
+        set => WriteUInt32LittleEndian(this._data[8..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the rank.
+    /// </summary>
+    public uint Rank
+    {
+        get => ReadUInt32LittleEndian(this._data[12..]);
+        set => WriteUInt32LittleEndian(this._data[12..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the contribution points.
+    /// </summary>
+    public uint ContributionPoints
+    {
+        get => ReadUInt32LittleEndian(this._data[16..]);
+        set => WriteUInt32LittleEndian(this._data[16..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the next rank contribution points.
+    /// </summary>
+    public uint NextRankContributionPoints
+    {
+        get => ReadUInt32LittleEndian(this._data[20..]);
+        set => WriteUInt32LittleEndian(this._data[20..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="GensInfo"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator GensInfoRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="GensInfo"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(GensInfoRef packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: After the player requested the gens ranking reward at one of the gens NPCs.
+/// Causes reaction on client side: The npc dialog shows the result.
+/// </summary>
+public readonly ref struct GensRewardResponseRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GensRewardResponseRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public GensRewardResponseRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GensRewardResponseRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private GensRewardResponseRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xF8;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x0A;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 5;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public GensRewardResponse.GensRewardResult Result
+    {
+        get => (GensRewardResponse.GensRewardResult)this._data[4];
+        set => this._data[4] = (byte)value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="GensRewardResponse"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator GensRewardResponseRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="GensRewardResponse"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(GensRewardResponseRef packet) => packet._data; 
+}
+
+
+/// <summary>
 /// Is sent by the server when: The player requested to enter the devil square mini game through the Charon NPC.
 /// Causes reaction on client side: In case it failed, it shows the corresponding error message.
 /// </summary>

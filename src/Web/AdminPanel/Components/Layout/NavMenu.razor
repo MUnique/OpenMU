@@ -80,6 +80,11 @@
                         }
                     </NavLink>
                 </li>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="config-captions" @onclick="() => NavigationHistory.Clear()">
+                        <span class="oi oi-globe" aria-hidden="true"></span> @Resources.Captions
+                    </NavLink>
+                </li>
             }
             <AuthorizeView Policy="@AdminPolicies.Administrator">
                 <li class="nav-item px-3">

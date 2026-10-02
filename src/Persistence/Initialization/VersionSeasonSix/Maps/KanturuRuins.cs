@@ -7,6 +7,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// The initialization for the Kanturu Ruins map.
@@ -19,11 +21,6 @@ internal class KanturuRuins : BaseMapInitializer
     internal const byte Number = 37;
 
     /// <summary>
-    /// The Name of the Map.
-    /// </summary>
-    internal const string Name = "Kanturu_I"; // Kanturu Ruins (1, 2), Kanturu Ruins (3) Island
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="KanturuRuins"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -33,11 +30,16 @@ internal class KanturuRuins : BaseMapInitializer
     {
     }
 
+    /// <summary>
+    /// Gets the name of the map.
+    /// </summary>
+    internal static LocalizedString Name => LocalizedString.FromResource(() => MapNames.KanturuI); // Kanturu Ruins (1, 2), Kanturu Ruins (3) Island
+
     /// <inheritdoc/>
     protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => Name;
+    protected override LocalizedString MapName => Name;
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()
@@ -272,7 +274,7 @@ internal class KanturuRuins : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 350;
-            monster.Designation = "Berserker";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Berserker);
             monster.MoveRange = 3;
             monster.AttackRange = 2;
             monster.ViewRange = 7;
@@ -304,7 +306,7 @@ internal class KanturuRuins : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 351;
-            monster.Designation = "Splinter Wolf";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.SplinterWolf);
             monster.MoveRange = 3;
             monster.AttackRange = 2;
             monster.ViewRange = 7;
@@ -336,7 +338,7 @@ internal class KanturuRuins : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 352;
-            monster.Designation = "Iron Rider";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.IronRider);
             monster.MoveRange = 3;
             monster.AttackRange = 2;
             monster.ViewRange = 5;
@@ -368,7 +370,7 @@ internal class KanturuRuins : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 353;
-            monster.Designation = "Satyros";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Satyros);
             monster.MoveRange = 3;
             monster.AttackRange = 2;
             monster.ViewRange = 7;
@@ -400,7 +402,7 @@ internal class KanturuRuins : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 354;
-            monster.Designation = "Blade Hunter";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.BladeHunter);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 7;
@@ -432,7 +434,7 @@ internal class KanturuRuins : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 355;
-            monster.Designation = "Kentauros";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Kentauros);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 7;
@@ -464,7 +466,7 @@ internal class KanturuRuins : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 356;
-            monster.Designation = "Gigantis";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Gigantis);
             monster.MoveRange = 3;
             monster.AttackRange = 2;
             monster.ViewRange = 7;
@@ -496,7 +498,7 @@ internal class KanturuRuins : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 357;
-            monster.Designation = "Genocider";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Genocider);
             monster.MoveRange = 3;
             monster.AttackRange = 2;
             monster.ViewRange = 7;
@@ -528,7 +530,7 @@ internal class KanturuRuins : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 553;
-            monster.Designation = "Berserker Warrior";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.BerserkerWarrior);
             monster.MoveRange = 3;
             monster.AttackRange = 2;
             monster.ViewRange = 9;
@@ -560,7 +562,7 @@ internal class KanturuRuins : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 554;
-            monster.Designation = "Kentauros Warrior";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.KentaurosWarrior);
             monster.MoveRange = 3;
             monster.AttackRange = 4;
             monster.ViewRange = 9;
@@ -592,7 +594,7 @@ internal class KanturuRuins : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 555;
-            monster.Designation = "Gigantis Warrior";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.GigantisWarrior);
             monster.MoveRange = 3;
             monster.AttackRange = 2;
             monster.ViewRange = 9;
@@ -624,7 +626,7 @@ internal class KanturuRuins : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 556;
-            monster.Designation = "Genocider Warrior";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.GenociderWarrior);
             monster.MoveRange = 3;
             monster.AttackRange = 2;
             monster.ViewRange = 9;

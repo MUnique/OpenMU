@@ -204,7 +204,7 @@ public sealed class Party : AsyncDisposable
     /// <returns>The experience which each party member gained, with all experience rates applied.</returns>
     public async ValueTask<IReadOnlyList<ExperienceShare>> DistributeExperienceAfterKillAsync(IAttackable killedObject, IObservable killer)
     {
-        using var l = await this._distributionLock.LockAsync();
+        using var l = await this._distributionLock.LockAsync().ConfigureAwait(false);
         try
         {
             return await this.InternalDistributeExperienceAfterKillAsync(killedObject, killer).ConfigureAwait(false);
@@ -238,7 +238,7 @@ public sealed class Party : AsyncDisposable
     /// <returns>A list of drop item groups from nearby party members' active quests.</returns>
     public async ValueTask<IList<DropItemGroup>> GetQuestDropItemGroupsAsync(IPartyMember killer)
     {
-        using var l = await this._distributionLock.LockAsync();
+        using var l = await this._distributionLock.LockAsync().ConfigureAwait(false);
         try
         {
             using (await killer.ObserverLock.ReaderLockAsync().ConfigureAwait(false))

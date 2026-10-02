@@ -38,7 +38,7 @@ public class CharInfoChatCommandPlugIn : ChatCommandPlugInBase<CharInfoChatComma
             return;
         }
 
-        await gameMaster.ShowBlueMessageAsync($"Account Name: {account.LoginName}").ConfigureAwait(false);
+        await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CharacterInfoAccountNameFormat), account.LoginName).ConfigureAwait(false);
 
         await this.ShowAllLinesMessageToAsync(gameMaster, GetCharacterInfo(gameMaster, character)).ConfigureAwait(false);
 
@@ -47,26 +47,27 @@ public class CharInfoChatCommandPlugIn : ChatCommandPlugInBase<CharInfoChatComma
 
     private static string GetCharacterInfo(Player gameMaster, Character character)
     {
-        var stringBuilder = new StringBuilder()
-            .AppendLine($"Id: {character.Id}")
-            .AppendLine($"Name: {character.Name}")
-            .AppendLine($"Class: {character.CharacterClass?.Name.GetTranslation(gameMaster.Culture)}")
-            .AppendLine($"Slot: {character.CharacterSlot}")
-            .AppendLine($"Create Date: {character.CreateDate}")
-            .AppendLine($"Exp: {character.Experience}")
-            .AppendLine($"Level Up Points: {character.LevelUpPoints}")
-            .AppendLine($"Master Exp: {character.MasterExperience}")
-            .AppendLine($"Master Lv Up Points: {character.MasterLevelUpPoints}")
-            .AppendLine($"Location: {character.CurrentMap?.Name}({character.PositionX}, {character.PositionY})")
-            .AppendLine($"Kill Count: {character.PlayerKillCount}")
-            .AppendLine($"State Remaining Seconds: {character.StateRemainingSeconds}")
-            .AppendLine($"State: {Enum.GetName(character.State)}")
-            .AppendLine($"Status: {Enum.GetName(character.CharacterStatus)}")
-            .AppendLine($"Used Fruit Points: {character.UsedFruitPoints}")
-            .AppendLine($"Used Neg Fruit Points: {character.UsedNegFruitPoints}")
-            .AppendLine($"Inventory Extensions: {character.InventoryExtensions}");
-
-        return stringBuilder.ToString();
+        return gameMaster.GetLocalizedMessage(
+            nameof(PlayerMessage.CharacterInfoFormat),
+            character.Id,
+            character.Name,
+            character.CharacterClass?.Name.GetTranslation(gameMaster.Culture),
+            character.CharacterSlot,
+            character.CreateDate,
+            character.Experience,
+            character.LevelUpPoints,
+            character.MasterExperience,
+            character.MasterLevelUpPoints,
+            character.CurrentMap?.Name,
+            character.PositionX,
+            character.PositionY,
+            character.PlayerKillCount,
+            character.StateRemainingSeconds,
+            Enum.GetName(character.State),
+            Enum.GetName(character.CharacterStatus),
+            character.UsedFruitPoints,
+            character.UsedNegFruitPoints,
+            character.InventoryExtensions);
     }
 
     private async ValueTask ShowAllLinesMessageToAsync(Player gameMaster, string? message)
