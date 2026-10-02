@@ -11399,6 +11399,7 @@
           <Index>4</Index>
           <Type>Byte</Type>
           <Name>ResultCount</Name>
+          <Description>The number of results. The client shares the code 0x93 with the BloodCastleScore (0xFF) and ChaosCastleScore (0xFE) at this index, so a score table must contain less than 200 results; the client holds up to 11.</Description>
         </Field>
         <Field>
           <Index>5</Index>
@@ -11457,6 +11458,7 @@
           <Index>4</Index>
           <Type>Byte</Type>
           <Name>Type</Name>
+          <Description>Identifies the blood castle result. The client shares the code 0x93 with the MiniGameScoreTable and the ChaosCastleScore and distinguishes them by this byte.</Description>
           <DefaultValue>0xFF</DefaultValue>
         </Field>
         <Field>
@@ -11479,6 +11481,51 @@
           <Index>25</Index>
           <Type>IntegerLittleEndian</Type>
           <Name>BonusMoney</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>93</Code>
+      <Name>ChaosCastleScore</Name>
+      <Length>29</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The chaos castle mini game ended and the score of the player is sent to the player.</SentWhen>
+      <CausedReaction>The client shows the experience and the killed monsters and players.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Boolean</Type>
+          <Name>Success</Name>
+          <Description>If the player won the chaos castle.</Description>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Type</Name>
+          <Description>Identifies the chaos castle result. The client shares the code 0x93 with the MiniGameScoreTable and the BloodCastleScore and distinguishes them by this byte.</Description>
+          <DefaultValue>0xFE</DefaultValue>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>String</Type>
+          <Name>PlayerName</Name>
+          <Length>10</Length>
+        </Field>
+        <Field>
+          <Index>17</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>MonsterKillCount</Name>
+        </Field>
+        <Field>
+          <Index>21</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>BonusExperience</Name>
+        </Field>
+        <Field>
+          <Index>25</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>PlayerKillCount</Name>
         </Field>
       </Fields>
     </Packet>

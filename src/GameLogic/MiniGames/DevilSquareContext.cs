@@ -15,7 +15,7 @@ public sealed class DevilSquareContext : MiniGameContext
 {
     private readonly ConcurrentDictionary<string, PlayerGameState> _gameStates = new();
 
-    private IReadOnlyCollection<(string Name, int Score, int BonusMoney, int BonusExp)>? _highScoreTable;
+    private IReadOnlyCollection<(string Name, int Score, int BonusExp, int BonusMoney)>? _highScoreTable;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DevilSquareContext"/> class.
@@ -59,10 +59,10 @@ public sealed class DevilSquareContext : MiniGameContext
         var sortedFinishers = finishers
             .Select(f => this._gameStates[f.Name])
             .WhereNotNull()
-            .OrderBy(state => state.Score)
+            .OrderByDescending(state => state.Score)
             .ToList();
 
-        var scoreList = new List<(string Name, int Score, int BonusMoney, int BonusExp)>();
+        var scoreList = new List<(string Name, int Score, int BonusExp, int BonusMoney)>();
         int rank = 0;
         foreach (var state in sortedFinishers)
         {
@@ -73,8 +73,8 @@ public sealed class DevilSquareContext : MiniGameContext
             scoreList.Add((
                 state.Player.Name,
                 state.Score,
-                givenMoney,
-                this.Definition.Rewards.FirstOrDefault(r => r.RewardType == MiniGameRewardType.Experience && (r.Rank is null || r.Rank == rank))?.RewardAmount ?? 0));
+                this.Definition.Rewards.FirstOrDefault(r => r.RewardType == MiniGameRewardType.Experience && (r.Rank is null || r.Rank == rank))?.RewardAmount ?? 0,
+                givenMoney));
         }
 
         this._highScoreTable = scoreList.AsReadOnly();

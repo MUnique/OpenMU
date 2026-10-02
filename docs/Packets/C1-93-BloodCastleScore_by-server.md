@@ -16,7 +16,7 @@ The score is shown at the client.
 | 1 | 1 |    Byte   |   29   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0x93  | Packet header - packet type identifier |
 | 3 | 1 | Boolean |  | Success |
-| 4 | 1 | Byte | 0xFF | Type |
+| 4 | 1 | Byte | 0xFF | Type; Identifies the blood castle result. The client shares the code 0x93 with the MiniGameScoreTable and the ChaosCastleScore and distinguishes them by this byte. |
 | 5 | 10 | String |  | PlayerName |
 | 17 | 4 | IntegerLittleEndian |  | TotalScore |
 | 21 | 4 | IntegerLittleEndian |  | BonusExperience |

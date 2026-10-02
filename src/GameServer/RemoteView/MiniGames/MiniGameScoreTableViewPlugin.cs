@@ -37,12 +37,13 @@ public class MiniGameScoreTableViewPlugin : IMiniGameScoreTableViewPlugin
         const int maxScores = 10;
         int Write()
         {
-            var size = MiniGameScoreTableRef.GetRequiredSize(Math.Min(maxScores, scores.Count));
+            var count = Math.Min(maxScores, scores.Count);
+            var size = MiniGameScoreTableRef.GetRequiredSize(count);
             var span = connection.Output.GetSpan(size)[..size];
             var message = new MiniGameScoreTableRef(span)
             {
                 PlayerRank = playerRank,
-                ResultCount = (byte)scores.Count,
+                ResultCount = (byte)count,
             };
             var i = 0;
             foreach (var (playerName, totalScore, bonusExp, bonusMoney) in scores.Take(maxScores))
