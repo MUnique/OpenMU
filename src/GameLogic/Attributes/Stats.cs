@@ -1588,6 +1588,14 @@ public class Stats
     public static AttributeDefinition SkillFinalMultiplier { get; } = new(new Guid("AC72CAE4-973C-46BB-BE3B-F6260E8DDFA8"), "Skill Final Damage Multiplier (skill attribute)", string.Empty);
 
     /// <summary>
+    /// Gets the value of a master skill at its current level, as calculated by <see cref="MasterSkillDefinition.ValueFormula"/>.
+    /// </summary>
+    /// <remarks>
+    /// It's an input for the <see cref="MasterSkillDefinition.PassivePowerUps"/>, next to the <see cref="SkillLevel"/>.
+    /// </remarks>
+    public static AttributeDefinition MasterSkillValue { get; } = new(new Guid("24E5ED6D-EB97-41C1-B013-60B8D9EB8B9C"), "Master Skill Value (skill attribute)", string.Empty);
+
+    /// <summary>
     /// Gets the skill's final damage bonus attribute definition.
     /// </summary>
     public static AttributeDefinition SkillFinalDamageBonus { get; } = new(new Guid("155D8045-5CD1-4238-BEFC-FCF8C46F94E3"), "Skill Final Damage Bonus (skill attribute)", string.Empty);

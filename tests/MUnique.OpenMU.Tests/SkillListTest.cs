@@ -5,10 +5,13 @@
 namespace MUnique.OpenMU.Tests;
 
 using Moq;
+using MUnique.OpenMU.AttributeSystem;
+using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Attributes;
 
 /// <summary>
 /// Tests the skill list.
@@ -20,6 +23,8 @@ public class SkillListTest
     private const ushort NonLearnedSkillId = 999;
     private const ushort QualifiedItemSkillId = 1;
     private const ushort NonQualifiedItemSkillId = 9;
+    private const ushort PassiveSkillId = 300;
+    private const byte MaximumMasterSkillLevel = 20;
 
     /// <summary>
     /// Tests if the created skill list contains a skill that was learned by the character before.
@@ -130,6 +135,87 @@ public class SkillListTest
     {
         var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         Assert.That(player.SkillList!.ContainsSkill(NonLearnedSkillId), Is.False);
+    }
+
+    /// <summary>
+    /// Tests that a passive power-up of a learned master skill applies its value to the character,
+    /// and follows the level of the skill.
+    /// </summary>
+    [Test]
+    public async ValueTask PassivePowerUpFollowsMasterSkillValueAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var skillEntry = CreatePassiveSkillEntry("level * 2", AggregateType.AddRaw, Stats.MasteryMoveTargetChance, Stats.MasterSkillValue, 1);
+        skillEntry.Level = 5;
+        player.SelectedCharacter!.LearnedSkills.Add(skillEntry);
+
+        using var skillList = new SkillList(player);
+        Assert.That(player.Attributes![Stats.MasteryMoveTargetChance], Is.EqualTo(10));
+
+        skillEntry.Level = 6;
+        Assert.That(player.Attributes[Stats.MasteryMoveTargetChance], Is.EqualTo(12));
+
+        skillList.Dispose();
+        Assert.That(player.Attributes[Stats.MasteryMoveTargetChance], Is.EqualTo(0));
+    }
+
+    /// <summary>
+    /// Tests that a multiplicative passive power-up applies the value of the master skill as factor.
+    /// </summary>
+    [Test]
+    public async ValueTask MultiplicativePassivePowerUpAppliesFactorAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var skillEntry = CreatePassiveSkillEntry("1 + level / 10", AggregateType.Multiplicate, Stats.ShieldRecoveryMultiplier, Stats.MasterSkillValue, 1);
+        skillEntry.Level = 5;
+        player.SelectedCharacter!.LearnedSkills.Add(skillEntry);
+
+        using var skillList = new SkillList(player);
+
+        Assert.That(player.Attributes![Stats.ShieldRecoveryMultiplier], Is.EqualTo(1.5f).Within(0.0001f));
+    }
+
+    /// <summary>
+    /// Tests that a passive power-up can depend on the level of the skill.
+    /// </summary>
+    [Test]
+    public async ValueTask PassivePowerUpByLevelAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var valueBefore = player.Attributes![Stats.DurabilityReductionFactor];
+        var skillEntry = CreatePassiveSkillEntry("level", AggregateType.AddRaw, Stats.DurabilityReductionFactor, Stats.SkillLevel, -0.002f);
+        skillEntry.Level = 5;
+        await player.SkillList!.AddLearnedSkillAsync(skillEntry.Skill!).ConfigureAwait(false);
+        var learnedEntry = player.SkillList.GetSkill(PassiveSkillId)!;
+        learnedEntry.Level = 5;
+
+        Assert.That(player.Attributes[Stats.DurabilityReductionFactor], Is.EqualTo(valueBefore - 0.01f).Within(0.0001f));
+    }
+
+    private static SkillEntry CreatePassiveSkillEntry(string valueFormula, AggregateType aggregateType, AttributeDefinition targetAttribute, AttributeDefinition inputAttribute, float inputOperand)
+    {
+        var powerUp = new Persistence.BasicModel.PowerUpDefinition
+        {
+            TargetAttribute = targetAttribute,
+            Boost = new Persistence.BasicModel.PowerUpDefinitionValue
+            {
+                ConstantValue = { Value = aggregateType == AggregateType.Multiplicate ? 1 : 0, AggregateType = aggregateType },
+                RelatedValues =
+                {
+                    new Persistence.BasicModel.AttributeRelationship { InputAttribute = inputAttribute, InputOperand = inputOperand, InputOperator = InputOperator.Multiply },
+                },
+            },
+        };
+        var masterDefinition = new Persistence.BasicModel.MasterSkillDefinition
+        {
+            ValueFormula = valueFormula,
+            MaximumLevel = MaximumMasterSkillLevel,
+            TargetAttribute = targetAttribute,
+            Aggregation = aggregateType,
+        };
+        masterDefinition.PassivePowerUps.Add(powerUp);
+        var skill = new Persistence.BasicModel.Skill { Number = PassiveSkillId.ToSigned(), SkillType = SkillType.PassiveBoost, MasterDefinition = masterDefinition };
+        return new Persistence.BasicModel.SkillEntry { Skill = skill };
     }
 
     private Item CreateItemWithSkill(ushort skillId, CharacterClass? qualifiedClass = null)
