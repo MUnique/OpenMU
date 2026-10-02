@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("A1B2C3D4-E5F6-7890-ABCD-EF1234567891")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.ResetStatsChatCommandPlugIn_Name), Description = nameof(PlugInResources.ResetStatsChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
-[ChatCommandHelp(Command, "Resets your character stats to base values and refunds all invested points.", null)]
+[ChatCommandHelp(Command)]
 public class ResetStatsChatCommandPlugIn : IChatCommandPlugIn
 {
     private const string Command = "/resetstats";

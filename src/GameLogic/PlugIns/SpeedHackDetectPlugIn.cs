@@ -310,7 +310,7 @@ public class SpeedHackDetectPlugIn : IFeaturePlugIn, ISupportCustomConfiguration
         }
         else if (shouldWarn)
         {
-            await player.ShowBlueMessageAsync("Warning: Unusual activity detected (speed check). Repeated violations will result in account restriction.").ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.SpeedHackWarning)).ConfigureAwait(false);
         }
         else
         {

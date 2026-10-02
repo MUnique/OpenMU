@@ -7,6 +7,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075.Maps;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 
 /// <summary>
@@ -20,11 +22,6 @@ internal class Lorencia : BaseMapInitializer
     internal const byte Number = 0;
 
     /// <summary>
-    /// The default name of the map.
-    /// </summary>
-    internal const string Name = "Lorencia";
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="Lorencia"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -34,11 +31,16 @@ internal class Lorencia : BaseMapInitializer
     {
     }
 
+    /// <summary>
+    /// Gets the name of the map.
+    /// </summary>
+    internal static LocalizedString Name => LocalizedString.FromResource(() => MapNames.Lorencia);
+
     /// <inheritdoc/>
     protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => Name;
+    protected override LocalizedString MapName => Name;
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
@@ -80,7 +82,7 @@ internal class Lorencia : BaseMapInitializer
             var bullFighter = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(bullFighter);
             bullFighter.Number = 0;
-            bullFighter.Designation = "Bull Fighter";
+            bullFighter.Designation = LocalizedString.FromResource(() => MonsterNames.BullFighter);
             bullFighter.MoveRange = 3;
             bullFighter.AttackRange = 1;
             bullFighter.ViewRange = 5;
@@ -106,7 +108,7 @@ internal class Lorencia : BaseMapInitializer
             var hound = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(hound);
             hound.Number = 1;
-            hound.Designation = "Hound";
+            hound.Designation = LocalizedString.FromResource(() => MonsterNames.Hound);
             var attributes = new Dictionary<AttributeDefinition, float>
             {
                 { Stats.Level, 9 },
@@ -132,7 +134,7 @@ internal class Lorencia : BaseMapInitializer
             var budgeDragon = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(budgeDragon);
             budgeDragon.Number = 2;
-            budgeDragon.Designation = "Budge Dragon";
+            budgeDragon.Designation = LocalizedString.FromResource(() => MonsterNames.BudgeDragon);
             var attributes = new Dictionary<AttributeDefinition, float>
             {
                 { Stats.Level, 4 },
@@ -158,7 +160,7 @@ internal class Lorencia : BaseMapInitializer
             var spider = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(spider);
             spider.Number = 3;
-            spider.Designation = "Spider";
+            spider.Designation = LocalizedString.FromResource(() => MonsterNames.Spider);
             var attributes = new Dictionary<AttributeDefinition, float>
             {
                 { Stats.Level, 2 },
@@ -184,7 +186,7 @@ internal class Lorencia : BaseMapInitializer
             var eliteBullFighter = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(eliteBullFighter);
             eliteBullFighter.Number = 4;
-            eliteBullFighter.Designation = "Elite Bull Fighter";
+            eliteBullFighter.Designation = LocalizedString.FromResource(() => MonsterNames.EliteBullFighter);
             var attributes = new Dictionary<AttributeDefinition, float>
             {
                 { Stats.Level, 12 },
@@ -210,7 +212,7 @@ internal class Lorencia : BaseMapInitializer
             var lich = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(lich);
             lich.Number = 6;
-            lich.Designation = "Lich";
+            lich.Designation = LocalizedString.FromResource(() => MonsterNames.Lich);
             var attributes = new Dictionary<AttributeDefinition, float>
             {
                 { Stats.Level, 14 },
@@ -238,7 +240,7 @@ internal class Lorencia : BaseMapInitializer
             var giant = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(giant);
             giant.Number = 7;
-            giant.Designation = "Giant";
+            giant.Designation = LocalizedString.FromResource(() => MonsterNames.Giant);
             var attributes = new Dictionary<AttributeDefinition, float>
             {
                 { Stats.Level, 17 },
@@ -264,7 +266,7 @@ internal class Lorencia : BaseMapInitializer
             var skeleton = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(skeleton);
             skeleton.Number = 14;
-            skeleton.Designation = "Skeleton Warrior";
+            skeleton.Designation = LocalizedString.FromResource(() => MonsterNames.SkeletonWarrior);
             var attributes = new Dictionary<AttributeDefinition, float>
             {
                 { Stats.Level, 19 },

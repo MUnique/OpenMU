@@ -8,6 +8,8 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 
 /// <summary>
@@ -19,11 +21,6 @@ internal class KanturuEvent : BaseMapInitializer
     /// The Number of the Map.
     /// </summary>
     internal const byte Number = 39;
-
-    /// <summary>
-    /// The Name of the Map.
-    /// </summary>
-    internal const string Name = "Kanturu Event";
 
     /// <summary>
     /// The monster number of Maya's body.
@@ -59,6 +56,11 @@ internal class KanturuEvent : BaseMapInitializer
         : base(context, gameConfiguration)
     {
     }
+
+    /// <summary>
+    /// Gets the name of the map.
+    /// </summary>
+    internal static LocalizedString Name => LocalizedString.FromResource(() => MapNames.KanturuEvent);
 
     /// <summary>
     /// Gets the spawn areas of the event waves, which are started by the
@@ -119,7 +121,7 @@ internal class KanturuEvent : BaseMapInitializer
     protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => Name;
+    protected override LocalizedString MapName => Name;
 
     /// <summary>
     /// Gets the safezone map number. Players who die inside the Kanturu Event map
@@ -197,7 +199,7 @@ internal class KanturuEvent : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = MayaBodyNumber;
-            monster.Designation = "Maya";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Maya);
             monster.MoveRange = 3;
             monster.AttackRange = 6;
             monster.ViewRange = 9;
@@ -229,7 +231,7 @@ internal class KanturuEvent : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = NightmareNumber;
-            monster.Designation = "Nightmare";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Nightmare);
             monster.MoveRange = 3;
             monster.AttackRange = 5;
             monster.ViewRange = 9;
@@ -264,7 +266,7 @@ internal class KanturuEvent : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = MayaLeftHandNumber;
-            monster.Designation = "Maya (Hand Left)";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.MayaHandLeft);
             monster.MoveRange = 3;
             monster.AttackRange = 5;
             monster.ViewRange = 8;
@@ -299,7 +301,7 @@ internal class KanturuEvent : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = MayaRightHandNumber;
-            monster.Designation = "Maya (Hand Right)";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.MayaHandRight);
             monster.MoveRange = 3;
             monster.AttackRange = 5;
             monster.ViewRange = 8;

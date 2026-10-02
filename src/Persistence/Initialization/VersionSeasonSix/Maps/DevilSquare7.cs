@@ -7,6 +7,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 using MUnique.OpenMU.Persistence.Initialization.Version095d.Events;
 
 /// <summary>
@@ -20,11 +22,6 @@ internal class DevilSquare7 : BaseMapInitializer
     internal const byte Number = 32;
 
     /// <summary>
-    /// The Name of the Map.
-    /// </summary>
-    internal const string Name = "Devil Square 7";
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="DevilSquare7"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -34,11 +31,16 @@ internal class DevilSquare7 : BaseMapInitializer
     {
     }
 
+    /// <summary>
+    /// Gets the name of the map.
+    /// </summary>
+    internal static LocalizedString Name => LocalizedString.FromResource(() => MapNames.DevilSquare7);
+
     /// <inheritdoc/>
     protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => Name;
+    protected override LocalizedString MapName => Name;
 
     /// <inheritdoc/>
     protected override byte Discriminator => 7;
@@ -74,7 +76,7 @@ internal class DevilSquare7 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 434;
-            monster.Designation = "Gigantis";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Gigantis434);
             monster.MoveRange = 3;
             monster.AttackRange = 2;
             monster.ViewRange = 7;
@@ -106,7 +108,7 @@ internal class DevilSquare7 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 435;
-            monster.Designation = "Berserk";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Berserk);
             monster.MoveRange = 3;
             monster.AttackRange = 2;
             monster.ViewRange = 7;
@@ -138,7 +140,7 @@ internal class DevilSquare7 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 436;
-            monster.Designation = "Balram (Trainee)";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.BalramTrainee);
             monster.MoveRange = 6;
             monster.AttackRange = 7;
             monster.ViewRange = 7;
@@ -170,7 +172,7 @@ internal class DevilSquare7 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 437;
-            monster.Designation = "Soram (Trainee)";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.SoramTrainee);
             monster.MoveRange = 6;
             monster.AttackRange = 4;
             monster.ViewRange = 7;
@@ -202,7 +204,7 @@ internal class DevilSquare7 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 438;
-            monster.Designation = "Persona";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Persona438);
             monster.MoveRange = 3;
             monster.AttackRange = 5;
             monster.ViewRange = 7;
@@ -234,7 +236,7 @@ internal class DevilSquare7 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 439;
-            monster.Designation = "Dreadfear";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Dreadfear439);
             monster.MoveRange = 3;
             monster.AttackRange = 2;
             monster.ViewRange = 5;
@@ -266,7 +268,7 @@ internal class DevilSquare7 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 440;
-            monster.Designation = "Dark_Elf";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.DarkElf);
             monster.MoveRange = 6;
             monster.AttackRange = 6;
             monster.ViewRange = 10;

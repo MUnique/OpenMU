@@ -5,7 +5,9 @@
 namespace MUnique.OpenMU.Persistence.Initialization.Version075;
 
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// Initialization of character classes data for Version 0.75.
@@ -28,8 +30,8 @@ internal class CharacterClassInitialization : Initialization.CharacterClasses.Ch
     /// <inheritdoc />
     public override void Initialize()
     {
-        this.CreateDarkKnight(CharacterClassNumber.DarkKnight, "Dark Knight", false, null, true);
-        this.CreateDarkWizard(CharacterClassNumber.DarkWizard, "Dark Wizard", false, null, true);
-        this.CreateFairyElf(CharacterClassNumber.FairyElf, "Fairy Elf", false, null, true);
+        this.CreateDarkKnight(CharacterClassNumber.DarkKnight, LocalizedString.FromResource(() => CharacterClassNames.DarkKnight), false, null, true);
+        this.CreateDarkWizard(CharacterClassNumber.DarkWizard, LocalizedString.FromResource(() => CharacterClassNames.DarkWizard), false, null, true);
+        this.CreateFairyElf(CharacterClassNumber.FairyElf, LocalizedString.FromResource(() => CharacterClassNames.FairyElf), false, null, true);
     }
 }
