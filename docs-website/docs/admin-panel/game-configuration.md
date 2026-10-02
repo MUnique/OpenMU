@@ -179,9 +179,9 @@ What an inactive entry means in the game:
 
 | Content | Effect when inactive |
 |---|---|
-| Map | It can't be entered by warps or gates, and no instance of it is created. A character which logs in on an inactive map is moved to the safezone map of it, or to the home map of its class. |
-| Character class | No new character of this class can be created, and its creation isn't unlocked on the character selection screen. Existing characters stay playable. |
-| Monster / NPC | It isn't spawned on the maps. Monsters which are already spawned remain until the game server is restarted. |
+| Map | It can't be entered by warps or gates, no instance of it is created, and invasions skip it. A character which logs in on an inactive map is moved to the safezone map of it, or to the home map of its class. |
+| Character class | No new character of this class can be created, and its creation isn't unlocked on the character selection screen. Quests which would evolve a character into it aren't offered and can't be completed. Existing characters stay playable. |
+| Monster / NPC | It isn't spawned on the maps, also not by invasions. Monsters which are already spawned remain until the game server is restarted. |
 | Item | Monsters and item boxes don't drop it, and merchants don't offer it. Existing items stay usable. |
 | Mini game | It can't be entered, and its periodic start doesn't open it. |
 
@@ -189,10 +189,11 @@ Entries are active by default, also after updating an existing installation.
 The setting is also available as *Is Active* on the edit page of each entry.
 
 :::tip[Deactivate the plugins, too]
-Some features are implemented as plugins, for example the invasions and the
-periodic starts of the mini games. Deactivate them on the [Plugins](plugins.md)
-page as well, so that players don't get announcements of events which aren't
-available.
+Invasions and the periodic starts of the mini games skip inactive content and
+don't announce an event when nothing of it is active. Other features are
+implemented as plugins without such content, for example the chat commands or
+the custom gameplay plugins. Deactivate them on the [Plugins](plugins.md) page
+if they don't fit the season of your server.
 :::
 
 ## Plugins, chat commands, map editor

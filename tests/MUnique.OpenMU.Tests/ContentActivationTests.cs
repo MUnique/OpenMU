@@ -10,6 +10,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlayerActions;
 using MUnique.OpenMU.GameLogic.PlayerActions.Character;
+using MUnique.OpenMU.GameLogic.PlayerActions.Quests;
 using MUnique.OpenMU.Pathfinding;
 using Character = MUnique.OpenMU.DataModel.Entities.Character;
 using CharacterClass = MUnique.OpenMU.Persistence.BasicModel.CharacterClass;
@@ -18,6 +19,9 @@ using ItemDefinition = MUnique.OpenMU.Persistence.BasicModel.ItemDefinition;
 using ItemStorage = MUnique.OpenMU.Persistence.BasicModel.ItemStorage;
 using MonsterDefinition = MUnique.OpenMU.Persistence.BasicModel.MonsterDefinition;
 using MonsterSpawnArea = MUnique.OpenMU.Persistence.BasicModel.MonsterSpawnArea;
+using QuestDefinition = MUnique.OpenMU.Persistence.BasicModel.QuestDefinition;
+using QuestReward = MUnique.OpenMU.Persistence.BasicModel.QuestReward;
+using QuestRewardType = MUnique.OpenMU.DataModel.Configuration.Quests.QuestRewardType;
 
 /// <summary>
 /// Tests that inactive content of the game configuration is not available in the game.
@@ -121,6 +125,27 @@ public class ContentActivationTests
         await new CreateCharacterAction().CreateCharacterAsync(player, "Tester", characterClass.Number).ConfigureAwait(false);
 
         Assert.That(player.Account!.Characters.Any(c => c.CharacterClass == characterClass), Is.EqualTo(isActive));
+    }
+
+    /// <summary>
+    /// Tests that a quest which evolves the character into the next generation class
+    /// is blocked when that class is inactive, while other quests are not affected.
+    /// </summary>
+    /// <param name="isNextClassActive">If set to <c>true</c>, the next generation class is active.</param>
+    [TestCase(true)]
+    [TestCase(false)]
+    public async ValueTask QuestWhichEvolvesIntoInactiveClassIsBlockedAsync(bool isNextClassActive)
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var nextClass = new CharacterClass { Number = 2, IsActive = isNextClassActive };
+        Mock.Get(player.SelectedCharacter!.CharacterClass!).Setup(c => c.NextGenerationClass).Returns(nextClass);
+        var evolutionQuest = new QuestDefinition();
+        evolutionQuest.Rewards.Add(new QuestReward { RewardType = QuestRewardType.CharacterEvolutionFirstToSecond });
+        var otherQuest = new QuestDefinition();
+        otherQuest.Rewards.Add(new QuestReward { RewardType = QuestRewardType.LevelUpPoints, Value = 10 });
+
+        Assert.That(evolutionQuest.EvolvesIntoInactiveClass(player), Is.EqualTo(!isNextClassActive));
+        Assert.That(otherQuest.EvolvesIntoInactiveClass(player), Is.False);
     }
 
     private static MonsterSpawnArea CreateSpawnArea(GameMapDefinition mapDefinition, DataModel.Configuration.MonsterDefinition monsterDefinition)
