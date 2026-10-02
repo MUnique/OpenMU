@@ -1588,6 +1588,15 @@ public class Stats
     public static AttributeDefinition SkillFinalMultiplier { get; } = new(new Guid("AC72CAE4-973C-46BB-BE3B-F6260E8DDFA8"), "Skill Final Damage Multiplier (skill attribute)", string.Empty);
 
     /// <summary>
+    /// Gets the skill's final multiplier attribute definition against non-player targets (PvE).
+    /// </summary>
+    /// <remarks>
+    /// When it's set, it replaces <see cref="SkillFinalMultiplier"/> outside of PvP.
+    /// E.g. Dragon Slasher deals three times its damage to monsters.
+    /// </remarks>
+    public static AttributeDefinition SkillFinalMultiplierPve { get; } = new(new Guid("A7C24DFA-7F97-42A6-90C4-1F634C77AD71"), "Skill Final Damage Multiplier (PvE) (skill attribute)", string.Empty);
+
+    /// <summary>
     /// Gets the skill's final damage bonus attribute definition.
     /// </summary>
     public static AttributeDefinition SkillFinalDamageBonus { get; } = new(new Guid("155D8045-5CD1-4238-BEFC-FCF8C46F94E3"), "Skill Final Damage Bonus (skill attribute)", string.Empty);
