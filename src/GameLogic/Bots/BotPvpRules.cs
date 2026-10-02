@@ -56,6 +56,13 @@ public static class BotPvpRules
             return true;
         }
 
+        // Attacks which are exempted from the player killer penalty, e.g. between the members of
+        // different gens in a battle zone.
+        if (!ReferenceEquals(bot, target) && bot.IsExemptedFromPlayerKillPenalty(target))
+        {
+            return true;
+        }
+
         // Active self-defense: the target attacked this bot recently (SelfDefenseState is keyed
         // (attacker, defender) and renewed on every damaging hit by the SelfDefensePlugIn).
         if (bot.GameContext.SelfDefenseState.TryGetValue((target, bot), out var timeout)

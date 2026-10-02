@@ -353,7 +353,7 @@ public sealed class SelupanIntelligence : INpcIntelligence, IDisposable
 
         this._attacker = null;
         List<IAttackable> candidates;
-        using (await monster.ObserverLock.ReaderLockAsync())
+        using (await monster.ObserverLock.ReaderLockAsync().ConfigureAwait(false))
         {
             candidates = monster.Observers.OfType<IAttackable>().Where(candidate => IsValidTarget(monster, candidate)).ToList();
         }

@@ -199,7 +199,7 @@ public sealed class DuelRoom : AsyncDisposable
     /// <param name="spectator">The spectator which should be removed.</param>
     public async ValueTask RemoveSpectatorAsync(Player spectator)
     {
-        using (await this._spectatorLock.LockAsync())
+        using (await this._spectatorLock.LockAsync().ConfigureAwait(false))
         {
             if (!this.Spectators.Remove(spectator))
             {
@@ -332,7 +332,7 @@ public sealed class DuelRoom : AsyncDisposable
         }
 
         Player[] spectators;
-        using (await this._spectatorLock.LockAsync())
+        using (await this._spectatorLock.LockAsync().ConfigureAwait(false))
         {
             if (this.Spectators.Count >= this._maximumSpectators)
             {

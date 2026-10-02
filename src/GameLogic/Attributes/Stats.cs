@@ -1332,14 +1332,31 @@ public class Stats
     public static AttributeDefinition ShieldRateIncrease { get; } = new(new Guid("C2FFBA46-4DC3-4861-84F5-313DED038997"), "SD Rate Increase", "Increases the shield’s damage absorb rate in PVP according to set value.");
 
     /// <summary>
-    /// Gets the item duration increase attribute definition.
+    /// Gets the weapon and armor duration increase MST attribute definition.
     /// </summary>
-    public static AttributeDefinition ItemDurationIncrease { get; } = new(new Guid("03EBE702-90FF-473C-8CBB-E83669FE3C68"), "Item Duration Increase", string.Empty);
+    /// <remarks>Includes weapons, shields and armor items. Excludes jewelry, wings and pets.</remarks>
+    public static AttributeDefinition WeaponAndArmorDurationIncrease { get; } = new(new Guid("03EBE702-90FF-473C-8CBB-E83669FE3C68"), "Weapon And Armor Duration Increase (MST)", string.Empty);
 
     /// <summary>
-    /// Gets the pet duration increase attribute definition.
+    /// Gets the jewelry and wings duration increase MST attribute definition.
     /// </summary>
-    public static AttributeDefinition PetDurationIncrease { get; } = new(new Guid("B4455150-D3A9-4A5F-914B-F41F9387FE9A"), "Pet Duration Increase", string.Empty);
+    public static AttributeDefinition JewelryAndWingsDurationIncrease { get; } = new(new Guid("E539FDD2-72C5-484A-B0F4-40565ABAEDD9"), "Jewelry And Wings Duration Increase (MST)", string.Empty);
+
+    /// <summary>
+    /// Gets the pet duration increase MST attribute definition.
+    /// </summary>
+    /// <remarks>Applies to imp, guardian angel, uniria, dinorant and fenrir. Cash shop items excluded.</remarks>
+    public static AttributeDefinition PetDurationIncrease { get; } = new(new Guid("E9CCA156-E0DE-4113-A249-B7CD4C0F610D"), "Pet Duration Increase (MST)", string.Empty);
+
+    /// <summary>
+    /// Gets the trainable pet (dark horse, dark raven) duration increase MST attribute definition.
+    /// </summary>
+    public static AttributeDefinition TrainablePetDurationIncrease { get; } = new(new Guid("B4455150-D3A9-4A5F-914B-F41F9387FE9A"), "Trainable Pet Duration Increase (MST)", string.Empty);
+
+    /// <summary>
+    /// Gets the weapon duration increase (ice socket) attribute definition.
+    /// </summary>
+    public static AttributeDefinition WeaponDurationIncrease { get; } = new(new Guid("C37DBD05-25A9-4C61-94EA-5A27781D0CD4"), "Weapon Duration Increase", string.Empty);
 
     /// <summary>
     /// Gets the horse level attribute definition.

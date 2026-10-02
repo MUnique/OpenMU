@@ -682,6 +682,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Updates the durabilty of time-decaying items..
+        /// </summary>
+        public static string DurabilityDecayPlugIn_Description {
+            get {
+                return ResourceManager.GetString("DurabilityDecayPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Durability Decay.
+        /// </summary>
+        public static string DurabilityDecayPlugIn_Name {
+            get {
+                return ResourceManager.GetString("DurabilityDecayPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the earth shake skill of the dark horse. Pushes the targets away from the attacker..
         /// </summary>
         public static string EarthShakeSkillPlugIn_Description {
@@ -804,6 +822,96 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string GatekeeperNpcPlugin_Name {
             get {
                 return ResourceManager.GetString("GatekeeperNpcPlugin_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only gens members can enter the battle zone. Kills between the members of different gens in it change their contribution points, without making the killer an outlaw..
+        /// </summary>
+        public static string GensBattleZonePlugIn_Description {
+            get {
+                return ResourceManager.GetString("GensBattleZonePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gens battle zone.
+        /// </summary>
+        public static string GensBattleZonePlugIn_Name {
+            get {
+                return ResourceManager.GetString("GensBattleZonePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Configures the gens system, in which the players can join one of the gens Duprian and Vanert at their npcs..
+        /// </summary>
+        public static string GensFeaturePlugIn_Description {
+            get {
+                return ResourceManager.GetString("GensFeaturePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gens system.
+        /// </summary>
+        public static string GensFeaturePlugIn_Name {
+            get {
+                return ResourceManager.GetString("GensFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loads the gens membership of a character when it enters the game, and shows it to the player..
+        /// </summary>
+        public static string GensMembershipPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GensMembershipPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gens membership.
+        /// </summary>
+        public static string GensMembershipPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GensMembershipPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Calculates the ranking of the gens in the configured interval, and updates the ranking positions and ranks of all members..
+        /// </summary>
+        public static string GensRankingPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GensRankingPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gens ranking.
+        /// </summary>
+        public static string GensRankingPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GensRankingPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The rules of the gens for parties, guilds and alliances: no party between different gens and in the battle zone, guilds and alliances only within a gens..
+        /// </summary>
+        public static string GensRelationshipRulesPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GensRelationshipRulesPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gens relationship rules.
+        /// </summary>
+        public static string GensRelationshipRulesPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GensRelationshipRulesPlugIn_Name", resourceCulture);
             }
         }
         
@@ -1974,24 +2082,6 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string PkClearChatCommandPlugIn_Name {
             get {
                 return ResourceManager.GetString("PkClearChatCommandPlugIn_Name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Handles the plasma storm skill of the fenrir pet. It randomly halves the durability of a target&apos;s equipped item..
-        /// </summary>
-        public static string PlasmaStormSkillPlugIn_Description {
-            get {
-                return ResourceManager.GetString("PlasmaStormSkillPlugIn_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Plasma Storm Skill.
-        /// </summary>
-        public static string PlasmaStormSkillPlugIn_Name {
-            get {
-                return ResourceManager.GetString("PlasmaStormSkillPlugIn_Name", resourceCulture);
             }
         }
         

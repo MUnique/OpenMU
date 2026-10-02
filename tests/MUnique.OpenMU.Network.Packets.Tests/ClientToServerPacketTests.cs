@@ -3524,7 +3524,7 @@ public class PacketStructureTests
             "Packet length mismatch: declared length does not match calculated size");
         
         // Validate field 'GensType' boundary
-        Assert.That(3 + 1, Is.LessThanOrEqualTo(expectedLength), 
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'GensType' exceeds packet boundary");
     }
 
@@ -3556,7 +3556,7 @@ public class PacketStructureTests
             "Packet length mismatch: declared length does not match calculated size");
         
         // Validate field 'GensType' boundary
-        Assert.That(3 + 1, Is.LessThanOrEqualTo(expectedLength), 
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'GensType' exceeds packet boundary");
     }
 
