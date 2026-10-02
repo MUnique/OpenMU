@@ -19,20 +19,21 @@ When these skills are learned, they give certain power-ups passively. For exampl
 there are master skills to increase the maximum health or to increase the
 attack damage.
 
-These power-ups are configured as *passive power-ups* of the master skill definition.
-Each one targets an attribute of the character, and its value is calculated from
-two attributes of the learned skill:
+These power-ups are configured as *passive power-ups* of the master skill
+definition. Each one targets an attribute of the character, and its value is
+calculated from two attributes of the learned skill:
 
-* *Master Skill Value*: the result of the value formula of the master skill at its
-  current level.
+* *Master Skill Value*: the result of the value formula of the master skill at
+  its current level.
 * *Skill level*: the current level of the master skill.
 
-Most passive skills apply their master skill value to one attribute. Some apply more:
-*Durability Reduction (1)* additionally lowers the durability reduction factor by
-0.2 percentage points per level, from 10% down to 6% at level 20.
+Most passive skills apply their master skill value to one attribute. Some apply
+more: *Durability Reduction (1)* additionally lowers the durability reduction
+factor by 0.2 percentage points per level, from 10% down to 6% at level 20.
 
-Some active skills also have a passive power-up. For example, *Twisting Slash Mastery*
-increases the chance to move the target, as long as it is learned.
+Some active skills also have a passive power-up. For example,
+*Twisting Slash Mastery* increases the chance to move the target, as long as it
+is learned.
 
 ### Active skills
 
