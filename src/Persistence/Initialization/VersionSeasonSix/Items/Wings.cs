@@ -89,6 +89,8 @@ public class Wings : WingsInitializerBase
         capeOfLord.Group = 13;
         capeOfLord.SetGuid(capeOfLord.Group, capeOfLord.Number);
 
+        this.CreateSmallWings();
+
         this.CreateFeather();
         this.CreateFeatherOfCondor();
         this.CreateFlameOfCondor();
@@ -102,6 +104,65 @@ public class Wings : WingsInitializerBase
         this.CreateWing(40, 2, 3, "Cape of Emperor", 150, 45, 220, 400, 0, 0, 0, 0, 3, 0, 0, this.BuildOptions((0b00, OptionType.HealthRecover), (0b11, OptionType.PhysDamage), (0b10, OptionType.Defense)), 39, 24, this._damageIncreaseByLevelTable, thirdWingOptions);
         this.CreateWing(43, 4, 3, "Wing of Dimension", 150, 45, 220, 400, 0, 0, 0, 0, 0, 3, 0, this.BuildOptions((0b00, OptionType.HealthRecover), (0b11, OptionType.WizDamage), (0b10, OptionType.CurseDamage)), 39, 39, this._damageIncreaseByLevelTable, thirdWingOptions);
         this.CreateWing(50, 2, 3, "Cape of Overrule", 150, 45, 220, 400, 0, 0, 0, 0, 0, 0, 3, this.BuildOptions((0b00, OptionType.HealthRecover), (0b11, OptionType.PhysDamage), (0b10, OptionType.Defense)), 39, 39, this._damageIncreaseByLevelTable, thirdWingOptions);
+    }
+
+    /// <summary>
+    /// Adds the small wings and capes to an existing configuration, which was created before they were part of it.
+    /// </summary>
+    /// <remarks>
+    /// The small wings use the same item level bonus tables as the first wings, so the existing tables of the
+    /// Wings of Elf are used. Only when they can't be found, new tables are created.
+    /// </remarks>
+    /// <returns>The created items. Small wings which already exist are not created again.</returns>
+    internal IReadOnlyList<ItemDefinition> AddSmallWings()
+    {
+        var wingsOfElf = this.GameConfiguration.Items.FirstOrDefault(item => item is { Group: 12, Number: 0 });
+        this._absorbByLevelTable = GetBonusTable(wingsOfElf, Stats.DamageReceiveDecrement) ?? this.CreateAbsorbBonusPerLevel();
+        this._damageIncreaseByLevelTable = GetBonusTable(wingsOfElf, Stats.AttackDamageIncrease) ?? this.CreateDamageIncreaseBonusPerLevelFirstAndThirdWings();
+        this._defenseBonusByLevelTable = GetBonusTable(wingsOfElf, Stats.DefenseBase) ?? this.CreateBonusDefensePerLevel();
+        return this.CreateSmallWings();
+    }
+
+    private static ItemLevelBonusTable? GetBonusTable(ItemDefinition? item, AttributeDefinition targetAttribute)
+    {
+        return item?.BasePowerUpAttributes.FirstOrDefault(powerUp => powerUp.TargetAttribute == targetAttribute)?.BonusPerLevelTable;
+    }
+
+    /// <summary>
+    /// Creates the small wings and capes, which are sold in the in-game shop.
+    /// </summary>
+    /// <remarks>
+    /// The values are the ones of the season 6 client: size, defense, classes, drop level, durability and level requirement
+    /// of the item data, damage increase and absorption of the item tooltip. Like with the first wings, damage increase
+    /// and absorption grow by 2 % and the defense by 3 per item level.
+    /// The client knows no item options for them, so they don't get any.
+    /// </remarks>
+    /// <returns>The created items. Small wings which already exist are not created again.</returns>
+    private IReadOnlyList<ItemDefinition> CreateSmallWings()
+    {
+        var created = new List<ItemDefinition?>
+        {
+            this.CreateSmallWing(130, 2, 2, "Small Cape of Lord", 15, 0, 0, 0, 0, 1, 0, 0, 20),
+            this.CreateSmallWing(131, 3, 2, "Small Wing of Curse", 10, 0, 0, 0, 0, 0, 1, 0, 12),
+            this.CreateSmallWing(132, 3, 2, "Small Wings of Elf", 10, 0, 0, 1, 0, 0, 0, 0, 12),
+            this.CreateSmallWing(133, 3, 2, "Small Wings of Heaven", 10, 1, 0, 0, 1, 0, 0, 0, 12),
+            this.CreateSmallWing(134, 3, 2, "Small Wings of Satan", 20, 0, 1, 0, 1, 0, 0, 0, 12),
+            this.CreateSmallWing(135, 2, 2, "Little Warrior's Cloak", 15, 0, 0, 0, 0, 0, 0, 1, 20),
+        };
+
+        return created.OfType<ItemDefinition>().ToList();
+    }
+
+    private ItemDefinition? CreateSmallWing(byte number, byte width, byte height, string name, int defense, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel, int damageIncreaseAndAbsorbInitial)
+    {
+        if (this.GameConfiguration.Items.Any(item => item.Group == 12 && item.Number == number))
+        {
+            return null;
+        }
+
+        var wing = this.CreateWing(number, width, height, name, 1, defense, 200, 1, darkWizardClassLevel, darkKnightClassLevel, elfClassLevel, magicGladiatorClassLevel, darkLordClassLevel, summonerClassLevel, ragefighterClassLevel);
+        this.AddDamagePowerUps(wing, damageIncreaseAndAbsorbInitial, damageIncreaseAndAbsorbInitial, this._damageIncreaseByLevelTable);
+        return wing;
     }
 
     private void CreateFeather()
@@ -157,19 +218,7 @@ public class Wings : WingsInitializerBase
             wing.PossibleItemOptions.Add(wingOptionDefinition);
         }
 
-        if (damageAbsorbInitial > 0)
-        {
-            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.DamageReceiveDecrement, 1f - (damageAbsorbInitial / 100f), AggregateType.Multiplicate);
-            powerUp.BonusPerLevelTable = this._absorbByLevelTable;
-            wing.BasePowerUpAttributes.Add(powerUp);
-        }
-
-        if (damageIncreaseInitial > 0)
-        {
-            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.AttackDamageIncrease, 1f + (damageIncreaseInitial / 100f), AggregateType.Multiplicate);
-            powerUp.BonusPerLevelTable = damageIncreasePerLevel;
-            wing.BasePowerUpAttributes.Add(powerUp);
-        }
+        this.AddDamagePowerUps(wing, damageIncreaseInitial, damageAbsorbInitial, damageIncreasePerLevel);
 
         var optionDefinition = this.Context.CreateNew<ItemOptionDefinition>();
         optionDefinition.SetGuid(wing.GetItemId());
@@ -190,6 +239,23 @@ public class Wings : WingsInitializerBase
 
         wing.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.First(iod => iod.PossibleOptions.Any(o => o?.OptionType == ItemOptionTypes.Luck)));
         return wing;
+    }
+
+    private void AddDamagePowerUps(ItemDefinition wing, int damageIncreaseInitial, int damageAbsorbInitial, ItemLevelBonusTable? damageIncreasePerLevel)
+    {
+        if (damageAbsorbInitial > 0)
+        {
+            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.DamageReceiveDecrement, 1f - (damageAbsorbInitial / 100f), AggregateType.Multiplicate);
+            powerUp.BonusPerLevelTable = this._absorbByLevelTable;
+            wing.BasePowerUpAttributes.Add(powerUp);
+        }
+
+        if (damageIncreaseInitial > 0)
+        {
+            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.AttackDamageIncrease, 1f + (damageIncreaseInitial / 100f), AggregateType.Multiplicate);
+            powerUp.BonusPerLevelTable = damageIncreasePerLevel;
+            wing.BasePowerUpAttributes.Add(powerUp);
+        }
     }
 
     private ItemDefinition CreateWing(byte number, byte width, byte height, string name, byte dropLevel, int defense, byte durability, int levelRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel, float movementSpeed = MovementSpeedConstants.DefaultWingMovementSpeed)
