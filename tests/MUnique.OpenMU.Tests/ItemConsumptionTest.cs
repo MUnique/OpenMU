@@ -221,6 +221,54 @@ public class ItemConsumptionTest
     }
 
     /// <summary>
+    /// Tests that a Jewel of Life doesn't add an option without level-dependent values, like the options of the Horn of Dinorant.
+    /// </summary>
+    /// <param name="successChance">The success chance of the jewel.</param>
+    [TestCase(1.0)]
+    [TestCase(0.0)]
+    public async ValueTask JewelOfLifeDoesNotAddFixedOptionAsync(double successChance)
+    {
+        var consumeHandler = new LifeJewelConsumeHandlerPlugIn();
+        consumeHandler.Configuration.SuccessChance = successChance;
+        var player = await this.GetPlayerAsync().ConfigureAwait(false);
+        var upgradeableItem = this.GetItemWithPossibleOption(false);
+        await player.Inventory!.AddItemAsync((byte)(ItemSlot + 1), upgradeableItem).ConfigureAwait(false);
+        var jewel = this.GetItem();
+        await player.Inventory.AddItemAsync(ItemSlot, jewel).ConfigureAwait(false);
+
+        var jewelConsumed = await consumeHandler.ConsumeItemAsync(player, jewel, upgradeableItem, FruitUsage.Undefined).ConfigureAwait(false);
+
+        Assert.That(jewelConsumed, Is.False);
+        Assert.That(upgradeableItem.ItemOptions, Is.Empty);
+    }
+
+    /// <summary>
+    /// Tests that a Jewel of Life neither increases nor removes an option without level-dependent values,
+    /// like the options of the Horn of Dinorant.
+    /// </summary>
+    /// <param name="successChance">The success chance of the jewel.</param>
+    [TestCase(1.0)]
+    [TestCase(0.0)]
+    public async ValueTask JewelOfLifeDoesNotChangeFixedOptionAsync(double successChance)
+    {
+        const int optionLevel = 2;
+        var consumeHandler = new LifeJewelConsumeHandlerPlugIn();
+        consumeHandler.Configuration.SuccessChance = successChance;
+        var player = await this.GetPlayerAsync().ConfigureAwait(false);
+        var upgradeableItem = this.GetItemWithPossibleOption(false);
+        var fixedOption = upgradeableItem.Definition!.PossibleItemOptions.Single().PossibleOptions.Single();
+        upgradeableItem.ItemOptions.Add(new ItemOptionLink { ItemOption = fixedOption, Level = optionLevel });
+        await player.Inventory!.AddItemAsync((byte)(ItemSlot + 1), upgradeableItem).ConfigureAwait(false);
+        var jewel = this.GetItem();
+        await player.Inventory.AddItemAsync(ItemSlot, jewel).ConfigureAwait(false);
+
+        var jewelConsumed = await consumeHandler.ConsumeItemAsync(player, jewel, upgradeableItem, FruitUsage.Undefined).ConfigureAwait(false);
+
+        Assert.That(jewelConsumed, Is.False);
+        Assert.That(upgradeableItem.ItemOptions.Single().Level, Is.EqualTo(optionLevel));
+    }
+
+    /// <summary>
     /// Tests the jewel of harmony consume.
     /// </summary>
     public void JewelOfHarmony()
@@ -482,7 +530,7 @@ public class ItemConsumptionTest
         return player;
     }
 
-    private Item GetItemWithPossibleOption()
+    private Item GetItemWithPossibleOption(bool hasLevelDependentOptions = true)
     {
         var item = new Mock<Item>();
         item.SetupAllProperties();
@@ -512,7 +560,7 @@ public class ItemConsumptionTest
         possibleOption.Setup(o => o.LevelDependentOptions).Returns(new List<ItemOptionOfLevel>());
         possibleOption.Object.OptionType = ItemOptionTypes.Option;
         option.Object.PossibleOptions.Add(possibleOption.Object);
-        for (int level = 1; level <= 4; level++)
+        for (int level = 1; hasLevelDependentOptions && level <= 4; level++)
         {
             var levelDependentOption = new ItemOptionOfLevel();
             levelDependentOption.Level = level;

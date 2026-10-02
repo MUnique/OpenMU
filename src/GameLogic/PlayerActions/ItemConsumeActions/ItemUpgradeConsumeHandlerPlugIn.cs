@@ -71,9 +71,13 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
     /// </summary>
     /// <param name="item">The item.</param>
     /// <returns>Flag indicating whether the item can have the option.</returns>
+    /// <remarks>
+    /// Only options with level-dependent values can be added and increased by a jewel.
+    /// Other options of the same type, like the ones of the Horn of Dinorant, are fixed.
+    /// </remarks>
     protected virtual bool ItemCanHaveOption(Item item)
     {
-        return item.Definition?.PossibleItemOptions.Any(o => o.PossibleOptions.Any(p => p.OptionType == this.Configuration.OptionType)) ?? false;
+        return item.Definition?.PossibleItemOptions.Any(o => o.PossibleOptions.Any(this.IsUpgradableOption)) ?? false;
     }
 
     /// <summary>
@@ -135,8 +139,8 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
         {
             var possibleOptions = item.Definition.PossibleItemOptions.
                 SelectMany(o => o.PossibleOptions).
-                Where(o => o.OptionType == this.Configuration.OptionType
-                           && (!o.LevelDependentOptions.Any() || o.LevelDependentOptions.Any(ldo => ldo.RequiredItemLevel <= item.Level))).ToList();
+                Where(o => this.IsUpgradableOption(o)
+                           && o.LevelDependentOptions.Any(ldo => ldo.RequiredItemLevel <= item.Level)).ToList();
             if (!possibleOptions.Any())
             {
                 return false;
@@ -174,6 +178,11 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
         }
 
         return true;
+    }
+
+    private bool IsUpgradableOption(IncreasableItemOption option)
+    {
+        return option.OptionType == this.Configuration.OptionType && option.LevelDependentOptions.Any();
     }
 
     private bool ItemHasOptionAlready(Item item)
