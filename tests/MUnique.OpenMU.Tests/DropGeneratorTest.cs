@@ -78,6 +78,45 @@ public class DropGeneratorTest
     }
 
     /// <summary>
+    /// Tests that inactive items are not dropped, but the active items of the same drop group.
+    /// </summary>
+    [Test]
+    public async ValueTask TestInactiveItemIsNotDroppedAsync()
+    {
+        var config = this.GetGameConfig();
+        var inactiveItem = this.CreateItemDefinition(14, 13, 0);
+        inactiveItem.IsActive = false;
+        var activeItem = this.CreateItemDefinition(14, 14, 0);
+        var monster = this.GetMonster(1, 0);
+        monster.DropItemGroups.Add(this.CreateDropItemGroup(inactiveItem, activeItem));
+
+        var generator = new DefaultDropGenerator(config, this.GetRandomizer(0));
+        var (items, _) = await generator.GenerateItemDropsAsync(monster, 1, await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false)).ConfigureAwait(false);
+        var item = items.FirstOrDefault();
+
+        Assert.That(item, Is.Not.Null);
+        Assert.That(item!.Definition, Is.EqualTo(activeItem));
+    }
+
+    /// <summary>
+    /// Tests that nothing is dropped of a drop group, when all of its items are inactive.
+    /// </summary>
+    [Test]
+    public async ValueTask TestNoDropWhenAllItemsAreInactiveAsync()
+    {
+        var config = this.GetGameConfig();
+        var inactiveItem = this.CreateItemDefinition(14, 13, 0);
+        inactiveItem.IsActive = false;
+        var monster = this.GetMonster(1, 0);
+        monster.DropItemGroups.Add(this.CreateDropItemGroup(inactiveItem));
+
+        var generator = new DefaultDropGenerator(config, this.GetRandomizer(0));
+        var (items, _) = await generator.GenerateItemDropsAsync(monster, 1, await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false)).ConfigureAwait(false);
+
+        Assert.That(items, Is.Empty);
+    }
+
+    /// <summary>
     /// Tests the drops defined by a player are getting considered.
     /// </summary>
     public void TestItemDropItemByPlayer()
@@ -144,6 +183,16 @@ public class DropGeneratorTest
         var gameConfiguration = new Mock<GameConfiguration>();
         gameConfiguration.Setup(c => c.Items).Returns(new List<ItemDefinition>());
         return gameConfiguration.Object;
+    }
+
+    private DropItemGroup CreateDropItemGroup(params ItemDefinition[] possibleItems)
+    {
+        var dropGroup = new Mock<DropItemGroup>();
+        dropGroup.SetupAllProperties();
+        dropGroup.Object.Chance = 1.0;
+        dropGroup.Object.ItemType = SpecialItemType.Jewel;
+        dropGroup.Setup(g => g.PossibleItems).Returns(possibleItems.ToList());
+        return dropGroup.Object;
     }
 
     private ItemDefinition CreateItemDefinition(byte group, short number, byte dropLevel, byte? maximumDropLevel = null)

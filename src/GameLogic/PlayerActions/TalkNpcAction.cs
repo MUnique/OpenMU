@@ -49,7 +49,7 @@ public class TalkNpcAction
         {
             await Task.Delay(500).ConfigureAwait(false);
             await player.InvokeViewPlugInAsync<IOpenNpcWindowPlugIn>(p => p.OpenNpcWindowAsync(npcStats.NpcWindow != NpcWindow.Undefined ? npcStats.NpcWindow : NpcWindow.Merchant)).ConfigureAwait(false);
-            await player.InvokeViewPlugInAsync<IShowMerchantStoreItemListPlugIn>(p => p.ShowMerchantStoreItemListAsync(npcStats.MerchantStore.Items, StoreKind.Normal)).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IShowMerchantStoreItemListPlugIn>(p => p.ShowMerchantStoreItemListAsync(npcStats.MerchantStore.GetOfferedItems(), StoreKind.Normal)).ConfigureAwait(false);
         }
         else
         {

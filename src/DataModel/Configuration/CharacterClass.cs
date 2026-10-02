@@ -28,6 +28,25 @@ public partial class CharacterClass
     public LocalizedString Name { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether this character class is active in the game.
+    /// </summary>
+    /// <remarks>
+    /// Inactive character classs stay in the configuration, but are not available in the game.
+    /// This allows to restrict the game to the features of a certain game version, e.g. a season,
+    /// without having to delete them.
+    /// </remarks>
+    public bool IsActive { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the version of the original game which introduced this character class.
+    /// </summary>
+    /// <remarks>
+    /// It's informational and allows to activate or deactivate the content of certain game versions
+    /// in batches (see <see cref="IsActive"/>).
+    /// </remarks>
+    public GameVersion IntroducedIn { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether this character class can get created by the user.
     /// </summary>
     public bool CanGetCreated { get; set; }

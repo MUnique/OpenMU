@@ -38,7 +38,7 @@ public class EnterDoppelgangerAction
     public async ValueTask TryEnterAsync(Player player, byte ticketInventoryIndex)
     {
         var definitions = player.GameContext.Configuration.MiniGameDefinitions
-            .Where(definition => definition.Type == MiniGameType.Doppelganger)
+            .Where(definition => definition.Type == MiniGameType.Doppelganger && definition.IsActive)
             .ToList();
         if (definitions.Count == 0 || FindTicket(player, ticketInventoryIndex) is not { } ticket)
         {

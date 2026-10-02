@@ -92,7 +92,7 @@ public class CreateCharacterAction
             return null;
         }
 
-        if (!characterClass.CanGetCreated || characterClass.HomeMap is null)
+        if (!characterClass.CanGetCreated || !characterClass.IsActive || characterClass.HomeMap is null)
         {
             return null;
         }

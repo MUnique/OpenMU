@@ -21,7 +21,7 @@ public static class MiniGameDefinitionExtensions
     public static MiniGameDefinition? GetSuitableMiniGameDefinition(this Player player, MiniGameType miniGameType, byte eventLevel)
     {
         var definitions = player.GameContext.Configuration.MiniGameDefinitions
-            .Where(def => def.Type == miniGameType)
+            .Where(def => def.Type == miniGameType && def.IsActive)
             .ToList();
         return definitions
                    .OrderByDescending(def => def.GameLevel)

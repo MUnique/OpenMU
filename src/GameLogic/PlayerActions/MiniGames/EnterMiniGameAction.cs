@@ -34,7 +34,7 @@ public class EnterMiniGameAction
         }
 
         var miniGameDefinition = player.GameContext.Configuration.MiniGameDefinitions
-            .FirstOrDefault(def => def.Type == miniGameType && def.GameLevel == gameLevel);
+            .FirstOrDefault(def => def.Type == miniGameType && def.GameLevel == gameLevel && def.IsActive);
         if (miniGameDefinition is null
             || (miniGameDefinition.RequiresMasterClass && !player.SelectedCharacter.CharacterClass.IsMasterClass)
             || player.CurrentMiniGame is not null)

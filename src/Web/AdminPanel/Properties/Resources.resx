@@ -1638,4 +1638,61 @@
   <data name="MonsterDropChanceOverviewDescription" xml:space="preserve">
     <value>The drop chances of each monster which is spawned on a map, considering the monster level restrictions of the map drop groups and the monster specific drop groups. The chances apply to each drop roll, a monster rolls up to its maximum item drops. Quest item drops are not included. If the total chance exceeds 100 %, the chances are scaled down proportionally and there is no chance for no drop.</value>
   </data>
+  <data name="ContentActivation" xml:space="preserve">
+    <value>Content Activation</value>
+  </data>
+  <data name="ContentActivationDescription" xml:space="preserve">
+    <value>Activate or deactivate maps, character classes, monsters, items and mini games, e.g. to restrict the game to the content of a certain season. Inactive entries stay in the configuration, but are not available in the game. Monsters which are already spawned remain until the game server is restarted.</value>
+  </data>
+  <data name="ContentType" xml:space="preserve">
+    <value>Content</value>
+  </data>
+  <data name="ActivateAllShown" xml:space="preserve">
+    <value>Activate all shown</value>
+  </data>
+  <data name="DeactivateAllShown" xml:space="preserve">
+    <value>Deactivate all shown</value>
+  </data>
+  <data name="ActiveCountFormat" xml:space="preserve">
+    <value>{0} of {1} active</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="Number" xml:space="preserve">
+    <value>Number</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="AllEntries" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="OnlyActive" xml:space="preserve">
+    <value>Only active</value>
+  </data>
+  <data name="OnlyInactive" xml:space="preserve">
+    <value>Only inactive</value>
+  </data>
+  <data name="IntroducedIn" xml:space="preserve">
+    <value>Introduced in</value>
+  </data>
+  <data name="GameVersionUnknown" xml:space="preserve">
+    <value>Unknown</value>
+  </data>
+  <data name="GameVersionFormat" xml:space="preserve">
+    <value>Version {0}</value>
+  </data>
+  <data name="SeasonFormat" xml:space="preserve">
+    <value>Season {0}</value>
+  </data>
+  <data name="SeasonEpisodeFormat" xml:space="preserve">
+    <value>Season {0} Episode {1}</value>
+  </data>
+  <data name="RestrictToGameVersion" xml:space="preserve">
+    <value>Restrict to game version</value>
+  </data>
+  <data name="RestrictToGameVersionHint" xml:space="preserve">
+    <value>Activates all content which was introduced up to the selected game version, and deactivates the content which was introduced later. Content of an unknown version is not changed. The changes are stored after saving.</value>
+  </data>
 </root>

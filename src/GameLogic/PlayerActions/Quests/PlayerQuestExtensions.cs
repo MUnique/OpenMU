@@ -46,6 +46,7 @@ public static class PlayerQuestExtensions
         var possibleQuestsOfGroup = player.OpenedNpc?.Definition.Quests
                 .Where(q => q.Group == group)
                 .Where(q => q.QualifiedCharacter is null || Equals(q.QualifiedCharacter, player.SelectedCharacter?.CharacterClass))
+                .Where(q => !q.EvolvesIntoInactiveClass(player))
                 .OrderBy(q => q.Number);
 
         return possibleQuestsOfGroup?.FirstOrDefault(q => q.StartingNumber == number || q.Number == number);
@@ -63,6 +64,20 @@ public static class PlayerQuestExtensions
                                || Equals(q.QualifiedCharacter, player.SelectedCharacter?.CharacterClass))
                    .Where(q => q.MinimumCharacterLevel <= player.Level
                                && (q.MaximumCharacterLevel == default || q.MaximumCharacterLevel >= player.Level))
+                   .Where(q => !q.EvolvesIntoInactiveClass(player))
                ?? Enumerable.Empty<QuestDefinition>();
+    }
+
+    /// <summary>
+    /// Determines whether the quest rewards the player with an evolution into the next
+    /// generation class, which is inactive (<see cref="CharacterClass.IsActive"/>).
+    /// </summary>
+    /// <param name="quest">The quest.</param>
+    /// <param name="player">The player.</param>
+    /// <returns><c>true</c>, if the quest evolves the character of the player into an inactive class; Otherwise, <c>false</c>.</returns>
+    public static bool EvolvesIntoInactiveClass(this QuestDefinition quest, Player player)
+    {
+        return player.SelectedCharacter?.CharacterClass?.NextGenerationClass is { IsActive: false }
+               && quest.Rewards.Any(reward => reward.RewardType is QuestRewardType.CharacterEvolutionFirstToSecond or QuestRewardType.CharacterEvolutionSecondToThird);
     }
 }
