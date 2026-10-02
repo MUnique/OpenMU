@@ -1758,4 +1758,22 @@
   <data name="CaptionsNextStepReview" xml:space="preserve">
     <value>Review the changes below and apply the selected ones.</value>
   </data>
+  <data name="CaptionLinkStep_LoadingConfiguration" xml:space="preserve">
+    <value>Loading the configuration</value>
+  </data>
+  <data name="CaptionLinkStep_CreatingReferenceConfiguration" xml:space="preserve">
+    <value>Creating the reference configuration (the data initialization is executed in memory)</value>
+  </data>
+  <data name="CaptionLinkStep_LinkingCaptions" xml:space="preserve">
+    <value>Linking the captions</value>
+  </data>
+  <data name="CaptionLinkStep_Saving" xml:space="preserve">
+    <value>Saving the changes</value>
+  </data>
+  <data name="CaptionsLinkingHint" xml:space="preserve">
+    <value>Linking can take a while, mainly because the data initialization is executed in memory. Please keep this page open.</value>
+  </data>
+  <data name="CaptionsLinkingElapsed" xml:space="preserve">
+    <value>Elapsed time: {0}</value>
+  </data>
 </root>

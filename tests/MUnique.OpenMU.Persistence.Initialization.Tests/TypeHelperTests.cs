@@ -94,13 +94,20 @@ public class TypeHelperTests
 
         Assert.That((await service.CompareAsync().ConfigureAwait(false)).LinkedCaptions, Is.Zero);
 
-        var (linked, skipped) = await service.LinkBuiltInCaptionsAsync().ConfigureAwait(false);
+        var steps = new List<CaptionLinkStep>();
+        var (linked, skipped) = await service.LinkBuiltInCaptionsAsync(new SynchronousProgress<CaptionLinkStep>(steps.Add)).ConfigureAwait(false);
 
+        Assert.That(steps, Is.EqualTo(Enum.GetValues<CaptionLinkStep>()));
         Assert.That(skipped, Is.Zero);
         Assert.That(linked, Is.EqualTo(linkedInFreshConfiguration));
         var comparison = await service.CompareAsync().ConfigureAwait(false);
         Assert.That(comparison.LinkedCaptions, Is.EqualTo(linkedInFreshConfiguration));
         Assert.That(comparison.Changes, Is.Empty);
         Assert.That(comparison.UnresolvedSourceKeys, Is.Empty);
+    }
+
+    private sealed class SynchronousProgress<T>(Action<T> handler) : IProgress<T>
+    {
+        public void Report(T value) => handler(value);
     }
 }

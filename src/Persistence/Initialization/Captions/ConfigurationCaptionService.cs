@@ -57,7 +57,7 @@ public class ConfigurationCaptionService
         using var context = this._contextProvider.CreateNewContext();
         var gameConfiguration = await GetGameConfigurationAsync(context).ConfigureAwait(false);
         var applied = ConfigurationCaptions.ApplyChanges(gameConfiguration, selectedChangeIds);
-        await context.SaveChangesAsync().ConfigureAwait(false);
+        await SaveWithoutChangeNotificationsAsync(context).ConfigureAwait(false);
         return applied;
     }
 
@@ -66,16 +66,40 @@ public class ConfigurationCaptionService
     /// This is required once for configurations which were created before captions got source keys.
     /// To determine the source keys, the data initialization of the configuration is executed in memory.
     /// </summary>
+    /// <param name="progress">The progress, which receives the current step.</param>
     /// <returns>The number of linked captions and the number of captions which were skipped because their neutral text was customized.</returns>
-    public async ValueTask<(int Linked, int SkippedBecauseOfCustomizedNeutralText)> LinkBuiltInCaptionsAsync()
+    public async ValueTask<(int Linked, int SkippedBecauseOfCustomizedNeutralText)> LinkBuiltInCaptionsAsync(IProgress<CaptionLinkStep>? progress = null)
     {
+        progress?.Report(CaptionLinkStep.LoadingConfiguration);
         using var context = this._contextProvider.CreateNewContext();
         var initializationKey = await DataUpdateService.DetermineInitializationKeyAsync(context).ConfigureAwait(false);
-        var referenceConfiguration = await this.CreateReferenceConfigurationAsync(initializationKey).ConfigureAwait(false);
         var gameConfiguration = await GetGameConfigurationAsync(context).ConfigureAwait(false);
-        var result = ConfigurationCaptions.LinkSourceKeys(gameConfiguration, referenceConfiguration);
-        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        // The initialization and the linking are mostly synchronous, CPU bound work.
+        // They're executed on the thread pool, so that the caller (e.g. a Blazor circuit) stays responsive.
+        progress?.Report(CaptionLinkStep.CreatingReferenceConfiguration);
+        var referenceConfiguration = await Task.Run(() => this.CreateReferenceConfigurationAsync(initializationKey).AsTask()).ConfigureAwait(false);
+
+        progress?.Report(CaptionLinkStep.LinkingCaptions);
+        var result = await Task.Run(() => ConfigurationCaptions.LinkSourceKeys(gameConfiguration, referenceConfiguration)).ConfigureAwait(false);
+
+        progress?.Report(CaptionLinkStep.Saving);
+        await SaveWithoutChangeNotificationsAsync(context).ConfigureAwait(false);
+
+        progress?.Report(CaptionLinkStep.Completed);
         return result;
+    }
+
+    /// <summary>
+    /// Saves the changes without publishing them as configuration changes to running servers.
+    /// Publishing is expensive for many changed captions (the parent of every changed object is searched),
+    /// and the captions take effect after a restart anyway, like configuration updates.
+    /// </summary>
+    /// <param name="context">The context.</param>
+    private static async ValueTask SaveWithoutChangeNotificationsAsync(IContext context)
+    {
+        using var suspension = context.SuspendChangeNotifications();
+        await context.SaveChangesAsync().ConfigureAwait(false);
     }
 
     private static async ValueTask<GameConfiguration> GetGameConfigurationAsync(IContext context)

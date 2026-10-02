@@ -4789,5 +4789,59 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("CaptionsNextStepReview", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loading the configuration.
+        /// </summary>
+        public static string CaptionLinkStep_LoadingConfiguration {
+            get {
+                return ResourceManager.GetString("CaptionLinkStep_LoadingConfiguration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Creating the reference configuration (the data initialization is executed in memory).
+        /// </summary>
+        public static string CaptionLinkStep_CreatingReferenceConfiguration {
+            get {
+                return ResourceManager.GetString("CaptionLinkStep_CreatingReferenceConfiguration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Linking the captions.
+        /// </summary>
+        public static string CaptionLinkStep_LinkingCaptions {
+            get {
+                return ResourceManager.GetString("CaptionLinkStep_LinkingCaptions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Saving the changes.
+        /// </summary>
+        public static string CaptionLinkStep_Saving {
+            get {
+                return ResourceManager.GetString("CaptionLinkStep_Saving", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Linking can take a while, mainly because the data initialization is executed in memory. Please keep this page open..
+        /// </summary>
+        public static string CaptionsLinkingHint {
+            get {
+                return ResourceManager.GetString("CaptionsLinkingHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Elapsed time: {0}.
+        /// </summary>
+        public static string CaptionsLinkingElapsed {
+            get {
+                return ResourceManager.GetString("CaptionsLinkingElapsed", resourceCulture);
+            }
+        }
     }
 }

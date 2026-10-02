@@ -31,11 +31,17 @@
     </div>
 }
 
+@if (this._isLinking)
+{
+    <CaptionLinkProgress CurrentStep="@this._linkStep" Elapsed="@this._linkStopwatch.Elapsed" StepElapsed="@this._stepStopwatch.Elapsed" />
+    return;
+}
+
 @if (this._comparison is not { } comparison)
 {
     <div class="d-flex align-items-center">
         <div class="spinner-border spinner-border-sm text-secondary me-2" role="status"></div>
-        <span>@(this._isLinking ? Resources.LinkingBuiltInCaptions : Resources.CaptionsLoading)</span>
+        <span>@Resources.CaptionsLoading</span>
     </div>
     return;
 }

@@ -4,7 +4,9 @@
 
 namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 
+using System.Diagnostics;
 using System.Globalization;
+using System.Threading;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using MUnique.OpenMU.Persistence;
@@ -15,7 +17,7 @@ using MUnique.OpenMU.Web.AdminPanel.Properties;
 /// Page which compares the captions of the configuration with their sources and applies selected changes.
 /// It guides through the steps: linking the built-in captions once, then reviewing and applying the changes.
 /// </summary>
-public partial class Captions
+public partial class Captions : IDisposable
 {
     private const string NeutralFilterValue = "-";
 
@@ -30,6 +32,14 @@ public partial class Captions
     private bool _isBusy;
 
     private bool _isLinking;
+
+    private CaptionLinkStep _linkStep;
+
+    private Stopwatch _linkStopwatch = new();
+
+    private Stopwatch _stepStopwatch = new();
+
+    private CancellationTokenSource? _linkProgressRefresh;
 
     /// <summary>
     /// Gets or sets the setup service.
@@ -50,6 +60,13 @@ public partial class Captions
     private IEnumerable<ChangeViewModel> FilteredChanges => this._changes
         .Where(c => this.LanguageFilter == string.Empty || (c.Change.CultureName ?? NeutralFilterValue) == this.LanguageFilter)
         .Where(c => this.KindFilter == string.Empty || c.Change.Kind.ToString() == this.KindFilter);
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        this._linkProgressRefresh?.Cancel();
+        this._linkProgressRefresh?.Dispose();
+    }
 
     /// <inheritdoc />
     protected override async Task OnInitializedAsync()
@@ -105,20 +122,7 @@ public partial class Captions
         builder.AddAttribute(2, "type", "button");
         builder.AddAttribute(3, "disabled", this._isBusy);
         builder.AddAttribute(4, "onclick", EventCallback.Factory.Create(this, this.OnLinkClickAsync));
-        if (this._isLinking)
-        {
-            builder.OpenElement(5, "span");
-            builder.AddAttribute(6, "class", "spinner-border spinner-border-sm me-2");
-            builder.AddAttribute(7, "role", "status");
-            builder.AddAttribute(8, "aria-hidden", "true");
-            builder.CloseElement();
-            builder.AddContent(9, Resources.LinkingBuiltInCaptions);
-        }
-        else
-        {
-            builder.AddContent(10, Resources.LinkBuiltInCaptions);
-        }
-
+        builder.AddContent(5, Resources.LinkBuiltInCaptions);
         builder.CloseElement();
     };
 
@@ -185,10 +189,23 @@ public partial class Captions
         this._message = null;
         this._isBusy = true;
         this._isLinking = true;
+        this._linkStep = CaptionLinkStep.LoadingConfiguration;
+        this._linkStopwatch.Restart();
+        this._stepStopwatch.Restart();
+        this._linkProgressRefresh = new CancellationTokenSource();
+        _ = this.RefreshLinkProgressAsync(this._linkProgressRefresh.Token);
         this.StateHasChanged();
+
+        // The progress is created on the renderer's synchronization context, so the steps are reported there.
+        var progress = new Progress<CaptionLinkStep>(step =>
+        {
+            this._linkStep = step;
+            this._stepStopwatch.Restart();
+            this.StateHasChanged();
+        });
         try
         {
-            var (linked, skipped) = await this.CaptionService.LinkBuiltInCaptionsAsync().ConfigureAwait(true);
+            var (linked, skipped) = await this.CaptionService.LinkBuiltInCaptionsAsync(progress).ConfigureAwait(true);
             this._comparison = null;
             this.StateHasChanged();
             await this.LoadAsync().ConfigureAwait(true);
@@ -204,9 +221,37 @@ public partial class Captions
         }
         finally
         {
+            if (this._linkProgressRefresh is { } refresh)
+            {
+                this._linkProgressRefresh = null;
+                await refresh.CancelAsync().ConfigureAwait(true);
+                refresh.Dispose();
+            }
+
+            this._linkStopwatch.Stop();
             this._isBusy = false;
             this._isLinking = false;
             this.StateHasChanged();
+        }
+    }
+
+    /// <summary>
+    /// Refreshes the progress (elapsed time and estimated progress of the current step) while linking.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token which stops the refresh.</param>
+    private async Task RefreshLinkProgressAsync(CancellationToken cancellationToken)
+    {
+        using var timer = new PeriodicTimer(TimeSpan.FromMilliseconds(500));
+        try
+        {
+            while (await timer.WaitForNextTickAsync(cancellationToken).ConfigureAwait(false))
+            {
+                await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // expected when linking is finished
         }
     }
 

@@ -1507,4 +1507,22 @@
   <data name="CaptionsNextStepReview" xml:space="preserve">
     <value>请检查下方的更改并应用所选更改。</value>
   </data>
+  <data name="CaptionLinkStep_LoadingConfiguration" xml:space="preserve">
+    <value>正在加载配置</value>
+  </data>
+  <data name="CaptionLinkStep_CreatingReferenceConfiguration" xml:space="preserve">
+    <value>正在创建参考配置（在内存中执行数据初始化）</value>
+  </data>
+  <data name="CaptionLinkStep_LinkingCaptions" xml:space="preserve">
+    <value>正在关联名称</value>
+  </data>
+  <data name="CaptionLinkStep_Saving" xml:space="preserve">
+    <value>正在保存更改</value>
+  </data>
+  <data name="CaptionsLinkingHint" xml:space="preserve">
+    <value>关联可能需要一些时间，主要是因为需要在内存中执行数据初始化。请保持此页面打开。</value>
+  </data>
+  <data name="CaptionsLinkingElapsed" xml:space="preserve">
+    <value>已用时间：{0}</value>
+  </data>
 </root>
