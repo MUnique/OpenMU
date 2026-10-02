@@ -42,52 +42,107 @@ public class DataUpdateService
         var updates = (await context.GetAsync<ConfigurationUpdate>().ConfigureAwait(false)).ToList();
 
         var initializationKey = await this.DetermineInitializationKeyAsync(context).ConfigureAwait(false);
-        var installedUpdates = updates
+        var installedKeys = updates
             .Where(up => up.InstalledAt is not null)
-            .Select(up => (UpdateVersion)up.Version)
+            .Select(up => up.Key)
             .ToHashSet();
 
-        var updateStrategyProvider = this._plugInManager.GetStrategyProvider<int, IConfigurationUpdatePlugIn>();
+        var updateStrategyProvider = this._plugInManager.GetStrategyProvider<Guid, IConfigurationUpdatePlugIn>();
         if (updateStrategyProvider is null)
         {
             // it's null when there are no plugins yet ...
             return [];
         }
 
-        var availableUpdates = updateStrategyProvider.AvailableStrategies
+        var pending = updateStrategyProvider.AvailableStrategies
             .Where(up => up.DataInitializationKey == initializationKey)
-            .Where(up => !installedUpdates.Contains(up.Version))
-            .OrderBy(up => up.Version)
+            .Where(up => !installedKeys.Contains(up.Key))
             .ToList();
 
-        return availableUpdates;
+        return OrderByDependencies(pending, installedKeys);
     }
 
     /// <summary>
     /// Applies the updates asynchronous.
     /// </summary>
-    /// <param name="updates">The updates.</param>
+    /// <param name="updates">The updates. They are validated and ordered by their dependencies before anything is applied, so callers may pass a partial or unordered selection.</param>
     /// <param name="progress">The progress provider. Reports the progress back to the caller.</param>
-    public async ValueTask ApplyUpdatesAsync(IReadOnlyList<IConfigurationUpdatePlugIn> updates, IProgress<(UpdateVersion CurrentUpdatingVersion, bool IsCompleted)> progress)
+    public async ValueTask ApplyUpdatesAsync(IReadOnlyList<IConfigurationUpdatePlugIn> updates, IProgress<(Guid CurrentUpdatingKey, bool IsCompleted)> progress)
     {
         using var context = this._contextProvider.CreateNewContext();
-        var updateStates = await context.GetAsync<ConfigurationUpdateState>().ConfigureAwait(false);
-        var updateState = updateStates.FirstOrDefault() ?? context.CreateNew<ConfigurationUpdateState>();
+        var installedKeys = (await context.GetAsync<ConfigurationUpdate>().ConfigureAwait(false))
+            .Where(up => up.InstalledAt is not null)
+            .Select(up => up.Key)
+            .ToHashSet();
         var gameConfiguration = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).First();
-        foreach (var update in updates)
+
+        var orderedUpdates = OrderByDependencies(updates, installedKeys);
+        foreach (var update in orderedUpdates)
         {
-            progress.Report((update.Version, false));
+            progress.Report((update.Key, false));
             await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
-
-            updateState.CurrentInstalledVersion = Math.Max((int)update.Version, updateState.CurrentInstalledVersion);
-            updateState.InitializationKey = update.DataInitializationKey;
-
             await context.SaveChangesAsync().ConfigureAwait(false);
-            progress.Report((update.Version, true));
+            progress.Report((update.Key, true));
         }
 
-        progress.Report((UpdateVersion.Undefined, true));
+        progress.Report((Guid.Empty, true));
         this.UpdatesInstalled?.SafeInvokeAsync();
+    }
+
+    /// <summary>
+    /// Orders the pending updates by their dependencies. Independent updates are ordered by <see cref="IConfigurationUpdatePlugIn.CreatedAt"/>.
+    /// </summary>
+    /// <param name="pending">The pending updates.</param>
+    /// <param name="alreadyInstalled">The keys of the already installed updates.</param>
+    /// <returns>The ordered updates.</returns>
+    internal static IReadOnlyList<IConfigurationUpdatePlugIn> OrderByDependencies(
+        IReadOnlyCollection<IConfigurationUpdatePlugIn> pending, IReadOnlySet<Guid> alreadyInstalled)
+    {
+        var pendingByKey = pending.ToDictionary(p => p.Key);
+
+        foreach (var plugin in pending)
+        {
+            var missing = plugin.DependsOn
+                .Where(dep => !alreadyInstalled.Contains(dep) && !pendingByKey.ContainsKey(dep))
+                .ToList();
+            if (missing.Count > 0)
+            {
+                throw new MissingUpdateDependencyException(plugin, missing);
+            }
+        }
+
+        var result = new List<IConfigurationUpdatePlugIn>();
+        var visited = new HashSet<Guid>();
+        var visiting = new HashSet<Guid>();
+
+        void Visit(IConfigurationUpdatePlugIn plugin)
+        {
+            if (visited.Contains(plugin.Key))
+            {
+                return;
+            }
+
+            if (!visiting.Add(plugin.Key))
+            {
+                throw new CircularUpdateDependencyException(plugin);
+            }
+
+            foreach (var depKey in plugin.DependsOn.Where(pendingByKey.ContainsKey))
+            {
+                Visit(pendingByKey[depKey]);
+            }
+
+            visiting.Remove(plugin.Key);
+            visited.Add(plugin.Key);
+            result.Add(plugin);
+        }
+
+        foreach (var plugin in pending.OrderBy(p => p.CreatedAt).ThenBy(p => p.Key))
+        {
+            Visit(plugin);
+        }
+
+        return result;
     }
 
     private async ValueTask<string> DetermineInitializationKeyAsync(IContext context)

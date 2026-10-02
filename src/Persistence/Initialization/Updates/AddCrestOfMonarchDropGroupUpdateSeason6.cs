@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// This update adds the Crest of Monarch drop item group for the Icarus map.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddCrestOfMonarchDropGroupUpdateSeason6_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddCrestOfMonarchDropGroupUpdateSeason6_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("FF14A478-3EA8-4C41-A298-8E6698D5973D")]
 public class AddCrestOfMonarchDropGroupUpdateSeason6 : UpdatePlugInBase
 {
@@ -26,9 +26,6 @@ public class AddCrestOfMonarchDropGroupUpdateSeason6 : UpdatePlugInBase
     /// The plug in description.
     /// </summary>
     internal const string PlugInDescription = "Adds the Crest of Monarch (Loch's Feather +1) drop item group to Icarus.";
-
-    /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.AddCrestOfMonarchDropGroupSeason6;
 
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;

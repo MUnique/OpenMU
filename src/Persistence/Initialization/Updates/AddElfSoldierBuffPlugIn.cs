@@ -16,7 +16,7 @@ using MUnique.OpenMU.PlugIns;
 /// This update adds the Elf Soldier buff to the existing Elf Soldier NPC.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddElfSoldierBuffPlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddElfSoldierBuffPlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("9BCFC8B1-6A6E-48F9-AE7C-0D34FA6D706B")]
 public class AddElfSoldierBuffPlugIn : UpdatePlugInBase
 {
@@ -35,9 +35,6 @@ public class AddElfSoldierBuffPlugIn : UpdatePlugInBase
 
     /// <inheritdoc />
     public override string Description => PlugInDescription;
-
-    /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.AddElfSoldierBuff;
 
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;

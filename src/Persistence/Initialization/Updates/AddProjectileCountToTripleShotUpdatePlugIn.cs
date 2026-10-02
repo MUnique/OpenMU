@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// Updates the Triple Shot skill to use 3 projectiles for proper arrow direction handling.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddProjectileCountToTripleShotUpdatePlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddProjectileCountToTripleShotUpdatePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("E3A8F7C9-2D4B-4A1E-9F3C-8B5D7A6C1E4F")]
 public class AddProjectileCountToTripleShotUpdatePlugIn : UpdatePlugInBase
 {
@@ -26,9 +26,6 @@ public class AddProjectileCountToTripleShotUpdatePlugIn : UpdatePlugInBase
     /// The plug in description.
     /// </summary>
     internal const string PlugInDescription = "Adds the projectile count of 3 to the Triple Shot skill to properly handle arrow directions.";
-
-    /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.AddProjectileCountToTripleShot;
 
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;

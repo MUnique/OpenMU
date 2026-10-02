@@ -76,6 +76,12 @@ public class SelfDefensePlugIn : IPeriodicTaskPlugIn, IAttackableGotHitPlugIn, I
             return;
         }
 
+        if (attackerPlayer.IsExemptedFromPlayerKillPenalty(defender))
+        {
+            // e.g. between the members of different gens in a battle zone.
+            return;
+        }
+
         if (attackerPlayer.IsSelfDefenseActive(defender))
         {
             // Attacking during self defense period does not initiate another self defense.

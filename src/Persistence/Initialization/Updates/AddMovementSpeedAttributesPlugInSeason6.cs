@@ -11,14 +11,11 @@ using MUnique.OpenMU.PlugIns;
 /// Adds movement speed attributes to season 6 game configurations.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddMovementSpeedAttributesPlugInBase_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddMovementSpeedAttributesPlugInBase_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("1D4968DA-9C9C-42A7-AF80-D4811535EC63")]
 public class AddMovementSpeedAttributesPlugInSeason6 : AddMovementSpeedAttributesPlugInBase
 {
     private const int SeasonSixMaximumItemLevel = 15;
-
-    /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.AddMovementSpeedAttributesSeason6;
 
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;

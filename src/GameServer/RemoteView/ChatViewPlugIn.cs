@@ -17,6 +17,11 @@ using MUnique.OpenMU.PlugIns;
 [Guid("F0B5BAD4-B97C-49F1-84E0-25EDC796B0E4")]
 public class ChatViewPlugIn : IChatViewPlugIn
 {
+    /// <summary>
+    /// The prefix of a chat message to the gens.
+    /// </summary>
+    private const string GensMessagePrefix = "$";
+
     private readonly RemotePlayer _player;
 
     /// <summary>
@@ -31,6 +36,12 @@ public class ChatViewPlugIn : IChatViewPlugIn
     /// <inheritdoc/>
     public async ValueTask ChatMessageAsync(string message, string sender, ChatMessageType type)
     {
+        if (type == ChatMessageType.Gens && message.StartsWith(GensMessagePrefix, StringComparison.Ordinal))
+        {
+            // The game client removes two characters of a message to the gens, instead of just the prefix.
+            message = GensMessagePrefix + message;
+        }
+
         await this._player.Connection.SendChatMessageAsync(ConvertChatMessageType(type), sender, message).ConfigureAwait(false);
     }
 

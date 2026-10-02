@@ -219,8 +219,8 @@ public class ItemSerializerExtended : IItemSerializer
     ///     HasSkill
     ///     HasExc
     ///     HasAnc
-    ///     HasGuardian
     ///     HasHarmony
+    ///     HasGuardian
     ///     HasSockets
     ///   Optional, depending on Flags:
     ///     Opt_Lvl 4 bit

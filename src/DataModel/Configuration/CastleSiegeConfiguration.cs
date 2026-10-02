@@ -172,6 +172,6 @@ public partial class CastleSiegeConfiguration
     /// <inheritdoc />
     public override string ToString()
     {
-        return "Castle Siege Configuration";
+        return typeof(CastleSiegeConfiguration).GetTypeCaption();
     }
 }

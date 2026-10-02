@@ -23,18 +23,12 @@ public partial class ItemBasePowerUpDefinition
     public virtual AttributeDefinition? TargetAttribute { get; set; }
 
     /// <summary>
-    /// Gets the base value.
-    /// </summary>
-    [Transient]
-    public ConstantElement BaseValueElement => this._baseValueElement ??= new ConstantElement(this.BaseValue, this.AggregateType);
-
-    /// <summary>
     /// Gets or sets the bonus per level.
     /// </summary>
     public virtual ItemLevelBonusTable? BonusPerLevelTable { get; set; }
 
     /// <summary>
-    /// Gets or sets the additional value to the base value.
+    /// Gets or sets the base value.
     /// </summary>
     public float BaseValue
     {
@@ -57,6 +51,21 @@ public partial class ItemBasePowerUpDefinition
             this._aggregateType = value;
             this._baseValueElement = null;
         }
+    }
+
+    /// <summary>
+    /// Gets the durability adjusted element for <see cref="BaseValue"/>.
+    /// </summary>
+    /// <param name="durabilityFactor">The durability factor.</param>
+    /// <returns>The durability adjusted element for <see cref="BaseValue"/>.</returns>
+    public ConstantElement GetBaseValueElement(float durabilityFactor = 1)
+    {
+        if (durabilityFactor == 1)
+        {
+            return this._baseValueElement ??= new ConstantElement(this.BaseValue, this.AggregateType);
+        }
+
+        return new ConstantElement(this.BaseValue * durabilityFactor, this.AggregateType);
     }
 
     /// <inheritdoc />

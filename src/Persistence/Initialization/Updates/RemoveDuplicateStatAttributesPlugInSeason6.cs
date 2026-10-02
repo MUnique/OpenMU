@@ -12,13 +12,10 @@ using MUnique.OpenMU.PlugIns;
 /// This update removes stat attributes which are defined more than once for a character class.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.RemoveDuplicateStatAttributesPlugInBase_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.RemoveDuplicateStatAttributesPlugInBase_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("9C3E5B71-8D04-42A6-BF19-7A2D6C8E5B03")]
 public class RemoveDuplicateStatAttributesPlugInSeason6 : RemoveDuplicateStatAttributesPlugInBase
 {
-    /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.RemoveDuplicateStatAttributesSeason6;
-
     /// <inheritdoc />
     public override string DataInitializationKey => DataInitialization.Id;
 }

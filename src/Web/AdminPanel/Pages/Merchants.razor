@@ -20,7 +20,7 @@
 {
     <div>
         <QuickGrid Items="@this.ViewModels" Pagination="@_merchantPagination" Theme="none">
-            <PropertyColumn Title="Name" Property="@(c => c.Name)" Sortable="true">
+            <PropertyColumn Title="@Resources.ConfigurationEntryName" Property="@(c => c.Name)" Sortable="true">
             </PropertyColumn>
 
             <TemplateColumn Align="Align.Start">
@@ -28,7 +28,7 @@
             </TemplateColumn>
         </QuickGrid>
     </div>
-    <Paginator State="@_merchantPagination"/>
+    <LocalizedPaginator State="@_merchantPagination"/>
 }
 else
 {

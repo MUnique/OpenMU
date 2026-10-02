@@ -205,6 +205,96 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Only members of a gens can enter the battle zone..
+        /// </summary>
+        public static string GensBattleZoneMembersOnly {
+            get {
+                return ResourceManager.GetString("GensBattleZoneMembersOnly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You gained {0} contribution points..
+        /// </summary>
+        public static string GensContributionGainedFormat {
+            get {
+                return ResourceManager.GetString("GensContributionGainedFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You lost {0} contribution points..
+        /// </summary>
+        public static string GensContributionLostFormat {
+            get {
+                return ResourceManager.GetString("GensContributionLostFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You killed {0} too often recently, so you get no contribution points for it..
+        /// </summary>
+        public static string GensKillAbuseLimitFormat {
+            get {
+                return ResourceManager.GetString("GensKillAbuseLimitFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You killed {0} {1} times recently. From {2} kills, you get no contribution points for {0} anymore..
+        /// </summary>
+        public static string GensKillAbuseWarningFormat {
+            get {
+                return ResourceManager.GetString("GensKillAbuseWarningFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You cannot form a party within a battle zone..
+        /// </summary>
+        public static string GensNoPartyInBattleZone {
+            get {
+                return ResourceManager.GetString("GensNoPartyInBattleZone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You cannot form a party with a member of the opposing gens..
+        /// </summary>
+        public static string GensNoPartyWithOtherGens {
+            get {
+                return ResourceManager.GetString("GensNoPartyWithOtherGens", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Parties are not activated within a battle zone, so you left your party..
+        /// </summary>
+        public static string GensPartyLeftInBattleZone {
+            get {
+                return ResourceManager.GetString("GensPartyLeftInBattleZone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You have to be a member of a gens to create a guild..
+        /// </summary>
+        public static string GensRequiredToCreateGuild {
+            get {
+                return ResourceManager.GetString("GensRequiredToCreateGuild", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You need at least level {0} to enter the Fortress of Imperial Guardian..
+        /// </summary>
+        public static string ImperialGuardianLevelTooLow {
+            get {
+                return ResourceManager.GetString("ImperialGuardianLevelTooLow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Your {0} has been destroyed! You are falling out of the Kanturu Refinery Tower..
         /// </summary>
         public static string KanturuRequiredItemDestroyed {
@@ -636,6 +726,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
             }
         }
         
+        /// <summary>
+        ///   Looks up a localized string similar to The equipment has been changed..
+        /// </summary>
+        public static string EquipmentHasChangedMessage {
+            get {
+                return ResourceManager.GetString("EquipmentHasChangedMessage", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Oops, some error happened during sending the Letter..
         /// </summary>

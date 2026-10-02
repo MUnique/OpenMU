@@ -4,7 +4,9 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild;
 
+using System.ComponentModel;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Guild;
 using MUnique.OpenMU.Interfaces;
@@ -97,6 +99,16 @@ public class GuildRelationshipChangeAction
                     await player.InvokeViewPlugInAsync<IGuildRelationshipChangeResultPlugIn>(p => p.ShowResultAsync(relationshipType, requestType, GuildRelationshipChangeResultType.MaximumNumberOfGuildsInAllianceReached, targetPlayerId)).ConfigureAwait(false);
                     return;
                 }
+            }
+        }
+
+        if (player.GameContext.PlugInManager.GetPlugInPoint<IGuildRelationshipChangingPlugIn>() is { } plugInPoint)
+        {
+            var eventArgs = new CancelEventArgs();
+            await plugInPoint.GuildRelationshipChangingAsync(player, targetPlayer, relationshipType, requestType, eventArgs).ConfigureAwait(false);
+            if (eventArgs.Cancel)
+            {
+                return;
             }
         }
 

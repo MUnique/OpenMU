@@ -5,11 +5,11 @@
   <p><span>@Question</span></p>
 </div>
 
-<div class="float-end" role="toolbar" aria-label="buttons">
-  <div class="btn-group" role="group" aria-label="yes">
+<div class="float-end" role="toolbar" aria-label="@Resources.Toolbar">
+  <div class="btn-group" role="group" aria-label="@Resources.Yes">
         <button type="button" class="btn btn-primary" @onclick="@(() => this.Modal.CloseAsync(ModalResult.Ok(true)))">@Resources.Yes</button>
   </div>
-  <div class="btn-group" role="group" aria-label="no">
+  <div class="btn-group" role="group" aria-label="@Resources.No">
         <button type="button" class="btn btn-secondary" @onclick="@(() => this.Modal.CloseAsync(ModalResult.Ok(false)))">@Resources.No</button>
   </div>
 </div>

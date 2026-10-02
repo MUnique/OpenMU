@@ -16,7 +16,7 @@ using MUnique.OpenMU.PlugIns;
 /// This plugin fixes configurations that were created after the initial fix but before the base data was corrected.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixItemRequirementsPlugIn2_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixItemRequirementsPlugIn2_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("A7C9D4E1-8F2B-4A3C-9E6D-7B8F9A0E1C2D")]
 public class FixItemRequirementsPlugIn2 : UpdatePlugInBase
 {
@@ -40,9 +40,6 @@ public class FixItemRequirementsPlugIn2 : UpdatePlugInBase
         (4, 5, 30, 100, 0, 0), // Silver Bow
         (4, 6, 40, 150, 0, 0), // Chaos Nature Bow
     ];
-
-    /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixItemRequirements2;
 
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;

@@ -41,7 +41,7 @@ internal class WarpHandlerPlugIn : IPacketHandlerPlugIn
         }
         else
         {
-            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.UnknownWarpIndex)).ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.UnknownWarpIndex), warpInfoIndex).ConfigureAwait(false);
         }
     }
 }

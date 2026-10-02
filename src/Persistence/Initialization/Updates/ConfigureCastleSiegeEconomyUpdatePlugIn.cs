@@ -12,7 +12,7 @@ using MUnique.OpenMU.PlugIns;
 /// Configures the Castle Siege economy interface for an existing Season 6 database.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.ConfigureCastleSiegeEconomyUpdatePlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.ConfigureCastleSiegeEconomyUpdatePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("7ED67868-5C82-4B10-9BDA-732F51704DB9")]
 public class ConfigureCastleSiegeEconomyUpdatePlugIn : UpdatePlugInBase
 {
@@ -33,9 +33,6 @@ public class ConfigureCastleSiegeEconomyUpdatePlugIn : UpdatePlugInBase
 
     /// <inheritdoc />
     public override string Description => PlugInDescription;
-
-    /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.ConfigureCastleSiegeEconomy;
 
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;

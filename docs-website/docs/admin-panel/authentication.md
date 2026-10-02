@@ -133,9 +133,9 @@ everybody else's password.
 ## API keys for external applications
 
 The server has a small public API under `/api` — the server status, the number
-of online players, whether an account is online, and a global message. A game
-launcher, a status page or a website needs it, and none of them can go through
-a login form with a second factor.
+of online players, whether an account is online, a global message, and the
+registration of new accounts. A game launcher, a status page or a website needs
+it, and none of them can go through a login form with a second factor.
 
 They authenticate with an API key instead. Send it in the `X-Api-Key` header:
 
@@ -178,6 +178,7 @@ A key has the same [roles](#roles) as a user, and defaults to **Viewer**:
 | `GET /api/status` | Viewer |
 | `GET /api/is-online/{account}` | Viewer |
 | `GET /api/send/{server}?msg=` | Operator |
+| `POST /api/accounts` | Operator |
 
 So a status page gets a Viewer key and can only read, while an application which
 announces something in the game needs an Operator key. The role is chosen when
@@ -186,6 +187,29 @@ role you need and delete the old one.
 
 A signed in admin panel user can use the API as well, with the same roles — this
 is handy while trying things out in the browser.
+
+### Registering accounts from a website
+
+A website's registration form creates the account with `POST /api/accounts`:
+
+```http
+POST /api/accounts HTTP/1.1
+X-Api-Key: <the key>
+Content-Type: application/json
+
+{ "loginName": "newbie", "password": "secret1", "eMail": "newbie@example.com" }
+```
+
+The account can log in right away. The answer is `201` when it was created,
+`409` when the login name is taken, and `400` with the invalid fields when the
+registration doesn't fit what the game client can send: the login name has 3 to
+10 characters, the password 3 to 20, both only printable ASCII (the login name
+without spaces). The e-mail address is optional.
+
+Call it from the website's server, not from the visitor's browser, so the key
+stays secret. The game server only sees the website, not the visitors behind
+it — protecting the form against abuse (a captcha, a limit per visitor) is the
+website's job.
 
 :::warning[The key is a password]
 It is sent in plain text with every request, so use HTTPS, and keep it out of

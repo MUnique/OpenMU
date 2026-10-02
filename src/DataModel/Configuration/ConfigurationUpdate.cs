@@ -10,15 +10,15 @@ using MUnique.OpenMU.Interfaces;
 /// Describes an applied configuration update.
 /// Based on this information, the program can decide which updates are need to
 /// be installed next.
-/// After a fresh database initialization, an entry exists, so that the maximum
-/// version can be determined in this case, too.
+/// After a fresh database initialization, entries exist for all known updates,
+/// so that nothing is applied twice.
 /// </summary>
 public class ConfigurationUpdate
 {
     /// <summary>
-    /// Gets or sets the version of the update.
+    /// Gets or sets the key of the update. This is the <see cref="Type.GUID"/> of the update plug-in implementation.
     /// </summary>
-    public int Version { get; set; }
+    public Guid Key { get; set; }
 
     /// <summary>
     /// Gets or sets the name of the update.
@@ -43,6 +43,6 @@ public class ConfigurationUpdate
     /// <inheritdoc />
     public override string ToString()
     {
-        return $"v{this.Version}: {this.Name}";
+        return $"{this.Name} ({this.Key})";
     }
 }

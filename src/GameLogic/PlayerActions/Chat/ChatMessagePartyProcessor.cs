@@ -22,6 +22,9 @@ public class ChatMessagePartyProcessor : BannableChatMessageBaseProcessor
             return;
         }
 
-        sender.Party?.SendChatMessageAsync(content.Message, sender.SelectedCharacter!.Name);
+        if (sender.Party is { } party)
+        {
+            await party.SendChatMessageAsync(content.Message, sender.SelectedCharacter!.Name).ConfigureAwait(false);
+        }
     }
 }

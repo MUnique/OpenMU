@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// Configures Sign of Lord registration for an existing Season 6 Castle Siege configuration.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.ConfigureCastleSiegeRegistrationUpdatePlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.ConfigureCastleSiegeRegistrationUpdatePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("D91757B1-0C3D-4336-8DEC-20438EDA7F09")]
 public class ConfigureCastleSiegeRegistrationUpdatePlugIn : UpdatePlugInBase
 {
@@ -34,9 +34,6 @@ public class ConfigureCastleSiegeRegistrationUpdatePlugIn : UpdatePlugInBase
     public override string Description => PlugInDescription;
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.ConfigureCastleSiegeRegistration;
-
-    /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />
@@ -46,10 +43,13 @@ public class ConfigureCastleSiegeRegistrationUpdatePlugIn : UpdatePlugInBase
     public override DateTime CreatedAt => new(2026, 08, 06, 14, 30, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
+    public override IEnumerable<Guid> DependsOn => [typeof(AddCastleSiegeDataUpdatePlugIn).GUID];
+
+    /// <inheritdoc />
     protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
-        var configuration = gameConfiguration.CastleSiegeConfiguration
-            ?? throw new InvalidOperationException("The Castle Siege configuration does not exist.");
+        // Guaranteed to exist by DependsOn above; DataUpdateService validates it eagerly.
+        var configuration = gameConfiguration.CastleSiegeConfiguration!;
         new CastleSiegeInitializer(context, gameConfiguration).InitializeRegistration(configuration);
         return ValueTask.CompletedTask;
     }
