@@ -378,4 +378,6 @@
   <data name="AddFenrirMaterialDropGroupsUpdateSeason6_Description" xml:space="preserve"><value>Adds the drops of Splinter of Armor (5 %), Bless of Guardian (2 %) and Claw of Beast (0.5 %) to all monsters of Crywolf. Materials which already drop on Crywolf by another group are skipped.</value></data>
   <data name="AddGensRewardItemsUpdatePlugIn_Name" xml:space="preserve"><value>Add the gens reward items</value></data>
   <data name="AddGensRewardItemsUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the jewellery cases (14/141 to 14/144), which the gens members get as monthly reward.</value></data>
+  <data name="FixVulcanusWarpIndexUpdatePlugIn_Name" xml:space="preserve"><value>Fix Vulcanus warp index</value></data>
+  <data name="FixVulcanusWarpIndexUpdatePlugIn_Description" xml:space="preserve"><value>This update corrects the index of the warp entry of Vulcanus to 42, which the season 6 game client requests.</value></data>
 </root>

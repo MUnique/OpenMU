@@ -899,5 +899,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized AddGensRewardItemsUpdatePlugIn_Description text.</summary>
         public static string AddGensRewardItemsUpdatePlugIn_Description => ResourceManager.GetString("AddGensRewardItemsUpdatePlugIn_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized FixVulcanusWarpIndexUpdatePlugIn_Name text.</summary>
+        public static string FixVulcanusWarpIndexUpdatePlugIn_Name => ResourceManager.GetString("FixVulcanusWarpIndexUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixVulcanusWarpIndexUpdatePlugIn_Description text.</summary>
+        public static string FixVulcanusWarpIndexUpdatePlugIn_Description => ResourceManager.GetString("FixVulcanusWarpIndexUpdatePlugIn_Description", resourceCulture)!;
+
     }
 }

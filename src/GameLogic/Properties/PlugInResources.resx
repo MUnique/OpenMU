@@ -465,12 +465,6 @@
   <data name="PhoenixShotSkillPlugIn_Description" xml:space="preserve">
     <value>Handles the phoenix shot weapon skill of the rage fighter class. Additionally to the attacked target, it will hit up to seven additional targets.</value>
   </data>
-  <data name="PlasmaStormSkillPlugIn_Name" xml:space="preserve">
-    <value>Plasma Storm Skill</value>
-  </data>
-  <data name="PlasmaStormSkillPlugIn_Description" xml:space="preserve">
-    <value>Handles the plasma storm skill of the fenrir pet. It randomly halves the durability of a target's equipped item.</value>
-  </data>
   <data name="PollutionSkillPlugIn_Name" xml:space="preserve">
     <value>Pollution Skill</value>
   </data>
@@ -800,6 +794,12 @@
   </data>
   <data name="RedDragonInvasionPlugIn_Description" xml:space="preserve">
     <value>Handle red dragon invasion event</value>
+  </data>
+    <data name="DurabilityDecayPlugIn_Name" xml:space="preserve">
+    <value>Durability Decay</value>
+  </data>
+  <data name="DurabilityDecayPlugIn_Description" xml:space="preserve">
+    <value>Updates the durabilty of time-decaying items.</value>
   </data>
   <data name="HappyHourPlugIn_Name" xml:space="preserve">
     <value>Happy Hour</value>

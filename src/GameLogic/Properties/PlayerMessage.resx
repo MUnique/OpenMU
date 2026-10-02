@@ -876,4 +876,7 @@
   <data name="GensRequiredToCreateGuild" xml:space="preserve">
     <value>You have to be a member of a gens to create a guild.</value>
   </data>
+  <data name="EquipmentHasChangedMessage" xml:space="preserve">
+    <value>The equipment has been changed.</value>
+  </data>
 </root>
