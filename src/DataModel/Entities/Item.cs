@@ -37,6 +37,35 @@ public partial class Item
     public byte Level { get; set; }
 
     /// <summary>
+    /// Gets or sets the option level of the item. Conventional values
+    /// in MU Online are multiples of 4 (0, 4, 8, 12, 16, 20, 24, 28).
+    /// Stored as a simple scalar for the web shop's purchase flow;
+    /// the canonical OpenMU option system (ItemOptions / ItemOptionLink)
+    /// is left untouched (it carries the actual stat bonuses when the
+    /// operator configures ItemOption rows in OpenMU admin).
+    /// </summary>
+    public short OptionLevel { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether this item instance has
+    /// the luck bonus (+5% crit rate when equipped). Set by the web
+    /// shop's purchase flow when the buyer opts in for the +luck add-on.
+    /// Same caveat as <see cref="OptionLevel"/>: stored as a scalar
+    /// here because the operator's ItemOption config is empty in the
+    /// default game setup; mirrors OpenMU's ItemOptionType=Luck when
+    /// configured.
+    /// </summary>
+    public bool Luck { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether this item instance has any
+    /// excellent options attached. Master toggle for the
+    /// <see cref="ItemOptions"/> collection — when false, the web
+    /// shop's purchase flow skips the multi-select picker entirely.
+    /// </summary>
+    public bool HasOption { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether this item instance provides the weapon skill while being equipped.
     /// </summary>
     public bool HasSkill { get; set; }
