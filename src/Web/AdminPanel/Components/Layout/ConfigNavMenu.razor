@@ -23,6 +23,9 @@
         <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(WarpInfo).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.WarpList</NavLink>
         <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(JewelMix).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.JewelMixes</NavLink>
         <hr class="dropdown-divider"/>
+        <NavLink class="dropdown-item" href="content-activation" @onclick="() => NavigationHistory.Clear()">
+            <span class="oi oi-circle-check" aria-hidden="true"></span> @Resources.ContentActivation
+        </NavLink>
         <NavLink class="dropdown-item" href="plugins" @onclick="() => NavigationHistory.Clear()">
             <span class="oi oi-puzzle-piece" aria-hidden="true"></span> @Resources.Plugins
         </NavLink>

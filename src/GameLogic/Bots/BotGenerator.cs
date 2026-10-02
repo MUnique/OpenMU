@@ -98,7 +98,7 @@ internal sealed class BotGenerator
     public async ValueTask<int> EnsureBotsAsync(int numberOfAccounts, int charactersPerAccount, BotStartupProfile profile, CancellationToken cancellationToken = default)
     {
         var creatableClasses = this._gameContext.Configuration.CharacterClasses
-            .Where(c => c is { CanGetCreated: true, HomeMap: not null })
+            .Where(c => c is { CanGetCreated: true, IsActive: true, HomeMap: not null })
             .ToList();
         if (creatableClasses.Count == 0)
         {

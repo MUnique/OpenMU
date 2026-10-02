@@ -160,10 +160,46 @@ Route `edit-config-grid/…JewelMix/`
 
 The jewel stacking (mix/unmix) definitions.
 
+## Content activation
+
+Route `content-activation`
+
+Maps, character classes, monsters, items and mini games can be deactivated
+without deleting them from the configuration. This is how a server can be
+restricted to the content of a certain season: deactivate everything which was
+introduced later, and activate it again when you want to offer it.
+
+Pick the kind of content in the first drop-down. The list can be narrowed down
+by its active state and by a search text, and **Activate all shown** /
+**Deactivate all shown** change all entries of the narrowed list at once — for
+example, search for `Kanturu` and deactivate all shown entries. The changes are
+only stored after **Save changes**.
+
+What an inactive entry means in the game:
+
+| Content | Effect when inactive |
+|---|---|
+| Map | It can't be entered by warps or gates, and no instance of it is created. A character which logs in on an inactive map is moved to the safezone map of it, or to the home map of its class. |
+| Character class | No new character of this class can be created, and its creation isn't unlocked on the character selection screen. Existing characters stay playable. |
+| Monster / NPC | It isn't spawned on the maps. Monsters which are already spawned remain until the game server is restarted. |
+| Item | Monsters and item boxes don't drop it, and merchants don't offer it. Existing items stay usable. |
+| Mini game | It can't be entered, and its periodic start doesn't open it. |
+
+Entries are active by default, also after updating an existing installation.
+The setting is also available as *Is Active* on the edit page of each entry.
+
+:::tip[Deactivate the plugins, too]
+Some features are implemented as plugins, for example the invasions and the
+periodic starts of the mini games. Deactivate them on the [Plugins](plugins.md)
+page as well, so that players don't get announcements of events which aren't
+available.
+:::
+
 ## Plugins, chat commands, map editor
 
-The lower part of the drop-down leads to [Plugins](plugins.md),
-[Chat commands](chat-commands.md) and the [Map editor](map-editor.md).
+The lower part of the drop-down leads to [Content activation](#content-activation),
+[Plugins](plugins.md), [Chat commands](chat-commands.md) and the
+[Map editor](map-editor.md).
 
 ## Full configuration
 

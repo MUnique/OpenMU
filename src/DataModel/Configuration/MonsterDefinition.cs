@@ -241,6 +241,16 @@ public partial class MonsterDefinition
     public LocalizedString Designation { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether this monster is active in the game.
+    /// </summary>
+    /// <remarks>
+    /// Inactive monsters stay in the configuration, but are not available in the game.
+    /// This allows to restrict the game to the features of a certain game version, e.g. a season,
+    /// without having to delete them.
+    /// </remarks>
+    public bool IsActive { get; set; } = true;
+
+    /// <summary>
     /// Gets or sets the range in which a monster will move randomly?
     /// It is not used yet. TODO: Find out what it's really good for. Remove, if not needed.
     /// </summary>

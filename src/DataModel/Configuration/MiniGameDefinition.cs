@@ -27,6 +27,16 @@ public partial class MiniGameDefinition
     public LocalizedString Name { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether this mini game is active in the game.
+    /// </summary>
+    /// <remarks>
+    /// Inactive mini games stay in the configuration, but are not available in the game.
+    /// This allows to restrict the game to the features of a certain game version, e.g. a season,
+    /// without having to delete them.
+    /// </remarks>
+    public bool IsActive { get; set; } = true;
+
+    /// <summary>
     /// Gets or sets the description of the mini game.
     /// </summary>
     public LocalizedString Description { get; set; }
