@@ -241,6 +241,10 @@ public static class AttackableExtensions
                 {
                     multiplier = skillMultiplier;
                 }
+                else
+                {
+                    // The skill doesn't define a final multiplier, so the general skill multiplier applies.
+                }
             }
 
             dmg = (int)(dmg * multiplier * damageFactor);
