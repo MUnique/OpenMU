@@ -183,6 +183,7 @@
     <ProjectReference Include="..\..\DataModel\MUnique.OpenMU.DataModel.csproj" />
     <ProjectReference Include="..\..\GameLogic\MUnique.OpenMU.GameLogic.csproj" />
     <ProjectReference Include="..\..\GameServer\MUnique.OpenMU.GameServer.csproj" />
+    <ProjectReference Include="..\InMemory\MUnique.OpenMU.Persistence.InMemory.csproj" />
     <ProjectReference Include="..\MUnique.OpenMU.Persistence.csproj" />
   </ItemGroup>
 

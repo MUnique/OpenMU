@@ -675,6 +675,7 @@ internal class SkillsInitializer : SkillsInitializerBase
 
         this.AddAttributeRelationship(SkillNumber.DragonRoar, Stats.SkillFinalMultiplier, 1.0f, Stats.SkillMultiplier);
         this.AddAttributeRelationship(SkillNumber.DragonSlasher, Stats.SkillFinalMultiplier, 1.0f, Stats.SkillMultiplier);
+        this.AddAttributeRelationship(SkillNumber.DragonSlasher, Stats.SkillFinalMultiplierPve, 3.0f, Stats.SkillMultiplier);
 
         // Other (mirror relationships)
         this.AddAttributeRelationship(SkillNumber.TripleShot, Stats.SkillExtraManaCost, 1, Stats.SkillExtraManaCost);
