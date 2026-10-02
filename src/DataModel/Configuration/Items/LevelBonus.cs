@@ -53,13 +53,19 @@ public partial class LevelBonus
     }
 
     /// <summary>
-    /// Gets the element which represents the <see cref="AdditionalValue"/>.
+    /// Gets the durability adjusted element for <see cref="AdditionalValue"/>.
     /// </summary>
     /// <param name="aggregateType">Type of the aggregate.</param>
-    /// <returns>The element which represents the <see cref="AdditionalValue"/>.</returns>
-    public IElement GetAdditionalValueElement(AggregateType aggregateType)
+    /// <param name="durabilityFactor">The durability factor.</param>
+    /// <returns>The durability adjusted element for <see cref="AdditionalValue"/>.</returns>
+    public IElement GetAdditionalValueElement(AggregateType aggregateType, float durabilityFactor = 1)
     {
-        return this._additionalValueElement ??= new ConstantElement(this.AdditionalValue, aggregateType);
+        if (durabilityFactor == 1)
+        {
+            return this._additionalValueElement ??= new ConstantElement(this.AdditionalValue, aggregateType);
+        }
+
+        return new ConstantElement(this.AdditionalValue * durabilityFactor, aggregateType);
     }
 
     /// <inheritdoc />

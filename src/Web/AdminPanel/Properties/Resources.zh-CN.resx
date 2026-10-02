@@ -1348,4 +1348,43 @@
   <data name="RoleOperator" xml:space="preserve"><value>操作员</value></data>
   <data name="RoleViewer" xml:space="preserve"><value>只读用户</value></data>
   <data name="PartyBadgeTitle" xml:space="preserve"><value>{0}的队伍：{1} 名成员</value></data>
+  <data name="Guilds" xml:space="preserve">
+    <value>战盟</value>
+  </data>
+  <data name="Guild" xml:space="preserve">
+    <value>战盟</value>
+  </data>
+  <data name="Alliance" xml:space="preserve">
+    <value>联盟</value>
+  </data>
+  <data name="Members" xml:space="preserve">
+    <value>成员</value>
+  </data>
+  <data name="Score" xml:space="preserve">
+    <value>积分</value>
+  </data>
+  <data name="Notice" xml:space="preserve">
+    <value>公告</value>
+  </data>
+  <data name="Position" xml:space="preserve">
+    <value>职位</value>
+  </data>
+  <data name="CharacterClass" xml:space="preserve">
+    <value>职业</value>
+  </data>
+  <data name="Level" xml:space="preserve">
+    <value>等级</value>
+  </data>
+  <data name="MasterLevel" xml:space="preserve">
+    <value>大师等级</value>
+  </data>
+  <data name="Account" xml:space="preserve">
+    <value>账号</value>
+  </data>
+  <data name="GuildNotFound" xml:space="preserve">
+    <value>未找到该战盟，可能已被删除。</value>
+  </data>
+  <data name="EmptyValue" xml:space="preserve">
+    <value>—</value>
+  </data>
 </root>

@@ -60,6 +60,7 @@ const sidebars = {
       items: [
         'server-features/bots',
         'server-features/test-actors',
+        'server-features/gens',
       ],
     },
     {

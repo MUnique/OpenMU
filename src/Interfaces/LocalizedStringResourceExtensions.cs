@@ -4,39 +4,44 @@
 
 namespace MUnique.OpenMU.Interfaces;
 
-using System.Collections.Concurrent;
 using System.Globalization;
+using System.IO;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Resources;
+using System.Runtime.CompilerServices;
 
 /// <summary>
-/// Builds multilingual configuration values from neutral and satellite resources.
+/// Extensions to build <see cref="LocalizedString"/>s from resources, including all available translations.
 /// </summary>
 public static class LocalizedStringResourceExtensions
 {
-    // StyleCop does not recognize the C# 14 extension receiver as a parameter; it cannot be prefixed with this.
+    // StyleCop doesn't recognize the C# 14 extension receiver as a parameter yet, so it can't be prefixed with 'this'.
 #pragma warning disable SA1101
+
     /// <summary>
-    /// Resource operations which use only explicitly defined translations.
+    /// Extensions for <see cref="ResourceManager"/>.
     /// </summary>
     /// <param name="resourceManager">The resource manager.</param>
     extension(ResourceManager resourceManager)
     {
         /// <summary>
-        /// Gets the cultures with their own resource set, excluding fallback aliases.
+        /// Gets the cultures which have their own resource set, excluding the neutral language.
         /// </summary>
-        public IReadOnlyList<CultureInfo> AvailableCultures => CulturesCache.GetOrAdd(resourceManager, FindAvailableCultures);
+        public IReadOnlyList<CultureInfo> AvailableCultures => CulturesCache.GetValue(resourceManager, FindAvailableCultures);
 
         /// <summary>
-        /// Builds a value containing the neutral name and all explicit translations.
+        /// Builds a <see cref="LocalizedString"/> with the neutral text and all translations which are explicitly defined for the key.
+        /// If the resource manager is registered at <see cref="LocalizedStringResources"/>, the result also gets
+        /// a <see cref="LocalizedString.SourceKey"/> and a <see cref="LocalizedString.SourceStamp"/>.
         /// </summary>
         /// <param name="key">The resource key.</param>
-        /// <returns>The multilingual value.</returns>
+        /// <returns>The localized string.</returns>
+        /// <exception cref="ArgumentException">The key doesn't exist in the neutral resources.</exception>
         public LocalizedString GetLocalizedString(string key)
         {
             var neutral = resourceManager.GetString(key, CultureInfo.InvariantCulture)
-                ?? throw new ArgumentException("The neutral resource key does not exist.", nameof(key));
+                          ?? throw new ArgumentException($"The resource key '{key}' does not exist.", nameof(key));
             var result = new LocalizedString(neutral);
             foreach (var culture in resourceManager.AvailableCultures)
             {
@@ -46,67 +51,83 @@ public static class LocalizedStringResourceExtensions
                 }
             }
 
+            if (LocalizedStringResources.TryGetName(resourceManager, out var sourceName))
+            {
+                result = result.WithSourceKey(LocalizedStringResources.CreateSourceKey(sourceName, key)).WithSourceStamp();
+            }
+
             return result;
+        }
+    }
+
+    /// <summary>
+    /// Extensions for <see cref="LocalizedString"/>.
+    /// </summary>
+    /// <param name="localizedString">The localized string.</param>
+    extension(LocalizedString localizedString)
+    {
+        /// <summary>
+        /// Builds a <see cref="LocalizedString"/> from a property of a generated resource class, for example
+        /// <c>LocalizedString.FromResource(() => MapNames.Lorencia)</c>.
+        /// If the resource class isn't registered yet, it's registered at <see cref="LocalizedStringResources"/>
+        /// with the name of the resource class.
+        /// </summary>
+        /// <param name="resourceProperty">The expression which accesses the static string property of a resource class.</param>
+        /// <returns>The localized string, including all available translations, the source key and the source stamp.</returns>
+        public static LocalizedString FromResource(Expression<Func<string>> resourceProperty)
+        {
+            ArgumentNullException.ThrowIfNull(resourceProperty);
+            if (resourceProperty.Body is not MemberExpression { Member: PropertyInfo { PropertyType: var propertyType, GetMethod.IsStatic: true, DeclaringType: { } resourceType } property }
+                || propertyType != typeof(string)
+                || resourceType.GetProperty("ResourceManager", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)?.GetValue(null) is not ResourceManager resourceManager)
+            {
+                throw new ArgumentException("Expected a static string property of a resource class, e.g. () => MapNames.Lorencia.", nameof(resourceProperty));
+            }
+
+            if (!LocalizedStringResources.TryGetName(resourceManager, out _))
+            {
+                LocalizedStringResources.Register(resourceType.Name, resourceManager);
+            }
+
+            return resourceManager.GetLocalizedString(property.Name);
+        }
+
+        /// <summary>
+        /// Builds the current value of the source of this localized string, see <see cref="LocalizedString.SourceKey"/>.
+        /// </summary>
+        /// <returns>
+        /// The localized string as it's currently defined by its source,
+        /// or <see langword="null"/> if it has no source key or the source isn't registered or doesn't contain the key anymore.
+        /// </returns>
+        public LocalizedString? GetFromSource()
+        {
+            if (!LocalizedStringResources.TryResolve(localizedString.SourceKey, out var resourceManager, out var resourceKey)
+                || resourceManager.GetString(resourceKey, CultureInfo.InvariantCulture) is null)
+            {
+                return null;
+            }
+
+            return resourceManager.GetLocalizedString(resourceKey);
         }
     }
 
 #pragma warning restore SA1101
 
-    /// <summary>
-    /// Strongly typed construction of multilingual values.
-    /// </summary>
-    extension(LocalizedString)
-    {
-        /// <summary>
-        /// Builds a value from a resource property, for example <c>() => MapNames.Lorencia</c>.
-        /// </summary>
-        /// <param name="resourceProperty">A static string property of a generated resource class.</param>
-        /// <returns>The multilingual value.</returns>
-        public static LocalizedString FromResource(Expression<Func<string>> resourceProperty)
-        {
-            ArgumentNullException.ThrowIfNull(resourceProperty);
-            if (resourceProperty.Body is not MemberExpression { Member: PropertyInfo property }
-                || property.PropertyType != typeof(string)
-                || property.GetMethod?.IsStatic != true
-                || property.DeclaringType?.GetProperty("ResourceManager", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)?.GetValue(null) is not ResourceManager resourceManager)
-            {
-                throw new ArgumentException("Expected a static string resource property.", nameof(resourceProperty));
-            }
+    private static readonly ConditionalWeakTable<ResourceManager, IReadOnlyList<CultureInfo>> CulturesCache = new();
 
-            return resourceManager.GetLocalizedString(property.Name);
-        }
-    }
-
-    private static readonly ConcurrentDictionary<ResourceManager, IReadOnlyList<CultureInfo>> CulturesCache = new();
-
-    private static IEnumerable<CultureInfo> GetCultureCandidates()
-    {
-        // ICU may list zh-Hans-CN but omit the valid zh-CN alias used by a satellite.
-        // Include language-region aliases for script-qualified cultures without hard-coding languages.
-        return CultureInfo.GetCultures(CultureTypes.AllCultures)
-            .SelectMany(culture =>
-            {
-                var parts = culture.Name.Split('-');
-                return parts.Length == 3 && parts[1].Length == 4
-                    ? new[] { culture, CultureInfo.GetCultureInfo($"{parts[0]}-{parts[2]}") }
-                    : new[] { culture };
-            })
-            .DistinctBy(culture => culture.Name, StringComparer.OrdinalIgnoreCase);
-    }
+    private static readonly Lazy<IReadOnlyList<CultureInfo>> CultureCandidates = new(FindCultureCandidates);
 
     private static IReadOnlyList<CultureInfo> FindAvailableCultures(ResourceManager resourceManager)
     {
         var cultures = new List<CultureInfo>();
-        foreach (var culture in GetCultureCandidates().OrderBy(c => c.Name, StringComparer.Ordinal))
+        foreach (var culture in CultureCandidates.Value)
         {
-            if (culture.Equals(CultureInfo.InvariantCulture)
-                || culture.TwoLetterISOLanguageName == LocalizedString.NeutralLanguageCode
-                || resourceManager.GetResourceSet(culture, true, tryParents: false) is not { } resources)
+            if (resourceManager.GetResourceSet(culture, true, tryParents: false) is not { } resources)
             {
                 continue;
             }
 
-            // ResourceManager may already have cached a parent's set under this culture after a fallback lookup.
+            // After a lookup with fallback, the ResourceManager may have cached a parent's set under this culture.
             var isFallback = false;
             for (var parent = culture.Parent; ; parent = parent.Parent)
             {
@@ -116,7 +137,7 @@ public static class LocalizedStringResourceExtensions
                     break;
                 }
 
-                if (parent.Equals(CultureInfo.InvariantCulture))
+                if (string.IsNullOrEmpty(parent.Name))
                 {
                     break;
                 }
@@ -129,5 +150,56 @@ public static class LocalizedStringResourceExtensions
         }
 
         return cultures.AsReadOnly();
+    }
+
+    private static IReadOnlyList<CultureInfo> FindCultureCandidates()
+    {
+        // ICU may enumerate zh-Hans-CN, but not the zh-CN alias which is used by a satellite assembly.
+        // So we add the language-region aliases of script-qualified cultures and the names of the deployed satellite directories.
+        var enumerated = CultureInfo.GetCultures(CultureTypes.AllCultures);
+        var aliases = enumerated
+            .Select(culture => culture.Name.Split('-'))
+            .Where(parts => parts is [_, { Length: 4 }, _])
+            .Select(parts => TryGetCulture($"{parts[0]}-{parts[2]}"));
+        var deployed = EnumerateSatelliteDirectoryNames().Select(TryGetCulture);
+
+        return enumerated
+            .Concat(aliases)
+            .Concat(deployed)
+            .OfType<CultureInfo>()
+            .Where(culture => !string.IsNullOrEmpty(culture.Name)
+                              && culture.TwoLetterISOLanguageName != LocalizedString.NeutralLanguageCode)
+            .DistinctBy(culture => culture.Name, StringComparer.OrdinalIgnoreCase)
+            .OrderBy(culture => culture.Name, StringComparer.Ordinal)
+            .ToList()
+            .AsReadOnly();
+    }
+
+    private static IEnumerable<string> EnumerateSatelliteDirectoryNames()
+    {
+        try
+        {
+            return Directory.EnumerateDirectories(AppContext.BaseDirectory).Select(Path.GetFileName).OfType<string>().ToList();
+        }
+        catch (IOException)
+        {
+            return [];
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return [];
+        }
+    }
+
+    private static CultureInfo? TryGetCulture(string name)
+    {
+        try
+        {
+            return CultureInfo.GetCultureInfo(name, predefinedOnly: true);
+        }
+        catch (CultureNotFoundException)
+        {
+            return null;
+        }
     }
 }

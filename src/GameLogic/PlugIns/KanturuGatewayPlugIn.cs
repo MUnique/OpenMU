@@ -84,7 +84,6 @@ public class KanturuGatewayPlugIn : IPlayerTalkToNpcPlugIn
             return;
         }
 
-        // Mark as handled before any await so TalkNpcAction sees it synchronously.
         eventArgs.HasBeenHandled = true;
 
         // The client keeps the dialog open until the player enters or closes it, so the
