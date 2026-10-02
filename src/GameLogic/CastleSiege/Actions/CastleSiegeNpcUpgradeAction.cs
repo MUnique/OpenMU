@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.CastleSiege.Actions;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.CastleSiege.NPC;
 using MUnique.OpenMU.GameLogic.Views.CastleSiege;
+using MUnique.OpenMU.GameLogic.Views.Inventory;
 
 /// <summary>
 /// Upgrades Castle Siege gates and Guardian Statues.
@@ -39,6 +40,11 @@ public static class CastleSiegeNpcUpgradeAction
                 upgradeType,
                 requestedLevel)
             .ConfigureAwait(false);
+        if (result == CastleSiegeNpcOperationResult.Success)
+        {
+            await player.InvokeViewPlugInAsync<IUpdateMoneyPlugIn>(view => view.UpdateMoneyAsync()).ConfigureAwait(false);
+        }
+
         await player.InvokeViewPlugInAsync<ICastleSiegeNpcOperationResultPlugIn>(
                 view => view.ShowUpgradeResultAsync(result, npcNumber, npcIndex, upgradeType, requestedLevel))
             .ConfigureAwait(false);

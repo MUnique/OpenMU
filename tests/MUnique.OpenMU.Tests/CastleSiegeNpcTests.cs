@@ -20,6 +20,7 @@ using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.CastleSiege;
+using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.GameServer;
 using MUnique.OpenMU.GameServer.MessageHandler.CastleSiege;
@@ -363,6 +364,8 @@ public class CastleSiegeNpcTests
                 Assert.That(gate.DefenseLevel, Is.EqualTo(1));
                 Assert.That(gate.Attributes[Stats.DefenseBase], Is.EqualTo(200));
             });
+            Mock.Get(fixture.Player.ViewPlugIns.GetPlugIn<IUpdateMoneyPlugIn>()!)
+                .Verify(view => view.UpdateMoneyAsync(), Times.Once);
 
             await fixture.Context.NpcController.DespawnAllAsync().ConfigureAwait(false);
             restartedContext = new CastleSiegeContext(fixture.GameServerContext, fixture.Configuration);
@@ -554,6 +557,8 @@ public class CastleSiegeNpcTests
                 Assert.That(fixture.Player.Money, Is.EqualTo(99));
                 Assert.That(fixture.Player.Inventory!.Items.Count(), Is.EqualTo(2));
             });
+            Mock.Get(fixture.Player.ViewPlugIns.GetPlugIn<IUpdateMoneyPlugIn>()!)
+                .Verify(view => view.UpdateMoneyAsync(), Times.Never);
         }
         finally
         {
@@ -659,6 +664,8 @@ public class CastleSiegeNpcTests
                 Assert.That(fixture.Player.Money, Is.Zero);
                 Assert.That(gate.Health, Is.EqualTo(gate.MaximumHealth));
             });
+            Mock.Get(fixture.Player.ViewPlugIns.GetPlugIn<IUpdateMoneyPlugIn>()!)
+                .Verify(view => view.UpdateMoneyAsync(), Times.Once);
 
             await gate.OpenAsync().ConfigureAwait(false);
             await fixture.Map.RemoveAsync(gate).ConfigureAwait(false);
@@ -682,6 +689,8 @@ public class CastleSiegeNpcTests
                 Assert.That(respawnedGate.Health, Is.EqualTo(1_000));
                 Assert.That(respawnedGate.IsClosed, Is.True);
             });
+            Mock.Get(fixture.Player.ViewPlugIns.GetPlugIn<IUpdateMoneyPlugIn>()!)
+                .Verify(view => view.UpdateMoneyAsync(), Times.Exactly(2));
         }
         finally
         {
@@ -815,6 +824,17 @@ public class CastleSiegeNpcTests
                     Times.Once);
 
             fixture.Context.CurrentState = CastleSiegeState.Start;
+            var withoutLeverResult = await CastleSiegeGateOperateAction
+                .OperateAsync(fixture.Player, fixture.Context, gate.Id, true)
+                .ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(withoutLeverResult, Is.EqualTo(CastleSiegeNpcOperationResult.Failed));
+                Assert.That(gate.IsClosed, Is.True);
+            });
+
+            // The NPC talk action keeps the lever opened because the lever plug-in leaves the dialog open.
+            fixture.Player.OpenedNpc = lever;
             var operationResult = await CastleSiegeGateOperateAction
                 .OperateAsync(fixture.Player, fixture.Context, gate.Id, true)
                 .ConfigureAwait(false);

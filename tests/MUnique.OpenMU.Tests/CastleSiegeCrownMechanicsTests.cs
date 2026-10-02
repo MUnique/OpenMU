@@ -283,6 +283,67 @@ public class CastleSiegeCrownMechanicsTests
     }
 
     /// <summary>
+    /// Verifies that a Crown seal by a member of an attacking alliance hands the castle to the alliance master guild,
+    /// because the tax exemption and the owner alliance checks compare against the alliance master.
+    /// </summary>
+    [Test]
+    public async ValueTask CaptureByAllianceMemberTransfersOwnershipToAllianceMasterAsync()
+    {
+        const uint allianceMemberGuildId = 21;
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        fixture.Context.FinalGuildList[allianceMemberGuildId] = new CastleSiegeGuildParticipant
+        {
+            GuildId = allianceMemberGuildId,
+            PersistentGuildId = Guid.NewGuid(),
+            GuildName = "AttackerAllies",
+            Side = CastleSiegeJoinSide.Attack1,
+            IsAllianceMaster = false,
+        };
+        var crownUser = await fixture.CreatePlayerAsync(
+                allianceMemberGuildId,
+                "AllyCrownUser",
+                CastleSiegeJoinSide.Attack1,
+                60,
+                60)
+            .ConfigureAwait(false);
+        var firstSwitchUser = await fixture.CreatePlayerAsync(
+                allianceMemberGuildId,
+                "AllySwitchOne",
+                CastleSiegeJoinSide.Attack1,
+                70,
+                60)
+            .ConfigureAwait(false);
+        var secondSwitchUser = await fixture.CreatePlayerAsync(
+                AttackGuildId,
+                "MasterSwitchTwo",
+                CastleSiegeJoinSide.Attack1,
+                80,
+                60)
+            .ConfigureAwait(false);
+        fixture.Context.CrownUser = crownUser;
+        fixture.Context.SwitchUsers[0] = firstSwitchUser;
+        fixture.Context.SwitchUsers[1] = secondSwitchUser;
+        fixture.Context.IsCrownAvailable = true;
+
+        await fixture.CheckCrownAsync().ConfigureAwait(false);
+        await fixture.CheckCrownAsync().ConfigureAwait(false);
+        await fixture.CheckCrownAsync().ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(fixture.Context.MiddleOwnerGuildId, Is.EqualTo(AttackGuildId));
+            Assert.That(fixture.Context.SiegeData.OwnerGuildId, Is.EqualTo(fixture.AttackPersistentGuildId));
+            Assert.That(fixture.Context.FinalGuildList[AttackGuildId].Side, Is.EqualTo(CastleSiegeJoinSide.Defense));
+            Assert.That(fixture.Context.FinalGuildList[allianceMemberGuildId].Side, Is.EqualTo(CastleSiegeJoinSide.Defense));
+            Assert.That(fixture.Context.FinalGuildList[DefenseGuildId].Side, Is.EqualTo(CastleSiegeJoinSide.Attack1));
+        });
+        Mock.Get(crownUser.ViewPlugIns.GetPlugIn<ICastleSiegeOwnershipChangePlugIn>()!)
+            .Verify(
+                plugIn => plugIn.ShowOwnershipChangeAsync("Attackers"),
+                Times.Once);
+    }
+
+    /// <summary>
     /// Verifies switch occupant broadcasts and Crown lock-state calculation.
     /// </summary>
     [Test]
