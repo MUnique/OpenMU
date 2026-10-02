@@ -13,7 +13,7 @@ using MUnique.OpenMU.Persistence.EntityFramework.Model;
 /// <summary>
 /// Context for all types of the data model.
 /// </summary>
-public class EntityDataContext : ExtendedTypeContext
+public partial class EntityDataContext : ExtendedTypeContext
 {
     /// <summary>
     /// Gets or sets the current game configuration.
@@ -87,6 +87,7 @@ public class EntityDataContext : ExtendedTypeContext
         modelBuilder.Entity<Model.ConstValueAttribute>();
         modelBuilder.Entity<Account>().Apply();
         modelBuilder.Entity<Character>().Apply();
+        modelBuilder.Entity<ShopItem>().Apply();
         modelBuilder.Entity<CharacterClass>().Apply();
         modelBuilder.Entity<CastleSiegeConfiguration>().Apply();
         modelBuilder.Entity<CastleSiegeData>().Apply();
@@ -95,6 +96,7 @@ public class EntityDataContext : ExtendedTypeContext
         modelBuilder.Entity<CastleSiegePendingReward>().Apply();
         modelBuilder.Entity<CastleSiegeNpcDefinition>().Apply();
         modelBuilder.Entity<CastleSiegeNpcState>().Apply();
+        modelBuilder.Entity<CrimsonCoinLedger>().Apply();
         modelBuilder.Entity<DropItemGroup>().Apply();
         modelBuilder.Entity<ExitGate>().Apply();
         modelBuilder.Entity<GameConfiguration>().Apply();
