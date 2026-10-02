@@ -83,9 +83,11 @@ internal class IntroducedGameVersionsDataTest
     {
         var gameConfiguration = this._season6;
 
-        Assert.That(gameConfiguration.Maps.Single(m => m.Number == 0).IntroducedIn, Is.EqualTo(GameVersion.Version075)); // Lorencia
+        Assert.That(gameConfiguration.Maps.Single(m => m.Number == 0).IntroducedIn, Is.EqualTo(GameVersion.Version029)); // Lorencia
         Assert.That(gameConfiguration.Maps.Single(m => m.Number == 80).IntroducedIn, Is.EqualTo(GameVersion.Season6Episode1)); // Karutan 1
-        Assert.That(gameConfiguration.CharacterClasses.Single(c => c.Number == 16).IntroducedIn, Is.EqualTo(GameVersion.Version099)); // Dark Lord
+        Assert.That(gameConfiguration.CharacterClasses.Single(c => c.Number == 16).IntroducedIn, Is.EqualTo(GameVersion.Version099GPlus)); // Dark Lord
+        Assert.That(gameConfiguration.Maps.Single(m => m.Number == 11).IntroducedIn, Is.EqualTo(GameVersion.Version096y)); // Blood Castle 1
+        Assert.That(gameConfiguration.Maps.Single(m => m.Number == 30).IntroducedIn, Is.EqualTo(GameVersion.Version100s)); // Valley of Loren
         Assert.That(gameConfiguration.Monsters.Single(m => m.Number == 459).IntroducedIn, Is.EqualTo(GameVersion.Season4Episode1)); // Selupan
         Assert.That(gameConfiguration.Items.Single(i => i.Group == 14 && i.Number == 42).IntroducedIn, Is.EqualTo(GameVersion.Season2)); // Jewel of Harmony
         Assert.That(gameConfiguration.MiniGameDefinitions.Single(m => m.Type == MiniGameType.BloodCastle && m.GameLevel == 8).IntroducedIn, Is.EqualTo(GameVersion.Season3Episode1));

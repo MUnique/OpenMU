@@ -204,22 +204,39 @@ public partial class ContentActivation : ComponentBase, IAsyncDisposable
     }
 
     /// <summary>
-    /// Gets the caption of a game version, e.g. "Version 0.97d" or "Season 3 Episode 1".
+    /// Gets the caption of a game version, e.g. "Version 0.97d", "Version 0.99G+" or "Season 3 Episode 1".
     /// </summary>
+    /// <remarks>
+    /// The caption is calculated from the value of the version, see the remarks of <see cref="GameVersion"/>.
+    /// </remarks>
     /// <param name="version">The game version.</param>
     /// <returns>The caption of the game version.</returns>
     private static string GetCaption(GameVersion version)
     {
+        const int lettersInAlphabet = 26;
         var value = (int)version;
-        return version switch
+        if (version == GameVersion.Unknown)
         {
-            GameVersion.Unknown => Resources.GameVersionUnknown,
-            GameVersion.Version095d or GameVersion.Version097d => string.Format(Resources.GameVersionFormat, $"0.{value}d"),
-            _ when value < 100 => string.Format(Resources.GameVersionFormat, $"0.{value}"),
-            _ when value < 1000 => string.Format(Resources.GameVersionFormat, $"{value / 100}.{value % 100:00}"),
-            _ when value % 1000 == 0 => string.Format(Resources.SeasonFormat, value / 1000),
-            _ => string.Format(Resources.SeasonEpisodeFormat, value / 1000, (value % 1000) / 100),
+            return Resources.GameVersionUnknown;
+        }
+
+        if (value >= 100000)
+        {
+            var season = value / 100000;
+            var episode = (value % 100000) / 1000;
+            return episode == 0
+                ? string.Format(Resources.SeasonFormat, season)
+                : string.Format(Resources.SeasonEpisodeFormat, season, episode);
+        }
+
+        var patch = value % 100;
+        var suffix = patch switch
+        {
+            0 => string.Empty,
+            <= lettersInAlphabet => ((char)('a' + patch - 1)).ToString(),
+            _ => $"{(char)('A' + patch - lettersInAlphabet - 1)}+",
         };
+        return string.Format(Resources.GameVersionFormat, $"{value / 10000}.{(value / 100) % 100:00}{suffix}");
     }
 
     private static Dictionary<ContentType, IReadOnlyList<ContentEntry>> CreateEntries(GameConfiguration configuration)
