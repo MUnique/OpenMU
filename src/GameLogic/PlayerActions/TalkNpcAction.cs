@@ -71,7 +71,11 @@ public class TalkNpcAction
         {
             case NpcWindow.Undefined:
                 var eventArgs = new NpcTalkEventArgs();
-                player.GameContext.PlugInManager.GetPlugInPoint<IPlayerTalkToNpcPlugIn>()?.PlayerTalksToNpcAsync(player, player.OpenedNpc, eventArgs);
+                if (player.GameContext.PlugInManager.GetPlugInPoint<IPlayerTalkToNpcPlugIn>() is { } talkToNpcPlugIn)
+                {
+                    await talkToNpcPlugIn.PlayerTalksToNpcAsync(player, player.OpenedNpc, eventArgs).ConfigureAwait(false);
+                }
+
                 if (!eventArgs.HasBeenHandled)
                 {
                     if (player.CurrentMiniGame is BloodCastleContext bloodCastle && player.OpenedNpc.Definition.Number == 232)
