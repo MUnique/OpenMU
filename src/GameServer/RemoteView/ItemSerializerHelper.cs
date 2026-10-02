@@ -376,6 +376,8 @@ public static class ItemSerializerHelper
 
     /// <summary>
     /// Adds a "normal" option to an item.
+    /// If the item has fixed options (e.g. a dinorant), the option level contains their bits instead,
+    /// and one fixed option is added for each set bit.
     /// </summary>
     /// <param name="optionNumber">The option number.</param>
     /// <param name="optionLevel">The option level.</param>
@@ -386,6 +388,22 @@ public static class ItemSerializerHelper
     {
         if (optionLevel == 0)
         {
+            return;
+        }
+
+        var fixedOptions = item.Definition?.PossibleItemOptions
+            .SelectMany(o => o.PossibleOptions)
+            .Where(o => o.IsFixedOption())
+            .ToList() ?? [];
+        if (fixedOptions.Count > 0)
+        {
+            foreach (var fixedOption in fixedOptions.Where(o => (optionLevel & o.Number) != 0))
+            {
+                var fixedOptionLink = persistenceContext.CreateNew<ItemOptionLink>();
+                fixedOptionLink.ItemOption = fixedOption;
+                item.ItemOptions.Add(fixedOptionLink);
+            }
+
             return;
         }
 

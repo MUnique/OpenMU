@@ -905,5 +905,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized AddSmallWingsUpdatePlugIn_Description text.</summary>
         public static string AddSmallWingsUpdatePlugIn_Description => ResourceManager.GetString("AddSmallWingsUpdatePlugIn_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized FixDinorantOptionNumbersPlugIn_Name text.</summary>
+        public static string FixDinorantOptionNumbersPlugIn_Name => ResourceManager.GetString("FixDinorantOptionNumbersPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixDinorantOptionNumbersPlugIn_Description text.</summary>
+        public static string FixDinorantOptionNumbersPlugIn_Description => ResourceManager.GetString("FixDinorantOptionNumbersPlugIn_Description", resourceCulture)!;
+
     }
 }
