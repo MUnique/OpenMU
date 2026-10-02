@@ -51,23 +51,3 @@ applied on top of a current schema.
   rates, monster stats), you may want to deselect it and merge the change
   yourself in the [game configuration](game-configuration.md).
 * Apply updates during a maintenance window, since a restart is needed anyway.
-
-## Configuration name translations
-
-The optional **Add configuration name translations** update supplements names of
-built-in classes, maps, merchants, monsters and NPCs from the available language
-resources. It supports 0.75, 0.95d and Season 6 configurations. This batch includes
-382 Simplified Chinese name mappings. Freshly initialized databases already
-include the translations and record the corresponding update as installed.
-
-Back up the database, apply the update on `/config-updates`, then restart the
-application. Only missing translations and exact copies of the neutral English
-name are filled. Custom neutral names and existing custom translations are
-preserved, including older language-only values such as `zh`. Regional entries
-such as `zh-CN` and `zh-TW` can coexist. Gameplay settings remain unchanged.
-Reapplying the mapping does not create duplicate translations.
-
-Coverage is partial: unverified names retain their existing values. These are
-server configuration names; the game's own client language files are unaffected.
-The [mapping and sources](https://github.com/MUnique/OpenMU/blob/master/docs/ChineseConfigurationNames.md)
-list included names and distinguish derived variant labels from official names.

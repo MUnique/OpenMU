@@ -192,12 +192,48 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>PlugInResources.resx</DependentUpon>
     </Compile>
+    <Compile Update="Properties\CharacterClassNames.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>CharacterClassNames.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Properties\MapNames.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>MapNames.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Properties\MerchantNames.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>MerchantNames.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Properties\MonsterNames.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>MonsterNames.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Update="Properties\PlugInResources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>PlugInResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Properties\CharacterClassNames.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>CharacterClassNames.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Properties\MapNames.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>MapNames.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Properties\MerchantNames.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>MerchantNames.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Properties\MonsterNames.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>MonsterNames.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
 

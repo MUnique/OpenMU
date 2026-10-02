@@ -6,46 +6,40 @@ under `src/Persistence/Initialization/Properties`. Their neutral `.resx` files
 are the single source of the corresponding English names. This does not translate
 client language files, item names or attribute resources.
 
-## Initialization and upgrades
+## Initialization and existing installations
 
 Initializers assign complete `LocalizedString` values directly using
-`LocalizedString.FromResource(() => MapNames.Lorencia)` or the equivalent resource
-manager extension. Satellite resource sets supply available translations without
-copying fallback text. No Chinese post-initialization patch is needed.
-
-Existing installations use the optional **Add configuration name translations**
-update for their initialization version. The shared updater maps built-in entity
-numbers to resource keys and requires an exact neutral-name match. Shared map
-numbers are distinguished by their neutral resource value. Only missing
-translations or exact copies of the neutral name are filled. Existing custom
-translations (including legacy parent-language values such as `zh`) are preserved.
-A translation in a sibling culture such as `zh-TW` does not prevent adding `zh-CN`.
+`LocalizedString.FromResource(() => MapNames.Lorencia)`. Satellite resource sets
+supply the available translations without copying fallback text. Each name also
+records its source, for example
+`Lorencia||zh-CN=勇者大陆||@src=MapNames/Lorencia||@stamp=…`, so it can be
+compared with the resources later. `ConfigurationNameSources` registers the four
+resources when the assembly is loaded, so these source keys can always be resolved.
 No identifiers, progression links, stats, shops, drops, spawn areas or gates change.
 
-Translations are stored with full culture codes, for example
-`Lorencia||zh-CN=勇者大陆`. Existing `||zh=` data continues to be read using the
-upstream culture fallback behavior introduced in #1016. The plugin uses the
-upstream GUID-based update mechanism and is not run automatically on deployment.
-See the [operator instructions](../docs-website/docs/admin-panel/configuration-updates.md).
+Existing installations receive new or changed translations on the admin panel's
+*Captions* page (`/config-captions`): *Link built-in captions* once, then review and
+apply the differences. Missing translations and exact copies of the English name
+are selected by default; customized texts, including older language-only values
+such as `zh`, are only changed when selected explicitly. No configuration update
+plugin is needed for translation changes.
+
+Translations are stored with full culture codes, so regional entries such as
+`zh-CN` and `zh-TW` can coexist. Existing `||zh=` data continues to be read using
+the culture fallback behavior introduced in #1016.
 
 ## Adding translations
 
 Add a `CategoryNames.<culture>.resx` file using keys from the matching neutral
-resource, for example `MapNames.de.resx` with key `Lorencia`. The four existing
-categories share the same initialization and update logic for every language;
-adding a language requires no C# dictionary or language-specific update class.
-Partial satellites are supported. Keep format placeholders unchanged.
+resource, for example `MapNames.de.resx` with key `Lorencia`. Adding a language
+requires no code changes. Partial satellites are supported. Keep format
+placeholders unchanged.
 
-When adding neutral keys, reference the typed property in the initializer and add
-its entity number and resource key to `ConfigurationNameTranslations`. Regenerate
-accessors with `python3 scripts/generate-configuration-name-resources.py`.
-The generated files are committed for CI and use expression-bodied properties.
-
-A future translation batch needs a new thin update subclass for each supported
-initialization version, with fresh GUIDs, reusing the shared update base. Do not
-change an already-released update and expect installed databases to run it again.
-The tests check satellite keys, entity coverage across supported versions,
-initialization, update discovery, custom-name preservation and idempotence.
+When adding neutral keys, regenerate the strongly typed resource class (it's
+linked to the `.resx` file in the project, like `PlugInResources`) and reference
+the property in the initializer. The tests check that satellite keys exist in the
+neutral resources, that every key is used by at least one initialization, and that
+the initialized names equal their resource source.
 
 ## Evidence and limits
 
