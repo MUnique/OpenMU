@@ -15,17 +15,16 @@ using MUnique.OpenMU.PlugIns;
 [Guid("08953BE6-DABF-49CC-A500-FDB9DC2C4D80")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.ResetCharacterNpcPlugin_Name), Description = nameof(PlugInResources.ResetCharacterNpcPlugin_Description), ResourceType = typeof(PlugInResources))]
-public class ResetCharacterNpcPlugin : IPlayerTalkToNpcPlugIn
+public class ResetCharacterNpcPlugin : IPlayerTalkToNpcPlugIn, ISupportCustomConfiguration<ResetCharacterNpcPluginConfiguration>, ISupportDefaultCustomConfiguration
 {
-    /// <summary>
-    /// Gets the reset NPC number of 'Leo the Helper'.
-    /// </summary>
-    public static short ResetNpcNumber => 371;
+    /// <inheritdoc />
+    public ResetCharacterNpcPluginConfiguration? Configuration { get; set; }
 
     /// <inheritdoc />
     public async ValueTask PlayerTalksToNpcAsync(Player player, NonPlayerCharacter npc, NpcTalkEventArgs eventArgs)
     {
-        if (npc.Definition.Number != ResetNpcNumber)
+        var configuration = this.Configuration ??= new ResetCharacterNpcPluginConfiguration();
+        if (npc.Definition.Number != configuration.ResetNpcNumber)
         {
             return;
         }
@@ -34,4 +33,7 @@ public class ResetCharacterNpcPlugin : IPlayerTalkToNpcPlugIn
         var resetAction = new ResetCharacterAction(player, npc);
         await resetAction.ResetCharacterAsync().ConfigureAwait(false);
     }
+
+    /// <inheritdoc />
+    public object CreateDefaultConfig() => new ResetCharacterNpcPluginConfiguration();
 }

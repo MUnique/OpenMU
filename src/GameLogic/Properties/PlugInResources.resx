@@ -1496,4 +1496,13 @@
   <data name="BloodCastleArchangelTalkPlugInConfiguration_ArchangelNumber_Name" xml:space="preserve">
     <value>Archangel NPC number</value>
   </data>
+  <data name="ResetCharacterNpcPluginConfiguration_ResetNpcNumber_Name" xml:space="preserve">
+    <value>Reset NPC number</value>
+  </data>
+  <data name="GatekeeperNpcPluginConfiguration_GatekeeperNumber_Name" xml:space="preserve">
+    <value>Gatekeeper NPC number</value>
+  </data>
+  <data name="CastleSiegeGuardsmanTalkPlugInConfiguration_GuardsmanNumber_Name" xml:space="preserve">
+    <value>Guardsman NPC number</value>
+  </data>
 </root>

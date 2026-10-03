@@ -15,17 +15,16 @@ using MUnique.OpenMU.PlugIns;
 [Guid("1B7BCA14-3124-4550-94B4-3FFCEE1FD55A")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.GatekeeperNpcPlugin_Name), Description = nameof(PlugInResources.GatekeeperNpcPlugin_Description), ResourceType = typeof(PlugInResources))]
-public class GatekeeperNpcPlugin : IPlayerTalkToNpcPlugIn
+public class GatekeeperNpcPlugin : IPlayerTalkToNpcPlugIn, ISupportCustomConfiguration<GatekeeperNpcPluginConfiguration>, ISupportDefaultCustomConfiguration
 {
-    /// <summary>
-    /// Gets the NPC number of 'Gatekeeper' in Barracks of Balgass.
-    /// </summary>
-    public static short GatekeeperNpcNumber => 408;
+    /// <inheritdoc />
+    public GatekeeperNpcPluginConfiguration? Configuration { get; set; }
 
     /// <inheritdoc />
     public async ValueTask PlayerTalksToNpcAsync(Player player, NonPlayerCharacter npc, NpcTalkEventArgs eventArgs)
     {
-        if (npc.Definition.Number != GatekeeperNpcNumber)
+        var configuration = this.Configuration ??= new GatekeeperNpcPluginConfiguration();
+        if (npc.Definition.Number != configuration.GatekeeperNumber)
         {
             return;
         }
@@ -34,4 +33,7 @@ public class GatekeeperNpcPlugin : IPlayerTalkToNpcPlugIn
         eventArgs.HasBeenHandled = true;
         eventArgs.LeavesDialogOpen = true;
     }
+
+    /// <inheritdoc />
+    public object CreateDefaultConfig() => new GatekeeperNpcPluginConfiguration();
 }

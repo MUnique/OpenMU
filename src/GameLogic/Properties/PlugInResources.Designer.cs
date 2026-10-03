@@ -4168,5 +4168,14 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>Gets the localized BloodCastleArchangelTalkPlugInConfiguration_ArchangelNumber_Name text.</summary>
         public static string BloodCastleArchangelTalkPlugInConfiguration_ArchangelNumber_Name => ResourceManager.GetString("BloodCastleArchangelTalkPlugInConfiguration_ArchangelNumber_Name", resourceCulture)!;
 
+        /// <summary>Gets the localized ResetCharacterNpcPluginConfiguration_ResetNpcNumber_Name text.</summary>
+        public static string ResetCharacterNpcPluginConfiguration_ResetNpcNumber_Name => ResourceManager.GetString("ResetCharacterNpcPluginConfiguration_ResetNpcNumber_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized GatekeeperNpcPluginConfiguration_GatekeeperNumber_Name text.</summary>
+        public static string GatekeeperNpcPluginConfiguration_GatekeeperNumber_Name => ResourceManager.GetString("GatekeeperNpcPluginConfiguration_GatekeeperNumber_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized CastleSiegeGuardsmanTalkPlugInConfiguration_GuardsmanNumber_Name text.</summary>
+        public static string CastleSiegeGuardsmanTalkPlugInConfiguration_GuardsmanNumber_Name => ResourceManager.GetString("CastleSiegeGuardsmanTalkPlugInConfiguration_GuardsmanNumber_Name", resourceCulture)!;
+
     }
 }

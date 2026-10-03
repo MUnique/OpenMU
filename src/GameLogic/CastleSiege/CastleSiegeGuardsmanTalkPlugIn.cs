@@ -16,16 +16,19 @@ using MUnique.OpenMU.PlugIns;
 [PlugIn]
 [Display(Name = nameof(PlugInResources.CastleSiegeGuardsmanTalkPlugIn_Name), Description = nameof(PlugInResources.CastleSiegeGuardsmanTalkPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("3E2AD5FD-E5D0-4464-91EE-70DF686BBB6A")]
-public sealed class CastleSiegeGuardsmanTalkPlugIn : IPlayerTalkToNpcPlugIn
+public sealed class CastleSiegeGuardsmanTalkPlugIn : IPlayerTalkToNpcPlugIn, ISupportCustomConfiguration<CastleSiegeGuardsmanTalkPlugInConfiguration>, ISupportDefaultCustomConfiguration
 {
-    private const short GuardsmanNumber = 224;
     private readonly CastleSiegeTaxProvider _taxProvider = new();
+
+    /// <inheritdoc />
+    public CastleSiegeGuardsmanTalkPlugInConfiguration? Configuration { get; set; }
 
     /// <inheritdoc />
     public async ValueTask PlayerTalksToNpcAsync(Player player, NonPlayerCharacter npc, NpcTalkEventArgs eventArgs)
     {
+        var configuration = this.Configuration ??= new CastleSiegeGuardsmanTalkPlugInConfiguration();
         var context = CastleSiegeContextResolver.GetContext(player);
-        if (npc.Definition.Number != GuardsmanNumber
+        if (npc.Definition.Number != configuration.GuardsmanNumber
             || context is not { Configuration.Enabled: true }
             || player.CurrentMap?.Definition.Number != context.Configuration.CastleSiegeMapDefinition?.Number)
         {
@@ -58,4 +61,7 @@ public sealed class CastleSiegeGuardsmanTalkPlugIn : IPlayerTalkToNpcPlugIn
                     CastleSiegeTaxProvider.HuntTaxStep))
             .ConfigureAwait(false);
     }
+
+    /// <inheritdoc />
+    public object CreateDefaultConfig() => new CastleSiegeGuardsmanTalkPlugInConfiguration();
 }
