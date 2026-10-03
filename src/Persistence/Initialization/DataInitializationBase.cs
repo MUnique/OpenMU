@@ -230,7 +230,7 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
     {
         var updates = plugInManager.GetStrategyProvider<Guid, IConfigurationUpdatePlugIn>()
                           ?.AvailableStrategies.Where(up => up.DataInitializationKey == this.Key)
-                          .OrderBy(up => up.CreatedAt)
+                          .OrderBy(up => up.UpdatedAt)
                           .ToList();
         if (updates is not { Count: > 0 })
         {
@@ -241,9 +241,11 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
         {
             var entry = this.Context.CreateNew<ConfigurationUpdate>();
             entry.Key = update.Key;
+            entry.Version = update.Version;
             entry.Name = update.Name;
             entry.Description = update.Description;
             entry.CreatedAt = update.CreatedAt;
+            entry.UpdatedAt = update.UpdatedAt;
             entry.InstalledAt = DateTime.UtcNow;
         }
 

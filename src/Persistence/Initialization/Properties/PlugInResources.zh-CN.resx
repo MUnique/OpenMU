@@ -167,8 +167,6 @@
   </data>
   <data name="FixWeaponRisePercentagePlugInSeason6_Name" xml:space="preserve"><value>修正武器增幅及召唤装备、三代翅膀属性</value></data>
   <data name="FixWeaponRisePercentagePlugInSeason6_Description" xml:space="preserve"><value>修正法杖、召唤杖、魔法书、权杖的增幅比例，召唤武器和翅膀的魔法与诅咒属性，以及部分三代翅膀和披风的伤害增减比例；包含大天使之杖与永恒之翼杖的修正。</value></data>
-  <data name="FixAreaSkillsUpdatePlugIn_Name" xml:space="preserve"><value>修正范围技能</value></data>
-  <data name="FixAreaSkillsUpdatePlugIn_Description" xml:space="preserve"><value>修正地狱火、毒炎和暴风雪的施法距离、作用半径与延迟。</value></data>
   <data name="AddMissingMerchantStoresPlugIn_Name" xml:space="preserve"><value>补充缺失的商店</value></data>
   <data name="AddMissingMerchantStoresPlugIn_Description" xml:space="preserve"><value>为仅有商店窗口却无商品的杂货商克莉丝汀（545）添加商店，商品复制自商人汤姆森（231）。</value></data>
   <data name="FixEventItemsDropFromMonstersUpdatePlugInSeason6_Name" xml:space="preserve"><value>修正 Season 6 活动物品掉落</value></data>
@@ -183,10 +181,6 @@
   <data name="FixBloodCastleMonsterAttributesUpdatePlugIn_Description" xml:space="preserve"><value>交换血色城堡 7 层（怪物 138–143）和 8 层（怪物 428–433）的属性，使强度按 6、7、8 层递增。</value></data>
   <data name="AddDoppelgangerDataUpdatePlugIn_Name" xml:space="preserve"><value>添加镜像世界数据</value></data>
   <data name="AddDoppelgangerDataUpdatePlugIn_Description" xml:space="preserve"><value>添加镜像世界的副本配置。</value></data>
-  <data name="ConfigureCastleSiegeRegistrationUpdatePlugIn_Name" xml:space="preserve"><value>配置攻城战报名</value></data>
-  <data name="ConfigureCastleSiegeRegistrationUpdatePlugIn_Description" xml:space="preserve"><value>配置攻城战登记城主标识所使用的物品。</value></data>
-  <data name="AddKanturuMapContentUpdatePlugIn_Name" xml:space="preserve"><value>添加坎特鲁地图内容</value></data>
-  <data name="AddKanturuMapContentUpdatePlugIn_Description" xml:space="preserve"><value>添加玛雅、玛雅之手、咒怨魔王等首领及副本波次刷新配置。</value></data>
   <data name="FinishSummonerMasterTreePlugIn_Name" xml:space="preserve"><value>补全召唤术师大师技能树</value></data>
   <data name="FinishSummonerMasterTreePlugIn_Description" xml:space="preserve"><value>补全召唤术师大师技能树并修正部分技能数值。</value></data>
   <data name="AddMaximumAllianceSizeUpdatePlugInSeason6_Name" xml:space="preserve"><value>添加 Season 6 联盟规模上限属性</value></data>
@@ -195,8 +189,6 @@
   <data name="FixAncientDiscriminatorsUpdatePlugIn_Description" xml:space="preserve"><value>修正部分套装物品的识别值。</value></data>
   <data name="AddSummonerBuffSkillsPlugIn_Name" xml:space="preserve"><value>添加召唤术师辅助技能</value></data>
   <data name="AddSummonerBuffSkillsPlugIn_Description" xml:space="preserve"><value>添加昏睡术、破御阵、伤害反射和虚弱阵，并修正三代翅膀的完全反射属性。</value></data>
-  <data name="AddIsQuestItemFlagPlugIn_Name" xml:space="preserve"><value>添加任务物品标记</value></data>
-  <data name="AddIsQuestItemFlagPlugIn_Description" xml:space="preserve"><value>为已有任务物品添加标记，使其仅能被持有对应进行中任务的角色拾取。</value></data>
   <data name="WizEnhanceAndRagefighterSkillsUpdatePlugIn_Name" xml:space="preserve"><value>补充魔法师与格斗家技能</value></data>
   <data name="WizEnhanceAndRagefighterSkillsUpdatePlugIn_Description" xml:space="preserve"><value>添加魔力强化、增加生命、增加防御成功率、无视防御等技能。</value></data>
   <data name="FixJeweleryPetsDamageCalcsPlugInBase_Name" xml:space="preserve"><value>修正首饰抗性计算</value></data>
@@ -247,8 +239,6 @@
   <data name="FixJeweleryPetsDamageCalcsPlugInSeason6_Description" xml:space="preserve"><value>修正首饰与宠物的伤害相关属性，以及首饰抗性数值。</value></data>
   <data name="RemoveDuplicateStatAttributesPlugInBase_Name" xml:space="preserve"><value>移除重复的角色属性</value></data>
   <data name="RemoveDuplicateStatAttributesPlugInBase_Description" xml:space="preserve"><value>移除同一职业中重复定义的属性。</value></data>
-  <data name="FixItemRequirementsPlugIn2_Name" xml:space="preserve"><value>再次修正弓箭手武器需求</value></data>
-  <data name="FixItemRequirementsPlugIn2_Description" xml:space="preserve"><value>修正错误初始化的弓类装备需求，适用于首次修复后、基础数据修正前创建的配置。</value></data>
   <data name="FixWeaponRisePercentagePlugInBase_Name" xml:space="preserve"><value>修正武器增幅比例</value></data>
   <data name="FixWeaponRisePercentagePlugInBase_Description" xml:space="preserve"><value>修正法杖的增幅比例。</value></data>
   <data name="FixItemRequirementsPlugIn_Name" xml:space="preserve"><value>修正弓箭手武器需求</value></data>
@@ -259,14 +249,12 @@
   <data name="FixAttackSpeedCalculationUpdate_Description" xml:space="preserve"><value>添加攻击速度属性及关系，并添加酒和灵魂药水的效果。</value></data>
   <data name="FixItemOptionsAndAttackSpeedPlugInBase_Name" xml:space="preserve"><value>修正物品属性和攻击速度</value></data>
   <data name="FixItemOptionsAndAttackSpeedPlugInBase_Description" xml:space="preserve"><value>修正部分伤害、防御成功率属性及武器攻击速度。</value></data>
-  <data name="FinishDarkKnightMasterTreePlugInBase_Name" xml:space="preserve"><value>修正双持伤害计算</value></data>
-  <data name="FinishDarkKnightMasterTreePlugInBase_Description" xml:space="preserve"><value>修正双持武器的伤害计算。</value></data>
+  <data name="FinishDarkKnightMasterTreePlugInBase_Name" xml:space="preserve"><value>补全剑士大师技能树</value></data>
+  <data name="FinishDarkKnightMasterTreePlugInBase_Description" xml:space="preserve"><value>补全剑士大师技能树及效果，并修正双持伤害计算。</value></data>
   <data name="AddGlobalMoneyAmountRateAttributePlugInBase_Name" xml:space="preserve"><value>添加全局金币数量倍率</value></data>
   <data name="AddGlobalMoneyAmountRateAttributePlugInBase_Description" xml:space="preserve"><value>将 MoneyAmountRate 属性从职业基础属性移至全局基础属性。</value></data>
   <data name="FixDamageCalcsPlugInBase_Name" xml:space="preserve"><value>修正伤害计算</value></data>
   <data name="FixDamageCalcsPlugInBase_Description" xml:space="preserve"><value>修正角色属性、魔法效果、物品及附加属性中与伤害有关的配置。</value></data>
-  <data name="ConfigureCastleSiegeParticipationUpdatePlugIn_Name" xml:space="preserve"><value>配置攻城战参战阵营</value></data>
-  <data name="ConfigureCastleSiegeParticipationUpdatePlugIn_Description" xml:space="preserve"><value>添加用于在客户端显示攻城战阵营的效果。</value></data>
   <data name="FixEventItemsDropFromMonstersUpdatePlugIn095d_Name" xml:space="preserve"><value>修正 0.95d 活动物品掉落</value></data>
   <data name="FixEventItemsDropFromMonstersUpdatePlugIn095d_Description" xml:space="preserve"><value>修正活动物品启用 DropsFromMonsters 后以 0 级掉落、未使用专属物品掉落组的问题。</value></data>
   <data name="AddItemDropGroupForJewelsUpdate075_Name" xml:space="preserve"><value>创建宝石掉落组</value></data>
@@ -275,12 +263,8 @@
   <data name="FixCharStatsForceWavePlugInBase_Description" xml:space="preserve"><value>修正魔法师敏捷转化为防御力的系数。</value></data>
   <data name="FinishElfMasterTreePlugIn_Name" xml:space="preserve"><value>补全弓箭手大师技能树</value></data>
   <data name="FinishElfMasterTreePlugIn_Description" xml:space="preserve"><value>补全弓箭手大师技能树并修正部分技能数值，为部分高级弓弩补充缺失的第 4 支箭。</value></data>
-  <data name="ConfigureCastleSiegeLifeStoneUpdatePlugIn_Name" xml:space="preserve"><value>配置攻城战生命石</value></data>
-  <data name="ConfigureCastleSiegeLifeStoneUpdatePlugIn_Description" xml:space="preserve"><value>配置攻城战生命石的战斗属性。</value></data>
   <data name="AddItemRegistrationAttributesUpdatePlugIn_Name" xml:space="preserve"><value>添加物品登记属性</value></data>
   <data name="AddItemRegistrationAttributesUpdatePlugIn_Description" xml:space="preserve"><value>添加物品登记功能所需的属性数据。</value></data>
-  <data name="ConfigureCastleSiegeEconomyUpdatePlugIn_Name" xml:space="preserve"><value>配置攻城战经济系统</value></data>
-  <data name="ConfigureCastleSiegeEconomyUpdatePlugIn_Description" xml:space="preserve"><value>启用长老 NPC 的攻城战经济管理界面。</value></data>
   <data name="FixWingsDmgRatesUpdatePlugInBase_Name" xml:space="preserve"><value>修正翅膀伤害比例</value></data>
   <data name="FixWingsDmgRatesUpdatePlugInBase_Description" xml:space="preserve"><value>修正翅膀伤害吸收与伤害增加的等级加成表。</value></data>
   <data name="FixLifeSwellEffectUpdatePlugIn_Name" xml:space="preserve"><value>修正生命之光效果</value></data>
@@ -313,8 +297,6 @@
   <data name="FixCharStatsForceWavePlugInSeason6_Description" xml:space="preserve"><value>修正多项角色基础数值及圣导师冲击波强化大师技能。</value></data>
   <data name="FixWarpLevelUpdatePlugIn_Name" xml:space="preserve"><value>修正传送等级减免</value></data>
   <data name="FixWarpLevelUpdatePlugIn_Description" xml:space="preserve"><value>更新魔剑士、圣导师和格斗家的传送等级需求减免比例。</value></data>
-  <data name="AddProjectileCountToTripleShotUpdatePlugIn_Name" xml:space="preserve"><value>添加多重箭弹道数量</value></data>
-  <data name="AddProjectileCountToTripleShotUpdatePlugIn_Description" xml:space="preserve"><value>将多重箭的弹道数量设为 3，以正确处理箭矢方向。</value></data>
   <data name="FixSkillMultipliersPlugIn_Name" xml:space="preserve"><value>修正技能倍率</value></data>
   <data name="FixSkillMultipliersPlugIn_Description" xml:space="preserve"><value>修正格斗家技能倍率，并补充多项技能专属倍率。</value></data>
   <data name="AddWhiteWizardInvasionMobsUpdatePlugIn_Name" xml:space="preserve"><value>添加白魔法师入侵怪物</value></data>
