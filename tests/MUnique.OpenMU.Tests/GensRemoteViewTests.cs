@@ -29,6 +29,8 @@ public class GensRemoteViewTests
         await view.ShowRewardResultAsync(GensRewardResult.NotEligible).ConfigureAwait(false);
         await view.ShowRewardResultAsync(GensRewardResult.DifferentGensNpc).ConfigureAwait(false);
         await view.ShowRewardResultAsync(GensRewardResult.NotJoined).ConfigureAwait(false);
+        await view.ShowRewardResultAsync(GensRewardResult.Success).ConfigureAwait(false);
+        await view.ShowRewardResultAsync(GensRewardResult.AlreadyClaimed).ConfigureAwait(false);
 
         Assert.That(output.ToArray(), Is.EqualTo(new byte[]
         {
@@ -38,6 +40,8 @@ public class GensRemoteViewTests
             0xC1, 5, 0xF8, 0x0A, 2,
             0xC1, 5, 0xF8, 0x0A, 5,
             0xC1, 5, 0xF8, 0x0A, 6,
+            0xC1, 5, 0xF8, 0x0A, 0,
+            0xC1, 5, 0xF8, 0x0A, 4,
         }));
     }
 
