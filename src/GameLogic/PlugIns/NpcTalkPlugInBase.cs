@@ -20,20 +20,6 @@ public abstract class NpcTalkPlugInBase : IPlayerTalkToNpcPlugIn, ISupportCustom
     /// </summary>
     public abstract short DefaultNpcNumber { get; }
 
-    /// <summary>
-    /// Determines whether the NPC is the configured NPC of an active plugin of type <typeparamref name="TPlugIn"/>.
-    /// </summary>
-    /// <typeparam name="TPlugIn">The type of the plugin.</typeparam>
-    /// <param name="gameContext">The game context.</param>
-    /// <param name="npc">The NPC, e.g. the <see cref="Player.OpenedNpc"/>.</param>
-    /// <returns><c>true</c>, if the NPC is the configured NPC of an active plugin of type <typeparamref name="TPlugIn"/>.</returns>
-    public static bool IsNpcOf<TPlugIn>(IGameContext gameContext, NonPlayerCharacter? npc)
-        where TPlugIn : NpcTalkPlugInBase
-    {
-        return npc is not null
-            && gameContext.PlugInManager.GetActivePlugInsOf<IPlayerTalkToNpcPlugIn>().OfType<TPlugIn>().Any(plugIn => plugIn.IsConfiguredNpc(npc));
-    }
-
     /// <inheritdoc />
     public async ValueTask PlayerTalksToNpcAsync(Player player, NonPlayerCharacter npc, NpcTalkEventArgs eventArgs)
     {
@@ -60,6 +46,17 @@ public abstract class NpcTalkPlugInBase : IPlayerTalkToNpcPlugIn, ISupportCustom
     }
 
     /// <summary>
+    /// Determines whether the NPC is the configured NPC of this plugin.
+    /// </summary>
+    /// <param name="npc">The NPC.</param>
+    /// <returns><c>true</c>, if the NPC is the configured NPC of this plugin.</returns>
+    public bool IsConfiguredNpc(NonPlayerCharacter npc)
+    {
+        return this.Configuration?.Npc is { } configuredNpc
+               && npc.Definition.Number == configuredNpc.Number;
+    }
+
+    /// <summary>
     /// Handles talking to the configured NPC.
     /// </summary>
     /// <param name="player">The player.</param>
@@ -67,10 +64,4 @@ public abstract class NpcTalkPlugInBase : IPlayerTalkToNpcPlugIn, ISupportCustom
     /// <param name="eventArgs">The <see cref="NpcTalkEventArgs"/> instance containing the event data.</param>
     /// <returns>The task.</returns>
     protected abstract ValueTask PlayerTalksToConfiguredNpcAsync(Player player, NonPlayerCharacter npc, NpcTalkEventArgs eventArgs);
-
-    private bool IsConfiguredNpc(NonPlayerCharacter npc)
-    {
-        return this.Configuration?.Npc is { } configuredNpc
-               && npc.Definition.Number == configuredNpc.Number;
-    }
 }

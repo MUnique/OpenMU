@@ -23,7 +23,7 @@ public sealed class CastleSiegeHuntZoneEnterAction
     public async ValueTask<bool> EnterAsync(Player player, CastleSiegeContext? context)
     {
         if (context is not { Configuration.Enabled: true }
-            || !NpcTalkPlugInBase.IsNpcOf<CastleSiegeGuardsmanTalkPlugIn>(player.GameContext, player.OpenedNpc)
+            || !player.OpenedNpc.IsNpcOf<CastleSiegeGuardsmanTalkPlugIn>(player.GameContext)
             || player.CurrentMap?.Definition.Number != context.Configuration.CastleSiegeMapDefinition?.Number
             || context.Configuration.LandOfTrialsMapDefinition is not { } targetMap
             || targetMap.ExitGates.FirstOrDefault() is not { } targetGate)

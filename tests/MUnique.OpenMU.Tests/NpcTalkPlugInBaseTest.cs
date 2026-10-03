@@ -56,7 +56,7 @@ public class NpcTalkPlugInBaseTest
     }
 
     /// <summary>
-    /// Tests that <see cref="NpcTalkPlugInBase.IsNpcOf{TPlugIn}"/> recognizes the configured NPC of an active plugin.
+    /// Tests that <see cref="NpcTalkPlugInExtensions.IsNpcOf{TPlugIn}"/> recognizes the configured NPC of an active plugin.
     /// </summary>
     [Test]
     public async ValueTask IsNpcOfRecognizesConfiguredNpcOfActivePlugInAsync()
@@ -67,14 +67,14 @@ public class NpcTalkPlugInBaseTest
             Configuration = new NpcTalkPlugInConfiguration { Npc = new MonsterDefinition { Number = ConfiguredNpcNumber } },
         };
 
-        Assert.That(NpcTalkPlugInBase.IsNpcOf<GatekeeperNpcPlugin>(player.GameContext, CreateNpc(player, ConfiguredNpcNumber)), Is.False, "The plugin isn't active yet.");
+        Assert.That(CreateNpc(player, ConfiguredNpcNumber).IsNpcOf<GatekeeperNpcPlugin>(player.GameContext), Is.False, "The plugin isn't active yet.");
 
         player.GameContext.PlugInManager.RegisterPlugInAtPlugInPoint<IPlayerTalkToNpcPlugIn>(plugIn);
 
-        Assert.That(NpcTalkPlugInBase.IsNpcOf<GatekeeperNpcPlugin>(player.GameContext, CreateNpc(player, ConfiguredNpcNumber)), Is.True);
-        Assert.That(NpcTalkPlugInBase.IsNpcOf<GatekeeperNpcPlugin>(player.GameContext, CreateNpc(player, plugIn.DefaultNpcNumber)), Is.False);
-        Assert.That(NpcTalkPlugInBase.IsNpcOf<ResetCharacterNpcPlugin>(player.GameContext, CreateNpc(player, ConfiguredNpcNumber)), Is.False);
-        Assert.That(NpcTalkPlugInBase.IsNpcOf<GatekeeperNpcPlugin>(player.GameContext, null), Is.False);
+        Assert.That(CreateNpc(player, ConfiguredNpcNumber).IsNpcOf<GatekeeperNpcPlugin>(player.GameContext), Is.True);
+        Assert.That(CreateNpc(player, plugIn.DefaultNpcNumber).IsNpcOf<GatekeeperNpcPlugin>(player.GameContext), Is.False);
+        Assert.That(CreateNpc(player, ConfiguredNpcNumber).IsNpcOf<ResetCharacterNpcPlugin>(player.GameContext), Is.False);
+        Assert.That(((NonPlayerCharacter?)null).IsNpcOf<GatekeeperNpcPlugin>(player.GameContext), Is.False);
     }
 
     /// <summary>

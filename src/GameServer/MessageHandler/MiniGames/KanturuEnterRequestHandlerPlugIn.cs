@@ -46,7 +46,7 @@ internal class KanturuEnterRequestHandlerPlugIn : ISubPacketHandlerPlugIn
     {
         if (packet.Length < KanturuEnterRequest.Length
             || player.SelectedCharacter?.CharacterClass is null
-            || !NpcTalkPlugInBase.IsNpcOf<KanturuGatewayPlugIn>(player.GameContext, player.OpenedNpc))
+            || !player.OpenedNpc.IsNpcOf<KanturuGatewayPlugIn>(player.GameContext))
         {
             return;
         }

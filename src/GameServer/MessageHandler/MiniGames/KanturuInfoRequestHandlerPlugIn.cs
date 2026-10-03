@@ -34,7 +34,7 @@ internal class KanturuInfoRequestHandlerPlugIn : ISubPacketHandlerPlugIn
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         if (packet.Length < KanturuInfoRequest.Length
-            || !NpcTalkPlugInBase.IsNpcOf<KanturuGatewayPlugIn>(player.GameContext, player.OpenedNpc))
+            || !player.OpenedNpc.IsNpcOf<KanturuGatewayPlugIn>(player.GameContext))
         {
             return;
         }
