@@ -94,6 +94,6 @@ public abstract class ConfigureNpcTalkPlugInsPlugInBase : UpdatePlugInBase
         }
 
         /// <inheritdoc />
-        public override object ResolveReference(string referenceId) => throw new NotSupportedException();
+        public override object ResolveReference(string referenceId) => throw new NotSupportedException($"This resolver only serializes references, so it can't resolve the reference '{referenceId}'.");
     }
 }
