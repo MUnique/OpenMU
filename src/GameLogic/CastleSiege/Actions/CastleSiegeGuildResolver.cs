@@ -67,4 +67,22 @@ internal static class CastleSiegeGuildResolver
             .GetPersistentAllianceMasterGuildIdAsync(guildStatus.GuildId)
             .ConfigureAwait(false);
     }
+
+    /// <summary>
+    /// Resolves the participating guild of a player who is the alliance master of their own guild.
+    /// </summary>
+    /// <param name="player">The requesting player.</param>
+    /// <param name="context">The Castle Siege context.</param>
+    /// <returns>The participant entry, or <see langword="null"/> when the player is not an authorized alliance master of a currently participating guild.</returns>
+    public static CastleSiegeGuildParticipant? ResolveParticipatingAllianceMaster(Player player, CastleSiegeContext context)
+    {
+        if (player.GuildStatus is not { Position: GuildPosition.GuildMaster } guildStatus
+            || !context.FinalGuildList.TryGetValue(guildStatus.GuildId, out var participant)
+            || !participant.IsAllianceMaster)
+        {
+            return null;
+        }
+
+        return participant;
+    }
 }
