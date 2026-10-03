@@ -4,6 +4,9 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
+using MUnique.OpenMU.GameLogic.PlugIns.AnimationCounters;
+using MUnique.OpenMU.PlugIns;
+
 /// <summary>
 /// Validator for skill hits, which were done by skills with type <see cref="SkillType.AreaSkillExplicitHits"/>.
 /// </summary>
@@ -12,19 +15,18 @@ public class SkillHitValidator
     private const int MinimumCounterValue = 1;
     private const int MaximumCounterValue = 0x32;
 
-    private const byte TwisterSkillId = 8;
-    private const byte EvilSpiritSkillId = 9;
-    private const byte MultishotSkillId = 235;
-
     private static readonly TimeSpan MaxAnimationToHitDelay = TimeSpan.FromSeconds(10);
 
     private readonly ILogger _logger;
 
+    private readonly PlugInManager? _plugInManager;
+
     private readonly HitEntry[] _hits = new HitEntry[MaximumCounterValue + 1];
 
-    private byte _lastTwisterIndex;
-
-    private byte _lastMultishotIndex;
+    /// <summary>
+    /// The counters of the last animations per skill.
+    /// </summary>
+    private readonly Dictionary<ushort, byte> _lastAnimationCounters = new();
 
     /// <summary>
     /// The game client doesn't reset its counter when it connects with a new account.
@@ -42,9 +44,11 @@ public class SkillHitValidator
     /// Initializes a new instance of the <see cref="SkillHitValidator"/> class.
     /// </summary>
     /// <param name="logger">The logger.</param>
-    public SkillHitValidator(ILogger logger)
+    /// <param name="plugInManager">The plug in manager, which provides the <see cref="ISkillAnimationCounterStrategy"/>s.</param>
+    public SkillHitValidator(ILogger logger, PlugInManager? plugInManager = null)
     {
         this._logger = logger;
+        this._plugInManager = plugInManager;
     }
 
     /// <summary>
@@ -63,21 +67,8 @@ public class SkillHitValidator
     /// <remarks>Basically, only skills with overlapping animations and hits send an animation counter greater than 0.</remarks>
     public bool TryRegisterAnimation(ushort skillId, byte animationCounter)
     {
-        if (skillId == TwisterSkillId)
-        {
-            // Twister is a implemented wrong at the client side. It sends a counter of the animations here, but not in the hit packets.
-            this._lastTwisterIndex = animationCounter;
-        }
-
-        if (skillId == MultishotSkillId)
-        {
-            // Multishot is a implemented wrong at the client side. It sends a counter of the animations here, but not in the hit packets.
-            this._lastMultishotIndex = animationCounter;
-        }
-
-        if (skillId == EvilSpiritSkillId
-            || skillId == TwisterSkillId
-            || animationCounter > 0)
+        this._lastAnimationCounters[skillId] = animationCounter;
+        if (this.GetStrategy(skillId)?.IsAnimationCounted(animationCounter) ?? animationCounter > 0)
         {
             if (this._isFirstAfterConnectionEstablished)
             {
@@ -119,16 +110,9 @@ public class SkillHitValidator
     /// </returns>
     public (bool IsValid, bool IncreaseCounter) IsHitValid(ushort skillId, byte animationCounter, byte hitCounter)
     {
-        if (animationCounter == 0 && skillId == TwisterSkillId)
+        if (this.GetStrategy(skillId) is { } strategy)
         {
-            // Twister is implemented wrong at the client side. It doesn't send an animation counter in hit packets.
-            animationCounter = this._lastTwisterIndex;
-        }
-
-        if (animationCounter == 0 && skillId == MultishotSkillId)
-        {
-            // Multishot is implemented wrong at the client side. It doesn't send an animation counter in hit packets.
-            animationCounter = this._lastMultishotIndex;
+            animationCounter = strategy.GetAnimationCounterOfHit(animationCounter, this._lastAnimationCounters.GetValueOrDefault(skillId));
         }
 
         if (this._hits[animationCounter] is { } animationEntry)
@@ -186,6 +170,11 @@ public class SkillHitValidator
             this._logger.LogWarning("Possible Hacker - Skill Hit Invalid because of missing previous animation.");
             return (false, false);
         }
+    }
+
+    private ISkillAnimationCounterStrategy? GetStrategy(ushort skillId)
+    {
+        return this._plugInManager?.GetStrategy<short, ISkillAnimationCounterStrategy>((short)skillId);
     }
 
     private void IncreaseExpectedCount()
