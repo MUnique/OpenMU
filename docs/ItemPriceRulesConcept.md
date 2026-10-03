@@ -86,10 +86,12 @@ Problems:
 
 Every price the calculator returns is derived from one **buying price**:
 
-```
-buying price  = Cap( GlobalModifiers( OptionModifiers( Quantity( BasePrice(item) ) ) ) )
+```text
+buying price  = Cap(GlobalModifiers(OptionModifiers(
+                    Quantity(BasePrice(item)))))
 final buying  = Round(buying price)
-selling price = Round( DurabilityLoss( buying price / 3 ) )        (per-rule rounding, see §4.1)
+selling price = Round(DurabilityLoss(buying price / 3))
+                (per-rule rounding, see §4.1)
 repair price  = unchanged, from final buying
 crafting ref. = rule.CraftingReferencePrice ?? final buying
 ```
@@ -115,41 +117,50 @@ definition, for example all Halloween items, or all one-handed weapons.
 
 ```csharp
 /// <summary>
-/// Defines how the price of an item is calculated, if it differs from the automatic
-/// price calculation of equipment.
+/// Defines how the price of an item is calculated, if it differs
+/// from the automatic price calculation of equipment.
 /// </summary>
 [Cloneable]
 public partial class ItemPriceDefinition
 {
-    /// <summary>Gets or sets the name, e.g. "Jewel of Bless" or "Halloween items".</summary>
+    /// <summary>
+    /// Gets or sets the name, e.g. "Jewel of Bless".
+    /// </summary>
     public LocalizedString Name { get; set; }
 
     /// <summary>
-    /// Gets or sets the formula (mXparser syntax) for the base price of one unit.
-    /// When it is <c>null</c>, the automatic equipment price is used.
-    /// Variables: see the table below.
+    /// Gets or sets the formula (mXparser syntax) for the base price
+    /// of one unit. When it is <c>null</c>, the automatic equipment
+    /// price is used. Variables: see the table below.
     /// </summary>
     public string? BasePriceFormula { get; set; }
 
     /// <summary>
-    /// Gets or sets fixed base prices for specific item levels. When an entry exists for
-    /// the level of the item, it takes precedence over the <see cref="BasePriceFormula"/>.
+    /// Gets or sets fixed base prices for specific item levels.
+    /// They take precedence over the <see cref="BasePriceFormula"/>.
     /// </summary>
     [MemberOfAggregate]
-    public virtual ICollection<ItemLevelPrice> PricePerLevel { get; protected set; } = null!;
+    public virtual ICollection<ItemLevelPrice> PricePerLevel { get; }
 
-    /// <summary>Gets or sets how the quantity (durability) of the item affects the price.</summary>
+    /// <summary>
+    /// Gets or sets how the quantity (durability) affects the price.
+    /// </summary>
     public ItemPriceQuantityScaling QuantityScaling { get; set; }
 
-    /// <summary>Gets or sets which option modifiers are applied on top of the base price.</summary>
+    /// <summary>
+    /// Gets or sets which option modifiers are applied.
+    /// </summary>
     public ItemPriceModifiers Modifiers { get; set; }
 
-    /// <summary>Gets or sets how the selling price is rounded.</summary>
+    /// <summary>
+    /// Gets or sets how the selling price is rounded.
+    /// </summary>
     public ItemPriceRounding SellingPriceRounding { get; set; }
 
     /// <summary>
-    /// Gets or sets the price which is used for the success rate of crafting instead of
-    /// the buying price. <c>null</c> means that the buying price is used.
+    /// Gets or sets the price which is used for the success rate of
+    /// crafting instead of the buying price. <c>null</c> means that
+    /// the buying price is used.
     /// </summary>
     public long? CraftingReferencePrice { get; set; }
 }
@@ -179,8 +190,9 @@ a reference:
 
 ```csharp
 /// <summary>
-/// Gets or sets the definition of how the price is calculated. When it is <c>null</c>,
-/// the price is calculated automatically, like for usual equipment.
+/// Gets or sets the definition of how the price is calculated.
+/// When it is <c>null</c>, the price is calculated automatically,
+/// like for usual equipment.
 /// </summary>
 public virtual ItemPriceDefinition? PriceDefinition { get; set; }
 ```
@@ -220,10 +232,10 @@ handler prices whole inventories, so we shouldn't parse a formula on every call.
 
 ### 4.3 Calculation with a definition
 
-```
+```text
 if definition.PricePerLevel has a row for item.Level → base = row.Price
-else if definition.BasePriceFormula is set            → base = Evaluate(formula)
-else                                                   → base = automaticPrice
+else if definition.BasePriceFormula is set → base = Evaluate(formula)
+else → base = automaticPrice
 base = Quantity(base, definition.QuantityScaling)
 price = ApplyModifiers(base, definition.Modifiers)   // fixed order, see §3
 price = price + 16 % if the item has a guardian option
