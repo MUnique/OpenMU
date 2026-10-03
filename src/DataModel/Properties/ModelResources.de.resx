@@ -1,0 +1,3117 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Account_TypeCaption" xml:space="preserve">
+    <value>Konto</value>
+  </data>
+  <data name="Account_TypeCaptionPlural" xml:space="preserve">
+    <value>Konten</value>
+  </data>
+  <data name="Account_LoginName_Caption" xml:space="preserve">
+    <value>Anmeldename</value>
+  </data>
+  <data name="Account_PasswordHash_Caption" xml:space="preserve">
+    <value>Passwort-Hash</value>
+  </data>
+  <data name="Account_SecurityCode_Caption" xml:space="preserve">
+    <value>Sicherheitscode</value>
+  </data>
+  <data name="Account_EMail_Caption" xml:space="preserve">
+    <value>E-Mail</value>
+  </data>
+  <data name="Account_LanguageIsoCode_Caption" xml:space="preserve">
+    <value>ISO-Code der Sprache</value>
+  </data>
+  <data name="Account_ChatBanUntil_Caption" xml:space="preserve">
+    <value>Chatsperre bis</value>
+  </data>
+  <data name="Account_UnlockedCharacterClasses_Caption" xml:space="preserve">
+    <value>Freigeschaltete Charakterklassen</value>
+  </data>
+  <data name="Account_RegistrationDate_Caption" xml:space="preserve">
+    <value>Registrierungsdatum</value>
+  </data>
+  <data name="Account_State_Caption" xml:space="preserve">
+    <value>Zustand</value>
+  </data>
+  <data name="Account_TimeZone_Caption" xml:space="preserve">
+    <value>Zeitzone</value>
+  </data>
+  <data name="Account_VaultPassword_Caption" xml:space="preserve">
+    <value>Tresorpasswort</value>
+  </data>
+  <data name="Account_Vault_Caption" xml:space="preserve">
+    <value>Tresor</value>
+  </data>
+  <data name="Account_IsVaultExtended_Caption" xml:space="preserve">
+    <value>Ist Tresor erweitert</value>
+  </data>
+  <data name="Account_IsTemplate_Caption" xml:space="preserve">
+    <value>Ist Vorlagenkonto</value>
+  </data>
+  <data name="Account_IsTemplate_Description" xml:space="preserve">
+    <value>Ein Vorlagenkonto kann sich zu Testzwecken mehrfach anmelden und ist schreibgeschützt.</value>
+  </data>
+  <data name="Account_Characters_Caption" xml:space="preserve">
+    <value>Charaktere</value>
+  </data>
+  <data name="Account_Attributes_Caption" xml:space="preserve">
+    <value>Attribute</value>
+  </data>
+  <data name="AccountState_TypeCaption" xml:space="preserve">
+    <value>Kontostatus</value>
+  </data>
+  <data name="AccountState_Spectator_Caption" xml:space="preserve">
+    <value>Zuschauer</value>
+  </data>
+  <data name="AccountState_GameMasterInvisible_Caption" xml:space="preserve">
+    <value>Game Master unsichtbar</value>
+  </data>
+  <data name="AccountState_Banned_Caption" xml:space="preserve">
+    <value>Gesperrt</value>
+  </data>
+  <data name="AccountState_TemporarilyBanned_Caption" xml:space="preserve">
+    <value>Vorübergehend gesperrt</value>
+  </data>
+  <data name="AggregateRootAttribute_TypeCaption" xml:space="preserve">
+    <value>Aggregat-Stammattribut</value>
+  </data>
+  <data name="AggregateRootAttribute_TypeCaptionPlural" xml:space="preserve">
+    <value>Aggregat-Stammattribute</value>
+  </data>
+  <data name="AppearanceData_TypeCaption" xml:space="preserve">
+    <value>Aussehensdaten</value>
+  </data>
+  <data name="AppearanceData_TypeCaptionPlural" xml:space="preserve">
+    <value>Aussehensdaten</value>
+  </data>
+  <data name="AppearanceData_CharacterClass_Caption" xml:space="preserve">
+    <value>Charakterklasse</value>
+  </data>
+  <data name="AppearanceData_CharacterStatus_Caption" xml:space="preserve">
+    <value>Charakterstatus</value>
+  </data>
+  <data name="AppearanceData_FullAncientSetEquipped_Caption" xml:space="preserve">
+    <value>Vollständiges antikes Set ausgerüstet</value>
+  </data>
+  <data name="AppearanceData_EquippedItems_Caption" xml:space="preserve">
+    <value>Ausgerüstete Gegenstände</value>
+  </data>
+  <data name="AreaSkillSettings_TypeCaption" xml:space="preserve">
+    <value>Einstellungen der Flächenfähigkeit</value>
+  </data>
+  <data name="AreaSkillSettings_TypeCaptionPlural" xml:space="preserve">
+    <value>Einstellungen der Flächenfähigkeit</value>
+  </data>
+  <data name="AreaSkillSettings_UseFrustumFilter_Caption" xml:space="preserve">
+    <value>Frustum-Filter verwenden</value>
+  </data>
+  <data name="AreaSkillSettings_FrustumStartWidth_Caption" xml:space="preserve">
+    <value>Frustum-Startbreite</value>
+  </data>
+  <data name="AreaSkillSettings_FrustumEndWidth_Caption" xml:space="preserve">
+    <value>Frustum-Endbreite</value>
+  </data>
+  <data name="AreaSkillSettings_FrustumDistance_Caption" xml:space="preserve">
+    <value>Frustum-Entfernung</value>
+  </data>
+  <data name="AreaSkillSettings_UseTargetAreaFilter_Caption" xml:space="preserve">
+    <value>Zielbereichsfilter verwenden</value>
+  </data>
+  <data name="AreaSkillSettings_TargetAreaDiameter_Caption" xml:space="preserve">
+    <value>Durchmesser des Zielbereichs</value>
+  </data>
+  <data name="AreaSkillSettings_UseDeferredHits_Caption" xml:space="preserve">
+    <value>Verzögerte Treffer verwenden</value>
+  </data>
+  <data name="AreaSkillSettings_DelayPerOneDistance_Caption" xml:space="preserve">
+    <value>Verzögerung pro Entfernungseinheit</value>
+  </data>
+  <data name="AreaSkillSettings_DelayBetweenHits_Caption" xml:space="preserve">
+    <value>Verzögerung zwischen Treffern</value>
+  </data>
+  <data name="AreaSkillSettings_MinimumNumberOfHitsPerTarget_Caption" xml:space="preserve">
+    <value>Minimale Anzahl an Treffern pro Ziel</value>
+  </data>
+  <data name="AreaSkillSettings_MaximumNumberOfHitsPerTarget_Caption" xml:space="preserve">
+    <value>Maximale Anzahl an Treffern pro Ziel</value>
+  </data>
+  <data name="AreaSkillSettings_MaximumNumberOfHitsPerAttack_Caption" xml:space="preserve">
+    <value>Maximale Anzahl an Treffern pro Angriff</value>
+  </data>
+  <data name="AreaSkillSettings_HitChancePerDistanceMultiplier_Caption" xml:space="preserve">
+    <value>Multiplikator der Trefferchance pro Entfernung</value>
+  </data>
+  <data name="AssignableExtensions_TypeCaption" xml:space="preserve">
+    <value>Zuweisbare Erweiterungen</value>
+  </data>
+  <data name="AssignableExtensions_TypeCaptionPlural" xml:space="preserve">
+    <value>Zuweisbare Erweiterungen</value>
+  </data>
+  <data name="AttributeRequirement_TypeCaption" xml:space="preserve">
+    <value>Attributanforderung</value>
+  </data>
+  <data name="AttributeRequirement_TypeCaptionPlural" xml:space="preserve">
+    <value>Attributanforderungen</value>
+  </data>
+  <data name="AttributeRequirement_Attribute_Caption" xml:space="preserve">
+    <value>Attribut</value>
+  </data>
+  <data name="AttributeRequirement_MinimumValue_Caption" xml:space="preserve">
+    <value>Minimalwert</value>
+  </data>
+  <data name="BattleType_TypeCaption" xml:space="preserve">
+    <value>Kampftyp</value>
+  </data>
+  <data name="BattleZoneDefinition_TypeCaption" xml:space="preserve">
+    <value>Kampfzonen</value>
+  </data>
+  <data name="BattleZoneDefinition_TypeCaptionPlural" xml:space="preserve">
+    <value>Kampfzonen</value>
+  </data>
+  <data name="BattleZoneDefinition_Type_Caption" xml:space="preserve">
+    <value>Typ</value>
+  </data>
+  <data name="BattleZoneDefinition_LeftTeamSpawnPointX_Caption" xml:space="preserve">
+    <value>Spawnpunkt X des linken Teams</value>
+  </data>
+  <data name="BattleZoneDefinition_LeftTeamSpawnPointY_Caption" xml:space="preserve">
+    <value>Spawnpunkt Y des linken Teams</value>
+  </data>
+  <data name="BattleZoneDefinition_RightTeamSpawnPointX_Caption" xml:space="preserve">
+    <value>Spawnpunkt X des rechten Teams</value>
+  </data>
+  <data name="BattleZoneDefinition_RightTeamSpawnPointY_Caption" xml:space="preserve">
+    <value>Spawnpunkt Y des rechten Teams</value>
+  </data>
+  <data name="BattleZoneDefinition_Ground_Caption" xml:space="preserve">
+    <value>Boden</value>
+  </data>
+  <data name="BattleZoneDefinition_LeftGoal_Caption" xml:space="preserve">
+    <value>Linkes Tor</value>
+  </data>
+  <data name="BattleZoneDefinition_RightGoal_Caption" xml:space="preserve">
+    <value>Rechtes Tor</value>
+  </data>
+  <data name="Character_TypeCaption" xml:space="preserve">
+    <value>Charakter</value>
+  </data>
+  <data name="Character_TypeCaptionPlural" xml:space="preserve">
+    <value>Charaktere</value>
+  </data>
+  <data name="Character_CharacterClass_Caption" xml:space="preserve">
+    <value>Charakterklasse</value>
+  </data>
+  <data name="Character_CharacterSlot_Caption" xml:space="preserve">
+    <value>Charakterplatz</value>
+  </data>
+  <data name="Character_CreateDate_Caption" xml:space="preserve">
+    <value>Erstellungsdatum</value>
+  </data>
+  <data name="Character_Experience_Caption" xml:space="preserve">
+    <value>Erfahrung</value>
+  </data>
+  <data name="Character_MasterExperience_Caption" xml:space="preserve">
+    <value>Master-Erfahrung</value>
+  </data>
+  <data name="Character_LevelUpPoints_Caption" xml:space="preserve">
+    <value>Level-up-Punkte</value>
+  </data>
+  <data name="Character_MasterLevelUpPoints_Caption" xml:space="preserve">
+    <value>Master-Level-up-Punkte</value>
+  </data>
+  <data name="Character_CurrentMap_Caption" xml:space="preserve">
+    <value>Aktuelle Karte</value>
+  </data>
+  <data name="Character_PlayerKillCount_Caption" xml:space="preserve">
+    <value>Anzahl der Spielermorde</value>
+  </data>
+  <data name="Character_StateRemainingSeconds_Caption" xml:space="preserve">
+    <value>Verbleibende Sekunden des Zustands</value>
+  </data>
+  <data name="Character_State_Caption" xml:space="preserve">
+    <value>Zustand</value>
+  </data>
+  <data name="Character_CharacterStatus_Caption" xml:space="preserve">
+    <value>Charakterstatus</value>
+  </data>
+  <data name="Character_UsedFruitPoints_Caption" xml:space="preserve">
+    <value>Verwendete Fruchtpunkte</value>
+  </data>
+  <data name="Character_UsedNegFruitPoints_Caption" xml:space="preserve">
+    <value>Verwendete negative Fruchtpunkte</value>
+  </data>
+  <data name="Character_InventoryExtensions_Caption" xml:space="preserve">
+    <value>Inventarerweiterungen</value>
+  </data>
+  <data name="Character_KeyConfiguration_Caption" xml:space="preserve">
+    <value>Tastenkonfiguration</value>
+  </data>
+  <data name="Character_MuHelperConfiguration_Caption" xml:space="preserve">
+    <value>MU-Helper-Konfiguration</value>
+  </data>
+  <data name="Character_StoreName_Caption" xml:space="preserve">
+    <value>Ladenname</value>
+  </data>
+  <data name="Character_IsStoreOpened_Caption" xml:space="preserve">
+    <value>Ist Laden geöffnet</value>
+  </data>
+  <data name="Character_Attributes_Caption" xml:space="preserve">
+    <value>Attribute</value>
+  </data>
+  <data name="Character_Letters_Caption" xml:space="preserve">
+    <value>Briefe</value>
+  </data>
+  <data name="Character_LearnedSkills_Caption" xml:space="preserve">
+    <value>Erlernte Fähigkeiten</value>
+  </data>
+  <data name="Character_Inventory_Caption" xml:space="preserve">
+    <value>Inventar</value>
+  </data>
+  <data name="Character_DropItemGroups_Caption" xml:space="preserve">
+    <value>Drop-Gegenstandsgruppen</value>
+  </data>
+  <data name="Character_QuestStates_Caption" xml:space="preserve">
+    <value>Queststatus</value>
+  </data>
+  <data name="CharacterClass_TypeCaption" xml:space="preserve">
+    <value>Charakterklasse</value>
+  </data>
+  <data name="CharacterClass_TypeCaptionPlural" xml:space="preserve">
+    <value>Charakterklasse</value>
+  </data>
+  <data name="CharacterClass_Number_Caption" xml:space="preserve">
+    <value>Nummer</value>
+  </data>
+  <data name="CharacterClass_CanGetCreated_Caption" xml:space="preserve">
+    <value>Kann erstellt werden</value>
+  </data>
+  <data name="CharacterClass_LevelRequirementByCreation_Caption" xml:space="preserve">
+    <value>Level-Anforderung bei Erstellung</value>
+  </data>
+  <data name="CharacterClass_CreationAllowedFlag_Caption" xml:space="preserve">
+    <value>Kennzeichen für erlaubte Erstellung</value>
+  </data>
+  <data name="CharacterClass_NextGenerationClass_Caption" xml:space="preserve">
+    <value>Klasse der nächsten Generation</value>
+  </data>
+  <data name="CharacterClass_IsMasterClass_Caption" xml:space="preserve">
+    <value>Ist Meisterklasse</value>
+  </data>
+  <data name="CharacterClass_LevelWarpRequirementReductionPercent_Caption" xml:space="preserve">
+    <value>Prozentuale Reduzierung der Level-Anforderung für Warps</value>
+  </data>
+  <data name="CharacterClass_FruitCalculation_Caption" xml:space="preserve">
+    <value>Fruchtberechnung</value>
+  </data>
+  <data name="CharacterClass_StatAttributes_Caption" xml:space="preserve">
+    <value>Statusattribute</value>
+  </data>
+  <data name="CharacterClass_AttributeCombinations_Caption" xml:space="preserve">
+    <value>Attributkombinationen</value>
+  </data>
+  <data name="CharacterClass_BaseAttributeValues_Caption" xml:space="preserve">
+    <value>Basisattributwerte</value>
+  </data>
+  <data name="CharacterClass_HomeMap_Caption" xml:space="preserve">
+    <value>Heimatkarte</value>
+  </data>
+  <data name="CharacterClass_ComboDefinition_Caption" xml:space="preserve">
+    <value>Kombos</value>
+  </data>
+  <data name="CharacterPose_TypeCaption" xml:space="preserve">
+    <value>Charakterpose</value>
+  </data>
+  <data name="CharacterPose_Standing_Caption" xml:space="preserve">
+    <value>Stehend</value>
+  </data>
+  <data name="CharacterPose_Sitting_Caption" xml:space="preserve">
+    <value>Sitzend</value>
+  </data>
+  <data name="CharacterPose_Leaning_Caption" xml:space="preserve">
+    <value>Anlehnend</value>
+  </data>
+  <data name="CharacterPose_Hanging_Caption" xml:space="preserve">
+    <value>Hängend</value>
+  </data>
+  <data name="CharacterQuestState_TypeCaption" xml:space="preserve">
+    <value>Queststatus des Charakters</value>
+  </data>
+  <data name="CharacterQuestState_TypeCaptionPlural" xml:space="preserve">
+    <value>Queststatus des Charakters</value>
+  </data>
+  <data name="CharacterQuestState_Group_Caption" xml:space="preserve">
+    <value>Gruppe</value>
+  </data>
+  <data name="CharacterQuestState_ClientActionPerformed_Caption" xml:space="preserve">
+    <value>Client-Aktion ausgeführt</value>
+  </data>
+  <data name="CharacterQuestState_LastFinishedQuest_Caption" xml:space="preserve">
+    <value>Zuletzt abgeschlossene Quest</value>
+  </data>
+  <data name="CharacterQuestState_ActiveQuest_Caption" xml:space="preserve">
+    <value>Aktive Quest</value>
+  </data>
+  <data name="CharacterQuestState_RequirementStates_Caption" xml:space="preserve">
+    <value>Anforderungsstatus</value>
+  </data>
+  <data name="CharacterStatus_TypeCaption" xml:space="preserve">
+    <value>Charakterstatus</value>
+  </data>
+  <data name="CharacterStatus_Banned_Caption" xml:space="preserve">
+    <value>Gesperrt</value>
+  </data>
+  <data name="ChatServerDefinition_TypeCaption" xml:space="preserve">
+    <value>Chat-Server</value>
+  </data>
+  <data name="ChatServerDefinition_TypeCaptionPlural" xml:space="preserve">
+    <value>Chat-Server</value>
+  </data>
+  <data name="ChatServerDefinition_ServerId_Caption" xml:space="preserve">
+    <value>Server-Id</value>
+  </data>
+  <data name="ChatServerDefinition_Description_Caption" xml:space="preserve">
+    <value>Beschreibung</value>
+  </data>
+  <data name="ChatServerDefinition_MaximumConnections_Caption" xml:space="preserve">
+    <value>Maximale Verbindungen</value>
+  </data>
+  <data name="ChatServerDefinition_ClientTimeout_Caption" xml:space="preserve">
+    <value>Client-Zeitlimit</value>
+  </data>
+  <data name="ChatServerDefinition_ClientCleanUpInterval_Caption" xml:space="preserve">
+    <value>Bereinigungsintervall für Clients</value>
+  </data>
+  <data name="ChatServerDefinition_RoomCleanUpInterval_Caption" xml:space="preserve">
+    <value>Bereinigungsintervall für Räume</value>
+  </data>
+  <data name="ChatServerDefinition_Endpoints_Caption" xml:space="preserve">
+    <value>Endpunkte</value>
+  </data>
+  <data name="ChatServerEndpoint_TypeCaption" xml:space="preserve">
+    <value>Chat-Server-Endpunkt</value>
+  </data>
+  <data name="ChatServerEndpoint_TypeCaptionPlural" xml:space="preserve">
+    <value>Chat-Server-Endpunkte</value>
+  </data>
+  <data name="CombinationBonusRequirement_TypeCaption" xml:space="preserve">
+    <value>Anforderung für Kombinationsbonus</value>
+  </data>
+  <data name="CombinationBonusRequirement_TypeCaptionPlural" xml:space="preserve">
+    <value>Anforderungen für Kombinationsbonus</value>
+  </data>
+  <data name="CombinationBonusRequirement_OptionType_Caption" xml:space="preserve">
+    <value>Optionstyp</value>
+  </data>
+  <data name="CombinationBonusRequirement_SubOptionType_Caption" xml:space="preserve">
+    <value>Unteroptionstyp</value>
+  </data>
+  <data name="CombinationBonusRequirement_MinimumCount_Caption" xml:space="preserve">
+    <value>Minimale Anzahl</value>
+  </data>
+  <data name="ConfigurationUpdate_TypeCaption" xml:space="preserve">
+    <value>Konfigurationsaktualisierung</value>
+  </data>
+  <data name="ConfigurationUpdate_TypeCaptionPlural" xml:space="preserve">
+    <value>Konfigurationsaktualisierungen</value>
+  </data>
+  <data name="ConfigurationUpdate_Key_Caption" xml:space="preserve">
+    <value>Schlüssel</value>
+  </data>
+  <data name="ConfigurationUpdate_Description_Caption" xml:space="preserve">
+    <value>Beschreibung</value>
+  </data>
+  <data name="ConfigurationUpdate_CreatedAt_Caption" xml:space="preserve">
+    <value>Erstellt am</value>
+  </data>
+  <data name="ConfigurationUpdate_InstalledAt_Caption" xml:space="preserve">
+    <value>Installiert am</value>
+  </data>
+  <data name="ConfigurationUpdateState_TypeCaption" xml:space="preserve">
+    <value>Status der Konfigurationsaktualisierung</value>
+  </data>
+  <data name="ConfigurationUpdateState_TypeCaptionPlural" xml:space="preserve">
+    <value>Status der Konfigurationsaktualisierungen</value>
+  </data>
+  <data name="ConfigurationUpdateState_InitializationKey_Caption" xml:space="preserve">
+    <value>Initialisierungsschlüssel</value>
+  </data>
+  <data name="ConnectServerDefinition_TypeCaption" xml:space="preserve">
+    <value>Connect-Server</value>
+  </data>
+  <data name="ConnectServerDefinition_TypeCaptionPlural" xml:space="preserve">
+    <value>Connect-Server</value>
+  </data>
+  <data name="ConnectServerDefinition_ConfigurationId_Caption" xml:space="preserve">
+    <value>Konfigurations-Id</value>
+  </data>
+  <data name="ConnectServerDefinition_ServerId_Caption" xml:space="preserve">
+    <value>Server-Id</value>
+  </data>
+  <data name="ConnectServerDefinition_Description_Caption" xml:space="preserve">
+    <value>Beschreibung</value>
+  </data>
+  <data name="ConnectServerDefinition_DisconnectOnUnknownPacket_Caption" xml:space="preserve">
+    <value>Bei unbekanntem Paket trennen</value>
+  </data>
+  <data name="ConnectServerDefinition_MaximumReceiveSize_Caption" xml:space="preserve">
+    <value>Maximale Empfangsgröße</value>
+  </data>
+  <data name="ConnectServerDefinition_ClientListenerPort_Caption" xml:space="preserve">
+    <value>Lausch-Port für Clients</value>
+  </data>
+  <data name="ConnectServerDefinition_Timeout_Caption" xml:space="preserve">
+    <value>Zeitlimit</value>
+  </data>
+  <data name="ConnectServerDefinition_CurrentPatchVersion_Caption" xml:space="preserve">
+    <value>Aktuelle Patch-Version</value>
+  </data>
+  <data name="ConnectServerDefinition_PatchAddress_Caption" xml:space="preserve">
+    <value>Patch-Adresse</value>
+  </data>
+  <data name="ConnectServerDefinition_MaxConnectionsPerAddress_Caption" xml:space="preserve">
+    <value>Max. Verbindungen pro Adresse</value>
+  </data>
+  <data name="ConnectServerDefinition_CheckMaxConnectionsPerAddress_Caption" xml:space="preserve">
+    <value>Max. Verbindungen pro Adresse prüfen</value>
+  </data>
+  <data name="ConnectServerDefinition_MaxConnections_Caption" xml:space="preserve">
+    <value>Max. Verbindungen</value>
+  </data>
+  <data name="ConnectServerDefinition_ListenerBacklog_Caption" xml:space="preserve">
+    <value>Warteschlange des Listeners</value>
+  </data>
+  <data name="ConnectServerDefinition_MaxFtpRequests_Caption" xml:space="preserve">
+    <value>Max. FTP-Anfragen</value>
+  </data>
+  <data name="ConnectServerDefinition_MaxIpRequests_Caption" xml:space="preserve">
+    <value>Max. IP-Anfragen</value>
+  </data>
+  <data name="ConnectServerDefinition_MaxServerListRequests_Caption" xml:space="preserve">
+    <value>Max. Serverlisten-Anfragen</value>
+  </data>
+  <data name="DamageType_TypeCaption" xml:space="preserve">
+    <value>Schadensart</value>
+  </data>
+  <data name="DamageType_None_Caption" xml:space="preserve">
+    <value>Keine</value>
+  </data>
+  <data name="DamageType_Physical_Caption" xml:space="preserve">
+    <value>Physisch</value>
+  </data>
+  <data name="DamageType_Wizardry_Caption" xml:space="preserve">
+    <value>Zauberei</value>
+  </data>
+  <data name="DamageType_Curse_Caption" xml:space="preserve">
+    <value>Fluch</value>
+  </data>
+  <data name="DamageType_SummonedMonster_Caption" xml:space="preserve">
+    <value>Beschworenes Monster</value>
+  </data>
+  <data name="DamageType_All_Caption" xml:space="preserve">
+    <value>Alle</value>
+  </data>
+  <data name="Direction_TypeCaption" xml:space="preserve">
+    <value>Richtung</value>
+  </data>
+  <data name="Direction_Undefined_Caption" xml:space="preserve">
+    <value>Undefiniert</value>
+  </data>
+  <data name="Direction_West_Caption" xml:space="preserve">
+    <value>Westen</value>
+  </data>
+  <data name="Direction_SouthWest_Caption" xml:space="preserve">
+    <value>Südwesten</value>
+  </data>
+  <data name="Direction_South_Caption" xml:space="preserve">
+    <value>Süden</value>
+  </data>
+  <data name="Direction_SouthEast_Caption" xml:space="preserve">
+    <value>Südosten</value>
+  </data>
+  <data name="Direction_East_Caption" xml:space="preserve">
+    <value>Osten</value>
+  </data>
+  <data name="Direction_NorthEast_Caption" xml:space="preserve">
+    <value>Nordosten</value>
+  </data>
+  <data name="Direction_North_Caption" xml:space="preserve">
+    <value>Norden</value>
+  </data>
+  <data name="Direction_NorthWest_Caption" xml:space="preserve">
+    <value>Nordwesten</value>
+  </data>
+  <data name="DropItemGroup_TypeCaption" xml:space="preserve">
+    <value>Drop-Gegenstandsgruppe</value>
+  </data>
+  <data name="DropItemGroup_TypeCaptionPlural" xml:space="preserve">
+    <value>Drop-Gegenstandsgruppen</value>
+  </data>
+  <data name="DropItemGroup_Description_Caption" xml:space="preserve">
+    <value>Beschreibung</value>
+  </data>
+  <data name="DropItemGroup_MinimumMonsterLevel_Caption" xml:space="preserve">
+    <value>Minimales Monsterlevel</value>
+  </data>
+  <data name="DropItemGroup_MaximumMonsterLevel_Caption" xml:space="preserve">
+    <value>Maximales Monsterlevel</value>
+  </data>
+  <data name="DropItemGroup_ItemLevel_Caption" xml:space="preserve">
+    <value>Gegenstandslevel</value>
+  </data>
+  <data name="DropItemGroup_ItemType_Caption" xml:space="preserve">
+    <value>Gegenstandstyp</value>
+  </data>
+  <data name="DropItemGroup_PossibleItems_Caption" xml:space="preserve">
+    <value>Mögliche Gegenstände</value>
+  </data>
+  <data name="DuelArea_TypeCaption" xml:space="preserve">
+    <value>Duellbereich</value>
+  </data>
+  <data name="DuelArea_TypeCaptionPlural" xml:space="preserve">
+    <value>Duellbereiche</value>
+  </data>
+  <data name="DuelArea_FirstPlayerGate_Caption" xml:space="preserve">
+    <value>Tor des ersten Spielers</value>
+  </data>
+  <data name="DuelArea_SecondPlayerGate_Caption" xml:space="preserve">
+    <value>Tor des zweiten Spielers</value>
+  </data>
+  <data name="DuelArea_SpectatorsGate_Caption" xml:space="preserve">
+    <value>Zuschauertor</value>
+  </data>
+  <data name="DuelConfiguration_TypeCaption" xml:space="preserve">
+    <value>Duellkonfiguration</value>
+  </data>
+  <data name="DuelConfiguration_TypeCaptionPlural" xml:space="preserve">
+    <value>Duellkonfigurationen</value>
+  </data>
+  <data name="DuelConfiguration_MaximumScore_Caption" xml:space="preserve">
+    <value>Maximale Punktzahl</value>
+  </data>
+  <data name="DuelConfiguration_EntranceFee_Caption" xml:space="preserve">
+    <value>Eintrittsgebühr</value>
+  </data>
+  <data name="DuelConfiguration_MinimumCharacterLevel_Caption" xml:space="preserve">
+    <value>Minimales Charakterlevel</value>
+  </data>
+  <data name="DuelConfiguration_MaximumSpectatorsPerDuelRoom_Caption" xml:space="preserve">
+    <value>Maximale Zuschauer pro Duellraum</value>
+  </data>
+  <data name="DuelConfiguration_Exit_Caption" xml:space="preserve">
+    <value>Ausgang</value>
+  </data>
+  <data name="DuelConfiguration_DuelAreas_Caption" xml:space="preserve">
+    <value>Duellbereiche</value>
+  </data>
+  <data name="EnterGate_TypeCaption" xml:space="preserve">
+    <value>Eingangstor</value>
+  </data>
+  <data name="EnterGate_TypeCaptionPlural" xml:space="preserve">
+    <value>Eingangstore</value>
+  </data>
+  <data name="EnterGate_TargetGate_Caption" xml:space="preserve">
+    <value>Zieltor</value>
+  </data>
+  <data name="EnterGate_LevelRequirement_Caption" xml:space="preserve">
+    <value>Level-Anforderung</value>
+  </data>
+  <data name="EnterGate_Number_Caption" xml:space="preserve">
+    <value>Nummer</value>
+  </data>
+  <data name="Error_TypeCaption" xml:space="preserve">
+    <value>Fehler</value>
+  </data>
+  <data name="Error_TypeCaptionPlural" xml:space="preserve">
+    <value>Fehler</value>
+  </data>
+  <data name="ExitGate_TypeCaption" xml:space="preserve">
+    <value>Ausgangstor</value>
+  </data>
+  <data name="ExitGate_TypeCaptionPlural" xml:space="preserve">
+    <value>Ausgangstore</value>
+  </data>
+  <data name="ExitGate_Direction_Caption" xml:space="preserve">
+    <value>Richtung</value>
+  </data>
+  <data name="ExitGate_Map_Caption" xml:space="preserve">
+    <value>Karte</value>
+  </data>
+  <data name="ExitGate_IsSpawnGate_Caption" xml:space="preserve">
+    <value>Ist Spawn-Tor</value>
+  </data>
+  <data name="FruitCalculationStrategy_TypeCaption" xml:space="preserve">
+    <value>Strategie der Fruchtberechnung</value>
+  </data>
+  <data name="FruitCalculationStrategy_Default_Caption" xml:space="preserve">
+    <value>Standard</value>
+  </data>
+  <data name="FruitCalculationStrategy_MagicGladiator_Caption" xml:space="preserve">
+    <value>Magischer Gladiator</value>
+  </data>
+  <data name="FruitCalculationStrategy_DarkLord_Caption" xml:space="preserve">
+    <value>Dunkler Lord</value>
+  </data>
+  <data name="GameClientDefinition_TypeCaption" xml:space="preserve">
+    <value>Spielclients</value>
+  </data>
+  <data name="GameClientDefinition_TypeCaptionPlural" xml:space="preserve">
+    <value>Spielclients</value>
+  </data>
+  <data name="GameClientDefinition_Language_Caption" xml:space="preserve">
+    <value>Sprache</value>
+  </data>
+  <data name="GameClientDefinition_Serial_Caption" xml:space="preserve">
+    <value>Seriennummer</value>
+  </data>
+  <data name="GameClientDefinition_Description_Caption" xml:space="preserve">
+    <value>Beschreibung</value>
+  </data>
+  <data name="GameConfiguration_TypeCaption" xml:space="preserve">
+    <value>Spielkonfiguration</value>
+  </data>
+  <data name="GameConfiguration_TypeCaptionPlural" xml:space="preserve">
+    <value>Spielkonfigurationen</value>
+  </data>
+  <data name="GameConfiguration_MaximumLevel_Caption" xml:space="preserve">
+    <value>Maximales Level</value>
+  </data>
+  <data name="GameConfiguration_MaximumMasterLevel_Caption" xml:space="preserve">
+    <value>Maximales Master-Level</value>
+  </data>
+  <data name="GameConfiguration_ExperienceRate_Caption" xml:space="preserve">
+    <value>Erfahrungsrate</value>
+  </data>
+  <data name="GameConfiguration_MasterExperienceRate_Caption" xml:space="preserve">
+    <value>Master-Erfahrungsrate</value>
+  </data>
+  <data name="GameConfiguration_PreventExperienceOverflow_Caption" xml:space="preserve">
+    <value>Erfahrungsüberlauf verhindern</value>
+  </data>
+  <data name="GameConfiguration_MinimumMonsterLevelForMasterExperience_Caption" xml:space="preserve">
+    <value>Minimales Monsterlevel für Master-Erfahrung</value>
+  </data>
+  <data name="GameConfiguration_InfoRange_Caption" xml:space="preserve">
+    <value>Info-Reichweite</value>
+  </data>
+  <data name="GameConfiguration_AreaSkillHitsPlayer_Caption" xml:space="preserve">
+    <value>Flächenfähigkeit trifft Spieler</value>
+  </data>
+  <data name="GameConfiguration_MaximumInventoryMoney_Caption" xml:space="preserve">
+    <value>Maximales Geld im Inventar</value>
+  </data>
+  <data name="GameConfiguration_MaximumVaultMoney_Caption" xml:space="preserve">
+    <value>Maximales Geld im Tresor</value>
+  </data>
+  <data name="GameConfiguration_ClampMoneyOnPickup_Caption" xml:space="preserve">
+    <value>Geld beim Aufheben begrenzen</value>
+  </data>
+  <data name="GameConfiguration_ExperienceFormula_Caption" xml:space="preserve">
+    <value>Erfahrungsformel</value>
+  </data>
+  <data name="GameConfiguration_MasterExperienceFormula_Caption" xml:space="preserve">
+    <value>Formel für Master-Erfahrung</value>
+  </data>
+  <data name="GameConfiguration_RecoveryInterval_Caption" xml:space="preserve">
+    <value>Regenerationsintervall</value>
+  </data>
+  <data name="GameConfiguration_MaximumLetters_Caption" xml:space="preserve">
+    <value>Maximale Anzahl an Briefen</value>
+  </data>
+  <data name="GameConfiguration_LetterSendPrice_Caption" xml:space="preserve">
+    <value>Preis für den Briefversand</value>
+  </data>
+  <data name="GameConfiguration_MaximumCharactersPerAccount_Caption" xml:space="preserve">
+    <value>Maximale Charaktere pro Konto</value>
+  </data>
+  <data name="GameConfiguration_CharacterNameRegex_Caption" xml:space="preserve">
+    <value>Regex für Charakternamen</value>
+  </data>
+  <data name="GameConfiguration_MaximumPasswordLength_Caption" xml:space="preserve">
+    <value>Maximale Passwortlänge</value>
+  </data>
+  <data name="GameConfiguration_MaximumPartySize_Caption" xml:space="preserve">
+    <value>Maximale Partygröße</value>
+  </data>
+  <data name="GameConfiguration_ShouldDropMoney_Caption" xml:space="preserve">
+    <value>Soll Geld droppen</value>
+  </data>
+  <data name="GameConfiguration_ItemDropDuration_Caption" xml:space="preserve">
+    <value>Liegedauer von Gegenstands-Drops</value>
+  </data>
+  <data name="GameConfiguration_MaximumItemOptionLevelDrop_Caption" xml:space="preserve">
+    <value>Maximales Level der Gegenstandsoption bei Drops</value>
+  </data>
+  <data name="GameConfiguration_DamagePerOneItemDurability_Caption" xml:space="preserve">
+    <value>Schaden pro Haltbarkeitspunkt des Gegenstands</value>
+  </data>
+  <data name="GameConfiguration_DamagePerOnePetDurability_Caption" xml:space="preserve">
+    <value>Schaden pro Haltbarkeitspunkt des Haustiers</value>
+  </data>
+  <data name="GameConfiguration_HitsPerOneItemDurability_Caption" xml:space="preserve">
+    <value>Treffer pro Haltbarkeitspunkt des Gegenstands</value>
+  </data>
+  <data name="GameConfiguration_DuelConfiguration_Caption" xml:space="preserve">
+    <value>Duellkonfiguration</value>
+  </data>
+  <data name="GameConfiguration_JewelMixes_Caption" xml:space="preserve">
+    <value>Juwelenkombinationen</value>
+  </data>
+  <data name="GameConfiguration_WarpList_Caption" xml:space="preserve">
+    <value>Warp-Liste</value>
+  </data>
+  <data name="GameConfiguration_DropItemGroups_Caption" xml:space="preserve">
+    <value>Drop-Gegenstandsgruppen</value>
+  </data>
+  <data name="GameConfiguration_Skills_Caption" xml:space="preserve">
+    <value>Fähigkeiten</value>
+  </data>
+  <data name="GameConfiguration_CharacterClasses_Caption" xml:space="preserve">
+    <value>Charakterklassen</value>
+  </data>
+  <data name="GameConfiguration_Items_Caption" xml:space="preserve">
+    <value>Gegenstände</value>
+  </data>
+  <data name="GameConfiguration_ItemLevelBonusTables_Caption" xml:space="preserve">
+    <value>Bonustabellen für Gegenstandslevel</value>
+  </data>
+  <data name="GameConfiguration_ItemSlotTypes_Caption" xml:space="preserve">
+    <value>Typen der Gegenstandsplätze</value>
+  </data>
+  <data name="GameConfiguration_ItemOptions_Caption" xml:space="preserve">
+    <value>Gegenstandsoptionen</value>
+  </data>
+  <data name="GameConfiguration_ItemOptionTypes_Caption" xml:space="preserve">
+    <value>Typen der Gegenstandsoptionen</value>
+  </data>
+  <data name="GameConfiguration_ItemSetGroups_Caption" xml:space="preserve">
+    <value>Gegenstandssetgruppen</value>
+  </data>
+  <data name="GameConfiguration_ItemOptionCombinationBonuses_Caption" xml:space="preserve">
+    <value>Kombinationsboni von Gegenstandsoptionen</value>
+  </data>
+  <data name="GameConfiguration_Maps_Caption" xml:space="preserve">
+    <value>Karten</value>
+  </data>
+  <data name="GameConfiguration_Monsters_Caption" xml:space="preserve">
+    <value>Monster</value>
+  </data>
+  <data name="GameConfiguration_Attributes_Caption" xml:space="preserve">
+    <value>Attribute</value>
+  </data>
+  <data name="GameConfiguration_MagicEffects_Caption" xml:space="preserve">
+    <value>Magische Effekte</value>
+  </data>
+  <data name="GameConfiguration_MasterSkillRoots_Caption" xml:space="preserve">
+    <value>Wurzeln der Meisterfähigkeiten</value>
+  </data>
+  <data name="GameConfiguration_PlugInConfigurations_Caption" xml:space="preserve">
+    <value>Plugin-Konfigurationen</value>
+  </data>
+  <data name="GameConfiguration_MiniGameDefinitions_Caption" xml:space="preserve">
+    <value>Minispiele</value>
+  </data>
+  <data name="GameConfigurationHelper_TypeCaption" xml:space="preserve">
+    <value>Hilfsklasse der Spielkonfiguration</value>
+  </data>
+  <data name="GameConfigurationHelper_TypeCaptionPlural" xml:space="preserve">
+    <value>Hilfsklassen der Spielkonfiguration</value>
+  </data>
+  <data name="GameMapDefinition_TypeCaption" xml:space="preserve">
+    <value>Spielkarten</value>
+  </data>
+  <data name="GameMapDefinition_TypeCaptionPlural" xml:space="preserve">
+    <value>Spielkarten</value>
+  </data>
+  <data name="GameMapDefinition_Number_Caption" xml:space="preserve">
+    <value>Nummer</value>
+  </data>
+  <data name="GameMapDefinition_TerrainData_Caption" xml:space="preserve">
+    <value>Geländedaten</value>
+  </data>
+  <data name="GameMapDefinition_MonsterSpawns_Caption" xml:space="preserve">
+    <value>Monster-Spawns</value>
+  </data>
+  <data name="GameMapDefinition_EnterGates_Caption" xml:space="preserve">
+    <value>Eingangstore</value>
+  </data>
+  <data name="GameMapDefinition_ExpMultiplier_Caption" xml:space="preserve">
+    <value>Erfahrungsmultiplikator</value>
+  </data>
+  <data name="GameMapDefinition_Discriminator_Caption" xml:space="preserve">
+    <value>Diskriminator</value>
+  </data>
+  <data name="GameMapDefinition_SafezoneMap_Caption" xml:space="preserve">
+    <value>Karte der sicheren Zone</value>
+  </data>
+  <data name="GameMapDefinition_BattleZone_Caption" xml:space="preserve">
+    <value>Kampfzone</value>
+  </data>
+  <data name="GameMapDefinition_ExitGates_Caption" xml:space="preserve">
+    <value>Ausgangstore</value>
+  </data>
+  <data name="GameMapDefinition_DropItemGroups_Caption" xml:space="preserve">
+    <value>Drop-Gegenstandsgruppen</value>
+  </data>
+  <data name="GameMapDefinition_MapRequirements_Caption" xml:space="preserve">
+    <value>Kartenanforderungen</value>
+  </data>
+  <data name="GameMapDefinition_CharacterPowerUpDefinitions_Caption" xml:space="preserve">
+    <value>Charakter-Verstärkungen</value>
+  </data>
+  <data name="GameServerConfiguration_TypeCaption" xml:space="preserve">
+    <value>Game-Server-Konfiguration</value>
+  </data>
+  <data name="GameServerConfiguration_TypeCaptionPlural" xml:space="preserve">
+    <value>Game-Server-Konfigurationen</value>
+  </data>
+  <data name="GameServerConfiguration_MaximumPlayers_Caption" xml:space="preserve">
+    <value>Maximale Spieler</value>
+  </data>
+  <data name="GameServerConfiguration_Maps_Caption" xml:space="preserve">
+    <value>Karten</value>
+  </data>
+  <data name="GameServerDefinition_TypeCaption" xml:space="preserve">
+    <value>Game-Server</value>
+  </data>
+  <data name="GameServerDefinition_TypeCaptionPlural" xml:space="preserve">
+    <value>Game-Server</value>
+  </data>
+  <data name="GameServerDefinition_ServerID_Caption" xml:space="preserve">
+    <value>Server-ID</value>
+  </data>
+  <data name="GameServerDefinition_Description_Caption" xml:space="preserve">
+    <value>Beschreibung</value>
+  </data>
+  <data name="GameServerDefinition_ExperienceRate_Caption" xml:space="preserve">
+    <value>Erfahrungsrate</value>
+  </data>
+  <data name="GameServerDefinition_PvpEnabled_Caption" xml:space="preserve">
+    <value>PvP aktiviert</value>
+  </data>
+  <data name="GameServerDefinition_ServerConfiguration_Caption" xml:space="preserve">
+    <value>Serverkonfiguration</value>
+  </data>
+  <data name="GameServerDefinition_GameConfiguration_Caption" xml:space="preserve">
+    <value>Spielkonfiguration</value>
+  </data>
+  <data name="GameServerDefinition_Endpoints_Caption" xml:space="preserve">
+    <value>Endpunkte</value>
+  </data>
+  <data name="GameServerEndpoint_TypeCaption" xml:space="preserve">
+    <value>Game-Server-Endpunkt</value>
+  </data>
+  <data name="GameServerEndpoint_TypeCaptionPlural" xml:space="preserve">
+    <value>Game-Server-Endpunkte</value>
+  </data>
+  <data name="GameServerEndpoint_AlternativePublishedPort_Caption" xml:space="preserve">
+    <value>Alternativer veröffentlichter Port</value>
+  </data>
+  <data name="Gate_TypeCaption" xml:space="preserve">
+    <value>Tor</value>
+  </data>
+  <data name="Gate_TypeCaptionPlural" xml:space="preserve">
+    <value>Tore</value>
+  </data>
+  <data name="Guild_TypeCaption" xml:space="preserve">
+    <value>Gilde</value>
+  </data>
+  <data name="Guild_TypeCaptionPlural" xml:space="preserve">
+    <value>Gilden</value>
+  </data>
+  <data name="Guild_Members_Caption" xml:space="preserve">
+    <value>Mitglieder</value>
+  </data>
+  <data name="GuildMember_TypeCaption" xml:space="preserve">
+    <value>Gildenmitglied</value>
+  </data>
+  <data name="GuildMember_TypeCaptionPlural" xml:space="preserve">
+    <value>Gildenmitglieder</value>
+  </data>
+  <data name="GuildMember_GuildId_Caption" xml:space="preserve">
+    <value>Gilden-Id</value>
+  </data>
+  <data name="HeroState_TypeCaption" xml:space="preserve">
+    <value>Heldenstatus</value>
+  </data>
+  <data name="HeroState_New_Caption" xml:space="preserve">
+    <value>Neu</value>
+  </data>
+  <data name="HeroState_Hero_Caption" xml:space="preserve">
+    <value>Held</value>
+  </data>
+  <data name="HeroState_LightHero_Caption" xml:space="preserve">
+    <value>Leichter Held</value>
+  </data>
+  <data name="HeroState_PlayerKillWarning_Caption" xml:space="preserve">
+    <value>Spielermord-Warnung</value>
+  </data>
+  <data name="HeroState_PlayerKiller1stStage_Caption" xml:space="preserve">
+    <value>Gesetzloser der 1. Stufe</value>
+  </data>
+  <data name="HeroState_PlayerKiller2ndStage_Caption" xml:space="preserve">
+    <value>Gesetzloser der 2. Stufe</value>
+  </data>
+  <data name="HiddenAtCreationAttribute_TypeCaption" xml:space="preserve">
+    <value>Bei Erstellung verborgenes Attribut</value>
+  </data>
+  <data name="HiddenAtCreationAttribute_TypeCaptionPlural" xml:space="preserve">
+    <value>Bei Erstellung verborgene Attribute</value>
+  </data>
+  <data name="IncreasableItemOption_TypeCaption" xml:space="preserve">
+    <value>Erhöhbare Gegenstandsoption</value>
+  </data>
+  <data name="IncreasableItemOption_TypeCaptionPlural" xml:space="preserve">
+    <value>Erhöhbare Gegenstandsoptionen</value>
+  </data>
+  <data name="IncreasableItemOption_LevelType_Caption" xml:space="preserve">
+    <value>Level-Typ</value>
+  </data>
+  <data name="IncreasableItemOption_Weight_Caption" xml:space="preserve">
+    <value>Gewichtung</value>
+  </data>
+  <data name="IncreasableItemOption_LevelDependentOptions_Caption" xml:space="preserve">
+    <value>Levelabhängige Optionen</value>
+  </data>
+  <data name="InventoryConstants_TypeCaption" xml:space="preserve">
+    <value>Inventarkonstanten</value>
+  </data>
+  <data name="InventoryConstants_TypeCaptionPlural" xml:space="preserve">
+    <value>Inventarkonstanten</value>
+  </data>
+  <data name="Item_TypeCaption" xml:space="preserve">
+    <value>Gegenstand</value>
+  </data>
+  <data name="Item_TypeCaptionPlural" xml:space="preserve">
+    <value>Gegenstände</value>
+  </data>
+  <data name="Item_ItemSlot_Caption" xml:space="preserve">
+    <value>Gegenstandsplatz</value>
+  </data>
+  <data name="Item_Durability_Caption" xml:space="preserve">
+    <value>Haltbarkeit</value>
+  </data>
+  <data name="Item_HasSkill_Caption" xml:space="preserve">
+    <value>Hat Fähigkeit</value>
+  </data>
+  <data name="Item_ItemOptions_Caption" xml:space="preserve">
+    <value>Gegenstandsoptionen</value>
+  </data>
+  <data name="Item_ItemSetGroups_Caption" xml:space="preserve">
+    <value>Gegenstandssetgruppen</value>
+  </data>
+  <data name="Item_SocketCount_Caption" xml:space="preserve">
+    <value>Anzahl der Sockel</value>
+  </data>
+  <data name="Item_StorePrice_Caption" xml:space="preserve">
+    <value>Ladenpreis</value>
+  </data>
+  <data name="Item_PetExperience_Caption" xml:space="preserve">
+    <value>Haustier-Erfahrung</value>
+  </data>
+  <data name="ItemAppearance_TypeCaption" xml:space="preserve">
+    <value>Gegenstandsaussehen</value>
+  </data>
+  <data name="ItemAppearance_TypeCaptionPlural" xml:space="preserve">
+    <value>Gegenstandsaussehen</value>
+  </data>
+  <data name="ItemAppearance_ItemSlot_Caption" xml:space="preserve">
+    <value>Gegenstandsplatz</value>
+  </data>
+  <data name="ItemAppearance_VisibleOptions_Caption" xml:space="preserve">
+    <value>Sichtbare Optionen</value>
+  </data>
+  <data name="ItemBasePowerUpDefinition_TypeCaption" xml:space="preserve">
+    <value>Basis-Verstärkungen des Gegenstands</value>
+  </data>
+  <data name="ItemBasePowerUpDefinition_TypeCaptionPlural" xml:space="preserve">
+    <value>Basis-Verstärkungen des Gegenstands</value>
+  </data>
+  <data name="ItemBasePowerUpDefinition_TargetAttribute_Caption" xml:space="preserve">
+    <value>Zielattribut</value>
+  </data>
+  <data name="ItemBasePowerUpDefinition_BonusPerLevelTable_Caption" xml:space="preserve">
+    <value>Tabelle des Bonus pro Level</value>
+  </data>
+  <data name="ItemBasePowerUpDefinition_BaseValue_Caption" xml:space="preserve">
+    <value>Basiswert</value>
+  </data>
+  <data name="ItemBasePowerUpDefinition_AggregateType_Caption" xml:space="preserve">
+    <value>Aggregattyp</value>
+  </data>
+  <data name="ItemCrafting_TypeCaption" xml:space="preserve">
+    <value>Gegenstandsherstellung</value>
+  </data>
+  <data name="ItemCrafting_TypeCaptionPlural" xml:space="preserve">
+    <value>Gegenstandsherstellungen</value>
+  </data>
+  <data name="ItemCrafting_Number_Caption" xml:space="preserve">
+    <value>Nummer</value>
+  </data>
+  <data name="ItemCrafting_ItemCraftingHandlerClassName_Caption" xml:space="preserve">
+    <value>Klassenname des Herstellungs-Handlers</value>
+  </data>
+  <data name="ItemCrafting_SimpleCraftingSettings_Caption" xml:space="preserve">
+    <value>Einfache Herstellungseinstellungen</value>
+  </data>
+  <data name="ItemCraftingRequiredItem_TypeCaption" xml:space="preserve">
+    <value>Benötigter Gegenstand für die Herstellung</value>
+  </data>
+  <data name="ItemCraftingRequiredItem_TypeCaptionPlural" xml:space="preserve">
+    <value>Benötigte Gegenstände für die Herstellung</value>
+  </data>
+  <data name="ItemCraftingRequiredItem_PossibleItems_Caption" xml:space="preserve">
+    <value>Mögliche Gegenstände</value>
+  </data>
+  <data name="ItemCraftingRequiredItem_MinimumItemLevel_Caption" xml:space="preserve">
+    <value>Minimales Gegenstandslevel</value>
+  </data>
+  <data name="ItemCraftingRequiredItem_MaximumItemLevel_Caption" xml:space="preserve">
+    <value>Maximales Gegenstandslevel</value>
+  </data>
+  <data name="ItemCraftingRequiredItem_RequiredItemOptions_Caption" xml:space="preserve">
+    <value>Erforderliche Gegenstandsoptionen</value>
+  </data>
+  <data name="ItemCraftingRequiredItem_MinimumAmount_Caption" xml:space="preserve">
+    <value>Minimale Menge</value>
+  </data>
+  <data name="ItemCraftingRequiredItem_MaximumAmount_Caption" xml:space="preserve">
+    <value>Maximale Menge</value>
+  </data>
+  <data name="ItemCraftingRequiredItem_SuccessResult_Caption" xml:space="preserve">
+    <value>Ergebnis bei Erfolg</value>
+  </data>
+  <data name="ItemCraftingRequiredItem_FailResult_Caption" xml:space="preserve">
+    <value>Ergebnis bei Fehlschlag</value>
+  </data>
+  <data name="ItemCraftingRequiredItem_NpcPriceDivisor_Caption" xml:space="preserve">
+    <value>NPC-Preisdivisor</value>
+  </data>
+  <data name="ItemCraftingRequiredItem_AddPercentage_Caption" xml:space="preserve">
+    <value>Prozentsatz hinzufügen</value>
+  </data>
+  <data name="ItemCraftingRequiredItem_Reference_Caption" xml:space="preserve">
+    <value>Referenz</value>
+  </data>
+  <data name="ItemCraftingResultItem_TypeCaption" xml:space="preserve">
+    <value>Ergebnisgegenstand der Herstellung</value>
+  </data>
+  <data name="ItemCraftingResultItem_TypeCaptionPlural" xml:space="preserve">
+    <value>Ergebnisgegenstände der Herstellung</value>
+  </data>
+  <data name="ItemCraftingResultItem_ItemDefinition_Caption" xml:space="preserve">
+    <value>Gegenstände</value>
+  </data>
+  <data name="ItemCraftingResultItem_RandomMinimumLevel_Caption" xml:space="preserve">
+    <value>Zufälliges Minimallevel</value>
+  </data>
+  <data name="ItemCraftingResultItem_RandomMaximumLevel_Caption" xml:space="preserve">
+    <value>Zufälliges Maximallevel</value>
+  </data>
+  <data name="ItemCraftingResultItem_Durability_Caption" xml:space="preserve">
+    <value>Haltbarkeit</value>
+  </data>
+  <data name="ItemCraftingResultItem_Reference_Caption" xml:space="preserve">
+    <value>Referenz</value>
+  </data>
+  <data name="ItemCraftingResultItem_AddLevel_Caption" xml:space="preserve">
+    <value>Level hinzufügen</value>
+  </data>
+  <data name="ItemDefinition_TypeCaption" xml:space="preserve">
+    <value>Gegenstände</value>
+  </data>
+  <data name="ItemDefinition_TypeCaptionPlural" xml:space="preserve">
+    <value>Gegenstände</value>
+  </data>
+  <data name="ItemDefinition_Number_Caption" xml:space="preserve">
+    <value>Nummer</value>
+  </data>
+  <data name="ItemDefinition_ItemSlot_Caption" xml:space="preserve">
+    <value>Gegenstandsplatz</value>
+  </data>
+  <data name="ItemDefinition_Width_Caption" xml:space="preserve">
+    <value>Breite</value>
+  </data>
+  <data name="ItemDefinition_Height_Caption" xml:space="preserve">
+    <value>Höhe</value>
+  </data>
+  <data name="ItemDefinition_DropsFromMonsters_Caption" xml:space="preserve">
+    <value>Droppt von Monstern</value>
+  </data>
+  <data name="ItemDefinition_IsAmmunition_Caption" xml:space="preserve">
+    <value>Ist Munition</value>
+  </data>
+  <data name="ItemDefinition_IsBoundToCharacter_Caption" xml:space="preserve">
+    <value>Ist an Charakter gebunden</value>
+  </data>
+  <data name="ItemDefinition_StorageLimitPerCharacter_Caption" xml:space="preserve">
+    <value>Speicherlimit pro Charakter</value>
+  </data>
+  <data name="ItemDefinition_DropLevel_Caption" xml:space="preserve">
+    <value>Drop-Level</value>
+  </data>
+  <data name="ItemDefinition_MaximumDropLevel_Caption" xml:space="preserve">
+    <value>Maximales Drop-Level</value>
+  </data>
+  <data name="ItemDefinition_MaximumItemLevel_Caption" xml:space="preserve">
+    <value>Maximales Gegenstandslevel</value>
+  </data>
+  <data name="ItemDefinition_Durability_Caption" xml:space="preserve">
+    <value>Haltbarkeit</value>
+  </data>
+  <data name="ItemDefinition_Group_Caption" xml:space="preserve">
+    <value>Gruppe</value>
+  </data>
+  <data name="ItemDefinition_Value_Caption" xml:space="preserve">
+    <value>Wert</value>
+  </data>
+  <data name="ItemDefinition_PetExperienceFormula_Caption" xml:space="preserve">
+    <value>Formel für Haustier-Erfahrung</value>
+  </data>
+  <data name="ItemDefinition_ConsumeEffect_Caption" xml:space="preserve">
+    <value>Verbrauchseffekt</value>
+  </data>
+  <data name="ItemDefinition_MaximumSockets_Caption" xml:space="preserve">
+    <value>Maximale Sockel</value>
+  </data>
+  <data name="ItemDefinition_Skill_Caption" xml:space="preserve">
+    <value>Fähigkeit</value>
+  </data>
+  <data name="ItemDefinition_QualifiedCharacters_Caption" xml:space="preserve">
+    <value>Qualifizierte Charaktere</value>
+  </data>
+  <data name="ItemDefinition_PossibleItemSetGroups_Caption" xml:space="preserve">
+    <value>Mögliche Gegenstandssetgruppen</value>
+  </data>
+  <data name="ItemDefinition_PossibleItemOptions_Caption" xml:space="preserve">
+    <value>Mögliche Gegenstandsoptionen</value>
+  </data>
+  <data name="ItemDefinition_Requirements_Caption" xml:space="preserve">
+    <value>Anforderungen</value>
+  </data>
+  <data name="ItemDefinition_BasePowerUpAttributes_Caption" xml:space="preserve">
+    <value>Basis-Verstärkungsattribute</value>
+  </data>
+  <data name="ItemDefinition_DropItems_Caption" xml:space="preserve">
+    <value>Gegenstände droppen</value>
+  </data>
+  <data name="ItemDropEffect_TypeCaption" xml:space="preserve">
+    <value>Drop-Effekt des Gegenstands</value>
+  </data>
+  <data name="ItemDropEffect_Undefined_Caption" xml:space="preserve">
+    <value>Undefiniert</value>
+  </data>
+  <data name="ItemDropEffect_Fireworks_Caption" xml:space="preserve">
+    <value>Feuerwerk</value>
+  </data>
+  <data name="ItemDropEffect_ChristmasFireworks_Caption" xml:space="preserve">
+    <value>Weihnachtsfeuerwerk</value>
+  </data>
+  <data name="ItemDropEffect_FanfareSound_Caption" xml:space="preserve">
+    <value>Fanfarenklang</value>
+  </data>
+  <data name="ItemDropEffect_Swirl_Caption" xml:space="preserve">
+    <value>Wirbel</value>
+  </data>
+  <data name="ItemDropItemGroup_TypeCaption" xml:space="preserve">
+    <value>Drop-Gegenstandsgruppe</value>
+  </data>
+  <data name="ItemDropItemGroup_TypeCaptionPlural" xml:space="preserve">
+    <value>Drop-Gegenstandsgruppen</value>
+  </data>
+  <data name="ItemDropItemGroup_SourceItemLevel_Caption" xml:space="preserve">
+    <value>Quellgegenstandslevel</value>
+  </data>
+  <data name="ItemDropItemGroup_MoneyAmount_Caption" xml:space="preserve">
+    <value>Geldbetrag</value>
+  </data>
+  <data name="ItemDropItemGroup_MinimumLevel_Caption" xml:space="preserve">
+    <value>Minimales Level</value>
+  </data>
+  <data name="ItemDropItemGroup_MaximumLevel_Caption" xml:space="preserve">
+    <value>Maximales Level</value>
+  </data>
+  <data name="ItemDropItemGroup_RequiredCharacterLevel_Caption" xml:space="preserve">
+    <value>Erforderliches Charakterlevel</value>
+  </data>
+  <data name="ItemDropItemGroup_DropEffect_Caption" xml:space="preserve">
+    <value>Drop-Effekt</value>
+  </data>
+  <data name="ItemExtensions_TypeCaption" xml:space="preserve">
+    <value>Gegenstandserweiterungen</value>
+  </data>
+  <data name="ItemExtensions_TypeCaptionPlural" xml:space="preserve">
+    <value>Gegenstandserweiterungen</value>
+  </data>
+  <data name="ItemLevelBonusTable_TypeCaption" xml:space="preserve">
+    <value>Bonustabelle für Gegenstandslevel</value>
+  </data>
+  <data name="ItemLevelBonusTable_TypeCaptionPlural" xml:space="preserve">
+    <value>Bonustabellen für Gegenstandslevel</value>
+  </data>
+  <data name="ItemLevelBonusTable_Description_Caption" xml:space="preserve">
+    <value>Beschreibung</value>
+  </data>
+  <data name="ItemLevelBonusTable_BonusPerLevel_Caption" xml:space="preserve">
+    <value>Bonus pro Level</value>
+  </data>
+  <data name="ItemOfItemSet_TypeCaption" xml:space="preserve">
+    <value>Gegenstand eines Gegenstandssets</value>
+  </data>
+  <data name="ItemOfItemSet_TypeCaptionPlural" xml:space="preserve">
+    <value>Gegenstände von Gegenstandssets</value>
+  </data>
+  <data name="ItemOfItemSet_AncientSetDiscriminator_Caption" xml:space="preserve">
+    <value>Diskriminator des antiken Sets</value>
+  </data>
+  <data name="ItemOfItemSet_ItemSetGroup_Caption" xml:space="preserve">
+    <value>Gegenstandssetgruppe</value>
+  </data>
+  <data name="ItemOfItemSet_ItemDefinition_Caption" xml:space="preserve">
+    <value>Gegenstände</value>
+  </data>
+  <data name="ItemOfItemSet_BonusOption_Caption" xml:space="preserve">
+    <value>Bonusoption</value>
+  </data>
+  <data name="ItemOption_TypeCaption" xml:space="preserve">
+    <value>Gegenstandsoption</value>
+  </data>
+  <data name="ItemOption_TypeCaptionPlural" xml:space="preserve">
+    <value>Gegenstandsoptionen</value>
+  </data>
+  <data name="ItemOption_Number_Caption" xml:space="preserve">
+    <value>Nummer</value>
+  </data>
+  <data name="ItemOption_SubOptionType_Caption" xml:space="preserve">
+    <value>Unteroptionstyp</value>
+  </data>
+  <data name="ItemOption_OptionType_Caption" xml:space="preserve">
+    <value>Optionstyp</value>
+  </data>
+  <data name="ItemOption_PowerUpDefinition_Caption" xml:space="preserve">
+    <value>Verstärkungen</value>
+  </data>
+  <data name="ItemOptionCombinationBonus_TypeCaption" xml:space="preserve">
+    <value>Kombinationsbonus von Gegenstandsoptionen</value>
+  </data>
+  <data name="ItemOptionCombinationBonus_TypeCaptionPlural" xml:space="preserve">
+    <value>Kombinationsbonus von Gegenstandsoptionen</value>
+  </data>
+  <data name="ItemOptionCombinationBonus_Description_Caption" xml:space="preserve">
+    <value>Beschreibung</value>
+  </data>
+  <data name="ItemOptionCombinationBonus_Number_Caption" xml:space="preserve">
+    <value>Nummer</value>
+  </data>
+  <data name="ItemOptionCombinationBonus_AppliesMultipleTimes_Caption" xml:space="preserve">
+    <value>Gilt mehrfach</value>
+  </data>
+  <data name="ItemOptionCombinationBonus_Requirements_Caption" xml:space="preserve">
+    <value>Anforderungen</value>
+  </data>
+  <data name="ItemOptionDefinition_TypeCaption" xml:space="preserve">
+    <value>Gegenstandsoptionen</value>
+  </data>
+  <data name="ItemOptionDefinition_TypeCaptionPlural" xml:space="preserve">
+    <value>Gegenstandsoptionen</value>
+  </data>
+  <data name="ItemOptionDefinition_AddsRandomly_Caption" xml:space="preserve">
+    <value>Fügt zufällig hinzu</value>
+  </data>
+  <data name="ItemOptionDefinition_AddChance_Caption" xml:space="preserve">
+    <value>Chance hinzufügen</value>
+  </data>
+  <data name="ItemOptionDefinition_MaximumOptionsPerItem_Caption" xml:space="preserve">
+    <value>Maximale Optionen pro Gegenstand</value>
+  </data>
+  <data name="ItemOptionDefinition_PossibleOptions_Caption" xml:space="preserve">
+    <value>Mögliche Optionen</value>
+  </data>
+  <data name="ItemOptionLink_TypeCaption" xml:space="preserve">
+    <value>Verknüpfung einer Gegenstandsoption</value>
+  </data>
+  <data name="ItemOptionLink_TypeCaptionPlural" xml:space="preserve">
+    <value>Verknüpfungen von Gegenstandsoptionen</value>
+  </data>
+  <data name="ItemOptionLink_ItemOption_Caption" xml:space="preserve">
+    <value>Gegenstandsoption</value>
+  </data>
+  <data name="ItemOptionOfLevel_TypeCaption" xml:space="preserve">
+    <value>Gegenstandsoption pro Level</value>
+  </data>
+  <data name="ItemOptionOfLevel_TypeCaptionPlural" xml:space="preserve">
+    <value>Gegenstandsoptionen pro Level</value>
+  </data>
+  <data name="ItemOptionOfLevel_RequiredItemLevel_Caption" xml:space="preserve">
+    <value>Erforderliches Gegenstandslevel</value>
+  </data>
+  <data name="ItemOptionOfLevel_PowerUpDefinition_Caption" xml:space="preserve">
+    <value>Verstärkungen</value>
+  </data>
+  <data name="ItemOptionType_TypeCaption" xml:space="preserve">
+    <value>Typ der Gegenstandsoption</value>
+  </data>
+  <data name="ItemOptionType_TypeCaptionPlural" xml:space="preserve">
+    <value>Typen der Gegenstandsoptionen</value>
+  </data>
+  <data name="ItemOptionType_Description_Caption" xml:space="preserve">
+    <value>Beschreibung</value>
+  </data>
+  <data name="ItemOptionType_IsVisible_Caption" xml:space="preserve">
+    <value>Ist sichtbar</value>
+  </data>
+  <data name="ItemOptionTypes_TypeCaption" xml:space="preserve">
+    <value>Typen der Gegenstandsoptionen</value>
+  </data>
+  <data name="ItemOptionTypes_TypeCaptionPlural" xml:space="preserve">
+    <value>Typen der Gegenstandsoptionen</value>
+  </data>
+  <data name="ItemOptionTypes_Excellent_Caption" xml:space="preserve">
+    <value>Exzellent</value>
+  </data>
+  <data name="ItemOptionTypes_Wing_Caption" xml:space="preserve">
+    <value>Flügel</value>
+  </data>
+  <data name="ItemOptionTypes_Luck_Caption" xml:space="preserve">
+    <value>Glück</value>
+  </data>
+  <data name="ItemOptionTypes_HarmonyOption_Caption" xml:space="preserve">
+    <value>Harmonie-Option</value>
+  </data>
+  <data name="ItemOptionTypes_AncientOption_Caption" xml:space="preserve">
+    <value>Antik-Option</value>
+  </data>
+  <data name="ItemOptionTypes_AncientBonus_Caption" xml:space="preserve">
+    <value>Antik-Bonus</value>
+  </data>
+  <data name="ItemOptionTypes_GuardianOption_Caption" xml:space="preserve">
+    <value>Wächter-Option</value>
+  </data>
+  <data name="ItemOptionTypes_SocketOption_Caption" xml:space="preserve">
+    <value>Sockeloption</value>
+  </data>
+  <data name="ItemOptionTypes_SocketBonusOption_Caption" xml:space="preserve">
+    <value>Sockel-Bonusoption</value>
+  </data>
+  <data name="ItemOptionTypes_BlueFenrir_Caption" xml:space="preserve">
+    <value>Blauer Fenrir</value>
+  </data>
+  <data name="ItemOptionTypes_BlackFenrir_Caption" xml:space="preserve">
+    <value>Schwarzer Fenrir</value>
+  </data>
+  <data name="ItemOptionTypes_GoldFenrir_Caption" xml:space="preserve">
+    <value>Goldener Fenrir</value>
+  </data>
+  <data name="ItemOptionTypes_DarkHorse_Caption" xml:space="preserve">
+    <value>Dunkles Pferd</value>
+  </data>
+  <data name="ItemSetGroup_TypeCaption" xml:space="preserve">
+    <value>Gegenstandssetgruppe</value>
+  </data>
+  <data name="ItemSetGroup_TypeCaptionPlural" xml:space="preserve">
+    <value>Gegenstandssetgruppen</value>
+  </data>
+  <data name="ItemSetGroup_AlwaysApplies_Caption" xml:space="preserve">
+    <value>Gilt immer</value>
+  </data>
+  <data name="ItemSetGroup_CountDistinct_Caption" xml:space="preserve">
+    <value>Eindeutige zählen</value>
+  </data>
+  <data name="ItemSetGroup_MinimumItemCount_Caption" xml:space="preserve">
+    <value>Minimale Gegenstandsanzahl</value>
+  </data>
+  <data name="ItemSetGroup_SetLevel_Caption" xml:space="preserve">
+    <value>Set-Level</value>
+  </data>
+  <data name="ItemSetGroup_Options_Caption" xml:space="preserve">
+    <value>Optionen</value>
+  </data>
+  <data name="ItemSetGroup_Items_Caption" xml:space="preserve">
+    <value>Gegenstände</value>
+  </data>
+  <data name="ItemSlotType_TypeCaption" xml:space="preserve">
+    <value>Typ des Gegenstandsplatzes</value>
+  </data>
+  <data name="ItemSlotType_TypeCaptionPlural" xml:space="preserve">
+    <value>Typen der Gegenstandsplätze</value>
+  </data>
+  <data name="ItemSlotType_Description_Caption" xml:space="preserve">
+    <value>Beschreibung</value>
+  </data>
+  <data name="ItemSlotType_ItemSlots_Caption" xml:space="preserve">
+    <value>Gegenstandsplätze</value>
+  </data>
+  <data name="ItemStorage_TypeCaption" xml:space="preserve">
+    <value>Gegenstandsspeicher</value>
+  </data>
+  <data name="ItemStorage_TypeCaptionPlural" xml:space="preserve">
+    <value>Gegenstandsspeicher</value>
+  </data>
+  <data name="ItemStorage_Items_Caption" xml:space="preserve">
+    <value>Gegenstände</value>
+  </data>
+  <data name="ItemStorage_Money_Caption" xml:space="preserve">
+    <value>Geld</value>
+  </data>
+  <data name="JewelMix_TypeCaption" xml:space="preserve">
+    <value>Juwelenkombination</value>
+  </data>
+  <data name="JewelMix_TypeCaptionPlural" xml:space="preserve">
+    <value>Juwelenkombinationen</value>
+  </data>
+  <data name="JewelMix_Number_Caption" xml:space="preserve">
+    <value>Nummer</value>
+  </data>
+  <data name="JewelMix_SingleJewel_Caption" xml:space="preserve">
+    <value>Einzelnes Juwel</value>
+  </data>
+  <data name="JewelMix_MixedJewel_Caption" xml:space="preserve">
+    <value>Kombiniertes Juwel</value>
+  </data>
+  <data name="KillTarget_TypeCaption" xml:space="preserve">
+    <value>Kill-Ziel</value>
+  </data>
+  <data name="KillTarget_AnyObject_Caption" xml:space="preserve">
+    <value>Beliebiges Objekt</value>
+  </data>
+  <data name="KillTarget_AnyMonster_Caption" xml:space="preserve">
+    <value>Beliebiges Monster</value>
+  </data>
+  <data name="KillTarget_Specific_Caption" xml:space="preserve">
+    <value>Spezifisch</value>
+  </data>
+  <data name="LetterBody_TypeCaption" xml:space="preserve">
+    <value>Brieftext</value>
+  </data>
+  <data name="LetterBody_TypeCaptionPlural" xml:space="preserve">
+    <value>Brieftexte</value>
+  </data>
+  <data name="LetterBody_Header_Caption" xml:space="preserve">
+    <value>Kopf</value>
+  </data>
+  <data name="LetterBody_Message_Caption" xml:space="preserve">
+    <value>Nachricht</value>
+  </data>
+  <data name="LetterBody_Rotation_Caption" xml:space="preserve">
+    <value>Drehung</value>
+  </data>
+  <data name="LetterBody_SenderAppearance_Caption" xml:space="preserve">
+    <value>Aussehen des Absenders</value>
+  </data>
+  <data name="LevelBonus_TypeCaption" xml:space="preserve">
+    <value>Level-Bonus</value>
+  </data>
+  <data name="LevelBonus_TypeCaptionPlural" xml:space="preserve">
+    <value>Level-Bonus</value>
+  </data>
+  <data name="LevelBonus_AdditionalValue_Caption" xml:space="preserve">
+    <value>Zusätzlicher Wert</value>
+  </data>
+  <data name="LevelDependentDamage_TypeCaption" xml:space="preserve">
+    <value>Levelabhängiger Schaden</value>
+  </data>
+  <data name="LevelDependentDamage_TypeCaptionPlural" xml:space="preserve">
+    <value>Levelabhängige Schäden</value>
+  </data>
+  <data name="LevelDependentDamage_Damage_Caption" xml:space="preserve">
+    <value>Schaden</value>
+  </data>
+  <data name="LevelType_TypeCaption" xml:space="preserve">
+    <value>Level-Typ</value>
+  </data>
+  <data name="LevelType_OptionLevel_Caption" xml:space="preserve">
+    <value>Optionslevel</value>
+  </data>
+  <data name="LevelType_ItemLevel_Caption" xml:space="preserve">
+    <value>Gegenstandslevel</value>
+  </data>
+  <data name="MagicEffectDefinition_TypeCaption" xml:space="preserve">
+    <value>Magische Effekte</value>
+  </data>
+  <data name="MagicEffectDefinition_TypeCaptionPlural" xml:space="preserve">
+    <value>Magische Effekte</value>
+  </data>
+  <data name="MagicEffectDefinition_Number_Caption" xml:space="preserve">
+    <value>Nummer</value>
+  </data>
+  <data name="MagicEffectDefinition_SubType_Caption" xml:space="preserve">
+    <value>Untertyp</value>
+  </data>
+  <data name="MagicEffectDefinition_InformObservers_Caption" xml:space="preserve">
+    <value>Beobachter informieren</value>
+  </data>
+  <data name="MagicEffectDefinition_StopByDeath_Caption" xml:space="preserve">
+    <value>Bei Tod beenden</value>
+  </data>
+  <data name="MagicEffectDefinition_SendDuration_Caption" xml:space="preserve">
+    <value>Sendedauer</value>
+  </data>
+  <data name="MagicEffectDefinition_DurationDependsOnTargetLevel_Caption" xml:space="preserve">
+    <value>Dauer hängt vom Ziellevel ab</value>
+  </data>
+  <data name="MagicEffectDefinition_MonsterTargetLevelDivisor_Caption" xml:space="preserve">
+    <value>Ziellevel-Divisor für Monster</value>
+  </data>
+  <data name="MagicEffectDefinition_PlayerTargetLevelDivisor_Caption" xml:space="preserve">
+    <value>Ziellevel-Divisor für Spieler</value>
+  </data>
+  <data name="MagicEffectDefinition_ChancePvp_Caption" xml:space="preserve">
+    <value>Chance PvP</value>
+  </data>
+  <data name="MagicEffectDefinition_Duration_Caption" xml:space="preserve">
+    <value>Dauer</value>
+  </data>
+  <data name="MagicEffectDefinition_DurationPvp_Caption" xml:space="preserve">
+    <value>Dauer PvP</value>
+  </data>
+  <data name="MagicEffectDefinition_PowerUpDefinitions_Caption" xml:space="preserve">
+    <value>Verstärkungen</value>
+  </data>
+  <data name="MagicEffectDefinition_PowerUpDefinitionsPvp_Caption" xml:space="preserve">
+    <value>Verstärkungen PvP</value>
+  </data>
+  <data name="MasterSkillDefinition_TypeCaption" xml:space="preserve">
+    <value>Meisterfähigkeiten</value>
+  </data>
+  <data name="MasterSkillDefinition_TypeCaptionPlural" xml:space="preserve">
+    <value>Meisterfähigkeiten</value>
+  </data>
+  <data name="MasterSkillDefinition_Root_Caption" xml:space="preserve">
+    <value>Wurzel</value>
+  </data>
+  <data name="MasterSkillDefinition_RequiredMasterSkills_Caption" xml:space="preserve">
+    <value>Erforderliche Meisterfähigkeiten</value>
+  </data>
+  <data name="MasterSkillDefinition_Rank_Caption" xml:space="preserve">
+    <value>Rang</value>
+  </data>
+  <data name="MasterSkillDefinition_MaximumLevel_Caption" xml:space="preserve">
+    <value>Maximales Level</value>
+  </data>
+  <data name="MasterSkillDefinition_MinimumLevel_Caption" xml:space="preserve">
+    <value>Minimales Level</value>
+  </data>
+  <data name="MasterSkillDefinition_ValueFormula_Caption" xml:space="preserve">
+    <value>Wertformel</value>
+  </data>
+  <data name="MasterSkillDefinition_DisplayValueFormula_Caption" xml:space="preserve">
+    <value>Formel für den Anzeigewert</value>
+  </data>
+  <data name="MasterSkillDefinition_TargetAttribute_Caption" xml:space="preserve">
+    <value>Zielattribut</value>
+  </data>
+  <data name="MasterSkillDefinition_ReplacedSkill_Caption" xml:space="preserve">
+    <value>Ersetzte Fähigkeit</value>
+  </data>
+  <data name="MasterSkillDefinition_ExtendsDuration_Caption" xml:space="preserve">
+    <value>Verlängert Dauer</value>
+  </data>
+  <data name="MasterSkillRoot_TypeCaption" xml:space="preserve">
+    <value>Wurzel der Meisterfähigkeiten</value>
+  </data>
+  <data name="MasterSkillRoot_TypeCaptionPlural" xml:space="preserve">
+    <value>Wurzeln der Meisterfähigkeiten</value>
+  </data>
+  <data name="MemberOfAggregateAttribute_TypeCaption" xml:space="preserve">
+    <value>Mitglied des Aggregatattributs</value>
+  </data>
+  <data name="MemberOfAggregateAttribute_TypeCaptionPlural" xml:space="preserve">
+    <value>Mitglieder des Aggregatattributs</value>
+  </data>
+  <data name="MiniGameChangeEvent_TypeCaption" xml:space="preserve">
+    <value>Änderungsereignis des Minispiels</value>
+  </data>
+  <data name="MiniGameChangeEvent_TypeCaptionPlural" xml:space="preserve">
+    <value>Änderungsereignisse des Minispiels</value>
+  </data>
+  <data name="MiniGameChangeEvent_Description_Caption" xml:space="preserve">
+    <value>Beschreibung</value>
+  </data>
+  <data name="MiniGameChangeEvent_Message_Caption" xml:space="preserve">
+    <value>Nachricht</value>
+  </data>
+  <data name="MiniGameChangeEvent_Target_Caption" xml:space="preserve">
+    <value>Ziel</value>
+  </data>
+  <data name="MiniGameChangeEvent_MinimumTargetLevel_Caption" xml:space="preserve">
+    <value>Minimales Ziellevel</value>
+  </data>
+  <data name="MiniGameChangeEvent_NumberOfKills_Caption" xml:space="preserve">
+    <value>Anzahl der Kills</value>
+  </data>
+  <data name="MiniGameChangeEvent_MultiplyKillsByPlayers_Caption" xml:space="preserve">
+    <value>Kills mit Spielern multiplizieren</value>
+  </data>
+  <data name="MiniGameChangeEvent_TargetDefinition_Caption" xml:space="preserve">
+    <value>Ziele</value>
+  </data>
+  <data name="MiniGameChangeEvent_SpawnArea_Caption" xml:space="preserve">
+    <value>Spawnbereich</value>
+  </data>
+  <data name="MiniGameChangeEvent_TerrainChanges_Caption" xml:space="preserve">
+    <value>Geländeänderungen</value>
+  </data>
+  <data name="MiniGameDefinition_TypeCaption" xml:space="preserve">
+    <value>Minispiele</value>
+  </data>
+  <data name="MiniGameDefinition_TypeCaptionPlural" xml:space="preserve">
+    <value>Minispiele</value>
+  </data>
+  <data name="MiniGameDefinition_Type_Caption" xml:space="preserve">
+    <value>Typ</value>
+  </data>
+  <data name="MiniGameDefinition_Description_Caption" xml:space="preserve">
+    <value>Beschreibung</value>
+  </data>
+  <data name="MiniGameDefinition_GameLevel_Caption" xml:space="preserve">
+    <value>Spiellevel</value>
+  </data>
+  <data name="MiniGameDefinition_MapCreationPolicy_Caption" xml:space="preserve">
+    <value>Richtlinie zur Kartenerstellung</value>
+  </data>
+  <data name="MiniGameDefinition_EnterDuration_Caption" xml:space="preserve">
+    <value>Eintrittsdauer</value>
+  </data>
+  <data name="MiniGameDefinition_GameDuration_Caption" xml:space="preserve">
+    <value>Spieldauer</value>
+  </data>
+  <data name="MiniGameDefinition_ExitDuration_Caption" xml:space="preserve">
+    <value>Austrittsdauer</value>
+  </data>
+  <data name="MiniGameDefinition_MaximumPlayerCount_Caption" xml:space="preserve">
+    <value>Maximale Spieleranzahl</value>
+  </data>
+  <data name="MiniGameDefinition_SaveRankingStatistics_Caption" xml:space="preserve">
+    <value>Ranglistenstatistik speichern</value>
+  </data>
+  <data name="MiniGameDefinition_RequiresMasterClass_Caption" xml:space="preserve">
+    <value>Erfordert Meisterklasse</value>
+  </data>
+  <data name="MiniGameDefinition_MinimumCharacterLevel_Caption" xml:space="preserve">
+    <value>Minimales Charakterlevel</value>
+  </data>
+  <data name="MiniGameDefinition_MaximumCharacterLevel_Caption" xml:space="preserve">
+    <value>Maximales Charakterlevel</value>
+  </data>
+  <data name="MiniGameDefinition_MinimumSpecialCharacterLevel_Caption" xml:space="preserve">
+    <value>Minimales Level für Spezialcharaktere</value>
+  </data>
+  <data name="MiniGameDefinition_MaximumSpecialCharacterLevel_Caption" xml:space="preserve">
+    <value>Maximales Level für Spezialcharaktere</value>
+  </data>
+  <data name="MiniGameDefinition_TicketItemLevel_Caption" xml:space="preserve">
+    <value>Level des Ticketgegenstands</value>
+  </data>
+  <data name="MiniGameDefinition_EntranceFee_Caption" xml:space="preserve">
+    <value>Eintrittsgebühr</value>
+  </data>
+  <data name="MiniGameDefinition_ArePlayerKillersAllowedToEnter_Caption" xml:space="preserve">
+    <value>Dürfen Spielermörder eintreten</value>
+  </data>
+  <data name="MiniGameDefinition_AllowParty_Caption" xml:space="preserve">
+    <value>Party erlauben</value>
+  </data>
+  <data name="MiniGameDefinition_Entrance_Caption" xml:space="preserve">
+    <value>Eingang</value>
+  </data>
+  <data name="MiniGameDefinition_TicketItem_Caption" xml:space="preserve">
+    <value>Ticketgegenstand</value>
+  </data>
+  <data name="MiniGameDefinition_Rewards_Caption" xml:space="preserve">
+    <value>Belohnungen</value>
+  </data>
+  <data name="MiniGameDefinition_SpawnWaves_Caption" xml:space="preserve">
+    <value>Spawn-Wellen</value>
+  </data>
+  <data name="MiniGameDefinition_ChangeEvents_Caption" xml:space="preserve">
+    <value>Änderungsereignisse</value>
+  </data>
+  <data name="MiniGameMapCreationPolicy_TypeCaption" xml:space="preserve">
+    <value>Richtlinie zur Kartenerstellung für Minispiele</value>
+  </data>
+  <data name="MiniGameMapCreationPolicy_OnePerParty_Caption" xml:space="preserve">
+    <value>Einer pro Party</value>
+  </data>
+  <data name="MiniGameMapCreationPolicy_OnePerPlayer_Caption" xml:space="preserve">
+    <value>Einer pro Spieler</value>
+  </data>
+  <data name="MiniGameMapCreationPolicy_Shared_Caption" xml:space="preserve">
+    <value>Geteilt</value>
+  </data>
+  <data name="MiniGameRankingEntry_TypeCaption" xml:space="preserve">
+    <value>Ranglisteneintrag des Minispiels</value>
+  </data>
+  <data name="MiniGameRankingEntry_TypeCaptionPlural" xml:space="preserve">
+    <value>Ranglisteneinträge des Minispiels</value>
+  </data>
+  <data name="MiniGameRankingEntry_GameInstanceId_Caption" xml:space="preserve">
+    <value>Spielinstanz-Id</value>
+  </data>
+  <data name="MiniGameRankingEntry_Timestamp_Caption" xml:space="preserve">
+    <value>Zeitstempel</value>
+  </data>
+  <data name="MiniGameRankingEntry_Score_Caption" xml:space="preserve">
+    <value>Punktzahl</value>
+  </data>
+  <data name="MiniGameRankingEntry_Rank_Caption" xml:space="preserve">
+    <value>Rang</value>
+  </data>
+  <data name="MiniGameRankingEntry_Character_Caption" xml:space="preserve">
+    <value>Charakter</value>
+  </data>
+  <data name="MiniGameRankingEntry_MiniGame_Caption" xml:space="preserve">
+    <value>Minispiel</value>
+  </data>
+  <data name="MiniGameReward_TypeCaption" xml:space="preserve">
+    <value>Minispiel-Belohnung</value>
+  </data>
+  <data name="MiniGameReward_TypeCaptionPlural" xml:space="preserve">
+    <value>Minispiel-Belohnungen</value>
+  </data>
+  <data name="MiniGameReward_Rank_Caption" xml:space="preserve">
+    <value>Rang</value>
+  </data>
+  <data name="MiniGameReward_RewardType_Caption" xml:space="preserve">
+    <value>Belohnungstyp</value>
+  </data>
+  <data name="MiniGameReward_RewardAmount_Caption" xml:space="preserve">
+    <value>Belohnungsmenge</value>
+  </data>
+  <data name="MiniGameReward_RequiredSuccess_Caption" xml:space="preserve">
+    <value>Erforderlicher Erfolg</value>
+  </data>
+  <data name="MiniGameReward_ItemReward_Caption" xml:space="preserve">
+    <value>Gegenstandsbelohnung</value>
+  </data>
+  <data name="MiniGameReward_RequiredKill_Caption" xml:space="preserve">
+    <value>Erforderlicher Kill</value>
+  </data>
+  <data name="MiniGameRewardType_TypeCaption" xml:space="preserve">
+    <value>Typ der Minispiel-Belohnung</value>
+  </data>
+  <data name="MiniGameRewardType_Undefined_Caption" xml:space="preserve">
+    <value>Undefiniert</value>
+  </data>
+  <data name="MiniGameRewardType_Money_Caption" xml:space="preserve">
+    <value>Geld</value>
+  </data>
+  <data name="MiniGameRewardType_Experience_Caption" xml:space="preserve">
+    <value>Erfahrung</value>
+  </data>
+  <data name="MiniGameRewardType_ExperiencePerRemainingSeconds_Caption" xml:space="preserve">
+    <value>Erfahrung pro verbleibender Sekunde</value>
+  </data>
+  <data name="MiniGameRewardType_Item_Caption" xml:space="preserve">
+    <value>Gegenstand</value>
+  </data>
+  <data name="MiniGameRewardType_ItemDrop_Caption" xml:space="preserve">
+    <value>Gegenstands-Drop</value>
+  </data>
+  <data name="MiniGameRewardType_Score_Caption" xml:space="preserve">
+    <value>Punktzahl</value>
+  </data>
+  <data name="MiniGameSpawnWave_TypeCaption" xml:space="preserve">
+    <value>Spawn-Welle des Minispiels</value>
+  </data>
+  <data name="MiniGameSpawnWave_TypeCaptionPlural" xml:space="preserve">
+    <value>Spawn-Wellen des Minispiels</value>
+  </data>
+  <data name="MiniGameSpawnWave_WaveNumber_Caption" xml:space="preserve">
+    <value>Wellennummer</value>
+  </data>
+  <data name="MiniGameSpawnWave_Description_Caption" xml:space="preserve">
+    <value>Beschreibung</value>
+  </data>
+  <data name="MiniGameSpawnWave_Message_Caption" xml:space="preserve">
+    <value>Nachricht</value>
+  </data>
+  <data name="MiniGameSpawnWave_StartTime_Caption" xml:space="preserve">
+    <value>Startzeit</value>
+  </data>
+  <data name="MiniGameSpawnWave_EndTime_Caption" xml:space="preserve">
+    <value>Endzeit</value>
+  </data>
+  <data name="MiniGameSuccessFlags_TypeCaption" xml:space="preserve">
+    <value>Erfolgskennzeichen des Minispiels</value>
+  </data>
+  <data name="MiniGameSuccessFlags_None_Caption" xml:space="preserve">
+    <value>Keine</value>
+  </data>
+  <data name="MiniGameSuccessFlags_Winner_Caption" xml:space="preserve">
+    <value>Gewinner</value>
+  </data>
+  <data name="MiniGameSuccessFlags_WinningParty_Caption" xml:space="preserve">
+    <value>Gewinnerparty</value>
+  </data>
+  <data name="MiniGameSuccessFlags_WinnerOrInWinningParty_Caption" xml:space="preserve">
+    <value>Gewinner oder in der Gewinnerparty</value>
+  </data>
+  <data name="MiniGameSuccessFlags_Loser_Caption" xml:space="preserve">
+    <value>Verlierer</value>
+  </data>
+  <data name="MiniGameSuccessFlags_Alive_Caption" xml:space="preserve">
+    <value>Lebendig</value>
+  </data>
+  <data name="MiniGameSuccessFlags_Dead_Caption" xml:space="preserve">
+    <value>Tot</value>
+  </data>
+  <data name="MiniGameSuccessFlags_WinnerExists_Caption" xml:space="preserve">
+    <value>Gewinner existiert</value>
+  </data>
+  <data name="MiniGameSuccessFlags_WinnerNotExists_Caption" xml:space="preserve">
+    <value>Kein Gewinner</value>
+  </data>
+  <data name="MiniGameTerrainChange_TypeCaption" xml:space="preserve">
+    <value>Geländeänderung des Minispiels</value>
+  </data>
+  <data name="MiniGameTerrainChange_TypeCaptionPlural" xml:space="preserve">
+    <value>Geländeänderungen des Minispiels</value>
+  </data>
+  <data name="MiniGameTerrainChange_TerrainAttribute_Caption" xml:space="preserve">
+    <value>Geländeattribut</value>
+  </data>
+  <data name="MiniGameTerrainChange_SetTerrainAttribute_Caption" xml:space="preserve">
+    <value>Geländeattribut setzen</value>
+  </data>
+  <data name="MiniGameTerrainChange_IsClientUpdateRequired_Caption" xml:space="preserve">
+    <value>Ist Client-Aktualisierung erforderlich</value>
+  </data>
+  <data name="MiniGameTerrainChange_EndX_Caption" xml:space="preserve">
+    <value>Ende X</value>
+  </data>
+  <data name="MiniGameTerrainChange_EndY_Caption" xml:space="preserve">
+    <value>Ende Y</value>
+  </data>
+  <data name="MiniGameType_TypeCaption" xml:space="preserve">
+    <value>Minispieltyp</value>
+  </data>
+  <data name="MiniGameType_Undefined_Caption" xml:space="preserve">
+    <value>Undefiniert</value>
+  </data>
+  <data name="MiniGameType_BloodCastle_Caption" xml:space="preserve">
+    <value>Blutburg</value>
+  </data>
+  <data name="MiniGameType_IllusionTemple_Caption" xml:space="preserve">
+    <value>Illusionstempel</value>
+  </data>
+  <data name="MiniGameType_Doppelganger_Caption" xml:space="preserve">
+    <value>Doppelgänger</value>
+  </data>
+  <data name="MixResult_TypeCaption" xml:space="preserve">
+    <value>Kombinationsergebnis</value>
+  </data>
+  <data name="MixResult_Disappear_Caption" xml:space="preserve">
+    <value>Verschwinden</value>
+  </data>
+  <data name="MixResult_StaysAsIs_Caption" xml:space="preserve">
+    <value>Bleibt unverändert</value>
+  </data>
+  <data name="MixResult_ChaosWeaponAndFirstWingsDowngradedRandom_Caption" xml:space="preserve">
+    <value>Chaos-Waffe und Flügel der 1. Stufe, zufällig herabgestuft</value>
+  </data>
+  <data name="MixResult_ThirdWingsDowngradedRandom_Caption" xml:space="preserve">
+    <value>Flügel der 3. Stufe, zufällig herabgestuft</value>
+  </data>
+  <data name="ModelResourceProvider_TypeCaption" xml:space="preserve">
+    <value>Modell-Ressourcenanbieter</value>
+  </data>
+  <data name="ModelResourceProvider_TypeCaptionPlural" xml:space="preserve">
+    <value>Modell-Ressourcenanbieter</value>
+  </data>
+  <data name="MonsterAttribute_TypeCaption" xml:space="preserve">
+    <value>Monsterattribut</value>
+  </data>
+  <data name="MonsterAttribute_TypeCaptionPlural" xml:space="preserve">
+    <value>Monsterattribute</value>
+  </data>
+  <data name="MonsterAttribute_AttributeDefinition_Caption" xml:space="preserve">
+    <value>Attribute</value>
+  </data>
+  <data name="MonsterAttribute_Value_Caption" xml:space="preserve">
+    <value>Wert</value>
+  </data>
+  <data name="MonsterDefinition_TypeCaptionPlural" xml:space="preserve">
+    <value>Monster</value>
+  </data>
+  <data name="MonsterDefinition_Number_Caption" xml:space="preserve">
+    <value>Nummer</value>
+  </data>
+  <data name="MonsterDefinition_Designation_Caption" xml:space="preserve">
+    <value>Bezeichnung</value>
+  </data>
+  <data name="MonsterDefinition_MoveRange_Caption" xml:space="preserve">
+    <value>Bewegungsreichweite</value>
+  </data>
+  <data name="MonsterDefinition_AttackRange_Caption" xml:space="preserve">
+    <value>Angriffsreichweite</value>
+  </data>
+  <data name="MonsterDefinition_ViewRange_Caption" xml:space="preserve">
+    <value>Sichtweite</value>
+  </data>
+  <data name="MonsterDefinition_MoveDelay_Caption" xml:space="preserve">
+    <value>Bewegungsverzögerung</value>
+  </data>
+  <data name="MonsterDefinition_AttackDelay_Caption" xml:space="preserve">
+    <value>Angriffsverzögerung</value>
+  </data>
+  <data name="MonsterDefinition_RespawnDelay_Caption" xml:space="preserve">
+    <value>Respawn-Verzögerung</value>
+  </data>
+  <data name="MonsterDefinition_Attribute_Caption" xml:space="preserve">
+    <value>Attribut</value>
+  </data>
+  <data name="MonsterDefinition_NumberOfMaximumItemDrops_Caption" xml:space="preserve">
+    <value>Maximale Anzahl an Gegenstands-Drops</value>
+  </data>
+  <data name="MonsterDefinition_NpcWindow_Caption" xml:space="preserve">
+    <value>NPC-Fenster</value>
+  </data>
+  <data name="MonsterDefinition_ObjectKind_Caption" xml:space="preserve">
+    <value>Objektart</value>
+  </data>
+  <data name="MonsterDefinition_IntelligenceTypeName_Caption" xml:space="preserve">
+    <value>Name des Intelligenztyps</value>
+  </data>
+  <data name="MonsterDefinition_AttackSkill_Caption" xml:space="preserve">
+    <value>Angriffsfähigkeit</value>
+  </data>
+  <data name="MonsterDefinition_MerchantStore_Caption" xml:space="preserve">
+    <value>Händlerladen</value>
+  </data>
+  <data name="MonsterDefinition_ItemCraftings_Caption" xml:space="preserve">
+    <value>Gegenstandsherstellungen</value>
+  </data>
+  <data name="MonsterDefinition_DropItemGroups_Caption" xml:space="preserve">
+    <value>Drop-Gegenstandsgruppen</value>
+  </data>
+  <data name="MonsterDefinition_Attributes_Caption" xml:space="preserve">
+    <value>Attribute</value>
+  </data>
+  <data name="MonsterSpawnArea_TypeCaption" xml:space="preserve">
+    <value>Monster-Spawnbereich</value>
+  </data>
+  <data name="MonsterSpawnArea_TypeCaptionPlural" xml:space="preserve">
+    <value>Monster-Spawnbereiche</value>
+  </data>
+  <data name="MonsterSpawnArea_MonsterDefinition_Caption" xml:space="preserve">
+    <value>Monster</value>
+  </data>
+  <data name="MonsterSpawnArea_GameMap_Caption" xml:space="preserve">
+    <value>Spielkarte</value>
+  </data>
+  <data name="MonsterSpawnArea_Direction_Caption" xml:space="preserve">
+    <value>Richtung</value>
+  </data>
+  <data name="MonsterSpawnArea_Quantity_Caption" xml:space="preserve">
+    <value>Anzahl</value>
+  </data>
+  <data name="MonsterSpawnArea_SpawnTrigger_Caption" xml:space="preserve">
+    <value>Spawn-Auslöser</value>
+  </data>
+  <data name="MonsterSpawnArea_WaveNumber_Caption" xml:space="preserve">
+    <value>Wellennummer</value>
+  </data>
+  <data name="MonsterSpawnArea_MaximumHealthOverride_Caption" xml:space="preserve">
+    <value>Überschreibung des maximalen Lebens</value>
+  </data>
+  <data name="NpcObjectKind_TypeCaption" xml:space="preserve">
+    <value>NPC-Objektart</value>
+  </data>
+  <data name="NpcObjectKind_PassiveNpc_Caption" xml:space="preserve">
+    <value>Passiver NPC</value>
+  </data>
+  <data name="NpcObjectKind_Guard_Caption" xml:space="preserve">
+    <value>Wache</value>
+  </data>
+  <data name="NpcObjectKind_Trap_Caption" xml:space="preserve">
+    <value>Falle</value>
+  </data>
+  <data name="NpcObjectKind_Gate_Caption" xml:space="preserve">
+    <value>Tor</value>
+  </data>
+  <data name="NpcObjectKind_SoccerBall_Caption" xml:space="preserve">
+    <value>Soccer-Ball</value>
+  </data>
+  <data name="NpcObjectKind_Destructible_Caption" xml:space="preserve">
+    <value>Zerstörbar</value>
+  </data>
+  <data name="NpcWindow_TypeCaption" xml:space="preserve">
+    <value>NPC-Fenster</value>
+  </data>
+  <data name="NpcWindow_Undefined_Caption" xml:space="preserve">
+    <value>Undefiniert</value>
+  </data>
+  <data name="NpcWindow_Merchant_Caption" xml:space="preserve">
+    <value>Händler</value>
+  </data>
+  <data name="NpcWindow_Merchant1_Caption" xml:space="preserve">
+    <value>Händler1</value>
+  </data>
+  <data name="NpcWindow_Storage_Caption" xml:space="preserve">
+    <value>Speicher</value>
+  </data>
+  <data name="NpcWindow_VaultStorage_Caption" xml:space="preserve">
+    <value>Tresorspeicher</value>
+  </data>
+  <data name="NpcWindow_ChaosMachine_Caption" xml:space="preserve">
+    <value>Chaosmaschine</value>
+  </data>
+  <data name="NpcWindow_BloodCastle_Caption" xml:space="preserve">
+    <value>Blutburg</value>
+  </data>
+  <data name="NpcWindow_PetTrainer_Caption" xml:space="preserve">
+    <value>Haustiertrainer</value>
+  </data>
+  <data name="NpcWindow_CastleSeniorNPC_Caption" xml:space="preserve">
+    <value>Burg-NPC Senior</value>
+  </data>
+  <data name="NpcWindow_ElphisRefinery_Caption" xml:space="preserve">
+    <value>Elphis-Raffinerie</value>
+  </data>
+  <data name="NpcWindow_RefineStoneMaking_Caption" xml:space="preserve">
+    <value>Herstellung von Verfeinerungssteinen</value>
+  </data>
+  <data name="NpcWindow_RemoveJohOption_Caption" xml:space="preserve">
+    <value>JoH-Option entfernen</value>
+  </data>
+  <data name="NpcWindow_IllusionTemple_Caption" xml:space="preserve">
+    <value>Illusionstempel</value>
+  </data>
+  <data name="NpcWindow_ChaosCardCombination_Caption" xml:space="preserve">
+    <value>Chaos-Card-Kombination</value>
+  </data>
+  <data name="NpcWindow_CherryBlossomBranchesAssembly_Caption" xml:space="preserve">
+    <value>Zusammensetzen von Kirschblütenzweigen</value>
+  </data>
+  <data name="NpcWindow_SeedMaster_Caption" xml:space="preserve">
+    <value>Samenmeister</value>
+  </data>
+  <data name="NpcWindow_SeedResearcher_Caption" xml:space="preserve">
+    <value>Samenforscher</value>
+  </data>
+  <data name="NpcWindow_StatReInitializer_Caption" xml:space="preserve">
+    <value>Statuswert-Neuinitialisierer</value>
+  </data>
+  <data name="NpcWindow_DelgadoLuckyCoinRegistration_Caption" xml:space="preserve">
+    <value>Registrierung von Glücksmünzen bei Delgado</value>
+  </data>
+  <data name="NpcWindow_DoorkeeperTitusDuelWatch_Caption" xml:space="preserve">
+    <value>Türhüter Titus: Duell zuschauen</value>
+  </data>
+  <data name="NpcWindow_LugardDoppelgangerEntry_Caption" xml:space="preserve">
+    <value>Lugard: Eintritt in Doppelgänger</value>
+  </data>
+  <data name="NpcWindow_JerintGaionEvententry_Caption" xml:space="preserve">
+    <value>Jerint: Eintritt in das Gaion-Event</value>
+  </data>
+  <data name="NpcWindow_JuliaWarpMarketServer_Caption" xml:space="preserve">
+    <value>Julia: Warp zum Markt-Server</value>
+  </data>
+  <data name="NpcWindow_GuildMaster_Caption" xml:space="preserve">
+    <value>Gildenmeister</value>
+  </data>
+  <data name="NpcWindow_CombineLuckyItem_Caption" xml:space="preserve">
+    <value>Glücksgegenstand kombinieren</value>
+  </data>
+  <data name="NpcWindow_NpcDialog_Caption" xml:space="preserve">
+    <value>NPC-Dialog</value>
+  </data>
+  <data name="NpcWindow_LegacyQuest_Caption" xml:space="preserve">
+    <value>Alte Quest</value>
+  </data>
+  <data name="PowerUpDefinition_TypeCaption" xml:space="preserve">
+    <value>Verstärkungen</value>
+  </data>
+  <data name="PowerUpDefinition_TypeCaptionPlural" xml:space="preserve">
+    <value>Verstärkungen</value>
+  </data>
+  <data name="PowerUpDefinition_TargetAttribute_Caption" xml:space="preserve">
+    <value>Zielattribut</value>
+  </data>
+  <data name="PowerUpDefinition_Boost_Caption" xml:space="preserve">
+    <value>Verstärkung</value>
+  </data>
+  <data name="PowerUpDefinitionValue_TypeCaption" xml:space="preserve">
+    <value>Verstärkungswert</value>
+  </data>
+  <data name="PowerUpDefinitionValue_TypeCaptionPlural" xml:space="preserve">
+    <value>Verstärkungswerte</value>
+  </data>
+  <data name="PowerUpDefinitionValue_ConstantValue_Caption" xml:space="preserve">
+    <value>Konstanter Wert</value>
+  </data>
+  <data name="PowerUpDefinitionValue_RelatedValues_Caption" xml:space="preserve">
+    <value>Zugehörige Werte</value>
+  </data>
+  <data name="PowerUpDefinitionValue_MaximumValue_Caption" xml:space="preserve">
+    <value>Maximalwert</value>
+  </data>
+  <data name="QuestDefinition_QuestGiver_Caption" xml:space="preserve">
+    <value>Questgeber</value>
+  </data>
+  <data name="QuestDefinition_Group_Caption" xml:space="preserve">
+    <value>Gruppe</value>
+  </data>
+  <data name="QuestDefinition_Number_Caption" xml:space="preserve">
+    <value>Nummer</value>
+  </data>
+  <data name="QuestDefinition_StartingNumber_Caption" xml:space="preserve">
+    <value>Startnummer</value>
+  </data>
+  <data name="QuestDefinition_RefuseNumber_Caption" xml:space="preserve">
+    <value>Ablehnungsnummer</value>
+  </data>
+  <data name="QuestDefinition_Repeatable_Caption" xml:space="preserve">
+    <value>Wiederholbar</value>
+  </data>
+  <data name="QuestDefinition_RequiresClientAction_Caption" xml:space="preserve">
+    <value>Erfordert Client-Aktion</value>
+  </data>
+  <data name="QuestDefinition_RequiredStartMoney_Caption" xml:space="preserve">
+    <value>Erforderliches Startgeld</value>
+  </data>
+  <data name="QuestDefinition_MinimumCharacterLevel_Caption" xml:space="preserve">
+    <value>Minimales Charakterlevel</value>
+  </data>
+  <data name="QuestDefinition_MaximumCharacterLevel_Caption" xml:space="preserve">
+    <value>Maximales Charakterlevel</value>
+  </data>
+  <data name="QuestDefinition_QualifiedCharacter_Caption" xml:space="preserve">
+    <value>Qualifizierter Charakter</value>
+  </data>
+  <data name="QuestDefinition_RequiredMonsterKills_Caption" xml:space="preserve">
+    <value>Erforderliche Monster-Kills</value>
+  </data>
+  <data name="QuestDefinition_RequiredItems_Caption" xml:space="preserve">
+    <value>Erforderliche Gegenstände</value>
+  </data>
+  <data name="QuestDefinition_Rewards_Caption" xml:space="preserve">
+    <value>Belohnungen</value>
+  </data>
+  <data name="QuestItemRequirement_TypeCaption" xml:space="preserve">
+    <value>Anforderung an Quest-Gegenstände</value>
+  </data>
+  <data name="QuestItemRequirement_TypeCaptionPlural" xml:space="preserve">
+    <value>Anforderungen an Quest-Gegenstände</value>
+  </data>
+  <data name="QuestItemRequirement_Item_Caption" xml:space="preserve">
+    <value>Gegenstand</value>
+  </data>
+  <data name="QuestItemRequirement_DropItemGroup_Caption" xml:space="preserve">
+    <value>Drop-Gegenstandsgruppe</value>
+  </data>
+  <data name="QuestItemRequirement_MinimumNumber_Caption" xml:space="preserve">
+    <value>Minimale Anzahl</value>
+  </data>
+  <data name="QuestMonsterKillRequirement_TypeCaption" xml:space="preserve">
+    <value>Anforderung an Quest-Monster-Kills</value>
+  </data>
+  <data name="QuestMonsterKillRequirement_TypeCaptionPlural" xml:space="preserve">
+    <value>Anforderungen an Quest-Monster-Kills</value>
+  </data>
+  <data name="QuestMonsterKillRequirement_MinimumNumber_Caption" xml:space="preserve">
+    <value>Minimale Anzahl</value>
+  </data>
+  <data name="QuestMonsterKillRequirementState_TypeCaption" xml:space="preserve">
+    <value>Status der Anforderung an Quest-Monster-Kills</value>
+  </data>
+  <data name="QuestMonsterKillRequirementState_TypeCaptionPlural" xml:space="preserve">
+    <value>Status der Anforderungen an Quest-Monster-Kills</value>
+  </data>
+  <data name="QuestMonsterKillRequirementState_Requirement_Caption" xml:space="preserve">
+    <value>Anforderung</value>
+  </data>
+  <data name="QuestMonsterKillRequirementState_KillCount_Caption" xml:space="preserve">
+    <value>Kill-Anzahl</value>
+  </data>
+  <data name="QuestReward_TypeCaption" xml:space="preserve">
+    <value>Questbelohnung</value>
+  </data>
+  <data name="QuestReward_TypeCaptionPlural" xml:space="preserve">
+    <value>Questbelohnungen</value>
+  </data>
+  <data name="QuestReward_RewardType_Caption" xml:space="preserve">
+    <value>Belohnungstyp</value>
+  </data>
+  <data name="QuestReward_Value_Caption" xml:space="preserve">
+    <value>Wert</value>
+  </data>
+  <data name="QuestReward_ItemReward_Caption" xml:space="preserve">
+    <value>Gegenstandsbelohnung</value>
+  </data>
+  <data name="QuestReward_AttributeReward_Caption" xml:space="preserve">
+    <value>Attributbelohnung</value>
+  </data>
+  <data name="QuestReward_SkillReward_Caption" xml:space="preserve">
+    <value>Fähigkeitsbelohnung</value>
+  </data>
+  <data name="QuestRewardType_TypeCaption" xml:space="preserve">
+    <value>Typ der Questbelohnung</value>
+  </data>
+  <data name="QuestRewardType_Undefined_Caption" xml:space="preserve">
+    <value>Undefiniert</value>
+  </data>
+  <data name="QuestRewardType_Experience_Caption" xml:space="preserve">
+    <value>Erfahrung</value>
+  </data>
+  <data name="QuestRewardType_Money_Caption" xml:space="preserve">
+    <value>Geld</value>
+  </data>
+  <data name="QuestRewardType_Item_Caption" xml:space="preserve">
+    <value>Gegenstand</value>
+  </data>
+  <data name="QuestRewardType_GensAttribution_Caption" xml:space="preserve">
+    <value>Gens-Zuordnung</value>
+  </data>
+  <data name="QuestRewardType_LevelUpPoints_Caption" xml:space="preserve">
+    <value>Level-up-Punkte</value>
+  </data>
+  <data name="QuestRewardType_CharacterEvolutionFirstToSecond_Caption" xml:space="preserve">
+    <value>Charakterentwicklung von der ersten zur zweiten Stufe</value>
+  </data>
+  <data name="QuestRewardType_CharacterEvolutionSecondToThird_Caption" xml:space="preserve">
+    <value>Charakterentwicklung von der zweiten zur dritten Stufe</value>
+  </data>
+  <data name="QuestRewardType_Attribute_Caption" xml:space="preserve">
+    <value>Attribut</value>
+  </data>
+  <data name="QuestRewardType_Skill_Caption" xml:space="preserve">
+    <value>Fähigkeit</value>
+  </data>
+  <data name="Rectangle_TypeCaption" xml:space="preserve">
+    <value>Rechteck</value>
+  </data>
+  <data name="Rectangle_TypeCaptionPlural" xml:space="preserve">
+    <value>Rechtecke</value>
+  </data>
+  <data name="Resources_TypeCaption" xml:space="preserve">
+    <value>Ressourcen</value>
+  </data>
+  <data name="Resources_TypeCaptionPlural" xml:space="preserve">
+    <value>Ressourcen</value>
+  </data>
+  <data name="Resources_ResourceManager_Caption" xml:space="preserve">
+    <value>Ressourcenmanager</value>
+  </data>
+  <data name="Resources_Culture_Caption" xml:space="preserve">
+    <value>Kultur</value>
+  </data>
+  <data name="ResultItemSelection_TypeCaption" xml:space="preserve">
+    <value>Auswahl des Ergebnisgegenstands</value>
+  </data>
+  <data name="ResultItemSelection_Any_Caption" xml:space="preserve">
+    <value>Beliebig</value>
+  </data>
+  <data name="ResultItemSelection_All_Caption" xml:space="preserve">
+    <value>Alle</value>
+  </data>
+  <data name="ServerEndpoint_TypeCaption" xml:space="preserve">
+    <value>Serverendpunkt</value>
+  </data>
+  <data name="ServerEndpoint_TypeCaptionPlural" xml:space="preserve">
+    <value>Serverendpunkte</value>
+  </data>
+  <data name="ServerEndpoint_NetworkPort_Caption" xml:space="preserve">
+    <value>Netzwerkport</value>
+  </data>
+  <data name="SimpleCraftingSettings_TypeCaption" xml:space="preserve">
+    <value>Einfache Herstellungseinstellungen</value>
+  </data>
+  <data name="SimpleCraftingSettings_TypeCaptionPlural" xml:space="preserve">
+    <value>Einfache Herstellungseinstellungen</value>
+  </data>
+  <data name="SimpleCraftingSettings_Money_Caption" xml:space="preserve">
+    <value>Geld</value>
+  </data>
+  <data name="SimpleCraftingSettings_MoneyPerFinalSuccessPercentage_Caption" xml:space="preserve">
+    <value>Geld pro endgültigem Erfolgsprozentsatz</value>
+  </data>
+  <data name="SimpleCraftingSettings_NpcPriceDivisor_Caption" xml:space="preserve">
+    <value>NPC-Preisdivisor</value>
+  </data>
+  <data name="SimpleCraftingSettings_SuccessPercent_Caption" xml:space="preserve">
+    <value>Erfolgsprozentsatz</value>
+  </data>
+  <data name="SimpleCraftingSettings_MaximumSuccessPercent_Caption" xml:space="preserve">
+    <value>Maximaler Erfolgsprozentsatz</value>
+  </data>
+  <data name="SimpleCraftingSettings_MultipleAllowed_Caption" xml:space="preserve">
+    <value>Mehrfach erlaubt</value>
+  </data>
+  <data name="SimpleCraftingSettings_RequiredItems_Caption" xml:space="preserve">
+    <value>Erforderliche Gegenstände</value>
+  </data>
+  <data name="SimpleCraftingSettings_ResultItems_Caption" xml:space="preserve">
+    <value>Ergebnisgegenstände</value>
+  </data>
+  <data name="SimpleCraftingSettings_ResultItemSelect_Caption" xml:space="preserve">
+    <value>Auswahl des Ergebnisgegenstands</value>
+  </data>
+  <data name="SimpleCraftingSettings_SuccessPercentageAdditionForLuck_Caption" xml:space="preserve">
+    <value>Erfolgsprozentsatz-Zuschlag für Glück</value>
+  </data>
+  <data name="SimpleCraftingSettings_SuccessPercentageAdditionForExcellentItem_Caption" xml:space="preserve">
+    <value>Erfolgsprozentsatz-Zuschlag für exzellente Gegenstände</value>
+  </data>
+  <data name="SimpleCraftingSettings_SuccessPercentageAdditionForAncientItem_Caption" xml:space="preserve">
+    <value>Erfolgsprozentsatz-Zuschlag für antike Gegenstände</value>
+  </data>
+  <data name="SimpleCraftingSettings_SuccessPercentageAdditionForGuardianItem_Caption" xml:space="preserve">
+    <value>Erfolgsprozentsatz-Zuschlag für Wächter-Gegenstände</value>
+  </data>
+  <data name="SimpleCraftingSettings_SuccessPercentageAdditionForSocketItem_Caption" xml:space="preserve">
+    <value>Erfolgsprozentsatz-Zuschlag für Sockelgegenstände</value>
+  </data>
+  <data name="SimpleCraftingSettings_ResultItemLuckOptionChance_Caption" xml:space="preserve">
+    <value>Chance auf Glücksoption beim Ergebnisgegenstand</value>
+  </data>
+  <data name="SimpleCraftingSettings_ResultItemSkillChance_Caption" xml:space="preserve">
+    <value>Fähigkeitschance beim Ergebnisgegenstand</value>
+  </data>
+  <data name="SimpleCraftingSettings_ResultItemExcellentOptionChance_Caption" xml:space="preserve">
+    <value>Chance auf exzellente Option beim Ergebnisgegenstand</value>
+  </data>
+  <data name="SimpleCraftingSettings_ResultItemMaxExcOptionCount_Caption" xml:space="preserve">
+    <value>Max. Anzahl exzellenter Optionen beim Ergebnisgegenstand</value>
+  </data>
+  <data name="Skill_TypeCaption" xml:space="preserve">
+    <value>Fähigkeit</value>
+  </data>
+  <data name="Skill_TypeCaptionPlural" xml:space="preserve">
+    <value>Fähigkeiten</value>
+  </data>
+  <data name="Skill_Number_Caption" xml:space="preserve">
+    <value>Nummer</value>
+  </data>
+  <data name="Skill_AttackDamage_Caption" xml:space="preserve">
+    <value>Angriffsschaden</value>
+  </data>
+  <data name="Skill_Requirements_Caption" xml:space="preserve">
+    <value>Anforderungen</value>
+  </data>
+  <data name="Skill_ConsumeRequirements_Caption" xml:space="preserve">
+    <value>Verbrauchsanforderungen</value>
+  </data>
+  <data name="Skill_AttributeRelationships_Caption" xml:space="preserve">
+    <value>Attributbeziehungen</value>
+  </data>
+  <data name="Skill_Range_Caption" xml:space="preserve">
+    <value>Reichweite</value>
+  </data>
+  <data name="Skill_DamageType_Caption" xml:space="preserve">
+    <value>Schadensart</value>
+  </data>
+  <data name="Skill_SkillType_Caption" xml:space="preserve">
+    <value>Fähigkeitstyp</value>
+  </data>
+  <data name="Skill_Target_Caption" xml:space="preserve">
+    <value>Ziel</value>
+  </data>
+  <data name="Skill_ImplicitTargetRange_Caption" xml:space="preserve">
+    <value>Implizite Zielreichweite</value>
+  </data>
+  <data name="Skill_TargetRestriction_Caption" xml:space="preserve">
+    <value>Zieleinschränkung</value>
+  </data>
+  <data name="Skill_MovesToTarget_Caption" xml:space="preserve">
+    <value>Bewegt sich zum Ziel</value>
+  </data>
+  <data name="Skill_MovesTarget_Caption" xml:space="preserve">
+    <value>Bewegt Ziel</value>
+  </data>
+  <data name="Skill_ElementalModifierTarget_Caption" xml:space="preserve">
+    <value>Ziel des Elementarmodifikators</value>
+  </data>
+  <data name="Skill_MagicEffectDef_Caption" xml:space="preserve">
+    <value>Def. des magischen Effekts</value>
+  </data>
+  <data name="Skill_QualifiedCharacters_Caption" xml:space="preserve">
+    <value>Qualifizierte Charaktere</value>
+  </data>
+  <data name="Skill_MasterDefinition_Caption" xml:space="preserve">
+    <value>Master</value>
+  </data>
+  <data name="Skill_AreaSkillSettings_Caption" xml:space="preserve">
+    <value>Einstellungen der Flächenfähigkeit</value>
+  </data>
+  <data name="SkillComboDefinition_TypeCaption" xml:space="preserve">
+    <value>Fähigkeitskombos</value>
+  </data>
+  <data name="SkillComboDefinition_TypeCaptionPlural" xml:space="preserve">
+    <value>Fähigkeitskombos</value>
+  </data>
+  <data name="SkillComboDefinition_MaximumCompletionTime_Caption" xml:space="preserve">
+    <value>Maximale Abschlusszeit</value>
+  </data>
+  <data name="SkillComboDefinition_Steps_Caption" xml:space="preserve">
+    <value>Schritte</value>
+  </data>
+  <data name="SkillComboStep_TypeCaption" xml:space="preserve">
+    <value>Schritt der Fähigkeitskombo</value>
+  </data>
+  <data name="SkillComboStep_TypeCaptionPlural" xml:space="preserve">
+    <value>Schritte der Fähigkeitskombo</value>
+  </data>
+  <data name="SkillComboStep_Order_Caption" xml:space="preserve">
+    <value>Reihenfolge</value>
+  </data>
+  <data name="SkillComboStep_IsFinalStep_Caption" xml:space="preserve">
+    <value>Ist letzter Schritt</value>
+  </data>
+  <data name="SkillComboStep_Skill_Caption" xml:space="preserve">
+    <value>Fähigkeit</value>
+  </data>
+  <data name="SkillEntry_TypeCaption" xml:space="preserve">
+    <value>Fähigkeitseintrag</value>
+  </data>
+  <data name="SkillEntry_TypeCaptionPlural" xml:space="preserve">
+    <value>Fähigkeitseinträge</value>
+  </data>
+  <data name="SkillEntry_Skill_Caption" xml:space="preserve">
+    <value>Fähigkeit</value>
+  </data>
+  <data name="SkillEntry_PowerUps_Caption" xml:space="preserve">
+    <value>Verstärkungen</value>
+  </data>
+  <data name="SkillEntry_PowerUpsPvp_Caption" xml:space="preserve">
+    <value>Verstärkungen PvP</value>
+  </data>
+  <data name="SkillEntry_PowerUpDuration_Caption" xml:space="preserve">
+    <value>Verstärkungsdauer</value>
+  </data>
+  <data name="SkillEntry_PowerUpDurationPvp_Caption" xml:space="preserve">
+    <value>Verstärkungsdauer PvP</value>
+  </data>
+  <data name="SkillEntry_PowerUpChance_Caption" xml:space="preserve">
+    <value>Verstärkungschance</value>
+  </data>
+  <data name="SkillEntry_PowerUpChancePvp_Caption" xml:space="preserve">
+    <value>Verstärkungschance PvP</value>
+  </data>
+  <data name="SkillEntry_Attributes_Caption" xml:space="preserve">
+    <value>Attribute</value>
+  </data>
+  <data name="SkillTarget_TypeCaption" xml:space="preserve">
+    <value>Fähigkeitsziel</value>
+  </data>
+  <data name="SkillTarget_Undefined_Caption" xml:space="preserve">
+    <value>Undefiniert</value>
+  </data>
+  <data name="SkillTarget_Explicit_Caption" xml:space="preserve">
+    <value>Explizit</value>
+  </data>
+  <data name="SkillTarget_ImplicitParty_Caption" xml:space="preserve">
+    <value>Implizit Party</value>
+  </data>
+  <data name="SkillTarget_ImplicitPlayersInRange_Caption" xml:space="preserve">
+    <value>Implizit Spieler in Reichweite</value>
+  </data>
+  <data name="SkillTarget_ImplicitNpcsInRange_Caption" xml:space="preserve">
+    <value>Implizit NPCs in Reichweite</value>
+  </data>
+  <data name="SkillTarget_ImplicitAllInRange_Caption" xml:space="preserve">
+    <value>Implizit alle in Reichweite</value>
+  </data>
+  <data name="SkillTarget_ExplicitWithImplicitInRange_Caption" xml:space="preserve">
+    <value>Explizit mit impliziten in Reichweite</value>
+  </data>
+  <data name="SkillTarget_ImplicitPlayer_Caption" xml:space="preserve">
+    <value>Implizit Spieler</value>
+  </data>
+  <data name="SkillTargetRestriction_TypeCaption" xml:space="preserve">
+    <value>Einschränkung des Fähigkeitsziels</value>
+  </data>
+  <data name="SkillTargetRestriction_Undefined_Caption" xml:space="preserve">
+    <value>Undefiniert</value>
+  </data>
+  <data name="SkillTargetRestriction_Self_Caption" xml:space="preserve">
+    <value>Selbst</value>
+  </data>
+  <data name="SkillTargetRestriction_Player_Caption" xml:space="preserve">
+    <value>Spieler</value>
+  </data>
+  <data name="SkillType_TypeCaption" xml:space="preserve">
+    <value>Fähigkeitstyp</value>
+  </data>
+  <data name="SkillType_DirectHit_Caption" xml:space="preserve">
+    <value>Direkter Treffer</value>
+  </data>
+  <data name="SkillType_CastleSiegeSpecial_Caption" xml:space="preserve">
+    <value>Castle-Siege-Spezial</value>
+  </data>
+  <data name="SkillType_CastleSiegeSkill_Caption" xml:space="preserve">
+    <value>Castle-Siege-Fähigkeit</value>
+  </data>
+  <data name="SkillType_AreaSkillAutomaticHits_Caption" xml:space="preserve">
+    <value>Flächenfähigkeit mit automatischen Treffern</value>
+  </data>
+  <data name="SkillType_AreaSkillExplicitHits_Caption" xml:space="preserve">
+    <value>Flächenfähigkeit mit expliziten Treffern</value>
+  </data>
+  <data name="SkillType_AreaSkillExplicitTarget_Caption" xml:space="preserve">
+    <value>Flächenfähigkeit mit explizitem Ziel</value>
+  </data>
+  <data name="SkillType_PassiveBoost_Caption" xml:space="preserve">
+    <value>Passive Verstärkung</value>
+  </data>
+  <data name="SkillType_SummonMonster_Caption" xml:space="preserve">
+    <value>Monster beschwören</value>
+  </data>
+  <data name="SkillType_Other_Caption" xml:space="preserve">
+    <value>Sonstige</value>
+  </data>
+  <data name="SpawnTrigger_TypeCaption" xml:space="preserve">
+    <value>Spawn-Auslöser</value>
+  </data>
+  <data name="SpawnTrigger_Automatic_Caption" xml:space="preserve">
+    <value>Automatisch</value>
+  </data>
+  <data name="SpawnTrigger_AutomaticDuringEvent_Caption" xml:space="preserve">
+    <value>Automatisch während des Events</value>
+  </data>
+  <data name="SpawnTrigger_OnceAtEventStart_Caption" xml:space="preserve">
+    <value>Einmal beim Event-Start</value>
+  </data>
+  <data name="SpawnTrigger_AutomaticDuringWave_Caption" xml:space="preserve">
+    <value>Automatisch während der Welle</value>
+  </data>
+  <data name="SpawnTrigger_OnceAtWaveStart_Caption" xml:space="preserve">
+    <value>Einmal beim Wellenstart</value>
+  </data>
+  <data name="SpawnTrigger_ManuallyForEvent_Caption" xml:space="preserve">
+    <value>Manuell für Event</value>
+  </data>
+  <data name="SpawnTrigger_Wandering_Caption" xml:space="preserve">
+    <value>Wandernd</value>
+  </data>
+  <data name="SpecialItemType_TypeCaption" xml:space="preserve">
+    <value>Spezieller Gegenstandstyp</value>
+  </data>
+  <data name="SpecialItemType_None_Caption" xml:space="preserve">
+    <value>Keine</value>
+  </data>
+  <data name="SpecialItemType_Ancient_Caption" xml:space="preserve">
+    <value>Antik</value>
+  </data>
+  <data name="SpecialItemType_Excellent_Caption" xml:space="preserve">
+    <value>Exzellent</value>
+  </data>
+  <data name="SpecialItemType_RandomItem_Caption" xml:space="preserve">
+    <value>Zufälliger Gegenstand</value>
+  </data>
+  <data name="SpecialItemType_SocketItem_Caption" xml:space="preserve">
+    <value>Sockelgegenstand</value>
+  </data>
+  <data name="SpecialItemType_Money_Caption" xml:space="preserve">
+    <value>Geld</value>
+  </data>
+  <data name="StatAttributeDefinition_TypeCaption" xml:space="preserve">
+    <value>Statusattribute</value>
+  </data>
+  <data name="StatAttributeDefinition_TypeCaptionPlural" xml:space="preserve">
+    <value>Statusattribute</value>
+  </data>
+  <data name="StatAttributeDefinition_Attribute_Caption" xml:space="preserve">
+    <value>Attribut</value>
+  </data>
+  <data name="StatAttributeDefinition_BaseValue_Caption" xml:space="preserve">
+    <value>Basiswert</value>
+  </data>
+  <data name="StatAttributeDefinition_IncreasableByPlayer_Caption" xml:space="preserve">
+    <value>Vom Spieler erhöhbar</value>
+  </data>
+  <data name="SystemConfiguration_TypeCaption" xml:space="preserve">
+    <value>Systemkonfiguration</value>
+  </data>
+  <data name="SystemConfiguration_TypeCaptionPlural" xml:space="preserve">
+    <value>Systemkonfigurationen</value>
+  </data>
+  <data name="SystemConfiguration_IpResolver_Caption" xml:space="preserve">
+    <value>IP-Ermittlung</value>
+  </data>
+  <data name="SystemConfiguration_IpResolverParameter_Caption" xml:space="preserve">
+    <value>Parameter der IP-Ermittlung</value>
+  </data>
+  <data name="SystemConfiguration_AutoStart_Caption" xml:space="preserve">
+    <value>Automatischer Start</value>
+  </data>
+  <data name="SystemConfiguration_AutoUpdateSchema_Caption" xml:space="preserve">
+    <value>Schema automatisch aktualisieren</value>
+  </data>
+  <data name="SystemConfiguration_ReadConsoleInput_Caption" xml:space="preserve">
+    <value>Konsoleneingabe lesen</value>
+  </data>
+  <data name="TerrainAttributeType_TypeCaption" xml:space="preserve">
+    <value>Typ des Geländeattributs</value>
+  </data>
+  <data name="TerrainAttributeType_Safezone_Caption" xml:space="preserve">
+    <value>Sichere Zone</value>
+  </data>
+  <data name="TerrainAttributeType_Character_Caption" xml:space="preserve">
+    <value>Charakter</value>
+  </data>
+  <data name="TerrainAttributeType_Blocked_Caption" xml:space="preserve">
+    <value>Blockiert</value>
+  </data>
+  <data name="TerrainAttributeType_NoGround_Caption" xml:space="preserve">
+    <value>Kein Boden</value>
+  </data>
+  <data name="TerrainAttributeType_Water_Caption" xml:space="preserve">
+    <value>Wasser</value>
+  </data>
+  <data name="TransientAttribute_TypeCaption" xml:space="preserve">
+    <value>Vorübergehendes Attribut</value>
+  </data>
+  <data name="TransientAttribute_TypeCaptionPlural" xml:space="preserve">
+    <value>Vorübergehende Attribute</value>
+  </data>
+  <data name="WarpInfo_TypeCaption" xml:space="preserve">
+    <value>Warp-Info</value>
+  </data>
+  <data name="WarpInfo_TypeCaptionPlural" xml:space="preserve">
+    <value>Warp-Infos</value>
+  </data>
+  <data name="WarpInfo_Costs_Caption" xml:space="preserve">
+    <value>Kosten</value>
+  </data>
+  <data name="WarpInfo_LevelRequirement_Caption" xml:space="preserve">
+    <value>Level-Anforderung</value>
+  </data>
+  <data name="WarpInfo_Gate_Caption" xml:space="preserve">
+    <value>Tor</value>
+  </data>
+  <data name="ConfigurationUpdate_Version_Caption" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="ConfigurationUpdateState_CurrentInstalledVersion_Caption" xml:space="preserve">
+    <value>Aktuell installierte Version</value>
+  </data>
+  <data name="ItemBasePowerUpDefinition_BaseValueElement_Caption" xml:space="preserve">
+    <value>Basiswertelement</value>
+  </data>
+  <data name="Account_IsBot_Caption" xml:space="preserve">
+    <value>Ist Bot</value>
+  </data>
+  <data name="Account_IsNetworkObservationActive_Caption" xml:space="preserve">
+    <value>Netzwerkbeobachtung aktiv</value>
+  </data>
+  <data name="AreaSkillSettings_MinimumNumberOfHitsPerAttack_Caption" xml:space="preserve">
+    <value>Minimale Anzahl an Treffern pro Angriff</value>
+  </data>
+  <data name="AreaSkillSettings_ProjectileCount_Caption" xml:space="preserve">
+    <value>Anzahl der Projektile</value>
+  </data>
+  <data name="AreaSkillSettings_EffectRange_Caption" xml:space="preserve">
+    <value>Wirkungsreichweite</value>
+  </data>
+  <data name="Skill_SkipElementalModifier_Caption" xml:space="preserve">
+    <value>Elementarmodifikator überspringen</value>
+  </data>
+  <data name="Skill_NumberOfHitsPerAttack_Caption" xml:space="preserve">
+    <value>Anzahl der Treffer pro Angriff</value>
+  </data>
+  <data name="SystemConfiguration_TimeZoneId_Caption" xml:space="preserve">
+    <value>Server-Zeitzone</value>
+  </data>
+  <data name="SystemConfiguration_NetworkAnalyzerLiveBufferSize_Caption" xml:space="preserve">
+    <value>Größe des Live-Puffers</value>
+  </data>
+  <data name="SystemConfiguration_NetworkObservationArchivePath_Caption" xml:space="preserve">
+    <value>Pfad des Beobachtungsarchivs</value>
+  </data>
+  <data name="SystemConfiguration_NetworkObservationMaxSessionSizeMb_Caption" xml:space="preserve">
+    <value>Maximale Sitzungsgröße (MB)</value>
+  </data>
+  <data name="SystemConfiguration_NetworkObservationMaxTotalSizeMb_Caption" xml:space="preserve">
+    <value>Maximale Archivgröße (MB)</value>
+  </data>
+  <data name="SystemConfiguration_NetworkObservationRetentionDays_Caption" xml:space="preserve">
+    <value>Aufbewahrung im Archiv (Tage)</value>
+  </data>
+  <data name="Buff_MagicEffectDefinition_Caption" xml:space="preserve">
+    <value>Magischer Effekt</value>
+  </data>
+  <data name="Buff_MinimumLevel_Caption" xml:space="preserve">
+    <value>Minimales Level</value>
+  </data>
+  <data name="Buff_MaximumLevel_Caption" xml:space="preserve">
+    <value>Maximales Level</value>
+  </data>
+  <data name="CastleSiegeStateScheduleEntry_State_Caption" xml:space="preserve">
+    <value>Zustand</value>
+  </data>
+  <data name="CastleSiegeStateScheduleEntry_DayOfWeek_Caption" xml:space="preserve">
+    <value>Wochentag</value>
+  </data>
+  <data name="CastleSiegeStateScheduleEntry_Hour_Caption" xml:space="preserve">
+    <value>Stunde</value>
+  </data>
+  <data name="CastleSiegeStateScheduleEntry_Minute_Caption" xml:space="preserve">
+    <value>Minute</value>
+  </data>
+  <data name="GameConfiguration_ExcellentItemDropLevelDelta_Caption" xml:space="preserve">
+    <value>Level-Differenz für exzellente Drops</value>
+  </data>
+  <data name="GameConfiguration_GlobalAttributeCombinations_Caption" xml:space="preserve">
+    <value>Globale Attributkombinationen</value>
+  </data>
+  <data name="GameConfiguration_GlobalBaseAttributeValues_Caption" xml:space="preserve">
+    <value>Globale Basisattributwerte</value>
+  </data>
+  <data name="GameConfiguration_CastleSiegeConfiguration_Caption" xml:space="preserve">
+    <value>Castle-Siege-Konfiguration</value>
+  </data>
+  <data name="CastleSiegeConfiguration_Enabled_Caption" xml:space="preserve">
+    <value>Aktiviert</value>
+  </data>
+  <data name="CastleSiegeConfiguration_CrownHoldTimeSeconds_Caption" xml:space="preserve">
+    <value>Haltezeit an der Krone (Sekunden)</value>
+  </data>
+  <data name="CastleSiegeConfiguration_RegisterMinLevel_Caption" xml:space="preserve">
+    <value>Minimales Level für die Registrierung</value>
+  </data>
+  <data name="CastleSiegeConfiguration_RegisterMinMembers_Caption" xml:space="preserve">
+    <value>Minimale Gildenmitglieder für die Registrierung</value>
+  </data>
+  <data name="CastleSiegeConfiguration_SignOfLordItemDefinition_Caption" xml:space="preserve">
+    <value>Gegenstand Sign of Lord</value>
+  </data>
+  <data name="CastleSiegeConfiguration_SignOfLordItemLevel_Caption" xml:space="preserve">
+    <value>Level des Gegenstands Sign of Lord</value>
+  </data>
+  <data name="CastleSiegeConfiguration_ParticipantRewardMinSeconds_Caption" xml:space="preserve">
+    <value>Mindestzeit für Teilnehmerbelohnung (Sekunden)</value>
+  </data>
+  <data name="CastleSiegeConfiguration_MaxAttackingGuilds_Caption" xml:space="preserve">
+    <value>Maximale Anzahl angreifender Gilden</value>
+  </data>
+  <data name="CastleSiegeConfiguration_GuildScoreCastleSiege_Caption" xml:space="preserve">
+    <value>Gildenpunkte für Castle Siege</value>
+  </data>
+  <data name="CastleSiegeConfiguration_GuildScoreCastleSiegeMembers_Caption" xml:space="preserve">
+    <value>Gildenpunkte für Castle-Siege-Mitglieder</value>
+  </data>
+  <data name="CastleSiegeConfiguration_GateBuyPrice_Caption" xml:space="preserve">
+    <value>Kaufpreis für Tore (Zen)</value>
+  </data>
+  <data name="CastleSiegeConfiguration_StatueBuyPrice_Caption" xml:space="preserve">
+    <value>Kaufpreis für Statuen (Zen)</value>
+  </data>
+  <data name="CastleSiegeConfiguration_GateRepairCostPerHealthPoint_Caption" xml:space="preserve">
+    <value>Reparaturkosten für Tore pro Lebenspunkt (Zen)</value>
+  </data>
+  <data name="CastleSiegeConfiguration_StatueRepairCostPerHealthPoint_Caption" xml:space="preserve">
+    <value>Reparaturkosten für Statuen pro Lebenspunkt (Zen)</value>
+  </data>
+  <data name="CastleSiegeConfiguration_RepairCostPerUpgradeLevel_Caption" xml:space="preserve">
+    <value>Reparaturzuschlag pro Verbesserungsstufe (Zen)</value>
+  </data>
+  <data name="CastleSiegeConfiguration_CastleSiegeMapDefinition_Caption" xml:space="preserve">
+    <value>Castle-Siege-Karte</value>
+  </data>
+  <data name="CastleSiegeConfiguration_LandOfTrialsMapDefinition_Caption" xml:space="preserve">
+    <value>Karte Land der Prüfungen</value>
+  </data>
+  <data name="CastleSiegeConfiguration_RewardItemDefinition_Caption" xml:space="preserve">
+    <value>Belohnungsgegenstand</value>
+  </data>
+  <data name="CastleSiegeConfiguration_StateSchedule_Caption" xml:space="preserve">
+    <value>Zustandszeitplan</value>
+  </data>
+  <data name="CastleSiegeConfiguration_NpcDefinitions_Caption" xml:space="preserve">
+    <value>NPC-Definitionen</value>
+  </data>
+  <data name="CastleSiegeConfiguration_GateDefenseUpgrades_Caption" xml:space="preserve">
+    <value>Verteidigungsverbesserungen der Tore</value>
+  </data>
+  <data name="CastleSiegeConfiguration_GateLifeUpgrades_Caption" xml:space="preserve">
+    <value>Lebensverbesserungen der Tore</value>
+  </data>
+  <data name="CastleSiegeConfiguration_StatueDefenseUpgrades_Caption" xml:space="preserve">
+    <value>Verteidigungsverbesserungen der Statuen</value>
+  </data>
+  <data name="CastleSiegeConfiguration_StatueLifeUpgrades_Caption" xml:space="preserve">
+    <value>Lebensverbesserungen der Statuen</value>
+  </data>
+  <data name="CastleSiegeConfiguration_StatueRegenUpgrades_Caption" xml:space="preserve">
+    <value>Regenerationsverbesserungen der Statuen</value>
+  </data>
+  <data name="CastleSiegeConfiguration_AttackMachineZones_Caption" xml:space="preserve">
+    <value>Zonen der Angriffsmaschinen</value>
+  </data>
+  <data name="CastleSiegeConfiguration_DefenseMachineZones_Caption" xml:space="preserve">
+    <value>Zonen der Verteidigungsmaschinen</value>
+  </data>
+  <data name="CastleSiegeConfiguration_DefenseRespawnArea_Caption" xml:space="preserve">
+    <value>Respawn-Bereich der Verteidiger</value>
+  </data>
+  <data name="CastleSiegeConfiguration_AttackRespawnArea_Caption" xml:space="preserve">
+    <value>Respawn-Bereich der Angreifer</value>
+  </data>
+  <data name="CastleSiegeUpgradeDefinition_Level_Caption" xml:space="preserve">
+    <value>Verbesserungsstufe</value>
+  </data>
+  <data name="CastleSiegeUpgradeDefinition_RequiredJewelOfGuardianCount_Caption" xml:space="preserve">
+    <value>Benötigte Juwelen des Wächters</value>
+  </data>
+  <data name="CastleSiegeUpgradeDefinition_RequiredZen_Caption" xml:space="preserve">
+    <value>Benötigtes Zen</value>
+  </data>
+  <data name="CastleSiegeUpgradeDefinition_Value_Caption" xml:space="preserve">
+    <value>Wert</value>
+  </data>
+  <data name="CastleSiegeNpcDefinition_MonsterDefinition_Caption" xml:space="preserve">
+    <value>Monsterdefinition</value>
+  </data>
+  <data name="CastleSiegeNpcDefinition_InstanceId_Caption" xml:space="preserve">
+    <value>Instanz-Id</value>
+  </data>
+  <data name="CastleSiegeNpcDefinition_IsPersistedToDatabase_Caption" xml:space="preserve">
+    <value>In Datenbank gespeichert</value>
+  </data>
+  <data name="CastleSiegeNpcDefinition_DefaultSide_Caption" xml:space="preserve">
+    <value>Standardseite</value>
+  </data>
+  <data name="CastleSiegeNpcDefinition_SpawnX_Caption" xml:space="preserve">
+    <value>Spawn X</value>
+  </data>
+  <data name="CastleSiegeNpcDefinition_SpawnY_Caption" xml:space="preserve">
+    <value>Spawn Y</value>
+  </data>
+  <data name="CastleSiegeNpcDefinition_Direction_Caption" xml:space="preserve">
+    <value>Richtung</value>
+  </data>
+  <data name="MonsterDefinition_Buffs_Caption" xml:space="preserve">
+    <value>Buffs</value>
+  </data>
+  <data name="ItemDefinition_IsQuestItem_Caption" xml:space="preserve">
+    <value>Ist Quest-Gegenstand</value>
+  </data>
+  <data name="CastleSiegeNpcState_MonsterNumber_Caption" xml:space="preserve">
+    <value>Monsternummer</value>
+  </data>
+  <data name="CastleSiegeNpcState_InstanceId_Caption" xml:space="preserve">
+    <value>Instanz-Id</value>
+  </data>
+  <data name="CastleSiegeNpcState_DefenseLevel_Caption" xml:space="preserve">
+    <value>Verteidigungsstufe</value>
+  </data>
+  <data name="CastleSiegeNpcState_RegenLevel_Caption" xml:space="preserve">
+    <value>Regenerationsstufe</value>
+  </data>
+  <data name="CastleSiegeNpcState_LifeLevel_Caption" xml:space="preserve">
+    <value>Lebensstufe</value>
+  </data>
+  <data name="CastleSiegeNpcState_CurrentHp_Caption" xml:space="preserve">
+    <value>Aktuelle HP</value>
+  </data>
+  <data name="CastleSiegeGuild_GuildId_Caption" xml:space="preserve">
+    <value>Gilden-Id</value>
+  </data>
+  <data name="CastleSiegeGuild_GuildName_Caption" xml:space="preserve">
+    <value>Gildenname</value>
+  </data>
+  <data name="CastleSiegeGuild_Side_Caption" xml:space="preserve">
+    <value>Seite</value>
+  </data>
+  <data name="CastleSiegeGuild_Score_Caption" xml:space="preserve">
+    <value>Punktzahl</value>
+  </data>
+  <data name="CastleSiegeGuild_IsAllianceMaster_Caption" xml:space="preserve">
+    <value>Ist Allianzmeister</value>
+  </data>
+  <data name="CastleSiegeGuildRegistration_GuildId_Caption" xml:space="preserve">
+    <value>Gilden-Id</value>
+  </data>
+  <data name="CastleSiegeGuildRegistration_GuildName_Caption" xml:space="preserve">
+    <value>Gildenname</value>
+  </data>
+  <data name="CastleSiegeGuildRegistration_Marks_Caption" xml:space="preserve">
+    <value>Zeichen</value>
+  </data>
+  <data name="CastleSiegeGuildRegistration_RegistrationOrder_Caption" xml:space="preserve">
+    <value>Registrierungsreihenfolge</value>
+  </data>
+  <data name="CastleSiegeData_OwnerGuildId_Caption" xml:space="preserve">
+    <value>Id der Besitzergilde</value>
+  </data>
+  <data name="CastleSiegeData_IsOccupied_Caption" xml:space="preserve">
+    <value>Ist besetzt</value>
+  </data>
+  <data name="CastleSiegeData_TaxChaos_Caption" xml:space="preserve">
+    <value>Chaos-Steuer</value>
+  </data>
+  <data name="CastleSiegeData_TaxStore_Caption" xml:space="preserve">
+    <value>Ladensteuer</value>
+  </data>
+  <data name="CastleSiegeData_TaxHunt_Caption" xml:space="preserve">
+    <value>Jagdgebühr</value>
+  </data>
+  <data name="CastleSiegeData_IsHuntZoneEnabled_Caption" xml:space="preserve">
+    <value>Jagdgebiet geöffnet</value>
+  </data>
+  <data name="CastleSiegeData_TributeMoney_Caption" xml:space="preserve">
+    <value>Tributgeld</value>
+  </data>
+  <data name="CastleSiegeData_NpcStates_Caption" xml:space="preserve">
+    <value>NPC-Zustände</value>
+  </data>
+  <data name="CastleSiegeData_Guilds_Caption" xml:space="preserve">
+    <value>Gilden</value>
+  </data>
+  <data name="CastleSiegePendingReward_CharacterId_Caption" xml:space="preserve">
+    <value>Charakter-Id</value>
+  </data>
+  <data name="CastleSiegePendingReward_ItemDefinitionId_Caption" xml:space="preserve">
+    <value>Gegenstandsdefinitions-Id</value>
+  </data>
+  <data name="Buff_TypeCaption" xml:space="preserve">
+    <value>Buff</value>
+  </data>
+  <data name="Buff_TypeCaptionPlural" xml:space="preserve">
+    <value>Buffs</value>
+  </data>
+  <data name="CastleSiegeStateScheduleEntry_TypeCaption" xml:space="preserve">
+    <value>Castle-Siege-Zeitplaneintrag</value>
+  </data>
+  <data name="CastleSiegeStateScheduleEntry_TypeCaptionPlural" xml:space="preserve">
+    <value>Castle-Siege-Zeitplaneinträge</value>
+  </data>
+  <data name="CastleSiegeConfiguration_TypeCaption" xml:space="preserve">
+    <value>Castle-Siege-Konfiguration</value>
+  </data>
+  <data name="CastleSiegeConfiguration_TypeCaptionPlural" xml:space="preserve">
+    <value>Castle-Siege-Konfigurationen</value>
+  </data>
+  <data name="CastleSiegeUpgradeDefinition_TypeCaption" xml:space="preserve">
+    <value>Castle-Siege-Verbesserungsdefinition</value>
+  </data>
+  <data name="CastleSiegeUpgradeDefinition_TypeCaptionPlural" xml:space="preserve">
+    <value>Castle-Siege-Verbesserungsdefinitionen</value>
+  </data>
+  <data name="CastleSiegeZoneDefinition_TypeCaption" xml:space="preserve">
+    <value>Castle-Siege-Zonendefinition</value>
+  </data>
+  <data name="CastleSiegeZoneDefinition_TypeCaptionPlural" xml:space="preserve">
+    <value>Castle-Siege-Zonendefinitionen</value>
+  </data>
+  <data name="CastleSiegeNpcDefinition_TypeCaption" xml:space="preserve">
+    <value>Castle-Siege-NPC-Definition</value>
+  </data>
+  <data name="CastleSiegeNpcDefinition_TypeCaptionPlural" xml:space="preserve">
+    <value>Castle-Siege-NPC-Definitionen</value>
+  </data>
+  <data name="CastleSiegeNpcState_TypeCaption" xml:space="preserve">
+    <value>Castle-Siege-NPC-Zustand</value>
+  </data>
+  <data name="CastleSiegeNpcState_TypeCaptionPlural" xml:space="preserve">
+    <value>Castle-Siege-NPC-Zustände</value>
+  </data>
+  <data name="CastleSiegeGuild_TypeCaption" xml:space="preserve">
+    <value>Castle-Siege-Gilde</value>
+  </data>
+  <data name="CastleSiegeGuild_TypeCaptionPlural" xml:space="preserve">
+    <value>Castle-Siege-Gilden</value>
+  </data>
+  <data name="CastleSiegeGuildRegistration_TypeCaption" xml:space="preserve">
+    <value>Castle-Siege-Registrierung</value>
+  </data>
+  <data name="CastleSiegeGuildRegistration_TypeCaptionPlural" xml:space="preserve">
+    <value>Castle-Siege-Registrierungen</value>
+  </data>
+  <data name="CastleSiegeData_TypeCaption" xml:space="preserve">
+    <value>Castle-Siege-Daten</value>
+  </data>
+  <data name="CastleSiegeData_TypeCaptionPlural" xml:space="preserve">
+    <value>Castle-Siege-Daten</value>
+  </data>
+  <data name="CastleSiegePendingReward_TypeCaption" xml:space="preserve">
+    <value>Ausstehende Castle-Siege-Belohnung</value>
+  </data>
+  <data name="CastleSiegePendingReward_TypeCaptionPlural" xml:space="preserve">
+    <value>Ausstehende Castle-Siege-Belohnungen</value>
+  </data>
+  <data name="CastleSiegeState_Idle1_Caption" xml:space="preserve">
+    <value>Ruhephase 1</value>
+  </data>
+  <data name="CastleSiegeState_RegisterGuild_Caption" xml:space="preserve">
+    <value>Gildenregistrierung</value>
+  </data>
+  <data name="CastleSiegeState_Idle2_Caption" xml:space="preserve">
+    <value>Ruhephase 2</value>
+  </data>
+  <data name="CastleSiegeState_RegisterMark_Caption" xml:space="preserve">
+    <value>Zeichenregistrierung</value>
+  </data>
+  <data name="CastleSiegeState_Idle3_Caption" xml:space="preserve">
+    <value>Ruhephase 3</value>
+  </data>
+  <data name="CastleSiegeState_Notify_Caption" xml:space="preserve">
+    <value>Bekanntgabe</value>
+  </data>
+  <data name="CastleSiegeState_Ready_Caption" xml:space="preserve">
+    <value>Bereit</value>
+  </data>
+  <data name="CastleSiegeState_Start_Caption" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="CastleSiegeState_End_Caption" xml:space="preserve">
+    <value>Ende</value>
+  </data>
+  <data name="CastleSiegeState_EndCycle_Caption" xml:space="preserve">
+    <value>Zyklusende</value>
+  </data>
+  <data name="CastleSiegeUpgradeType_Undefined_Caption" xml:space="preserve">
+    <value>Undefiniert</value>
+  </data>
+  <data name="CastleSiegeUpgradeType_Defense_Caption" xml:space="preserve">
+    <value>Verteidigung</value>
+  </data>
+  <data name="CastleSiegeUpgradeType_Life_Caption" xml:space="preserve">
+    <value>Leben</value>
+  </data>
+  <data name="CastleSiegeUpgradeType_Regen_Caption" xml:space="preserve">
+    <value>Regeneration</value>
+  </data>
+  <data name="CastleSiegeConfiguration_GateBuyPrice_Description" xml:space="preserve">
+    <value>Das Zen, das zum erneuten Kauf eines zerstörten Burgtors benötigt wird.</value>
+  </data>
+  <data name="CastleSiegeConfiguration_StatueBuyPrice_Description" xml:space="preserve">
+    <value>Das Zen, das zum erneuten Kauf einer zerstörten Wächterstatue benötigt wird.</value>
+  </data>
+  <data name="CastleSiegeConfiguration_GateRepairCostPerHealthPoint_Description" xml:space="preserve">
+    <value>Das Zen pro wiederhergestelltem Lebenspunkt eines Burgtors. Die gesamten Reparaturkosten enthalten zusätzlich den Zuschlag für die Verteidigungsverbesserungsstufe.</value>
+  </data>
+  <data name="CastleSiegeConfiguration_StatueRepairCostPerHealthPoint_Description" xml:space="preserve">
+    <value>Das Zen pro wiederhergestelltem Lebenspunkt einer Wächterstatue. Die gesamten Reparaturkosten enthalten zusätzlich den Zuschlag für die Verteidigungs- und Regenerationsverbesserungsstufe.</value>
+  </data>
+  <data name="CastleSiegeConfiguration_RepairCostPerUpgradeLevel_Description" xml:space="preserve">
+    <value>Bei jeder Reparatur wird für Tore ein Zuschlag nach der Verteidigungsstufe und für Wächterstatuen nach der Summe aus Verteidigungs- und Regenerationsstufe berechnet. Die Lebensstufe zählt nicht. Dies ist ein Reparaturzuschlag, keine Verbesserungskosten.</value>
+  </data>
+  <data name="CastleSiegeUpgradeDefinition_Level_Description" xml:space="preserve">
+    <value>0 steht für den unverbesserten Grundzustand, 1–3 für die jeweilige Verbesserungsstufe.</value>
+  </data>
+  <data name="CastleSiegeUpgradeDefinition_RequiredJewelOfGuardianCount_Description" xml:space="preserve">
+    <value>Die Anzahl der Juwelen des Wächters, die für diese Verbesserungsstufe benötigt werden; sie wird getrennt vom benötigten Zen berechnet.</value>
+  </data>
+  <data name="CastleSiegeUpgradeDefinition_RequiredZen_Description" xml:space="preserve">
+    <value>Das Zen, das für diese Verbesserungsstufe benötigt wird; es wird getrennt von den benötigten Juwelen des Wächters berechnet.</value>
+  </data>
+  <data name="CastleSiegeUpgradeDefinition_Value_Description" xml:space="preserve">
+    <value>Der Attributwert nach Erreichen dieser Stufe; die genaue Bedeutung hängt von der zugehörigen Verteidigungs-, Lebens- oder Regenerationsverbesserung ab.</value>
+  </data>
+  <data name="CastleSiegeConfiguration_CrownHoldTimeSeconds_Description" xml:space="preserve">
+    <value>Die Zeit, die der Allianzmeister der Angreifer an der Krone verbringen muss, um das Siegel zu registrieren; standardmäßig 30 Sekunden.</value>
+  </data>
+</root>

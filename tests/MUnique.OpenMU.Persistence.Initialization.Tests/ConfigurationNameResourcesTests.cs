@@ -40,6 +40,18 @@ internal class ConfigurationNameResourcesTests
         Assert.That(new LocalizedString("Lorencia").WithSourceKey("MapNames/Lorencia").GetFromSource()?.GetOwnTranslation(CultureInfo.GetCultureInfo("zh-CN")), Is.EqualTo("勇者大陆"));
     }
 
+    /// <summary>The German names use the same terms as the German game client.</summary>
+    [Test]
+    public void GermanNamesAreResolvedFromSources()
+    {
+        ConfigurationNameSources.Register();
+        var german = CultureInfo.GetCultureInfo("de");
+        Assert.That(new LocalizedString("Lost Tower").WithSourceKey("MapNames/LostTower").GetFromSource()?.GetOwnTranslation(german), Is.EqualTo("Verlorener Turm"));
+        Assert.That(new LocalizedString("Dark Knight").WithSourceKey("CharacterClassNames/DarkKnight").GetFromSource()?.GetOwnTranslation(german), Is.EqualTo("Dunkler Ritter"));
+        Assert.That(new LocalizedString("Lorencia").WithSourceKey("MapNames/Lorencia").GetFromSource()?.GetOwnTranslation(german), Is.Null, "names which are equal in German fall back to the neutral name");
+        Assert.That(string.Format(MonsterNames.ResourceManager.GetString(nameof(MonsterNames.GateToKalima1OfPlayer), german)!, "Tester"), Is.EqualTo("Tor nach Kalima 1 von Tester"));
+    }
+
     /// <summary>Every key of a satellite resource exists in the neutral resource.</summary>
     [Test]
     public void SatelliteKeysExistInNeutralResources()
