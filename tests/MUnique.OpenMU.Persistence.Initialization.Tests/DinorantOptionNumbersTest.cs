@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
 using MUnique.OpenMU.Persistence.InMemory;
@@ -50,7 +51,7 @@ internal class DinorantOptionNumbersTest
     {
         var (context, gameConfiguration) = await CreateConfigurationAsync(season6).ConfigureAwait(false);
         using var _ = context;
-        foreach (var option in GetDinorantOptions(gameConfiguration).PossibleOptions)
+        foreach (var option in GetDinorantOptions(gameConfiguration))
         {
             option.Number = 4;
         }
@@ -64,7 +65,7 @@ internal class DinorantOptionNumbersTest
 
     private static void AssertOptionNumbers(GameConfiguration gameConfiguration)
     {
-        var options = GetDinorantOptions(gameConfiguration).PossibleOptions;
+        var options = GetDinorantOptions(gameConfiguration).ToList();
         Assert.That(options, Has.Count.EqualTo(ExpectedNumbers.Count));
         foreach (var option in options)
         {
@@ -72,9 +73,13 @@ internal class DinorantOptionNumbersTest
         }
     }
 
-    private static ItemOptionDefinition GetDinorantOptions(GameConfiguration gameConfiguration)
+    private static IEnumerable<IncreasableItemOption> GetDinorantOptions(GameConfiguration gameConfiguration)
     {
-        return gameConfiguration.ItemOptions.Single(o => o.Name == "Dinorant Options");
+        return gameConfiguration.Items
+            .Single(item => item.Group == ItemConstants.Dinorant.Group && item.Number == ItemConstants.Dinorant.Number)
+            .PossibleItemOptions
+            .SelectMany(definition => definition.PossibleOptions)
+            .Where(option => option.OptionType == ItemOptionTypes.Option);
     }
 
     private static async Task<(IContext Context, GameConfiguration GameConfiguration)> CreateConfigurationAsync(bool season6)

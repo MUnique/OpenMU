@@ -6,6 +6,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.Updates;
 
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 
 /// <summary>
@@ -45,12 +47,13 @@ public abstract class FixDinorantOptionNumbersPlugInBase : UpdatePlugInBase
             { Stats.AttackSpeedAny, 4 },
         };
 
-        if (gameConfiguration.ItemOptions.FirstOrDefault(o => o.Name == "Dinorant Options") is not { } dinoOptions)
-        {
-            return ValueTask.CompletedTask;
-        }
+        var dinorant = gameConfiguration.Items.FirstOrDefault(item => item.Group == ItemConstants.Dinorant.Group && item.Number == ItemConstants.Dinorant.Number);
+        var dinoOptions = dinorant?.PossibleItemOptions
+            .SelectMany(definition => definition.PossibleOptions)
+            .Where(option => option.OptionType == ItemOptionTypes.Option)
+            ?? [];
 
-        foreach (var option in dinoOptions.PossibleOptions)
+        foreach (var option in dinoOptions)
         {
             if (option.PowerUpDefinition?.TargetAttribute is { } targetAttribute
                 && numbersByAttribute.TryGetValue(targetAttribute, out var number))
