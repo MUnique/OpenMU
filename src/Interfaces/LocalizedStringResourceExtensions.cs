@@ -195,7 +195,9 @@ public static class LocalizedStringResourceExtensions
     {
         try
         {
-            return CultureInfo.GetCultureInfo(name, predefinedOnly: true);
+            // Alpine's reduced ICU data can reject deployed satellite cultures as predefined,
+            // even though CultureInfo and ResourceManager can resolve them by name.
+            return CultureInfo.GetCultureInfo(name);
         }
         catch (CultureNotFoundException)
         {

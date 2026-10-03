@@ -911,6 +911,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized FixDinorantOptionNumbersPlugIn_Description text.</summary>
         public static string FixDinorantOptionNumbersPlugIn_Description => ResourceManager.GetString("FixDinorantOptionNumbersPlugIn_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized ConfigureNpcTalkPlugInsPlugIn_Name text.</summary>
+        public static string ConfigureNpcTalkPlugInsPlugIn_Name => ResourceManager.GetString("ConfigureNpcTalkPlugInsPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized ConfigureNpcTalkPlugInsPlugIn_Description text.</summary>
+        public static string ConfigureNpcTalkPlugInsPlugIn_Description => ResourceManager.GetString("ConfigureNpcTalkPlugInsPlugIn_Description", resourceCulture)!;
+
         /// <summary>Gets the localized AddItemPriceDefinitionsPlugIn_Name text.</summary>
         public static string AddItemPriceDefinitionsPlugIn_Name => ResourceManager.GetString("AddItemPriceDefinitionsPlugIn_Name", resourceCulture)!;
 

@@ -4165,8 +4165,11 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>Gets the localized BloodCastleArchangelTalkPlugIn_Description text.</summary>
         public static string BloodCastleArchangelTalkPlugIn_Description => ResourceManager.GetString("BloodCastleArchangelTalkPlugIn_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized BloodCastleArchangelTalkPlugInConfiguration_ArchangelNumber_Name text.</summary>
-        public static string BloodCastleArchangelTalkPlugInConfiguration_ArchangelNumber_Name => ResourceManager.GetString("BloodCastleArchangelTalkPlugInConfiguration_ArchangelNumber_Name", resourceCulture)!;
+        /// <summary>Gets the localized NpcTalkPlugInConfiguration_Npc_Name text.</summary>
+        public static string NpcTalkPlugInConfiguration_Npc_Name => ResourceManager.GetString("NpcTalkPlugInConfiguration_Npc_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized NpcTalkPlugInConfiguration_Npc_Description text.</summary>
+        public static string NpcTalkPlugInConfiguration_Npc_Description => ResourceManager.GetString("NpcTalkPlugInConfiguration_Npc_Description", resourceCulture)!;
 
     }
 }
