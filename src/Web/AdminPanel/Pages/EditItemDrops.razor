@@ -72,12 +72,12 @@
             {
                 <tbody @key="map">
                 <tr class="table-secondary">
-                    <th colspan="7">@map.Number - @map.Name</th>
+                    <th colspan="7">@map.Number - @map.Name.ToString()</th>
                 </tr>
                 @foreach (var overview in overviews)
                 {
                     <tr @key="overview.Monster">
-                        <td>@overview.Monster.Number - @overview.Monster.Designation</td>
+                        <td>@overview.Monster.Number - @overview.Monster.Designation.ToString()</td>
                         <td>@overview.Level</td>
                         <td>@overview.Monster.NumberOfMaximumItemDrops</td>
                         <td title="@overview.GroupsTooltip">@overview.Groups.Count</td>
@@ -109,7 +109,7 @@
     {
         <div @key="monster" class="mb-4">
             <div class="d-flex flex-wrap align-items-center gap-3 mb-2">
-                <h6 class="mb-0">@monster.Number - @monster.Designation</h6>
+                <h6 class="mb-0">@monster.Number - @monster.Designation.ToString()</h6>
                 <label class="d-flex align-items-center gap-2 mb-0 small" title="@Resources.NumberOfMaximumItemDropsHint">
                     @Resources.NumberOfMaximumItemDrops
                     <input type="number" class="form-control form-control-sm monster-max-drops" min="0" @bind="monster.NumberOfMaximumItemDrops" />
@@ -151,7 +151,7 @@
     @foreach (var boxItem in this.FilteredBoxItems)
     {
         <div @key="boxItem" class="mb-4">
-            <h6>@boxItem.Name <small class="text-muted">(@boxItem.Group, @boxItem.Number)</small></h6>
+            <h6>@boxItem.Name.ToString() <small class="text-muted">(@boxItem.Group, @boxItem.Number)</small></h6>
             <DropItemGroupTable Groups="@this.GetBoxGroups(boxItem)"
                                 IsItemBoxDrop="true"
                                 OnRemove="@(group => this.OnRemoveBoxGroupAsync(boxItem, group))"
@@ -194,7 +194,7 @@
             @foreach (var item in this.FilteredItems)
             {
                 <tr @key="item">
-                    <td>@item.Name <small class="text-muted">(@item.Group, @item.Number)</small></td>
+                    <td>@item.Name.ToString() <small class="text-muted">(@item.Group, @item.Number)</small></td>
                     <td><input type="checkbox" class="form-check-input" @bind="item.DropsFromMonsters" /></td>
                     <td><input type="number" class="form-control form-control-sm monster-max-drops" min="0" max="255" @bind="item.DropLevel" /></td>
                     <td><input type="number" class="form-control form-control-sm monster-max-drops" min="0" max="255" @bind="item.MaximumDropLevel" /></td>
@@ -220,7 +220,7 @@
             @foreach (var option in this.FilteredOptions)
             {
                 <tr @key="option">
-                    <td>@option.Name</td>
+                    <td>@option.Name.ToString()</td>
                     <td><input type="checkbox" class="form-check-input" @bind="option.AddsRandomly" /></td>
                     <td>
                         <input type="number" class="form-control form-control-sm monster-max-drops" step="any" min="0" max="100"
