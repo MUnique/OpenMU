@@ -382,8 +382,8 @@ public static class ItemExtensions
             {
                 multiplier = 4;
 
-                // Summoner Books are calculated differently. They are in group 5 (staffs) and are the only items in the group which can have skill.
-                if (item.Definition?.Skill != null && item.Definition.Group == 5)
+                // Summoner books, which increase the curse damage by their book rise, are calculated differently.
+                if (item.IsBook(out _))
                 {
                     return (totalAttribute, item.CalculateBookEnergyRequirement(requirement.MinimumValue));
                 }

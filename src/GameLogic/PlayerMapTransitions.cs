@@ -289,7 +289,11 @@ internal sealed class PlayerMapTransitions
     public async ValueTask<ExitGate> GetSpawnGateOfCurrentMapAsync()
     {
         var player = this._player;
-        if (player.CurrentMap is null)
+        // While a map change waits for the client's acknowledgement (F3 12), CurrentMap is null;
+        // the character's map is then the one being entered. A disconnect or the end of a mini game
+        // in that moment still needs the spawn gate.
+        var currentMapDefinition = player.CurrentMap?.Definition ?? player.SelectedCharacter?.CurrentMap;
+        if (currentMapDefinition is null)
         {
             throw new InvalidOperationException("CurrentMap is not set. Can't determine spawn gate.");
         }
@@ -304,7 +308,7 @@ internal sealed class PlayerMapTransitions
             }
         }
 
-        var spawnTargetMapDefinition = player.CurrentMap.Definition.SafezoneMap ?? player.CurrentMap.Definition;
+        var spawnTargetMapDefinition = currentMapDefinition.SafezoneMap ?? currentMapDefinition;
         var targetMap = await player.GameContext.GetMapAsync((ushort)spawnTargetMapDefinition.Number, false).ConfigureAwait(false);
         return targetMap?.SafeZoneSpawnGate
                ?? spawnTargetMapDefinition.GetSafezoneGate()

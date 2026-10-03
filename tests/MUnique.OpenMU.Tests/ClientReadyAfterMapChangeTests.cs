@@ -103,6 +103,38 @@ public class ClientReadyAfterMapChangeTests
     }
 
     /// <summary>
+    /// Tests that the safezone of a player whose map change is not yet acknowledged by the client
+    /// (F3 12) can still be found. A disconnect, or the end of a mini game, in that moment warps
+    /// the player to the safezone - which threw, since the current map is not set until then.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [Test]
+    public async Task SafezoneWarpDuringMapChangeDoesNotThrowAsync()
+    {
+        var gameContext = GameContextTestHelper.CreateGameContext();
+        var mapDefinition = gameContext.Configuration.Maps.First();
+        mapDefinition.ExitGates.Add(new MUnique.OpenMU.Persistence.BasicModel.ExitGate
+        {
+            Id = Guid.NewGuid(),
+            Map = mapDefinition,
+            X1 = 10,
+            Y1 = 10,
+            X2 = 13,
+            Y2 = 13,
+            IsSpawnGate = true,
+        });
+
+        var player = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        await player.ClientReadyAfterMapChangeAsync().ConfigureAwait(false);
+
+        // What a warp does until the client acknowledges the new map.
+        player.CurrentMap = null;
+
+        Assert.That(async () => await player.WarpToSafezoneAsync().ConfigureAwait(false), Throws.Nothing);
+        Assert.That(player.SelectedCharacter!.CurrentMap, Is.SameAs(mapDefinition));
+    }
+
+    /// <summary>
     /// Makes the given rectangle of the terrain non-walkable.
     /// </summary>
     /// <param name="terrainData">The terrain data, including its three byte header.</param>
