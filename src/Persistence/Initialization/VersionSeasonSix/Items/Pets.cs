@@ -277,9 +277,10 @@ public class Pets : InitializerBase
         dinoOptionDefinition.AddsRandomly = true;
         dinoOptionDefinition.MaximumOptionsPerItem = 1;     // There is a second rollout for an additional bonus option to the first
 
-        dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Option, 4, Stats.DamageReceiveDecrement, 0.95f, AggregateType.Multiplicate, ItemOptionDefinitionNumbers.Dino));  // Level 1
-        dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Option, 4, Stats.MaximumAbility, 50f, AggregateType.AddFinal, ItemOptionDefinitionNumbers.Dino));    // Level 2
-        dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Option, 4, Stats.AttackSpeedAny, 5f, AggregateType.AddFinal, ItemOptionDefinitionNumbers.Dino));    // Level 4
+        // The numbers are the bits of the option field which the client expects for each option.
+        dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Option, 1, Stats.DamageReceiveDecrement, 0.95f, AggregateType.Multiplicate, ItemOptionDefinitionNumbers.Dino));
+        dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Option, 2, Stats.MaximumAbility, 50f, AggregateType.AddFinal, ItemOptionDefinitionNumbers.Dino));
+        dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Option, 4, Stats.AttackSpeedAny, 5f, AggregateType.AddFinal, ItemOptionDefinitionNumbers.Dino));
 
         dinorant.PossibleItemOptions.Add(dinoOptionDefinition);
     }
