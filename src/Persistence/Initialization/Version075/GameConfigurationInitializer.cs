@@ -6,7 +6,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075;
 
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
-
+using MUnique.OpenMU.Persistence.Initialization.Items;
 using MUnique.OpenMU.Persistence.Initialization.Version075.Items;
 
 /// <summary>
@@ -58,6 +58,7 @@ public class GameConfigurationInitializer : GameConfigurationInitializerBase
         this.AssignCharacterClassHomeMaps();
         new ChaosMixes(this.Context, this.GameConfiguration).Initialize(); // todo
         new Gates(this.Context, this.GameConfiguration).Initialize();
+        new ItemPriceDefinitions(this.Context, this.GameConfiguration).Initialize();
         //// TODO: ItemSetGroups for set bonus
     }
 }

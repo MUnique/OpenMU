@@ -69,6 +69,7 @@ public class JsonObjectSerializer
                 new OnlyWriteBelowRootConverter<BasicModel.Skill>(),
                 new OnlyWriteBelowRootConverter<BasicModel.CharacterClass>(),
                 new OnlyWriteBelowRootConverter<BasicModel.ItemLevelBonusTable>(),
+                new OnlyWriteBelowRootConverter<BasicModel.ItemPriceDefinition>(),
                 new OnlyWriteBelowRootConverter<BasicModel.ItemSlotType>(),
                 new OnlyWriteBelowRootConverter<BasicModel.ItemOptionDefinition>(),
                 new OnlyWriteBelowRootConverter<BasicModel.ItemOptionType>(),

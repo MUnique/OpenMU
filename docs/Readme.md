@@ -46,6 +46,10 @@ can be searched and navigated.
 * [Player refactoring plan](PlayerRefactoringPlan.md): an internal plan for the
   refactoring of the player class
 
+* [Item price rules concept](ItemPriceRulesConcept.md): the concept for
+  data-driven item price rules
+  ([#75](https://github.com/MUnique/OpenMU/issues/75))
+
 * [architecture overview.png](architecture%20overview.png): the big picture,
   explained on the
   [architecture page](../docs-website/docs/development/architecture.md) of the

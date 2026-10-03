@@ -64,5 +64,6 @@ public class GameConfigurationInitializer : GameConfigurationInitializerBase
         new ChaosMixes(this.Context, this.GameConfiguration).Initialize();
         new Gates(this.Context, this.GameConfiguration).Initialize();
         new DevilSquareInitializer(this.Context, this.GameConfiguration).Initialize();
+        new ItemPriceDefinitions(this.Context, this.GameConfiguration).Initialize();
     }
 }
