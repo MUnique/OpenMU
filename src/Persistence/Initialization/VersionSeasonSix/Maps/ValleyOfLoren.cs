@@ -5,6 +5,8 @@
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// The initialization for the Valley of Loren map.
@@ -17,11 +19,6 @@ internal class ValleyOfLoren : BaseMapInitializer
     internal const byte Number = 30;
 
     /// <summary>
-    /// The Name of the Map.
-    /// </summary>
-    internal const string Name = "Valley of Loren";
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="ValleyOfLoren"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -31,11 +28,16 @@ internal class ValleyOfLoren : BaseMapInitializer
     {
     }
 
+    /// <summary>
+    /// Gets the name of the map.
+    /// </summary>
+    internal static LocalizedString Name => LocalizedString.FromResource(() => MapNames.ValleyOfLoren);
+
     /// <inheritdoc/>
     protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => Name;
+    protected override LocalizedString MapName => Name;
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()

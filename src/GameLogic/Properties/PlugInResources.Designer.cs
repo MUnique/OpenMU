@@ -4153,5 +4153,41 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>Gets the localized BlessJewelConsumeHandlerPlugInConfiguration_RepairTargetItems_Caption text.</summary>
         public static string BlessJewelConsumeHandlerPlugInConfiguration_RepairTargetItems_Caption => ResourceManager.GetString("BlessJewelConsumeHandlerPlugInConfiguration_RepairTargetItems_Caption", resourceCulture)!;
 
+        /// <summary>Gets the localized SiegePotionConsumeHandlerConfiguration_BlessEffectNumber_Name text.</summary>
+        public static string SiegePotionConsumeHandlerConfiguration_BlessEffectNumber_Name => ResourceManager.GetString("SiegePotionConsumeHandlerConfiguration_BlessEffectNumber_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized SiegePotionConsumeHandlerConfiguration_SoulEffectNumber_Name text.</summary>
+        public static string SiegePotionConsumeHandlerConfiguration_SoulEffectNumber_Name => ResourceManager.GetString("SiegePotionConsumeHandlerConfiguration_SoulEffectNumber_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BloodCastleArchangelTalkPlugIn_Name text.</summary>
+        public static string BloodCastleArchangelTalkPlugIn_Name => ResourceManager.GetString("BloodCastleArchangelTalkPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BloodCastleArchangelTalkPlugIn_Description text.</summary>
+        public static string BloodCastleArchangelTalkPlugIn_Description => ResourceManager.GetString("BloodCastleArchangelTalkPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized NpcTalkPlugInConfiguration_Npc_Name text.</summary>
+        public static string NpcTalkPlugInConfiguration_Npc_Name => ResourceManager.GetString("NpcTalkPlugInConfiguration_Npc_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized NpcTalkPlugInConfiguration_Npc_Description text.</summary>
+        public static string NpcTalkPlugInConfiguration_Npc_Description => ResourceManager.GetString("NpcTalkPlugInConfiguration_Npc_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized TwisterAnimationCounterStrategy_Name text.</summary>
+        public static string TwisterAnimationCounterStrategy_Name => ResourceManager.GetString("TwisterAnimationCounterStrategy_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized TwisterAnimationCounterStrategy_Description text.</summary>
+        public static string TwisterAnimationCounterStrategy_Description => ResourceManager.GetString("TwisterAnimationCounterStrategy_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized EvilSpiritAnimationCounterStrategy_Name text.</summary>
+        public static string EvilSpiritAnimationCounterStrategy_Name => ResourceManager.GetString("EvilSpiritAnimationCounterStrategy_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized EvilSpiritAnimationCounterStrategy_Description text.</summary>
+        public static string EvilSpiritAnimationCounterStrategy_Description => ResourceManager.GetString("EvilSpiritAnimationCounterStrategy_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized MultiShotAnimationCounterStrategy_Name text.</summary>
+        public static string MultiShotAnimationCounterStrategy_Name => ResourceManager.GetString("MultiShotAnimationCounterStrategy_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized MultiShotAnimationCounterStrategy_Description text.</summary>
+        public static string MultiShotAnimationCounterStrategy_Description => ResourceManager.GetString("MultiShotAnimationCounterStrategy_Description", resourceCulture)!;
+
     }
 }

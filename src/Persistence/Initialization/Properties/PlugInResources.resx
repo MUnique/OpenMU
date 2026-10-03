@@ -360,4 +360,10 @@
   <data name="AddFenrirMaterialDropGroupsUpdateSeason6_Description" xml:space="preserve"><value>Adds the drops of Splinter of Armor (5 %), Bless of Guardian (2 %) and Claw of Beast (0.5 %) to all monsters of Crywolf. Materials which already drop on Crywolf by another group are skipped.</value></data>
   <data name="FixVulcanusWarpIndexUpdatePlugIn_Name" xml:space="preserve"><value>Fix Vulcanus warp index</value></data>
   <data name="FixVulcanusWarpIndexUpdatePlugIn_Description" xml:space="preserve"><value>This update corrects the index of the warp entry of Vulcanus to 42, which the season 6 game client requests.</value></data>
+  <data name="AddSmallWingsUpdatePlugIn_Name" xml:space="preserve"><value>Add small wings and capes</value></data>
+  <data name="AddSmallWingsUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the missing small wings and capes of the in-game shop: Small Cape of Lord, Small Wing of Curse, Small Wings of Elf, Small Wings of Heaven, Small Wings of Satan and Little Warrior's Cloak. Existing items with the same numbers are left unchanged.</value></data>
+  <data name="FixDinorantOptionNumbersPlugIn_Name" xml:space="preserve"><value>Fix Dinorant option numbers</value></data>
+  <data name="FixDinorantOptionNumbersPlugIn_Description" xml:space="preserve"><value>This update gives each Dinorant option a distinct number, which is its bit in the option field the client expects.</value></data>
+  <data name="ConfigureNpcTalkPlugInsPlugIn_Name" xml:space="preserve"><value>Configure NPCs of talk plugins</value></data>
+  <data name="ConfigureNpcTalkPlugInsPlugIn_Description" xml:space="preserve"><value>This update configures the NPCs of the plugins which handle talking to an NPC, e.g. the reset NPC or the Blood Castle Archangel.</value></data>
 </root>

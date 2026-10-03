@@ -42,7 +42,7 @@ public class DataUpdateService
         using var context = this._contextProvider.CreateNewContext();
         var installedVersions = await GetInstalledVersionsAsync(context).ConfigureAwait(false);
 
-        var initializationKey = await this.DetermineInitializationKeyAsync(context).ConfigureAwait(false);
+        var initializationKey = await DetermineInitializationKeyAsync(context).ConfigureAwait(false);
 
         var updateStrategyProvider = this._plugInManager.GetStrategyProvider<Guid, IConfigurationUpdatePlugIn>();
         if (updateStrategyProvider is null)
@@ -185,7 +185,12 @@ public class DataUpdateService
             .ToDictionary(group => group.Key, group => group.Max(up => up.Version));
     }
 
-    private async ValueTask<string> DetermineInitializationKeyAsync(IContext context)
+    /// <summary>
+    /// Determines the key of the data initialization which created the configuration.
+    /// </summary>
+    /// <param name="context">The context.</param>
+    /// <returns>The key of the <see cref="IDataInitializationPlugIn"/>.</returns>
+    internal static async ValueTask<string> DetermineInitializationKeyAsync(IContext context)
     {
         var updateStates = await context.GetAsync<ConfigurationUpdateState>().ConfigureAwait(false);
         if (updateStates.FirstOrDefault() is { InitializationKey: not null } updateState)

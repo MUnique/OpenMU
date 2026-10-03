@@ -5,13 +5,13 @@
 namespace MUnique.OpenMU.GameLogic.CastleSiege.Actions;
 
 using MUnique.OpenMU.GameLogic.PlayerActions;
+using MUnique.OpenMU.GameLogic.PlugIns;
 
 /// <summary>
 /// Enters the Castle Siege hunting zone.
 /// </summary>
 public sealed class CastleSiegeHuntZoneEnterAction
 {
-    private const short GuardsmanNumber = 224;
     private readonly CastleSiegeTaxProvider _taxProvider = new();
 
     /// <summary>
@@ -23,7 +23,7 @@ public sealed class CastleSiegeHuntZoneEnterAction
     public async ValueTask<bool> EnterAsync(Player player, CastleSiegeContext? context)
     {
         if (context is not { Configuration.Enabled: true }
-            || player.OpenedNpc?.Definition.Number != GuardsmanNumber
+            || !player.OpenedNpc.IsNpcOf<CastleSiegeGuardsmanTalkPlugIn>(player.GameContext)
             || player.CurrentMap?.Definition.Number != context.Configuration.CastleSiegeMapDefinition?.Number
             || context.Configuration.LandOfTrialsMapDefinition is not { } targetMap
             || targetMap.ExitGates.FirstOrDefault() is not { } targetGate)

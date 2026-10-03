@@ -7,34 +7,37 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
 
 using System.Runtime.InteropServices;
-using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// The alcohol consume handler.
+/// The consume handler for the siege potions, the Potion of Bless and the Potion of Soul.
 /// </summary>
 [Guid("9D50CE95-5354-43A7-8DD5-9D6953700DFA")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.SiegePotionConsumeHandlerPlugIn_Name), Description = nameof(PlugInResources.SiegePotionConsumeHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
-public class SiegePotionConsumeHandlerPlugIn : ApplyMagicEffectConsumeHandlerPlugIn
+public class SiegePotionConsumeHandlerPlugIn : ApplyMagicEffectConsumeHandlerPlugIn, ISupportCustomConfiguration<SiegePotionConsumeHandlerConfiguration>, ISupportDefaultCustomConfiguration
 {
+    /// <inheritdoc />
+    public SiegePotionConsumeHandlerConfiguration? Configuration { get; set; }
+
     /// <inheritdoc />
     public override ItemIdentifier Key => ItemConstants.SiegePotion;
 
     /// <inheritdoc/>
     public override async ValueTask<bool> ConsumeItemAsync(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
     {
+        var configuration = this.Configuration ??= new SiegePotionConsumeHandlerConfiguration();
         if (item.Level == 0
-            && player.GameContext.Configuration.MagicEffects.FirstOrDefault(e => e.Number == 10) is { } blessEffectDefinition)
+            && player.GameContext.Configuration.MagicEffects.FirstOrDefault(e => e.Number == configuration.BlessEffectNumber) is { } blessEffectDefinition)
         {
-            return await base.ConsumeItemCoreAsync(player, item, targetItem, fruitUsage, blessEffectDefinition).ConfigureAwait(false);
+            return await this.ConsumeItemCoreAsync(player, item, targetItem, fruitUsage, blessEffectDefinition).ConfigureAwait(false);
         }
 
         if (item.Level == 1
-            && player.GameContext.Configuration.MagicEffects.FirstOrDefault(e => e.Number == 11) is { } effectDefinition)
+            && player.GameContext.Configuration.MagicEffects.FirstOrDefault(e => e.Number == configuration.SoulEffectNumber) is { } effectDefinition)
         {
-            if (await base.ConsumeItemCoreAsync(player, item, targetItem, fruitUsage, effectDefinition).ConfigureAwait(false))
+            if (await this.ConsumeItemCoreAsync(player, item, targetItem, fruitUsage, effectDefinition).ConfigureAwait(false))
             {
                 await player.InvokeViewPlugInAsync<IConsumeSpecialItemPlugIn>(p => p.ConsumeSpecialItemAsync(item, (ushort)(effectDefinition.Duration?.ConstantValue.Value ?? 0))).ConfigureAwait(false);
                 return true;
@@ -47,4 +50,7 @@ public class SiegePotionConsumeHandlerPlugIn : ApplyMagicEffectConsumeHandlerPlu
 
         return false;
     }
+
+    /// <inheritdoc />
+    public object CreateDefaultConfig() => new SiegePotionConsumeHandlerConfiguration();
 }

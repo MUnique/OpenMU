@@ -7,6 +7,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 
 /// <summary>
@@ -18,11 +20,6 @@ internal class Elvenland : BaseMapInitializer
     /// The Number of the Map.
     /// </summary>
     public static readonly byte Number = 51;
-
-    /// <summary>
-    /// The Name of the Map.
-    /// </summary>
-    private static readonly string Name = "Elvenland";
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Elvenland"/> class.
@@ -38,7 +35,12 @@ internal class Elvenland : BaseMapInitializer
     protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => Name;
+    protected override LocalizedString MapName => Name;
+
+    /// <summary>
+    /// Gets the name of the map.
+    /// </summary>
+    private static LocalizedString Name => LocalizedString.FromResource(() => MapNames.Elvenland);
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
@@ -80,7 +82,7 @@ internal class Elvenland : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 418;
-            monster.Designation = "Strange Rabbit";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.StrangeRabbit);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 5;
@@ -108,7 +110,7 @@ internal class Elvenland : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 419;
-            monster.Designation = "Polluted Butterfly";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.PollutedButterfly);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 5;
@@ -136,7 +138,7 @@ internal class Elvenland : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 420;
-            monster.Designation = "Hideous Rabbit";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.HideousRabbit);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 5;
@@ -164,7 +166,7 @@ internal class Elvenland : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 421;
-            monster.Designation = "Werewolf";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Werewolf421);
             monster.MoveRange = 2;
             monster.AttackRange = 1;
             monster.ViewRange = 5;
@@ -192,7 +194,7 @@ internal class Elvenland : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 422;
-            monster.Designation = "Cursed Lich";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.CursedLich);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 5;
@@ -225,7 +227,7 @@ internal class Elvenland : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 423;
-            monster.Designation = "Totem Golem";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.TotemGolem);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 5;
@@ -253,7 +255,7 @@ internal class Elvenland : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 424;
-            monster.Designation = "Grizzly";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Grizzly);
             monster.MoveRange = 2;
             monster.AttackRange = 1;
             monster.ViewRange = 5;
@@ -282,7 +284,7 @@ internal class Elvenland : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 425;
-            monster.Designation = "Captain Grizzly";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.CaptainGrizzly);
             monster.MoveRange = 2;
             monster.AttackRange = 1;
             monster.ViewRange = 5;

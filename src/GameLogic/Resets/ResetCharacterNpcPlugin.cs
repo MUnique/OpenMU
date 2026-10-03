@@ -15,21 +15,19 @@ using MUnique.OpenMU.PlugIns;
 [Guid("08953BE6-DABF-49CC-A500-FDB9DC2C4D80")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.ResetCharacterNpcPlugin_Name), Description = nameof(PlugInResources.ResetCharacterNpcPlugin_Description), ResourceType = typeof(PlugInResources))]
-public class ResetCharacterNpcPlugin : IPlayerTalkToNpcPlugIn
+public class ResetCharacterNpcPlugin : NpcTalkPlugInBase
 {
     /// <summary>
-    /// Gets the reset NPC number of 'Leo the Helper'.
+    /// The number of 'Leo the Helper', which is the default reset NPC.
     /// </summary>
-    public static short ResetNpcNumber => 371;
+    internal const short LeoTheHelperNumber = 371;
 
     /// <inheritdoc />
-    public async ValueTask PlayerTalksToNpcAsync(Player player, NonPlayerCharacter npc, NpcTalkEventArgs eventArgs)
-    {
-        if (npc.Definition.Number != ResetNpcNumber)
-        {
-            return;
-        }
+    public override short DefaultNpcNumber => LeoTheHelperNumber;
 
+    /// <inheritdoc />
+    protected override async ValueTask PlayerTalksToConfiguredNpcAsync(Player player, NonPlayerCharacter npc, NpcTalkEventArgs eventArgs)
+    {
         eventArgs.HasBeenHandled = true;
         var resetAction = new ResetCharacterAction(player, npc);
         await resetAction.ResetCharacterAsync().ConfigureAwait(false);

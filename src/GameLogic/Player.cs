@@ -206,7 +206,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <summary>
     /// Gets the skill hit validator.
     /// </summary>
-    public SkillHitValidator SkillHitValidator => this._skillHitValidator ??= new SkillHitValidator(this.Logger);
+    public SkillHitValidator SkillHitValidator => this._skillHitValidator ??= new SkillHitValidator(this.Logger, this.GameContext.PlugInManager);
 
     /// <inheritdoc/>
     public int Money
@@ -1056,7 +1056,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return;
         }
 
-        using var l = await this.ObserverLock.WriterLockAsync();
+        using var l = await this.ObserverLock.WriterLockAsync().ConfigureAwait(false);
         this.Observers.Add(observer);
         if (this.Party is not null
             && observer is Player observingPlayer
@@ -1070,7 +1070,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <inheritdoc/>
     public async ValueTask RemoveObserverAsync(IWorldObserver observer)
     {
-        using var l = await this.ObserverLock.WriterLockAsync();
+        using var l = await this.ObserverLock.WriterLockAsync().ConfigureAwait(false);
         this.Observers.Remove(observer);
         if (this.Party is not null
             && observer is Player observingPlayer
@@ -1253,6 +1253,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         await this.HandleMoveToNextSafezoneAsync().ConfigureAwait(false);
 
         await this._mapTransitions.RemoveFromCurrentMapAsync().ConfigureAwait(false);
+
+        // The player always observes itself, so leaving the map doesn't remove it from its own
+        // observed objects. Without clearing them, entering the world again (e.g. after going back
+        // to the character selection) wouldn't show the player to itself as a new player in scope.
+        await this._observerToWorldViewAdapter.ClearObservingObjectsListAsync().ConfigureAwait(false);
 
         await this._storages.RestoreTemporaryStorageItemsAsync().ConfigureAwait(false);
 

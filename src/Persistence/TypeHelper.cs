@@ -15,9 +15,11 @@ public static class TypeHelper
     private static readonly string ConfigurationNamespace = "MUnique.OpenMU.DataModel.Configuration";
 
     /// <summary>
-    /// A cache which holds extended types (Value) for their corresponding base type (Key).
+    /// A cache which holds extended types (Value) for their originating assembly and corresponding base type (Key).
+    /// The assembly is part of the key, because there are multiple persistence models (e.g. Entity Framework and in-memory)
+    /// which can be used in the same process.
     /// </summary>
-    private static readonly IDictionary<Type, Type> BaseToPersistentTypes = new ConcurrentDictionary<Type, Type>();
+    private static readonly ConcurrentDictionary<(Assembly Origin, Type BaseType), Type> BaseToPersistentTypes = new();
 
     /// <summary>
     /// Gets the ef core type of <typeparamref name="TBase"/>.
@@ -44,13 +46,7 @@ public static class TypeHelper
             return baseType;
         }
 
-        if (!BaseToPersistentTypes.TryGetValue(baseType, out var persistentType))
-        {
-            persistentType = origin.GetTypes().First(t => t.BaseType == baseType);
-            BaseToPersistentTypes.Add(baseType, persistentType);
-        }
-
-        return persistentType;
+        return BaseToPersistentTypes.GetOrAdd((origin, baseType), static key => key.Origin.GetTypes().First(t => t.BaseType == key.BaseType));
     }
 
     /// <summary>

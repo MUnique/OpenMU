@@ -1351,4 +1351,424 @@
   <data name="RoleOperator" xml:space="preserve"><value>操作员</value></data>
   <data name="RoleViewer" xml:space="preserve"><value>只读用户</value></data>
   <data name="PartyBadgeTitle" xml:space="preserve"><value>{0}的队伍：{1} 名成员</value></data>
+  <data name="Captions" xml:space="preserve">
+    <value>配置名称</value>
+  </data>
+  <data name="CaptionsDescription" xml:space="preserve">
+    <value>将配置中的名称（例如地图和怪物名称）与其内置来源进行比较。新的和已更新的翻译会被选中；自定义文本仅在您选择时才会更改。</value>
+  </data>
+  <data name="AllLocalizationsInPlace" xml:space="preserve">
+    <value>所有可用的本地化内容均已就位。</value>
+  </data>
+  <data name="CaptionsLoading" xml:space="preserve">
+    <value>正在将名称与其来源进行比较……</value>
+  </data>
+  <data name="CaptionLanguageSummary" xml:space="preserve">
+    <value>{0}：{1} 项更改</value>
+  </data>
+  <data name="CaptionAllLanguages" xml:space="preserve">
+    <value>所有语言</value>
+  </data>
+  <data name="CaptionAllKinds" xml:space="preserve">
+    <value>所有更改类型</value>
+  </data>
+  <data name="CaptionNeutralText" xml:space="preserve">
+    <value>中性（英语）</value>
+  </data>
+  <data name="CaptionObject" xml:space="preserve">
+    <value>对象</value>
+  </data>
+  <data name="CaptionProperty" xml:space="preserve">
+    <value>属性</value>
+  </data>
+  <data name="CaptionLanguage" xml:space="preserve">
+    <value>语言</value>
+  </data>
+  <data name="CaptionChange" xml:space="preserve">
+    <value>更改</value>
+  </data>
+  <data name="CaptionCurrentText" xml:space="preserve">
+    <value>当前文本</value>
+  </data>
+  <data name="CaptionSourceText" xml:space="preserve">
+    <value>新文本</value>
+  </data>
+  <data name="CaptionChangeKind_Missing" xml:space="preserve">
+    <value>新增</value>
+  </data>
+  <data name="CaptionChangeKind_Updated" xml:space="preserve">
+    <value>已更新</value>
+  </data>
+  <data name="CaptionChangeKind_Removed" xml:space="preserve">
+    <value>已移除</value>
+  </data>
+  <data name="CaptionChangeKind_Customized" xml:space="preserve">
+    <value>已自定义</value>
+  </data>
+  <data name="SelectRecommended" xml:space="preserve">
+    <value>选择推荐项</value>
+  </data>
+  <data name="SelectNone" xml:space="preserve">
+    <value>全部取消选择</value>
+  </data>
+  <data name="ApplySelectedChanges" xml:space="preserve">
+    <value>应用所选更改</value>
+  </data>
+  <data name="ApplyingChanges" xml:space="preserve">
+    <value>正在应用更改……</value>
+  </data>
+  <data name="AppliedCaptionChanges" xml:space="preserve">
+    <value>已应用 {0} 项更改。</value>
+  </data>
+  <data name="LinkBuiltInCaptions" xml:space="preserve">
+    <value>关联内置名称</value>
+  </data>
+  <data name="LinkBuiltInCaptionsDescription" xml:space="preserve">
+    <value>使用旧版本创建的配置尚不知道其内置名称的来源，因此无法接收新的翻译。关联操作会在内存中执行数据初始化，并将匹配的名称与其来源关联。不会更改任何文本。</value>
+  </data>
+  <data name="LinkingBuiltInCaptions" xml:space="preserve">
+    <value>正在关联内置名称……</value>
+  </data>
+  <data name="LinkedBuiltInCaptions" xml:space="preserve">
+    <value>已将 {0} 个名称与其来源关联。由于中性文本已被自定义，跳过了 {1} 个名称。</value>
+  </data>
+  <data name="CaptionsUnresolvedSources" xml:space="preserve">
+    <value>此版本中有 {0} 个名称来源不可用，因此无法比较这些名称，例如 {1}。</value>
+  </data>
+  <data name="Guilds" xml:space="preserve">
+    <value>战盟</value>
+  </data>
+  <data name="Guild" xml:space="preserve">
+    <value>战盟</value>
+  </data>
+  <data name="Alliance" xml:space="preserve">
+    <value>联盟</value>
+  </data>
+  <data name="Members" xml:space="preserve">
+    <value>成员</value>
+  </data>
+  <data name="Score" xml:space="preserve">
+    <value>积分</value>
+  </data>
+  <data name="Notice" xml:space="preserve">
+    <value>公告</value>
+  </data>
+  <data name="Position" xml:space="preserve">
+    <value>职位</value>
+  </data>
+  <data name="CharacterClass" xml:space="preserve">
+    <value>职业</value>
+  </data>
+  <data name="Level" xml:space="preserve">
+    <value>等级</value>
+  </data>
+  <data name="MasterLevel" xml:space="preserve">
+    <value>大师等级</value>
+  </data>
+  <data name="Account" xml:space="preserve">
+    <value>账号</value>
+  </data>
+  <data name="GuildNotFound" xml:space="preserve">
+    <value>未找到该战盟，可能已被删除。</value>
+  </data>
+  <data name="EmptyValue" xml:space="preserve">
+    <value>—</value>
+  </data>
+  <data name="CaptionsNotLinkedTitle" xml:space="preserve">
+    <value>关联内置名称</value>
+  </data>
+  <data name="CaptionsNotLinkedDescription" xml:space="preserve">
+    <value>此配置中的名称尚不知道其来源。使用旧版本 OpenMU 创建的配置都是这种情况。只需关联一次；之后此页面会显示可以添加或更新的翻译。</value>
+  </data>
+  <data name="CaptionsLinkedCount" xml:space="preserve">
+    <value>已有 {0} 个名称与其来源关联。</value>
+  </data>
+  <data name="CaptionsReviewTitle" xml:space="preserve">
+    <value>检查并应用更改</value>
+  </data>
+  <data name="CaptionsReviewDescription" xml:space="preserve">
+    <value>以下名称与其来源不同。推荐的更改已被选中。自定义文本仅在您选择时才会更改。</value>
+  </data>
+  <data name="CaptionChangeKind_Missing_Description" xml:space="preserve">
+    <value>有可用的翻译，但配置中缺少该翻译，或者只是英文文本的副本。</value>
+  </data>
+  <data name="CaptionChangeKind_Updated_Description" xml:space="preserve">
+    <value>内置文本已更改，而配置中的文本仍是最初接收的文本。</value>
+  </data>
+  <data name="CaptionChangeKind_Removed_Description" xml:space="preserve">
+    <value>内置翻译已不存在，而配置中的文本仍是最初接收的文本。</value>
+  </data>
+  <data name="CaptionChangeKind_Customized_Description" xml:space="preserve">
+    <value>配置中的文本不同，因为它已被更改或来源未知。仅在您选择时才会被覆盖。</value>
+  </data>
+  <data name="CaptionsLinkAgainTitle" xml:space="preserve">
+    <value>重新关联名称</value>
+  </data>
+  <data name="CaptionsLinkAgainDescription" xml:space="preserve">
+    <value>关联尚未关联的内置名称，例如在配置更新添加了新对象之后。已关联的名称和文本不会更改。</value>
+  </data>
+  <data name="CaptionsNextStepReview" xml:space="preserve">
+    <value>请检查下方的更改并应用所选更改。</value>
+  </data>
+  <data name="CaptionLinkStep_LoadingConfiguration" xml:space="preserve">
+    <value>正在加载配置</value>
+  </data>
+  <data name="CaptionLinkStep_CreatingReferenceConfiguration" xml:space="preserve">
+    <value>正在创建参考配置（在内存中执行数据初始化）</value>
+  </data>
+  <data name="CaptionLinkStep_LinkingCaptions" xml:space="preserve">
+    <value>正在关联名称</value>
+  </data>
+  <data name="CaptionLinkStep_Saving" xml:space="preserve">
+    <value>正在保存更改</value>
+  </data>
+  <data name="CaptionsLinkingHint" xml:space="preserve">
+    <value>关联可能需要一些时间，主要是因为需要在内存中执行数据初始化。请保持此页面打开。</value>
+  </data>
+  <data name="CaptionsLinkingElapsed" xml:space="preserve">
+    <value>已用时间：{0}</value>
+  </data>
+  <data name="AddChancePercent" xml:space="preserve">
+    <value>添加概率（%）</value>
+  </data>
+  <data name="AddDropItemGroup" xml:space="preserve">
+    <value>添加物品掉落组</value>
+  </data>
+  <data name="AddDropsForItem" xml:space="preserve">
+    <value>为其他物品（如宝箱）添加掉落配置</value>
+  </data>
+  <data name="AddDropsForMonster" xml:space="preserve">
+    <value>为其他怪物添加掉落配置</value>
+  </data>
+  <data name="AddsRandomly" xml:space="preserve">
+    <value>随机添加</value>
+  </data>
+  <data name="AreYouSure" xml:space="preserve">
+    <value>确定要执行此操作吗？</value>
+  </data>
+  <data name="AssignToAllMaps" xml:space="preserve">
+    <value>分配到所有地图</value>
+  </data>
+  <data name="AssignedMaps" xml:space="preserve">
+    <value>已分配地图</value>
+  </data>
+  <data name="ChanceHint" xml:space="preserve">
+    <value>选中此掉落组的概率，范围为 0～100%。概率为 100% 的组必定掉落，独立于其他按概率选择的掉落组。</value>
+  </data>
+  <data name="ChancePercent" xml:space="preserve">
+    <value>概率（%）</value>
+  </data>
+  <data name="DeleteDropItemGroupQuestion" xml:space="preserve">
+    <value>即将删除物品掉落组“{0}”，确定要继续吗？</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>说明</value>
+  </data>
+  <data name="DropEffect" xml:space="preserve">
+    <value>掉落特效</value>
+  </data>
+  <data name="DropItemGroupStillUsed" xml:space="preserve">
+    <value>无法删除物品掉落组“{0}”，因为以下内容仍在使用它：{1}</value>
+  </data>
+  <data name="DropLevel" xml:space="preserve">
+    <value>掉落等级</value>
+  </data>
+  <data name="DropLevelHint" xml:space="preserve">
+    <value>该物品可随机掉落时所需的最低怪物等级。</value>
+  </data>
+  <data name="DropsFromMonsters" xml:space="preserve">
+    <value>可由怪物掉落</value>
+  </data>
+  <data name="EditDetails" xml:space="preserve">
+    <value>编辑详情</value>
+  </data>
+  <data name="ExcellentItemDropLevelDelta" xml:space="preserve">
+    <value>卓越物品掉落等级偏移</value>
+  </data>
+  <data name="ExcellentItemDropLevelDeltaHint" xml:space="preserve">
+    <value>怪物等级至少需要比物品掉落等级高出此数值，该物品才可能作为卓越物品掉落。</value>
+  </data>
+  <data name="GeneralDropSettings" xml:space="preserve">
+    <value>通用掉落设置</value>
+  </data>
+  <data name="GuaranteedDrops" xml:space="preserve">
+    <value>必定掉落</value>
+  </data>
+  <data name="Item" xml:space="preserve">
+    <value>物品</value>
+  </data>
+  <data name="ItemBoxDrops" xml:space="preserve">
+    <value>宝箱物品掉落</value>
+  </data>
+  <data name="ItemBoxDropsDescription" xml:space="preserve">
+    <value>设置玩家丢出宝箱类物品（如幸运宝箱、昆顿宝箱）时掉落的内容。根据来源物品的等级匹配掉落组，再按概率选择其中一组。</value>
+  </data>
+  <data name="ItemDropDurationSeconds" xml:space="preserve">
+    <value>掉落物品保留时间（秒）</value>
+  </data>
+  <data name="ItemDrops" xml:space="preserve">
+    <value>物品掉落</value>
+  </data>
+  <data name="ItemDropsPageDescription" xml:space="preserve">
+    <value>在同一页面配置所有物品掉落。更改仅在保存后生效。</value>
+  </data>
+  <data name="ItemLevel" xml:space="preserve">
+    <value>物品等级</value>
+  </data>
+  <data name="ItemLevelHint" xml:space="preserve">
+    <value>掉落物品的强化等级。留空时，随机物品的强化等级由怪物等级决定。</value>
+  </data>
+  <data name="ItemOption" xml:space="preserve">
+    <value>物品属性</value>
+  </data>
+  <data name="ItemOptionDropChances" xml:space="preserve">
+    <value>物品属性生成概率</value>
+  </data>
+  <data name="ItemOptionDropChancesDescription" xml:space="preserve">
+    <value>随机为掉落物品添加各类属性的概率。</value>
+  </data>
+  <data name="ItemType" xml:space="preserve">
+    <value>类型</value>
+  </data>
+  <data name="MapDropItemGroups" xml:space="preserve">
+    <value>地图掉落组</value>
+  </data>
+  <data name="MapDropItemGroupsDescription" xml:space="preserve">
+    <value>适用于所分配地图中怪物的掉落组。未分配到任何地图的组不会产生掉落。</value>
+  </data>
+  <data name="MaximumDropLevel" xml:space="preserve">
+    <value>最高掉落等级</value>
+  </data>
+  <data name="MaximumDropLevelHint" xml:space="preserve">
+    <value>该物品可随机掉落时允许的最高怪物等级。留空表示没有上限。</value>
+  </data>
+  <data name="MaximumItemLevel" xml:space="preserve">
+    <value>最高物品等级</value>
+  </data>
+  <data name="MaximumItemOptionLevelDrop" xml:space="preserve">
+    <value>最高追加属性等级</value>
+  </data>
+  <data name="MaximumItemOptionLevelDropHint" xml:space="preserve">
+    <value>掉落物品可获得的追加属性最高等级（如 +4、+8、+12、+16）。</value>
+  </data>
+  <data name="MaximumMonsterLevel" xml:space="preserve">
+    <value>最高怪物等级</value>
+  </data>
+  <data name="MaximumOptionsPerItem" xml:space="preserve">
+    <value>每件物品的属性数量上限</value>
+  </data>
+  <data name="MiniGameUsage" xml:space="preserve">
+    <value>活动副本“{0}”</value>
+  </data>
+  <data name="MinimumItemLevel" xml:space="preserve">
+    <value>最低物品等级</value>
+  </data>
+  <data name="MinimumMonsterLevel" xml:space="preserve">
+    <value>最低怪物等级</value>
+  </data>
+  <data name="Money" xml:space="preserve">
+    <value>金币</value>
+  </data>
+  <data name="MoneyAmount" xml:space="preserve">
+    <value>金币数量</value>
+  </data>
+  <data name="Monster" xml:space="preserve">
+    <value>怪物</value>
+  </data>
+  <data name="MonsterDropChanceOverview" xml:space="preserve">
+    <value>怪物掉落概率概览</value>
+  </data>
+  <data name="MonsterDropChanceOverviewDescription" xml:space="preserve">
+    <value>显示地图中各类怪物的掉落概率，综合考虑地图掉落组的怪物等级限制和怪物专属掉落组。概率适用于每次掉落判定，判定次数最多为该怪物的掉落物品数量上限。不包含任务物品掉落。若总概率超过 100%，各项概率会按比例缩减，且不会出现无掉落的结果。</value>
+  </data>
+  <data name="MonsterDrops" xml:space="preserve">
+    <value>怪物掉落</value>
+  </data>
+  <data name="MonsterDropsDescription" xml:space="preserve">
+    <value>特定怪物的掉落组。怪物被击杀时，这些组会与地图掉落组一起参与掉落判定。</value>
+  </data>
+  <data name="MonsterLevel" xml:space="preserve">
+    <value>等级</value>
+  </data>
+  <data name="NewDropItemGroup" xml:space="preserve">
+    <value>新物品掉落组</value>
+  </data>
+  <data name="NewDropItemGroupOf" xml:space="preserve">
+    <value>{0}的掉落</value>
+  </data>
+  <data name="NoDropChance" xml:space="preserve">
+    <value>无掉落概率</value>
+  </data>
+  <data name="NoDropItemGroups" xml:space="preserve">
+    <value>暂无物品掉落组。</value>
+  </data>
+  <data name="NoItems" xml:space="preserve">
+    <value>无物品</value>
+  </data>
+  <data name="NumberOfMaximumItemDrops" xml:space="preserve">
+    <value>掉落物品数量上限</value>
+  </data>
+  <data name="NumberOfMaximumItemDropsHint" xml:space="preserve">
+    <value>该怪物被击杀时最多掉落的物品数量。</value>
+  </data>
+  <data name="OnlyForMonster" xml:space="preserve">
+    <value>仅限指定怪物</value>
+  </data>
+  <data name="PossibleItems" xml:space="preserve">
+    <value>候选物品</value>
+  </data>
+  <data name="PossibleItemsHint" xml:space="preserve">
+    <value>如果未选择物品，则根据类型和怪物等级随机生成掉落物品。</value>
+  </data>
+  <data name="QuestAndEventDropItemGroups" xml:space="preserve">
+    <value>任务与活动掉落组</value>
+  </data>
+  <data name="QuestAndEventDropItemGroupsDescription" xml:space="preserve">
+    <value>用于任务或活动副本奖励的掉落组。</value>
+  </data>
+  <data name="QuestUsage" xml:space="preserve">
+    <value>任务“{0}”</value>
+  </data>
+  <data name="RandomAncientItems" xml:space="preserve">
+    <value>随机套装物品</value>
+  </data>
+  <data name="RandomItemsByMonsterLevel" xml:space="preserve">
+    <value>按怪物等级随机生成物品</value>
+  </data>
+  <data name="RandomlyDroppedItems" xml:space="preserve">
+    <value>随机掉落物品</value>
+  </data>
+  <data name="RandomlyDroppedItemsDescription" xml:space="preserve">
+    <value>设置哪些物品可以随机掉落（例如通过普通或卓越掉落组），以及允许掉落的怪物等级范围。</value>
+  </data>
+  <data name="RemoveFromAllMaps" xml:space="preserve">
+    <value>从所有地图移除</value>
+  </data>
+  <data name="RemoveFromMonster" xml:space="preserve">
+    <value>从该怪物移除</value>
+  </data>
+  <data name="RequiredCharacterLevel" xml:space="preserve">
+    <value>所需角色等级</value>
+  </data>
+  <data name="ShouldDropMoney" xml:space="preserve">
+    <value>金币掉落到地面（而非直接放入背包）</value>
+  </data>
+  <data name="ShowOnlyDroppableItems" xml:space="preserve">
+    <value>仅显示可由怪物掉落的物品</value>
+  </data>
+  <data name="SourceItemLevel" xml:space="preserve">
+    <value>来源物品等级</value>
+  </data>
+  <data name="SourceItemLevelHint" xml:space="preserve">
+    <value>此组适用的来源物品（如丢出的宝箱）的等级。</value>
+  </data>
+  <data name="TotalChance" xml:space="preserve">
+    <value>总概率</value>
+  </data>
+  <data name="TotalChanceExceedsHint" xml:space="preserve">
+    <value>总概率超过 100%，各项概率会按比例缩减。</value>
+  </data>
+  <data name="UsedBy" xml:space="preserve">
+    <value>使用位置</value>
+  </data>
 </root>
