@@ -21,7 +21,7 @@ public class SkillHitValidator
 
     private readonly PlugInManager? _plugInManager;
 
-    private readonly HitEntry[] _hits = new HitEntry[MaximumCounterValue + 1];
+    private readonly HitEntry?[] _hits = new HitEntry?[MaximumCounterValue + 1];
 
     /// <summary>
     /// The counters of the last animations per skill.

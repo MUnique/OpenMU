@@ -63,4 +63,41 @@ public class SkillHitValidatorTest
 
         Assert.That(validator.TryRegisterAnimation(SkillId, 0), Is.EqualTo(!withStrategy));
     }
+
+    /// <summary>
+    /// Tests that a hit is only valid, if the animation to which it refers was registered.
+    /// </summary>
+    [Test]
+    public void HitIsOnlyValidForRegisteredAnimation()
+    {
+        var validator = new SkillHitValidator(NullLogger.Instance);
+
+        Assert.That(validator.IsHitValid(SkillId, 10, 11).IsValid, Is.False);
+
+        validator.TryRegisterAnimation(SkillId, 10);
+
+        Assert.That(validator.IsHitValid(SkillId, 10, 11).IsValid, Is.True);
+        Assert.That(validator.IsHitValid(SkillId, 12, 11).IsValid, Is.False);
+    }
+
+    /// <summary>
+    /// Tests that a hit without animation counter refers to the last animation of the skill,
+    /// if its strategy says that the hits don't contain the animation counter.
+    /// </summary>
+    /// <param name="withStrategy">If set to <c>true</c>, the <see cref="TwisterAnimationCounterStrategy"/> is registered.</param>
+    [TestCase(true)]
+    [TestCase(false)]
+    public void HitWithoutAnimationCounterRefersToLastAnimationIfStrategySaysSo(bool withStrategy)
+    {
+        var plugInManager = new PlugInManager(null, NullLoggerFactory.Instance, null, null);
+        if (withStrategy)
+        {
+            plugInManager.RegisterPlugIn<ISkillAnimationCounterStrategy, TwisterAnimationCounterStrategy>();
+        }
+
+        var validator = new SkillHitValidator(NullLogger.Instance, plugInManager);
+        validator.TryRegisterAnimation(SkillId, 10);
+
+        Assert.That(validator.IsHitValid(SkillId, 0, 11).IsValid, Is.EqualTo(withStrategy));
+    }
 }
