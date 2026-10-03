@@ -104,6 +104,31 @@ Item definitions with their requirements, level tables, possible options, socket
 and the classes which may equip them. Items use a dedicated editor with a
 graphical representation instead of the plain generic form.
 
+### Item prices
+
+The price of an item is used by the NPC merchants (buying, selling, repairing)
+and by the success rate of some crafting recipes. By default, an item gets the
+price of usual equipment: a base price from its drop level, increased by its
+skill and options. Items with a different price reference a *price definition*
+(the `PriceDefinition` of the item). The price definitions are in the full
+configuration tree (`ItemPriceDefinitions` of the game configuration), and one
+can be shared by several items.
+
+| Setting | Meaning |
+|---|---|
+| Base price formula | The price of one unit, for example `9000000`, or `(level + 1) * 200000`. Without a formula, the equipment price is used. |
+| Price per level | Fixed prices for specific item levels. They take precedence over the formula. |
+| Quantity scaling | `PerPiece` multiplies the price by the number of pieces (potions), `ByFillRatio` by the fill ratio (arrows). |
+| Modifiers | Which options increase the price, like for equipment: skill, luck, option, wing option, excellent. |
+| Selling price rounding | `Tens` rounds the selling price to tens and ignores the durability, like for potions. |
+| Crafting reference price | A different price for the success rate of crafting (e.g. the jewels). |
+
+The formula can use the variables `level`, `durability`, `maxDurability`,
+`value` (the value of the item), `dropLevel`, `optionLevel`, `optionCount`,
+`healthRecoveryOptionLevel` and `automaticPrice` (the equipment price). The game
+client calculates the prices it shows by itself, so changed prices only show up
+correctly in clients which calculate them the same way.
+
 ## Item drops
 
 Route `edit-item-drops`

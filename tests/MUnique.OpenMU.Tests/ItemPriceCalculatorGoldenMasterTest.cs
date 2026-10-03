@@ -1,4 +1,4 @@
-// <copyright file="ItemPriceCalculatorGoldenMasterTest.cs" company="MUnique">
+﻿// <copyright file="ItemPriceCalculatorGoldenMasterTest.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -58,6 +58,7 @@ public class ItemPriceCalculatorGoldenMasterTest
             foreach (var item in CreateItems(context, definition))
             {
                 comparedItems++;
+                Compare(item, "unrounded buying", ItemPriceCalculator.CalculateBuyingPrice, LegacyItemPriceCalculator.CalculateBuyingPrice, differences);
                 Compare(item, "buying", calculator.CalculateFinalBuyingPrice, legacyCalculator.CalculateFinalBuyingPrice, differences);
                 Compare(item, "old buying", calculator.CalculateFinalOldBuyingPrice, legacyCalculator.CalculateFinalOldBuyingPrice, differences);
                 Compare(item, "selling", i => calculator.CalculateSellingPrice(i, i.Durability()), i => legacyCalculator.CalculateSellingPrice(i, i.Durability()), differences);

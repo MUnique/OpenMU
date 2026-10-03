@@ -66,6 +66,5 @@ Don't perform large retroactive cleanups of existing code to fit the rules unles
 the user explicitly asks for it. Apply the rules going forward; pre-existing code
 can be refactored opportunistically when you're already touching it.
 
-Some parts of the codebase knowingly violate the rules and say so in a comment
-(for example `ItemPriceCalculator`). Leave them alone unless fixing them is the
-task.
+Some parts of the codebase knowingly violate the rules and say so in a comment.
+Leave them alone unless fixing them is the task.

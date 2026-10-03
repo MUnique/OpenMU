@@ -16,7 +16,7 @@ using MUnique.OpenMU.GameLogic.Attributes;
 /// which proves that the configured prices are the same as before.
 /// </summary>
 /// <remarks>
-/// Don't change it, except to keep it compiling. It can be deleted together with the golden master test.
+/// Don't change it, except to keep it compiling. Its unrounded buying price is internal, so it can be compared, too. It can be deleted together with the golden master test.
 /// </remarks>
 internal class LegacyItemPriceCalculator
 {
@@ -412,31 +412,12 @@ internal class LegacyItemPriceCalculator
         }
     }
 
-    private static int GetId(byte group, int id)
-    {
-        return (id << 8) + group;
-    }
-
-    private static long RoundPrice(long price)
-    {
-        var result = price;
-        if (result >= 1000)
-        {
-            result = result / 100 * 100;
-        }
-        else if (result >= 100)
-        {
-            result = result / 10 * 10;
-        }
-        else
-        {
-            // no rounding for smaller values.
-        }
-
-        return result;
-    }
-
-    private static long CalculateBuyingPrice(Item item)
+    /// <summary>
+    /// Calculates the buying price of the item, before it's rounded.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <returns>The buying price, before it's rounded.</returns>
+    internal static long CalculateBuyingPrice(Item item)
     {
         item.ThrowNotInitializedProperty(item.Definition is null, nameof(item.Definition));
 
@@ -580,5 +561,29 @@ internal class LegacyItemPriceCalculator
         }
 
         return price;
+    }
+
+    private static int GetId(byte group, int id)
+    {
+        return (id << 8) + group;
+    }
+
+    private static long RoundPrice(long price)
+    {
+        var result = price;
+        if (result >= 1000)
+        {
+            result = result / 100 * 100;
+        }
+        else if (result >= 100)
+        {
+            result = result / 10 * 10;
+        }
+        else
+        {
+            // no rounding for smaller values.
+        }
+
+        return result;
     }
 }

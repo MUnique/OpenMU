@@ -1,6 +1,8 @@
 # Concept: data-driven item price rules
 
-**Status:** concept, up for discussion. Nothing is implemented yet.
+**Status:** steps 1–4 of the implementation plan (§7) are implemented. §10
+summarizes where the implementation deviates from the first draft of this
+concept.
 **Issue:** [#75 Rule engine for item price calculation](https://github.com/MUnique/OpenMU/issues/75)
 **Subject:** `src/GameLogic/ItemPriceCalculator.cs`
 
@@ -162,7 +164,8 @@ Supporting types:
   `ByFillRatio` multiplies by `durability / maxDurability` (arrows, bolts).
   Like today, it multiplies first and then divides, as integers.
 * `[Flags] enum ItemPriceModifiers { None = 0, Skill = 1, Luck = 2, Option = 4,
-  WingOption = 8, Excellent = 16, Guardian = 32, All = ... }`.
+  WingOption = 8, Excellent = 16, All = ... }`. The guardian option isn't a
+  flag: it's applied to every item which has one, like before.
 * `enum ItemPriceRounding { Default, Tens }`: `Tens` is the potion rule, which
   only cuts the selling price down to a multiple of 10. `Default` is today's
   `RoundPrice`.
@@ -201,6 +204,7 @@ already references for `ItemDefinition.PetExperienceFormula`
 | `dropLevel` | effective drop level: `DropLevel + 3 * level`, plus 25 for excellent items |
 | `optionLevel` | level of the item's normal option (type `Option`), or 0 |
 | `optionCount` | number of normal options (Dinorant) |
+| `healthRecoveryOptionLevel` | level of the normal option, if it's a health recovery option; otherwise 0 (see open question 5) |
 | `automaticPrice` | the automatic equipment base price (see §5), before modifiers |
 
 The engine works with `double`. The result is truncated to `long`. Where the
@@ -222,6 +226,7 @@ else if definition.BasePriceFormula is set            → base = Evaluate(formul
 else                                                   → base = automaticPrice
 base = Quantity(base, definition.QuantityScaling)
 price = ApplyModifiers(base, definition.Modifiers)   // fixed order, see §3
+price = price + 16 % if the item has a guardian option
 price = Min(price, MaximumPrice)
 ```
 
@@ -263,9 +268,10 @@ What used to be group checks becomes explicit, shared data:
 * **Accessories (`dropLevel³ + 100`)**: rings, pendants, capes and the other
   group 13/15 items reference an "Accessory" definition. Today they get "+100 %
   per level of the normal option", but only if that option is health recovery.
-  For rings and pendants, health recovery is their only normal option, so the
-  formula is `(dropLevel^3 + 100) * (1 + optionLevel)`. Capes are the exception
-  (see §9 and open question 5).
+  For rings and pendants, health recovery is their only normal option, but
+  capes can also have a damage option, which doesn't count. So the formula is
+  `(dropLevel^3 + 100) * (1 + healthRecoveryOptionLevel)` (see §9 and open
+  question 5).
 
 That removes all group and number checks from the calculator. `IsDarkRaven()`
 is no longer needed for pricing either, because the two pets get their own
@@ -295,7 +301,7 @@ change needs **both** (coding rule 4):
 
 1. the initializers of every version, which create the definitions and assign
    them; **and**
-2. an update plugin, `ItemPriceDefinitionsUpdatePlugIn{075,095d,SeasonSix}`
+2. an update plugin, `AddItemPriceDefinitionsPlugIn{075,095d,Season6}`
    with a shared base class, which does the same for existing databases.
    Group and number lookups are fine there: `Persistence.Initialization` is
    allowed to know items.
@@ -307,10 +313,16 @@ customize, so a mandatory update doesn't override anybody's changes. It only
 assigns definitions to items which don't have one yet. Custom items which a
 server owner added by hand keep the automatic price, just like today.
 
-Until the update is applied, the calculator should log a warning once when it
-sees an item without a definition and a non-zero `Value` in a group which used
-to be special. In other words, the old conditions become a diagnostic, not
-logic. We can remove that check in a later release.
+Both use the same initializer (`ItemPriceDefinitions`), so a fresh database and
+an updated one end up with the same definitions.
+
+Configuration updates are applied by the server owner on the update page of the
+admin panel, and take effect after a restart. Until then, an existing database
+prices the special items like equipment. The draft proposed a warning for that
+case, but the calculator has no access to the configuration, and the old
+conditions would bring the item numbers back into the game logic. So the
+implementation relies on the update page, which shows pending updates with a
+badge. The release notes should mention the update.
 
 ## 7. Implementation plan
 
@@ -324,7 +336,9 @@ Each step is its own pull request.
    options, guardian) and durabilities (full, half, zero, partial stack),
    assert that the current calculator returns the same buying, selling, repair
    and crafting reference prices. This test is the safety net for everything
-   below. Delete it, with the legacy copy, once the migration is done.
+   below. It also compares the unrounded buying price, because the rounding
+   hides small differences. Delete it, with the legacy copy, once the
+   migration has been released.
 2. **Data model.** `ItemPriceDefinition`, `ItemLevelPrice`, the enums, the
    `ItemDefinition.PriceDefinition` reference, the `GameConfiguration`
    collection, the generated model, the EF migration. No logic yet.
@@ -342,12 +356,11 @@ Each step is its own pull request.
 5. **Optional:** the configurable conventions from §5, and getting the
    calculator from the game context.
 
-Steps 2–4 could also be one pull request. They are only useful together, and
-step 1 makes the review mechanical.
+Steps 1–4 are implemented in one pull request, one commit per step. They are
+only useful together, and step 1 makes the review mechanical.
 
-Additional test: for each version, every item which is neither wearable nor
-priced by the automatic path on purpose has a `PriceDefinition`. That catches
-new items which were added without a price.
+The draft of this concept proposed an additional test: every item which isn't
+wearable has a `PriceDefinition`. That isn't true today, see §9.
 
 ## 8. Admin panel
 
@@ -376,6 +389,12 @@ in the original client first (coding rule 9):
 * **Arrows and bolts:** their buying price already scales with the fill ratio,
   and selling then subtracts the durability loss again because they are
   wearable. Check whether the client does the same.
+* **Items which aren't equipment but get the equipment price:** for example the
+  Box of Luck, the Mirror and Sign of Dimensions, the chocolate boxes, the
+  Cherry Blossom Play-Box and the GM Gift. They have neither a special price nor
+  a `Value`, so the old calculator priced them like equipment by their drop
+  level, and they keep that automatic price. Check their prices in the client;
+  if they differ, they get a price definition.
 
 ## Open questions
 
@@ -396,8 +415,9 @@ in the original client first (coding rule 9):
    needs a variable for the level of a health recovery option, which ties the
    formula engine to one stat. The alternative is to fix the cape price to
    match the client first (§9), and apply the normal option table to capes,
-   like the client does. Recommendation: clear up §9 first. If that's not
-   possible in time, add the variable and remove it again with the fix.
+   like the client does. The implementation adds the variable
+   (`healthRecoveryOptionLevel`), so that it changes no price. It can be
+   removed again with the fix.
 
 ## Appendix: the special items as definitions
 
@@ -472,7 +492,32 @@ and `SellingPriceRounding` is `Default`.
 | Dark Raven / Dark Horse | `level * 1000000` / `level * 2000000` | durability loss doesn't apply to trainable pets (data-based already) |
 | Apple, healing and mana potions, antidote | `floor(floor(value^2 * 10 / 12) * 2^level / 10) * 10` | Scaling `PerPiece`, SellingPriceRounding `Tens` |
 | Scrolls, orbs (fixed `Value`) | `value` | |
-| Rings, pendants, other accessories without a normal option | `(dropLevel^3 + 100) * (1 + optionLevel)` | |
-| Capes | `dropLevel^3 + 100`, plus the bonus for the recovery option only | open question 5 |
+| Rings, pendants, capes and other accessories | `(dropLevel^3 + 100) * (1 + healthRecoveryOptionLevel)` | open question 5 |
 | One-handed weapons, shields | `floor(automaticPrice * 80 / 100)` | `Modifiers = All` |
 | Scepters, summoner books | `floor(automaticPrice * 80 / 100)` | `Modifiers = All & ~Skill` |
+| Other equipment with one of these skills | automatic | `Modifiers = All & ~Skill` |
+
+## 10. Implementation notes
+
+Where the implementation differs from the draft above, the sections were
+updated. In short:
+
+* **Guardian option:** not a modifier flag, but applied to every item with a
+  guardian option, like before (§4.1, §4.3).
+* **`healthRecoveryOptionLevel`:** an additional formula variable, so that the
+  accessories, including capes, keep their prices (open question 5).
+* **Selling rounding:** the large healing and mana potions and the siege
+  potion are special items *and* potions, so their definitions use the
+  `Tens` selling rounding, too.
+* **Names:** the definitions are named after their items. Items with the same
+  price share one definition (e.g. "Halloween items", "Illusion Temple
+  tickets"). The general ones are "Fixed value", "Potions", "Value based",
+  "Accessories", "Dark Raven", "Dark Horse", "One-handed weapons and shields",
+  "One-handed weapons with a skill without value" and "Equipment with a skill
+  without value".
+* **Initialization:** the decisions which used item numbers and groups moved
+  to `Persistence/Initialization/Items/ItemPriceDefinitions.cs`, which follows
+  the same order of checks as the old calculator. It's used by the
+  initializers of all versions and by the update plugin. It reuses existing
+  definitions by name and skips items which already have one, so applying it
+  twice doesn't add anything twice.
