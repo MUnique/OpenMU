@@ -62,11 +62,15 @@ public class ItemSerializerExtended : IItemSerializer
             // Some items (wings) can have different options (3rd wings up to 3!)
             targetStruct.OptionType = (byte)((itemOption.ItemOption?.Number ?? 0) & 0xF);
         }
-        else if (item.GetFixedOptionBits() is var fixedOptionBits and not 0)
+        else
         {
             // Fixed options (e.g. of the dinorant) are coded as bits in the item option level.
-            targetStruct.OptionLevel = (byte)(fixedOptionBits & 0xF);
-            targetStruct.OptionType = 0;
+            var fixedOptionBits = item.GetFixedOptionBits();
+            if (fixedOptionBits != 0)
+            {
+                targetStruct.OptionLevel = (byte)(fixedOptionBits & 0xF);
+                targetStruct.OptionType = 0;
+            }
         }
 
         if (targetStruct.Options.HasFlag(OptionFlags.HasExcellent))
