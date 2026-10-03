@@ -16,21 +16,21 @@ The client shows the list of guilds participating in the castle siege.
 | 1 | 2 |    Short   |      | Packet header - length of the packet |
 | 3 | 1 |    Byte   | 0xB5  | Packet header - packet type identifier |
 | 4 | 1 | Byte |  | Result |
-| 5 | 4 | IntegerLittleEndian |  | GuildCount |
-| 9 | CastleSiegeGuildEntry.Length * GuildCount | Array of CastleSiegeGuildEntry |  | Guilds |
+| 8 | 4 | IntegerLittleEndian |  | GuildCount |
+| 12 | CastleSiegeGuildEntry.Length * GuildCount | Array of CastleSiegeGuildEntry |  | Guilds |
 
 ### CastleSiegeGuildEntry Structure
 
 Information about one guild in the castle siege.
 
-Length: 14 Bytes
+Length: 16 Bytes
 
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
 | 0 | 1 | CastleSiegeJoinSide |  | Side |
 | 1 | 1 | Boolean |  | IsInvolved |
 | 2 | 8 | String |  | GuildName |
-| 10 | 4 | IntegerLittleEndian |  | Score |
+| 12 | 4 | IntegerLittleEndian |  | Score |
 
 ### CastleSiegeJoinSide Enum
 
