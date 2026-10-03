@@ -9,6 +9,7 @@ using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Persistence.BasicModel;
 using IncreasableItemOption = MUnique.OpenMU.Persistence.BasicModel.IncreasableItemOption;
+using ItemBasePowerUpDefinition = MUnique.OpenMU.Persistence.BasicModel.ItemBasePowerUpDefinition;
 using ItemDefinition = MUnique.OpenMU.Persistence.BasicModel.ItemDefinition;
 using ItemSlotType = MUnique.OpenMU.Persistence.BasicModel.ItemSlotType;
 
@@ -157,10 +158,9 @@ public class ItemRequirementCalculationTest
         var item = new Item();
         item.Level = itemLevel;
         item.Definition = new ItemDefinition();
-        item.Definition.Skill = new Skill();
         item.Definition.DropLevel = 59;
-        item.Definition.Group = 5;
         item.Definition.ItemSlot = new ItemSlotType();
+        item.Definition.BasePowerUpAttributes.Add(new ItemBasePowerUpDefinition { TargetAttribute = Stats.BookRise, BaseValue = 23 });
         var energyRequirement = new Persistence.BasicModel.AttributeRequirement { Attribute = Stats.TotalEnergyRequirementValue, MinimumValue = 168 };
         var agilityRequirement = new Persistence.BasicModel.AttributeRequirement { Attribute = Stats.TotalAgilityRequirementValue, MinimumValue = 25 };
 
