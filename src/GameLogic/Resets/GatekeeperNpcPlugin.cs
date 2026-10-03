@@ -15,25 +15,22 @@ using MUnique.OpenMU.PlugIns;
 [Guid("1B7BCA14-3124-4550-94B4-3FFCEE1FD55A")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.GatekeeperNpcPlugin_Name), Description = nameof(PlugInResources.GatekeeperNpcPlugin_Description), ResourceType = typeof(PlugInResources))]
-public class GatekeeperNpcPlugin : IPlayerTalkToNpcPlugIn, ISupportCustomConfiguration<GatekeeperNpcPluginConfiguration>, ISupportDefaultCustomConfiguration
+public class GatekeeperNpcPlugin : NpcTalkPlugInBase
 {
-    /// <inheritdoc />
-    public GatekeeperNpcPluginConfiguration? Configuration { get; set; }
+    /// <summary>
+    /// The number of the 'Gatekeeper' in the Barracks of Balgass.
+    /// </summary>
+    internal const short GatekeeperNumber = 408;
 
     /// <inheritdoc />
-    public async ValueTask PlayerTalksToNpcAsync(Player player, NonPlayerCharacter npc, NpcTalkEventArgs eventArgs)
+    public override short DefaultNpcNumber => GatekeeperNumber;
+
+    /// <inheritdoc />
+    protected override ValueTask PlayerTalksToConfiguredNpcAsync(Player player, NonPlayerCharacter npc, NpcTalkEventArgs eventArgs)
     {
-        var configuration = this.Configuration ??= new GatekeeperNpcPluginConfiguration();
-        if (npc.Definition.Number != configuration.GatekeeperNumber)
-        {
-            return;
-        }
-
         // The client opens the dialog itself, so we don't need to do anything here.
         eventArgs.HasBeenHandled = true;
         eventArgs.LeavesDialogOpen = true;
+        return ValueTask.CompletedTask;
     }
-
-    /// <inheritdoc />
-    public object CreateDefaultConfig() => new GatekeeperNpcPluginConfiguration();
 }

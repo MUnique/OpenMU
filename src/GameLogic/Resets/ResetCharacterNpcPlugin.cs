@@ -15,25 +15,21 @@ using MUnique.OpenMU.PlugIns;
 [Guid("08953BE6-DABF-49CC-A500-FDB9DC2C4D80")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.ResetCharacterNpcPlugin_Name), Description = nameof(PlugInResources.ResetCharacterNpcPlugin_Description), ResourceType = typeof(PlugInResources))]
-public class ResetCharacterNpcPlugin : IPlayerTalkToNpcPlugIn, ISupportCustomConfiguration<ResetCharacterNpcPluginConfiguration>, ISupportDefaultCustomConfiguration
+public class ResetCharacterNpcPlugin : NpcTalkPlugInBase
 {
-    /// <inheritdoc />
-    public ResetCharacterNpcPluginConfiguration? Configuration { get; set; }
+    /// <summary>
+    /// The number of 'Leo the Helper', which is the default reset NPC.
+    /// </summary>
+    internal const short LeoTheHelperNumber = 371;
 
     /// <inheritdoc />
-    public async ValueTask PlayerTalksToNpcAsync(Player player, NonPlayerCharacter npc, NpcTalkEventArgs eventArgs)
+    public override short DefaultNpcNumber => LeoTheHelperNumber;
+
+    /// <inheritdoc />
+    protected override async ValueTask PlayerTalksToConfiguredNpcAsync(Player player, NonPlayerCharacter npc, NpcTalkEventArgs eventArgs)
     {
-        var configuration = this.Configuration ??= new ResetCharacterNpcPluginConfiguration();
-        if (npc.Definition.Number != configuration.ResetNpcNumber)
-        {
-            return;
-        }
-
         eventArgs.HasBeenHandled = true;
         var resetAction = new ResetCharacterAction(player, npc);
         await resetAction.ResetCharacterAsync().ConfigureAwait(false);
     }
-
-    /// <inheritdoc />
-    public object CreateDefaultConfig() => new ResetCharacterNpcPluginConfiguration();
 }
