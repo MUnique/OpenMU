@@ -28,9 +28,12 @@ Additional references include:
   the orb with the separate weapon skill 天雷闪.
 - [Christmas event](https://mu.zhaouc.com/event/2015sd/): Christmas box names.
 - [Halloween event](https://mu.zhaouc.com/news/event/683.html): pumpkin consumables.
-- [Illusion Temple](https://mu.zhaouc.com/Guide/GameFeature/07_feature.html): ticket materials.
-- [Third-party Frost Mace entry](https://mu.dvg.cn/item_info.php?id=2423): 2/16, 巨毒之刺.
-- [Third-party Divine Stick entry](https://mu.dvg.cn/item_info.php?id=2544): 5/36, 大天使绝对魔杖.
+- [Illusion Temple](https://mu.zhaouc.com/Guide/GameFeature/07_feature.html):
+  ticket materials.
+- [Third-party Frost Mace entry](https://mu.dvg.cn/item_info.php?id=2423):
+  2/16, 巨毒之刺.
+- [Third-party Divine Stick entry](https://mu.dvg.cn/item_info.php?id=2544):
+  5/36, 大天使绝对魔杖.
 - [Third-party box list](https://mu.dvg.cn/v2_item_list.php?category=box&view=list)
   and [ring list](https://mu.dvg.cn/v2_item_list.php?category=ring&view=list):
   item-number cross-checks for event items.

@@ -1274,7 +1274,7 @@ internal class BoxOfLuck : InitializerBase
 
     private void CreateGameMasterPresentBox()
     {
-        var box = this.CreateBox(LocalizedString.FromResource(() => ItemNames.GMGift), 14, 52);
+        this.CreateBox(LocalizedString.FromResource(() => ItemNames.GMGift), 14, 52);
     }
 
     private void CreateWizardsRings()

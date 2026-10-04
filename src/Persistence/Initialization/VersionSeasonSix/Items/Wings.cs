@@ -211,6 +211,23 @@ public class Wings : WingsInitializerBase
         this.GameConfiguration.Items.Add(feather);
     }
 
+    private void AddDamagePowerUps(ItemDefinition wing, int damageIncreaseInitial, int damageAbsorbInitial, ItemLevelBonusTable? damageIncreasePerLevel)
+    {
+        if (damageAbsorbInitial > 0)
+        {
+            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.DamageReceiveDecrement, 1f - (damageAbsorbInitial / 100f), AggregateType.Multiplicate);
+            powerUp.BonusPerLevelTable = this._absorbByLevelTable;
+            wing.BasePowerUpAttributes.Add(powerUp);
+        }
+
+        if (damageIncreaseInitial > 0)
+        {
+            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.AttackDamageIncrease, 1f + (damageIncreaseInitial / 100f), AggregateType.Multiplicate);
+            powerUp.BonusPerLevelTable = damageIncreasePerLevel;
+            wing.BasePowerUpAttributes.Add(powerUp);
+        }
+    }
+
     private ItemDefinition CreateWing(byte number, byte width, byte height, LocalizedString name, byte dropLevel, int defense, byte durability, int levelRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel, IEnumerable<IncreasableItemOption> possibleOptions, int damageIncreaseInitial, int damageAbsorbInitial, ItemLevelBonusTable damageIncreasePerLevel, ItemOptionDefinition? wingOptionDefinition, float movementSpeed = MovementSpeedConstants.DefaultWingMovementSpeed)
     {
         var wing = this.CreateWing(number, width, height, name, dropLevel, defense, durability, levelRequirement, darkWizardClassLevel, darkKnightClassLevel, elfClassLevel, magicGladiatorClassLevel, darkLordClassLevel, summonerClassLevel, ragefighterClassLevel, movementSpeed);
@@ -240,23 +257,6 @@ public class Wings : WingsInitializerBase
 
         wing.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.First(iod => iod.PossibleOptions.Any(o => o?.OptionType == ItemOptionTypes.Luck)));
         return wing;
-    }
-
-    private void AddDamagePowerUps(ItemDefinition wing, int damageIncreaseInitial, int damageAbsorbInitial, ItemLevelBonusTable? damageIncreasePerLevel)
-    {
-        if (damageAbsorbInitial > 0)
-        {
-            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.DamageReceiveDecrement, 1f - (damageAbsorbInitial / 100f), AggregateType.Multiplicate);
-            powerUp.BonusPerLevelTable = this._absorbByLevelTable;
-            wing.BasePowerUpAttributes.Add(powerUp);
-        }
-
-        if (damageIncreaseInitial > 0)
-        {
-            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.AttackDamageIncrease, 1f + (damageIncreaseInitial / 100f), AggregateType.Multiplicate);
-            powerUp.BonusPerLevelTable = damageIncreasePerLevel;
-            wing.BasePowerUpAttributes.Add(powerUp);
-        }
     }
 
     private ItemDefinition CreateWing(byte number, byte width, byte height, LocalizedString name, byte dropLevel, int defense, byte durability, int levelRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel, float movementSpeed = MovementSpeedConstants.DefaultWingMovementSpeed)
