@@ -56,11 +56,11 @@ internal class CrywolfFortress : BaseMapInitializer
     /// <param name="map">The Crywolf map definition.</param>
     internal static void AddFenrirMaterialDropGroups(IContext context, GameConfiguration gameConfiguration, GameMapDefinition map)
     {
-        (short Index, short ItemNumber, string Description, double Chance)[] materials =
+        (short Index, short ItemNumber, LocalizedString Description, double Chance)[] materials =
         [
-            (1, 32, "Splinter of Armor", 0.05),
-            (2, 33, "Bless of Guardian", 0.02),
-            (3, 34, "Claw of Beast", 0.005),
+            (1, 32, LocalizedString.FromResource(() => ItemNames.SplinterOfArmor), 0.05),
+            (2, 33, LocalizedString.FromResource(() => ItemNames.BlessOfGuardian), 0.02),
+            (3, 34, LocalizedString.FromResource(() => ItemNames.ClawOfBeast), 0.005),
         ];
 
         foreach (var material in materials)

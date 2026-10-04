@@ -47,3 +47,13 @@ configuration. It doesn't change any text. Captions whose English text was
 customized are skipped. This is only required once; afterwards the page shows
 the available differences. *Link captions again* (at the bottom of the page) links
 captions which aren't linked yet, e.g. after configuration updates added new objects.
+
+New source-backed captions also include the seven Imperial Guardian day names
+and descriptions, Fenrir material drop-group descriptions, and the four Selupan
+skill names (250–253). On an existing database, use *Link captions again*, review
+the Chinese translations, and apply the recommended changes. Restart the server
+process afterwards. Linking alone does not apply translations.
+
+The Chinese Fenrir material labels reuse the item-name resources. The Selupan
+skill labels are descriptive translations of the internal English skill names;
+they are not asserted to be official Chinese client skill names.

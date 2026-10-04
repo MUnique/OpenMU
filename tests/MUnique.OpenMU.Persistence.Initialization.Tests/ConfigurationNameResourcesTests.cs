@@ -24,6 +24,9 @@ internal class ConfigurationNameResourcesTests
         (nameof(MapNames), MapNames.ResourceManager),
         (nameof(MerchantNames), MerchantNames.ResourceManager),
         (nameof(MonsterNames), MonsterNames.ResourceManager),
+        (nameof(MiniGameNames), MiniGameNames.ResourceManager),
+        (nameof(MiniGameDescriptions), MiniGameDescriptions.ResourceManager),
+        (nameof(SkillNames), SkillNames.ResourceManager),
     ];
 
     /// <summary>The resources are registered as sources, so source keys can be resolved without running an initialization.</summary>
@@ -90,7 +93,10 @@ internal class ConfigurationNameResourcesTests
             var configuration = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).Single();
             var names = configuration.CharacterClasses.Select(c => c.Name)
                 .Concat(configuration.Maps.Select(m => m.Name))
-                .Concat(configuration.Monsters.Select(m => m.Designation));
+                .Concat(configuration.Monsters.Select(m => m.Designation))
+                .Concat(configuration.MiniGameDefinitions.Select(m => m.Name))
+                .Concat(configuration.MiniGameDefinitions.Select(m => m.Description))
+                .Concat(configuration.Skills.Select(skill => skill.Name));
             foreach (var name in names.Where(n => n.SourceKey is not null))
             {
                 usedSourceKeys.Add(name.SourceKey!);
