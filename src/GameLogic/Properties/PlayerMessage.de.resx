@@ -910,4 +910,7 @@ Verwendete Fruchtpunkte: {16}
 Verwendete negative Fruchtpunkte: {17}
 Inventarerweiterungen: {18}</value>
   </data>
+  <data name="MapIsNotActive" xml:space="preserve">
+    <value>Diese Karte ist nicht verfügbar.</value>
+  </data>
 </root>

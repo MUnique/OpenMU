@@ -1680,4 +1680,61 @@
   <data name="CaptionsLinkingElapsed" xml:space="preserve">
     <value>Verstrichene Zeit: {0}</value>
   </data>
+  <data name="ContentActivation" xml:space="preserve">
+    <value>Inhaltsaktivierung</value>
+  </data>
+  <data name="ContentActivationDescription" xml:space="preserve">
+    <value>Aktivieren oder deaktivieren Sie Karten, Charakterklassen, Monster, Gegenstände und Minispiele, z. B. um das Spiel auf die Inhalte einer bestimmten Season zu beschränken. Inaktive Einträge bleiben in der Konfiguration erhalten, sind im Spiel aber nicht verfügbar. Bereits gespawnte Monster bleiben bestehen, bis der Spielserver neu gestartet wird.</value>
+  </data>
+  <data name="ContentType" xml:space="preserve">
+    <value>Inhalt</value>
+  </data>
+  <data name="ActivateAllShown" xml:space="preserve">
+    <value>Alle angezeigten aktivieren</value>
+  </data>
+  <data name="DeactivateAllShown" xml:space="preserve">
+    <value>Alle angezeigten deaktivieren</value>
+  </data>
+  <data name="ActiveCountFormat" xml:space="preserve">
+    <value>{0} von {1} aktiv</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>Aktiv</value>
+  </data>
+  <data name="Number" xml:space="preserve">
+    <value>Nummer</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="AllEntries" xml:space="preserve">
+    <value>Alle</value>
+  </data>
+  <data name="OnlyActive" xml:space="preserve">
+    <value>Nur aktive</value>
+  </data>
+  <data name="OnlyInactive" xml:space="preserve">
+    <value>Nur inaktive</value>
+  </data>
+  <data name="IntroducedIn" xml:space="preserve">
+    <value>Eingeführt in</value>
+  </data>
+  <data name="GameVersionUnknown" xml:space="preserve">
+    <value>Unbekannt</value>
+  </data>
+  <data name="GameVersionFormat" xml:space="preserve">
+    <value>Version {0}</value>
+  </data>
+  <data name="SeasonFormat" xml:space="preserve">
+    <value>Season {0}</value>
+  </data>
+  <data name="SeasonEpisodeFormat" xml:space="preserve">
+    <value>Season {0} Episode {1}</value>
+  </data>
+  <data name="RestrictToGameVersion" xml:space="preserve">
+    <value>Auf Spielversion beschränken</value>
+  </data>
+  <data name="RestrictToGameVersionHint" xml:space="preserve">
+    <value>Aktiviert alle Inhalte, die bis zur ausgewählten Spielversion eingeführt wurden, und deaktiviert die später eingeführten Inhalte. Inhalte mit unbekannter Version werden nicht verändert. Die Änderungen werden erst nach dem Speichern übernommen.</value>
+  </data>
 </root>
