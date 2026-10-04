@@ -52,6 +52,12 @@ public interface IGameServerContext : IGameContext
     GameServerConfiguration ServerConfiguration { get; }
 
     /// <summary>
+    /// Gets the locator for the maps which this game server doesn't host itself,
+    /// but other game servers do. It's <c>null</c>, if maps are not shared between game servers.
+    /// </summary>
+    IMapHostLocator? MapHostLocator { get; }
+
+    /// <summary>
     /// Stops the periodic tasks of this context (the per-second plug-in tasks and the recovery
     /// timer), so that no periodic plug-in runs concurrently with a subsequent teardown, such as
     /// the player disconnect loop of a shutting-down game server.
