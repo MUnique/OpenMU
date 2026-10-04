@@ -33,6 +33,20 @@ internal class ItemNameResourcesTests
     }
 
     /// <summary>
+    /// The German names use the same terms as the German game client.
+    /// </summary>
+    [Test]
+    public void GermanNamesAreResolvedFromSources()
+    {
+        ConfigurationNameSources.Register();
+        var german = CultureInfo.GetCultureInfo("de");
+        Assert.That(new LocalizedString("Short Sword").WithSourceKey("ItemNames/ShortSword").GetFromSource()?.GetOwnTranslation(german), Is.EqualTo("Kurzschwert"));
+        Assert.That(new LocalizedString("Jewel of Bless").WithSourceKey("ItemNames/JewelOfBless").GetFromSource()?.GetOwnTranslation(german), Is.EqualTo("Juwel des Segens"));
+        Assert.That(new LocalizedString("Great Dragon Helm").WithSourceKey("ItemNames/GreatDragonHelm").GetFromSource()?.GetOwnTranslation(german), Is.EqualTo("Großartiger Drachenhelm"));
+        Assert.That(new LocalizedString("Kris").WithSourceKey("ItemNames/Kris").GetFromSource()?.GetOwnTranslation(german), Is.Null, "names which are equal in German fall back to the neutral name");
+    }
+
+    /// <summary>
     /// Every supported configuration initializes its item names from resources, and existing
     /// neutral names can be linked and translated through the caption workflow.
     /// </summary>
@@ -82,7 +96,7 @@ internal class ItemNameResourcesTests
         Assert.That(changes.All(change => change.IsRecommended), Is.True);
         ConfigurationCaptions.ApplyChanges(existing, changes.Select(change => change.Id));
         Assert.That(existing.Items.Select(item => item.Name.GetOwnTranslation(culture)), Is.EqualTo(expected));
-        Assert.That(ConfigurationCaptions.DetermineChanges(existing), Is.Empty);
+        Assert.That(ConfigurationCaptions.DetermineChanges(existing).Where(change => change.CultureName == culture.Name), Is.Empty);
         Assert.That(ConfigurationCaptions.LinkSourceKeys(existing, configuration).Linked, Is.Zero);
 
         if (version == "Season6")
