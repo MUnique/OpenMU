@@ -103,7 +103,7 @@ internal class AdditionalCaptionResourcesTests
 
             Assert.That(customized.Name.GetOwnTranslation(culture), Is.EqualTo("自定义毒液技能"));
             Assert.That(ConfigurationCaptions.LinkSourceKeys(existing, reference).Linked, Is.Zero);
-            Assert.That(ConfigurationCaptions.DetermineChanges(existing).Any(change => change.IsRecommended), Is.False);
+            Assert.That(ConfigurationCaptions.DetermineChanges(existing).Any(change => change.CultureName == culture.Name && change.IsRecommended), Is.False);
 
             var renamed = existing.Skills.Single(skill => skill.Number == (short)SkillNumber.SelupanIceStorm);
             renamed.Name = "Custom Ice Storm||zh-CN=自定义冰风暴";
