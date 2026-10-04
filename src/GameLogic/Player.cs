@@ -920,6 +920,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public ValueTask StopWalkingAsync() => this._movement.StopWalkingAsync();
 
     /// <summary>
+    /// Ends a running walk early, at the position the game client reports it stopped at.
+    /// </summary>
+    /// <param name="stopPoint">The position the client reports it stopped the walk at.</param>
+    public ValueTask StopWalkAtAsync(Point stopPoint) => this._movement.StopWalkAtAsync(stopPoint);
+
+    /// <summary>
     /// Regenerates the attributes specified in <see cref="Stats.IntervalRegenerationAttributes"/>.
     /// </summary>
     public async Task RegenerateAsync()
