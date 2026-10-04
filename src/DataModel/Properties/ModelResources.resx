@@ -877,6 +877,12 @@
   <data name="ConfigurationUpdate_Key_Description" xml:space="preserve">
     <value></value>
   </data>
+  <data name="ConfigurationUpdate_Version_Caption" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="ConfigurationUpdate_Version_Description" xml:space="preserve">
+    <value></value>
+  </data>
   <data name="ConfigurationUpdate_Name_Caption" xml:space="preserve">
     <value>Name</value>
   </data>
@@ -893,6 +899,12 @@
     <value>Created At</value>
   </data>
   <data name="ConfigurationUpdate_CreatedAt_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="ConfigurationUpdate_UpdatedAt_Caption" xml:space="preserve">
+    <value>Updated At</value>
+  </data>
+  <data name="ConfigurationUpdate_UpdatedAt_Description" xml:space="preserve">
     <value></value>
   </data>
   <data name="ConfigurationUpdate_InstalledAt_Caption" xml:space="preserve">

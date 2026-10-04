@@ -447,6 +447,9 @@
   <data name="PleaseFirstInstallTheDatabaseUpdatesOnTheSetupPage" xml:space="preserve">
     <value>Please, first install the database updates on the setup page.</value>
   </data>
+  <data name="InstalledOn" xml:space="preserve">
+    <value>Installed on {0}.</value>
+  </data>
   <data name="NoConfigurationDataUpdateAvailable" xml:space="preserve">
     <value>No configuration data update available.</value>
   </data>

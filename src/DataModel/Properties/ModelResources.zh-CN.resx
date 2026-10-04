@@ -895,6 +895,12 @@
   <data name="ConfigurationUpdate_CreatedAt_Description" xml:space="preserve">
     <value></value>
   </data>
+  <data name="ConfigurationUpdate_UpdatedAt_Caption" xml:space="preserve">
+    <value>更新时间</value>
+  </data>
+  <data name="ConfigurationUpdate_UpdatedAt_Description" xml:space="preserve">
+    <value></value>
+  </data>
   <data name="ConfigurationUpdate_InstalledAt_Caption" xml:space="preserve">
     <value>安装时间</value>
   </data>
@@ -914,12 +920,6 @@
     <value>初始化键</value>
   </data>
   <data name="ConfigurationUpdateState_InitializationKey_Description" xml:space="preserve">
-    <value></value>
-  </data>
-  <data name="ConfigurationUpdateState_CurrentInstalledVersion_Caption" xml:space="preserve">
-    <value>当前已安装版本</value>
-  </data>
-  <data name="ConfigurationUpdateState_CurrentInstalledVersion_Description" xml:space="preserve">
     <value></value>
   </data>
   <data name="ConnectServerDefinition_TypeCaption" xml:space="preserve">
