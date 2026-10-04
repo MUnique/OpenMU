@@ -1597,6 +1597,14 @@ public class Stats
     public static AttributeDefinition SkillFinalMultiplierPve { get; } = new(new Guid("A7C24DFA-7F97-42A6-90C4-1F634C77AD71"), "Skill Final Damage Multiplier (PvE) (skill attribute)", string.Empty);
 
     /// <summary>
+    /// Gets the value of a master skill at its current level, as calculated by <see cref="MasterSkillDefinition.ValueFormula"/>.
+    /// </summary>
+    /// <remarks>
+    /// It's an input for the <see cref="MasterSkillDefinition.PassivePowerUps"/>, next to the <see cref="SkillLevel"/>.
+    /// </remarks>
+    public static AttributeDefinition MasterSkillValue { get; } = new(new Guid("24E5ED6D-EB97-41C1-B013-60B8D9EB8B9C"), "Master Skill Value (skill attribute)", string.Empty);
+
+    /// <summary>
     /// Gets the skill's final damage bonus attribute definition.
     /// </summary>
     public static AttributeDefinition SkillFinalDamageBonus { get; } = new(new Guid("155D8045-5CD1-4238-BEFC-FCF8C46F94E3"), "Skill Final Damage Bonus (skill attribute)", string.Empty);
