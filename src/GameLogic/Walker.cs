@@ -18,7 +18,7 @@ public sealed class Walker : IDisposable
     /// The maximum number of steps a single walk can consist of. It is the number of steps which fit
     /// into one walk packet of the game client.
     /// </summary>
-    public const int MaximumStepCount = 16;
+    private const int MaximumStepCount = 16;
 
     private readonly ISupportWalk _walkSupporter;
     private readonly Queue<WalkingStep> _nextSteps = new(5);
@@ -173,6 +173,29 @@ public sealed class Walker : IDisposable
         }
 
         return count;
+    }
+
+    /// <summary>
+    /// Determines whether the walk which is currently running passes through the specified point.
+    /// </summary>
+    /// <param name="point">The point.</param>
+    /// <returns>
+    /// <c>True</c>, if the current walk starts at, ends at or passes through the point;
+    /// Otherwise, <c>false</c>.
+    /// </returns>
+    public async ValueTask<bool> IsPointOfCurrentWalkAsync(Point point)
+    {
+        using var readerLock = await this._walkLock.ReaderLockAsync().ConfigureAwait(false);
+        for (var index = 0; index < this._currentWalkStepCount; index++)
+        {
+            var step = this._currentWalkSteps[index];
+            if (step.From == point || step.To == point)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /// <summary>
