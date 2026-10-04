@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
-using System.Buffers;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.World;
@@ -305,36 +304,13 @@ internal sealed class PlayerMovement : IDisposable
             return false;
         }
 
-        if (!await this.IsPointOfCurrentWalkAsync(stopPoint).ConfigureAwait(false))
+        if (!await this._walker.IsPointOfCurrentWalkAsync(stopPoint).ConfigureAwait(false))
         {
             this._player.Logger.LogWarning("StopWalkAtAsync: Player reported it stopped walking at {0}, which is not a position of its current walk to {1}. Keeping the walk.", stopPoint, this.WalkTarget);
             return false;
         }
 
         return true;
-    }
-
-    /// <summary>
-    /// Determines whether the specified position is one the walk which is currently running passes
-    /// through.
-    /// </summary>
-    /// <param name="point">The position.</param>
-    /// <returns><c>True</c>, if the current walk passes through it; Otherwise, <c>false</c>.</returns>
-    private async ValueTask<bool> IsPointOfCurrentWalkAsync(Point point)
-    {
-        using var stepsOwner = MemoryPool<WalkingStep>.Shared.Rent(Walker.MaximumStepCount);
-        var steps = stepsOwner.Memory[..Walker.MaximumStepCount];
-        var stepCount = await this._walker.GetStepsAsync(steps).ConfigureAwait(false);
-        for (var index = 0; index < stepCount; index++)
-        {
-            var step = steps.Span[index];
-            if (step.From == point || step.To == point)
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /// <summary>
