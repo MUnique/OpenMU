@@ -244,7 +244,7 @@ public class ItemSerializerTests<T>
     {
         using var context = this._contextProvider.CreateNewContext(this._gameConfiguration);
         var item = context.CreateNew<Item>();
-        item.Definition = this._gameConfiguration.Items.First(i => i.Name == "Horn of Dinorant");
+        item.Definition = this._gameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Horn of Dinorant");
         item.Durability = 255;
         foreach (var option in item.Definition.PossibleItemOptions
                      .SelectMany(def => def.PossibleOptions)
@@ -304,7 +304,7 @@ public class ItemSerializerTests<T>
     {
         using var context = this._contextProvider.CreateNewContext(this._gameConfiguration);
         var item = context.CreateNew<Item>();
-        item.Definition = this._gameConfiguration.Items.First(i => i.Name == "Lighting Sword");
+        item.Definition = this._gameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Lighting Sword");
         item.Level = 15;
         item.Durability = 100;
         item.HasSkill = true;
@@ -328,7 +328,7 @@ public class ItemSerializerTests<T>
     {
         using var context = this._contextProvider.CreateNewContext(this._gameConfiguration);
         var item = context.CreateNew<Item>();
-        item.Definition = this._gameConfiguration.Items.First(i => i.Name == "Pendant of Ability");
+        item.Definition = this._gameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Pendant of Ability");
         item.Durability = 10;
 
         var ancientSet = this._gameConfiguration.ItemSetGroups.First(i => i.Name == "Gywen");
@@ -346,7 +346,7 @@ public class ItemSerializerTests<T>
     {
         using var context = this._contextProvider.CreateNewContext(this._gameConfiguration);
         var item = context.CreateNew<Item>();
-        item.Definition = this._gameConfiguration.Items.First(i => i.Name == "Blade");
+        item.Definition = this._gameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Blade");
         item.Level = 15;
         item.Durability = 23;
         item.HasSkill = hasSkill;

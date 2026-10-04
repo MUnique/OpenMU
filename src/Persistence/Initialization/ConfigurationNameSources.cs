@@ -24,6 +24,7 @@ public static class ConfigurationNameSources
         RegisterIfNeeded(nameof(MapNames), MapNames.ResourceManager);
         RegisterIfNeeded(nameof(MerchantNames), MerchantNames.ResourceManager);
         RegisterIfNeeded(nameof(MonsterNames), MonsterNames.ResourceManager);
+        RegisterIfNeeded(nameof(ItemNames), ItemNames.ResourceManager);
     }
 
     /// <summary>

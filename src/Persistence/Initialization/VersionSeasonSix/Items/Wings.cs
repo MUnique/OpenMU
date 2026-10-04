@@ -8,9 +8,10 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
-
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// Initializer for wing items.
@@ -70,22 +71,22 @@ public class Wings : WingsInitializerBase
         this._damageIncreaseByLevelTableSecond = this.CreateDamageIncreaseBonusPerLevelSecondWings();
 
         // First class wings:
-        this.CreateWing(0, 3, 2, "Wings of Elf", 100, 10, 200, 180, 0, 0, 1, 0, 0, 0, 0, this.BuildOptions((0, OptionType.HealthRecover)), 12, 12, this._damageIncreaseByLevelTable, null);
-        this.CreateWing(1, 5, 3, "Wings of Heaven", 100, 10, 200, 180, 1, 0, 0, 1, 0, 0, 0, this.BuildOptions((0, OptionType.WizDamage)), 12, 12, this._damageIncreaseByLevelTable, null);
-        this.CreateWing(2, 5, 2, "Wings of Satan", 100, 20, 200, 180, 0, 1, 0, 1, 0, 0, 0, this.BuildOptions((0, OptionType.PhysDamage)), 12, 12, this._damageIncreaseByLevelTable, null);
-        this.CreateWing(41, 4, 2, "Wings of Curse", 100, 10, 200, 180, 0, 0, 0, 0, 0, 1, 0, this.BuildOptions((0, OptionType.WizDamage)), 12, 12, this._damageIncreaseByLevelTable, null);
+        this.CreateWing(0, 3, 2, LocalizedString.FromResource(() => ItemNames.WingsOfElf), 100, 10, 200, 180, 0, 0, 1, 0, 0, 0, 0, this.BuildOptions((0, OptionType.HealthRecover)), 12, 12, this._damageIncreaseByLevelTable, null);
+        this.CreateWing(1, 5, 3, LocalizedString.FromResource(() => ItemNames.WingsOfHeaven), 100, 10, 200, 180, 1, 0, 0, 1, 0, 0, 0, this.BuildOptions((0, OptionType.WizDamage)), 12, 12, this._damageIncreaseByLevelTable, null);
+        this.CreateWing(2, 5, 2, LocalizedString.FromResource(() => ItemNames.WingsOfSatan), 100, 20, 200, 180, 0, 1, 0, 1, 0, 0, 0, this.BuildOptions((0, OptionType.PhysDamage)), 12, 12, this._damageIncreaseByLevelTable, null);
+        this.CreateWing(41, 4, 2, LocalizedString.FromResource(() => ItemNames.WingsOfCurse), 100, 10, 200, 180, 0, 0, 0, 0, 0, 1, 0, this.BuildOptions((0, OptionType.WizDamage)), 12, 12, this._damageIncreaseByLevelTable, null);
 
         // Second class wings:
         var secondWingOptions = this.CreateSecondClassWingOptions();
-        this.CreateWing(3, 5, 3, "Wings of Spirits", 150, 30, 200, 215, 0, 0, 2, 0, 0, 0, 0, this.BuildOptions((0b10, OptionType.HealthRecover), (0b00, OptionType.PhysDamage)), 32, 25, this._damageIncreaseByLevelTableSecond, secondWingOptions);
-        this.CreateWing(4, 5, 3, "Wings of Soul", 150, 30, 200, 215, 2, 0, 0, 0, 0, 0, 0, this.BuildOptions((0b00, OptionType.HealthRecover), (0b10, OptionType.WizDamage)), 32, 25, this._damageIncreaseByLevelTableSecond, secondWingOptions);
-        this.CreateWing(5, 3, 3, "Wings of Dragon", 150, 45, 200, 215, 0, 2, 0, 0, 0, 0, 0, this.BuildOptions((0b00, OptionType.HealthRecover), (0b10, OptionType.PhysDamage)), 32, 25, this._damageIncreaseByLevelTableSecond, secondWingOptions, movementSpeed: MovementSpeedConstants.FastWingMovementSpeed);
-        this.CreateWing(6, 4, 2, "Wings of Darkness", 150, 40, 200, 215, 0, 0, 0, 1, 0, 0, 0, this.BuildOptions((0b00, OptionType.WizDamage), (0b10, OptionType.PhysDamage)), 32, 25, this._damageIncreaseByLevelTableSecond, secondWingOptions);
-        this.CreateWing(42, 4, 3, "Wings of Despair", 150, 30, 200, 215, 0, 0, 0, 0, 0, 2, 0, this.BuildOptions((0b00, OptionType.CurseDamage), (0b10, OptionType.WizDamage)), 32, 25, this._damageIncreaseByLevelTableSecond, secondWingOptions);
+        this.CreateWing(3, 5, 3, LocalizedString.FromResource(() => ItemNames.WingsOfSpirits), 150, 30, 200, 215, 0, 0, 2, 0, 0, 0, 0, this.BuildOptions((0b10, OptionType.HealthRecover), (0b00, OptionType.PhysDamage)), 32, 25, this._damageIncreaseByLevelTableSecond, secondWingOptions);
+        this.CreateWing(4, 5, 3, LocalizedString.FromResource(() => ItemNames.WingsOfSoul), 150, 30, 200, 215, 2, 0, 0, 0, 0, 0, 0, this.BuildOptions((0b00, OptionType.HealthRecover), (0b10, OptionType.WizDamage)), 32, 25, this._damageIncreaseByLevelTableSecond, secondWingOptions);
+        this.CreateWing(5, 3, 3, LocalizedString.FromResource(() => ItemNames.WingsOfDragon), 150, 45, 200, 215, 0, 2, 0, 0, 0, 0, 0, this.BuildOptions((0b00, OptionType.HealthRecover), (0b10, OptionType.PhysDamage)), 32, 25, this._damageIncreaseByLevelTableSecond, secondWingOptions, movementSpeed: MovementSpeedConstants.FastWingMovementSpeed);
+        this.CreateWing(6, 4, 2, LocalizedString.FromResource(() => ItemNames.WingsOfDarkness), 150, 40, 200, 215, 0, 0, 0, 1, 0, 0, 0, this.BuildOptions((0b00, OptionType.WizDamage), (0b10, OptionType.PhysDamage)), 32, 25, this._damageIncreaseByLevelTableSecond, secondWingOptions);
+        this.CreateWing(42, 4, 3, LocalizedString.FromResource(() => ItemNames.WingsOfDespair), 150, 30, 200, 215, 0, 0, 0, 0, 0, 2, 0, this.BuildOptions((0b00, OptionType.CurseDamage), (0b10, OptionType.WizDamage)), 32, 25, this._damageIncreaseByLevelTableSecond, secondWingOptions);
 
         // The capes are a bit of a hybrid. Their damage gets increased like first wings, but they start slightly lower than 2nd wings.
-        this.CreateWing(49, 2, 3, "Cape of Fighter", 180, 15, 200, 180, 0, 0, 0, 0, 0, 0, 1, this.BuildOptions((0b00, OptionType.HealthRecover), (0b10, OptionType.PhysDamage)), 20, 10, this._damageIncreaseByLevelTable, secondWingOptions);
-        var capeOfLord = this.CreateWing(30, 2, 3, "Cape of Lord", 180, 15, 200, 180, 0, 0, 0, 0, 1, 0, 0, this.BuildOptions((0b00, OptionType.PhysDamage)), 20, 10, this._damageIncreaseByLevelTable, this.CreateCapeOptions());
+        this.CreateWing(49, 2, 3, LocalizedString.FromResource(() => ItemNames.CapeOfFighter), 180, 15, 200, 180, 0, 0, 0, 0, 0, 0, 1, this.BuildOptions((0b00, OptionType.HealthRecover), (0b10, OptionType.PhysDamage)), 20, 10, this._damageIncreaseByLevelTable, secondWingOptions);
+        var capeOfLord = this.CreateWing(30, 2, 3, LocalizedString.FromResource(() => ItemNames.CapeOfLord), 180, 15, 200, 180, 0, 0, 0, 0, 1, 0, 0, this.BuildOptions((0b00, OptionType.PhysDamage)), 20, 10, this._damageIncreaseByLevelTable, this.CreateCapeOptions());
         capeOfLord.Group = 13;
         capeOfLord.SetGuid(capeOfLord.Group, capeOfLord.Number);
 
@@ -97,13 +98,13 @@ public class Wings : WingsInitializerBase
 
         // Third class wings:
         var thirdWingOptions = this.CreateThirdClassWingOptions();
-        this.CreateWing(36, 4, 3, "Wing of Storm", 150, 60, 220, 400, 0, 3, 0, 0, 0, 0, 0, this.BuildOptions((0b00, OptionType.HealthRecover), (0b11, OptionType.PhysDamage), (0b10, OptionType.Defense)), 39, 39, this._damageIncreaseByLevelTable, thirdWingOptions, movementSpeed: MovementSpeedConstants.FastWingMovementSpeed);
-        this.CreateWing(37, 4, 3, "Wing of Eternal", 150, 45, 220, 400, 3, 0, 0, 0, 0, 0, 0, this.BuildOptions((0b00, OptionType.HealthRecover), (0b11, OptionType.WizDamage), (0b10, OptionType.Defense)), 39, 39, this._damageIncreaseByLevelTable, thirdWingOptions);
-        this.CreateWing(38, 4, 3, "Wing of Illusion", 150, 45, 220, 400, 0, 0, 3, 0, 0, 0, 0, this.BuildOptions((0b00, OptionType.HealthRecover), (0b11, OptionType.PhysDamage), (0b10, OptionType.Defense)), 39, 39, this._damageIncreaseByLevelTable, thirdWingOptions);
-        this.CreateWing(39, 4, 3, "Wing of Ruin", 150, 55, 220, 400, 0, 0, 0, 3, 0, 0, 0, this.BuildOptions((0b00, OptionType.HealthRecover), (0b11, OptionType.PhysDamage), (0b10, OptionType.WizDamage)), 39, 39, this._damageIncreaseByLevelTable, thirdWingOptions);
-        this.CreateWing(40, 2, 3, "Cape of Emperor", 150, 45, 220, 400, 0, 0, 0, 0, 3, 0, 0, this.BuildOptions((0b00, OptionType.HealthRecover), (0b11, OptionType.PhysDamage), (0b10, OptionType.Defense)), 39, 24, this._damageIncreaseByLevelTable, thirdWingOptions);
-        this.CreateWing(43, 4, 3, "Wing of Dimension", 150, 45, 220, 400, 0, 0, 0, 0, 0, 3, 0, this.BuildOptions((0b00, OptionType.HealthRecover), (0b11, OptionType.WizDamage), (0b10, OptionType.CurseDamage)), 39, 39, this._damageIncreaseByLevelTable, thirdWingOptions);
-        this.CreateWing(50, 2, 3, "Cape of Overrule", 150, 45, 220, 400, 0, 0, 0, 0, 0, 0, 3, this.BuildOptions((0b00, OptionType.HealthRecover), (0b11, OptionType.PhysDamage), (0b10, OptionType.Defense)), 39, 39, this._damageIncreaseByLevelTable, thirdWingOptions);
+        this.CreateWing(36, 4, 3, LocalizedString.FromResource(() => ItemNames.WingOfStorm), 150, 60, 220, 400, 0, 3, 0, 0, 0, 0, 0, this.BuildOptions((0b00, OptionType.HealthRecover), (0b11, OptionType.PhysDamage), (0b10, OptionType.Defense)), 39, 39, this._damageIncreaseByLevelTable, thirdWingOptions, movementSpeed: MovementSpeedConstants.FastWingMovementSpeed);
+        this.CreateWing(37, 4, 3, LocalizedString.FromResource(() => ItemNames.WingOfEternal), 150, 45, 220, 400, 3, 0, 0, 0, 0, 0, 0, this.BuildOptions((0b00, OptionType.HealthRecover), (0b11, OptionType.WizDamage), (0b10, OptionType.Defense)), 39, 39, this._damageIncreaseByLevelTable, thirdWingOptions);
+        this.CreateWing(38, 4, 3, LocalizedString.FromResource(() => ItemNames.WingOfIllusion), 150, 45, 220, 400, 0, 0, 3, 0, 0, 0, 0, this.BuildOptions((0b00, OptionType.HealthRecover), (0b11, OptionType.PhysDamage), (0b10, OptionType.Defense)), 39, 39, this._damageIncreaseByLevelTable, thirdWingOptions);
+        this.CreateWing(39, 4, 3, LocalizedString.FromResource(() => ItemNames.WingOfRuin), 150, 55, 220, 400, 0, 0, 0, 3, 0, 0, 0, this.BuildOptions((0b00, OptionType.HealthRecover), (0b11, OptionType.PhysDamage), (0b10, OptionType.WizDamage)), 39, 39, this._damageIncreaseByLevelTable, thirdWingOptions);
+        this.CreateWing(40, 2, 3, LocalizedString.FromResource(() => ItemNames.CapeOfEmperor), 150, 45, 220, 400, 0, 0, 0, 0, 3, 0, 0, this.BuildOptions((0b00, OptionType.HealthRecover), (0b11, OptionType.PhysDamage), (0b10, OptionType.Defense)), 39, 24, this._damageIncreaseByLevelTable, thirdWingOptions);
+        this.CreateWing(43, 4, 3, LocalizedString.FromResource(() => ItemNames.WingOfDimension), 150, 45, 220, 400, 0, 0, 0, 0, 0, 3, 0, this.BuildOptions((0b00, OptionType.HealthRecover), (0b11, OptionType.WizDamage), (0b10, OptionType.CurseDamage)), 39, 39, this._damageIncreaseByLevelTable, thirdWingOptions);
+        this.CreateWing(50, 2, 3, LocalizedString.FromResource(() => ItemNames.CapeOfOverrule), 150, 45, 220, 400, 0, 0, 0, 0, 0, 0, 3, this.BuildOptions((0b00, OptionType.HealthRecover), (0b11, OptionType.PhysDamage), (0b10, OptionType.Defense)), 39, 39, this._damageIncreaseByLevelTable, thirdWingOptions);
     }
 
     /// <summary>
@@ -142,18 +143,18 @@ public class Wings : WingsInitializerBase
     {
         var created = new List<ItemDefinition?>
         {
-            this.CreateSmallWing(130, 2, 2, "Small Cape of Lord", 15, 0, 0, 0, 0, 1, 0, 0, 20),
-            this.CreateSmallWing(131, 3, 2, "Small Wing of Curse", 10, 0, 0, 0, 0, 0, 1, 0, 12),
-            this.CreateSmallWing(132, 3, 2, "Small Wings of Elf", 10, 0, 0, 1, 0, 0, 0, 0, 12),
-            this.CreateSmallWing(133, 3, 2, "Small Wings of Heaven", 10, 1, 0, 0, 1, 0, 0, 0, 12),
-            this.CreateSmallWing(134, 3, 2, "Small Wings of Satan", 20, 0, 1, 0, 1, 0, 0, 0, 12),
-            this.CreateSmallWing(135, 2, 2, "Little Warrior's Cloak", 15, 0, 0, 0, 0, 0, 0, 1, 20),
+            this.CreateSmallWing(130, 2, 2, LocalizedString.FromResource(() => ItemNames.SmallCapeOfLord), 15, 0, 0, 0, 0, 1, 0, 0, 20),
+            this.CreateSmallWing(131, 3, 2, LocalizedString.FromResource(() => ItemNames.SmallWingOfCurse), 10, 0, 0, 0, 0, 0, 1, 0, 12),
+            this.CreateSmallWing(132, 3, 2, LocalizedString.FromResource(() => ItemNames.SmallWingsOfElf), 10, 0, 0, 1, 0, 0, 0, 0, 12),
+            this.CreateSmallWing(133, 3, 2, LocalizedString.FromResource(() => ItemNames.SmallWingsOfHeaven), 10, 1, 0, 0, 1, 0, 0, 0, 12),
+            this.CreateSmallWing(134, 3, 2, LocalizedString.FromResource(() => ItemNames.SmallWingsOfSatan), 20, 0, 1, 0, 1, 0, 0, 0, 12),
+            this.CreateSmallWing(135, 2, 2, LocalizedString.FromResource(() => ItemNames.LittleWarriorsCloak), 15, 0, 0, 0, 0, 0, 0, 1, 20),
         };
 
         return created.OfType<ItemDefinition>().ToList();
     }
 
-    private ItemDefinition? CreateSmallWing(byte number, byte width, byte height, string name, int defense, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel, int damageIncreaseAndAbsorbInitial)
+    private ItemDefinition? CreateSmallWing(byte number, byte width, byte height, LocalizedString name, int defense, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel, int damageIncreaseAndAbsorbInitial)
     {
         if (this.GameConfiguration.Items.Any(item => item.Group == 12 && item.Number == number))
         {
@@ -168,7 +169,7 @@ public class Wings : WingsInitializerBase
     private void CreateFeather()
     {
         var feather = this.Context.CreateNew<ItemDefinition>();
-        feather.Name = "Loch's Feather";
+        feather.Name = LocalizedString.FromResource(() => ItemNames.LochSFeather);
         feather.MaximumItemLevel = 1;
         feather.Number = 14;
         feather.Group = 13;
@@ -183,7 +184,7 @@ public class Wings : WingsInitializerBase
     private void CreateFeatherOfCondor()
     {
         var feather = this.Context.CreateNew<ItemDefinition>();
-        feather.Name = "Feather of Condor";
+        feather.Name = LocalizedString.FromResource(() => ItemNames.FeatherOfCondor);
         feather.MaximumItemLevel = 1;
         feather.Number = 53;
         feather.Group = 13;
@@ -198,7 +199,7 @@ public class Wings : WingsInitializerBase
     private void CreateFlameOfCondor()
     {
         var feather = this.Context.CreateNew<ItemDefinition>();
-        feather.Name = "Flame of Condor";
+        feather.Name = LocalizedString.FromResource(() => ItemNames.FlameOfCondor);
         feather.MaximumItemLevel = 1;
         feather.Number = 52;
         feather.Group = 13;
@@ -210,7 +211,24 @@ public class Wings : WingsInitializerBase
         this.GameConfiguration.Items.Add(feather);
     }
 
-    private ItemDefinition CreateWing(byte number, byte width, byte height, string name, byte dropLevel, int defense, byte durability, int levelRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel, IEnumerable<IncreasableItemOption> possibleOptions, int damageIncreaseInitial, int damageAbsorbInitial, ItemLevelBonusTable damageIncreasePerLevel, ItemOptionDefinition? wingOptionDefinition, float movementSpeed = MovementSpeedConstants.DefaultWingMovementSpeed)
+    private void AddDamagePowerUps(ItemDefinition wing, int damageIncreaseInitial, int damageAbsorbInitial, ItemLevelBonusTable? damageIncreasePerLevel)
+    {
+        if (damageAbsorbInitial > 0)
+        {
+            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.DamageReceiveDecrement, 1f - (damageAbsorbInitial / 100f), AggregateType.Multiplicate);
+            powerUp.BonusPerLevelTable = this._absorbByLevelTable;
+            wing.BasePowerUpAttributes.Add(powerUp);
+        }
+
+        if (damageIncreaseInitial > 0)
+        {
+            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.AttackDamageIncrease, 1f + (damageIncreaseInitial / 100f), AggregateType.Multiplicate);
+            powerUp.BonusPerLevelTable = damageIncreasePerLevel;
+            wing.BasePowerUpAttributes.Add(powerUp);
+        }
+    }
+
+    private ItemDefinition CreateWing(byte number, byte width, byte height, LocalizedString name, byte dropLevel, int defense, byte durability, int levelRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel, IEnumerable<IncreasableItemOption> possibleOptions, int damageIncreaseInitial, int damageAbsorbInitial, ItemLevelBonusTable damageIncreasePerLevel, ItemOptionDefinition? wingOptionDefinition, float movementSpeed = MovementSpeedConstants.DefaultWingMovementSpeed)
     {
         var wing = this.CreateWing(number, width, height, name, dropLevel, defense, durability, levelRequirement, darkWizardClassLevel, darkKnightClassLevel, elfClassLevel, magicGladiatorClassLevel, darkLordClassLevel, summonerClassLevel, ragefighterClassLevel, movementSpeed);
         if (wingOptionDefinition != null)
@@ -241,24 +259,7 @@ public class Wings : WingsInitializerBase
         return wing;
     }
 
-    private void AddDamagePowerUps(ItemDefinition wing, int damageIncreaseInitial, int damageAbsorbInitial, ItemLevelBonusTable? damageIncreasePerLevel)
-    {
-        if (damageAbsorbInitial > 0)
-        {
-            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.DamageReceiveDecrement, 1f - (damageAbsorbInitial / 100f), AggregateType.Multiplicate);
-            powerUp.BonusPerLevelTable = this._absorbByLevelTable;
-            wing.BasePowerUpAttributes.Add(powerUp);
-        }
-
-        if (damageIncreaseInitial > 0)
-        {
-            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.AttackDamageIncrease, 1f + (damageIncreaseInitial / 100f), AggregateType.Multiplicate);
-            powerUp.BonusPerLevelTable = damageIncreasePerLevel;
-            wing.BasePowerUpAttributes.Add(powerUp);
-        }
-    }
-
-    private ItemDefinition CreateWing(byte number, byte width, byte height, string name, byte dropLevel, int defense, byte durability, int levelRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel, float movementSpeed = MovementSpeedConstants.DefaultWingMovementSpeed)
+    private ItemDefinition CreateWing(byte number, byte width, byte height, LocalizedString name, byte dropLevel, int defense, byte durability, int levelRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel, float movementSpeed = MovementSpeedConstants.DefaultWingMovementSpeed)
     {
         var wing = this.Context.CreateNew<ItemDefinition>();
         this.GameConfiguration.Items.Add(wing);

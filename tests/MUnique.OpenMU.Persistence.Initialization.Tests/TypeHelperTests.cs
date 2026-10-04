@@ -84,6 +84,11 @@ public class TypeHelperTests
                 map.Name = map.Name.WithSourceKey(null);
             }
 
+            foreach (var item in configuration.Items)
+            {
+                item.Name = item.Name.WithSourceKey(null);
+            }
+
             foreach (var characterClass in configuration.CharacterClasses)
             {
                 characterClass.Name = characterClass.Name.WithSourceKey(null);
