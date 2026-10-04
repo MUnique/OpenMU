@@ -9,7 +9,9 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// Initializer for pets.
@@ -29,15 +31,15 @@ public class Pets : InitializerBase
     /// <inheritdoc />
     public override void Initialize()
     {
-        var angel = this.CreatePet(0, "Guardian Angel", 23, (Stats.DamageReceiveDecrement, 0.8f, AggregateType.Multiplicate), (Stats.MaximumHealth, 50f, AggregateType.AddRaw));
+        var angel = this.CreatePet(0, LocalizedString.FromResource(() => ItemNames.GuardianAngel), 23, (Stats.DamageReceiveDecrement, 0.8f, AggregateType.Multiplicate), (Stats.MaximumHealth, 50f, AggregateType.AddRaw));
         this.AddItemToJewelItemDrop(angel);
-        var imp = this.CreatePet(1, "Imp", 28, (Stats.AttackDamageIncrease, 1.3f, AggregateType.Multiplicate));
+        var imp = this.CreatePet(1, LocalizedString.FromResource(() => ItemNames.Imp), 28, (Stats.AttackDamageIncrease, 1.3f, AggregateType.Multiplicate));
         this.AddItemToJewelItemDrop(imp);
-        var uniria = this.CreatePet(2, "Horn of Uniria", 25, (Stats.MovementSpeed, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum), (Stats.MovementSpeedUnderwater, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum));
+        var uniria = this.CreatePet(2, LocalizedString.FromResource(() => ItemNames.HornOfUniria), 25, (Stats.MovementSpeed, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum), (Stats.MovementSpeedUnderwater, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum));
         this.AddItemToJewelItemDrop(uniria);
     }
 
-    private ItemDefinition CreatePet(byte number, string name, int dropLevelAndLevelRequirement, params (AttributeDefinition, float, AggregateType)[] basePowerUps)
+    private ItemDefinition CreatePet(byte number, LocalizedString name, int dropLevelAndLevelRequirement, params (AttributeDefinition, float, AggregateType)[] basePowerUps)
     {
         var pet = this.Context.CreateNew<ItemDefinition>();
         this.GameConfiguration.Items.Add(pet);

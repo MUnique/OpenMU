@@ -64,18 +64,12 @@ public class ItemSerializer095 : IItemSerializer
         var itemLevel = item.IsTrainablePet() ? 0 : item.Level;
         target[1] = (byte)((itemLevel << 3) & LevelMask);
 
-        var itemOption = item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.Option);
-        if (itemOption != null)
+        var itemOption = item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.Option && !o.ItemOption.IsFixedOption());
+        var fixedOptionBits = item.GetFixedOptionBits();
+        if (itemOption != null || fixedOptionBits != 0)
         {
-            var optionLevel = itemOption.Level;
-
-            // A dinorant can normally have up to 2 options, all being coded in the item option level.
-            // A one-option dino has level = 1, 2, or 4; a two-option has level = 3, 5, or 6.
-            if (item.Definition.Skill?.Number == 49)
-            {
-                item.ItemOptions.Where(o => o.ItemOption?.OptionType == ItemOptionTypes.Option && o != itemOption)
-                    .ForEach(o => optionLevel |= o.Level);
-            }
+            // Fixed options (e.g. of the dinorant) are coded as bits in the item option level.
+            var optionLevel = itemOption?.Level ?? fixedOptionBits;
 
             target[1] |= (byte)(optionLevel & 3);
             target[3] |= (byte)((optionLevel & 4) << 4); // The highest bit is placed into the 2nd bit of the exc byte (0x40).

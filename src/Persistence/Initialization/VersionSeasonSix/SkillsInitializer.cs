@@ -8,7 +8,9 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 
 /// <summary>
@@ -252,10 +254,10 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.CreateSkill(SkillNumber.MonsterSkill, "Generic Monster Skill", distance: 5, skillType: SkillType.Other);
 
         // Skills of Selupan, the boss of the raklion event:
-        this.CreateSkill(SkillNumber.SelupanPoison, "Selupan Poison", damageType: DamageType.Physical, distance: 10, skillType: SkillType.AreaSkillExplicitTarget);
-        this.CreateSkill(SkillNumber.SelupanIceStorm, "Selupan Ice Storm", damageType: DamageType.Physical, distance: 10, skillType: SkillType.AreaSkillExplicitTarget);
-        this.CreateSkill(SkillNumber.SelupanIceStrike, "Selupan Ice Strike", damageType: DamageType.Physical, distance: 10, skillType: SkillType.AreaSkillExplicitTarget);
-        this.CreateSkill(SkillNumber.SelupanFall, "Selupan Fall", damageType: DamageType.Physical, distance: 10, skillType: SkillType.AreaSkillExplicitTarget);
+        this.CreateSkill(SkillNumber.SelupanPoison, LocalizedString.FromResource(() => SkillNames.SelupanPoison), damageType: DamageType.Physical, distance: 10, skillType: SkillType.AreaSkillExplicitTarget);
+        this.CreateSkill(SkillNumber.SelupanIceStorm, LocalizedString.FromResource(() => SkillNames.SelupanIceStorm), damageType: DamageType.Physical, distance: 10, skillType: SkillType.AreaSkillExplicitTarget);
+        this.CreateSkill(SkillNumber.SelupanIceStrike, LocalizedString.FromResource(() => SkillNames.SelupanIceStrike), damageType: DamageType.Physical, distance: 10, skillType: SkillType.AreaSkillExplicitTarget);
+        this.CreateSkill(SkillNumber.SelupanFall, LocalizedString.FromResource(() => SkillNames.SelupanFall), damageType: DamageType.Physical, distance: 10, skillType: SkillType.AreaSkillExplicitTarget);
 
         // Master skills:
         // Common:
@@ -451,6 +453,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.InitializeEffects();
         this.MapSkillsToEffects();
         this.InitializeMasterSkillData();
+        MasterSkillPassivePowerUps.AddMissing(this.Context, this.GameConfiguration);
         this.CreateSpecialSummonMonsters();
         this.CreateSkillCombos();
         this.InitializeSkillAttributes();
@@ -674,6 +677,7 @@ internal class SkillsInitializer : SkillsInitializerBase
 
         this.AddAttributeRelationship(SkillNumber.DragonRoar, Stats.SkillFinalMultiplier, 1.0f, Stats.SkillMultiplier);
         this.AddAttributeRelationship(SkillNumber.DragonSlasher, Stats.SkillFinalMultiplier, 1.0f, Stats.SkillMultiplier);
+        this.AddAttributeRelationship(SkillNumber.DragonSlasher, Stats.SkillFinalMultiplierPve, 3.0f, Stats.SkillMultiplier);
 
         // Other (mirror relationships)
         this.AddAttributeRelationship(SkillNumber.TripleShot, Stats.SkillExtraManaCost, 1, Stats.SkillExtraManaCost);

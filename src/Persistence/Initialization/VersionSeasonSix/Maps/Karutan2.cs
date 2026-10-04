@@ -7,6 +7,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// The initialization for the Karutan2 map.
@@ -19,11 +21,6 @@ internal class Karutan2 : BaseMapInitializer
     internal const byte Number = 81;
 
     /// <summary>
-    /// The Name of the Map.
-    /// </summary>
-    internal const string Name = "Karutan 2";
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="Karutan2"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -33,11 +30,16 @@ internal class Karutan2 : BaseMapInitializer
     {
     }
 
+    /// <summary>
+    /// Gets the name of the map.
+    /// </summary>
+    internal static LocalizedString Name => LocalizedString.FromResource(() => MapNames.Karutan2);
+
     /// <inheritdoc/>
     protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => Name;
+    protected override LocalizedString MapName => Name;
 
     /// <inheritdoc/>
     protected override byte SafezoneMapNumber => Karutan1.Number;
@@ -190,7 +192,7 @@ internal class Karutan2 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 572;
-            monster.Designation = "Gollock";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Gollock);
             monster.MoveRange = 6;
             monster.AttackRange = 2;
             monster.ViewRange = 10;
@@ -222,7 +224,7 @@ internal class Karutan2 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 575;
-            monster.Designation = "Condra";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Condra);
             monster.MoveRange = 6;
             monster.AttackRange = 2;
             monster.ViewRange = 10;
@@ -254,7 +256,7 @@ internal class Karutan2 : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 576;
-            monster.Designation = "Narcondra";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Narcondra);
             monster.MoveRange = 6;
             monster.AttackRange = 2;
             monster.ViewRange = 10;

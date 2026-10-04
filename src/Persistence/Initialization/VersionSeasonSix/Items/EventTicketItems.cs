@@ -6,6 +6,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// Initializer for event related items.
@@ -26,18 +28,18 @@ internal class EventTicketItems : InitializerBase
     public override void Initialize()
     {
         // Blood Castle:
-        this.CreateEventItem(16, 13, 1, 2, "Scroll of Archangel", false, 8, 2, 32, 45, 57, 68, 76, 84, 95);
-        this.CreateEventItem(17, 13, 1, 2, "Blood Bone", false, 8, 2, 32, 45, 57, 68, 76, 84, 95);
-        this.CreateEventItem(18, 13, 2, 2, "Invisibility Cloak", false, 8);
-        this.CreateEventItem(19, 13, 1, 2, "Weapon of Archangel", false);
+        this.CreateEventItem(16, 13, 1, 2, LocalizedString.FromResource(() => ItemNames.ScrollOfArchangel), false, 8, 2, 32, 45, 57, 68, 76, 84, 95);
+        this.CreateEventItem(17, 13, 1, 2, LocalizedString.FromResource(() => ItemNames.BloodBone), false, 8, 2, 32, 45, 57, 68, 76, 84, 95);
+        this.CreateEventItem(18, 13, 2, 2, LocalizedString.FromResource(() => ItemNames.InvisibilityCloak), false, 8);
+        this.CreateEventItem(19, 13, 1, 2, LocalizedString.FromResource(() => ItemNames.WeaponOfArchangel), false);
 
         // Chaos Castle:
-        this.CreateEventItem(29, 13, 2, 2, "Armor of Guardsman", false);
+        this.CreateEventItem(29, 13, 2, 2, LocalizedString.FromResource(() => ItemNames.ArmorOfGuardsman), false);
 
         // Illusion Temple:
-        this.CreateEventItem(49, 13, 1, 1, "Old Scroll", false, 6, 66, 72, 78, 84, 90, 96);
-        this.CreateEventItem(50, 13, 1, 2, "Illusion Sorcerer Covenant", false, 6, 70, 76, 82, 88, 94, 100);
-        this.CreateEventItem(51, 13, 2, 2, "Scroll of Blood", false, 6);
+        this.CreateEventItem(49, 13, 1, 1, LocalizedString.FromResource(() => ItemNames.OldScroll), false, 6, 66, 72, 78, 84, 90, 96);
+        this.CreateEventItem(50, 13, 1, 2, LocalizedString.FromResource(() => ItemNames.IllusionSorcererCovenant), false, 6, 70, 76, 82, 88, 94, 100);
+        this.CreateEventItem(51, 13, 2, 2, LocalizedString.FromResource(() => ItemNames.ScrollOfBlood), false, 6);
 
         // Doppelganger:
         if (this.CreateDoppelgangerItems() is { } signOfDimensionsDropGroup)
@@ -46,21 +48,21 @@ internal class EventTicketItems : InitializerBase
         }
 
         // Devil Square:
-        this.CreateEventItem(17, 14, 1, 1, "Devil's Eye", false, 7, 2, 36, 47, 60, 70, 80, 90);
-        this.CreateEventItem(18, 14, 1, 1, "Devil's Key", false, 7, 2, 36, 47, 60, 70, 80, 90);
-        this.CreateEventItem(19, 14, 1, 1, "Devil's Invitation", false, 7);
+        this.CreateEventItem(17, 14, 1, 1, LocalizedString.FromResource(() => ItemNames.DevilSEye), false, 7, 2, 36, 47, 60, 70, 80, 90);
+        this.CreateEventItem(18, 14, 1, 1, LocalizedString.FromResource(() => ItemNames.DevilSKey), false, 7, 2, 36, 47, 60, 70, 80, 90);
+        this.CreateEventItem(19, 14, 1, 1, LocalizedString.FromResource(() => ItemNames.DevilSInvitation), false, 7);
 
         // Imperial Guardian
-        var scrapOfPaper = this.CreateEventItem(101, 14, 1, 1, "Suspicious Scrap of Paper", false, 0, 32);
+        var scrapOfPaper = this.CreateEventItem(101, 14, 1, 1, LocalizedString.FromResource(() => ItemNames.SuspiciousScrapOfPaper), false, 0, 32);
         scrapOfPaper.Durability = 5;
-        this.CreateEventItem(102, 14, 1, 1, "Gaion's Order", false);
-        this.CreateEventItem(103, 14, 1, 1, "First Secromicon Fragment", false);
-        this.CreateEventItem(104, 14, 1, 1, "Second Secromicon Fragment", false);
-        this.CreateEventItem(105, 14, 1, 1, "Third Secromicon Fragment", false);
-        this.CreateEventItem(106, 14, 1, 1, "Fourth Secromicon Fragment", false);
-        this.CreateEventItem(107, 14, 1, 1, "Fifth Secromicon Fragment", false);
-        this.CreateEventItem(108, 14, 1, 1, "Sixth Secromicon Fragment", false);
-        this.CreateEventItem(109, 14, 1, 1, "Complete Secromicon", false);
+        this.CreateEventItem(102, 14, 1, 1, LocalizedString.FromResource(() => ItemNames.GaionSOrder), false);
+        this.CreateEventItem(103, 14, 1, 1, LocalizedString.FromResource(() => ItemNames.FirstSecromiconFragment), false);
+        this.CreateEventItem(104, 14, 1, 1, LocalizedString.FromResource(() => ItemNames.SecondSecromiconFragment), false);
+        this.CreateEventItem(105, 14, 1, 1, LocalizedString.FromResource(() => ItemNames.ThirdSecromiconFragment), false);
+        this.CreateEventItem(106, 14, 1, 1, LocalizedString.FromResource(() => ItemNames.FourthSecromiconFragment), false);
+        this.CreateEventItem(107, 14, 1, 1, LocalizedString.FromResource(() => ItemNames.FifthSecromiconFragment), false);
+        this.CreateEventItem(108, 14, 1, 1, LocalizedString.FromResource(() => ItemNames.SixthSecromiconFragment), false);
+        this.CreateEventItem(109, 14, 1, 1, LocalizedString.FromResource(() => ItemNames.CompleteSecromicon), false);
         if (this.CreateSuspiciousScrapOfPaperDropGroup() is { } scrapOfPaperDropGroup)
         {
             BaseMapInitializer.RegisterDefaultDropItemGroup(scrapOfPaperDropGroup);
@@ -84,7 +86,7 @@ internal class EventTicketItems : InitializerBase
         var dropItemGroup = this.Context.CreateNew<DropItemGroup>();
         dropItemGroup.SetGuid(14, 101);
         dropItemGroup.Chance = 0.001;
-        dropItemGroup.Description = "Suspicious Scrap of Paper";
+        dropItemGroup.Description = LocalizedString.FromResource(() => ItemNames.SuspiciousScrapOfPaper);
         dropItemGroup.MinimumMonsterLevel = 32;
         dropItemGroup.PossibleItems.Add(scrapOfPaper);
         this.GameConfiguration.DropItemGroups.Add(dropItemGroup);
@@ -128,7 +130,7 @@ internal class EventTicketItems : InitializerBase
         return dropItemGroup;
     }
 
-    private ItemDefinition CreateEventItem(byte number, byte group, byte width, byte height, string name, bool dropsFromMonsters, byte maxItemLevel = 0, params byte[] dropLevels)
+    private ItemDefinition CreateEventItem(byte number, byte group, byte width, byte height, LocalizedString name, bool dropsFromMonsters, byte maxItemLevel = 0, params byte[] dropLevels)
     {
         var item = this.Context.CreateNew<ItemDefinition>();
         this.GameConfiguration.Items.Add(item);

@@ -12,6 +12,7 @@ using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.MiniGames.Doppelganger;
 using MUnique.OpenMU.GameLogic.MiniGames.Kanturu;
 using MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
+using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 using MUnique.OpenMU.GameLogic.Resets;
 using MUnique.OpenMU.GameServer.MessageHandler;
@@ -164,6 +165,13 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
                 plugInConfiguration.SetConfiguration(config, referenceHandler);
             }
 
+            if (plugInType.IsAssignableTo(typeof(NpcTalkPlugInBase)))
+            {
+                // The default configuration of the plug-in can't reference the NPC, because it's created without a game configuration.
+                var npcTalkPlugIn = (NpcTalkPlugInBase)Activator.CreateInstance(plugInType)!;
+                plugInConfiguration.SetConfiguration(npcTalkPlugIn.CreateDefaultConfig(this.GameConfiguration), referenceHandler);
+            }
+
             if (plugInType == typeof(DoppelgangerFeaturePlugIn))
             {
                 // The default configuration of the plug-in can't reference the monsters of the
@@ -223,7 +231,7 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
     {
         var updates = plugInManager.GetStrategyProvider<Guid, IConfigurationUpdatePlugIn>()
                           ?.AvailableStrategies.Where(up => up.DataInitializationKey == this.Key)
-                          .OrderBy(up => up.CreatedAt)
+                          .OrderBy(up => up.UpdatedAt)
                           .ToList();
         if (updates is not { Count: > 0 })
         {
@@ -234,9 +242,11 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
         {
             var entry = this.Context.CreateNew<ConfigurationUpdate>();
             entry.Key = update.Key;
+            entry.Version = update.Version;
             entry.Name = update.Name;
             entry.Description = update.Description;
             entry.CreatedAt = update.CreatedAt;
+            entry.UpdatedAt = update.UpdatedAt;
             entry.InstalledAt = DateTime.UtcNow;
         }
 

@@ -7,6 +7,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// The initialization for the Crywolf Fortress map.
@@ -19,11 +21,6 @@ internal class CrywolfFortress : BaseMapInitializer
     internal const byte Number = 34;
 
     /// <summary>
-    /// The Name of the Map.
-    /// </summary>
-    internal const string Name = "Crywolf Fortress";
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="CrywolfFortress"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -33,11 +30,16 @@ internal class CrywolfFortress : BaseMapInitializer
     {
     }
 
+    /// <summary>
+    /// Gets the name of the map.
+    /// </summary>
+    internal static LocalizedString Name => LocalizedString.FromResource(() => MapNames.CrywolfFortress);
+
     /// <inheritdoc/>
     protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => Name;
+    protected override LocalizedString MapName => Name;
 
     /// <summary>
     /// Adds the drop item groups for the materials of the Horn of Fenrir to the map, or updates them.
@@ -54,11 +56,11 @@ internal class CrywolfFortress : BaseMapInitializer
     /// <param name="map">The Crywolf map definition.</param>
     internal static void AddFenrirMaterialDropGroups(IContext context, GameConfiguration gameConfiguration, GameMapDefinition map)
     {
-        (short Index, short ItemNumber, string Description, double Chance)[] materials =
+        (short Index, short ItemNumber, LocalizedString Description, double Chance)[] materials =
         [
-            (1, 32, "Splinter of Armor", 0.05),
-            (2, 33, "Bless of Guardian", 0.02),
-            (3, 34, "Claw of Beast", 0.005),
+            (1, 32, LocalizedString.FromResource(() => ItemNames.SplinterOfArmor), 0.05),
+            (2, 33, LocalizedString.FromResource(() => ItemNames.BlessOfGuardian), 0.02),
+            (3, 34, LocalizedString.FromResource(() => ItemNames.ClawOfBeast), 0.005),
         ];
 
         foreach (var material in materials)
@@ -319,7 +321,7 @@ internal class CrywolfFortress : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 204;
-            monster.Designation = "Wolf Status";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.WolfStatus);
             var attributes = new Dictionary<AttributeDefinition, float>
             {
                 { Stats.Level, 2 },
@@ -339,7 +341,7 @@ internal class CrywolfFortress : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 205;
-            monster.Designation = "Wolf Altar1";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.WolfAltar1);
             var attributes = new Dictionary<AttributeDefinition, float>
             {
                 { Stats.Level, 2 },
@@ -359,7 +361,7 @@ internal class CrywolfFortress : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 206;
-            monster.Designation = "Wolf Altar2";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.WolfAltar2);
             var attributes = new Dictionary<AttributeDefinition, float>
             {
                 { Stats.Level, 2 },
@@ -379,7 +381,7 @@ internal class CrywolfFortress : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 207;
-            monster.Designation = "Wolf Altar3";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.WolfAltar3);
             var attributes = new Dictionary<AttributeDefinition, float>
             {
                 { Stats.Level, 2 },
@@ -399,7 +401,7 @@ internal class CrywolfFortress : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 208;
-            monster.Designation = "Wolf Altar4";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.WolfAltar4);
             var attributes = new Dictionary<AttributeDefinition, float>
             {
                 { Stats.Level, 2 },
@@ -419,7 +421,7 @@ internal class CrywolfFortress : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 209;
-            monster.Designation = "Wolf Altar5";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.WolfAltar5);
             var attributes = new Dictionary<AttributeDefinition, float>
             {
                 { Stats.Level, 2 },
@@ -439,7 +441,7 @@ internal class CrywolfFortress : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 310;
-            monster.Designation = "Hammer Scout";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.HammerScout);
             monster.MoveRange = 6;
             monster.AttackRange = 1;
             monster.ViewRange = 5;
@@ -470,7 +472,7 @@ internal class CrywolfFortress : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 311;
-            monster.Designation = "Lance Scout";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.LanceScout);
             monster.MoveRange = 6;
             monster.AttackRange = 3;
             monster.ViewRange = 6;
@@ -501,7 +503,7 @@ internal class CrywolfFortress : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 312;
-            monster.Designation = "Bow Scout";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.BowScout);
             monster.MoveRange = 6;
             monster.AttackRange = 6;
             monster.ViewRange = 7;
@@ -532,7 +534,7 @@ internal class CrywolfFortress : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 313;
-            monster.Designation = "Werewolf";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Werewolf);
             monster.MoveRange = 6;
             monster.AttackRange = 1;
             monster.ViewRange = 7;
@@ -563,7 +565,7 @@ internal class CrywolfFortress : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 314;
-            monster.Designation = "Scout(Hero)";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.ScoutHero);
             monster.MoveRange = 6;
             monster.AttackRange = 2;
             monster.ViewRange = 7;
@@ -594,7 +596,7 @@ internal class CrywolfFortress : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 315;
-            monster.Designation = "Werewolf(Hero)";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.WerewolfHero);
             monster.MoveRange = 6;
             monster.AttackRange = 2;
             monster.ViewRange = 7;
@@ -625,7 +627,7 @@ internal class CrywolfFortress : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 316;
-            monster.Designation = "Balram";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Balram);
             monster.MoveRange = 6;
             monster.AttackRange = 3;
             monster.ViewRange = 7;
@@ -656,7 +658,7 @@ internal class CrywolfFortress : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 317;
-            monster.Designation = "Soram";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Soram);
             monster.MoveRange = 6;
             monster.AttackRange = 7;
             monster.ViewRange = 7;

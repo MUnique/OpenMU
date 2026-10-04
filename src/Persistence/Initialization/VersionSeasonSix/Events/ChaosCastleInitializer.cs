@@ -166,11 +166,11 @@ internal class ChaosCastleInitializer : InitializerBase
         var jewelDropItemGroup = this.Context.CreateNew<DropItemGroup>();
         jewelDropItemGroup.SetGuid(chaosCastle.Entrance!.Map!.Number, 1, level);
         jewelDropItemGroup.Description = $"Rewarded jewels for Chaos Castle {level}";
-        jewelDropItemGroup.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos"));
-        jewelDropItemGroup.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Bless"));
-        jewelDropItemGroup.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Soul"));
-        jewelDropItemGroup.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Creation"));
-        jewelDropItemGroup.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Life"));
+        jewelDropItemGroup.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Chaos"));
+        jewelDropItemGroup.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Bless"));
+        jewelDropItemGroup.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Soul"));
+        jewelDropItemGroup.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Creation"));
+        jewelDropItemGroup.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name.ValueInNeutralLanguage == "Jewel of Life"));
         jewelDropItemGroup.Chance = 0.9;
 
         this.GameConfiguration.DropItemGroups.Add(jewelDropItemGroup);

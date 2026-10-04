@@ -56,6 +56,8 @@ public class GuildWarAnswerAction
         var playerTeam = this.GetTeamPlayers(player);
         var requesterTeam = this.GetTeamPlayers(requester);
         var score = guildWarContext.Score;
+
+        // PropertyChanged requires a void handler. The handler catches and logs all exceptions, so none get lost.
 #pragma warning disable VSTHRD101 // Avoid unsupported async delegates
         score.PropertyChanged += async (_, args) =>
         {
@@ -74,9 +76,9 @@ public class GuildWarAnswerAction
                     await gameContext.GuildServer.IncreaseGuildScoreAsync(winner, 1).ConfigureAwait(false);
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                // must be catched because it's async void.
+                player.Logger.LogError(ex, "Error handling the end of a guild war.");
             }
         };
 #pragma warning restore VSTHRD101 // Avoid unsupported async delegates
@@ -112,6 +114,7 @@ public class GuildWarAnswerAction
         // Captured separately, so that the handler doesn't keep a strong reference to the player.
         var logger = guildPlayer.Logger;
 
+        // PropertyChanged requires a void handler. The handler catches and logs all exceptions, so none get lost.
 #pragma warning disable VSTHRD100 // Avoid async void methods
         async void OnScorePropertyChanged(object? sender, PropertyChangedEventArgs args)
 #pragma warning restore VSTHRD100 // Avoid async void methods

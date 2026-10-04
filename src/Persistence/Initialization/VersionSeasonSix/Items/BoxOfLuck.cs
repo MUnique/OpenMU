@@ -6,7 +6,9 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.Items;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// Initializer for box of luck items.
@@ -71,7 +73,7 @@ internal class BoxOfLuck : InitializerBase
     /// </remarks>
     private void CreateBoxOfLuck()
     {
-        var box = this.CreateBox("Box of Luck", 14, 11);
+        var box = this.CreateBox(LocalizedString.FromResource(() => ItemNames.BoxOfLuck), 14, 11);
         box.MaximumItemLevel = 15;
         var boxOfLuck = this.Context.CreateNew<ItemDropItemGroup>();
         boxOfLuck.ItemType = SpecialItemType.RandomItem;
@@ -79,7 +81,7 @@ internal class BoxOfLuck : InitializerBase
         boxOfLuck.Chance = 0.5;
         boxOfLuck.MinimumLevel = 6;
         boxOfLuck.MaximumLevel = 6;
-        boxOfLuck.Description = "Box of Luck";
+        boxOfLuck.Description = LocalizedString.FromResource(() => ItemNames.BoxOfLuck);
         box.DropItems.Add(boxOfLuck);
         this.AddDropItem(boxOfLuck, 0, 3); // Katana
         this.AddDropItem(boxOfLuck, 0, 5); // Blade
@@ -605,7 +607,7 @@ internal class BoxOfLuck : InitializerBase
 
     private void CreatePinkChocolateBox()
     {
-        var box = this.CreateBox("Pink Chocolate Box", 14, 32);
+        var box = this.CreateBox(LocalizedString.FromResource(() => ItemNames.PinkChocolateBox), 14, 32);
         var pinkBox = this.Context.CreateNew<ItemDropItemGroup>();
         pinkBox.ItemType = SpecialItemType.RandomItem;
         pinkBox.SourceItemLevel = 0;
@@ -677,7 +679,7 @@ internal class BoxOfLuck : InitializerBase
         this.AddArmorSet(pinkBoxExc, 11); // Silk Set
         this.AddArmorSet(pinkBoxExc, 4); // Bone Set
 
-        this.AddMoneyDropFallback(box, 100000, pinkBox, "Pink Chocolate Box");
+        this.AddMoneyDropFallback(box, 100000, pinkBox, LocalizedString.FromResource(() => ItemNames.PinkChocolateBox));
 
         var lightPurpleCandyBox = this.Context.CreateNew<ItemDropItemGroup>();
         lightPurpleCandyBox.ItemType = SpecialItemType.RandomItem;
@@ -754,7 +756,7 @@ internal class BoxOfLuck : InitializerBase
 
     private void CreateRedChocolateBox()
     {
-        var box = this.CreateBox("Red Chocolate Box", 14, 33);
+        var box = this.CreateBox(LocalizedString.FromResource(() => ItemNames.RedChocolateBox), 14, 33);
         var redBox = this.Context.CreateNew<ItemDropItemGroup>();
         redBox.ItemType = SpecialItemType.RandomItem;
         redBox.SourceItemLevel = 0;
@@ -835,7 +837,7 @@ internal class BoxOfLuck : InitializerBase
         this.AddArmorSet(redBoxExc, 9);
         this.AddArmorSet(redBoxExc, 26);
 
-        this.AddMoneyDropFallback(box, 500000, redBox, "Red Chocolate Box");
+        this.AddMoneyDropFallback(box, 500000, redBox, LocalizedString.FromResource(() => ItemNames.RedChocolateBox));
 
         var vermilionBox = this.Context.CreateNew<ItemDropItemGroup>();
         vermilionBox.ItemType = SpecialItemType.RandomItem;
@@ -922,7 +924,7 @@ internal class BoxOfLuck : InitializerBase
 
     private void CreateBlueChocolateBox()
     {
-        var box = this.CreateBox("Blue Chocolate Box", 14, 34);
+        var box = this.CreateBox(LocalizedString.FromResource(() => ItemNames.BlueChocolateBox), 14, 34);
         var blueBox = this.Context.CreateNew<ItemDropItemGroup>();
         blueBox.ItemType = SpecialItemType.RandomItem;
         blueBox.SourceItemLevel = 0;
@@ -984,7 +986,7 @@ internal class BoxOfLuck : InitializerBase
         this.AddArmorSet(blueBoxExc, 19); // Divine Set
         this.AddArmorSet(blueBoxExc, 27); // Dark Steel Set
 
-        this.AddMoneyDropFallback(box, 500000, blueBox, "Blue Chocolate Box");
+        this.AddMoneyDropFallback(box, 500000, blueBox, LocalizedString.FromResource(() => ItemNames.BlueChocolateBox));
 
         var deepBlueBox = this.Context.CreateNew<ItemDropItemGroup>();
         deepBlueBox.ItemType = SpecialItemType.RandomItem;
@@ -1052,13 +1054,13 @@ internal class BoxOfLuck : InitializerBase
 
     private void CreatePumpkinOfLuck()
     {
-        var box = this.CreateBox("Pumpkin of Luck", 14, 45);
+        var box = this.CreateBox(LocalizedString.FromResource(() => ItemNames.PumpkinOfLuck), 14, 45);
         box.Value = 1;
 
         var pumpkinBox = this.Context.CreateNew<ItemDropItemGroup>();
         pumpkinBox.ItemType = SpecialItemType.RandomItem;
         pumpkinBox.Chance = 1.0;
-        pumpkinBox.Description = "Pumpkin of Luck";
+        pumpkinBox.Description = LocalizedString.FromResource(() => ItemNames.PumpkinOfLuck);
         box.DropItems.Add(pumpkinBox);
 
         this.AddDropItem(pumpkinBox, 14, 46); // Jack O'Lantern Bless Scroll
@@ -1070,12 +1072,12 @@ internal class BoxOfLuck : InitializerBase
 
     private void CreateRedRibbonBox()
     {
-        var box = this.CreateBox("Red Ribbon Box", 12, 32);
+        var box = this.CreateBox(LocalizedString.FromResource(() => ItemNames.RedRibbonBox), 12, 32);
         var redBox = this.Context.CreateNew<ItemDropItemGroup>();
         redBox.ItemType = SpecialItemType.RandomItem;
         redBox.SourceItemLevel = 0;
         redBox.Chance = 0.5;
-        redBox.Description = "Red Ribbon Box";
+        redBox.Description = LocalizedString.FromResource(() => ItemNames.RedRibbonBox);
         redBox.MinimumLevel = 7;
         redBox.MaximumLevel = 9;
         redBox.DropEffect = ItemDropEffect.Fireworks;
@@ -1107,7 +1109,7 @@ internal class BoxOfLuck : InitializerBase
 
     private void CreateGreenRibbonBox()
     {
-        var box = this.CreateBox("Green Ribbon Box", 12, 33);
+        var box = this.CreateBox(LocalizedString.FromResource(() => ItemNames.GreenRibbonBox), 12, 33);
         var greenBox = this.Context.CreateNew<ItemDropItemGroup>();
         greenBox.ItemType = SpecialItemType.RandomItem;
         greenBox.SourceItemLevel = 0;
@@ -1154,12 +1156,12 @@ internal class BoxOfLuck : InitializerBase
         this.AddArmorSet(greenBoxExc, 7);
         this.AddArmorSet(greenBoxExc, 12);
 
-        this.AddMoneyDropFallback(box, 40000, greenBox, "Green Ribbon Box");
+        this.AddMoneyDropFallback(box, 40000, greenBox, LocalizedString.FromResource(() => ItemNames.GreenRibbonBox));
     }
 
     private void CreateBlueRibbonBox()
     {
-        var box = this.CreateBox("Blue Ribbon Box", 12, 34);
+        var box = this.CreateBox(LocalizedString.FromResource(() => ItemNames.BlueRibbonBox), 12, 34);
         var blueBox = this.Context.CreateNew<ItemDropItemGroup>();
         blueBox.ItemType = SpecialItemType.RandomItem;
         blueBox.SourceItemLevel = 0;
@@ -1210,13 +1212,13 @@ internal class BoxOfLuck : InitializerBase
         this.AddArmorSet(blueBoxExc, 3);
         this.AddArmorSet(blueBoxExc, 26);
 
-        this.AddMoneyDropFallback(box, 80000, blueBox, "Blue Ribbon Box");
+        this.AddMoneyDropFallback(box, 80000, blueBox, LocalizedString.FromResource(() => ItemNames.BlueRibbonBox));
     }
 
     // season 2.5
     private void CreateChristmasStar()
     {
-        var box = this.CreateBox("Christmas Star", 14, 51);
+        var box = this.CreateBox(LocalizedString.FromResource(() => ItemNames.ChristmasStar), 14, 51);
         var starEffect = this.Context.CreateNew<ItemDropItemGroup>();
         starEffect.ItemType = SpecialItemType.None;
         starEffect.SourceItemLevel = 0;
@@ -1229,7 +1231,7 @@ internal class BoxOfLuck : InitializerBase
     // from Natasha NPC, drops same as christmas star, season 2.5
     private void CreateFireCracker()
     {
-        var box = this.CreateBox("Firecracker", 14, 63);
+        var box = this.CreateBox(LocalizedString.FromResource(() => ItemNames.Firecracker), 14, 63);
         var crackerEffect = this.Context.CreateNew<ItemDropItemGroup>();
         crackerEffect.ItemType = SpecialItemType.None;
         crackerEffect.SourceItemLevel = 0;
@@ -1242,12 +1244,12 @@ internal class BoxOfLuck : InitializerBase
     // Season 3
     private void CreateCherryBlossomBox()
     {
-        var box = this.CreateBox("Cherry Blossom Play-Box", 14, 84);
+        var box = this.CreateBox(LocalizedString.FromResource(() => ItemNames.CherryBlossomPlayBox), 14, 84);
         var playBox = this.Context.CreateNew<ItemDropItemGroup>();
         playBox.ItemType = SpecialItemType.RandomItem;
         playBox.SourceItemLevel = 0;
         playBox.Chance = 1.0;
-        playBox.Description = "Cherry Blossom Play-Box";
+        playBox.Description = LocalizedString.FromResource(() => ItemNames.CherryBlossomPlayBox);
         playBox.DropEffect = ItemDropEffect.Swirl;
         box.DropItems.Add(playBox);
 
@@ -1260,7 +1262,7 @@ internal class BoxOfLuck : InitializerBase
     // season 4
     private void CreateChristmasFirecracker()
     {
-        var box = this.CreateBox("Christmas Firecracker", 14, 99);
+        var box = this.CreateBox(LocalizedString.FromResource(() => ItemNames.ChristmasFirecracker), 14, 99);
         var crackerEffect = this.Context.CreateNew<ItemDropItemGroup>();
         crackerEffect.ItemType = SpecialItemType.None;
         crackerEffect.SourceItemLevel = 0;
@@ -1272,7 +1274,7 @@ internal class BoxOfLuck : InitializerBase
 
     private void CreateGameMasterPresentBox()
     {
-        var box = this.CreateBox("GM Gift", 14, 52);
+        this.CreateBox(LocalizedString.FromResource(() => ItemNames.GMGift), 14, 52);
     }
 
     private void CreateWizardsRings()
@@ -1356,7 +1358,7 @@ internal class BoxOfLuck : InitializerBase
         this.AddMoneyDropFallback(box, 100000, level80Ring);
     }
 
-    private ItemDefinition CreateBox(string name, byte group, byte number, byte width = 1, byte height = 1, byte maximumItemLevel = 0)
+    private ItemDefinition CreateBox(LocalizedString name, byte group, byte number, byte width = 1, byte height = 1, byte maximumItemLevel = 0)
     {
         var item = this.Context.CreateNew<ItemDefinition>();
         this.GameConfiguration.Items.Add(item);
@@ -1372,14 +1374,17 @@ internal class BoxOfLuck : InitializerBase
         return item;
     }
 
-    private void AddMoneyDropFallback(ItemDefinition item, int moneyAmount, ItemDropItemGroup baseGroup, string itemName = "")
+    private void AddMoneyDropFallback(ItemDefinition item, int moneyAmount, ItemDropItemGroup baseGroup, LocalizedString? itemName = null)
     {
         var zenDrop = this.Context.CreateNew<ItemDropItemGroup>();
         zenDrop.ItemType = SpecialItemType.Money;
         zenDrop.MoneyAmount = moneyAmount;
         zenDrop.SourceItemLevel = baseGroup.SourceItemLevel;
         zenDrop.Chance = 1.0;
-        zenDrop.Description = string.IsNullOrWhiteSpace(itemName) ? $"{baseGroup.Description} - Money" : $"{itemName} - Money";
+        var neutralName = itemName?.ValueInNeutralLanguage;
+        zenDrop.Description = string.IsNullOrWhiteSpace(neutralName)
+            ? $"{baseGroup.Description.ValueInNeutralLanguage} - Money"
+            : $"{neutralName} - Money";
         item.DropItems.Add(zenDrop);
     }
 

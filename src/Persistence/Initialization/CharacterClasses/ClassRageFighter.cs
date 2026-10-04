@@ -7,13 +7,15 @@ namespace MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// Initialization of character classes data.
 /// </summary>
 internal partial class CharacterClassInitialization
 {
-    private CharacterClass CreateRageFighter(CharacterClassNumber number, string name, bool isMaster, CharacterClass? nextGenerationClass, bool canGetCreated)
+    private CharacterClass CreateRageFighter(CharacterClassNumber number, LocalizedString name, bool isMaster, CharacterClass? nextGenerationClass, bool canGetCreated)
     {
         var result = this.Context.CreateNew<CharacterClass>();
         result.SetGuid((byte)number);
@@ -107,7 +109,7 @@ internal partial class CharacterClassInitialization
 
     private CharacterClass CreateFistMaster()
     {
-        var result = this.CreateRageFighter(CharacterClassNumber.FistMaster, "Fist Master", true, null, false);
+        var result = this.CreateRageFighter(CharacterClassNumber.FistMaster, LocalizedString.FromResource(() => CharacterClassNames.FistMaster), true, null, false);
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.MasterLevel, 0, false));
         return result;
     }

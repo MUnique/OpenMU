@@ -5,6 +5,8 @@
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// Initialization for the Blood Castle.
@@ -35,7 +37,18 @@ internal abstract class BloodCastleBase : BaseMapInitializer
     protected override byte SafezoneMapNumber => Devias.Number;
 
     /// <inheritdoc />
-    protected override string MapName => $"Blood Castle {this.CastleLevel}";
+    protected override LocalizedString MapName => this.CastleLevel switch
+    {
+        1 => LocalizedString.FromResource(() => MapNames.BloodCastle1),
+        2 => LocalizedString.FromResource(() => MapNames.BloodCastle2),
+        3 => LocalizedString.FromResource(() => MapNames.BloodCastle3),
+        4 => LocalizedString.FromResource(() => MapNames.BloodCastle4),
+        5 => LocalizedString.FromResource(() => MapNames.BloodCastle5),
+        6 => LocalizedString.FromResource(() => MapNames.BloodCastle6),
+        7 => LocalizedString.FromResource(() => MapNames.BloodCastle7),
+        8 => LocalizedString.FromResource(() => MapNames.BloodCastle8),
+        _ => throw new InvalidOperationException("Unsupported Blood Castle level."),
+    };
 
     /// <summary>
     /// Gets the castle level.

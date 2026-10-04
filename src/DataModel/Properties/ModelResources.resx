@@ -877,6 +877,12 @@
   <data name="ConfigurationUpdate_Key_Description" xml:space="preserve">
     <value></value>
   </data>
+  <data name="ConfigurationUpdate_Version_Caption" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="ConfigurationUpdate_Version_Description" xml:space="preserve">
+    <value></value>
+  </data>
   <data name="ConfigurationUpdate_Name_Caption" xml:space="preserve">
     <value>Name</value>
   </data>
@@ -893,6 +899,12 @@
     <value>Created At</value>
   </data>
   <data name="ConfigurationUpdate_CreatedAt_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="ConfigurationUpdate_UpdatedAt_Caption" xml:space="preserve">
+    <value>Updated At</value>
+  </data>
+  <data name="ConfigurationUpdate_UpdatedAt_Description" xml:space="preserve">
     <value></value>
   </data>
   <data name="ConfigurationUpdate_InstalledAt_Caption" xml:space="preserve">
@@ -2394,6 +2406,42 @@
   </data>
   <data name="ItemDefinition_StorageLimitPerCharacter_Description" xml:space="preserve">
     <value></value>
+  </data>
+  <data name="ItemDefinition_IsTradable_Caption" xml:space="preserve">
+    <value>Tradable</value>
+  </data>
+  <data name="ItemDefinition_IsTradable_Description" xml:space="preserve">
+    <value>Whether this item can be traded with another player.</value>
+  </data>
+  <data name="ItemDefinition_IsDroppable_Caption" xml:space="preserve">
+    <value>Droppable</value>
+  </data>
+  <data name="ItemDefinition_IsDroppable_Description" xml:space="preserve">
+    <value>Whether this item can be dropped to the ground. This does not control monster drops.</value>
+  </data>
+  <data name="ItemDefinition_IsStorable_Caption" xml:space="preserve">
+    <value>Storable in Vault</value>
+  </data>
+  <data name="ItemDefinition_IsStorable_Description" xml:space="preserve">
+    <value>Whether this item can be stored in the vault.</value>
+  </data>
+  <data name="ItemDefinition_IsSellableToNpc_Caption" xml:space="preserve">
+    <value>Sellable to NPC</value>
+  </data>
+  <data name="ItemDefinition_IsSellableToNpc_Description" xml:space="preserve">
+    <value>Whether this item can be sold to an NPC merchant.</value>
+  </data>
+  <data name="ItemDefinition_IsPersonalStoreSellable_Caption" xml:space="preserve">
+    <value>Sellable in Personal Store</value>
+  </data>
+  <data name="ItemDefinition_IsPersonalStoreSellable_Description" xml:space="preserve">
+    <value>Whether this item can be offered in a personal store.</value>
+  </data>
+  <data name="ItemDefinition_IsRepairable_Caption" xml:space="preserve">
+    <value>Normally Repairable</value>
+  </data>
+  <data name="ItemDefinition_IsRepairable_Description" xml:space="preserve">
+    <value>Whether this item can be repaired by an NPC or through the inventory repair function. Special durability restoration methods are not affected.</value>
   </data>
   <data name="ItemDefinition_Name_Caption" xml:space="preserve">
     <value>Name</value>

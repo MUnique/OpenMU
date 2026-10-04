@@ -1487,4 +1487,34 @@
   <data name="SiegePotionConsumeHandlerConfiguration_SoulEffectNumber_Name" xml:space="preserve">
     <value>Potion of Soul effect number</value>
   </data>
+  <data name="BloodCastleArchangelTalkPlugIn_Name" xml:space="preserve">
+    <value>Blood Castle Archangel</value>
+  </data>
+  <data name="BloodCastleArchangelTalkPlugIn_Description" xml:space="preserve">
+    <value>Handles talking to the Archangel in the blood castle event, where players hand in the quest item to win the event.</value>
+  </data>
+  <data name="NpcTalkPlugInConfiguration_Npc_Name" xml:space="preserve">
+    <value>NPC</value>
+  </data>
+  <data name="NpcTalkPlugInConfiguration_Npc_Description" xml:space="preserve">
+    <value>The NPC which is handled by this plugin. If no NPC is set, the plugin doesn't handle any NPC.</value>
+  </data>
+  <data name="TwisterAnimationCounterStrategy_Name" xml:space="preserve">
+    <value>Twister animation counter</value>
+  </data>
+  <data name="TwisterAnimationCounterStrategy_Description" xml:space="preserve">
+    <value>Describes how the game client counts the animations of Twister: every animation is counted, and the hits don't contain the animation counter.</value>
+  </data>
+  <data name="EvilSpiritAnimationCounterStrategy_Name" xml:space="preserve">
+    <value>Evil Spirit animation counter</value>
+  </data>
+  <data name="EvilSpiritAnimationCounterStrategy_Description" xml:space="preserve">
+    <value>Describes how the game client counts the animations of Evil Spirit: every animation is counted.</value>
+  </data>
+  <data name="MultiShotAnimationCounterStrategy_Name" xml:space="preserve">
+    <value>Multi-Shot animation counter</value>
+  </data>
+  <data name="MultiShotAnimationCounterStrategy_Description" xml:space="preserve">
+    <value>Describes how the game client counts the animations of Multi-Shot: the hits don't contain the animation counter.</value>
+  </data>
 </root>

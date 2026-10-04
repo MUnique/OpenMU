@@ -8,7 +8,9 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.Items;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// Initializer for jewelery (rings and pendants).
@@ -30,15 +32,15 @@ internal class Jewelery : Version075.Items.Jewelery
     /// </summary>
     protected override void CreateItems()
     {
-        this.CreateRing(8, "Ring of Ice", 20, 50, Stats.IceResistance);
-        this.CreateRing(9, "Ring of Poison", 17, 50, Stats.PoisonResistance);
+        this.CreateRing(8, LocalizedString.FromResource(() => ItemNames.RingOfIce), 20, 50, Stats.IceResistance);
+        this.CreateRing(9, LocalizedString.FromResource(() => ItemNames.RingOfPoison), 17, 50, Stats.PoisonResistance);
 
-        this.CreatePendant(12, "Pendant of Lighting", 21, 50, DamageType.Wizardry, Stats.LightningResistance);
-        this.CreatePendant(13, "Pendant of Fire", 13, 50, DamageType.Physical, Stats.FireResistance);
+        this.CreatePendant(12, LocalizedString.FromResource(() => ItemNames.PendantOfLighting), 21, 50, DamageType.Wizardry, Stats.LightningResistance);
+        this.CreatePendant(13, LocalizedString.FromResource(() => ItemNames.PendantOfFire), 13, 50, DamageType.Physical, Stats.FireResistance);
 
         this.CreateTransformationRing(
             10,
-            "Transformation Ring",
+            LocalizedString.FromResource(() => ItemNames.TransformationRing),
             0,
             200,
             20, // It's actually lvl 50 for the last 3
@@ -63,7 +65,7 @@ internal class Jewelery : Version075.Items.Jewelery
     /// <param name="resistanceAttribute">The resistance attribute.</param>
     /// <param name="withHealthOption">if set to <c>true</c> [with health option].</param>
     /// <returns>The created jewelery.</returns>
-    protected ItemDefinition CreateJewelery(byte number, int slot, bool dropsFromMonsters, string name, byte level, byte durability, ItemOptionDefinition? excellentOptionDefinition, AttributeDefinition? resistanceAttribute, bool withHealthOption = true)
+    protected ItemDefinition CreateJewelery(byte number, int slot, bool dropsFromMonsters, LocalizedString name, byte level, byte durability, ItemOptionDefinition? excellentOptionDefinition, AttributeDefinition? resistanceAttribute, bool withHealthOption = true)
     {
         var item = this.CreateJewelery(number, slot, dropsFromMonsters, name, level, durability, resistanceAttribute, withHealthOption);
 
@@ -86,7 +88,7 @@ internal class Jewelery : Version075.Items.Jewelery
     /// <remarks>
     /// Rings always have defensive excellent options.
     /// </remarks>
-    private void CreateRing(byte number, string name, byte level, byte durability, AttributeDefinition? resistanceAttribute)
+    private void CreateRing(byte number, LocalizedString name, byte level, byte durability, AttributeDefinition? resistanceAttribute)
     {
         this.CreateJewelery(number, 10, true, name, level, durability, this.GameConfiguration.ExcellentDefenseOptions(), resistanceAttribute);
     }
@@ -103,7 +105,7 @@ internal class Jewelery : Version075.Items.Jewelery
     /// <remarks>
     /// Pendants always have offensive excellent options. If it's wizardry or physical depends on the specific item. I didn't find a pattern yet.
     /// </remarks>
-    private void CreatePendant(byte number, string name, byte level, byte durability, DamageType excellentOptionDamageType, AttributeDefinition? resistanceAttribute)
+    private void CreatePendant(byte number, LocalizedString name, byte level, byte durability, DamageType excellentOptionDamageType, AttributeDefinition? resistanceAttribute)
     {
         var excellentOption = excellentOptionDamageType == DamageType.Physical
             ? this.GameConfiguration.ExcellentPhysicalAttackOptions()

@@ -6,6 +6,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d.Items;
 
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// Initializer for event related items.
@@ -26,12 +28,12 @@ internal class EventTicketItems : InitializerBase
     public override void Initialize()
     {
         // Devil Square:
-        this.CreateEventItem(17, 14, 1, 1, "Devil's Eye", 4, false, 2, 36, 47, 60);
-        this.CreateEventItem(18, 14, 1, 1, "Devil's Key", 4, false, 2, 36, 47, 60);
-        this.CreateEventItem(19, 14, 1, 1, "Devil's Invitation", 4, false);
+        this.CreateEventItem(17, 14, 1, 1, LocalizedString.FromResource(() => ItemNames.DevilSEye), 4, false, 2, 36, 47, 60);
+        this.CreateEventItem(18, 14, 1, 1, LocalizedString.FromResource(() => ItemNames.DevilSKey), 4, false, 2, 36, 47, 60);
+        this.CreateEventItem(19, 14, 1, 1, LocalizedString.FromResource(() => ItemNames.DevilSInvitation), 4, false);
     }
 
-    private void CreateEventItem(byte number, byte group, byte width, byte height, string name, byte maxItemLevel, bool dropsFromMonster, params byte[] dropLevels)
+    private void CreateEventItem(byte number, byte group, byte width, byte height, LocalizedString name, byte maxItemLevel, bool dropsFromMonster, params byte[] dropLevels)
     {
         var item = this.Context.CreateNew<ItemDefinition>();
         this.GameConfiguration.Items.Add(item);

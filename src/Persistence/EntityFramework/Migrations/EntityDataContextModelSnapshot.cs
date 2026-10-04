@@ -1094,6 +1094,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.ToTable("ConfigurationUpdate", "config");
@@ -3431,6 +3437,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid?>("MagicEffectDefinitionId1")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("MasterSkillDefinitionId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid?>("TargetAttributeId")
                         .HasColumnType("uuid");
 
@@ -3444,6 +3453,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasIndex("MagicEffectDefinitionId");
 
                     b.HasIndex("MagicEffectDefinitionId1");
+
+                    b.HasIndex("MasterSkillDefinitionId");
 
                     b.HasIndex("TargetAttributeId");
 
@@ -5514,6 +5525,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .HasConstraintName("FK_PowerUpDefinition_MagicEffectDefinition_MagicEffectDefinit~1");
 
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.MasterSkillDefinition", null)
+                        .WithMany("RawPassivePowerUps")
+                        .HasForeignKey("MasterSkillDefinitionId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeDefinition", "RawTargetAttribute")
                         .WithMany()
                         .HasForeignKey("TargetAttributeId");
@@ -5984,6 +6000,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MasterSkillDefinition", b =>
                 {
                     b.Navigation("JoinedRequiredMasterSkills");
+
+                    b.Navigation("RawPassivePowerUps");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MiniGameChangeEvent", b =>
