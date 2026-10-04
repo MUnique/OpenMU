@@ -50,9 +50,10 @@ Map, class and event names follow the client (e.g. *Verlorener Turm*,
 *Dunkler Ritter*, *Lord-Imperator*, *Blutburg*, *Illusionstempel*,
 *Festung der Kaiserlichen Wächter*); the event names *Devil Square*,
 *Chaos Castle* and *Castle Siege* are not translated, like in the client. The
-client's `docs/translation-system.md` lists the shared terms. Monster, skill and
-most item names stay English, because the client shows them in English; jewels
-use the German names of the client texts (e.g. *Juwel des Segens*).
+client's `docs/translation-system.md` lists the shared terms. Monster and skill
+names stay English, because the client shows them in English. Item names are
+German, like in the client's item data (see
+[Item name localization](ItemNameLocalization.md)).
 
 Run the admin panel tests with:
 

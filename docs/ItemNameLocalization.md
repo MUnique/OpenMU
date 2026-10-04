@@ -2,7 +2,8 @@
 
 The initialization project's `Properties/ItemNames.resx` contains the neutral
 names; `ItemNames.zh-CN.resx` contains Simplified Chinese translations for 683
-item definitions. Initializers use `LocalizedString.FromResource`, so names carry
+item definitions, and `ItemNames.de.resx` German translations (see
+[German names](#german-names)). Initializers use `LocalizedString.FromResource`, so names carry
 stable `ItemNames/<resource key>` source keys. English names, item identifiers,
 level-dependent name ordering, and gameplay settings are preserved.
 
@@ -81,3 +82,41 @@ this PR does not rewrite already-released update plugins.
 
 The newer Doppelganger definitions (13/125, 14/110, 14/111) are outside this
 reviewed resource set and retain their existing neutral names.
+
+## German names
+
+`ItemNames.de.resx` uses the same German item names as the open source game
+client ([sven-n/MuMain](https://github.com/sven-n/MuMain), the `"de"` names in
+`src/bin/Data/Items/*.json`), so players see the same names in server messages
+and in the client. Names which are equal in German (e.g. *Kris*, *Zen*, *Rena*)
+are left out and fall back to the neutral name.
+
+Where the neutral name of an item differs from the client's English name for the
+same group and number, the German name follows the client. For example, the
+armor sets 39, 42, 43, 44, 50, 51 and 59–61 (*Mistery*, *Black Rose*, *Aura*,
+*Lilium*, *Faith*, *Paewang*, *Sacred*, *Storm Hard*, *Piercing*) are called
+*Violent Wind*, *Demonic*, *Storm Blitz*, *Eternal Wing*, *Divine*, *Royal*,
+*Sacred Fire*, *Storm Jahad* and *Piercing Groove* in the client, and get the
+German names of those (e.g. *Sturmwindhelm*). The sets 47 and 48 are an
+exception: the neutral names *Destory* (47) and *Phantom* (48) are swapped
+compared to the client (*Phantom* at 47, *Destroy* at 48). Each of these keeps the
+translation of its own name (*Zerstörerrüstung*, *Phantom-Rüstung*).
+
+Conventions:
+
+- Armor pieces are *Helm*, *Rüstung*, *Hose*, *Handschuhe*, *Stiefel* and
+  *Maske*. Set names are joined with the piece (*Drachenhelm*), proper names get
+  a hyphen (*Hades-Helm*) and adjectives are declined (*Legendärer Helm*,
+  *Legendäre Rüstung*). *Great* is translated as *großartig*
+  (*Großartiger Drachenhelm*), *Grand* as *Groß-* (*Großseelenhelm*).
+- Jewels use the client's terms (*Juwel des Segens*, *Juwel der Seele*).
+- Skill names stay English, like in the client. Items which teach a skill name it
+  after a colon: *Schriftrolle: Evil Spirit*, *Pergament: Chain Lightning*,
+  *Kugel: Twisting Slash*, *Kristall: Multi-Shot*.
+- Monster and event names stay English, like in the client
+  (*Flamme des Death Beam Knight*, *Devil-Square-Ticket*), except *Blutburg* and
+  *Illusionstempel*.
+
+These set names are provisional and open for review: *Großseelen-* (18),
+*Tapfer* (46), *Ewigschwingen-* (44), *Heiligfeuer-* (59), *Sturm-Jahad-* (60)
+and *Durchbohrer-* (61).
