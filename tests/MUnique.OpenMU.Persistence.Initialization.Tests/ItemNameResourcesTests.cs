@@ -92,4 +92,68 @@ internal class ItemNameResourcesTests
             Assert.That(referenceNames.Select(name => name.SourceKey).Distinct(), Is.EquivalentTo(keys));
         }
     }
+    /// <summary>
+    /// Money fallback descriptions retain their neutral text without inheriting item-name metadata.
+    /// </summary>
+    /// <param name="version">The configuration version.</param>
+    /// <param name="cultureName">The culture used during initialization.</param>
+    /// <returns>The task.</returns>
+    [TestCase("095d", "en-US")]
+    [TestCase("095d", "zh-CN")]
+    [TestCase("Season6", "en-US")]
+    [TestCase("Season6", "zh-CN")]
+    public async Task MoneyFallbackDescriptionsAreCultureIndependentAsync(string version, string cultureName)
+    {
+        var previousCulture = CultureInfo.CurrentCulture;
+        var previousUiCulture = CultureInfo.CurrentUICulture;
+        try
+        {
+            CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo(cultureName);
+            CultureInfo.CurrentUICulture = CultureInfo.CurrentCulture;
+            var provider = new InMemoryPersistenceContextProvider();
+            DataInitializationBase initializer = version == "095d"
+                ? new Version095d.DataInitialization(provider, NullLoggerFactory.Instance)
+                : new VersionSeasonSix.DataInitialization(provider, NullLoggerFactory.Instance);
+            await initializer.CreateInitialDataAsync(1, false).ConfigureAwait(false);
+            using var context = provider.CreateNewContext();
+            var configuration = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).Single();
+            var expected = new List<(byte Group, short Number, string Name, int MoneyAmount)>
+            {
+                (14, 11, "Box of Luck", 10000),
+            };
+            if (version == "Season6")
+            {
+                expected.AddRange(new (byte, short, string, int)[]
+                {
+                    (14, 32, "Pink Chocolate Box", 100000),
+                    (14, 33, "Red Chocolate Box", 500000),
+                    (14, 34, "Blue Chocolate Box", 500000),
+                    (12, 32, "Red Ribbon Box", 10000),
+                    (12, 33, "Green Ribbon Box", 40000),
+                    (12, 34, "Blue Ribbon Box", 80000),
+                });
+            }
+
+            foreach (var (group, number, name, moneyAmount) in expected)
+            {
+                var item = configuration.Items.Single(item => item.Group == group && item.Number == number);
+                var fallback = item.DropItems.Single(drop => drop.ItemType == SpecialItemType.Money && drop.SourceItemLevel == 0);
+                Assert.Multiple(() =>
+                {
+                    Assert.That(fallback.Description.Value, Is.EqualTo($"{name} - Money"));
+                    Assert.That(fallback.Description.ValueInNeutralLanguage, Is.EqualTo($"{name} - Money"));
+                    Assert.That(fallback.Description.SourceKey, Is.Null);
+                    Assert.That(fallback.Description.SourceStamp, Is.Null);
+                    Assert.That(fallback.MoneyAmount, Is.EqualTo(moneyAmount));
+                    Assert.That(fallback.Chance, Is.EqualTo(1.0));
+                });
+            }
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = previousCulture;
+            CultureInfo.CurrentUICulture = previousUiCulture;
+        }
+    }
+
 }
