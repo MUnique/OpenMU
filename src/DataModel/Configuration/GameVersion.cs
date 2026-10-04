@@ -50,11 +50,6 @@ public enum GameVersion
     Version045 = 4500,
 
     /// <summary>
-    /// The version 0.47 (11.12.2001), e.g. the Magic Gladiator.
-    /// </summary>
-    Version047 = 4700,
-
-    /// <summary>
     /// The version 0.48 (18.12.2001), e.g. the Red Dragon invasion and the Box of Luck.
     /// </summary>
     Version048 = 4800,
@@ -100,7 +95,7 @@ public enum GameVersion
     Version094b = 9402,
 
     /// <summary>
-    /// The version 0.95d, which is the version of the 0.95d data initialization.
+    /// The version 0.95d, which is the version of the 0.95d data initialization, e.g. the Magic Gladiator.
     /// </summary>
     Version095d = 9504,
 

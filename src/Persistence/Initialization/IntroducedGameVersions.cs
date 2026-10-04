@@ -21,6 +21,9 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 /// </list>
 /// Entries for which the version isn't known reliably are not listed, so they stay <see cref="GameVersion.Unknown"/>.
 /// The keys are the numbers of the Season 6 data; the data of the older versions uses the same numbers.
+/// Where the history contradicts the data of the older versions, the data wins: according to the history,
+/// the Magic Gladiator and its Storm Crow set were introduced before 0.75, but the 0.75 client is not capable of
+/// showing them, so they are listed as introduced in <see cref="GameVersion.Version095d"/>.
 /// </remarks>
 public static class IntroducedGameVersions
 {
@@ -118,7 +121,7 @@ public static class IntroducedGameVersions
         [8] = GameVersion.Version034, // Fairy Elf
         [10] = GameVersion.Version095k, // Muse Elf
         [11] = GameVersion.Season2, // High Elf
-        [12] = GameVersion.Version047, // Magic Gladiator
+        [12] = GameVersion.Version095d, // Magic Gladiator
         [13] = GameVersion.Season2, // Duel Master
         [16] = GameVersion.Version099GPlus, // Dark Lord
         [17] = GameVersion.Season2, // Lord Emperor
@@ -361,7 +364,7 @@ public static class IntroducedGameVersions
         (8, 4, 9, GameVersion.Version075), // Bone Armor - Plate Armor
         (8, 10, 13, GameVersion.Version034), // Vine Armor - Spirit Armor
         (8, 14, 14, GameVersion.Version045), // Guardian Armor
-        (8, 15, 15, GameVersion.Version064), // Storm Crow Armor
+        (8, 15, 15, GameVersion.Version095d), // Storm Crow Armor
         (8, 16, 16, GameVersion.Version084), // Black Dragon Armor
         (8, 17, 20, GameVersion.Version095k), // Dark Phoenix Armor - Thunder Hawk Armor
         (8, 21, 28, GameVersion.Version099GPlus), // Great Dragon Armor - Dark Master Armor
@@ -378,7 +381,7 @@ public static class IntroducedGameVersions
         (9, 2, 9, GameVersion.Version075), // Pad Pants - Plate Pants
         (9, 10, 13, GameVersion.Version034), // Vine Pants - Spirit Pants
         (9, 14, 14, GameVersion.Version045), // Guardian Pants
-        (9, 15, 15, GameVersion.Version064), // Storm Crow Pants
+        (9, 15, 15, GameVersion.Version095d), // Storm Crow Pants
         (9, 16, 16, GameVersion.Version084), // Black Dragon Pants
         (9, 17, 20, GameVersion.Version095k), // Dark Phoenix Pants - Thunder Hawk Pants
         (9, 21, 28, GameVersion.Version099GPlus), // Great Dragon Pants - Dark Master Pants
@@ -393,7 +396,7 @@ public static class IntroducedGameVersions
         (10, 0, 9, GameVersion.Version075), // Bronze Gloves - Plate Gloves
         (10, 10, 13, GameVersion.Version034), // Vine Gloves - Spirit Gloves
         (10, 14, 14, GameVersion.Version045), // Guardian Gloves
-        (10, 15, 15, GameVersion.Version064), // Storm Crow Gloves
+        (10, 15, 15, GameVersion.Version095d), // Storm Crow Gloves
         (10, 16, 16, GameVersion.Version084), // Black Dragon Gloves
         (10, 17, 20, GameVersion.Version095k), // Dark Phoenix Gloves - Thunder Hawk Gloves
         (10, 21, 28, GameVersion.Version099GPlus), // Great Dragon Gloves - Dark Master Gloves
@@ -406,7 +409,7 @@ public static class IntroducedGameVersions
         (11, 0, 9, GameVersion.Version075), // Bronze Boots - Plate Boots
         (11, 10, 13, GameVersion.Version034), // Vine Boots - Spirit Boots
         (11, 14, 14, GameVersion.Version045), // Guardian Boots
-        (11, 15, 15, GameVersion.Version064), // Storm Crow Boots
+        (11, 15, 15, GameVersion.Version095d), // Storm Crow Boots
         (11, 16, 16, GameVersion.Version084), // Black Dragon Boots
         (11, 17, 20, GameVersion.Version095k), // Dark Phoenix Boots - Thunder Hawk Boots
         (11, 21, 28, GameVersion.Version099GPlus), // Great Dragon Boots - Dark Master Boots
