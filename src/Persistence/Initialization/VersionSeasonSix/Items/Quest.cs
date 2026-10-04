@@ -6,6 +6,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// Initialization of quest items.
@@ -65,17 +67,17 @@ public class Quest : InitializerBase
     /// <inheritdoc />
     public override void Initialize()
     {
-        this.CreateQuestItem(ScrollOfEmperorNumber, "Scroll of Emperor;Ring of Honor", 0, 1, 1); // Ring of Honor is level 1
-        this.CreateQuestItem(BrokenSwordNumber, "Broken Sword;Dark Stone", 0, 2, 1); // Dark Stone is level 1
-        this.CreateQuestItem(TearOfElfNumber, "Tear of Elf", 0, 1);
-        this.CreateQuestItem(SoulShardOfWizardNumber, "Soul Shard of Wizard", 0, 1);
-        this.CreateQuestItem(EyeOfAbyssalNumber, "Eye of Abyssal", 0, 2);
-        this.CreateQuestItem(FlameOfDeathBeamKnightNumber, "Flame of Death Beam Knight", 0, 1);
-        this.CreateQuestItem(HornOfHellMaineNumber, "Horn of Hell Maine", 0, 2);
-        this.CreateQuestItem(FeatherOfDarkPhoenixNumber, "Feather of Dark Phoenix", 0, 2);
+        this.CreateQuestItem(ScrollOfEmperorNumber, LocalizedString.FromResource(() => ItemNames.ScrollOfEmperorRingOfHonor), 0, 1, 1); // Ring of Honor is level 1
+        this.CreateQuestItem(BrokenSwordNumber, LocalizedString.FromResource(() => ItemNames.BrokenSwordDarkStone), 0, 2, 1); // Dark Stone is level 1
+        this.CreateQuestItem(TearOfElfNumber, LocalizedString.FromResource(() => ItemNames.TearOfElf), 0, 1);
+        this.CreateQuestItem(SoulShardOfWizardNumber, LocalizedString.FromResource(() => ItemNames.SoulShardOfWizard), 0, 1);
+        this.CreateQuestItem(EyeOfAbyssalNumber, LocalizedString.FromResource(() => ItemNames.EyeOfAbyssal), 0, 2);
+        this.CreateQuestItem(FlameOfDeathBeamKnightNumber, LocalizedString.FromResource(() => ItemNames.FlameOfDeathBeamKnight), 0, 1);
+        this.CreateQuestItem(HornOfHellMaineNumber, LocalizedString.FromResource(() => ItemNames.HornOfHellMaine), 0, 2);
+        this.CreateQuestItem(FeatherOfDarkPhoenixNumber, LocalizedString.FromResource(() => ItemNames.FeatherOfDarkPhoenix), 0, 2);
     }
 
-    private void CreateQuestItem(byte number, string name, byte dropLevel, byte height, byte maximumLevel = 0)
+    private void CreateQuestItem(byte number, LocalizedString name, byte dropLevel, byte height, byte maximumLevel = 0)
     {
         var item = this.Context.CreateNew<ItemDefinition>();
         this.GameConfiguration.Items.Add(item);

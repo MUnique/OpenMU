@@ -188,6 +188,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Properties\ItemNames.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ItemNames.resx</DependentUpon>
+    </Compile>
     <Compile Update="Properties\PlugInResources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -216,6 +221,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Update="Properties\ItemNames.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ItemNames.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Update="Properties\PlugInResources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>PlugInResources.Designer.cs</LastGenOutput>
