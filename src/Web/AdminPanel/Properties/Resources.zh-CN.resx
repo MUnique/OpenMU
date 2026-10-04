@@ -1528,6 +1528,15 @@
   <data name="CaptionsLinkingElapsed" xml:space="preserve">
     <value>已用时间：{0}</value>
   </data>
+  <data name="CaptionsLinkableTitle" xml:space="preserve">
+    <value>关联新的内置名称</value>
+  </data>
+  <data name="CaptionsLinkableDescription" xml:space="preserve">
+    <value>有 {0} 个内置名称尚未与其来源关联，因此无法在此检查其翻译：{1}。这通常发生在 OpenMU 更新添加了翻译（例如物品名称）之后。关联操作不会更改任何文本。</value>
+  </data>
+  <data name="CaptionsCheckingLinkable" xml:space="preserve">
+    <value>正在检查尚未关联的内置名称……</value>
+  </data>
   <data name="AddChancePercent" xml:space="preserve">
     <value>添加概率（%）</value>
   </data>

@@ -9,6 +9,7 @@ using System.Globalization;
 using System.Threading;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
+using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.Initialization.Captions;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
@@ -41,6 +42,22 @@ public partial class Captions : IDisposable
 
     private CancellationTokenSource? _linkProgressRefresh;
 
+    private readonly CancellationTokenSource _disposeCts = new();
+
+    /// <summary>
+    /// The version of the linking state; it's incremented when captions are linked,
+    /// so that the result of a check which was started before is discarded.
+    /// </summary>
+    private int _linkVersion;
+
+    /// <summary>
+    /// The built-in captions which can be linked to their sources, by the type name of their owner.
+    /// It's <see langword="null"/> while it's not checked yet.
+    /// </summary>
+    private IReadOnlyDictionary<string, int>? _linkableCaptions;
+
+    private bool _isCheckingLinkableCaptions;
+
     /// <summary>
     /// Gets or sets the setup service.
     /// </summary>
@@ -53,6 +70,12 @@ public partial class Captions : IDisposable
     [Inject]
     public ConfigurationCaptionService CaptionService { get; set; } = null!;
 
+    /// <summary>
+    /// Gets or sets the logger.
+    /// </summary>
+    [Inject]
+    public ILogger<Captions> Logger { get; set; } = null!;
+
     private string LanguageFilter { get; set; } = string.Empty;
 
     private string KindFilter { get; set; } = string.Empty;
@@ -64,6 +87,8 @@ public partial class Captions : IDisposable
     /// <inheritdoc />
     public void Dispose()
     {
+        this._disposeCts.Cancel();
+        this._disposeCts.Dispose();
         this._linkProgressRefresh?.Cancel();
         this._linkProgressRefresh?.Dispose();
     }
@@ -74,6 +99,11 @@ public partial class Captions : IDisposable
         if (this.SetupService.IsInstalled && !this.SetupService.IsUpdateRequired)
         {
             await this.LoadAsync().ConfigureAwait(true);
+            if (this._comparison?.LinkedCaptions > 0)
+            {
+                // Checking takes a while when the data initialization has to be executed in memory, so the page is shown in the meantime.
+                _ = this.CheckLinkableCaptionsAsync(this._disposeCts.Token);
+            }
         }
     }
 
@@ -143,6 +173,39 @@ public partial class Captions : IDisposable
         }
     }
 
+    /// <summary>
+    /// Checks in the background if built-in captions can be linked, which are not linked yet,
+    /// e.g. because an update of OpenMU added their sources.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token, which is canceled when the page is disposed.</param>
+    private async Task CheckLinkableCaptionsAsync(CancellationToken cancellationToken)
+    {
+        this._isCheckingLinkableCaptions = true;
+        var linkVersion = this._linkVersion;
+        try
+        {
+            // The continuation runs on the renderer's synchronization context, so the state can be changed safely.
+            var linkableCaptions = await this.CaptionService.FindLinkableCaptionsAsync().ConfigureAwait(true);
+            if (!cancellationToken.IsCancellationRequested && linkVersion == this._linkVersion)
+            {
+                this._linkableCaptions = linkableCaptions;
+            }
+        }
+        catch (Exception ex)
+        {
+            // It's just a hint, linking is still possible manually.
+            this.Logger.LogWarning(ex, "Couldn't check for built-in captions which are not linked to their sources yet.");
+        }
+        finally
+        {
+            this._isCheckingLinkableCaptions = false;
+            if (!cancellationToken.IsCancellationRequested)
+            {
+                this.StateHasChanged();
+            }
+        }
+    }
+
     private void SelectRecommended()
     {
         foreach (var change in this.FilteredChanges)
@@ -189,6 +252,8 @@ public partial class Captions : IDisposable
         this._message = null;
         this._isBusy = true;
         this._isLinking = true;
+        this._linkVersion++;
+        this._linkableCaptions = null;
         this._linkStep = CaptionLinkStep.LoadingConfiguration;
         this._linkStopwatch.Restart();
         this._stepStopwatch.Restart();

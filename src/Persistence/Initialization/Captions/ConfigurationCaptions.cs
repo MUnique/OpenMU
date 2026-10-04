@@ -113,16 +113,67 @@ public static class ConfigurationCaptions
     /// <returns>The number of linked captions and the number of captions which were skipped because their neutral text was customized.</returns>
     public static (int Linked, int SkippedBecauseOfCustomizedNeutralText) LinkSourceKeys(GameConfiguration gameConfiguration, GameConfiguration referenceConfiguration)
     {
-        var references = LocalizedCaption.FindAll(referenceConfiguration).ToList();
-        var referencesById = references
-            .Where(caption => caption.Value.SourceKey is not null)
-            .GroupBy(caption => caption.Key)
+        return LinkSourceKeys(gameConfiguration, CaptionLinkReference.Create(referenceConfiguration));
+    }
+
+    /// <summary>
+    /// Adds the <see cref="LocalizedString.SourceKey"/>s of a reference to the matching captions of the configuration,
+    /// which don't have a source key yet. See <see cref="LinkSourceKeys(GameConfiguration, GameConfiguration)"/>.
+    /// </summary>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    /// <param name="reference">The reference, created from a reference configuration.</param>
+    /// <returns>The number of linked captions and the number of captions which were skipped because their neutral text was customized.</returns>
+    public static (int Linked, int SkippedBecauseOfCustomizedNeutralText) LinkSourceKeys(GameConfiguration gameConfiguration, CaptionLinkReference reference)
+    {
+        var (links, skipped) = FindLinks(gameConfiguration, reference);
+        foreach (var (caption, referenceValue) in links)
+        {
+            caption.SetValue(caption.Value.WithSourceKey(referenceValue.SourceKey));
+        }
+
+        return (links.Count, skipped);
+    }
+
+    /// <summary>
+    /// Finds the captions of the configuration which <see cref="LinkSourceKeys(GameConfiguration, CaptionLinkReference)"/>
+    /// would link to their sources, without changing them. This way, it's possible to tell if linking is required again,
+    /// e.g. after an update added sources for captions which are not linked yet.
+    /// </summary>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    /// <param name="reference">The reference, created from a reference configuration.</param>
+    /// <returns>The number of linkable captions by the type name of their owner, e.g. "ItemDefinition".</returns>
+    public static IReadOnlyDictionary<string, int> FindLinkableCaptions(GameConfiguration gameConfiguration, CaptionLinkReference reference)
+    {
+        return FindLinks(gameConfiguration, reference).Links
+            .GroupBy(link => GetTypeName(link.Caption.Owner), StringComparer.Ordinal)
+            .OrderBy(group => group.Key, StringComparer.Ordinal)
+            .ToDictionary(group => group.Key, group => group.Count(), StringComparer.Ordinal)
+            .AsReadOnly();
+    }
+
+    /// <summary>
+    /// Gets the key of a caption by the type and number of its owner, and the property.
+    /// </summary>
+    /// <param name="caption">The caption.</param>
+    /// <returns>The key, or <see langword="null"/>, if the owner has no number.</returns>
+    internal static (string OwnerType, long Number, string PropertyName)? GetNumberKey(LocalizedCaption caption)
+    {
+        var numberProperty = caption.Owner.GetType().GetProperty("Number");
+        return numberProperty?.GetValue(caption.Owner) is { } number and (byte or short or int or long or ushort)
+            ? (GetTypeName(caption.Owner), Convert.ToInt64(number, CultureInfo.InvariantCulture), caption.Property.Name)
+            : null;
+    }
+
+    private static (IReadOnlyList<(LocalizedCaption Caption, LocalizedString Reference)> Links, int SkippedBecauseOfCustomizedNeutralText) FindLinks(GameConfiguration gameConfiguration, CaptionLinkReference reference)
+    {
+        var referencesById = reference.Entries
+            .GroupBy(entry => entry.Key)
             .ToDictionary(g => g.Key, g => g.First().Value);
         var targets = LocalizedCaption.FindAll(gameConfiguration).ToList();
         var targetIds = targets.Select(caption => caption.Key).ToHashSet();
-        var referencesByNumber = references
-            .Where(caption => caption.Value.SourceKey is not null && !targetIds.Contains(caption.Key))
-            .GroupBy(GetNumberKey)
+        var referencesByNumber = reference.Entries
+            .Where(entry => !targetIds.Contains(entry.Key))
+            .GroupBy(entry => entry.NumberKey)
             .Where(g => g.Key is not null && g.Count() == 1)
             .ToDictionary(g => g.Key!.Value, g => g.Single().Value);
         var ambiguousTargetNumbers = targets
@@ -131,7 +182,7 @@ public static class ConfigurationCaptions
             .Select(g => g.Key!.Value)
             .ToHashSet();
 
-        var linked = 0;
+        var links = new List<(LocalizedCaption Caption, LocalizedString Reference)>();
         var skipped = 0;
         foreach (var caption in targets)
         {
@@ -140,25 +191,24 @@ public static class ConfigurationCaptions
                 continue;
             }
 
-            if (!referencesById.TryGetValue(caption.Key, out var reference)
+            if (!referencesById.TryGetValue(caption.Key, out var referenceValue)
                 && (GetNumberKey(caption) is not { } numberKey
                     || ambiguousTargetNumbers.Contains(numberKey)
-                    || !referencesByNumber.TryGetValue(numberKey, out reference)))
+                    || !referencesByNumber.TryGetValue(numberKey, out referenceValue)))
             {
                 continue;
             }
 
-            if (caption.Value.ValueInNeutralLanguage != reference.ValueInNeutralLanguage)
+            if (caption.Value.ValueInNeutralLanguage != referenceValue.ValueInNeutralLanguage)
             {
                 skipped++;
                 continue;
             }
 
-            caption.SetValue(caption.Value.WithSourceKey(reference.SourceKey));
-            linked++;
+            links.Add((caption, referenceValue));
         }
 
-        return (linked, skipped);
+        return (links, skipped);
     }
 
     private static IEnumerable<CaptionChange> DetermineChanges(LocalizedCaption caption)
@@ -218,14 +268,6 @@ public static class ConfigurationCaptions
                 }
             }
         }
-    }
-
-    private static (string OwnerType, long Number, string PropertyName)? GetNumberKey(LocalizedCaption caption)
-    {
-        var numberProperty = caption.Owner.GetType().GetProperty("Number");
-        return numberProperty?.GetValue(caption.Owner) is { } number and (byte or short or int or long or ushort)
-            ? (GetTypeName(caption.Owner), Convert.ToInt64(number, CultureInfo.InvariantCulture), caption.Property.Name)
-            : null;
     }
 
     private static string GetTypeName(object owner)

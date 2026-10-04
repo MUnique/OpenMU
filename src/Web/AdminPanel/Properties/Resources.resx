@@ -1779,4 +1779,13 @@
   <data name="CaptionsLinkingElapsed" xml:space="preserve">
     <value>Elapsed time: {0}</value>
   </data>
+  <data name="CaptionsLinkableTitle" xml:space="preserve">
+    <value>Link new built-in captions</value>
+  </data>
+  <data name="CaptionsLinkableDescription" xml:space="preserve">
+    <value>{0} built-in captions are not linked to their sources yet, so their translations can't be reviewed here: {1}. That's usually the case after an update of OpenMU added translations, e.g. for item names. Linking doesn't change any texts.</value>
+  </data>
+  <data name="CaptionsCheckingLinkable" xml:space="preserve">
+    <value>Checking for built-in captions which are not linked yet ...</value>
+  </data>
 </root>

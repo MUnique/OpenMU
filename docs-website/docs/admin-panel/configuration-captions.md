@@ -21,6 +21,11 @@ The page guides you through two steps:
 2. Afterwards it lists the differences, which you can review and apply. If there
    are no differences, it shows *All available localizations are in place*.
 
+When an update of OpenMU adds sources for captions which weren't linked before
+(e.g. the item names), the page shows *Link new built-in captions* with the
+number of these captions by type, so they can be linked as well. See
+[Link built-in captions](#link-built-in-captions).
+
 ## Kinds of changes
 
 | Kind | Meaning | Selected by default |
@@ -47,6 +52,14 @@ configuration. It doesn't change any text. Captions whose English text was
 customized are skipped. This is only required once; afterwards the page shows
 the available differences. *Link captions again* (at the bottom of the page) links
 captions which aren't linked yet, e.g. after configuration updates added new objects.
+
+When you open the page, it checks in the background if linking would link
+captions which aren't linked yet. That's the case when a newer version of OpenMU
+added sources, e.g. for the item names. Then it shows *Link new built-in captions*
+at the top of the page, so you don't need to remember to link again. The first
+check after a server start takes a while, because it executes the data
+initialization in memory. The built-in captions which it determines are kept until
+the server process is restarted, so later checks and linking are quick.
 
 New source-backed captions also include the seven Imperial Guardian day names
 and descriptions, Fenrir material drop-group descriptions, and the four Selupan
