@@ -114,15 +114,15 @@ public class CaptionsPageTests
         var cut = this._context.Render<Captions>();
 
         cut.WaitForAssertion(() => Assert.That(cut.Markup, Does.Contain(Resources.CaptionsReviewTitle)));
-        var row = cut.Find("tbody tr");
-        Assert.That(row.TextContent, Does.Contain("zh-CN"));
+        var rows = cut.FindAll("tbody tr");
+        var row = rows.Single(r => r.TextContent.Contains("zh-CN", StringComparison.Ordinal));
         Assert.That(row.TextContent, Does.Contain(Resources.CaptionChangeKind_Missing));
         Assert.That(row.QuerySelector("input[type=checkbox]")!.HasAttribute("checked"), Is.True);
 
         cut.FindAll("button").Single(b => b.TextContent.Trim() == Resources.ApplySelectedChanges).Click();
 
         cut.WaitForAssertion(() => Assert.That(cut.Markup, Does.Contain(Resources.AllLocalizationsInPlace)));
-        Assert.That(cut.Markup, Does.Contain(string.Format(Resources.AppliedCaptionChanges, 1)));
+        Assert.That(cut.Markup, Does.Contain(string.Format(Resources.AppliedCaptionChanges, rows.Count)));
         using var context = this._persistenceContextProvider.CreateNewContext();
         var storedMonster = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).Single().Monsters.Single();
         Assert.That(storedMonster.Designation.GetOwnTranslation(CultureInfo.GetCultureInfo("zh-CN")), Is.EqualTo("配置名称"));
