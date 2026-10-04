@@ -329,6 +329,15 @@ internal partial class CastleSiegeData : IConvertibleTo<BasicModel.CastleSiegeDa
     }
 }
 
+internal partial class CrywolfData : IConvertibleTo<BasicModel.CrywolfData>
+{
+    public BasicModel.CrywolfData Convert()
+    {
+        MapsterConfigurator.EnsureConfigured();
+        return this.Adapt<BasicModel.CrywolfData>();
+    }
+}
+
 internal partial class GensMember : IConvertibleTo<BasicModel.GensMember>
 {
     public BasicModel.GensMember Convert()

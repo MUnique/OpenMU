@@ -121,12 +121,12 @@ internal class CrywolfFortress : BaseMapInitializer
         yield return this.CreateMonsterSpawn(7, this.NpcDictionary[240], 113, 056, Direction.SouthWest); // Baz The Vault Keeper
         yield return this.CreateMonsterSpawn(8, this.NpcDictionary[224], 118, 011, Direction.SouthEast); // Guardsman
 
-        yield return this.CreateMonsterSpawn(9, this.NpcDictionary[204], 121, 031, Direction.South, SpawnTrigger.OnceAtEventStart); // Wolf Status
-        yield return this.CreateMonsterSpawn(10, this.NpcDictionary[205], 125, 027, Direction.South, SpawnTrigger.OnceAtEventStart); // Wolf Altar1
-        yield return this.CreateMonsterSpawn(11, this.NpcDictionary[206], 126, 035, Direction.South, SpawnTrigger.OnceAtEventStart); // Wolf Altar2
-        yield return this.CreateMonsterSpawn(12, this.NpcDictionary[207], 120, 038, Direction.South, SpawnTrigger.OnceAtEventStart); // Wolf Altar3
-        yield return this.CreateMonsterSpawn(13, this.NpcDictionary[208], 115, 035, Direction.South, SpawnTrigger.OnceAtEventStart); // Wolf Altar4
-        yield return this.CreateMonsterSpawn(14, this.NpcDictionary[209], 117, 027, Direction.South, SpawnTrigger.OnceAtEventStart); // Wolf Altar5
+        yield return this.CreateMonsterSpawn(9, this.NpcDictionary[204], 121, 031, Direction.South); // Wolf Status
+        yield return this.CreateMonsterSpawn(10, this.NpcDictionary[205], 125, 027, Direction.South); // Wolf Altar1
+        yield return this.CreateMonsterSpawn(11, this.NpcDictionary[206], 126, 035, Direction.South); // Wolf Altar2
+        yield return this.CreateMonsterSpawn(12, this.NpcDictionary[207], 120, 038, Direction.South); // Wolf Altar3
+        yield return this.CreateMonsterSpawn(13, this.NpcDictionary[208], 115, 035, Direction.South); // Wolf Altar4
+        yield return this.CreateMonsterSpawn(14, this.NpcDictionary[209], 117, 027, Direction.South); // Wolf Altar5
     }
 
     /// <inheritdoc/>
@@ -322,6 +322,7 @@ internal class CrywolfFortress : BaseMapInitializer
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 204;
             monster.Designation = LocalizedString.FromResource(() => MonsterNames.WolfStatus);
+            monster.ObjectKind = NpcObjectKind.PassiveNpc;
             var attributes = new Dictionary<AttributeDefinition, float>
             {
                 { Stats.Level, 2 },
@@ -342,6 +343,7 @@ internal class CrywolfFortress : BaseMapInitializer
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 205;
             monster.Designation = LocalizedString.FromResource(() => MonsterNames.WolfAltar1);
+            monster.ObjectKind = NpcObjectKind.PassiveNpc;
             var attributes = new Dictionary<AttributeDefinition, float>
             {
                 { Stats.Level, 2 },
@@ -362,6 +364,7 @@ internal class CrywolfFortress : BaseMapInitializer
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 206;
             monster.Designation = LocalizedString.FromResource(() => MonsterNames.WolfAltar2);
+            monster.ObjectKind = NpcObjectKind.PassiveNpc;
             var attributes = new Dictionary<AttributeDefinition, float>
             {
                 { Stats.Level, 2 },
@@ -382,6 +385,7 @@ internal class CrywolfFortress : BaseMapInitializer
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 207;
             monster.Designation = LocalizedString.FromResource(() => MonsterNames.WolfAltar3);
+            monster.ObjectKind = NpcObjectKind.PassiveNpc;
             var attributes = new Dictionary<AttributeDefinition, float>
             {
                 { Stats.Level, 2 },
@@ -402,6 +406,7 @@ internal class CrywolfFortress : BaseMapInitializer
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 208;
             monster.Designation = LocalizedString.FromResource(() => MonsterNames.WolfAltar4);
+            monster.ObjectKind = NpcObjectKind.PassiveNpc;
             var attributes = new Dictionary<AttributeDefinition, float>
             {
                 { Stats.Level, 2 },
@@ -422,6 +427,7 @@ internal class CrywolfFortress : BaseMapInitializer
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 209;
             monster.Designation = LocalizedString.FromResource(() => MonsterNames.WolfAltar5);
+            monster.ObjectKind = NpcObjectKind.PassiveNpc;
             var attributes = new Dictionary<AttributeDefinition, float>
             {
                 { Stats.Level, 2 },

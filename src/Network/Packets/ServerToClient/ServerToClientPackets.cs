@@ -25730,6 +25730,1074 @@ public readonly struct SkillStageUpdate
 
 
 /// <summary>
+/// Is sent by the server when: The state of the crywolf event changed, or the player entered the crywolf map. It should only be sent to players on the crywolf map, because the client loads the terrain of the occupation state for its current map.
+/// Causes reaction on client side: The client shows the event window in the states Ready, Start and End, plays the intro in the state Notify2, shows the result in the state End, and loads the terrain and light of the occupation state.
+/// </summary>
+public readonly struct CrywolfInfo
+{
+    /// <summary>
+    /// The occupation state of the crywolf fortress.
+    /// </summary>
+    public enum OccupationState
+    {
+        /// <summary>
+        /// The fortress has been defended. The benefits apply.
+        /// </summary>
+            Peace = 0,
+
+        /// <summary>
+        /// The fortress has been occupied by Balgass. The penalties apply.
+        /// </summary>
+            Occupied = 1,
+
+        /// <summary>
+        /// The fortress is under attack.
+        /// </summary>
+            War = 2,
+    }
+
+    /// <summary>
+    /// The state of the crywolf event.
+    /// </summary>
+    public enum CrywolfState
+    {
+        /// <summary>
+        /// The event is not running.
+        /// </summary>
+            None = 0,
+
+        /// <summary>
+        /// The first notification of the upcoming event.
+        /// </summary>
+            Notify1 = 1,
+
+        /// <summary>
+        /// The second notification. The client plays the intro of the event.
+        /// </summary>
+            Notify2 = 2,
+
+        /// <summary>
+        /// The altars can be contracted and the monsters appeared.
+        /// </summary>
+            Ready = 3,
+
+        /// <summary>
+        /// The monsters attack.
+        /// </summary>
+            Start = 4,
+
+        /// <summary>
+        /// The event ended. The client shows the result.
+        /// </summary>
+            End = 5,
+
+        /// <summary>
+        /// The event is finished.
+        /// </summary>
+            EndCycle = 6,
+    }
+
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CrywolfInfo"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CrywolfInfo(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CrywolfInfo"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CrywolfInfo(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xBD;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x00;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 6;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the occupation state. It must be Peace or Occupied in the state End, otherwise the client shows no result.
+    /// </summary>
+    public CrywolfInfo.OccupationState Occupation
+    {
+        get => (OccupationState)this._data.Span[4];
+        set => this._data.Span[4] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the state of the event.
+    /// </summary>
+    public CrywolfInfo.CrywolfState State
+    {
+        get => (CrywolfState)this._data.Span[5];
+        set => this._data.Span[5] = (byte)value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CrywolfInfo"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CrywolfInfo(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CrywolfInfo"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CrywolfInfo packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: Every two seconds while the altars can be contracted and during the battle.
+/// Causes reaction on client side: The client shows the shield of the statue and the states of the altars.
+/// </summary>
+public readonly struct CrywolfStatueAndAltarInfo
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CrywolfStatueAndAltarInfo"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CrywolfStatueAndAltarInfo(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CrywolfStatueAndAltarInfo"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CrywolfStatueAndAltarInfo(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xBD;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x02;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 16;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the shield of the statue in percent, from 0 to 100.
+    /// </summary>
+    public uint StatueHealthPercent
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[4..]);
+        set => WriteUInt32LittleEndian(this._data.Span[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the state of the first altar (205). The high nibble is the altar state (1 = contracted), the low nibble the number of remaining contracts.
+    /// </summary>
+    public byte Altar1State
+    {
+        get => this._data.Span[8];
+        set => this._data.Span[8] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the state of the second altar (206), like Altar1State.
+    /// </summary>
+    public byte Altar2State
+    {
+        get => this._data.Span[9];
+        set => this._data.Span[9] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the state of the third altar (207), like Altar1State.
+    /// </summary>
+    public byte Altar3State
+    {
+        get => this._data.Span[10];
+        set => this._data.Span[10] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the state of the fourth altar (208), like Altar1State.
+    /// </summary>
+    public byte Altar4State
+    {
+        get => this._data.Span[11];
+        set => this._data.Span[11] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the state of the fifth altar (209), like Altar1State.
+    /// </summary>
+    public byte Altar5State
+    {
+        get => this._data.Span[12];
+        set => this._data.Span[12] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CrywolfStatueAndAltarInfo"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CrywolfStatueAndAltarInfo(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CrywolfStatueAndAltarInfo"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CrywolfStatueAndAltarInfo packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: The player requested to contract an altar.
+/// Causes reaction on client side: On success, the client shows that the player is a guardian of the altar, and lets the character pray. Otherwise, it shows why the contract failed.
+/// </summary>
+public readonly struct CrywolfContractResult
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CrywolfContractResult"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CrywolfContractResult(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CrywolfContractResult"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CrywolfContractResult(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xBD;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x03;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 8;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result of the contract: 1 when it was accepted, 0 otherwise. The client compares the whole byte, so it's no boolean field.
+    /// </summary>
+    public byte Result
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the new state of the altar, like in the CrywolfStatueAndAltarInfo.
+    /// </summary>
+    public byte AltarState
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the key of the altar. The client uses the key minus 317 as index into its five altar states without checking the range, so it must be 317 plus the index of the altar (0 to 4).
+    /// </summary>
+    public ushort AltarKey
+    {
+        get => ReadUInt16BigEndian(this._data.Span[6..]);
+        set => WriteUInt16BigEndian(this._data.Span[6..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CrywolfContractResult"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CrywolfContractResult(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CrywolfContractResult"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CrywolfContractResult packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: Every 20 seconds during the battle.
+/// Causes reaction on client side: The client shows the remaining minutes and counts down the seconds by itself. It expects this packet every 20 seconds: when the minute is the same as before, it assumes that 40 or 20 seconds of the minute are left.
+/// </summary>
+public readonly struct CrywolfLeftTime
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CrywolfLeftTime"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CrywolfLeftTime(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CrywolfLeftTime"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CrywolfLeftTime(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xBD;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x04;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 6;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the remaining hours. The client doesn't show them.
+    /// </summary>
+    public byte Hours
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the remaining minutes.
+    /// </summary>
+    public byte Minutes
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CrywolfLeftTime"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CrywolfLeftTime(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CrywolfLeftTime"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CrywolfLeftTime packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: Every five seconds during the battle.
+/// Causes reaction on client side: The client shows the health of Balgass and the number of Dark Elves.
+/// </summary>
+public readonly struct CrywolfBossMonsterInfo
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CrywolfBossMonsterInfo"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CrywolfBossMonsterInfo(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CrywolfBossMonsterInfo"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CrywolfBossMonsterInfo(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xBD;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x05;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 12;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the health of Balgass in percent, or -1, when Balgass is not alive.
+    /// </summary>
+    public uint BalgassHealthPercent
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[4..]);
+        set => WriteUInt32LittleEndian(this._data.Span[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the number of alive Dark Elves. The client shows it as count of 12.
+    /// </summary>
+    public byte DarkElfCount
+    {
+        get => this._data.Span[8];
+        set => this._data.Span[8] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CrywolfBossMonsterInfo"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CrywolfBossMonsterInfo(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CrywolfBossMonsterInfo"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CrywolfBossMonsterInfo packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: The crywolf event ended, after the CrywolfInfo with the state End.
+/// Causes reaction on client side: The client shows the rank and the experience of the player in the result.
+/// </summary>
+public readonly struct CrywolfPersonalRank
+{
+    /// <summary>
+    /// The rank of a player in the crywolf event.
+    /// </summary>
+    public enum CrywolfRank
+    {
+        /// <summary>
+        /// The rank D.
+        /// </summary>
+            D = 0,
+
+        /// <summary>
+        /// The rank C.
+        /// </summary>
+            C = 1,
+
+        /// <summary>
+        /// The rank B.
+        /// </summary>
+            B = 2,
+
+        /// <summary>
+        /// The rank A.
+        /// </summary>
+            A = 3,
+
+        /// <summary>
+        /// The rank S.
+        /// </summary>
+            S = 4,
+    }
+
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CrywolfPersonalRank"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CrywolfPersonalRank(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CrywolfPersonalRank"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CrywolfPersonalRank(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xBD;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x07;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 12;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the rank of the player.
+    /// </summary>
+    public CrywolfPersonalRank.CrywolfRank Rank
+    {
+        get => (CrywolfRank)this._data.Span[4];
+        set => this._data.Span[4] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the rewarded experience. The field is aligned to 4 bytes, because the client structure is not packed.
+    /// </summary>
+    public uint Experience
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[8..]);
+        set => WriteUInt32LittleEndian(this._data.Span[8..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CrywolfPersonalRank"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CrywolfPersonalRank(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CrywolfPersonalRank"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CrywolfPersonalRank packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: The crywolf event ended, after the CrywolfInfo with the state End.
+/// Causes reaction on client side: The client shows the heroes with the highest scores in the result.
+/// </summary>
+public readonly struct CrywolfHeroList
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CrywolfHeroList"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CrywolfHeroList(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CrywolfHeroList"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CrywolfHeroList(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xBD;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x08;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the number of heroes, at most 5.
+    /// </summary>
+    public byte HeroCount
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets the <see cref="Hero"/> of the specified index.
+    /// </summary>
+        public Hero this[int index] => new (this._data.Slice(5 + index * Hero.Length));
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CrywolfHeroList"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CrywolfHeroList(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CrywolfHeroList"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CrywolfHeroList packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="Hero"/>.
+    /// </summary>
+    /// <param name="heroesCount">The count of <see cref="Hero"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int heroesCount) => heroesCount * Hero.Length + 5;
+
+
+/// <summary>
+/// Contains a hero of the crywolf event..
+/// </summary>
+public readonly struct Hero
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Hero"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public Hero(Memory<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 20;
+
+    /// <summary>
+    /// Gets or sets the place of the hero, from 0 (first) to 4. The client uses it as array index, so it must not be greater than 4.
+    /// </summary>
+    public byte Rank
+    {
+        get => this._data.Span[0];
+        set => this._data.Span[0] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the name of the hero.
+    /// </summary>
+    public string Name
+    {
+        get => this._data.Span.ExtractString(1, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(1, 10).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the score of the hero. The field is aligned to 4 bytes, because the client structure is not packed.
+    /// </summary>
+    public uint Score
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[12..]);
+        set => WriteUInt32LittleEndian(this._data.Span[12..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the number of the character class.
+    /// </summary>
+    public byte CharacterClass
+    {
+        get => this._data.Span[16];
+        set => this._data.Span[16] = value;
+    }
+}
+}
+
+
+/// <summary>
+/// Is sent by the server when: The player opened a crafting dialog and requested the chaos rate benefit of the crywolf event.
+/// Causes reaction on client side: The client shows the additional success rate of the crafting.
+/// </summary>
+public readonly struct CrywolfBenefitPlusChaosRate
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CrywolfBenefitPlusChaosRate"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CrywolfBenefitPlusChaosRate(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CrywolfBenefitPlusChaosRate"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CrywolfBenefitPlusChaosRate(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xBD;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x09;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 5;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the additional success rate in percent.
+    /// </summary>
+    public byte PlusChaosRate
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CrywolfBenefitPlusChaosRate"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CrywolfBenefitPlusChaosRate(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CrywolfBenefitPlusChaosRate"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CrywolfBenefitPlusChaosRate packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: A ballista of the crywolf event attacks an area.
+/// Causes reaction on client side: The client shows an arrow which hits the target point. The direction of the arrow depends on the x coordinate of the ballista.
+/// </summary>
+public readonly struct CrywolfRegionMonsterAttack
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CrywolfRegionMonsterAttack"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CrywolfRegionMonsterAttack(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CrywolfRegionMonsterAttack"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CrywolfRegionMonsterAttack(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xBD;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x0C;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 10;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the number of the monster. The client ignores it.
+    /// </summary>
+    public ushort MonsterNumber
+    {
+        get => ReadUInt16BigEndian(this._data.Span[4..]);
+        set => WriteUInt16BigEndian(this._data.Span[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the x coordinate of the ballista.
+    /// </summary>
+    public byte SourceX
+    {
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the y coordinate of the ballista. The client ignores it.
+    /// </summary>
+    public byte SourceY
+    {
+        get => this._data.Span[7];
+        set => this._data.Span[7] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the x coordinate of the target point.
+    /// </summary>
+    public byte TargetX
+    {
+        get => this._data.Span[8];
+        set => this._data.Span[8] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the y coordinate of the target point.
+    /// </summary>
+    public byte TargetY
+    {
+        get => this._data.Span[9];
+        set => this._data.Span[9] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CrywolfRegionMonsterAttack"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CrywolfRegionMonsterAttack(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CrywolfRegionMonsterAttack"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CrywolfRegionMonsterAttack packet) => packet._data; 
+}
+
+
+/// <summary>
 /// Is sent by the server when: The player requested to enter the illusion temple event.
 /// Causes reaction on client side: The client shows the result.
 /// </summary>

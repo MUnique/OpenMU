@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.NPC;
 
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading;
 using MUnique.OpenMU.AttributeSystem;
@@ -471,8 +472,19 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
         }
 
         var firstItem = !droppedMoney.HasValue;
+        var plugInPoint = killer.GameContext.PlugInManager.GetPlugInPoint<IMonsterItemDropPlugIn>();
         foreach (var item in generatedItems)
         {
+            if (plugInPoint is not null)
+            {
+                var eventArgs = new CancelEventArgs();
+                plugInPoint.ItemDropping(this, killer, item, eventArgs);
+                if (eventArgs.Cancel)
+                {
+                    continue;
+                }
+            }
+
             Point dropCoordinates;
             if (firstItem)
             {

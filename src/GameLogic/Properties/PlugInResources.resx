@@ -1439,6 +1439,18 @@
   <data name="RaklionPlugIn_Description" xml:space="preserve">
     <value>The event in the hatchery of raklion: when all spider eggs are destroyed, Selupan appears. After the battle, the hatchery is closed for some time.</value>
   </data>
+  <data name="CrywolfPlugIn_Name" xml:space="preserve">
+    <value>Crywolf Event</value>
+  </data>
+  <data name="CrywolfPlugIn_Description" xml:space="preserve">
+    <value>The event in the crywolf fortress: the players defend the statue of the holy wolf against the army of Balgass. The result is kept until the next event.</value>
+  </data>
+  <data name="CrywolfChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chat command: /crywolf</value>
+  </data>
+  <data name="CrywolfChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Lets the crywolf event proceed: it starts the event when it is not running, and during the battle Balgass appears if he did not yet. Otherwise, the current state ends.</value>
+  </data>
   <data name="ImperialGuardianFeaturePlugIn_Name" xml:space="preserve">
     <value>Imperial Guardian event</value>
   </data>
