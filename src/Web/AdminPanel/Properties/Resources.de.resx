@@ -1680,4 +1680,13 @@
   <data name="CaptionsLinkingElapsed" xml:space="preserve">
     <value>Verstrichene Zeit: {0}</value>
   </data>
+  <data name="CaptionsLinkableTitle" xml:space="preserve">
+    <value>Neue integrierte Beschriftungen verknüpfen</value>
+  </data>
+  <data name="CaptionsLinkableDescription" xml:space="preserve">
+    <value>{0} integrierte Beschriftungen sind noch nicht mit ihren Quellen verknüpft, daher können ihre Übersetzungen hier nicht geprüft werden: {1}. Das ist meist der Fall, nachdem ein Update von OpenMU Übersetzungen hinzugefügt hat, z. B. für Gegenstandsnamen. Beim Verknüpfen werden keine Texte geändert.</value>
+  </data>
+  <data name="CaptionsCheckingLinkable" xml:space="preserve">
+    <value>Es wird geprüft, ob integrierte Beschriftungen noch nicht verknüpft sind ...</value>
+  </data>
 </root>

@@ -4852,5 +4852,32 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("CaptionsLinkingElapsed", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Link new built-in captions.
+        /// </summary>
+        public static string CaptionsLinkableTitle {
+            get {
+                return ResourceManager.GetString("CaptionsLinkableTitle", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to {0} built-in captions are not linked to their sources yet, so their translations can't be reviewed here: {1}. That's usually the case after an update of OpenMU added translations, e.g. for item names. Linking doesn't change any texts..
+        /// </summary>
+        public static string CaptionsLinkableDescription {
+            get {
+                return ResourceManager.GetString("CaptionsLinkableDescription", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Checking for built-in captions which are not linked yet ....
+        /// </summary>
+        public static string CaptionsCheckingLinkable {
+            get {
+                return ResourceManager.GetString("CaptionsCheckingLinkable", resourceCulture);
+            }
+        }
     }
 }

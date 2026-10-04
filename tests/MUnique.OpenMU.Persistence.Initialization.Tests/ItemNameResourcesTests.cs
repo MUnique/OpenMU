@@ -87,7 +87,9 @@ internal class ItemNameResourcesTests
             existing.Items.Add(copy);
         }
 
-        var (linked, skipped) = ConfigurationCaptions.LinkSourceKeys(existing, configuration);
+        var reference = CaptionLinkReference.Create(configuration);
+        Assert.That(ConfigurationCaptions.FindLinkableCaptions(existing, reference), Is.EquivalentTo(new Dictionary<string, int> { { nameof(ItemDefinition), items.Length } }));
+        var (linked, skipped) = ConfigurationCaptions.LinkSourceKeys(existing, reference);
         Assert.That(linked, Is.EqualTo(items.Length));
         Assert.That(skipped, Is.Zero);
         Assert.That(existing.Items.All(item => item.Name.GetOwnTranslation(culture) is null), Is.True);
@@ -97,6 +99,7 @@ internal class ItemNameResourcesTests
         ConfigurationCaptions.ApplyChanges(existing, changes.Select(change => change.Id));
         Assert.That(existing.Items.Select(item => item.Name.GetOwnTranslation(culture)), Is.EqualTo(expected));
         Assert.That(ConfigurationCaptions.DetermineChanges(existing).Where(change => change.CultureName == culture.Name), Is.Empty);
+        Assert.That(ConfigurationCaptions.FindLinkableCaptions(existing, reference), Is.Empty);
         Assert.That(ConfigurationCaptions.LinkSourceKeys(existing, configuration).Linked, Is.Zero);
 
         if (version == "Season6")

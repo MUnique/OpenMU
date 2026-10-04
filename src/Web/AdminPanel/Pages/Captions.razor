@@ -65,13 +65,34 @@
     return;
 }
 
+@if (this._linkableCaptions is { Count: > 0 } linkableCaptions)
+{
+    @* An update added sources for captions which were not linked before, e.g. for item names. *@
+    <div class="card border-primary mb-3">
+        <div class="card-body">
+            <h4 class="card-title"><span class="oi oi-link-intact me-2" aria-hidden="true"></span>@Resources.CaptionsLinkableTitle</h4>
+            <p class="card-text">@string.Format(Resources.CaptionsLinkableDescription, linkableCaptions.Values.Sum(), string.Join(", ", linkableCaptions.Select(pair => $"{pair.Key} ({pair.Value})")))</p>
+            @this.RenderLinkButton("btn-primary")
+        </div>
+    </div>
+}
+else if (this._isCheckingLinkableCaptions)
+{
+    <p class="small text-body-secondary">
+        <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>@Resources.CaptionsCheckingLinkable
+    </p>
+}
+
 @if (this._changes.Count == 0)
 {
-    <div class="alert alert-success" role="alert">
-        <span class="oi oi-check me-2" aria-hidden="true"></span>@Resources.AllLocalizationsInPlace
-        <br/>
-        <small>@string.Format(Resources.CaptionsLinkedCount, comparison.LinkedCaptions)</small>
-    </div>
+    @if (this._linkableCaptions is not { Count: > 0 })
+    {
+        <div class="alert alert-success" role="alert">
+            <span class="oi oi-check me-2" aria-hidden="true"></span>@Resources.AllLocalizationsInPlace
+            <br/>
+            <small>@string.Format(Resources.CaptionsLinkedCount, comparison.LinkedCaptions)</small>
+        </div>
+    }
 }
 else
 {
