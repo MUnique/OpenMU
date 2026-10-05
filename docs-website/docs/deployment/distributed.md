@@ -17,8 +17,10 @@ It also requires a good understanding of distributed systems and more resources
 :::
 
 Each subsystem runs in its own container and the communication between them is
-handled with [Dapr](https://dapr.io/). Loki, Grafana, Prometheus and Zipkin are
-included for observability.
+handled with [Dapr](https://dapr.io/). For observability, all subsystems and
+their Dapr sidecars send logs, metrics and traces with
+[OpenTelemetry](https://opentelemetry.io/) to the `otel-lgtm` container, which
+bundles an OpenTelemetry collector, Loki, Prometheus, Tempo and Grafana.
 
 ## Deployment with docker compose
 
@@ -92,8 +94,8 @@ when it is done.
 Some functions of the admin panel behave differently, because the panel runs in
 its own process:
 
-* **Logs and metrics** are not read from local log files. Instead the navigation
-  menu links to Grafana (Loki), the metric dashboards and Zipkin — see
+* **Logs, metrics and traces** are not read from local log files. Instead the
+  navigation menu links to Grafana — see
   [Logs and monitoring](../admin-panel/logs-and-monitoring.md).
 * **Live map** links point to the reverse-proxied map application of the
   respective game server container.
@@ -131,5 +133,28 @@ Usually specified correctly in the docker compose files for each game server. It
 specifies the id of a game server and is used to retrieve the
 `GameServerConfiguration` from the database.
 
+### `OTEL_EXPORTER_OTLP_ENDPOINT`
+
+The address of the OpenTelemetry (OTLP) endpoint to which a subsystem sends its
+logs, metrics and traces, e.g. `http://otel-lgtm:4317`. Without it, nothing is
+exported. The other standard
+[OpenTelemetry variables](https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/)
+work as well, e.g. `OTEL_EXPORTER_OTLP_PROTOCOL` or `OTEL_RESOURCE_ATTRIBUTES`.
+
+The log levels follow the usual .NET configuration. By default, everything from
+`Debug` is exported and everything from `Information` is written to the console,
+except the framework logs (`Microsoft.*`), which start at `Warning`. To change
+it, set for example `Logging__LogLevel__Default` or
+`Logging__LogLevel__MUnique.OpenMU.GameLogic`.
+
 See [Startup parameters and environment variables](startup-parameters.md) for the
 variables which apply to every deployment.
+
+## Observability backend
+
+The `otel-lgtm` container ([grafana/otel-lgtm](https://github.com/grafana/docker-otel-lgtm))
+is meant for development, demo and test environments. It keeps its data in the
+`otel-lgtm-data` volume. For a bigger production setup, run an OpenTelemetry
+collector, Loki, Prometheus, Tempo and Grafana as separate services, or use a
+hosted service, and point `OTEL_EXPORTER_OTLP_ENDPOINT` of the OpenMU services
+and the tracing endpoint in `dapr-components/config.yaml` to it.

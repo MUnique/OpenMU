@@ -40,6 +40,12 @@ public static class AdminAuthenticationDefaults
     public static string SignOutEndpointPath => "/auth/logout";
 
     /// <summary>
+    /// Gets the endpoint which answers the authentication requests of a reverse proxy.
+    /// </summary>
+    /// <seealso cref="ReverseProxyAuthenticationService"/>
+    public static string ReverseProxyAuthenticationEndpointPath => "/auth/proxy";
+
+    /// <summary>
     /// Gets the path of the javascript module which talks to the sign in and sign out endpoints.
     /// </summary>
     public static string AuthScriptPath => "./_content/MUnique.OpenMU.Web.AdminPanel/js/auth.js";

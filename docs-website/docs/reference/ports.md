@@ -37,4 +37,4 @@ reports.
 | 443 | HTTPS, when configured — see [All-in-one deployment](../deployment/all-in-one.md) |
 
 In the [distributed deployment](../deployment/distributed.md), the reverse proxy
-also serves Grafana, Prometheus and Zipkin under sub-paths of the same port.
+also serves Grafana under the sub-path `/grafana/` of the same port.

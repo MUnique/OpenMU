@@ -21,12 +21,8 @@
         "chatServer-dapr": "StartWithoutDebugging",
         "adminPanel": "StartDebugging",
         "adminPanel-dapr": "StartWithoutDebugging",
-        "grafana": "StartWithoutDebugging",
-        "loki": "StartWithoutDebugging",
-        "minio": "StartWithoutDebugging",
         "nginx-80": "StartWithoutDebugging",
-        "prometheus": "StartWithoutDebugging",
-        "zipkin": "StartWithoutDebugging",
+        "otel-lgtm": "StartWithoutDebugging",
         "gameServer0": "StartWithoutDebugging",
         "gameServer0-dapr": "StartWithoutDebugging",
         "redis-state": "StartWithoutDebugging"
