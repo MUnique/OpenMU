@@ -1081,9 +1081,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<DateTime?>("InstalledAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid>("Key")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("Version")
                         .HasColumnType("integer");
@@ -1098,9 +1104,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
-
-                    b.Property<int>("CurrentInstalledVersion")
-                        .HasColumnType("integer");
 
                     b.Property<string>("InitializationKey")
                         .HasColumnType("text");
@@ -1710,6 +1713,69 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasIndex("GameServerDefinitionId");
 
                     b.ToTable("GameServerEndpoint", "config");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GensAbuse", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("KillCount")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("KillerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("LastKillAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("VictimId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VictimId");
+
+                    b.HasIndex("KillerId", "VictimId")
+                        .IsUnique();
+
+                    b.ToTable("GensAbuse", "data");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GensMember", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CharacterId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Contribution")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Gens")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("JoinedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("LeftAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<byte>("Rank")
+                        .HasColumnType("smallint");
+
+                    b.Property<int>("RankingPosition")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CharacterId")
+                        .IsUnique();
+
+                    b.ToTable("GensMember", "data");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.Guild", b =>
@@ -3341,6 +3407,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid?>("MagicEffectDefinitionId1")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("MasterSkillDefinitionId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid?>("TargetAttributeId")
                         .HasColumnType("uuid");
 
@@ -3354,6 +3423,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasIndex("MagicEffectDefinitionId");
 
                     b.HasIndex("MagicEffectDefinitionId1");
+
+                    b.HasIndex("MasterSkillDefinitionId");
 
                     b.HasIndex("TargetAttributeId");
 
@@ -4606,6 +4677,30 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Navigation("RawClient");
                 });
 
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GensAbuse", b =>
+                {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Character", null)
+                        .WithMany()
+                        .HasForeignKey("KillerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Character", null)
+                        .WithMany()
+                        .HasForeignKey("VictimId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GensMember", b =>
+                {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Character", null)
+                        .WithMany()
+                        .HasForeignKey("CharacterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.Guild", b =>
                 {
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Guild", "RawAllianceGuild")
@@ -5400,6 +5495,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .HasConstraintName("FK_PowerUpDefinition_MagicEffectDefinition_MagicEffectDefinit~1");
 
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.MasterSkillDefinition", null)
+                        .WithMany("RawPassivePowerUps")
+                        .HasForeignKey("MasterSkillDefinitionId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeDefinition", "RawTargetAttribute")
                         .WithMany()
                         .HasForeignKey("TargetAttributeId");
@@ -5870,6 +5970,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MasterSkillDefinition", b =>
                 {
                     b.Navigation("JoinedRequiredMasterSkills");
+
+                    b.Navigation("RawPassivePowerUps");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MiniGameChangeEvent", b =>

@@ -1,0 +1,1692 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Create" xml:space="preserve">
+    <value>Erstellen</value>
+  </data>
+  <data name="Reload" xml:space="preserve">
+    <value>Neu laden</value>
+  </data>
+  <data name="AdminUsers" xml:space="preserve">
+    <value>Admin-Benutzer</value>
+  </data>
+  <data name="Actions" xml:space="preserve">
+    <value>Aktionen</value>
+  </data>
+  <data name="ChangePassword" xml:space="preserve">
+    <value>Passwort ändern</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Löschen</value>
+  </data>
+  <data name="Duplicate" xml:space="preserve">
+    <value>Duplizieren</value>
+  </data>
+  <data name="DuplicatedSuccessfully" xml:space="preserve">
+    <value>'{0}' wurde erfolgreich dupliziert.</value>
+  </data>
+  <data name="CouldNotFindToDuplicate" xml:space="preserve">
+    <value>'{0}' konnte zum Duplizieren nicht gefunden werden.</value>
+  </data>
+  <data name="TypeDoesNotSupportCloning" xml:space="preserve">
+    <value>Der Typ '{0}' unterstützt kein Klonen.</value>
+  </data>
+  <data name="FailedToClone" xml:space="preserve">
+    <value>'{0}' konnte nicht geklont werden.</value>
+  </data>
+  <data name="ErrorDuplicating" xml:space="preserve">
+    <value>Fehler beim Duplizieren von '{0}': {1}</value>
+  </data>
+  <data name="CreateUser" xml:space="preserve">
+    <value>Benutzer erstellen</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Wird geladen ...</value>
+  </data>
+  <data name="CreateConnectServer" xml:space="preserve">
+    <value>Connect-Server erstellen</value>
+  </data>
+  <data name="CreateGameServer" xml:space="preserve">
+    <value>Game-Server erstellen</value>
+  </data>
+  <data name="ServerWithIdAlreadyExists" xml:space="preserve">
+    <value>Ein Server mit der Id {0} existiert bereits. Bitte verwenden Sie einen anderen Wert.</value>
+  </data>
+  <data name="ServerWithPortAlreadyExists" xml:space="preserve">
+    <value>Ein Server mit dem TCP-Port {0} existiert bereits. Bitte verwenden Sie einen anderen TCP-Port.</value>
+  </data>
+  <data name="CreatingConfigurationInfo" xml:space="preserve">
+    <value>Konfiguration wird erstellt ...</value>
+  </data>
+  <data name="SavingConfigurationInfo" xml:space="preserve">
+    <value>Konfiguration wird gespeichert ...</value>
+  </data>
+  <data name="ConnectionServerConfigurationSaved" xml:space="preserve">
+    <value>Die Konfiguration des Connect-Servers wurde gespeichert. Connect-Server wird initialisiert ...</value>
+  </data>
+  <data name="InitializingConnectServerInfo" xml:space="preserve">
+    <value>Connect-Server wird initialisiert ...</value>
+  </data>
+  <data name="NoChangesSaved" xml:space="preserve">
+    <value>Es wurden keine Änderungen gespeichert.</value>
+  </data>
+  <data name="UnexpectedErrorOccurred" xml:space="preserve">
+    <value>Ein unerwarteter Fehler ist aufgetreten: {0}.</value>
+  </data>
+  <data name="GameServerConfigurationSavedInfo" xml:space="preserve">
+    <value>Die Konfiguration des Game-Servers wurde gespeichert. Game-Server wird initialisiert ...</value>
+  </data>
+  <data name="InitializingGameServerInfo" xml:space="preserve">
+    <value>Game-Server wird initialisiert ...</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Bearbeiten</value>
+  </data>
+  <data name="Refresh" xml:space="preserve">
+    <value>Aktualisieren</value>
+  </data>
+  <data name="SavedChanges" xml:space="preserve">
+    <value>Die Änderungen wurden gespeichert.</value>
+  </data>
+  <data name="NoChangesToSave" xml:space="preserve">
+    <value>Es gab keine Änderungen zum Speichern.</value>
+  </data>
+  <data name="FailedByUninitializedContext" xml:space="preserve">
+    <value>Fehlgeschlagen, Kontext nicht initialisiert</value>
+  </data>
+  <data name="UnsavedChangesQuestion" xml:space="preserve">
+    <value>Es gibt ungespeicherte Änderungen. Möchten Sie diese wirklich verwerfen?</value>
+  </data>
+  <data name="DownloadAsJson" xml:space="preserve">
+    <value>Als JSON herunterladen</value>
+  </data>
+  <data name="LoadingErrorCheckLog" xml:space="preserve">
+    <value>Die Daten konnten nicht geladen werden. Details finden Sie in den Logs.</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Fehler</value>
+  </data>
+  <data name="MapEditor" xml:space="preserve">
+    <value>Karteneditor</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Suchen</value>
+  </data>
+  <data name="AddNew" xml:space="preserve">
+    <value>Neu hinzufügen</value>
+  </data>
+  <data name="CouldNotLoadMapDataCheckTheLogs" xml:space="preserve">
+    <value>Die Kartendaten konnten nicht geladen werden. Details finden Sie in den Logs.</value>
+  </data>
+  <data name="UnexpectedErrorCheckLogs" xml:space="preserve">
+    <value>Ein unerwarteter Fehler ist aufgetreten: {0}. Weitere Details finden Sie in den Logs.</value>
+  </data>
+  <data name="UnhandledErrorOccurred" xml:space="preserve">
+    <value>Ein unbehandelter Fehler ist aufgetreten.</value>
+  </data>
+  <data name="DevelopmentEnvironmentWarning" xml:space="preserve">
+    <value>&lt;strong&gt;Die Development-Umgebung sollte für bereitgestellte Anwendungen nicht aktiviert sein.&lt;/strong&gt;
+    Sie kann dazu führen, dass Endbenutzern vertrauliche Informationen aus Ausnahmen angezeigt werden.
+    Aktivieren Sie für das lokale Debugging die &lt;strong&gt;Development&lt;/strong&gt;-Umgebung, indem Sie die Umgebungsvariable &lt;strong&gt;ASPNETCORE_ENVIRONMENT&lt;/strong&gt; auf &lt;strong&gt;Development&lt;/strong&gt; setzen
+    und die App neu starten.</value>
+  </data>
+  <data name="SwappingToDevForMoreInformation" xml:space="preserve">
+    <value>Durch den Wechsel zur &lt;strong&gt;Development&lt;/strong&gt;-Umgebung werden ausführlichere Informationen über den aufgetretenen Fehler angezeigt.</value>
+  </data>
+  <data name="AnErrorOccurredWhileProcessingYourRequest" xml:space="preserve">
+    <value>Bei der Verarbeitung Ihrer Anfrage ist ein Fehler aufgetreten</value>
+  </data>
+  <data name="DevelopmentMode" xml:space="preserve">
+    <value>Entwicklungsmodus</value>
+  </data>
+  <data name="GameServer" xml:space="preserve">
+    <value>Game-Server</value>
+  </data>
+  <data name="WelcomeMessage" xml:space="preserve">
+    <value>Willkommen im Admin-Panel von OpenMU.</value>
+  </data>
+  <data name="OpenMUAdminPanel" xml:space="preserve">
+    <value>OpenMU Admin-Panel</value>
+  </data>
+  <data name="About" xml:space="preserve">
+    <value>Über</value>
+  </data>
+  <data name="LogFiles" xml:space="preserve">
+    <value>Logdateien</value>
+  </data>
+  <data name="Metrics" xml:space="preserve">
+    <value>Metriken</value>
+  </data>
+  <data name="FileName" xml:space="preserve">
+    <value>Dateiname</value>
+  </data>
+  <data name="LastUpdate" xml:space="preserve">
+    <value>Letzte Aktualisierung</value>
+  </data>
+  <data name="Size" xml:space="preserve">
+    <value>Größe</value>
+  </data>
+  <data name="Disconnect" xml:space="preserve">
+    <value>Trennen</value>
+  </data>
+  <data name="LiveMap" xml:space="preserve">
+    <value>Live-Karte</value>
+  </data>
+  <data name="All" xml:space="preserve">
+    <value>Alle</value>
+  </data>
+  <data name="Merchants" xml:space="preserve">
+    <value>Händler</value>
+  </data>
+  <data name="Back" xml:space="preserve">
+    <value>Zurück</value>
+  </data>
+  <data name="DiscardChanges" xml:space="preserve">
+    <value>Änderungen verwerfen</value>
+  </data>
+  <data name="SaveChanges" xml:space="preserve">
+    <value>Änderungen speichern</value>
+  </data>
+  <data name="ExtensionPoint" xml:space="preserve">
+    <value>Erweiterungspunkt</value>
+  </data>
+  <data name="PluginName" xml:space="preserve">
+    <value>Plugin-Name</value>
+  </data>
+  <data name="PluginType" xml:space="preserve">
+    <value>Plugin-Typ</value>
+  </data>
+  <data name="Deactivate" xml:space="preserve">
+    <value>Deaktivieren</value>
+  </data>
+  <data name="Activate" xml:space="preserve">
+    <value>Aktivieren</value>
+  </data>
+  <data name="Servers" xml:space="preserve">
+    <value>Server</value>
+  </data>
+  <data name="ServerName" xml:space="preserve">
+    <value>Servername</value>
+  </data>
+  <data name="PlayerCount" xml:space="preserve">
+    <value>Spieler</value>
+  </data>
+  <data name="CurrentState" xml:space="preserve">
+    <value>Aktueller Status</value>
+  </data>
+  <data name="ConnectServer" xml:space="preserve">
+    <value>Connect-Server</value>
+  </data>
+  <data name="ReloadConfigurationAndRestartAllGameServers" xml:space="preserve">
+    <value>Konfiguration neu laden und alle Game-Server neu starten</value>
+  </data>
+  <data name="DatabaseStatus" xml:space="preserve">
+    <value>Datenbankstatus</value>
+  </data>
+  <data name="CantConnectToTheDatabaseProbablyNotCreatedYet" xml:space="preserve">
+    <value>Keine Verbindung zur Datenbank möglich. Wahrscheinlich wurde sie noch nicht erstellt.</value>
+  </data>
+  <data name="InitializedGameVersion" xml:space="preserve">
+    <value>Initialisierte Spielversion</value>
+  </data>
+  <data name="NoInitializedDataFound" xml:space="preserve">
+    <value>Keine initialisierten Daten gefunden!</value>
+  </data>
+  <data name="ReInstall" xml:space="preserve">
+    <value>Neu installieren</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Aktualisieren</value>
+  </data>
+  <data name="UpToDate" xml:space="preserve">
+    <value>Aktuell</value>
+  </data>
+  <data name="NotCreated" xml:space="preserve">
+    <value>Nicht erstellt</value>
+  </data>
+  <data name="UpdateRequired" xml:space="preserve">
+    <value>Aktualisierung erforderlich</value>
+  </data>
+  <data name="Setup" xml:space="preserve">
+    <value>Einrichtung</value>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>Startseite</value>
+  </data>
+  <data name="Accounts" xml:space="preserve">
+    <value>Konten</value>
+  </data>
+  <data name="OnlineAccounts" xml:space="preserve">
+    <value>Online-Konten</value>
+  </data>
+  <data name="Updates" xml:space="preserve">
+    <value>Aktualisierungen</value>
+  </data>
+  <data name="AvailableUpdates" xml:space="preserve">
+    <value>verfügbare Aktualisierungen</value>
+  </data>
+  <data name="Users" xml:space="preserve">
+    <value>Benutzer</value>
+  </data>
+  <data name="GameClients" xml:space="preserve">
+    <value>Spielclients</value>
+  </data>
+  <data name="Monsters" xml:space="preserve">
+    <value>Monster</value>
+  </data>
+  <data name="MerchantStores" xml:space="preserve">
+    <value>Händlerläden</value>
+  </data>
+  <data name="CharacterClasses" xml:space="preserve">
+    <value>Charakterklassen</value>
+  </data>
+  <data name="Skills" xml:space="preserve">
+    <value>Fähigkeiten</value>
+  </data>
+  <data name="Items" xml:space="preserve">
+    <value>Gegenstände</value>
+  </data>
+  <data name="DropItemGroups" xml:space="preserve">
+    <value>Drop-Gegenstandsgruppen</value>
+  </data>
+  <data name="GameMaps" xml:space="preserve">
+    <value>Spielkarten</value>
+  </data>
+  <data name="MiniGames" xml:space="preserve">
+    <value>Minispiele</value>
+  </data>
+  <data name="WarpList" xml:space="preserve">
+    <value>Warp-Liste</value>
+  </data>
+  <data name="JewelMixes" xml:space="preserve">
+    <value>Juwelenkombinationen</value>
+  </data>
+  <data name="General" xml:space="preserve">
+    <value>Allgemein</value>
+  </data>
+  <data name="FullConfiguration" xml:space="preserve">
+    <value>Vollständige Konfiguration</value>
+  </data>
+  <data name="GameConfiguration" xml:space="preserve">
+    <value>Spielkonfiguration</value>
+  </data>
+  <data name="ReinstallConfirmation" xml:space="preserve">
+    <value>Sind Sie sicher? Alle aktuellen Daten werden gelöscht und neu installiert.</value>
+  </data>
+  <data name="PleaseFirstInstallTheDatabaseUpdatesOnTheSetupPage" xml:space="preserve">
+    <value>Bitte installieren Sie zuerst die Datenbankaktualisierungen auf der Einrichtungsseite.</value>
+  </data>
+  <data name="NoConfigurationDataUpdateAvailable" xml:space="preserve">
+    <value>Keine Aktualisierung der Konfigurationsdaten verfügbar.</value>
+  </data>
+  <data name="NewConfigurationUpdatesAvailable" xml:space="preserve">
+    <value>Es sind neue Aktualisierungen für die Konfigurationsdaten verfügbar. Sie können auswählen, welche auf Ihre Konfiguration angewendet werden sollen.</value>
+  </data>
+  <data name="MandatoryUpdatesAreAlwaysAppliedAndCannotBeDeselected" xml:space="preserve">
+    <value>Verpflichtende Aktualisierungen werden immer angewendet und können nicht abgewählt werden.</value>
+  </data>
+  <data name="TheUpdatesRequireARestartOfTheServerProcessToTakeEffect" xml:space="preserve">
+    <value>Die Aktualisierungen werden erst nach einem Neustart des Serverprozesses wirksam.</value>
+  </data>
+  <data name="Updating" xml:space="preserve">
+    <value>Wird aktualisiert...</value>
+  </data>
+  <data name="ApplyingUpdates" xml:space="preserve">
+    <value>Aktualisierungen werden angewendet ...</value>
+  </data>
+  <data name="UpdateFailed" xml:space="preserve">
+    <value>Aktualisierung fehlgeschlagen!</value>
+  </data>
+  <data name="ApplySelectedUpdates" xml:space="preserve">
+    <value>Ausgewählte Aktualisierungen anwenden</value>
+  </data>
+  <data name="PatchAddress" xml:space="preserve">
+    <value>Patch-Adresse</value>
+  </data>
+  <data name="Seconds" xml:space="preserve">
+    <value>Sekunden</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Speichern</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Abbrechen</value>
+  </data>
+  <data name="InstallingPleaseWait" xml:space="preserve">
+    <value>Wird installiert, bitte warten ...</value>
+  </data>
+  <data name="PleaseRestartTheConnectAndGameServerContainers" xml:space="preserve">
+    <value>Bitte starten Sie die Container des Connect- und Game-Servers neu.</value>
+  </data>
+  <data name="FinishedHaveFun" xml:space="preserve">
+    <value>Fertig! Viel Spaß :)</value>
+  </data>
+  <data name="FirstCloseAllConnectionsToTheServer" xml:space="preserve">
+    <value>Schließen Sie zuerst alle Verbindungen zum Server.</value>
+  </data>
+  <data name="SelectTheGameVersion" xml:space="preserve">
+    <value>Wählen Sie die Spielversion</value>
+  </data>
+  <data name="HowManyGameServersQuestion" xml:space="preserve">
+    <value>Wie viele Game-Server möchten Sie?</value>
+  </data>
+  <data name="TestAccountsQuestion" xml:space="preserve">
+    <value>Möchten Sie Testkonten?</value>
+  </data>
+  <data name="YesCreateTestAccounts" xml:space="preserve">
+    <value>Ja, Testkonten erstellen</value>
+  </data>
+  <data name="StartInstall" xml:space="preserve">
+    <value>Installation starten</value>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>Entfernen</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Ja</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>Nein</value>
+  </data>
+  <data name="Start" xml:space="preserve">
+    <value>Starten</value>
+  </data>
+  <data name="Stop" xml:space="preserve">
+    <value>Stoppen</value>
+  </data>
+  <data name="RemoveServer" xml:space="preserve">
+    <value>Server entfernen</value>
+  </data>
+  <data name="ServerDeleteProceedQuestion" xml:space="preserve">
+    <value>Der Server wird aus der Datenbank gelöscht. Möchten Sie wirklich fortfahren?</value>
+  </data>
+  <data name="ServerControl" xml:space="preserve">
+    <value>Serversteuerung</value>
+  </data>
+  <data name="TotalPlayers" xml:space="preserve">
+    <value>Spieler gesamt</value>
+  </data>
+  <data name="SocketNumber" xml:space="preserve">
+    <value>Sockel {0}</value>
+  </data>
+  <data name="Action" xml:space="preserve">
+    <value>Aktion</value>
+  </data>
+  <data name="GameServerCount" xml:space="preserve">
+    <value>Anzahl der Game-Server</value>
+  </data>
+  <data name="JsonBackup" xml:space="preserve">
+    <value>JSON-Sicherung (langsam!)</value>
+  </data>
+  <data name="ExportJsonBackup" xml:space="preserve">
+    <value>JSON-Sicherung exportieren</value>
+  </data>
+  <data name="ImportJsonBackup" xml:space="preserve">
+    <value>JSON-Sicherung importieren</value>
+  </data>
+  <data name="ImportingBackupPleaseWait" xml:space="preserve">
+    <value>Sicherung wird importiert, bitte warten ...</value>
+  </data>
+  <data name="BackupImportSucceeded" xml:space="preserve">
+    <value>Der Import der Sicherung war erfolgreich. Bitte starten Sie den Serverprozess neu, um die Änderungen zu übernehmen.</value>
+  </data>
+  <data name="BackupImportFailed" xml:space="preserve">
+    <value>Der Import der Sicherung ist fehlgeschlagen.</value>
+  </data>
+  <data name="SelectZipFileToRestore" xml:space="preserve">
+    <value>Wählen Sie eine .zip-Sicherungsdatei zur Wiederherstellung</value>
+  </data>
+  <data name="SelectedFileIsNoBackup" xml:space="preserve">
+    <value>Die ausgewählte Datei ist kein Sicherungsarchiv. Die Datenbank wurde nicht verändert.</value>
+  </data>
+  <data name="DatabaseSnapshot" xml:space="preserve">
+    <value>Datenbank-Snapshot</value>
+  </data>
+  <data name="DatabaseSnapshotDescription" xml:space="preserve">
+    <value>Ein Snapshot enthält alle Daten der Datenbank und wird deutlich schneller erstellt und wiederhergestellt. Er kann von dieser oder einer neueren Version des Servers wiederhergestellt werden, die ihre Datenbankaktualisierungen auf die wiederhergestellten Daten anwendet. Um Daten auf eine ältere Version zu übertragen, verwenden Sie die Sicherung oben.</value>
+  </data>
+  <data name="ExportSnapshot" xml:space="preserve">
+    <value>Snapshot exportieren</value>
+  </data>
+  <data name="SelectZipFileToRestoreSnapshot" xml:space="preserve">
+    <value>Wählen Sie eine .zip-Snapshot-Datei zur Wiederherstellung</value>
+  </data>
+  <data name="IncludeAccounts" xml:space="preserve">
+    <value>Konten einschließen (dauert länger)</value>
+  </data>
+  <data name="Character" xml:space="preserve">
+    <value>Charakter</value>
+  </data>
+  <data name="StartedAt" xml:space="preserve">
+    <value>Gestartet um</value>
+  </data>
+  <data name="ActiveOfflinePlayer" xml:space="preserve">
+    <value>Aktiver Offline-Spieler</value>
+  </data>
+  <data name="CouldNotFindToDelete" xml:space="preserve">
+    <value>'{0}' konnte zum Löschen nicht gefunden werden.</value>
+  </data>
+  <data name="DeleteFailedReferenced" xml:space="preserve">
+    <value>'{0}' konnte nicht gelöscht werden, wahrscheinlich weil es von einem anderen Objekt referenziert wird. Details siehe Log</value>
+  </data>
+  <data name="CreatedSuccessfully" xml:space="preserve">
+    <value>Neues Objekt erfolgreich erstellt.</value>
+  </data>
+  <data name="ShowEntryForm" xml:space="preserve">
+    <value>Eingabeformular anzeigen</value>
+  </data>
+  <data name="HideEntryForm" xml:space="preserve">
+    <value>Eingabeformular ausblenden</value>
+  </data>
+  <data name="AllGameServers" xml:space="preserve">
+    <value>Alle Game-Server</value>
+  </data>
+  <data name="GlobalMessage" xml:space="preserve">
+    <value>Globale Nachricht</value>
+  </data>
+  <data name="GlobalMessageNoTarget" xml:space="preserve">
+    <value>Kein laufender Game-Server, an den die Nachricht gesendet werden kann.</value>
+  </data>
+  <data name="GlobalMessageSendFailed" xml:space="preserve">
+    <value>Die Nachricht konnte nicht an {0} gesendet werden: {1}</value>
+  </data>
+  <data name="GlobalMessageSent" xml:space="preserve">
+    <value>Nachricht gesendet.</value>
+  </data>
+  <data name="MessagePlaceholder" xml:space="preserve">
+    <value>Nachricht eingeben...</value>
+  </data>
+  <data name="Send" xml:space="preserve">
+    <value>Senden</value>
+  </data>
+  <data name="Target" xml:space="preserve">
+    <value>Ziel</value>
+  </data>
+  <data name="LogViewer" xml:space="preserve">
+    <value>Log-Anzeige</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Schließen</value>
+  </data>
+  <data name="FilterLogEntries" xml:space="preserve">
+    <value>Logeinträge filtern...</value>
+  </data>
+  <data name="NoLogEntriesFound" xml:space="preserve">
+    <value>Keine Logeinträge gefunden.</value>
+  </data>
+  <data name="NoLogEntriesMatchFilter" xml:space="preserve">
+    <value>Keine Logeinträge entsprechen Ihrem Filter.</value>
+  </data>
+  <data name="ShowingXOfYLines" xml:space="preserve">
+    <value>{0} von {1} Zeilen werden angezeigt (letzte {2} Zeilen geladen).</value>
+  </data>
+  <data name="ScrollToBottom" xml:space="preserve">
+    <value>Nach unten scrollen</value>
+  </data>
+  <data name="ReloadFileList" xml:space="preserve">
+    <value>Dateiliste neu laden</value>
+  </data>
+  <data name="DownloadFile" xml:space="preserve">
+    <value>Datei herunterladen</value>
+  </data>
+  <data name="ChatCommands" xml:space="preserve">
+    <value>Chatbefehle</value>
+  </data>
+  <data name="CommandColumn" xml:space="preserve">
+    <value>Befehl</value>
+  </data>
+  <data name="CommandDescription" xml:space="preserve">
+    <value>Beschreibung</value>
+  </data>
+  <data name="CommandUsage" xml:space="preserve">
+    <value>Verwendung</value>
+  </data>
+  <data name="MinimumCharacterStatus" xml:space="preserve">
+    <value>Erforderlicher Status</value>
+  </data>
+  <data name="NoParameters" xml:space="preserve">
+    <value>Dieser Befehl hat keine Parameter.</value>
+  </data>
+  <data name="ParameterShortName" xml:space="preserve">
+    <value>Kurzname</value>
+  </data>
+  <data name="ParameterType" xml:space="preserve">
+    <value>Typ</value>
+  </data>
+  <data name="ParameterValidValues" xml:space="preserve">
+    <value>Gültige Werte</value>
+  </data>
+  <data name="ParametersOf" xml:space="preserve">
+    <value>Parameter von {0}</value>
+  </data>
+  <data name="Required" xml:space="preserve">
+    <value>Erforderlich</value>
+  </data>
+  <data name="Login" xml:space="preserve">
+    <value>Anmelden</value>
+  </data>
+  <data name="Logout" xml:space="preserve">
+    <value>Abmelden</value>
+  </data>
+  <data name="LoginName" xml:space="preserve">
+    <value>Anmeldename</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Passwort</value>
+  </data>
+  <data name="SignIn" xml:space="preserve">
+    <value>Anmelden</value>
+  </data>
+  <data name="SignedInAs" xml:space="preserve">
+    <value>Angemeldet als</value>
+  </data>
+  <data name="RememberMe" xml:space="preserve">
+    <value>Angemeldet bleiben</value>
+  </data>
+  <data name="InvalidCredentials" xml:space="preserve">
+    <value>Der Anmeldename oder das Passwort ist falsch.</value>
+  </data>
+  <data name="AccountLockedOut" xml:space="preserve">
+    <value>Zu viele fehlgeschlagene Versuche. Bitte versuchen Sie es später erneut.</value>
+  </data>
+  <data name="TwoFactorTitle" xml:space="preserve">
+    <value>Zwei-Faktor-Authentifizierung</value>
+  </data>
+  <data name="TwoFactorPrompt" xml:space="preserve">
+    <value>Geben Sie den Code aus Ihrer Authenticator-App ein.</value>
+  </data>
+  <data name="AuthenticatorCode" xml:space="preserve">
+    <value>Authenticator-Code</value>
+  </data>
+  <data name="RecoveryCode" xml:space="preserve">
+    <value>Wiederherstellungscode</value>
+  </data>
+  <data name="UseRecoveryCode" xml:space="preserve">
+    <value>Stattdessen einen Wiederherstellungscode verwenden</value>
+  </data>
+  <data name="UseAuthenticatorCode" xml:space="preserve">
+    <value>Stattdessen einen Authenticator-Code verwenden</value>
+  </data>
+  <data name="InvalidTwoFactorCode" xml:space="preserve">
+    <value>Der Code ist ungültig.</value>
+  </data>
+  <data name="Verify" xml:space="preserve">
+    <value>Bestätigen</value>
+  </data>
+  <data name="AccessDenied" xml:space="preserve">
+    <value>Zugriff verweigert</value>
+  </data>
+  <data name="AccessDeniedDescription" xml:space="preserve">
+    <value>Ihr Konto ist nicht berechtigt, diese Seite zu öffnen.</value>
+  </data>
+  <data name="AccountSecurity" xml:space="preserve">
+    <value>Kontosicherheit</value>
+  </data>
+  <data name="TwoFactorAuthentication" xml:space="preserve">
+    <value>Zwei-Faktor-Authentifizierung</value>
+  </data>
+  <data name="TwoFactorEnabled" xml:space="preserve">
+    <value>Die Zwei-Faktor-Authentifizierung ist aktiviert.</value>
+  </data>
+  <data name="TwoFactorDisabled" xml:space="preserve">
+    <value>Die Zwei-Faktor-Authentifizierung ist noch nicht eingerichtet.</value>
+  </data>
+  <data name="SetUpAuthenticator" xml:space="preserve">
+    <value>Authenticator-App einrichten</value>
+  </data>
+  <data name="DisableTwoFactor" xml:space="preserve">
+    <value>Zwei-Faktor-Authentifizierung deaktivieren</value>
+  </data>
+  <data name="ScanQrCode" xml:space="preserve">
+    <value>Scannen Sie diesen QR-Code mit Ihrer Authenticator-App, zum Beispiel Microsoft Authenticator.</value>
+  </data>
+  <data name="ManualKeyHint" xml:space="preserve">
+    <value>Scannen nicht möglich? Geben Sie diesen Schlüssel manuell ein:</value>
+  </data>
+  <data name="ConfirmSetupHint" xml:space="preserve">
+    <value>Geben Sie zum Abschluss den Code ein, den Ihre App jetzt anzeigt.</value>
+  </data>
+  <data name="RecoveryCodes" xml:space="preserve">
+    <value>Wiederherstellungscodes</value>
+  </data>
+  <data name="RecoveryCodesHint" xml:space="preserve">
+    <value>Bewahren Sie diese Codes an einem sicheren Ort auf. Jeder davon kann einmal zur Anmeldung verwendet werden, wenn Sie Ihre Authenticator-App nicht zur Hand haben. Sie werden nur jetzt angezeigt.</value>
+  </data>
+  <data name="RemainingRecoveryCodes" xml:space="preserve">
+    <value>Verbleibende Wiederherstellungscodes</value>
+  </data>
+  <data name="GenerateNewRecoveryCodes" xml:space="preserve">
+    <value>Neue Wiederherstellungscodes generieren</value>
+  </data>
+  <data name="TwoFactorRequiredTitle" xml:space="preserve">
+    <value>Zwei-Faktor-Authentifizierung ist erforderlich</value>
+  </data>
+  <data name="TwoFactorRequiredDescription" xml:space="preserve">
+    <value>Die Serverkonfiguration verlangt, dass jeder Benutzer des Admin-Panels einen zweiten Faktor verwendet. Bitte richten Sie Ihre Authenticator-App ein, um fortzufahren.</value>
+  </data>
+  <data name="Roles" xml:space="preserve">
+    <value>Rollen</value>
+  </data>
+  <data name="Role" xml:space="preserve">
+    <value>Rolle</value>
+  </data>
+  <data name="TwoFactor" xml:space="preserve">
+    <value>Zweiter Faktor</value>
+  </data>
+  <data name="LastLogin" xml:space="preserve">
+    <value>Letzte Anmeldung</value>
+  </data>
+  <data name="Enabled" xml:space="preserve">
+    <value>Aktiviert</value>
+  </data>
+  <data name="Disabled" xml:space="preserve">
+    <value>Deaktiviert</value>
+  </data>
+  <data name="NoAdminUserWarning" xml:space="preserve">
+    <value>Es existiert noch kein Benutzer für das Admin-Panel, daher ist das Panel derzeit ohne Anmeldung erreichbar. Erstellen Sie den ersten Benutzer, sobald die Datenbank eingerichtet ist, oder konfigurieren Sie einen Bootstrap-Benutzer.</value>
+  </data>
+  <data name="CreateFirstUser" xml:space="preserve">
+    <value>Ersten Benutzer erstellen</value>
+  </data>
+  <data name="UserCreated" xml:space="preserve">
+    <value>Der Benutzer wurde erstellt.</value>
+  </data>
+  <data name="UserDeleted" xml:space="preserve">
+    <value>Der Benutzer wurde gelöscht.</value>
+  </data>
+  <data name="PasswordChanged" xml:space="preserve">
+    <value>Das Passwort wurde geändert.</value>
+  </data>
+  <data name="TwoFactorResetForUser" xml:space="preserve">
+    <value>Der zweite Faktor des Benutzers wurde zurückgesetzt.</value>
+  </data>
+  <data name="ResetTwoFactor" xml:space="preserve">
+    <value>Zweiten Faktor zurücksetzen</value>
+  </data>
+  <data name="CannotDeleteLastUser" xml:space="preserve">
+    <value>Der letzte verbleibende Benutzer kann nicht gelöscht werden.</value>
+  </data>
+  <data name="CannotModifyBootstrapUser" xml:space="preserve">
+    <value>Der Bootstrap-Benutzer wird durch die Konfiguration festgelegt und kann hier nicht geändert werden.</value>
+  </data>
+  <data name="ApiKeys" xml:space="preserve">
+    <value>API-Schlüssel</value>
+  </data>
+  <data name="ApiKeysDescription" xml:space="preserve">
+    <value>Externe Anwendungen wie ein Spiel-Launcher oder eine Website authentifizieren sich an der öffentlichen API unter /api mit einem dieser Schlüssel. Geben Sie jeder Anwendung einen eigenen Schlüssel, damit ein einzelner widerrufen werden kann.</value>
+  </data>
+  <data name="ApiKeyName" xml:space="preserve">
+    <value>Anwendung</value>
+  </data>
+  <data name="ApiKeyPrefix" xml:space="preserve">
+    <value>Schlüssel</value>
+  </data>
+  <data name="CreateApiKey" xml:space="preserve">
+    <value>API-Schlüssel erstellen</value>
+  </data>
+  <data name="DeleteApiKey" xml:space="preserve">
+    <value>API-Schlüssel löschen</value>
+  </data>
+  <data name="DeleteApiKeyQuestion" xml:space="preserve">
+    <value>Möchten Sie den API-Schlüssel von '{0}' wirklich löschen? Die Anwendung, die ihn verwendet, funktioniert sofort nicht mehr.</value>
+  </data>
+  <data name="ApiKeyCreated" xml:space="preserve">
+    <value>Der API-Schlüssel wurde erstellt.</value>
+  </data>
+  <data name="ApiKeyDeleted" xml:space="preserve">
+    <value>Der API-Schlüssel wurde gelöscht.</value>
+  </data>
+  <data name="ApiKeyEnabled" xml:space="preserve">
+    <value>Der API-Schlüssel wurde aktiviert.</value>
+  </data>
+  <data name="ApiKeyDisabled" xml:space="preserve">
+    <value>Der API-Schlüssel wurde deaktiviert.</value>
+  </data>
+  <data name="ApiKeyShownOnce" xml:space="preserve">
+    <value>Kopieren Sie diesen Schlüssel jetzt</value>
+  </data>
+  <data name="ApiKeyShownOnceDescription" xml:space="preserve">
+    <value>Es wird nur der Hash des Schlüssels gespeichert, daher wird er nur dieses eine Mal angezeigt. Wenn er verloren geht, löschen Sie den Schlüssel und erstellen Sie einen neuen.</value>
+  </data>
+  <data name="NoApiKeys" xml:space="preserve">
+    <value>Es wurde noch kein API-Schlüssel erstellt.</value>
+  </data>
+  <data name="Enable" xml:space="preserve">
+    <value>Aktivieren</value>
+  </data>
+  <data name="Disable" xml:space="preserve">
+    <value>Deaktivieren</value>
+  </data>
+  <data name="CopyToClipboard" xml:space="preserve">
+    <value>Kopieren</value>
+  </data>
+  <data name="CopiedToClipboard" xml:space="preserve">
+    <value>Der API-Schlüssel wurde in die Zwischenablage kopiert.</value>
+  </data>
+  <data name="CopyToClipboardFailed" xml:space="preserve">
+    <value>Der API-Schlüssel konnte nicht kopiert werden. Bitte markieren und kopieren Sie ihn von Hand.</value>
+  </data>
+  <data name="NetworkAnalyzer" xml:space="preserve">
+    <value>Netzwerkanalyse</value>
+  </data>
+  <data name="ChatServer" xml:space="preserve">
+    <value>Chat-Server</value>
+  </data>
+  <data name="Connections" xml:space="preserve">
+    <value>Verbindungen</value>
+  </data>
+  <data name="NoConnectionsFound" xml:space="preserve">
+    <value>Keine Verbindungen gefunden.</value>
+  </data>
+  <data name="SelectAConnection" xml:space="preserve">
+    <value>Wählen Sie eine Verbindung aus, um ihren Netzwerkverkehr zu sehen.</value>
+  </data>
+  <data name="NetworkAnalyzerNotAvailable" xml:space="preserve">
+    <value>Die Netzwerkanalyse ist nur in der All-in-one-Installation verfügbar, da sie die Server im selben Prozess benötigt.</value>
+  </data>
+  <data name="CapturedPackets" xml:space="preserve">
+    <value>Aufgezeichnete Pakete</value>
+  </data>
+  <data name="Timestamp" xml:space="preserve">
+    <value>Zeitstempel</value>
+  </data>
+  <data name="Direction" xml:space="preserve">
+    <value>Richtung</value>
+  </data>
+  <data name="PacketMessage" xml:space="preserve">
+    <value>Nachricht</value>
+  </data>
+  <data name="PacketDetails" xml:space="preserve">
+    <value>Paketdetails</value>
+  </data>
+  <data name="ExtractedInformation" xml:space="preserve">
+    <value>Extrahierte Informationen</value>
+  </data>
+  <data name="RawData" xml:space="preserve">
+    <value>Rohdaten</value>
+  </data>
+  <data name="ClearPackets" xml:space="preserve">
+    <value>Leeren</value>
+  </data>
+  <data name="ToServer" xml:space="preserve">
+    <value>An Server</value>
+  </data>
+  <data name="ToClient" xml:space="preserve">
+    <value>An Client</value>
+  </data>
+  <data name="FilterPackets" xml:space="preserve">
+    <value>Nach Code oder Nachricht filtern</value>
+  </data>
+  <data name="NoPacketsCaptured" xml:space="preserve">
+    <value>Noch keine Pakete aufgezeichnet.</value>
+  </data>
+  <data name="SelectAPacket" xml:space="preserve">
+    <value>Wählen Sie ein Paket aus, um seinen Inhalt zu sehen.</value>
+  </data>
+  <data name="FollowNewPackets" xml:space="preserve">
+    <value>Folgen</value>
+  </data>
+  <data name="AnalyzeTraffic" xml:space="preserve">
+    <value>Netzwerkverkehr analysieren</value>
+  </data>
+  <data name="ConnectionNotFound" xml:space="preserve">
+    <value>Die angeforderte Verbindung ist nicht (mehr) verfügbar. Bitte wählen Sie eine der aufgelisteten Verbindungen.</value>
+  </data>
+  <data name="FollowNewPacketsHint" xml:space="preserve">
+    <value>Zeigt die neuesten Pakete und scrollt zu ihnen. Wird beim Hochscrollen ausgeschaltet, damit sich die Ansicht nicht wegbewegt.</value>
+  </data>
+  <data name="CastleSiegeAllInOneHint" xml:space="preserve">
+    <value>Die Verwaltung von Castle Siege ist nur verfügbar, wenn das Admin-Panel und ein Game-Server im selben Prozess laufen.</value>
+  </data>
+  <data name="CastleSiegeManualRefreshHint" xml:space="preserve">
+    <value>Die Seite zeigt einen Schnappschuss. Verwenden Sie Aktualisieren, um den aktuellen Zustand von Castle Siege zu laden.</value>
+  </data>
+  <data name="CastleSiegeState" xml:space="preserve">
+    <value>Zustand</value>
+  </data>
+  <data name="CastleSiegeStartedUtc" xml:space="preserve">
+    <value>Gestartet (UTC)</value>
+  </data>
+  <data name="CastleSiegeEndsUtc" xml:space="preserve">
+    <value>Endet (UTC)</value>
+  </data>
+  <data name="CastleSiegeOwner" xml:space="preserve">
+    <value>Besitzer</value>
+  </data>
+  <data name="CastleSiegeUnoccupied" xml:space="preserve">
+    <value>Unbesetzt</value>
+  </data>
+  <data name="CastleSiegeRegistrations" xml:space="preserve">
+    <value>Registrierungen</value>
+  </data>
+  <data name="CastleSiegeEconomy" xml:space="preserve">
+    <value>Wirtschaft</value>
+  </data>
+  <data name="CastleSiegeChaosMachineTax" xml:space="preserve">
+    <value>Steuer der Chaosmaschine</value>
+  </data>
+  <data name="CastleSiegePersonalStoreTax" xml:space="preserve">
+    <value>Steuer für persönliche Läden</value>
+  </data>
+  <data name="CastleSiegeLandOfTrialsFee" xml:space="preserve">
+    <value>Gebühr für das Land der Prüfungen</value>
+  </data>
+  <data name="CastleSiegeTribute" xml:space="preserve">
+    <value>Tribut</value>
+  </data>
+  <data name="CastleSiegeStateAndOwner" xml:space="preserve">
+    <value>Zustand und Besitzer</value>
+  </data>
+  <data name="CastleSiegeForceState" xml:space="preserve">
+    <value>Zustand erzwingen</value>
+  </data>
+  <data name="CastleSiegeForce" xml:space="preserve">
+    <value>Erzwingen</value>
+  </data>
+  <data name="CastleSiegeForceStateHint" xml:space="preserve">
+    <value>Der Übergang wird beim nächsten Timer-Tick von Castle Siege verarbeitet.</value>
+  </data>
+  <data name="CastleSiegeChangeOwner" xml:space="preserve">
+    <value>Besitzer ändern</value>
+  </data>
+  <data name="CastleSiegeGuildName" xml:space="preserve">
+    <value>Gildenname</value>
+  </data>
+  <data name="CastleSiegeChangeOwnerHint" xml:space="preserve">
+    <value>Ein Besitzerwechsel beginnt eine neue Amtszeit und löscht die bisherigen Steuern, den Tribut und den Zugang zum Land der Prüfungen.</value>
+  </data>
+  <data name="CastleSiegeResetCycle" xml:space="preserve">
+    <value>Registrierungen löschen und auf Idle1 zurücksetzen</value>
+  </data>
+  <data name="CastleSiegeTaxesAndTribute" xml:space="preserve">
+    <value>Steuern und Tribut</value>
+  </data>
+  <data name="CastleSiegeChaosTaxPercent" xml:space="preserve">
+    <value>Chaos-Steuer (%)</value>
+  </data>
+  <data name="CastleSiegeStoreTaxPercent" xml:space="preserve">
+    <value>Ladensteuer (%)</value>
+  </data>
+  <data name="CastleSiegeHuntFee" xml:space="preserve">
+    <value>Jagdgebühr</value>
+  </data>
+  <data name="CastleSiegeSaveTaxes" xml:space="preserve">
+    <value>Steuern speichern</value>
+  </data>
+  <data name="CastleSiegeClearTribute" xml:space="preserve">
+    <value>Tribut löschen</value>
+  </data>
+  <data name="CastleSiegeRegisteredGuilds" xml:space="preserve">
+    <value>Registrierte Gilden</value>
+  </data>
+  <data name="CastleSiegeNoRegisteredGuilds" xml:space="preserve">
+    <value>Es sind keine Gilden registriert.</value>
+  </data>
+  <data name="CastleSiegeGuildDeleted" xml:space="preserve">
+    <value>Gilde gelöscht</value>
+  </data>
+  <data name="CastleSiegeMarks" xml:space="preserve">
+    <value>Zeichen</value>
+  </data>
+  <data name="CastleSiegeRegistrationOrder" xml:space="preserve">
+    <value>Registrierungsreihenfolge</value>
+  </data>
+  <data name="CastleSiegeNpcStatus" xml:space="preserve">
+    <value>NPC-Status</value>
+  </data>
+  <data name="CastleSiegeInstance" xml:space="preserve">
+    <value>Instanz</value>
+  </data>
+  <data name="CastleSiegeDefense" xml:space="preserve">
+    <value>Verteidigung</value>
+  </data>
+  <data name="CastleSiegeLife" xml:space="preserve">
+    <value>Leben</value>
+  </data>
+  <data name="CastleSiegeAlive" xml:space="preserve">
+    <value>Lebendig</value>
+  </data>
+  <data name="CastleSiegeConfirmOwnerTitle" xml:space="preserve">
+    <value>Besitzer von Castle Siege ändern?</value>
+  </data>
+  <data name="CastleSiegeConfirmOwner" xml:space="preserve">
+    <value>Die Burg '{0}' zuweisen? Dadurch werden die bisherigen Steuern, der Tribut und der Zugang zum Land der Prüfungen gelöscht.</value>
+  </data>
+  <data name="CastleSiegeConfirmResetTitle" xml:space="preserve">
+    <value>Castle-Siege-Zyklus zurücksetzen?</value>
+  </data>
+  <data name="CastleSiegeConfirmReset" xml:space="preserve">
+    <value>Alle Registrierungen und ausgewählten Gilden löschen, die Castle-Siege-NPCs entfernen und Idle1 planen?</value>
+  </data>
+  <data name="CastleSiegeConfirmClearTributeTitle" xml:space="preserve">
+    <value>Tribut von Castle Siege löschen?</value>
+  </data>
+  <data name="CastleSiegeConfirmClearTribute" xml:space="preserve">
+    <value>Den gesamten angesammelten Tribut von Castle Siege dauerhaft löschen?</value>
+  </data>
+  <data name="CastleSiegeConfirmRemoveRegistrationTitle" xml:space="preserve">
+    <value>Gildenregistrierung entfernen?</value>
+  </data>
+  <data name="CastleSiegeConfirmRemoveRegistration" xml:space="preserve">
+    <value>Die Castle-Siege-Registrierung von '{0}' entfernen?</value>
+  </data>
+  <data name="CastleSiegeStateScheduled" xml:space="preserve">
+    <value>Der Zustandsübergang von Castle Siege wurde geplant.</value>
+  </data>
+  <data name="CastleSiegeOwnerUpdated" xml:space="preserve">
+    <value>Der Besitzer von Castle Siege wurde aktualisiert.</value>
+  </data>
+  <data name="CastleSiegeCycleReset" xml:space="preserve">
+    <value>Die Castle-Siege-Registrierungen wurden gelöscht und Idle1 wurde geplant.</value>
+  </data>
+  <data name="CastleSiegeTaxesUpdated" xml:space="preserve">
+    <value>Die Steuern von Castle Siege wurden aktualisiert.</value>
+  </data>
+  <data name="CastleSiegeTributeCleared" xml:space="preserve">
+    <value>Der Tribut von Castle Siege wurde gelöscht.</value>
+  </data>
+  <data name="CastleSiegeRegistrationRemoved" xml:space="preserve">
+    <value>Die Gildenregistrierung wurde entfernt.</value>
+  </data>
+  <data name="CastleSiegeErrorInvalidState" xml:space="preserve">
+    <value>Der ausgewählte Zustand von Castle Siege ist ungültig.</value>
+  </data>
+  <data name="CastleSiegeErrorNotInitialized" xml:space="preserve">
+    <value>Castle Siege wurde auf diesem Game-Server nicht initialisiert.</value>
+  </data>
+  <data name="CastleSiegeErrorGuildNameRequired" xml:space="preserve">
+    <value>Geben Sie einen Gildennamen ein.</value>
+  </data>
+  <data name="CastleSiegeErrorGameServerContextRequired" xml:space="preserve">
+    <value>Das Ändern des Besitzers erfordert einen Game-Server-Kontext.</value>
+  </data>
+  <data name="CastleSiegeErrorGuildNotFound" xml:space="preserve">
+    <value>Die Gilde wurde nicht gefunden.</value>
+  </data>
+  <data name="CastleSiegeErrorOwnerChangeDuringBattle" xml:space="preserve">
+    <value>Der Besitzer kann nicht geändert werden, während der Belagerungskampf läuft.</value>
+  </data>
+  <data name="CastleSiegeErrorResetDuringActiveSiege" xml:space="preserve">
+    <value>Der Castle-Siege-Zyklus kann nicht zurückgesetzt werden, während die Vorbereitung, der Kampf oder die Ergebnisverarbeitung der Belagerung aktiv ist.</value>
+  </data>
+  <data name="CastleSiegeErrorTaxOutOfRange" xml:space="preserve">
+    <value>Einer oder mehrere Steuerwerte liegen außerhalb des unterstützten Bereichs.</value>
+  </data>
+  <data name="CastleSiegeErrorTaxChangeDuringBattle" xml:space="preserve">
+    <value>Steuern können nicht geändert werden, während der Belagerungskampf läuft.</value>
+  </data>
+  <data name="CastleSiegeErrorTributeClearDuringBattle" xml:space="preserve">
+    <value>Der Tribut kann nicht gelöscht werden, während der Belagerungskampf läuft.</value>
+  </data>
+  <data name="CastleSiegeErrorRegistrationChangeOutsideRegistration" xml:space="preserve">
+    <value>Gildenregistrierungen können nur während eines Registrierungszustands geändert werden.</value>
+  </data>
+  <data name="CastleSiegeErrorRegistrationMissing" xml:space="preserve">
+    <value>Die Registrierung existiert nicht mehr.</value>
+  </data>
+  <data name="CastleSiegeErrorGameServerUnavailable" xml:space="preserve">
+    <value>Der ausgewählte Game-Server ist nicht mehr verfügbar.</value>
+  </data>
+  <data name="CastleSiegeErrorAllInOneDeploymentRequired" xml:space="preserve">
+    <value>Die Verwaltung von Castle Siege erfordert eine All-in-one-Installation des Game-Servers.</value>
+  </data>
+  <data name="CastleSiegeErrorPlugInInactive" xml:space="preserve">
+    <value>Das Castle-Siege-Plugin ist auf diesem Game-Server nicht aktiv.</value>
+  </data>
+  <data name="CastleSiegeErrorUnexpected" xml:space="preserve">
+    <value>Der Castle-Siege-Vorgang ist unerwartet fehlgeschlagen. Details finden Sie im Server-Log.</value>
+  </data>
+  <data name="ArchivedSessions" xml:space="preserve">
+    <value>Archivierte Sitzungen</value>
+  </data>
+  <data name="NoArchivedSessions" xml:space="preserve">
+    <value>Keine archivierten Sitzungen.</value>
+  </data>
+  <data name="ArchivedSession" xml:space="preserve">
+    <value>Archiv</value>
+  </data>
+  <data name="SessionIsRunning" xml:space="preserve">
+    <value>Läuft</value>
+  </data>
+  <data name="ObserveAccount" xml:space="preserve">
+    <value>Beobachten</value>
+  </data>
+  <data name="ObserveAccountHint" xml:space="preserve">
+    <value>Archiviert den Datenverkehr dieses Kontos für jede seiner Sitzungen, bis dies wieder ausgeschaltet wird.</value>
+  </data>
+  <data name="DeleteArchivedSession" xml:space="preserve">
+    <value>Archivierte Sitzung löschen</value>
+  </data>
+  <data name="DeleteArchivedSessionQuestion" xml:space="preserve">
+    <value>Sie sind dabei, die archivierte Sitzung '{0}' zu löschen. Sind Sie sicher?</value>
+  </data>
+  <data name="DownloadArchivedSession" xml:space="preserve">
+    <value>Archivierte Sitzung herunterladen</value>
+  </data>
+  <data name="Players" xml:space="preserve">
+    <value>Spieler</value>
+  </data>
+  <data name="OffLevelPlayers" xml:space="preserve">
+    <value>Off-Level-Spieler</value>
+  </data>
+  <data name="BotPlayers" xml:space="preserve">
+    <value>Bot-Spieler</value>
+  </data>
+  <data name="CreateGameServer_ServerId" xml:space="preserve">
+    <value>Server-ID</value>
+  </data>
+  <data name="CreateGameServer_Description" xml:space="preserve">
+    <value>Beschreibung</value>
+  </data>
+  <data name="CreateGameServer_ExperienceRate" xml:space="preserve">
+    <value>Erfahrungsrate</value>
+  </data>
+  <data name="CreateGameServer_PvpEnabled" xml:space="preserve">
+    <value>PvP aktivieren</value>
+  </data>
+  <data name="CreateGameServer_ServerConfiguration" xml:space="preserve">
+    <value>Serverkonfiguration</value>
+  </data>
+  <data name="CreateGameServer_NetworkPort" xml:space="preserve">
+    <value>Lausch-Port</value>
+  </data>
+  <data name="CreateConnectServer_ServerId" xml:space="preserve">
+    <value>Server-ID</value>
+  </data>
+  <data name="CreateConnectServer_Description" xml:space="preserve">
+    <value>Beschreibung</value>
+  </data>
+  <data name="CreateConnectServer_NetworkPort" xml:space="preserve">
+    <value>Lausch-Port</value>
+  </data>
+  <data name="PageNotFound" xml:space="preserve">
+    <value>Nicht gefunden</value>
+  </data>
+  <data name="PageNotFoundDescription" xml:space="preserve">
+    <value>Leider existiert der gesuchte Inhalt nicht.</value>
+  </data>
+  <data name="PartySummary" xml:space="preserve">
+    <value>Party von {0}: {1} Mitglieder</value>
+  </data>
+  <data name="DeletedSuccessfully" xml:space="preserve">
+    <value>'{0}' wurde erfolgreich gelöscht.</value>
+  </data>
+  <data name="InvalidCloneMethod" xml:space="preserve">
+    <value>Der Typ '{0}' muss eine Clone-Methode haben, die '{1}' entgegennimmt und '{0}' zurückgibt.</value>
+  </data>
+  <data name="LogReadError" xml:space="preserve">
+    <value>Fehler beim Lesen der Logdatei: {0}</value>
+  </data>
+  <data name="CouldNotSaveEntry" xml:space="preserve">
+    <value>Der neue Eintrag konnte nicht gespeichert werden: {0}</value>
+  </data>
+  <data name="ConfirmDelete" xml:space="preserve">
+    <value>Löschen bestätigen</value>
+  </data>
+  <data name="ConfirmDeleteEntry" xml:space="preserve">
+    <value>Sie sind dabei, '{0}' zu löschen. Sind Sie sicher?</value>
+  </data>
+  <data name="CreateEntry" xml:space="preserve">
+    <value>{0} erstellen</value>
+  </data>
+  <data name="DuplicateEntry" xml:space="preserve">
+    <value>'{0}' duplizieren</value>
+  </data>
+  <data name="ReconnectJoining" xml:space="preserve">
+    <value>Verbindung zum Server wird wiederhergestellt...</value>
+  </data>
+  <data name="ReconnectRetryBefore" xml:space="preserve">
+    <value>Wiederverbinden fehlgeschlagen... neuer Versuch in </value>
+  </data>
+  <data name="ReconnectRetryAfter" xml:space="preserve">
+    <value> Sekunden.</value>
+  </data>
+  <data name="ReconnectFailed" xml:space="preserve">
+    <value>Wiederverbinden fehlgeschlagen. Bitte versuchen Sie es erneut oder laden Sie die Seite neu.</value>
+  </data>
+  <data name="ReconnectRetry" xml:space="preserve">
+    <value>Erneut versuchen</value>
+  </data>
+  <data name="ReconnectPaused" xml:space="preserve">
+    <value>Die Sitzung wurde vom Server pausiert.</value>
+  </data>
+  <data name="ReconnectResume" xml:space="preserve">
+    <value>Fortsetzen</value>
+  </data>
+  <data name="ReconnectResumeFailed" xml:space="preserve">
+    <value>Die Sitzung konnte nicht fortgesetzt werden. Bitte laden Sie die Seite neu.</value>
+  </data>
+  <data name="RoleViewer" xml:space="preserve">
+    <value>Nur lesen</value>
+  </data>
+  <data name="Guilds" xml:space="preserve">
+    <value>Gilden</value>
+  </data>
+  <data name="Guild" xml:space="preserve">
+    <value>Gilde</value>
+  </data>
+  <data name="Alliance" xml:space="preserve">
+    <value>Allianz</value>
+  </data>
+  <data name="Members" xml:space="preserve">
+    <value>Mitglieder</value>
+  </data>
+  <data name="Score" xml:space="preserve">
+    <value>Punktzahl</value>
+  </data>
+  <data name="Notice" xml:space="preserve">
+    <value>Mitteilung</value>
+  </data>
+  <data name="CharacterClass" xml:space="preserve">
+    <value>Charakterklasse</value>
+  </data>
+  <data name="MasterLevel" xml:space="preserve">
+    <value>Master-Level</value>
+  </data>
+  <data name="Account" xml:space="preserve">
+    <value>Konto</value>
+  </data>
+  <data name="GuildNotFound" xml:space="preserve">
+    <value>Die Gilde wurde nicht gefunden. Sie wurde möglicherweise gelöscht.</value>
+  </data>
+  <data name="PartyBadgeTitle" xml:space="preserve">
+    <value>Party von {0}: {1} Mitglieder</value>
+  </data>
+  <data name="AddChancePercent" xml:space="preserve">
+    <value>Chance hinzufügen (%)</value>
+  </data>
+  <data name="AddDropItemGroup" xml:space="preserve">
+    <value>Drop-Gegenstandsgruppe hinzufügen</value>
+  </data>
+  <data name="AddDropsForItem" xml:space="preserve">
+    <value>Drops für einen weiteren Gegenstand hinzufügen (z. B. eine Box)</value>
+  </data>
+  <data name="AddDropsForMonster" xml:space="preserve">
+    <value>Drops für ein weiteres Monster hinzufügen</value>
+  </data>
+  <data name="AddsRandomly" xml:space="preserve">
+    <value>Fügt zufällig hinzu</value>
+  </data>
+  <data name="AreYouSure" xml:space="preserve">
+    <value>Sind Sie sicher?</value>
+  </data>
+  <data name="AssignToAllMaps" xml:space="preserve">
+    <value>Allen Karten zuweisen</value>
+  </data>
+  <data name="AssignedMaps" xml:space="preserve">
+    <value>Zugewiesene Karten</value>
+  </data>
+  <data name="ChanceHint" xml:space="preserve">
+    <value>Die Chance, dass diese Gruppe für einen Drop ausgewählt wird, von 0 bis 100 %. Eine Chance von 100 % bedeutet, dass die Gruppe immer droppt, zusätzlich zu den chancenbasierten Gruppen.</value>
+  </data>
+  <data name="DeleteDropItemGroupQuestion" xml:space="preserve">
+    <value>Sie sind dabei, die Drop-Gegenstandsgruppe '{0}' zu löschen. Sind Sie sicher?</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Beschreibung</value>
+  </data>
+  <data name="DropEffect" xml:space="preserve">
+    <value>Drop-Effekt</value>
+  </data>
+  <data name="DropItemGroupStillUsed" xml:space="preserve">
+    <value>Die Drop-Gegenstandsgruppe '{0}' kann nicht gelöscht werden, da sie noch verwendet wird von: {1}</value>
+  </data>
+  <data name="DropLevel" xml:space="preserve">
+    <value>Drop-Level</value>
+  </data>
+  <data name="DropLevelHint" xml:space="preserve">
+    <value>Das minimale Monsterlevel, ab dem der Gegenstand zufällig droppen kann.</value>
+  </data>
+  <data name="DropsFromMonsters" xml:space="preserve">
+    <value>Drops von Monstern</value>
+  </data>
+  <data name="EditDetails" xml:space="preserve">
+    <value>Details bearbeiten</value>
+  </data>
+  <data name="ExcellentItemDropLevelDelta" xml:space="preserve">
+    <value>Level-Differenz für exzellente Drops</value>
+  </data>
+  <data name="ExcellentItemDropLevelDeltaHint" xml:space="preserve">
+    <value>Ein Monster muss mindestens so viele Level über dem Drop-Level eines Gegenstands liegen, damit der Gegenstand als exzellenter Gegenstand droppen kann.</value>
+  </data>
+  <data name="GameMap" xml:space="preserve">
+    <value>Karte</value>
+  </data>
+  <data name="GeneralDropSettings" xml:space="preserve">
+    <value>Allgemeine Einstellungen</value>
+  </data>
+  <data name="GuaranteedDrops" xml:space="preserve">
+    <value>Garantierte Drops</value>
+  </data>
+  <data name="Item" xml:space="preserve">
+    <value>Gegenstand</value>
+  </data>
+  <data name="ItemBoxDrops" xml:space="preserve">
+    <value>Drops aus Gegenstandsboxen</value>
+  </data>
+  <data name="ItemBoxDropsDescription" xml:space="preserve">
+    <value>Legt fest, was droppt, wenn ein Spieler einen Gegenstand wie eine Box fallen lässt (z. B. Box of Luck, Box of Kundun). Eine der Gruppen des passenden Quellgegenstandslevels wird anhand ihrer Chance ausgewählt.</value>
+  </data>
+  <data name="ItemDropDurationSeconds" xml:space="preserve">
+    <value>Liegedauer von Drops (Sekunden)</value>
+  </data>
+  <data name="ItemDrops" xml:space="preserve">
+    <value>Gegenstands-Drops</value>
+  </data>
+  <data name="ItemDropsPageDescription" xml:space="preserve">
+    <value>Konfigurieren Sie alle Gegenstands-Drops auf einer Seite. Änderungen werden erst nach dem Speichern übernommen.</value>
+  </data>
+  <data name="ItemLevel" xml:space="preserve">
+    <value>Gegenstandslevel</value>
+  </data>
+  <data name="ItemLevelHint" xml:space="preserve">
+    <value>Das Gegenstandslevel, das dem gedroppten Gegenstand zugewiesen wird. Wenn leer, wird das Level bei zufälligen Gegenständen anhand des Monsterlevels bestimmt.</value>
+  </data>
+  <data name="ItemOption" xml:space="preserve">
+    <value>Gegenstandsoption</value>
+  </data>
+  <data name="ItemOptionDropChances" xml:space="preserve">
+    <value>Chancen für Gegenstandsoptionen</value>
+  </data>
+  <data name="ItemOptionDropChancesDescription" xml:space="preserve">
+    <value>Die Chancen, dass gedroppten Gegenständen zufällig Optionen hinzugefügt werden.</value>
+  </data>
+  <data name="ItemType" xml:space="preserve">
+    <value>Typ</value>
+  </data>
+  <data name="MapDropItemGroups" xml:space="preserve">
+    <value>Karten-Drop-Gruppen</value>
+  </data>
+  <data name="MapDropItemGroupsDescription" xml:space="preserve">
+    <value>Drop-Gruppen, die für Monster auf den zugewiesenen Karten gelten. Gruppen, die keiner Karte zugewiesen sind, droppen nicht.</value>
+  </data>
+  <data name="MaximumDropLevel" xml:space="preserve">
+    <value>Maximales Drop-Level</value>
+  </data>
+  <data name="MaximumDropLevelHint" xml:space="preserve">
+    <value>Das maximale Monsterlevel, bis zu dem der Gegenstand zufällig droppen kann. Wenn leer, gibt es keine Obergrenze.</value>
+  </data>
+  <data name="MaximumItemLevel" xml:space="preserve">
+    <value>Max. Gegenstandslevel</value>
+  </data>
+  <data name="MaximumItemOptionLevelDrop" xml:space="preserve">
+    <value>Maximales Level der Gegenstandsoption</value>
+  </data>
+  <data name="MaximumItemOptionLevelDropHint" xml:space="preserve">
+    <value>Das maximale Level der Gegenstandsoption (z. B. +4, +8, +12, +16), das einem gedroppten Gegenstand hinzugefügt werden kann.</value>
+  </data>
+  <data name="MaximumMonsterLevel" xml:space="preserve">
+    <value>Max. Monsterlevel</value>
+  </data>
+  <data name="MaximumOptionsPerItem" xml:space="preserve">
+    <value>Maximale Optionen pro Gegenstand</value>
+  </data>
+  <data name="MiniGameUsage" xml:space="preserve">
+    <value>Minispiel '{0}'</value>
+  </data>
+  <data name="MinimumItemLevel" xml:space="preserve">
+    <value>Min. Gegenstandslevel</value>
+  </data>
+  <data name="MinimumMonsterLevel" xml:space="preserve">
+    <value>Min. Monsterlevel</value>
+  </data>
+  <data name="Money" xml:space="preserve">
+    <value>Geld</value>
+  </data>
+  <data name="MoneyAmount" xml:space="preserve">
+    <value>Geldbetrag</value>
+  </data>
+  <data name="MonsterDrops" xml:space="preserve">
+    <value>Monster-Drops</value>
+  </data>
+  <data name="MonsterDropsDescription" xml:space="preserve">
+    <value>Drop-Gruppen bestimmter Monster. Sie werden zusätzlich zu den Karten-Drop-Gruppen berücksichtigt, wenn das Monster getötet wird.</value>
+  </data>
+  <data name="NewDropItemGroup" xml:space="preserve">
+    <value>Neue Drop-Gegenstandsgruppe</value>
+  </data>
+  <data name="NewDropItemGroupOf" xml:space="preserve">
+    <value>Drop von {0}</value>
+  </data>
+  <data name="NoDropChance" xml:space="preserve">
+    <value>Kein Drop</value>
+  </data>
+  <data name="NoDropItemGroups" xml:space="preserve">
+    <value>Es gibt keine Drop-Gegenstandsgruppen.</value>
+  </data>
+  <data name="NoItems" xml:space="preserve">
+    <value>Keine Gegenstände</value>
+  </data>
+  <data name="NumberOfMaximumItemDrops" xml:space="preserve">
+    <value>Maximale Gegenstands-Drops</value>
+  </data>
+  <data name="NumberOfMaximumItemDropsHint" xml:space="preserve">
+    <value>Die maximale Anzahl an Gegenständen, die dieses Monster droppt, wenn es getötet wird.</value>
+  </data>
+  <data name="OnlyForMonster" xml:space="preserve">
+    <value>Nur für Monster</value>
+  </data>
+  <data name="PossibleItems" xml:space="preserve">
+    <value>Mögliche Gegenstände</value>
+  </data>
+  <data name="PossibleItemsHint" xml:space="preserve">
+    <value>Wenn keine Gegenstände ausgewählt sind, werden je nach Typ und Monsterlevel zufällige Gegenstände gedroppt.</value>
+  </data>
+  <data name="QuestAndEventDropItemGroups" xml:space="preserve">
+    <value>Quest- und Event-Drop-Gruppen</value>
+  </data>
+  <data name="QuestAndEventDropItemGroupsDescription" xml:space="preserve">
+    <value>Drop-Gruppen, die von Quests oder Minispiel-Belohnungen verwendet werden.</value>
+  </data>
+  <data name="RandomAncientItems" xml:space="preserve">
+    <value>Zufällige antike Gegenstände</value>
+  </data>
+  <data name="RandomItemsByMonsterLevel" xml:space="preserve">
+    <value>Zufällige Gegenstände nach Monsterlevel</value>
+  </data>
+  <data name="RandomlyDroppedItems" xml:space="preserve">
+    <value>Zufällig gedroppte Gegenstände</value>
+  </data>
+  <data name="RandomlyDroppedItemsDescription" xml:space="preserve">
+    <value>Legt fest, welche Gegenstände als zufällige Gegenstände droppen können (z. B. durch die normalen und exzellenten Drop-Gruppen) und bei welchen Monsterleveln.</value>
+  </data>
+  <data name="RemoveFromAllMaps" xml:space="preserve">
+    <value>Von allen Karten entfernen</value>
+  </data>
+  <data name="RemoveFromMonster" xml:space="preserve">
+    <value>Vom Monster entfernen</value>
+  </data>
+  <data name="RequiredCharacterLevel" xml:space="preserve">
+    <value>Erforderliches Charakterlevel</value>
+  </data>
+  <data name="ShouldDropMoney" xml:space="preserve">
+    <value>Geld droppen (anstatt es direkt dem Inventar hinzuzufügen)</value>
+  </data>
+  <data name="ShowOnlyDroppableItems" xml:space="preserve">
+    <value>Nur Gegenstände anzeigen, die von Monstern droppen</value>
+  </data>
+  <data name="SourceItemLevel" xml:space="preserve">
+    <value>Quellgegenstandslevel</value>
+  </data>
+  <data name="SourceItemLevelHint" xml:space="preserve">
+    <value>Das Level des gedroppten Gegenstands (z. B. der Box), für das diese Gruppe gilt.</value>
+  </data>
+  <data name="TotalChance" xml:space="preserve">
+    <value>Gesamtchance</value>
+  </data>
+  <data name="TotalChanceExceedsHint" xml:space="preserve">
+    <value>Die Gesamtchance übersteigt 100 %. Die Chancen werden proportional herunterskaliert.</value>
+  </data>
+  <data name="UsedBy" xml:space="preserve">
+    <value>Verwendet von</value>
+  </data>
+  <data name="MonsterDropChanceOverview" xml:space="preserve">
+    <value>Übersicht der Drop-Chancen pro Monster</value>
+  </data>
+  <data name="MonsterDropChanceOverviewDescription" xml:space="preserve">
+    <value>Die Drop-Chancen jedes Monsters, das auf einer Karte gespawnt wird, unter Berücksichtigung der Monsterlevel-Einschränkungen der Karten-Drop-Gruppen und der monsterspezifischen Drop-Gruppen. Die Chancen gelten für jeden Drop-Wurf; ein Monster würfelt bis zu seiner maximalen Anzahl an Gegenstands-Drops. Quest-Gegenstands-Drops sind nicht enthalten. Übersteigt die Gesamtchance 100 %, werden die Chancen proportional herunterskaliert, und es gibt keine Chance auf keinen Drop.</value>
+  </data>
+  <data name="Captions" xml:space="preserve">
+    <value>Beschriftungen</value>
+  </data>
+  <data name="CaptionsDescription" xml:space="preserve">
+    <value>Vergleicht die Beschriftungen der Konfiguration, z. B. die Namen von Karten und Monstern, mit ihren integrierten Quellen. Neue und aktualisierte Übersetzungen sind ausgewählt; angepasste Texte werden nur geändert, wenn Sie sie auswählen.</value>
+  </data>
+  <data name="AllLocalizationsInPlace" xml:space="preserve">
+    <value>Alle verfügbaren Lokalisierungen sind vorhanden.</value>
+  </data>
+  <data name="CaptionsLoading" xml:space="preserve">
+    <value>Die Beschriftungen werden mit ihren Quellen verglichen ...</value>
+  </data>
+  <data name="CaptionLanguageSummary" xml:space="preserve">
+    <value>{0}: {1} Änderungen</value>
+  </data>
+  <data name="CaptionAllLanguages" xml:space="preserve">
+    <value>Alle Sprachen</value>
+  </data>
+  <data name="CaptionAllKinds" xml:space="preserve">
+    <value>Alle Arten von Änderungen</value>
+  </data>
+  <data name="CaptionNeutralText" xml:space="preserve">
+    <value>Neutral (Englisch)</value>
+  </data>
+  <data name="CaptionObject" xml:space="preserve">
+    <value>Objekt</value>
+  </data>
+  <data name="CaptionProperty" xml:space="preserve">
+    <value>Eigenschaft</value>
+  </data>
+  <data name="CaptionLanguage" xml:space="preserve">
+    <value>Sprache</value>
+  </data>
+  <data name="CaptionChange" xml:space="preserve">
+    <value>Änderung</value>
+  </data>
+  <data name="CaptionCurrentText" xml:space="preserve">
+    <value>Aktueller Text</value>
+  </data>
+  <data name="CaptionSourceText" xml:space="preserve">
+    <value>Neuer Text</value>
+  </data>
+  <data name="CaptionChangeKind_Missing" xml:space="preserve">
+    <value>Neu</value>
+  </data>
+  <data name="CaptionChangeKind_Updated" xml:space="preserve">
+    <value>Aktualisiert</value>
+  </data>
+  <data name="CaptionChangeKind_Removed" xml:space="preserve">
+    <value>Entfernt</value>
+  </data>
+  <data name="CaptionChangeKind_Customized" xml:space="preserve">
+    <value>Angepasst</value>
+  </data>
+  <data name="SelectRecommended" xml:space="preserve">
+    <value>Empfohlene auswählen</value>
+  </data>
+  <data name="SelectNone" xml:space="preserve">
+    <value>Keine auswählen</value>
+  </data>
+  <data name="ApplySelectedChanges" xml:space="preserve">
+    <value>Ausgewählte Änderungen anwenden</value>
+  </data>
+  <data name="ApplyingChanges" xml:space="preserve">
+    <value>Änderungen werden angewendet ...</value>
+  </data>
+  <data name="AppliedCaptionChanges" xml:space="preserve">
+    <value>{0} Änderungen wurden angewendet.</value>
+  </data>
+  <data name="LinkBuiltInCaptions" xml:space="preserve">
+    <value>Integrierte Beschriftungen verknüpfen</value>
+  </data>
+  <data name="LinkBuiltInCaptionsDescription" xml:space="preserve">
+    <value>Konfigurationen, die mit einer älteren Version erstellt wurden, kennen die Quellen ihrer integrierten Beschriftungen noch nicht und können daher keine neuen Übersetzungen erhalten. Beim Verknüpfen wird die Dateninitialisierung im Speicher ausgeführt und die passenden Beschriftungen werden mit ihren Quellen verknüpft. Es werden keine Texte geändert.</value>
+  </data>
+  <data name="LinkingBuiltInCaptions" xml:space="preserve">
+    <value>Integrierte Beschriftungen werden verknüpft ...</value>
+  </data>
+  <data name="LinkedBuiltInCaptions" xml:space="preserve">
+    <value>{0} Beschriftungen wurden mit ihren Quellen verknüpft. {1} Beschriftungen wurden übersprungen, da ihr neutraler Text angepasst wurde.</value>
+  </data>
+  <data name="CaptionsUnresolvedSources" xml:space="preserve">
+    <value>{0} Quellen von Beschriftungen sind in dieser Version nicht verfügbar, daher können diese Beschriftungen nicht verglichen werden, z. B. {1}.</value>
+  </data>
+  <data name="CaptionsNotLinkedTitle" xml:space="preserve">
+    <value>Integrierte Beschriftungen verknüpfen</value>
+  </data>
+  <data name="CaptionsNotLinkedDescription" xml:space="preserve">
+    <value>Die Beschriftungen dieser Konfiguration kennen ihre Quellen noch nicht. Das ist bei Konfigurationen der Fall, die mit einer älteren Version von OpenMU erstellt wurden. Das Verknüpfen ist einmalig erforderlich; danach zeigt diese Seite, welche Übersetzungen hinzugefügt oder aktualisiert werden können.</value>
+  </data>
+  <data name="CaptionsLinkedCount" xml:space="preserve">
+    <value>{0} Beschriftungen sind mit ihren Quellen verknüpft.</value>
+  </data>
+  <data name="CaptionsReviewTitle" xml:space="preserve">
+    <value>Änderungen prüfen und anwenden</value>
+  </data>
+  <data name="CaptionsReviewDescription" xml:space="preserve">
+    <value>Die folgenden Beschriftungen weichen von ihren Quellen ab. Die empfohlenen Änderungen sind bereits ausgewählt. Angepasste Texte werden nur geändert, wenn Sie sie auswählen.</value>
+  </data>
+  <data name="CaptionChangeKind_Missing_Description" xml:space="preserve">
+    <value>Eine Übersetzung ist verfügbar, fehlt aber in der Konfiguration, oder sie ist nur eine Kopie des englischen Textes.</value>
+  </data>
+  <data name="CaptionChangeKind_Updated_Description" xml:space="preserve">
+    <value>Der integrierte Text wurde geändert, und der konfigurierte Text ist noch derjenige, der ursprünglich übernommen wurde.</value>
+  </data>
+  <data name="CaptionChangeKind_Removed_Description" xml:space="preserve">
+    <value>Die integrierte Übersetzung existiert nicht mehr, und der konfigurierte Text ist noch derjenige, der ursprünglich übernommen wurde.</value>
+  </data>
+  <data name="CaptionChangeKind_Customized_Description" xml:space="preserve">
+    <value>Der konfigurierte Text weicht ab, weil er geändert wurde oder seine Herkunft unbekannt ist. Er wird nur überschrieben, wenn Sie ihn auswählen.</value>
+  </data>
+  <data name="CaptionsLinkAgainTitle" xml:space="preserve">
+    <value>Beschriftungen erneut verknüpfen</value>
+  </data>
+  <data name="CaptionsLinkAgainDescription" xml:space="preserve">
+    <value>Verknüpft die integrierten Beschriftungen, die noch nicht verknüpft sind, zum Beispiel nachdem Konfigurationsaktualisierungen neue Objekte hinzugefügt haben. Verknüpfte Beschriftungen und Texte werden nicht geändert.</value>
+  </data>
+  <data name="CaptionsNextStepReview" xml:space="preserve">
+    <value>Prüfen Sie die Änderungen unten und wenden Sie die ausgewählten an.</value>
+  </data>
+  <data name="CaptionLinkStep_LoadingConfiguration" xml:space="preserve">
+    <value>Konfiguration wird geladen</value>
+  </data>
+  <data name="CaptionLinkStep_CreatingReferenceConfiguration" xml:space="preserve">
+    <value>Referenzkonfiguration wird erstellt (die Dateninitialisierung wird im Speicher ausgeführt)</value>
+  </data>
+  <data name="CaptionLinkStep_LinkingCaptions" xml:space="preserve">
+    <value>Beschriftungen werden verknüpft</value>
+  </data>
+  <data name="CaptionLinkStep_Saving" xml:space="preserve">
+    <value>Änderungen werden gespeichert</value>
+  </data>
+  <data name="CaptionsLinkingHint" xml:space="preserve">
+    <value>Das Verknüpfen kann eine Weile dauern, hauptsächlich weil die Dateninitialisierung im Speicher ausgeführt wird. Bitte lassen Sie diese Seite geöffnet.</value>
+  </data>
+  <data name="CaptionsLinkingElapsed" xml:space="preserve">
+    <value>Verstrichene Zeit: {0}</value>
+  </data>
+  <data name="CaptionsLinkableTitle" xml:space="preserve">
+    <value>Neue integrierte Beschriftungen verknüpfen</value>
+  </data>
+  <data name="CaptionsLinkableDescription" xml:space="preserve">
+    <value>{0} integrierte Beschriftungen sind noch nicht mit ihren Quellen verknüpft, daher können ihre Übersetzungen hier nicht geprüft werden: {1}. Das ist meist der Fall, nachdem ein Update von OpenMU Übersetzungen hinzugefügt hat, z. B. für Gegenstandsnamen. Beim Verknüpfen werden keine Texte geändert.</value>
+  </data>
+  <data name="CaptionsCheckingLinkable" xml:space="preserve">
+    <value>Es wird geprüft, ob integrierte Beschriftungen noch nicht verknüpft sind ...</value>
+  </data>
+</root>

@@ -8,7 +8,9 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// Initializer for wing items.
@@ -41,12 +43,12 @@ public class Wings : WingsInitializerBase
         this._defenseBonusByLevelTable = this.CreateBonusDefensePerLevel();
         this._damageIncreaseByLevelTable = this.CreateDamageIncreaseBonusPerLevelFirstAndThirdWings();
 
-        this.CreateWing(0, 3, 2, "Wings of Elf", 100, 10, 200, 180, 0, 0, 1, this.BuildOptions((0, OptionType.HealthRecover)), 12, 12);
-        this.CreateWing(1, 5, 3, "Wings of Heaven", 100, 10, 200, 180, 1, 0, 0, this.BuildOptions((0, OptionType.WizDamage)), 12, 12);
-        this.CreateWing(2, 5, 2, "Wings of Satan", 100, 20, 200, 180, 0, 1, 0, this.BuildOptions((0, OptionType.PhysDamage)), 12, 12);
+        this.CreateWing(0, 3, 2, LocalizedString.FromResource(() => ItemNames.WingsOfElf), 100, 10, 200, 180, 0, 0, 1, this.BuildOptions((0, OptionType.HealthRecover)), 12, 12);
+        this.CreateWing(1, 5, 3, LocalizedString.FromResource(() => ItemNames.WingsOfHeaven), 100, 10, 200, 180, 1, 0, 0, this.BuildOptions((0, OptionType.WizDamage)), 12, 12);
+        this.CreateWing(2, 5, 2, LocalizedString.FromResource(() => ItemNames.WingsOfSatan), 100, 20, 200, 180, 0, 1, 0, this.BuildOptions((0, OptionType.PhysDamage)), 12, 12);
     }
 
-    private void CreateWing(byte number, byte width, byte height, string name, byte dropLevel, int defense, byte durability, int levelRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, IEnumerable<IncreasableItemOption> possibleOptions, int damageIncreaseInitial, int damageAbsorbInitial)
+    private void CreateWing(byte number, byte width, byte height, LocalizedString name, byte dropLevel, int defense, byte durability, int levelRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, IEnumerable<IncreasableItemOption> possibleOptions, int damageIncreaseInitial, int damageAbsorbInitial)
     {
         var wing = this.CreateWing(number, width, height, name, dropLevel, defense, durability, levelRequirement, darkWizardClassLevel, darkKnightClassLevel, elfClassLevel);
 
@@ -79,7 +81,7 @@ public class Wings : WingsInitializerBase
         wing.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.First(iod => iod.PossibleOptions.Any(o => o?.OptionType == ItemOptionTypes.Luck)));
     }
 
-    private ItemDefinition CreateWing(byte number, byte width, byte height, string name, byte dropLevel, int defense, byte durability, int levelRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel)
+    private ItemDefinition CreateWing(byte number, byte width, byte height, LocalizedString name, byte dropLevel, int defense, byte durability, int levelRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel)
     {
         var wing = this.Context.CreateNew<ItemDefinition>();
         this.GameConfiguration.Items.Add(wing);

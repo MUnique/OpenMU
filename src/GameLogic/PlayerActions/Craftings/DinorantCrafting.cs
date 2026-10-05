@@ -6,7 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings;
 
 using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
 using MUnique.OpenMU.DataModel.Configuration.Items;
-using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlayerActions.Items;
 using MUnique.OpenMU.GameLogic.Views.NPC;
 
@@ -30,7 +30,7 @@ public class DinorantCrafting : SimpleItemCraftingHandler
         var craftingResult = base.TryGetRequiredItems(player, out items, out successRate);
         if (craftingResult is null)
         {
-            var uniriaLink = items.Where(i => i.ItemRequirement.PossibleItems.Any(i => i.Name.ValueInNeutralLanguage == "Horn of Uniria"));
+            var uniriaLink = items.Where(i => i.ItemRequirement.PossibleItems.Any(i => new ItemIdentifier(i.Number, i.Group) == ItemConstants.Uniria));
             foreach (var item in uniriaLink.First().Items)
             {
                 if (item.Durability < 255)
@@ -65,23 +65,6 @@ public class DinorantCrafting : SimpleItemCraftingHandler
                     bonusLink.ItemOption = bonusOpt;
                     resultItem.ItemOptions.Add(bonusLink);
                 }
-            }
-        }
-
-        // Dinorant options were originally coded within the normal item option; each has a different level.
-        foreach (var dinoOption in resultItem.ItemOptions)
-        {
-            if (dinoOption.ItemOption!.PowerUpDefinition!.TargetAttribute == Stats.DamageReceiveDecrement)
-            {
-                dinoOption.Level = 1;
-            }
-            else if (dinoOption.ItemOption!.PowerUpDefinition!.TargetAttribute == Stats.MaximumAbility)
-            {
-                dinoOption.Level = 2;
-            }
-            else
-            {
-                dinoOption.Level = 4;
             }
         }
     }

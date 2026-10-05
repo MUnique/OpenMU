@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Reflection;
 using System.Threading;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,10 @@ using Nito.Disposables;
 /// </summary>
 internal class EntityFrameworkContextBase : IContext
 {
+    private static readonly ConcurrentDictionary<IEntityType, IProperty?> PropertyToParentByEntityType = new();
+
+    private static readonly ConcurrentDictionary<Type, PropertyInfo[]> AggregatePropertiesByType = new();
+
     private readonly bool _isOwner;
     private readonly IConfigurationChangeListener? _changeListener;
     private readonly AsyncLock _lock = new();
@@ -47,11 +52,6 @@ internal class EntityFrameworkContextBase : IContext
         // Ensure that the model is created.
         _ = context.Model;
     }
-
-    /// <summary>
-    /// Finalizes an instance of the <see cref="EntityFrameworkContextBase"/> class.
-    /// </summary>
-    ~EntityFrameworkContextBase() => this.Dispose(false);
 
     /// <inheritdoc />
     public bool HasChanges => this.Context.ChangeTracker.HasChanges();
@@ -306,7 +306,7 @@ internal class EntityFrameworkContextBase : IContext
 
     private async ValueTask<bool> SaveChangesCoreAsync(CancellationToken cancellationToken)
     {
-        using var l = await this._lock.LockAsync();
+        using var l = await this._lock.LockAsync(cancellationToken).ConfigureAwait(false);
 
         // when we have a change publisher attached, we want to get the changed entries before accepting them.
         // Otherwise, we can accept them.
@@ -381,10 +381,13 @@ internal class EntityFrameworkContextBase : IContext
 
     private void ForEachAggregate(object obj, Action<object> action)
     {
-        var aggregateProperties = obj.GetType()
-            .GetProperties(BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.Instance)
-            .Where(p => p.GetCustomAttribute<MemberOfAggregateAttribute>() is { }
-                        || p.Name.StartsWith("Joined"));
+        var aggregateProperties = AggregatePropertiesByType.GetOrAdd(
+            obj.GetType(),
+            static type => type
+                .GetProperties(BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.Instance)
+                .Where(p => p.GetCustomAttribute<MemberOfAggregateAttribute>() is { }
+                            || p.Name.StartsWith("Joined"))
+                .ToArray());
         foreach (var propertyInfo in aggregateProperties)
         {
             var propertyValue = propertyInfo.GetMethod?.Invoke(obj, []);
@@ -423,9 +426,15 @@ internal class EntityFrameworkContextBase : IContext
                 .Where(entity => entity.State != EntityState.Unchanged
                                  && PublishesConfigurationChanges(entity.Metadata))
                 .ToList();
+            if (changedEntries.Count == 0)
+            {
+                return;
+            }
+
+            var trackedEntriesById = this.GetTrackedEntriesById();
             foreach (var entry in changedEntries)
             {
-                var (parent, parentCollectionNavigation) = this.GetParentInformation(entry);
+                var (parent, parentCollectionNavigation) = this.GetParentInformation(entry, trackedEntriesById);
 
                 switch (entry.State)
                 {
@@ -466,11 +475,14 @@ internal class EntityFrameworkContextBase : IContext
         }
     }
 
-    private (object? Parent, INavigationBase? ParentCollectionNavigation) GetParentInformation(EntityEntry entry)
+    private (object? Parent, INavigationBase? ParentCollectionNavigation) GetParentInformation(EntityEntry entry, IReadOnlyDictionary<Guid, EntityEntry> trackedEntriesById)
     {
-        var propertyToParent = entry.Properties
-            .FirstOrDefault(p => p.Metadata.IsForeignKey()
-                                 && (p.Metadata.IsShadowProperty() || p.Metadata.PropertyInfo?.GetCustomAttribute<IsLinkToParentAttribute>() is not null));
+        var propertyToParentMetadata = PropertyToParentByEntityType.GetOrAdd(
+            entry.Metadata,
+            entityType => entityType.GetProperties()
+                .FirstOrDefault(p => p.IsForeignKey()
+                                     && (p.IsShadowProperty() || p.PropertyInfo?.GetCustomAttribute<IsLinkToParentAttribute>() is not null)));
+        var propertyToParent = propertyToParentMetadata is null ? null : entry.Property(propertyToParentMetadata);
 
         var parentId = (Guid?)(propertyToParent?.CurrentValue ?? propertyToParent?.OriginalValue);
         if (parentId is null)
@@ -480,8 +492,7 @@ internal class EntityFrameworkContextBase : IContext
 
         object? parent = null;
         INavigationBase? parentCollectionNavigation = null;
-        var parentEntry = this.Context.ChangeTracker.Entries().FirstOrDefault(e => e.Entity.GetId() == parentId);
-        if (parentEntry is not null && propertyToParent is not null)
+        if (trackedEntriesById.TryGetValue(parentId.Value, out var parentEntry) && propertyToParent is not null)
         {
             parent = parentEntry.Entity;
             var parentCollection = parentEntry.Collections
@@ -491,5 +502,21 @@ internal class EntityFrameworkContextBase : IContext
         }
 
         return (parent ?? parentId, parentCollectionNavigation);
+    }
+
+    private Dictionary<Guid, EntityEntry> GetTrackedEntriesById()
+    {
+        var result = new Dictionary<Guid, EntityEntry>();
+        foreach (var trackedEntry in this.Context.ChangeTracker.Entries())
+        {
+            var id = trackedEntry.Entity.GetId();
+            if (id != Guid.Empty)
+            {
+                // first match wins, as in a linear search.
+                result.TryAdd(id, trackedEntry);
+            }
+        }
+
+        return result;
     }
 }

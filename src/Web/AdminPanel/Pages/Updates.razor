@@ -28,33 +28,45 @@
 @foreach (var update in this._availableUpdates)
 {
     <div class="alert @(update.State == UpdateState.Failed ? "alert-warning" : update.Selected ? "alert-primary" : "alert-secondary")" role="alert">
-        @if (update.State == UpdateState.Started)
-        {
-            <div class="spinner-border text-secondary spinner-border-sm" role="status">
-                <span class="visually-hidden">@Resources.Updating</span>
+        <div class="d-flex align-items-start">
+            @if (update.State == UpdateState.Started)
+            {
+                <div class="spinner-border text-secondary spinner-border-sm" role="status">
+                    <span class="visually-hidden">@Resources.Updating</span>
+                </div>
+            }
+            else if (update.State == UpdateState.Failed)
+            {
+                <span class="oi oi-bolt"></span>
+            }
+            else if (update.State == UpdateState.Installed)
+            {
+                <span class="oi oi-check"></span>
+            }
+            else if (update.IsMandatory)
+            {
+                <InputCheckbox class="form-check-input" @bind-Value="@update.Selected" disabled="disabled"></InputCheckbox>
+            }
+            else
+            {
+                <InputCheckbox class="form-check-input" @bind-Value="@update.Selected"></InputCheckbox>
+            }
+            <div class="ms-2">
+                <span>@update.Name@update.VersionLabel</span>
+                <br />
+                <span>@update.UpdatePlugIn.UpdatedAt.ToString("yyyy-MM-dd HH:mm")</span>
             </div>
-        }
-        else if (update.State == UpdateState.Failed)
-        {
-            <span class="oi oi-bolt"></span>
-        }
-        else if (update.State == UpdateState.Installed)
-        {
-            <span class="oi oi-check"></span>
-        }
-        else if (update.IsMandatory)
-        {
-            <InputCheckbox class="form-check-input" @bind-Value="@update.Selected" disabled="disabled"></InputCheckbox>
-        }
-        else
-        {
-            <InputCheckbox class="form-check-input" @bind-Value="@update.Selected"></InputCheckbox>
-        }
-        <span>&nbsp;@update.Name (#@update.Version)</span>
+        </div>
         <hr/>
         <div class="alert alert-secondary">
             <span>@update.Description</span>
         </div>
+        @if (update.InstalledAt.HasValue)
+        {
+            <div>
+                <span>@string.Format(Resources.InstalledOn, update.InstalledAt.Value.ToString("yyyy-MM-dd HH:mm"))</span>
+            </div>
+        }
     </div>
 }
 

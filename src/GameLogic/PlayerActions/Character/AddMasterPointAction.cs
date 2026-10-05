@@ -138,7 +138,7 @@ public class AddMasterPointAction
 
         var learnedRequiredSkills = character.LearnedSkills
             .Where(l => l.Skill?.MasterDefinition?.Root != null
-                && l.Skill.MasterDefinition.Root.Id == definition.Root?.Id
+                && l.Skill.MasterDefinition.Root.Equals(definition.Root)
                 && l.Skill.MasterDefinition.Rank == definition.Rank - 1);
         return learnedRequiredSkills?.Any(lrs => lrs.Level >= MinimumSkillLevelOfRequiredSkill) ?? false;
     }

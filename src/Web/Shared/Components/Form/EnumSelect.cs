@@ -10,6 +10,7 @@ using System.Globalization;
 using System.Reflection;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
+using MUnique.OpenMU.DataModel;
 
 /// <summary>
 /// A dropdown selection component for enum values of <typeparamref name="TValue" />.
@@ -31,7 +32,7 @@ public class EnumSelect<TValue> : NotifyableInputBase<TValue>
         foreach (var enumValue in Enum.GetValues(typeof(TValue)))
         {
             var name = Enum.GetName(typeof(TValue), enumValue);
-            var displayName = typeof(TValue).GetField(name!)!.GetCustomAttribute<DisplayAttribute>()?.Name;
+            var displayName = typeof(TValue).GetField(name!)!.GetCustomAttribute<DisplayAttribute>()?.GetName();
             builder.OpenElement(i++, "option");
             builder.AddAttribute(i++, "value", enumValue.ToString());
             if (this.CurrentValueAsString == enumValue.ToString())
@@ -39,7 +40,10 @@ public class EnumSelect<TValue> : NotifyableInputBase<TValue>
                 builder.AddAttribute(i++, "selected", true);
             }
 
-            builder.AddContent(i++, displayName ?? name);
+            var caption = displayName ?? (enumValue is DayOfWeek day
+                ? CultureHelper.GetDayName(day)
+                : ModelResourceProvider.GetEnumCaption(typeof(TValue), (Enum)enumValue));
+            builder.AddContent(i++, caption);
             builder.CloseElement();
         }
 
@@ -62,7 +66,7 @@ public class EnumSelect<TValue> : NotifyableInputBase<TValue>
         }
 
         result = default;
-        validationErrorMessage = $"The {this.FieldIdentifier.FieldName} field is not valid.";
+        validationErrorMessage = string.Format(MUnique.OpenMU.Web.Shared.Properties.Resources.InvalidField, this.FieldIdentifier.Model.GetType().GetPropertyCaption(this.FieldIdentifier.FieldName));
         return false;
     }
 }

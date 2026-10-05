@@ -17,15 +17,12 @@ using MUnique.OpenMU.PlugIns;
 /// This update fixes character stats, magic effects, and options related to defense.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixDefenseCalcsPlugInBase_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixDefenseCalcsPlugInBase_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("447FA95B-091B-4950-B1F3-F4EB6D20DE19")]
 public class FixDefenseCalcsPlugInSeason6 : FixDefenseCalcsPlugInBase
 {
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
-
-    /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixDefenseCalcsSeason6;
 
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)

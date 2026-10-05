@@ -13,15 +13,12 @@ using MUnique.OpenMU.PlugIns;
 /// It also refactors attack speed attributes for simplification.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixItemOptionsAndAttackSpeedPlugInBase_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixItemOptionsAndAttackSpeedPlugInBase_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("7733CDA9-6F4B-48D2-94F1-796C937F032A")]
 public class FixItemOptionsAndAttackSpeedPlugIn075 : FixItemOptionsAndAttackSpeedPlugInBase
 {
     /// <inheritdoc />
     public override string DataInitializationKey => Version075.DataInitialization.Id;
-
-    /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixItemOptionsAndAttackSpeed075;
 
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)

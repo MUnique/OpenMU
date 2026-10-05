@@ -82,5 +82,6 @@ communication between the subsystems is handled with [Dapr](https://dapr.io/).
 * Communication overhead between subsystems
 * Higher memory footprint, since multiple docker containers run (each with their
   own .NET runtime) which can't share some data
-* Harder to observe and debug. Loki, Grafana, Prometheus and Zipkin are included
-  to compensate for that, but they require additional resources.
+* Harder to observe and debug. An OpenTelemetry backend with Grafana, Loki,
+  Prometheus and Tempo is included to compensate for that, but it requires
+  additional resources.

@@ -20,6 +20,7 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.2" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.2" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.2" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="10.0.2" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.FileExtensions" Version="10.0.2" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="10.0.2" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.2" />
@@ -39,10 +40,9 @@
     <PackageVersion Include="Nito.AsyncEx.Coordination" Version="5.1.2" />
     <PackageVersion Include="Nito.AsyncEx.Tasks" Version="5.1.2" />
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
-    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.10.0" />
-    <PackageVersion Include="OpenTelemetry.Exporter.Zipkin" Version="1.10.0" />
-    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.10.0" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.9.0" />
+    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.19.1" />
+    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.19.1" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.19.0" />
     <PackageVersion Include="QRCoder" Version="1.8.0" />
     <PackageVersion Include="Pipelines.Sockets.Unofficial" Version="2.2.8" />
     <PackageVersion Include="Serilog" Version="4.3.0" />
@@ -50,8 +50,6 @@
     <PackageVersion Include="Serilog.Settings.Configuration" Version="10.0.0" />
     <PackageVersion Include="Serilog.Sinks.Console" Version="6.1.1" />
     <PackageVersion Include="Serilog.Sinks.File" Version="7.0.0" />
-    <PackageVersion Include="Serilog.Sinks.Grafana.Loki" Version="8.3.1" />
-    <PackageVersion Include="SharpAbp.Abp.OpenTelemetry.Exporter.Prometheus.AspNetCore" Version="3.5.3" />
     <PackageVersion Include="StyleCop.Analyzers" Version="1.2.0-beta.556" />
     <PackageVersion Include="Swashbuckle.AspNetCore" Version="7.0.0" />
     <PackageVersion Include="System.ComponentModel.Annotations" Version="6.0.0-preview.4.21253.7" />
@@ -62,7 +60,6 @@
     <PackageVersion Include="System.Net.Sockets" Version="4.3.0" />
     <PackageVersion Include="System.Text.Encoding" Version="4.3.0" />
     <PackageVersion Include="System.Text.Json" Version="10.0.1" />
-    <PackageVersion Include="prometheus-net.AspNetCore.HealthChecks" Version="8.2.1" />
     <!-- Do not update, because plugin tests will not work:-->
     <PackageVersion Include="NUnit" Version="3.14.0" />
     <PackageVersion Include="NUnit3TestAdapter" Version="4.6.0" />

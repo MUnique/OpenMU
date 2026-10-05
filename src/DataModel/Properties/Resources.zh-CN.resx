@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<!--
+		Microsoft ResX Schema
+
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format
+		that is mostly human readable. The generation and parsing of the
+		various data types are done through the TypeConverter classes
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a
+		type or mimetype. Type corresponds to a .NET class that support
+		text/value conversion through the TypeConverter architecture.
+		Classes that don't support this are serialized and stored with the
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the
+		ResXResourceReader how to depersist the object. This is currently not
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format
+		that the ResXResourceWriter will generate, however the reader can
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
+
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="SystemConfiguration_IpResolver_Description" xml:space="preserve">
+		<value>指定服务器如何确定向游戏客户端返回的自身 IP 地址。客户端选择游戏服务器或使用游戏内聊天时会使用该地址。如果公网 IP 无法从外部访问（例如共享 IPv4 地址或受防火墙限制），可通过此设置在本机或局域网中使用服务器。</value>
+	</data>
+	<data name="SystemConfiguration_IpResolver_Name" xml:space="preserve">
+		<value>IP 地址解析方式</value>
+	</data>
+	<data name="SystemConfiguration_IpResolverParameter_Description" xml:space="preserve">
+		<value>当 IP 地址解析方式设为“自定义”时使用的参数。</value>
+	</data>
+	<data name="SystemConfiguration_IpResolverParameter_Name" xml:space="preserve">
+		<value>自定义 IP / 主机名</value>
+	</data>
+	<data name="SystemConfiguration_AutoStart_Name" xml:space="preserve">
+		<value>自动启动</value>
+	</data>
+	<data name="SystemConfiguration_AutoStart_Description" xml:space="preserve">
+		<value>服务器进程启动时自动启动各子服务。此设置仅适用于一体化服务器（MUnique.OpenMU.Startup）。</value>
+	</data>
+	<data name="SystemConfiguration_ReadConsoleInput_Description" xml:space="preserve">
+		<value>允许在服务器控制台中输入命令。此设置仅适用于一体化服务器（MUnique.OpenMU.Startup），用于替代“-deamon”启动参数。</value>
+	</data>
+	<data name="SystemConfiguration_ReadConsoleInput_Name" xml:space="preserve">
+		<value>读取控制台输入</value>
+	</data>
+	<data name="SystemConfiguration_TimeZoneId_Name" xml:space="preserve">
+		<value>服务器时区</value>
+	</data>
+	<data name="SystemConfiguration_TimeZoneId_Description" xml:space="preserve">
+		<value>用于解释定时活动（例如入侵、血色城堡、恶魔广场）时间的时区 ID。建议使用 IANA 时区 ID，例如“Asia/Shanghai”。留空时使用 UTC。</value>
+	</data>
+	<data name="SystemConfiguration_Name" xml:space="preserve">
+		<value>系统配置</value>
+	</data>
+	<data name="SystemConfiguration_Description" xml:space="preserve">
+		<value>这些设置对整个系统生效，但可能被启动参数或环境变量覆盖。更多信息请参阅 Startup 的 README 文档。</value>
+	</data>
+	<data name="SystemConfiguration_AutoUpdateSchema_Name" xml:space="preserve">
+		<value>自动更新数据库结构</value>
+	</data>
+	<data name="SystemConfiguration_AutoUpdateSchema_Description" xml:space="preserve">
+		<value>一体化服务器（MUnique.OpenMU.Startup）启动时自动更新数据库结构。分布式部署需要通过管理后台手动执行更新。</value>
+	</data>
+    <data name="Slot" xml:space="preserve">
+      <value>栏位</value>
+    </data>
+    <data name="Excellent" xml:space="preserve">
+      <value>卓越</value>
+    </data>
+    <data name="Skill" xml:space="preserve">
+      <value>技能</value>
+    </data>
+    <data name="Luck" xml:space="preserve">
+      <value>幸运</value>
+    </data>
+    <data name="SocketAbbreviation" xml:space="preserve">
+      <value>孔</value>
+    </data>
+	<data name="SystemConfiguration_NetworkAnalyzer_Name" xml:space="preserve">
+		<value>网络分析器</value>
+	</data>
+	<data name="SystemConfiguration_NetworkAnalyzerLiveBufferSize_Name" xml:space="preserve">
+		<value>实时缓冲区大小</value>
+	</data>
+	<data name="SystemConfiguration_NetworkAnalyzerLiveBufferSize_Description" xml:space="preserve">
+		<value>网络分析器为每个受监测连接保留在内存中的数据包数量。超过此数量时，最旧的数据包将被移除。</value>
+	</data>
+	<data name="SystemConfiguration_NetworkObservationArchivePath_Name" xml:space="preserve">
+		<value>通信数据归档路径</value>
+	</data>
+	<data name="SystemConfiguration_NetworkObservationArchivePath_Description" xml:space="preserve">
+		<value>已开启通信记录的账号的数据包归档路径。相对路径以应用程序目录为基准。归档可能包含玩家隐私和游戏通信内容，请勿放在可公开访问的 Web 目录中。</value>
+	</data>
+	<data name="SystemConfiguration_NetworkObservationMaxSessionSizeMb_Name" xml:space="preserve">
+		<value>单个会话文件大小上限（MB）</value>
+	</data>
+	<data name="SystemConfiguration_NetworkObservationMaxSessionSizeMb_Description" xml:space="preserve">
+		<value>每个归档会话文件的最大大小，单位为 MB。超过上限后，会话数据将继续写入新文件。</value>
+	</data>
+	<data name="SystemConfiguration_NetworkObservationMaxTotalSizeMb_Name" xml:space="preserve">
+		<value>归档总大小上限（MB）</value>
+	</data>
+	<data name="SystemConfiguration_NetworkObservationMaxTotalSizeMb_Description" xml:space="preserve">
+		<value>流量归档的总大小上限，单位为 MB。超过上限时删除最旧的会话。设为 0 表示不限制大小。</value>
+	</data>
+	<data name="SystemConfiguration_NetworkObservationRetentionDays_Name" xml:space="preserve">
+		<value>归档保留天数</value>
+	</data>
+	<data name="SystemConfiguration_NetworkObservationRetentionDays_Description" xml:space="preserve">
+		<value>归档会话保留的天数，超过后自动删除。设为 0 表示永久保留。</value>
+	</data>
+  <data name="CastleSiegeScheduleSummary" xml:space="preserve">
+    <value>{0}：{1} {2:D2}:{3:D2}</value>
+  </data>
+  <data name="CastleSiegeUpgradeSummary" xml:space="preserve">
+    <value>等级 {0}：属性值 {1}，升级所需守护宝石 {2} 颗、金币 {3}</value>
+  </data>
+  <data name="CastleSiegeZoneSummary" xml:space="preserve">
+    <value>({0}, {1}) 至 ({2}, {3})</value>
+  </data>
+  <data name="ItemStorageSummary" xml:space="preserve">
+    <value>{0} 件物品，{1} 金币</value>
+  </data>
+  <data name="DayOfWeek_Sunday" xml:space="preserve">
+    <value>星期日</value>
+  </data>
+  <data name="DayOfWeek_Monday" xml:space="preserve">
+    <value>星期一</value>
+  </data>
+  <data name="DayOfWeek_Tuesday" xml:space="preserve">
+    <value>星期二</value>
+  </data>
+  <data name="DayOfWeek_Wednesday" xml:space="preserve">
+    <value>星期三</value>
+  </data>
+  <data name="DayOfWeek_Thursday" xml:space="preserve">
+    <value>星期四</value>
+  </data>
+  <data name="DayOfWeek_Friday" xml:space="preserve">
+    <value>星期五</value>
+  </data>
+  <data name="DayOfWeek_Saturday" xml:space="preserve">
+    <value>星期六</value>
+  </data>
+  <data name="SpawnPointSummary" xml:space="preserve"><value>{0} - 数量：{1}，坐标：{2}/{3}</value></data>
+  <data name="SpawnAreaSummary" xml:space="preserve"><value>{0} - 数量：{1}，区域：{2}/{3} 至 {4}/{5}</value></data>
+  <data name="SpawnWaveSummary" xml:space="preserve"><value> - 波次：{0}</value></data>
+  <data name="EnterGateSummary" xml:space="preserve"><value>{0}（{1}），所需等级：{2}，目标：{3}</value></data>
+  <data name="WaveSummary" xml:space="preserve"><value>第 {0} 波：{1}</value></data>
+  <data name="LevelValueSummary" xml:space="preserve"><value>等级 {0}：{1}</value></data>
+  <data name="RectangleSummary" xml:space="preserve"><value>{0} / {1} 至 {2} / {3}</value></data>
+  <data name="BattleZoneSummary" xml:space="preserve"><value>战斗区域（{0}）</value></data>
+  <data name="CastleNpcSummary" xml:space="preserve"><value>{0} #{1}，坐标：({2},{3})</value></data>
+  <data name="DuelConfigSummary" xml:space="preserve"><value>决斗配置：{0} 个场地，出口：{1}</value></data>
+  <data name="GameServerConfigSummary" xml:space="preserve"><value>默认（{0} 名玩家）</value></data>
+  <data name="RandomItemSummary" xml:space="preserve"><value>随机物品</value></data>
+  <data name="OptionRequirementSummary" xml:space="preserve"><value>{0}：子属性类型 {1}，最少数量 {2}</value></data>
+  <data name="SkillRewardSummary" xml:space="preserve"><value>技能：{0}</value></data>
+  <data name="AttributeRewardSummary" xml:space="preserve"><value>属性：{0} × {1}</value></data>
+  <data name="TerrainChangeSummary" xml:space="preserve"><value>{0}地形属性“{1}”，区域：({2}, {3}) 至 ({4}, {5})；{6}</value></data>
+  <data name="TerrainSet" xml:space="preserve"><value>设置</value></data>
+  <data name="TerrainRemove" xml:space="preserve"><value>移除</value></data>
+  <data name="TerrainWithClientUpdate" xml:space="preserve"><value>同步至客户端</value></data>
+  <data name="TerrainWithoutClientUpdate" xml:space="preserve"><value>不同步至客户端</value></data>
+  <data name="ChatServerSummary" xml:space="preserve"><value>[聊天服务器 编号={0}，说明={1}]</value></data>
+  <data name="ServerEndpointSummary" xml:space="preserve"><value>客户端：{0}；端口：{1}</value></data>
+</root>

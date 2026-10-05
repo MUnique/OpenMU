@@ -99,19 +99,13 @@ public sealed class ChaosCastleContext : MiniGameContext
             return false;
         }
 
-        switch (definition.Group, definition.Number)
+        var identifier = new ItemIdentifier(definition.Number, definition.Group);
+        if (identifier == ItemConstants.Uniria
+            || identifier == ItemConstants.Dinorant
+            || identifier == ItemConstants.Fenrir
+            || item.IsTransformationRing())
         {
-            case (13, 2): // Uniria
-            case (13, 3): // Dino
-            case (13, 37): // Fenrir
-                return false;
-            default:
-                if (definition.BasePowerUpAttributes.Any(a => a.TargetAttribute == Stats.TransformationSkin))
-                {
-                    return false;
-                }
-
-                break;
+            return false;
         }
 
         return base.IsItemAllowedToEquip(item);
@@ -261,8 +255,9 @@ public sealed class ChaosCastleContext : MiniGameContext
         }
     }
 
-#pragma warning disable VSTHRD100 // Avoid async void methods
     /// <inheritdoc />
+    // This handles the Died event, which requires a void handler. It catches and logs all exceptions, so none get lost.
+#pragma warning disable VSTHRD100 // Avoid async void methods
     protected override async void OnMonsterDied(object? sender, DeathInformation e)
 #pragma warning restore VSTHRD100 // Avoid async void methods
     {

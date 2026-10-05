@@ -6261,6 +6261,128 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="GensJoinResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="gensType">The gens type.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the player requested to join a gens at one of the gens NPCs.
+    /// Causes reaction on client side: The npc dialog shows the result. When the player joined, the client assigns the gens to the own character.
+    /// </remarks>
+    public static async ValueTask SendGensJoinResponseAsync(this IConnection? connection, GensJoinResponse.GensJoinResult @result, GensType @gensType)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = GensJoinResponseRef.Length;
+            var packet = new GensJoinResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.GensType = @gensType;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="GensLeaveResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the player requested to leave the gens at one of the gens NPCs.
+    /// Causes reaction on client side: The npc dialog shows the result. When the player left, the client removes the gens of the own character.
+    /// </remarks>
+    public static async ValueTask SendGensLeaveResponseAsync(this IConnection? connection, GensLeaveResponse.GensLeaveResult @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = GensLeaveResponseRef.Length;
+            var packet = new GensLeaveResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="GensInfo" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="gensType">The gens type.</param>
+    /// <param name="rankingPosition">The ranking position.</param>
+    /// <param name="rank">The rank.</param>
+    /// <param name="contributionPoints">The contribution points.</param>
+    /// <param name="nextRankContributionPoints">The next rank contribution points.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the player entered the game world, joined or left a gens, or requested the gens ranking.
+    /// Causes reaction on client side: The client shows the gens mark and rank of the own character, and the gens info window shows the ranking and contribution.
+    /// </remarks>
+    public static async ValueTask SendGensInfoAsync(this IConnection? connection, GensType @gensType, uint @rankingPosition, uint @rank, uint @contributionPoints, uint @nextRankContributionPoints)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = GensInfoRef.Length;
+            var packet = new GensInfoRef(connection.Output.GetSpan(length)[..length]);
+            packet.GensType = @gensType;
+            packet.RankingPosition = @rankingPosition;
+            packet.Rank = @rank;
+            packet.ContributionPoints = @contributionPoints;
+            packet.NextRankContributionPoints = @nextRankContributionPoints;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="GensRewardResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the player requested the gens ranking reward at one of the gens NPCs.
+    /// Causes reaction on client side: The npc dialog shows the result.
+    /// </remarks>
+    public static async ValueTask SendGensRewardResponseAsync(this IConnection? connection, GensRewardResponse.GensRewardResult @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = GensRewardResponseRef.Length;
+            var packet = new GensRewardResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="DevilSquareEnterResult" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
@@ -7977,6 +8099,104 @@ public static class ConnectionExtensions
             packet.SkillNumber = @skillNumber;
             packet.AttackerId = @attackerId;
             packet.TargetId = @targetId;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ImperialGuardianEnterResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result of the request.</param>
+    /// <param name="day">The day of the week, from 1 (monday) to 7 (sunday). The client shows it as the round.</param>
+    /// <param name="zone">The zone, starting at 1.</param>
+    /// <param name="weather">The weather of the map.</param>
+    /// <param name="remainingMilliseconds">The remaining time in milliseconds. When the result is NotOpen, the client shows the minutes until the event can be entered. The field is aligned to 4 bytes, because the client structure is not packed.</param>
+    /// <remarks>
+    /// Is sent by the server when: The player requested to enter the imperial guardian event, or entered the next zone of it.
+    /// Causes reaction on client side: The client shows a message when entering failed. On success, it remembers the day and zone for the timer and the result, and sets the weather of the map.
+    /// </remarks>
+    public static async ValueTask SendImperialGuardianEnterResultAsync(this IConnection? connection, ImperialGuardianEnterResult.EnterResult @result, byte @day, byte @zone, ImperialGuardianEnterResult.WeatherType @weather, uint @remainingMilliseconds)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ImperialGuardianEnterResultRef.Length;
+            var packet = new ImperialGuardianEnterResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.Day = @day;
+            packet.Zone = @zone;
+            packet.Weather = @weather;
+            packet.RemainingMilliseconds = @remainingMilliseconds;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ImperialGuardianTimer" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="type">The type of the timer.</param>
+    /// <param name="remainingMilliseconds">The remaining time in milliseconds. The field is aligned to 4 bytes, because the client structure is not packed.</param>
+    /// <param name="monsterCount">The number of remaining monsters.</param>
+    /// <remarks>
+    /// Is sent by the server when: Every second during the imperial guardian event.
+    /// Causes reaction on client side: The client shows the timer with the remaining time and the number of remaining monsters. The client doesn't count down the time by itself.
+    /// </remarks>
+    public static async ValueTask SendImperialGuardianTimerAsync(this IConnection? connection, ImperialGuardianTimer.TimerType @type, uint @remainingMilliseconds, byte @monsterCount)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ImperialGuardianTimerRef.Length;
+            var packet = new ImperialGuardianTimerRef(connection.Output.GetSpan(length)[..length]);
+            packet.Type = @type;
+            packet.RemainingMilliseconds = @remainingMilliseconds;
+            packet.MonsterCount = @monsterCount;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ImperialGuardianResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="experience">The rewarded experience, when the event has been completed. The field is aligned to 4 bytes, because the client structure is not packed.</param>
+    /// <remarks>
+    /// Is sent by the server when: A zone of the imperial guardian event has been cleared, or the event ended.
+    /// Causes reaction on client side: The client shows the result and hides the timer.
+    /// </remarks>
+    public static async ValueTask SendImperialGuardianResultAsync(this IConnection? connection, ImperialGuardianResult.ResultType @result, uint @experience)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ImperialGuardianResultRef.Length;
+            var packet = new ImperialGuardianResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.Experience = @experience;
 
             return packet.Header.Length;
         }

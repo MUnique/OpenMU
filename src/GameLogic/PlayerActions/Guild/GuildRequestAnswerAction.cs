@@ -51,6 +51,14 @@ public class GuildRequestAnswerAction
             await lastGuildRequester.InvokeViewPlugInAsync<IGuildJoinResponsePlugIn>(p => p.ShowGuildJoinResponseAsync(GuildRequestAnswerResult.GuildMasterOrRequesterIsBusy)).ConfigureAwait(false);
         }
 
+        if (accept
+            && await GuildRequestAction.IsGuildJoinDeniedAsync(lastGuildRequester, player).ConfigureAwait(false))
+        {
+            // Checked again, because the players could have changed in the meantime, e.g. their gens.
+            player.LastGuildRequester = null;
+            return;
+        }
+
         if (accept)
         {
             await guildServer.CreateGuildMemberAsync(player.GuildStatus.GuildId, lastGuildRequester.SelectedCharacter.Id, lastGuildRequester.SelectedCharacter.Name, GuildPosition.NormalMember, ((IGameServerContext)player.GameContext).Id).ConfigureAwait(false);

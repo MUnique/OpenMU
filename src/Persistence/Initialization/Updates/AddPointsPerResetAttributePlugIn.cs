@@ -16,7 +16,7 @@ using MUnique.OpenMU.PlugIns;
 /// This update adds the <see cref="Stats.PointsPerReset"/>.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddPointsPerResetAttributePlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddPointsPerResetAttributePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("6011A1B8-7FA5-48EB-935D-EEAF83017799")]
 public class AddPointsPerResetAttributePlugIn : UpdatePlugInBase
 {
@@ -35,9 +35,6 @@ public class AddPointsPerResetAttributePlugIn : UpdatePlugInBase
 
     /// <inheritdoc />
     public override string Description => PlugInDescription;
-
-    /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.AddPointsPerResetByClassAttribute;
 
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;

@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 /// This update fixes the damage absorption settings for items and skills.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixDamageAbsorbItemsUpdatePlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixDamageAbsorbItemsUpdatePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("280ACE93-2B96-476C-A4AF-4FDA7611D5D5")]
 public class FixDamageAbsorbItemsUpdatePlugIn : UpdatePlugInBase
 {
@@ -36,9 +36,6 @@ public class FixDamageAbsorbItemsUpdatePlugIn : UpdatePlugInBase
 
     /// <inheritdoc />
     public override string Description => PlugInDescription;
-
-    /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixDamageAbsorbItems;
 
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;

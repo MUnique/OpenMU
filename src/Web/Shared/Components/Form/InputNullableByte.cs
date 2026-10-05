@@ -31,7 +31,7 @@ public class InputNullableByte : InputByteBase<byte?>
         }
 
         result = null;
-        validationErrorMessage = string.Format(this.ParsingErrorMessage, this.FieldIdentifier.FieldName);
+        validationErrorMessage = string.Format(this.ParsingErrorMessage, this.DisplayName ?? FieldCaption.Get(this.FieldIdentifier));
         return false;
     }
 

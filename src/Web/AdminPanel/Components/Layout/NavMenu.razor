@@ -49,6 +49,18 @@
                     <span class="oi oi-people" aria-hidden="true" /> @Resources.OnlineAccounts
                   </NavLink>
                 </li>
+                <li class="nav-item px-3">
+                  <NavLink class="nav-link" href="guilds" @onclick="() => NavigationHistory.Clear()">
+                    <span class="oi oi-flag" aria-hidden="true" /> @Resources.Guilds
+                  </NavLink>
+                </li>
+                <AuthorizeView Policy="@AdminPolicies.Administrator">
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" href="castle-siege" @onclick="() => NavigationHistory.Clear()">
+                            <span class="oi oi-shield" aria-hidden="true"></span> @Resources.CastleSiege
+                        </NavLink>
+                    </li>
+                </AuthorizeView>
                 @if (this.GameConfigurationId is { } gameConfigurationId )
                 {
                     <ConfigNavMenu GameConfigurationId="@gameConfigurationId" />
@@ -64,17 +76,17 @@
                         @if (this._availableConfigUpdates > 0)
                         {
                             <span class="badge text-bg-light ms-2">@this._availableConfigUpdates</span>
-                            <span class="visually-hidden">available updates</span>
+                            <span class="visually-hidden">@Resources.AvailableUpdates</span>
                         }
+                    </NavLink>
+                </li>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="config-captions" @onclick="() => NavigationHistory.Clear()">
+                        <span class="oi oi-globe" aria-hidden="true"></span> @Resources.Captions
                     </NavLink>
                 </li>
             }
             <AuthorizeView Policy="@AdminPolicies.Administrator">
-                <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="castle-siege" @onclick="() => NavigationHistory.Clear()">
-                        <span class="oi oi-shield" aria-hidden="true"></span> @Resources.CastleSiege
-                    </NavLink>
-                </li>
                 <li class="nav-item px-3">
                     <NavLink class="nav-link" href="users" @onclick="() => NavigationHistory.Clear()">
                         <span class="oi oi-key" aria-hidden="true"></span> @Resources.Users
@@ -97,7 +109,7 @@
             else
             {
                 <li class="nav-item px-3">
-                    <a class="nav-link" href="/grafana/explore?orgId=1&left=%7B%22datasource%22:%22Loki%22,%22queries%22:%5B%7B%22refId%22:%22A%22%7D%5D,%22range%22:%7B%22from%22:%22now-1h%22,%22to%22:%22now%22%7D%7D"
+                    <a class="nav-link" href="/grafana/explore?schemaVersion=1&orgId=1&panes=%7B%22a%22%3A%7B%22datasource%22%3A%22loki%22%2C%22queries%22%3A%5B%7B%22refId%22%3A%22A%22%2C%22datasource%22%3A%7B%22type%22%3A%22loki%22%2C%22uid%22%3A%22loki%22%7D%2C%22expr%22%3A%22%7Bservice_name%3D~%5C%22.%2B%5C%22%7D%22%7D%5D%2C%22range%22%3A%7B%22from%22%3A%22now-1h%22%2C%22to%22%3A%22now%22%7D%7D%7D"
                        target="_blank">
                         <span class="oi oi-list" aria-hidden="true"></span> @Resources.Logs
                     </a>
@@ -109,7 +121,7 @@
                     </a>
                 </li>
                 <li class="nav-item px-3">
-                    <a class="nav-link" href="/zipkin/"
+                    <a class="nav-link" href="/grafana/explore?schemaVersion=1&orgId=1&panes=%7B%22a%22%3A%7B%22datasource%22%3A%22tempo%22%2C%22queries%22%3A%5B%7B%22refId%22%3A%22A%22%2C%22datasource%22%3A%7B%22type%22%3A%22tempo%22%2C%22uid%22%3A%22tempo%22%7D%2C%22queryType%22%3A%22traceql%22%2C%22query%22%3A%22%7B%7D%22%2C%22limit%22%3A20%7D%5D%2C%22range%22%3A%7B%22from%22%3A%22now-1h%22%2C%22to%22%3A%22now%22%7D%7D%7D"
                        target="_blank">
                         <span class="oi oi-fork" aria-hidden="true"></span> @Resources.Tracing
                     </a>

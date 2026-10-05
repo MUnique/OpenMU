@@ -18,7 +18,7 @@ using MUnique.OpenMU.PlugIns;
 /// This update completes the rage fighter master tree and fixes some of its skill values.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FinishRageFighterMasterTreePlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FinishRageFighterMasterTreePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("2DAE95BC-AE08-45E8-942A-9F61AE1C277B")]
 public class FinishRageFighterMasterTreePlugIn : UpdatePlugInBase
 {
@@ -31,9 +31,6 @@ public class FinishRageFighterMasterTreePlugIn : UpdatePlugInBase
     /// The plug in description.
     /// </summary>
     internal const string PlugInDescription = "This update completes the rage fighter master tree and fixes some of its skill values.";
-
-    /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FinishRageFighterMasterTree;
 
     /// <inheritdoc />
     public override string DataInitializationKey => DataInitialization.Id;

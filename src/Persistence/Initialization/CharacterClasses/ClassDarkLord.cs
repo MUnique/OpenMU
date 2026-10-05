@@ -7,13 +7,15 @@ namespace MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// Initialization of character classes data.
 /// </summary>
 internal partial class CharacterClassInitialization
 {
-    private CharacterClass CreateDarkLord(CharacterClassNumber number, string name, bool isMaster, CharacterClass? nextGenerationClass, bool canGetCreated)
+    private CharacterClass CreateDarkLord(CharacterClassNumber number, LocalizedString name, bool isMaster, CharacterClass? nextGenerationClass, bool canGetCreated)
     {
         var energyMinus15 = this.Context.CreateNew<AttributeDefinition>(Guid.NewGuid(), "TotalEnergy minus 15", "TotalEnergy minus 15");
         this.GameConfiguration.Attributes.Add(energyMinus15);
@@ -124,7 +126,6 @@ internal partial class CharacterClassInitialization
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(48.5f, Stats.MaximumHealth));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(2, Stats.SkillMultiplier));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0.03f, Stats.AbilityRecoveryMultiplier));
-        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.PetDurationIncrease));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(MovementSpeedConstants.RunningGearMovementSpeed, Stats.MovementSpeed, AggregateType.Maximum));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(MovementSpeedConstants.RunningGearMovementSpeed, Stats.MovementSpeedUnderwater, AggregateType.Maximum));
 
@@ -141,7 +142,7 @@ internal partial class CharacterClassInitialization
 
     private CharacterClass CreateLordEmperor()
     {
-        var result = this.CreateDarkLord(CharacterClassNumber.LordEmperor, "Lord Emperor", true, null, false);
+        var result = this.CreateDarkLord(CharacterClassNumber.LordEmperor, LocalizedString.FromResource(() => CharacterClassNames.LordEmperor), true, null, false);
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.MasterLevel, 0, false));
         return result;
     }

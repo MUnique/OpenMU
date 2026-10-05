@@ -9,6 +9,7 @@ using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 
@@ -124,7 +125,7 @@ public abstract class ArmorInitializerBase : InitializerBase
     /// <param name="darkWizardClassLevel">The dark wizard class level.</param>
     /// <param name="darkKnightClassLevel">The dark knight class level.</param>
     /// <param name="elfClassLevel">The elf class level.</param>
-    protected void CreateShield(byte number, byte slot, byte skill, byte width, byte height, string name, byte dropLevel, int defense, int defenseRate, byte durability, int strengthRequirement, int agilityRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel)
+    protected void CreateShield(byte number, byte slot, byte skill, byte width, byte height, LocalizedString name, byte dropLevel, int defense, int defenseRate, byte durability, int strengthRequirement, int agilityRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel)
     {
         this.CreateShield(number, slot, skill, width, height, name, dropLevel, defense, defenseRate, durability, 0, strengthRequirement, agilityRequirement, 0, 0, 0, darkWizardClassLevel, darkKnightClassLevel, elfClassLevel, 0, 0, 0, 0);
     }
@@ -155,7 +156,7 @@ public abstract class ArmorInitializerBase : InitializerBase
     /// <param name="darkLordClassLevel">The dark lord class level.</param>
     /// <param name="summonerClassLevel">The summoner class level.</param>
     /// <param name="ragefighterClassLevel">The rage fighter class level.</param>
-    protected void CreateShield(byte number, byte slot, byte skill, byte width, byte height, string name, byte dropLevel, int defense, int defenseRate, byte durability, int levelRequirement, int strengthRequirement, int agilityRequirement, int energyRequirement, int vitalityRequirement, int leadershipRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel)
+    protected void CreateShield(byte number, byte slot, byte skill, byte width, byte height, LocalizedString name, byte dropLevel, int defense, int defenseRate, byte durability, int levelRequirement, int strengthRequirement, int agilityRequirement, int energyRequirement, int vitalityRequirement, int leadershipRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel)
     {
         var shield = this.CreateArmor(number, slot, width, height, name, dropLevel, 0, durability, levelRequirement, strengthRequirement, agilityRequirement, energyRequirement, vitalityRequirement, leadershipRequirement, darkWizardClassLevel, darkKnightClassLevel, elfClassLevel, magicGladiatorClassLevel, darkLordClassLevel, summonerClassLevel, ragefighterClassLevel, true);
         if (skill != 0)
@@ -200,7 +201,7 @@ public abstract class ArmorInitializerBase : InitializerBase
     /// <param name="darkKnightClassLevel">The dark knight class level.</param>
     /// <param name="elfClassLevel">The elf class level.</param>
     /// <returns>The created item definition.</returns>
-    protected ItemDefinition CreateGloves(byte number, string name, byte dropLevel, int defense, int attackSpeed, byte durability, int strengthRequirement, int agilityRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel)
+    protected ItemDefinition CreateGloves(byte number, LocalizedString name, byte dropLevel, int defense, int attackSpeed, byte durability, int strengthRequirement, int agilityRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel)
     {
         var gloves = this.CreateArmor(number, 5, 2, 2, name, dropLevel, defense, durability, strengthRequirement, agilityRequirement, darkWizardClassLevel, darkKnightClassLevel, elfClassLevel);
         if (attackSpeed > 0)
@@ -231,7 +232,7 @@ public abstract class ArmorInitializerBase : InitializerBase
     /// <param name="darkLordClassLevel">The dark lord class level.</param>
     /// <param name="summonerClassLevel">The summoner class level.</param>
     /// <returns>The created item definition.</returns>
-    protected ItemDefinition CreateGloves(byte number, string name, byte dropLevel, int defense, int attackSpeed, byte durability, int levelRequirement, int strengthRequirement, int agilityRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel)
+    protected ItemDefinition CreateGloves(byte number, LocalizedString name, byte dropLevel, int defense, int attackSpeed, byte durability, int levelRequirement, int strengthRequirement, int agilityRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel)
     {
         var gloves = this.CreateArmor(number, 5, 2, 2, name, dropLevel, defense, durability, levelRequirement, strengthRequirement, agilityRequirement, 0, 0, 0, darkWizardClassLevel, darkKnightClassLevel, elfClassLevel, magicGladiatorClassLevel, darkLordClassLevel, summonerClassLevel, 0);
         if (attackSpeed > 0)
@@ -261,7 +262,7 @@ public abstract class ArmorInitializerBase : InitializerBase
     /// <param name="darkKnightClassLevel">The dark knight class level.</param>
     /// <param name="elfClassLevel">The elf class level.</param>
     /// <returns>The created item definition.</returns>
-    protected ItemDefinition CreateBoots(byte number, byte slot, byte width, byte height, string name, byte dropLevel, int defense, int walkSpeed, byte durability, int strengthRequirement, int agilityRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel)
+    protected ItemDefinition CreateBoots(byte number, byte slot, byte width, byte height, LocalizedString name, byte dropLevel, int defense, int walkSpeed, byte durability, int strengthRequirement, int agilityRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel)
     {
         var boots = this.CreateArmor(number, 6, 2, 2, name, dropLevel, defense, durability, strengthRequirement, agilityRequirement, darkWizardClassLevel, darkKnightClassLevel, elfClassLevel);
         if (walkSpeed > 0)
@@ -296,7 +297,7 @@ public abstract class ArmorInitializerBase : InitializerBase
     /// <param name="summonerClassLevel">The summoner class level.</param>
     /// <param name="ragefighterClassLevel">The rage fighter class level.</param>
     /// <returns>The created item definition.</returns>
-    protected ItemDefinition CreateBoots(byte number, string name, byte dropLevel, int defense, int walkSpeed, byte durability, int levelRequirement, int strengthRequirement, int agilityRequirement, int energyRequirement, int vitalityRequirement, int leadershipRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel)
+    protected ItemDefinition CreateBoots(byte number, LocalizedString name, byte dropLevel, int defense, int walkSpeed, byte durability, int levelRequirement, int strengthRequirement, int agilityRequirement, int energyRequirement, int vitalityRequirement, int leadershipRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel)
     {
         var boots = this.CreateArmor(number, 6, 2, 2, name, dropLevel, defense, durability, levelRequirement, strengthRequirement, agilityRequirement, energyRequirement, vitalityRequirement, leadershipRequirement, darkWizardClassLevel, darkKnightClassLevel, elfClassLevel, magicGladiatorClassLevel, darkLordClassLevel, summonerClassLevel, ragefighterClassLevel);
         if (walkSpeed > 0)
@@ -325,7 +326,7 @@ public abstract class ArmorInitializerBase : InitializerBase
     /// <param name="darkKnightClassLevel">The dark knight class level.</param>
     /// <param name="elfClassLevel">The elf class level.</param>
     /// <returns>The created item definition.</returns>
-    protected ItemDefinition CreateArmor(byte number, byte slot, byte width, byte height, string name, byte dropLevel, int defense, byte durability, int strengthRequirement, int agilityRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel)
+    protected ItemDefinition CreateArmor(byte number, byte slot, byte width, byte height, LocalizedString name, byte dropLevel, int defense, byte durability, int strengthRequirement, int agilityRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel)
     {
         var magicGladiatorClassLevel = 0;
         if ((slot + 5) != (int)ItemGroups.Helm
@@ -364,7 +365,7 @@ public abstract class ArmorInitializerBase : InitializerBase
     /// <param name="ragefighterClassLevel">The rage fighter class level.</param>
     /// <param name="isShield">If set to <c>true</c> the armor is considered a shield.</param>
     /// <returns>The created item definition.</returns>
-    protected ItemDefinition CreateArmor(byte number, byte slot, byte width, byte height, string name, byte dropLevel, int defense, byte durability, int levelRequirement, int strengthRequirement, int agilityRequirement, int energyRequirement, int vitalityRequirement, int leadershipRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel, bool isShield = false)
+    protected ItemDefinition CreateArmor(byte number, byte slot, byte width, byte height, LocalizedString name, byte dropLevel, int defense, byte durability, int levelRequirement, int strengthRequirement, int agilityRequirement, int energyRequirement, int vitalityRequirement, int leadershipRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel, bool isShield = false)
     {
         var armor = this.Context.CreateNew<ItemDefinition>();
         this.GameConfiguration.Items.Add(armor);

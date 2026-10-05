@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.DataModel.Configuration;
 
 using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.AttributeSystem;
+using MUnique.OpenMU.DataModel.Attributes;
 
 /// <summary>
 /// The definition of a master skill. One skill can have 0-n master skill definitions,
@@ -69,14 +70,28 @@ public partial class MasterSkillDefinition
     public string DisplayValueFormula { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the target attribute of a passive skill boost.
+    /// Gets or sets the attribute which the calculated value of this master skill affects.
     /// </summary>
+    /// <remarks>
+    /// If it's not set, the value increases the damage of the skill.
+    /// The power-ups which apply as long as the skill is learned are defined by <see cref="PassivePowerUps"/>.
+    /// </remarks>
     public virtual AttributeDefinition? TargetAttribute { get; set; }
 
     /// <summary>
     /// Gets or sets the type of how the calculated value is aggregated to the <see cref="TargetAttribute"/>.
     /// </summary>
     public AggregateType Aggregation { get; set; }
+
+    /// <summary>
+    /// Gets or sets the power-ups which apply to the character, as long as the skill is learned.
+    /// </summary>
+    /// <remarks>
+    /// Their values are calculated by the attributes of the learned skill, which are its level
+    /// and the value of <see cref="ValueFormula"/> at this level.
+    /// </remarks>
+    [MemberOfAggregate]
+    public virtual ICollection<PowerUpDefinition> PassivePowerUps { get; protected set; } = null!;
 
     /// <summary>
     /// Gets or sets the replaced skill. If this skill is defined, this master skill replaces it in the skill list.
@@ -92,6 +107,6 @@ public partial class MasterSkillDefinition
     /// <inheritdoc />
     public override string ToString()
     {
-        return "Master Skill Definition";
+        return typeof(MasterSkillDefinition).GetTypeCaption();
     }
 }

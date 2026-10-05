@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// This update sets the right settings for the socket seed crafting.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixSocketSeedCraftingUpdatePlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixSocketSeedCraftingUpdatePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("C802EFC2-1D42-4218-871E-8886D115F3ED")]
 public class FixSocketSeedCraftingUpdatePlugIn : UpdatePlugInBase
 {
@@ -32,9 +32,6 @@ public class FixSocketSeedCraftingUpdatePlugIn : UpdatePlugInBase
 
     /// <inheritdoc />
     public override string Description => PlugInDescription;
-
-    /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixSocketSeedCrafting;
 
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;

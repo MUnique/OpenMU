@@ -60,7 +60,7 @@ public class RandomAttackInRangeTrapIntelligence : TrapIntelligenceBase
     private async ValueTask<IAttackable?> SearchNextTargetAsync()
     {
         List<IWorldObserver> tempObservers;
-        using (await this.Trap.ObserverLock.ReaderLockAsync())
+        using (await this.Trap.ObserverLock.ReaderLockAsync().ConfigureAwait(false))
         {
             tempObservers = new List<IWorldObserver>(this.Trap.Observers);
         }
@@ -76,7 +76,7 @@ public class RandomAttackInRangeTrapIntelligence : TrapIntelligenceBase
 
     private async ValueTask<bool> IsTargetInObserversAsync()
     {
-        using (await this.Trap.ObserverLock.ReaderLockAsync())
+        using (await this.Trap.ObserverLock.ReaderLockAsync().ConfigureAwait(false))
         {
             return this._currentTarget is IWorldObserver worldObserver && this.Trap.Observers.Contains(worldObserver);
         }

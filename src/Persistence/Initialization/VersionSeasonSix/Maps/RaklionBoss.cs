@@ -7,6 +7,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// Map initialization for the raklion boss map.
@@ -18,11 +20,6 @@ internal class RaklionBoss : BaseMapInitializer
     /// The Number of the Map.
     /// </summary>
     internal const byte Number = 58;
-
-    /// <summary>
-    /// The Name of the Map.
-    /// </summary>
-    internal const string Name = "LaCleon Boss";
 
     /// <summary>
     /// The wave number of the spider eggs, which appear when the raklion event starts.
@@ -49,11 +46,16 @@ internal class RaklionBoss : BaseMapInitializer
     {
     }
 
+    /// <summary>
+    /// Gets the name of the map.
+    /// </summary>
+    internal static LocalizedString Name => LocalizedString.FromResource(() => MapNames.LaCleonBoss);
+
     /// <inheritdoc/>
     protected override byte MapNumber => Number;
 
     /// <inheritdoc />
-    protected override string MapName => Name;
+    protected override LocalizedString MapName => Name;
 
     /// <inheritdoc/>
     protected override byte SafezoneMapNumber => Raklion.Number;
@@ -105,7 +107,7 @@ internal class RaklionBoss : BaseMapInitializer
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 459;
-            monster.Designation = "Selupan";
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Selupan);
             monster.MoveRange = 3;
             monster.AttackRange = 10;
             monster.ViewRange = 8;

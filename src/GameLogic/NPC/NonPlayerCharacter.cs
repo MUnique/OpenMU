@@ -40,6 +40,12 @@ public class NonPlayerCharacter : AsyncDisposable, IObservable, IRotatable, ILoc
     /// <inheritdoc/>
     public Direction Rotation { get; set; }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether this instance is invisible, so that it isn't shown to the players,
+    /// e.g. a trap which isn't known by the game client.
+    /// </summary>
+    public bool IsInvisible { get; set; }
+
     /// <inheritdoc/>
     public ISet<IWorldObserver> Observers { get; } = new HashSet<IWorldObserver>();
 
@@ -111,7 +117,7 @@ public class NonPlayerCharacter : AsyncDisposable, IObservable, IRotatable, ILoc
     /// <inheritdoc/>
     public async ValueTask AddObserverAsync(IWorldObserver observer)
     {
-        using var writerLock = await this.ObserverLock.WriterLockAsync();
+        using var writerLock = await this.ObserverLock.WriterLockAsync().ConfigureAwait(false);
         this.Observers.Add(observer);
         if (this.Observers.Count == 1)
         {
@@ -124,7 +130,7 @@ public class NonPlayerCharacter : AsyncDisposable, IObservable, IRotatable, ILoc
     /// <inheritdoc/>
     public async ValueTask RemoveObserverAsync(IWorldObserver observer)
     {
-        using var writerLock = await this.ObserverLock.WriterLockAsync();
+        using var writerLock = await this.ObserverLock.WriterLockAsync().ConfigureAwait(false);
         this.Observers.Remove(observer);
         if (this.Observers.Count == 0)
         {

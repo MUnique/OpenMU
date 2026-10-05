@@ -234,49 +234,34 @@ public partial class SkillListField : InputBase<ICollection<SkillEntry>>
             this._levelInputVersion++;
         }
 
-        if (level != currentLevel)
-        {
-            await this.SetMasterSkillLevelAsync(skill, level).ConfigureAwait(true);
-        }
-    }
-
-    private async Task SetMasterSkillLevelAsync(Skill skill, int level)
-    {
-        if (this.Value is not { } collection)
+        if (level == currentLevel || this.Value is not { } collection)
         {
             return;
         }
 
         var entry = this.GetEntry(skill);
-        if (level == 0)
+        if (level > 0)
         {
-            if (entry is not null)
+            if (entry is null)
             {
-                await this.RemoveEntryAsync(collection, entry).ConfigureAwait(true);
+                entry = this.CreateEntry();
+                entry.Skill = skill;
+                collection.Add(entry);
             }
+
+            entry.Level = level;
+            this.EditContext.NotifyFieldChanged(this.FieldIdentifier);
         }
         else if (entry is not null)
         {
-            entry.Level = level;
+            collection.Remove(entry);
+            this.EditContext.NotifyFieldChanged(this.FieldIdentifier);
+            await this.DeleteEntryAsync(entry).ConfigureAwait(false);
         }
-        else
-        {
-            entry = this.CreateEntry();
-            entry.Skill = skill;
-            entry.Level = level;
-            collection.Add(entry);
-        }
-
-        this.EditContext.NotifyFieldChanged(this.FieldIdentifier);
     }
 
     private async Task OnResetMasterSkillsClickAsync()
     {
-        if (this.Value is not { } collection)
-        {
-            return;
-        }
-
         var masterEntries = this.MasterSkillEntries.ToList();
         if (masterEntries.Count == 0)
         {
@@ -287,25 +272,33 @@ public partial class SkillListField : InputBase<ICollection<SkillEntry>>
         var question = this._character is null
             ? Resources.ResetMasterSkillTreeQuestion
             : string.Format(Resources.ResetMasterSkillTreeAndRefundQuestion, spentPoints);
-        if (!await this.ModalService.ShowQuestionAsync(Resources.ResetMasterSkillTree, question).ConfigureAwait(true))
+        if (!await this.ModalService.ShowQuestionAsync(Resources.ResetMasterSkillTree, question).ConfigureAwait(false))
         {
             return;
         }
 
+        await this.InvokeAsync(() =>
+        {
+            foreach (var entry in masterEntries)
+            {
+                this.Value?.Remove(entry);
+            }
+
+            if (this._character is { } character)
+            {
+                // Every level of a master skill costs one master level up point, so we give them back.
+                character.MasterLevelUpPoints += spentPoints;
+                this.NotificationService.NotifyChange(character, nameof(Character.MasterLevelUpPoints));
+            }
+
+            this.EditContext.NotifyFieldChanged(this.FieldIdentifier);
+            this.StateHasChanged();
+        }).ConfigureAwait(false);
+
         foreach (var entry in masterEntries)
         {
-            await this.RemoveEntryAsync(collection, entry).ConfigureAwait(true);
+            await this.DeleteEntryAsync(entry).ConfigureAwait(false);
         }
-
-        if (this._character is { } character)
-        {
-            // Every level of a master skill costs one master level up point, so we give them back.
-            character.MasterLevelUpPoints += spentPoints;
-            this.NotificationService.NotifyChange(character, nameof(Character.MasterLevelUpPoints));
-        }
-
-        this.EditContext.NotifyFieldChanged(this.FieldIdentifier);
-        this.StateHasChanged();
     }
 
     private async Task OnAddRegularSkillClickAsync()
@@ -319,44 +312,31 @@ public partial class SkillListField : InputBase<ICollection<SkillEntry>>
 
         var options = new ModalOptions { DisableBackgroundCancel = true };
         var modal = this.ModalService.Show<ModalCreateNew<SkillEntry>>(Resources.AddSkill, parameters, options);
-        var result = await modal.Result.ConfigureAwait(true);
+        var result = await modal.Result.ConfigureAwait(false);
 
-        if (result.Cancelled || newEntry.Skill is null)
+        // A skill which is already learned doesn't need to be added twice.
+        if (result.Cancelled
+            || newEntry.Skill is not { } skill
+            || this.Entries.Any(e => e != newEntry && e.Skill?.Number == skill.Number))
         {
-            if (this.PersistenceContext.IsSupporting(typeof(SkillEntry)))
-            {
-                await this.PersistenceContext.DeleteAsync(newEntry).ConfigureAwait(true);
-            }
-
+            await this.DeleteEntryAsync(newEntry).ConfigureAwait(false);
             return;
         }
 
-        if (this.Entries.Any(e => e != newEntry && e.Skill?.Number == newEntry.Skill.Number))
+        await this.InvokeAsync(() =>
         {
-            // The skill is already learned, so there is no need to add it twice.
-            if (this.PersistenceContext.IsSupporting(typeof(SkillEntry)))
-            {
-                await this.PersistenceContext.DeleteAsync(newEntry).ConfigureAwait(true);
-            }
-
-            return;
-        }
-
-        this.Value ??= new List<SkillEntry>();
-        this.Value.Add(newEntry);
-        this.EditContext.NotifyFieldChanged(this.FieldIdentifier);
-        this.StateHasChanged();
+            this.Value ??= new List<SkillEntry>();
+            this.Value.Add(newEntry);
+            this.EditContext.NotifyFieldChanged(this.FieldIdentifier);
+            this.StateHasChanged();
+        }).ConfigureAwait(false);
     }
 
     private async Task OnRemoveSkillClickAsync(SkillEntry entry)
     {
-        if (this.Value is not { } collection)
-        {
-            return;
-        }
-
-        await this.RemoveEntryAsync(collection, entry).ConfigureAwait(true);
+        this.Value?.Remove(entry);
         this.EditContext.NotifyFieldChanged(this.FieldIdentifier);
+        await this.DeleteEntryAsync(entry).ConfigureAwait(false);
     }
 
     private SkillEntry CreateEntry()
@@ -366,14 +346,16 @@ public partial class SkillListField : InputBase<ICollection<SkillEntry>>
             : new SkillEntry();
     }
 
-    private async ValueTask RemoveEntryAsync(ICollection<SkillEntry> collection, SkillEntry entry)
+    /// <summary>
+    /// Deletes the entry from the persistence context.
+    /// Skill entries are members of the character aggregate, so they don't exist without it.
+    /// </summary>
+    /// <param name="entry">The entry which was removed from the collection or never added to it.</param>
+    private async ValueTask DeleteEntryAsync(SkillEntry entry)
     {
-        collection.Remove(entry);
-
-        // Skill entries are members of the character aggregate, so they don't exist without it.
         if (this.PersistenceContext.IsSupporting(typeof(SkillEntry)))
         {
-            await this.PersistenceContext.DeleteAsync(entry).ConfigureAwait(true);
+            await this.PersistenceContext.DeleteAsync(entry).ConfigureAwait(false);
         }
     }
 

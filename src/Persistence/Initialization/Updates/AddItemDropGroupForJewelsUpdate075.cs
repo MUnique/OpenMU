@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// This update creates a specific item drop group for jewels with a default chance of 5%.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddItemDropGroupForJewelsUpdate075_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddItemDropGroupForJewelsUpdate075_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("DCF14924-BB19-4CA2-93EC-397A89AA3EB3")]
 public class AddItemDropGroupForJewelsUpdate075 : UpdatePlugInBase
 {
@@ -33,9 +33,6 @@ public class AddItemDropGroupForJewelsUpdate075 : UpdatePlugInBase
 
     /// <inheritdoc />
     public override string Description => PlugInDescription;
-
-    /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.AddItemDropGroupForJewels075;
 
     /// <inheritdoc />
     public override string DataInitializationKey => Version075.DataInitialization.Id;

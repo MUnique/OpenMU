@@ -3880,7 +3880,7 @@
       <CausedReaction>The server checks if the player is not in a gens already and joins the player to the selected gens.</CausedReaction>
       <Fields>
         <Field>
-          <Index>3</Index>
+          <Index>4</Index>
           <Type>Enum</Type>
           <TypeName>GensType</TypeName>
           <Name>GensType</Name>
@@ -3909,7 +3909,7 @@
       <CausedReaction>The server checks if the player has enough points to get the reward, and sends a response.</CausedReaction>
       <Fields>
         <Field>
-          <Index>3</Index>
+          <Index>4</Index>
           <Type>Enum</Type>
           <TypeName>GensType</TypeName>
           <Name>GensType</Name>

@@ -75,7 +75,7 @@ public sealed class DroppedMoney : AsyncDisposable, ILocateable
     {
         player.Logger.LogDebug("Player {0} tries to pick up {1}", player, this);
 
-        using (await this._pickupLock.LockAsync())
+        using (await this._pickupLock.LockAsync().ConfigureAwait(false))
         {
             if (!this._availableToPick)
             {
@@ -90,7 +90,7 @@ public sealed class DroppedMoney : AsyncDisposable, ILocateable
         {
             // Nobody got the money, so the drop is released again. Keeping it claimed would leave it
             // lying on the map, unpickable for everyone until it expires - and then lost.
-            using (await this._pickupLock.LockAsync())
+            using (await this._pickupLock.LockAsync().ConfigureAwait(false))
             {
                 this._availableToPick = true;
             }

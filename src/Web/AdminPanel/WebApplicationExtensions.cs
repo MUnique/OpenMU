@@ -15,6 +15,7 @@ using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Network.Analyzer;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.AdminAuth;
+using MUnique.OpenMU.Persistence.Initialization.Captions;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix;
 using MUnique.OpenMU.Web.AdminPanel.Auth;
@@ -48,7 +49,7 @@ public static class WebApplicationExtensions
 
         var supportedCultures = CultureHelper
             .GetAvailableCultures<Properties.Resources>()
-            .Select(culture => culture.TwoLetterISOLanguageName)
+            .Select(culture => culture.Name)
             .ToArray();
         services.AddLocalization()
             .Configure<RequestLocalizationOptions>(o =>
@@ -70,6 +71,8 @@ public static class WebApplicationExtensions
 
         services.AddToasts();
 
+        services.AddMemoryCache();
+
         services.AddScoped<ModalService>();
         services.AddScoped<IModalService>(sp => sp.GetRequiredService<ModalService>());
         services.AddScoped<ILookupController, PersistentObjectsLookupController>();
@@ -82,8 +85,13 @@ public static class WebApplicationExtensions
         services.AddSingleton<ConfigurationSearchIndexCache>();
         services.AddSingleton<SetupService>();
         services.AddScoped<DataUpdateService>();
+        services.AddScoped<ConfigurationCaptionService>();
         services.AddScoped<AccountService>();
         services.AddScoped<IDataService<Account>>(serviceProvider => serviceProvider.GetService<AccountService>()!);
+        services.AddScoped<IGuildMemberEnricher, CharacterGuildMemberEnricher>();
+        services.AddScoped<GuildService>();
+        services.AddScoped<IGuildService>(serviceProvider => serviceProvider.GetRequiredService<GuildService>());
+        services.AddScoped<IDataService<GuildListItem>>(serviceProvider => serviceProvider.GetRequiredService<GuildService>());
         services.AddScoped<PlugInController>();
         services.AddScoped<IDataService<PlugInConfigurationViewItem>>(serviceProvider => serviceProvider.GetService<PlugInController>()!);
         services.AddScoped<ChatCommandController>();

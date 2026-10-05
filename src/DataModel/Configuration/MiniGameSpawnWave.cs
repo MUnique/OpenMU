@@ -41,6 +41,6 @@ public partial class MiniGameSpawnWave
     /// <inheritdoc />
     public override string ToString()
     {
-        return $"Wave {this.WaveNumber}: {this.Description}";
+        return string.Format(MUnique.OpenMU.DataModel.Properties.Resources.WaveSummary, this.WaveNumber, this.Description);
     }
 }
