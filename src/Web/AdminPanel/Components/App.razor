@@ -12,6 +12,11 @@
     /// Gets the base path of the panel, e.g. "/admin/" when it's hosted under a sub path behind a reverse proxy.
     /// </summary>
     private string BaseHref => $"{this.HttpContext?.Request.PathBase}/";
+
+    /// <summary>
+    /// Gets the bundle of the scoped styles of the hosting application, e.g. the all-in-one startup or the admin panel host.
+    /// </summary>
+    private string HostStylesheet => $"{System.Reflection.Assembly.GetEntryAssembly()?.GetName().Name}.styles.css";
 }
 
 <!DOCTYPE html>
@@ -22,7 +27,7 @@
     <title>@MUnique.OpenMU.Web.AdminPanel.Properties.Resources.OpenMUAdminPanel</title>
     <base href="@this.BaseHref" />
     <ResourcePreloader />
-    <link href="@Assets["MUnique.OpenMU.Startup.styles.css"]" rel="stylesheet" />
+    <link href="@Assets[this.HostStylesheet]" rel="stylesheet" />
     <link href="@Assets["_content/MUnique.OpenMU.Web.AdminPanel/MUnique.OpenMU.Web.AdminPanel.styles.css"]" rel="stylesheet" />
     @foreach (var stylesheetSrc in Web.AdminPanel.Exports.Stylesheets)
     {
