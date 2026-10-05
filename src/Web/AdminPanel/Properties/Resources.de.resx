@@ -472,7 +472,7 @@
     <value>Wird installiert, bitte warten ...</value>
   </data>
   <data name="PleaseRestartTheConnectAndGameServerContainers" xml:space="preserve">
-    <value>Bitte starten Sie die Container des Connect- und Game-Servers neu.</value>
+    <value>Bitte starten Sie die Container des Central- und Game-Servers neu.</value>
   </data>
   <data name="FinishedHaveFun" xml:space="preserve">
     <value>Fertig! Viel Spaß :)</value>

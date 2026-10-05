@@ -2,9 +2,10 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.ConnectServer.Host;
+namespace MUnique.OpenMU.CentralServer.Host;
 
 using Microsoft.AspNetCore.Mvc;
+using ConnectServer = MUnique.OpenMU.ConnectServer.ConnectServer;
 
 /// <summary>
 /// API Controller which provides information about the connection and game servers.

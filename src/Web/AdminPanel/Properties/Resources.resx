@@ -502,7 +502,7 @@
     <value>Installing, please wait ...</value>
   </data>
   <data name="PleaseRestartTheConnectAndGameServerContainers" xml:space="preserve">
-    <value>Please restart the connect and game server containers.</value>
+    <value>Please restart the central server and game server containers.</value>
   </data>
   <data name="FinishedHaveFun" xml:space="preserve">
     <value>Finished! Have fun :)</value>

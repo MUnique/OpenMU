@@ -16,9 +16,19 @@ It also requires a good understanding of distributed systems and more resources
 (CPU, RAM, disk, network) than the [all-in-one deployment](all-in-one.md).
 :::
 
-Each subsystem runs in its own container and the communication between them is
-handled with [Dapr](https://dapr.io/). For observability, all subsystems and
-their Dapr sidecars send logs, metrics and traces with
+The subsystems run in their own containers and the communication between them is
+handled with [Dapr](https://dapr.io/):
+
+| Container | Subsystems | Instances |
+|---|---|---|
+| `centralServer` | Connect server, login server, guild server, friend server, chat server | One |
+| `gameServer0`, `gameServer1`, … | One game server each | One per game server |
+| `adminPanel` | Admin panel | One |
+
+The subsystems of the central server exist just once per deployment and keep
+their state in memory, so they run together in one process.
+
+For observability, all subsystems and their Dapr sidecars send logs, metrics and traces with
 [OpenTelemetry](https://opentelemetry.io/) to the `otel-lgtm` container, which
 bundles an OpenTelemetry collector, Loki, Prometheus, Tempo and Grafana.
 
@@ -84,7 +94,7 @@ created. Click *Install* and wait until the database is set up and filled with
 the data.
 
 :::note[Restart the containers after an installation]
-In a distributed deployment, the connect server and game server containers have
+In a distributed deployment, the central server and game server containers have
 to be restarted after the installation finished. The admin panel tells you so
 when it is done.
 :::

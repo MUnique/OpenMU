@@ -2,11 +2,12 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.LoginServer.Host;
+namespace MUnique.OpenMU.CentralServer.Host;
 
 using System.Threading;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using MUnique.OpenMU.ServerClients;
 
 /// <summary>
 /// A <see cref="IHostedService"/> which cleans up logged in accounts of
@@ -15,6 +16,11 @@ using Microsoft.Extensions.Logging;
 /// </summary>
 public sealed class LoginStateCleanup : IHostedService
 {
+    /// <summary>
+    /// The maximum up-time of a game server, which is considered as freshly started.
+    /// </summary>
+    private static readonly TimeSpan NewServerUptimeLimit = TimeSpan.FromSeconds(60);
+
     private readonly GameServerRegistry _registry;
     private readonly PersistentLoginServer _loginServer;
     private readonly ILogger<LoginStateCleanup> _logger;
@@ -35,7 +41,7 @@ public sealed class LoginStateCleanup : IHostedService
     /// <inheritdoc />
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        this._registry.NewGameServerAdded += this.OnNewGameServerAddedAsync;
+        this._registry.GameServerAdded += this.OnGameServerAddedAsync;
         this._registry.GameServerRemoved += this.OnGameServerRemovedAsync;
         return Task.CompletedTask;
     }
@@ -43,23 +49,27 @@ public sealed class LoginStateCleanup : IHostedService
     /// <inheritdoc />
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        this._registry.NewGameServerAdded -= this.OnNewGameServerAddedAsync;
+        this._registry.GameServerAdded -= this.OnGameServerAddedAsync;
         this._registry.GameServerRemoved -= this.OnGameServerRemovedAsync;
         return Task.CompletedTask;
     }
 
     /// <summary>
-    /// It's called when a new server which recently started, is added.
-    /// We clean up the login states for this server as well.
+    /// It's called when a server is added. If it recently started, we clean up the login states for this server.
     /// </summary>
-    /// <param name="serverId">The id of the started server.</param>
+    /// <param name="heartbeat">The first heartbeat of the added server.</param>
     /// <remarks>
-    /// We handle here the <see cref="GameServerRegistry.NewGameServerAdded"/> instead of the <see cref="GameServerRegistry.GameServerAdded"/>,
-    /// because only then it makes sense to clean the login states of this server.
+    /// Only for a freshly started server it makes sense to clean the login states.
     /// Otherwise, it might be possible, that the login server itself just crashed and recognized a longer running game server. In that case, cleaning the states is not wanted.
     /// </remarks>
-    private async ValueTask OnNewGameServerAddedAsync(ushort serverId)
+    private async ValueTask OnGameServerAddedAsync(GameServerHeartbeatArguments heartbeat)
     {
+        if (heartbeat.UpTime > NewServerUptimeLimit)
+        {
+            return;
+        }
+
+        var serverId = heartbeat.ServerInfo.Id;
         try
         {
             await this._loginServer.RemoveServerAsync((byte)serverId).ConfigureAwait(false);

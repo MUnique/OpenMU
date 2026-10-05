@@ -2,9 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.FriendServer.Host;
+namespace MUnique.OpenMU.CentralServer.Host;
 
-using global::Dapr;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Interfaces;
@@ -14,7 +13,7 @@ using MUnique.OpenMU.ServerClients;
 /// API Controller which handles the calls from the <see cref="ServerClients.FriendServer"/>.
 /// </summary>
 [ApiController]
-[Route("")]
+[Route(CentralServer.FriendServerRoute)]
 public class FriendServerController : ControllerBase
 {
     private readonly IFriendServer _friendServer;
@@ -30,31 +29,6 @@ public class FriendServerController : ControllerBase
     {
         this._friendServer = friendServer;
         this._logger = logger;
-    }
-
-    /// <summary>
-    /// Is called when a player entered the game.
-    /// It will cause a response with <see cref="IFriendSystemSubscriber.InitializeMessengerAsync" />
-    /// and a state update for friends.
-    /// </summary>
-    /// <param name="data">The data.</param>
-    [Topic("pubsub", nameof(IEventPublisher.PlayerEnteredGameAsync))]
-    [HttpPost(nameof(IEventPublisher.PlayerEnteredGameAsync))]
-    public async Task PlayerEnteredGameAsync([FromBody] PlayerOnlineStateArguments data)
-    {
-        await this._friendServer.PlayerEnteredGameAsync(data.ServerId, data.CharacterId, data.CharacterName).ConfigureAwait(false);
-    }
-
-    /// <summary>
-    /// Is called when a player leaves the game.
-    /// It will cause a state update for friends.
-    /// </summary>
-    /// <param name="data">The data.</param>
-    [Topic("pubsub", nameof(IEventPublisher.PlayerLeftGameAsync))]
-    [HttpPost(nameof(IEventPublisher.PlayerLeftGameAsync))]
-    public async Task PlayerLeftGameAsync([FromBody] PlayerOnlineStateArguments data)
-    {
-        await this._friendServer.PlayerLeftGameAsync(data.CharacterId, data.CharacterName).ConfigureAwait(false);
     }
 
     /// <summary>

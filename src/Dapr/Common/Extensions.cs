@@ -158,6 +158,7 @@ public static class Extensions
 
     /// <summary>
     /// Publishes the server to other daprized services by registering a <see cref="ManagableServerStatePublisher"/>.
+    /// It can be called for multiple servers of the same process.
     /// </summary>
     /// <typeparam name="TServer">The type of the server.</typeparam>
     /// <param name="services">The service collection.</param>

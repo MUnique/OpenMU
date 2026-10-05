@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.LoginServer.Host;
+namespace MUnique.OpenMU.CentralServer.Host;
 
 using global::Dapr.Client;
 using Microsoft.Extensions.Logging;

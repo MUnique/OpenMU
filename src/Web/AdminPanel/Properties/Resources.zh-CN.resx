@@ -499,7 +499,7 @@
     <value>正在安装，请稍候……</value>
   </data>
   <data name="PleaseRestartTheConnectAndGameServerContainers" xml:space="preserve">
-    <value>请重启连接服务器和游戏服务器容器。</value>
+    <value>请重启中央服务器和游戏服务器容器。</value>
   </data>
   <data name="FinishedHaveFun" xml:space="preserve">
     <value>已完成！祝您游戏愉快 :)</value>
