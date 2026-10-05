@@ -51,11 +51,6 @@ internal class EntityFrameworkContextBase : IContext
         _ = context.Model;
     }
 
-    /// <summary>
-    /// Finalizes an instance of the <see cref="EntityFrameworkContextBase"/> class.
-    /// </summary>
-    ~EntityFrameworkContextBase() => this.Dispose(false);
-
     /// <inheritdoc />
     public bool HasChanges => this.Context.ChangeTracker.HasChanges();
 
