@@ -201,7 +201,7 @@ public class GameServerController : ControllerBase
     /// </summary>
     /// <param name="accountName">Name of the account.</param>
     /// <returns>True, if the player has been disconnected; False, otherwise.</returns>
-    [HttpPost(nameof(IGameServer.DisconnectPlayerAsync))]
+    [HttpPost(nameof(IGameServer.DisconnectAccountAsync))]
     public ValueTask<bool> DisconnectAccountAsync([FromBody] string accountName)
     {
         return this._gameServer.DisconnectAccountAsync(accountName);
