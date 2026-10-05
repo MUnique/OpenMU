@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework.Json;
 
+using System.Collections.Concurrent;
 using System.Text.Json.Serialization;
 using MUnique.OpenMU.Persistence.EntityFramework.Model;
 
@@ -19,7 +20,11 @@ internal class ConfigurationIdReferenceResolver : ReferenceResolver
     /// </summary>
     private static readonly ConfigurationIdReferenceResolver InstanceValue = new();
 
-    private readonly IDictionary<Guid, IIdentifiable> _cache = new Dictionary<Guid, IIdentifiable>();
+    /// <summary>
+    /// The cache of the configuration objects by their id.
+    /// It's filled by the repositories of the configuration types while accounts of logging in players are deserialized concurrently.
+    /// </summary>
+    private readonly IDictionary<Guid, IIdentifiable> _cache = new ConcurrentDictionary<Guid, IIdentifiable>();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConfigurationIdReferenceResolver"/> class.

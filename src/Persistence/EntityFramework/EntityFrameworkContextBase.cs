@@ -24,6 +24,8 @@ internal class EntityFrameworkContextBase : IContext
 {
     private static readonly ConcurrentDictionary<IEntityType, IProperty?> PropertyToParentByEntityType = new();
 
+    private static readonly ConcurrentDictionary<Type, PropertyInfo[]> AggregatePropertiesByType = new();
+
     private readonly bool _isOwner;
     private readonly IConfigurationChangeListener? _changeListener;
     private readonly AsyncLock _lock = new();
@@ -50,11 +52,6 @@ internal class EntityFrameworkContextBase : IContext
         // Ensure that the model is created.
         _ = context.Model;
     }
-
-    /// <summary>
-    /// Finalizes an instance of the <see cref="EntityFrameworkContextBase"/> class.
-    /// </summary>
-    ~EntityFrameworkContextBase() => this.Dispose(false);
 
     /// <inheritdoc />
     public bool HasChanges => this.Context.ChangeTracker.HasChanges();
@@ -384,10 +381,13 @@ internal class EntityFrameworkContextBase : IContext
 
     private void ForEachAggregate(object obj, Action<object> action)
     {
-        var aggregateProperties = obj.GetType()
-            .GetProperties(BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.Instance)
-            .Where(p => p.GetCustomAttribute<MemberOfAggregateAttribute>() is { }
-                        || p.Name.StartsWith("Joined"));
+        var aggregateProperties = AggregatePropertiesByType.GetOrAdd(
+            obj.GetType(),
+            static type => type
+                .GetProperties(BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.Instance)
+                .Where(p => p.GetCustomAttribute<MemberOfAggregateAttribute>() is { }
+                            || p.Name.StartsWith("Joined"))
+                .ToArray());
         foreach (var propertyInfo in aggregateProperties)
         {
             var propertyValue = propertyInfo.GetMethod?.Invoke(obj, []);
