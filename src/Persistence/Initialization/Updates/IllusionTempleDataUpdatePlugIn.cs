@@ -199,7 +199,6 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
         this.AddArenaMonsterDefinitions(context, gameConfiguration);
         this.AddMapSpawns(context, gameConfiguration);
         this.FixSafezoneMaps(gameConfiguration);
-        this.AddSpecialSkillEffects(context, gameConfiguration);
 
         if (gameConfiguration.MiniGameDefinitions.All(def => def.Type != MiniGameType.IllusionTemple))
         {
@@ -213,6 +212,10 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
                 definition.MinimumPlayerCount = DefaultMinimumPlayerCount;
             }
         }
+
+        // After the initializer: it creates the magic effects along with the definitions, so running
+        // this first would add a second copy of each on a database which has neither yet.
+        this.AddSpecialSkillEffects(context, gameConfiguration);
 
         if (gameConfiguration.Monsters.FirstOrDefault(monster => monster.Number == MirageNpcNumber) is { } mirage)
         {
