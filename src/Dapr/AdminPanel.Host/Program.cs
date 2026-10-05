@@ -41,6 +41,7 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAdminPanelAuth();
 app.UseAntiforgery();
+app.MapStaticAssets();
 app.MapRazorComponents<MUnique.OpenMU.Web.AdminPanel.Components.App>()
     .AddInteractiveServerRenderMode();
 app.MapAdminPanelAuthEndpoints();
