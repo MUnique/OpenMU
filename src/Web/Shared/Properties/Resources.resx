@@ -312,6 +312,37 @@
   <data name="No" xml:space="preserve">
     <value>No</value>
   </data>
+  <data name="UnknownSkill" xml:space="preserve">
+    <value>Unknown skill</value>
+  </data>
+  <data name="AddSkill" xml:space="preserve">
+    <value>Add Skill</value>
+  </data>
+  <data name="MasterSkillTree" xml:space="preserve">
+    <value>Master Skill Tree</value>
+  </data>
+  <data name="SpentMasterPoints" xml:space="preserve">
+    <value>Spent points: {0}</value>
+  </data>
+  <data name="ResetMasterSkillTree" xml:space="preserve">
+    <value>Reset Master Skill Tree</value>
+  </data>
+  <data name="ResetMasterSkillTreeQuestion" xml:space="preserve">
+    <value>Do you really want to remove all master skills of the character?</value>
+  </data>
+  <data name="ResetMasterSkillTreeAndRefundQuestion" xml:space="preserve">
+    <value>Do you really want to remove all master skills of the character? The {0} spent points will be added to the master level up points.</value>
+  </data>
+  <data name="MasterSkillTooltip" xml:space="preserve">
+    <value>{0} (#{1})
+Level: {2} - {3}</value>
+  </data>
+  <data name="MasterSkillRequirementsNotFulfilled" xml:space="preserve">
+    <value>Warning: The requirements to learn this skill are not fulfilled. The required skills and a skill of the previous rank need a level of at least {0}.</value>
+  </data>
+  <data name="MasterSkillRequirementsNotYetFulfilled" xml:space="preserve">
+    <value>Requires the required skills and a skill of the previous rank with a level of at least {0}.</value>
+  </data>
   <data name="Create" xml:space="preserve">
     <value>Create</value>
   </data>
