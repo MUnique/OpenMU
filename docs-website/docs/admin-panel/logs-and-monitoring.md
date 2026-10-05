@@ -58,11 +58,12 @@ menu therefore links to the tools instead of showing a log file page:
 |---|---|---|
 | **Logs** | Grafana / Loki | Search the log entries of all containers |
 | **Metrics** | Grafana dashboards (Prometheus) | Player counts, resource usage, throughput |
-| **Tracing** | Zipkin | Follow one request through the subsystems |
+| **Tracing** | Grafana / Tempo | Follow one request through the subsystems |
 
-These tools are part of the distributed docker compose file and are served by the
-same reverse proxy as the admin panel, protected by the same basic
-authentication.
+All subsystems send their logs, metrics and traces with
+[OpenTelemetry](https://opentelemetry.io/) (OTLP) to one backend container, which
+is part of the distributed docker compose file. Grafana is served by the same
+reverse proxy as the admin panel, under `/grafana/`.
 
 ## What to include in a bug report
 
