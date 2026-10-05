@@ -76,14 +76,15 @@ internal class AccountRepository : CachingGenericRepository<Account>
         cancellationToken.ThrowIfCancellationRequested();
 
         using var context = this.GetContext();
-        var accountInfo = await context.Context.Set<Account>()
-            .AsNoTracking()
-            .FirstOrDefaultAsync(a => a.RawCharacters.Any(c => c.Name == characterName), cancellationToken)
+        var accountId = await context.Context.Set<Account>()
+            .Where(a => a.RawCharacters.Any(c => c.Name == characterName))
+            .Select(a => (Guid?)a.Id)
+            .FirstOrDefaultAsync(cancellationToken)
             .ConfigureAwait(false);
 
-        if (accountInfo != null)
+        if (accountId is { } id)
         {
-            return await this.GetByIdAsync(accountInfo.Id, cancellationToken).ConfigureAwait(false);
+            return await this.GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
         }
 
         return null;

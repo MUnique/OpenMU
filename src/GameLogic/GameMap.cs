@@ -104,6 +104,15 @@ public class GameMap
     }
 
     /// <summary>
+    /// Gets the players which are currently on this map.
+    /// </summary>
+    /// <returns>The players which are currently on this map.</returns>
+    public IList<Player> GetPlayers()
+    {
+        return this._objectsInMap.Values.OfType<Player>().ToList();
+    }
+
+    /// <summary>
     /// Gets the attackables in range of the specified coordinates.
     /// </summary>
     /// <param name="point">The coordinates.</param>
