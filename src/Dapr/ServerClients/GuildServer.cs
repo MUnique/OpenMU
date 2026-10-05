@@ -292,7 +292,7 @@ public class GuildServer : IGuildServer
     {
         try
         {
-            return await this._daprClient.InvokeMethodAsync<(uint, uint), AllianceCreationResult>(this._targetAppId, GetMethodName(nameof(this.CreateAllianceAsync)), (masterGuildId, targetGuildId)).ConfigureAwait(false);
+            return await this._daprClient.InvokeMethodAsync<AllianceCreationArguments, AllianceCreationResult>(this._targetAppId, GetMethodName(nameof(this.CreateAllianceAsync)), new AllianceCreationArguments(masterGuildId, targetGuildId)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -348,7 +348,7 @@ public class GuildServer : IGuildServer
     {
         try
         {
-            return await this._daprClient.InvokeMethodAsync<(uint, uint, bool), bool>(this._targetAppId, GetMethodName(nameof(this.SetHostilityAsync)), (guildIdA, guildIdB, create)).ConfigureAwait(false);
+            return await this._daprClient.InvokeMethodAsync<GuildHostilityArguments, bool>(this._targetAppId, GetMethodName(nameof(this.SetHostilityAsync)), new GuildHostilityArguments(guildIdA, guildIdB, create)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -362,7 +362,7 @@ public class GuildServer : IGuildServer
     {
         try
         {
-            return await this._daprClient.InvokeMethodAsync<(uint, uint), GuildRelationship>(this._targetAppId, GetMethodName(nameof(this.GetGuildRelationshipAsync)), (guild1, guild2)).ConfigureAwait(false);
+            return await this._daprClient.InvokeMethodAsync<GuildRelationshipArguments, GuildRelationship>(this._targetAppId, GetMethodName(nameof(this.GetGuildRelationshipAsync)), new GuildRelationshipArguments(guild1, guild2)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
