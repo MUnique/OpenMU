@@ -3,10 +3,6 @@ services:
     ports:
       - "5433:5432"
   otel-lgtm:
-    environment:
-      # Grafana without login, for local testing only.
-      GF_AUTH_ANONYMOUS_ENABLED: "true"
-      GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
     ports:
       # OTLP endpoints for services which are started from the IDE, outside of docker.
       - "4317:4317"

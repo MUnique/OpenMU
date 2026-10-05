@@ -65,10 +65,19 @@ All subsystems send their logs, metrics and traces with
 is part of the distributed docker compose file. Grafana is served by the same
 reverse proxy as the admin panel, under `/grafana/`.
 
-:::warning[Grafana has no login in production yet]
-Grafana doesn't share the admin panel login yet. In the development setup it is
-reachable without a login; with `docker-compose.prod.yml` it is closed.
-:::
+Grafana uses the admin panel login: without being signed in to the admin panel,
+you're sent to its login page first, and signing out of the admin panel signs you
+out of Grafana, too. The role of the admin panel user decides what you may do in
+Grafana:
+
+| Admin panel role | Grafana role |
+|---|---|
+| Administrator | Admin |
+| Operator | Editor |
+| Viewer | Viewer — can still search logs and traces |
+
+Like the admin panel itself, Grafana is reachable without a login until the
+[first user](authentication.md#the-first-user) exists.
 
 ## What to include in a bug report
 

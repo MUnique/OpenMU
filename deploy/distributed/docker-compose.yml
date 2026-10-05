@@ -29,15 +29,20 @@ services:
     environment:
       GF_SERVER_ROOT_URL: http://localhost/grafana/
       GF_SERVER_SERVE_FROM_SUB_PATH: "true"
-      # Grafana relies on the authentication by nginx, which passes the user in the X-WEBAUTH-USER header.
+      # Grafana relies on the admin panel login: nginx asks the admin panel and passes
+      # the user and its role in the X-WEBAUTH-USER and X-WEBAUTH-ROLE headers.
       GF_AUTH_ANONYMOUS_ENABLED: "false"
       GF_AUTH_BASIC_ENABLED: "false"
       GF_AUTH_DISABLE_LOGIN_FORM: "true"
+      GF_AUTH_DISABLE_SIGNOUT_MENU: "true"
       GF_AUTH_PROXY_ENABLED: "true"
       GF_AUTH_PROXY_HEADER_NAME: X-WEBAUTH-USER
       GF_AUTH_PROXY_HEADER_PROPERTY: username
+      GF_AUTH_PROXY_HEADERS: Role:X-WEBAUTH-ROLE
+      GF_AUTH_PROXY_SYNC_TTL: "1" # minutes until a changed role is applied
       GF_USERS_AUTO_ASSIGN_ORG: "true"
-      GF_USERS_AUTO_ASSIGN_ORG_ROLE: Admin
+      GF_USERS_AUTO_ASSIGN_ORG_ROLE: Viewer
+      GF_USERS_VIEWERS_CAN_EDIT: "true" # allows the viewers to use Explore for logs and traces
     volumes:
       - otel-lgtm-data:/data
 
