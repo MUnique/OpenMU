@@ -22,7 +22,7 @@ public class GameServerController : ControllerBase
     /// Initializes a new instance of the <see cref="GameServerController"/> class.
     /// </summary>
     /// <param name="gameServer">The game server.</param>
-    public GameServerController(GameServer gameServer)
+    public GameServerController(IGameServer gameServer)
     {
         this._gameServer = gameServer;
     }
