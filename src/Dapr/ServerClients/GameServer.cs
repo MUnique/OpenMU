@@ -29,7 +29,7 @@ public class GameServer : IGameServer
         this.CurrentConnections = 0;
 
         this._client = daprClient;
-        this._targetAppId = $"gameServer{serverId}";
+        this._targetAppId = GameServerAppId.Of(serverId);
         this.Description = $"Game Server {serverId}";
 
         async Task InitAsync()

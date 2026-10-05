@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.CentralServer.Host;
 
-using System.Collections.ObjectModel;
 using global::Dapr.Client;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.FriendServer;
@@ -19,7 +18,6 @@ public class FriendNotifier : IFriendNotifier
 {
     private readonly DaprClient _daprClient;
     private readonly ILogger<FriendNotifier> _logger;
-    private readonly IReadOnlyDictionary<int, string> _appIds;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FriendNotifier" /> class.
@@ -30,14 +28,6 @@ public class FriendNotifier : IFriendNotifier
     {
         this._daprClient = daprClient;
         this._logger = logger;
-
-        var appIds = new Dictionary<int, string>();
-        for (int i = 0; i < 100; i++)
-        {
-            appIds.Add(i, $"gameServer{i + 1}");
-        }
-
-        this._appIds = new ReadOnlyDictionary<int, string>(appIds);
     }
 
     /// <inheritdoc />
@@ -45,7 +35,7 @@ public class FriendNotifier : IFriendNotifier
     {
         try
         {
-            await this._daprClient.InvokeMethodAsync(this._appIds[serverId], nameof(IGameServer.FriendRequestAsync), new RequestArguments(requester, receiver)).ConfigureAwait(false);
+            await this._daprClient.InvokeMethodAsync(GameServerAppId.Of(serverId), nameof(IGameServer.FriendRequestAsync), new RequestArguments(requester, receiver)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -73,9 +63,9 @@ public class FriendNotifier : IFriendNotifier
         try
         {
             // todo: find out if this is correct when logging out
-            if (this._appIds.TryGetValue(playerServerId, out var gameServer))
+            if (GameServerAppId.IsValid(playerServerId))
             {
-                await this._daprClient.InvokeMethodAsync(gameServer, nameof(IGameServer.FriendOnlineStateChangedAsync), new FriendOnlineStateChangedArguments(player, friend, friendServerId)).ConfigureAwait(false);
+                await this._daprClient.InvokeMethodAsync(GameServerAppId.Of(playerServerId), nameof(IGameServer.FriendOnlineStateChangedAsync), new FriendOnlineStateChangedArguments(player, friend, friendServerId)).ConfigureAwait(false);
             }
         }
         catch (Exception ex)
@@ -89,7 +79,7 @@ public class FriendNotifier : IFriendNotifier
     {
         try
         {
-            await this._daprClient.InvokeMethodAsync(this._appIds[serverId], nameof(IGameServer.ChatRoomCreatedAsync), new ChatRoomCreationArguments(playerAuthenticationInfo, friendName)).ConfigureAwait(false);
+            await this._daprClient.InvokeMethodAsync(GameServerAppId.Of(serverId), nameof(IGameServer.ChatRoomCreatedAsync), new ChatRoomCreationArguments(playerAuthenticationInfo, friendName)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -102,9 +92,9 @@ public class FriendNotifier : IFriendNotifier
     {
         try
         {
-            if (this._appIds.TryGetValue(serverId, out var gameServer))
+            if (GameServerAppId.IsValid(serverId))
             {
-                await this._daprClient.InvokeMethodAsync(gameServer, nameof(IGameServer.InitializeMessengerAsync), initializationData).ConfigureAwait(false);
+                await this._daprClient.InvokeMethodAsync(GameServerAppId.Of(serverId), nameof(IGameServer.InitializeMessengerAsync), initializationData).ConfigureAwait(false);
             }
         }
         catch (Exception ex)
