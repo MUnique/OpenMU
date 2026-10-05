@@ -4,8 +4,8 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.Tests;
 
-using System.Collections;
 using System.Threading;
+using Moq;
 
 /// <summary>
 /// Tests for the <see cref="BaseRepositoryProvider"/>.
@@ -50,19 +50,8 @@ public class BaseRepositoryProviderTests
 
             // Gives the other accesses the time to arrive while the initialization is running.
             Thread.Sleep(100);
-            this.RegisterRepository(typeof(string), new EmptyRepository());
+            this.RegisterRepository(typeof(string), new Mock<IRepository>().Object);
             base.Initialize();
         }
-    }
-
-    private sealed class EmptyRepository : IRepository
-    {
-        public ValueTask<object?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default) => ValueTask.FromResult<object?>(null);
-
-        public ValueTask<bool> DeleteAsync(object obj) => ValueTask.FromResult(false);
-
-        public ValueTask<bool> DeleteAsync(Guid id) => ValueTask.FromResult(false);
-
-        public ValueTask<IEnumerable> GetAllAsync(CancellationToken cancellationToken = default) => ValueTask.FromResult<IEnumerable>(Array.Empty<object>());
     }
 }

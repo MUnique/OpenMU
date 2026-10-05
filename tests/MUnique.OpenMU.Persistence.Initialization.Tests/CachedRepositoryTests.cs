@@ -4,8 +4,8 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.Tests;
 
-using System.Collections;
 using System.Threading;
+using Moq;
 using MUnique.OpenMU.Persistence.EntityFramework;
 
 /// <summary>
@@ -21,14 +21,14 @@ public class CachedRepositoryTests
     public async Task ConcurrentCallsLoadOnceAsync()
     {
         var item = new IdentifiableObject { Id = Guid.NewGuid() };
-        var baseRepository = new GatedRepository(item);
-        var repository = new CachedRepository<IdentifiableObject>(baseRepository);
+        var loader = new GatedLoader(item);
+        var repository = new CachedRepository<IdentifiableObject>(loader.CreateRepository());
 
         var calls = Enumerable.Range(0, 8).Select(_ => repository.GetAllAsync().AsTask()).ToList();
-        baseRepository.Gate.SetResult();
+        loader.Gate.SetResult();
         var results = await Task.WhenAll(calls).ConfigureAwait(false);
 
-        Assert.That(baseRepository.LoadCount, Is.EqualTo(1));
+        Assert.That(loader.LoadCount, Is.EqualTo(1));
         Assert.That(results, Has.All.EquivalentTo(new[] { item }));
     }
 
@@ -40,16 +40,16 @@ public class CachedRepositoryTests
     public async Task WaitingCallerLoadsAgainWhenTheLoadFailedAsync()
     {
         var item = new IdentifiableObject { Id = Guid.NewGuid() };
-        var baseRepository = new GatedRepository(item) { FailFirstLoad = true };
-        var repository = new CachedRepository<IdentifiableObject>(baseRepository);
+        var loader = new GatedLoader(item) { FailFirstLoad = true };
+        var repository = new CachedRepository<IdentifiableObject>(loader.CreateRepository());
 
         var failingCall = repository.GetAllAsync().AsTask();
         var waitingCall = repository.GetByIdAsync(item.Id).AsTask();
-        baseRepository.Gate.SetResult();
+        loader.Gate.SetResult();
 
         Assert.ThrowsAsync<InvalidOperationException>(() => failingCall);
         Assert.That(await waitingCall.ConfigureAwait(false), Is.SameAs(item));
-        Assert.That(baseRepository.LoadCount, Is.EqualTo(2));
+        Assert.That(loader.LoadCount, Is.EqualTo(2));
     }
 
     /// <summary>
@@ -62,15 +62,15 @@ public class CachedRepositoryTests
     }
 
     /// <summary>
-    /// A repository which returns its item after the gate is opened.
+    /// Loads the item for a mocked base repository after the gate is opened.
     /// </summary>
-    private sealed class GatedRepository : IRepository<IdentifiableObject>
+    private sealed class GatedLoader
     {
         private readonly IdentifiableObject _item;
 
         private int _loadCount;
 
-        public GatedRepository(IdentifiableObject item)
+        public GatedLoader(IdentifiableObject item)
         {
             this._item = item;
         }
@@ -81,7 +81,14 @@ public class CachedRepositoryTests
 
         public int LoadCount => this._loadCount;
 
-        public async ValueTask<IEnumerable<IdentifiableObject>> GetAllAsync(CancellationToken cancellationToken = default)
+        public IRepository<IdentifiableObject> CreateRepository()
+        {
+            var repository = new Mock<IRepository<IdentifiableObject>>();
+            repository.Setup(r => r.GetAllAsync(It.IsAny<CancellationToken>())).Returns(() => this.LoadAsync());
+            return repository.Object;
+        }
+
+        private async ValueTask<IEnumerable<IdentifiableObject>> LoadAsync()
         {
             var loadCount = Interlocked.Increment(ref this._loadCount);
             await this.Gate.Task.ConfigureAwait(false);
@@ -92,15 +99,5 @@ public class CachedRepositoryTests
 
             return [this._item];
         }
-
-        public ValueTask<IdentifiableObject?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default) => throw new NotSupportedException();
-
-        public ValueTask<bool> DeleteAsync(object obj) => throw new NotSupportedException();
-
-        public ValueTask<bool> DeleteAsync(Guid id) => throw new NotSupportedException();
-
-        async ValueTask<IEnumerable> IRepository.GetAllAsync(CancellationToken cancellationToken) => await this.GetAllAsync(cancellationToken).ConfigureAwait(false);
-
-        ValueTask<object?> IRepository.GetByIdAsync(Guid id, CancellationToken cancellationToken) => throw new NotSupportedException();
     }
 }
