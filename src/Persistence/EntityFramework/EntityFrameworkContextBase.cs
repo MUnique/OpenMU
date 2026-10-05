@@ -306,7 +306,7 @@ internal class EntityFrameworkContextBase : IContext
 
     private async ValueTask<bool> SaveChangesCoreAsync(CancellationToken cancellationToken)
     {
-        using var l = await this._lock.LockAsync();
+        using var l = await this._lock.LockAsync(cancellationToken).ConfigureAwait(false);
 
         // when we have a change publisher attached, we want to get the changed entries before accepting them.
         // Otherwise, we can accept them.
