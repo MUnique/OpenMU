@@ -29,7 +29,9 @@ services:
     environment:
       GF_SERVER_ROOT_URL: http://localhost/grafana/
       GF_SERVER_SERVE_FROM_SUB_PATH: "true"
+      # Grafana relies on the authentication by nginx, which passes the user in the X-WEBAUTH-USER header.
       GF_AUTH_ANONYMOUS_ENABLED: "false"
+      GF_AUTH_BASIC_ENABLED: "false"
       GF_AUTH_DISABLE_LOGIN_FORM: "true"
       GF_AUTH_PROXY_ENABLED: "true"
       GF_AUTH_PROXY_HEADER_NAME: X-WEBAUTH-USER

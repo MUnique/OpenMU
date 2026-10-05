@@ -65,6 +65,11 @@ All subsystems send their logs, metrics and traces with
 is part of the distributed docker compose file. Grafana is served by the same
 reverse proxy as the admin panel, under `/grafana/`.
 
+:::warning[Grafana has no login in production yet]
+Grafana doesn't share the admin panel login yet. In the development setup it is
+reachable without a login; with `docker-compose.prod.yml` it is closed.
+:::
+
 ## What to include in a bug report
 
 If you report a problem in
